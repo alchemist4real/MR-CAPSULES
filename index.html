@@ -533,9 +533,27 @@ html,body{
 iframe {
   flex: 1; border: none; width: 100%; height: 100%; background: #FAFAFA;
 }
+@keyframes glitch {
+  0% { transform: translate(0) }
+  20% { transform: translate(-2px, 2px) }
+  40% { transform: translate(-2px, -2px) }
+  60% { transform: translate(2px, 2px) }
+  80% { transform: translate(2px, -2px) }
+  100% { transform: translate(0) }
+}
+.glitch-text { animation: glitch 0.2s infinite; }
 </style>
 </head>
 <body>
+
+<!-- Global Reload Overlay -->
+<div id="reloadOverlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(20,0,0,0.95); z-index:999999; flex-direction:column; justify-content:center; align-items:center; font-family:monospace; color:#FF3333; text-align:center;">
+  <h1 class="glitch-text" style="font-size:3rem; margin-bottom:10px; letter-spacing:4px;">SYSTEM OVERRIDE</h1>
+  <p style="font-size:1.2rem; color:#FFAAAA; max-width:600px; line-height:1.6;">ADMINISTRATOR HAS INITIATED A GLOBAL PROTOCOL RELOAD.</p>
+  <p style="font-size:1.2rem; color:#FFAAAA;">PURGING CACHE & RECALIBRATING IN...</p>
+  <div id="reloadCountdown" style="font-size:8rem; font-weight:bold; margin-top:20px;">3</div>
+</div>
+
 <!-- AUTH OVERLAY -->
 <div class="auth-overlay" id="authOverlay">
   <div class="auth-container">
@@ -1186,7 +1204,23 @@ try {
         const count = Object.keys(state).length;
         onlineCount.textContent = count;
       }).on('broadcast', { event: 'force_reload' }, () => {
-        window.location.reload(true);
+        const ro = document.getElementById('reloadOverlay');
+        const rc = document.getElementById('reloadCountdown');
+        if (ro && rc) {
+          ro.style.display = 'flex';
+          let cnt = 3;
+          rc.textContent = cnt;
+          const iv = setInterval(() => {
+            cnt--;
+            if(cnt > 0) rc.textContent = cnt;
+            else {
+              clearInterval(iv);
+              window.location.href = window.location.href.split('?')[0] + '?t=' + new Date().getTime();
+            }
+          }, 1000);
+        } else {
+          window.location.href = window.location.href.split('?')[0] + '?t=' + new Date().getTime();
+        }
       }).subscribe(async (status) => {
         if (status === 'SUBSCRIBED') {
           await sessionRoom.track({ user: 'auth-user', joined_at: new Date().toISOString() });
