@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcard Patologi Klinik</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for a custom look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Luckiest+Guy&display=swap" rel="stylesheet">
+    <!-- Alpine.js for interactivity -->
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #e8f5e9; }
+        .font-title { font-family: 'Luckiest Guy', cursive; text-shadow: 2px 2px 0px rgba(0,0,0,0.1); }
+        .main-header { background-color: #556B2F; }
+        .card { background-color: #FFFDD0; border: 2px solid #D2B48C; box-shadow: 4px 4px 0px #D2B48C; }
+        .flashcard {
+            perspective: 1000px;
+        }
+        .flashcard-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+            text-align: center;
+            border-radius: 1rem;
+            overflow-y: auto;
+        }
+        .flashcard-front {
+            background-color: #fafad2;
+             border: 2px dashed #D2B48C;
+        }
+        .flashcard-back {
+            background-color: #C8E6C9;
+            transform: rotateY(180deg);
+            border: 2px solid #81C784;
+        }
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body class="p-4 sm:p-6 lg:p-8">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header Section -->
+        <header class="text-center p-4 mb-8 main-header rounded-2xl shadow-lg border-4 border-black">
+            <h1 class="font-title text-4xl sm:text-5xl text-yellow-300 tracking-wider">Flashcard Patologi Klinik</h1>
+        </header>
+
+        <main x-data="{
+            cards: [
+                { q: 'Prinsip Golongan Darah', a: 'Didasarkan pada <strong>reaksi aglutinasi</strong>, yaitu penggumpalan sel darah merah (eritrosit) ketika direaksikan dengan antibodi (aglutinin) yang spesifik. Contoh: Eritrosit grup A akan digumpalkan oleh serum anti-A.' },
+                { q: 'Metode Sahli', a: 'Metode manual untuk mengukur kadar Hemoglobin (Hb). Prinsipnya adalah mengubah Hb menjadi <strong>Asam Hematin</strong> yang berwarna coklat menggunakan <strong>HCl 0,1 N</strong>, kemudian warnanya dicocokkan dengan standar warna secara visual.' },
+                { q: 'Reaksi pada Metode Sahli', a: 'Larutan <strong>HCl 0,1 N</strong> (diteteskan hingga angka 2) digunakan untuk melisiskan eritrosit dan mengubah Hemoglobin (Hb) menjadi <strong>Asam Hematin</strong>, sebuah senyawa berwarna coklat yang stabil untuk pengukuran.' },
+                { q: 'Waktu Pembentukan Asam Hematin', a: 'Setelah darah dicampur dengan HCl 0,1 N, perlu ditunggu selama <strong>1-3 menit</strong> agar reaksi pembentukan Asam Hematin berjalan sempurna sebelum diencerkan dengan akuades.' },
+                { q: 'Zona Ideal Hitung Jenis Leukosit', a: '<strong>Zona V (Even Zone)</strong> pada sediaan apus darah. Di zona ini, eritrosit tersebar merata, sedikit saling bersentuhan, dan tidak tumpang tindih, sehingga morfologi leukosit dapat diidentifikasi dengan jelas.' },
+                { q: 'Larutan Turk', a: 'Digunakan untuk hitung jumlah leukosit. Fungsinya adalah <strong>melisiskan sel darah merah (eritrosit)</strong> dan trombosit tanpa merusak leukosit, sehingga leukosit lebih mudah dihitung di bawah mikroskop.' },
+                { q: 'Area Hitung Leukosit', a: 'Menggunakan bilik hitung Improved Neubauer, leukosit dihitung pada <strong>4 kotak sedang</strong> di sudut-sudut, yaitu kotak nomor <strong>1, 3, 7, dan 9</strong>.' },
+                { q: 'Metode Laju Endap Darah (LED)', a: 'Metode yang umum digunakan adalah <strong>Metode Westergren</strong>. Metode ini mengukur kecepatan pengendapan eritrosit dalam tabung vertikal selama 1 jam, yang hasilnya dipengaruhi oleh konsentrasi protein plasma.' },
+                { q: 'Nilai Rujukan LED (Pria)', a: 'Untuk pria di bawah usia 50 tahun, nilai rujukan normalnya adalah <strong>0 - 15 mm/jam</strong>.' },
+                { q: 'Durasi Pemeriksaan LED', a: 'Setelah darah dimasukkan ke dalam tabung Westergren dan diletakkan di rak, hasilnya dibaca setelah didiamkan selama tepat <strong>1 jam</strong>.' },
+                { q: 'Antikoagulan LED', a: 'Menggunakan <strong>Natrium Sitrat 3,8%</strong> dengan perbandingan 4 bagian darah dan 1 bagian antikoagulan. Ini mencegah pembekuan darah tanpa mengubah bentuk eritrosit.' },
+                { q: 'Rumus Hitung Jumlah Leukosit', a: 'Rumus umum: (Jumlah sel dihitung / Jumlah kotak) x Faktor Pengenceran x (1 / Tinggi bilik hitung) x (1 / Luas area). Rumus praktis: <strong>(Jumlah sel / 4) x 16 x 10 x 10 = Jumlah sel x 400</strong> (jika menghitung di 4 kotak sedang).' },
+                { q: 'Nilai Rujukan Leukosit', a: '<strong>Dewasa:</strong> 4.000 - 11.000 sel/mm³<br><strong>Bayi:</strong> 10.000 - 25.000 sel/mm³<br><strong>1 Tahun:</strong> 6.000 - 18.000 sel/mm³<br><strong>12 Tahun:</strong> 4.500 - 13.500 sel/mm³.' },
+                { q: 'Kelemahan Metode Sahli', a: '1. <strong>Subjektif:</strong> Pencocokan warna sangat bergantung pada mata pengamat.<br>2. <strong>Alat:</strong> Standar warna bisa pudar.<br>3. <strong>Tidak Akurat:</strong> Tidak semua jenis Hb (misal: karboksihemoglobin) terukur.<br>4. <strong>Kesalahan Teknis:</strong> Waktu reaksi tidak tepat, volume pipet tidak akurat.' },
+                { q: 'Tingkat Kesalahan Metode Sahli', a: 'Metode Sahli memiliki tingkat kesalahan yang cukup tinggi, diperkirakan sekitar <strong>10%</strong>.' },
+                { q: 'Urutan Hitung Jenis Leukosit', a: 'Pelaporan standar (differential counting) umumnya mengikuti urutan: <strong>Basofil / Eosinofil / Neutrofil Batang / Neutrofil Segmen / Limfosit / Monosit</strong>.' },
+                { q: 'Identifikasi Alat: Hemometer Sahli', a: 'Satu set alat yang digunakan untuk pemeriksaan Hemoglobin metode Sahli, terdiri dari tabung pengencer, pipet Hb, pipet tetes, batang pengaduk, dan standar warna.' },
+                { q: 'Identifikasi Alat: Pipet Leukosit', a: 'Pipet khusus dengan bola putih di dalamnya. Digunakan untuk mengambil darah hingga tanda 0,5 dan mengencerkannya dengan larutan Turk hingga tanda 11 (pengenceran 20x).' },
+                { q: 'Identifikasi Alat: Rak Westergren', a: 'Rak khusus untuk meletakkan tabung Westergren secara vertikal sempurna selama 1 jam saat pemeriksaan Laju Endap Darah (LED).' },
+                { q: 'Interpretasi Tabel Golongan Darah', a: '<strong>Grup A:</strong> Aglutinasi pada Anti-A.<br><strong>Grup B:</strong> Aglutinasi pada Anti-B.<br><strong>Grup AB:</strong> Aglutinasi pada Anti-A dan Anti-B.<br><strong>Grup O:</strong> Tidak ada aglutinasi sama sekali.' },
+                { q: 'Tindakan untuk Hiperemis', a: 'Memijat-mijat lokasi pengambilan darah kapiler (seperti cuping telinga atau ujung jari) bertujuan untuk menyebabkan <strong>hiperemis</strong>, yaitu meningkatkan aliran darah ke area tersebut agar sampel darah lebih mudah didapat.' },
+                { q: 'Pemeriksaan Hematokrit', a: 'Hematokrit (Ht/HCT) mengukur persentase volume sel darah merah terhadap volume total darah. Pemeriksaannya menggunakan <strong>tabung kapiler</strong> yang diisi darah lalu disentrifuge dengan kecepatan tinggi (mikrosentrifuge).' },
+                { q: 'Alat untuk Hematokrit', a: 'Pemeriksaan hematokrit mikro menggunakan alat <strong>Sentrifuge</strong> khusus yang mampu memutar tabung kapiler dengan kecepatan sangat tinggi.' },
+                { q: 'Prosedur Sentrifuge Hematokrit', a: 'Tabung kapiler yang telah diisi darah sekitar <strong>3/4 bagian</strong> dan salah satu ujungnya ditutup (misal: dengan Vaselin), disentrifuge dengan kecepatan <strong>16.000 rpm</strong> selama <strong>3-5 menit</strong>.' },
+                { q: 'Reagen Hitung Eritrosit', a: 'Menggunakan <strong>Larutan Hayem</strong>. Larutan ini bersifat isotonis sehingga eritrosit tidak lisis dan bentuknya tetap terjaga saat dihitung di bawah mikroskop.' },
+                { q: 'Area Hitung Eritrosit', a: 'Eritrosit dihitung pada <strong>5 kotak kecil</strong> di dalam kotak sedang bagian tengah (kotak nomor 5) pada bilik hitung Improved Neubauer.' },
+                { q: 'Metode Waktu Perdarahan (BT)', a: 'Ada dua metode utama: <strong>Metode Ivy</strong> (menggunakan tensimeter dengan tekanan 40 mmHg di lengan atas) dan <strong>Metode Duke</strong> (luka tusuk dibuat di cuping telinga).' },
+                { q: 'Definisi Bleeding Time (BT)', a: 'Mengukur waktu yang diperlukan sejak luka standar dibuat hingga perdarahan berhenti. Pemeriksaan ini menilai fungsi <strong>hemostasis primer</strong>, terutama fungsi trombosit dan kondisi vaskular.' },
+                { q: 'Kriteria Keberhasilan BT', a: 'Pemeriksaan dianggap valid jika bercak darah pertama yang diserap kertas saring memiliki diameter antara <strong>3-5 mm</strong>.' },
+                { q: 'Uji Rumple Leede', a: 'Digunakan untuk menilai <strong>kerapuhan dinding kapiler</strong> dan fungsi trombosit. Uji ini juga dikenal sebagai Uji Bendung atau <i>Tourniquet Test</i>.' },
+                { q: 'Prosedur Uji Rumple Leede', a: 'Pembendungan dilakukan pada lengan atas menggunakan tensimeter. Tekanan diatur antara tekanan sistolik dan diastolik, dipertahankan selama <strong>10 menit</strong> (maksimal pada 100 mmHg).' },
+                { q: 'Interpretasi Uji Rumple Leede', a: '<strong>Positif:</strong> Timbul <strong>lebih dari 10 petekie</strong> (bintik perdarahan) baru dalam area lingkaran berdiameter 5 cm di lengan bawah. <br><strong>Negatif:</strong> Timbul kurang dari 10 petekie.' },
+                { q: 'Nilai Normal Waktu Pembekuan (CT)', a: 'Waktu pembekuan normal adalah <strong>9 - 15 menit</strong>. Ini adalah waktu yang dibutuhkan darah untuk membeku di dalam tabung reaksi tanpa antikoagulan. Volume darah vena yang diambil adalah <strong>5 ml</strong>.' },
+                 { q: 'Perhitungan Waktu Pembekuan (CT)', a: 'Hasil dinyatakan sebagai nilai <strong>rata-rata</strong> dari waktu beku pada dua tabung. Contoh: Tabung I beku 9 menit, Tabung II beku 10 menit, maka CT = (9+10)/2 = 9,5 menit.' },
+                { q: 'Arti Klinis Clotting Time (CT)', a: 'Waktu yang memanjang menunjukkan adanya kelainan pada jalur koagulasi (koagulopati) atau adanya inhibitor seperti heparin. Ini menilai <strong>hemostasis sekunder</strong>.' },
+                { q: 'Rumus Hitung Jumlah Eritrosit', a: 'Rumus praktis: <strong>Jumlah sel dihitung x 10.000</strong> (jika menghitung di 5 kotak kecil/80 kotak terkecil, dengan pengenceran 200x).' },
+                { q: 'Nilai Rujukan Eritrosit', a: '<strong>Pria Dewasa:</strong> 4,5 - 6,5 juta/mm³<br><strong>Wanita Dewasa:</strong> 3,9 - 5,6 juta/mm³<br><strong>Bayi (<3 bln):</strong> 4,0 - 5,6 juta/mm³' },
+                { q: 'Nilai Rujukan Hematokrit', a: '<strong>Pria Dewasa:</strong> 47 ± 5%<br><strong>Wanita Dewasa:</strong> 42 ± 5%.' },
+                { q: 'Rumus MCH', a: 'MCH (Mean Corpuscular Hemoglobin) mengukur berat rata-rata hemoglobin dalam satu eritrosit. Rumusnya adalah: <strong>(Kadar Hb (g/dL) / Jumlah Eritrosit (juta/mm³)) x 10</strong>. Satuannya adalah pikogram (pg).' },
+                { q: 'Interpretasi MCH Rendah', a: 'Nilai MCH di bawah normal disebut <strong>Hipokromik</strong>. Ini menandakan bahwa sel darah merah memiliki konsentrasi hemoglobin yang lebih rendah dari biasanya, sering terlihat pada anemia defisiensi besi.' },
+                { q: 'Nilai Rujukan MCH', a: '<strong>Laki-laki:</strong> 24.2 - 31.2 pg<br><strong>Perempuan:</strong> 22.6 - 31.0 pg.' },
+            ],
+            shuffleMode: false,
+            shuffledCards: [],
+            currentIndex: 0,
+            startShuffle() {
+                this.shuffledCards = [...this.cards].sort(() => Math.random() - 0.5);
+                this.currentIndex = 0;
+                this.shuffleMode = true;
+            },
+            exitShuffle() {
+                this.shuffleMode = false;
+            },
+            nextCard() {
+                this.currentIndex = (this.currentIndex + 1) % this.shuffledCards.length;
+            },
+            prevCard() {
+                this.currentIndex = (this.currentIndex - 1 + this.shuffledCards.length) % this.shuffledCards.length;
+            }
+        }" x-cloak>
+
+            <!-- Mode Toggle -->
+            <div class="flex justify-center mb-8">
+                <button @click="startShuffle()" x-show="!shuffleMode" class="card font-title text-xl px-6 py-3 rounded-full transition bg-blue-200 hover:bg-blue-300">
+                    Mulai Mode Acak
+                </button>
+                <button @click="exitShuffle()" x-show="shuffleMode" class="card font-title text-xl px-6 py-3 rounded-full transition bg-red-200 hover:bg-red-300">
+                    Kembali ke Tampilan Grid
+                </button>
+            </div>
+
+            <!-- Grid View -->
+            <div x-show="!shuffleMode" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <template x-for="(card, index) in cards.sort((a, b) => a.q.localeCompare(b.q))" :key="index">
+                    <div x-data="{ flipped: false }" @click="flipped = !flipped" class="flashcard h-72 cursor-pointer">
+                        <div class="flashcard-inner" :style="flipped ? 'transform: rotateY(180deg)' : ''">
+                            <div class="flashcard-front">
+                                <h3 class="text-xl font-bold" x-text="card.q"></h3>
+                                <p class="text-sm mt-4 text-gray-500">(Klik untuk melihat detail)</p>
+                            </div>
+                            <div class="flashcard-back">
+                                <p class="text-base font-semibold" x-html="card.a"></p>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+            
+            <!-- Shuffle View -->
+            <div x-show="shuffleMode" class="flex flex-col items-center">
+                <div class="w-full max-w-2xl">
+                     <div x-data="{ flipped: false }" @click="flipped = !flipped" class="flashcard h-96 cursor-pointer">
+                        <div class="flashcard-inner" :style="flipped ? 'transform: rotateY(180deg)' : ''">
+                            <div class="flashcard-front">
+                                <h3 class="text-3xl font-bold" x-text="shuffledCards[currentIndex]?.q"></h3>
+                                <p class="text-md mt-4 text-gray-500">(Klik untuk melihat detail)</p>
+                            </div>
+                            <div class="flashcard-back">
+                                <p class="text-xl font-semibold" x-html="shuffledCards[currentIndex]?.a"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 flex items-center justify-center w-full max-w-2xl">
+                    <button @click="prevCard()" class="font-title text-4xl p-2 mx-4 text-gray-600 hover:text-black transition"> &lt; </button>
+                    <p class="font-semibold text-lg" x-text="`Kartu ${currentIndex + 1} dari ${shuffledCards.length}`"></p>
+                    <button @click="nextCard()" class="font-title text-4xl p-2 mx-4 text-gray-600 hover:text-black transition"> &gt; </button>
+                </div>
+            </div>
+
+        </main>
+
+        <footer class="text-center mt-12">
+            <p class="text-sm text-gray-600">Semoga berhasil dalam praktikumnya! ✨</p>
+        </footer>
+    </div>
+</body>
+</html>
+

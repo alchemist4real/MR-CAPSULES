@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Card Generator - Med School</title>
+    <!-- Load Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Load Chart.js for spiderweb diagram --><script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Load Google Font (Poppins) for game theme --><link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Custom styles for "game" theme */
+        body {
+            font-family: 'Poppins', 'Inter', sans-serif;
+            background-color: #111827; /* bg-gray-900 */
+            color: white;
+        }
+
+        /* Player card background */
+        #player-card {
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.3), 0 0 40px rgba(74, 222, 128, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease-in-out;
+        }
+        
+        /* Dynamic Background Classes */
+        .card-bg-default { background: linear-gradient(145deg, #1f0053, #0f0029); } /* Purple */
+        .card-bg-e { background: linear-gradient(145deg, #530000, #290000); } /* Dark Red */
+        .card-bg-d { background: linear-gradient(145deg, #532d00, #291a00); } /* Dark Orange */
+        .card-bg-c { background: linear-gradient(145deg, #003c53, #001f29); } /* Dark Blue */
+        .card-bg-b { background: linear-gradient(145deg, #005319, #00290c); } /* Dark Green */
+        .card-bg-a { background: linear-gradient(145deg, #7a5500, #291a00); } /* Dark Gold */
+
+
+        /* Hide default file input */
+        #foto-input { display: none; }
+
+        /* Custom file input label style */
+        #foto-label {
+            cursor: pointer;
+            background-color: #4a5568;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.2s;
+        }
+        #foto-label:hover { background-color: #2d3748; }
+
+        /* Dark theme form input styles */
+        .form-input {
+            background-color: #374151;
+            border: 1px solid #4b5563;
+            color: white;
+            border-radius: 0.375rem;
+            width: 100%;
+            padding: 0.5rem;
+        }
+        
+        /* Main button style */
+        .btn-primary {
+            font-weight: 700;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+            background-color: #22c55e;
+            color: #0c2a19;
+        }
+        .btn-primary:hover {
+            background-color: #4ade80;
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.5);
+        }
+        
+        /* Toggle size button style */
+        .btn-size-toggle {
+            background-color: #374151;
+            color: white;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border: 1px solid #4b5563;
+            flex-grow: 1;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-size-toggle.active {
+            background-color: #22c55e;
+            color: #0c2a19;
+            border-color: #22c55e;
+        }
+        
+        /* NEW: Badge styles with Icons */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 10px 2px 4px;
+            border-radius: 9999px; /* rounded-full */
+            font-size: 0.75rem; /* text-xs */
+            font-weight: 700;
+            text-transform: uppercase;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            flex-shrink: 0; /* Prevent badge from shrinking */
+        }
+        .badge-icon {
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: rgba(0,0,0,0.2);
+            padding: 2px;
+        }
+        .badge-icon svg {
+            width: 10px;
+            height: 10px;
+            stroke-width: 2.5;
+        }
+        
+        .badge-positive { background-color: #10b981; color: #064e3b; }
+        .badge-positive .badge-icon svg { stroke: #064e3b; }
+        
+        .badge-negative { background-color: #ef4444; color: #7f1d1d; }
+        .badge-negative .badge-icon svg { stroke: #7f1d1d; }
+        
+        .badge-special { background: linear-gradient(90deg, #f7971e, #ffd200); color: #4d2c00; }
+        .badge-special .badge-icon svg { stroke: #4d2c00; }
+        
+        .badge-average { background-color: #6b7280; color: #1f2937; }
+        .badge-average .badge-icon svg { stroke: #1f2937; }
+        
+        /* NEW: Card Size Classes */
+        .card-story { width: 360px; height: 640px; }
+        .card-feed { width: 400px; height: 400px; }
+
+        /* Feed Mode: Hide stats, center badges */
+        .card-feed #stats-container { display: none !important; }
+        .card-feed #photo-container {
+            flex-grow: 1;
+            align-items: center;
+        }
+        /* In feed mode, we'll show badges below the name */
+        .card-feed #badge-container-feed {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 4px;
+            padding: 4px 16px;
+        }
+
+        /* NEW: Display Options (Checkbox) Styles */
+        .form-checkbox {
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: 0.25rem;
+            background-color: #374151;
+            border: 1px solid #4b5563;
+            appearance: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+            position: relative;
+        }
+        .form-checkbox:checked {
+            background-color: #22c55e;
+            border-color: #22c55e;
+        }
+        .form-checkbox:checked::after {
+            content: '✔';
+            color: #0c2a19;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.8rem;
+            font-weight: 900;
+        }
+        
+        /* NEW: Dynamic Photo Frame Classes */
+        #photo-frame {
+            transition: all 0.3s ease-in-out;
+        }
+        .frame-default { border: 2px solid #ffffff1A; box-shadow: 0 0 10px rgba(255,255,255,0.1); }
+        .frame-e { border: 2px solid #ef4444; box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); }
+        .frame-d { border: 2px solid #f97316; box-shadow: 0 0 15px rgba(249, 115, 22, 0.5); }
+        .frame-c { border: 2px solid #3b82f6; box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
+        .frame-b { border: 2px solid #22c55e; box-shadow: 0 0 15px rgba(34, 197, 94, 0.5); }
+        .frame-a { border: 2px solid #fde047; box-shadow: 0 0 20px rgba(253, 224, 71, 0.7); }
+
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="container mx-auto max-w-7xl">
+        <h1 class="text-3xl md:text-4xl font-bold text-center mb-8 text-green-400">
+            Player Card Generator
+            <span class="block text-xl font-normal text-yellow-300">Block 1.3 Control & Regulation Systems</span>
+        </h1>
+        
+        <!-- ================== -->
+        <!--  LAYOUT GRID 1/3 (FORM) & 2/3 (CARD) -->
+        <!-- ================== -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- ================== -->
+            <!--  INPUT CONTAINER (1/3) -->
+            <!-- ================== -->
+            <div id="input-container" class="lg:col-span-1">
+                <div class="bg-gray-800 p-6 rounded-lg shadow-xl border border-gray-700">
+                    <h2 class="text-2xl font-bold mb-6 text-yellow-400">Player Data</h2>
+                    
+                    <form id="player-form" class="space-y-4">
+                        <!-- Name & NIM --><div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="nama" class="block text-sm font-medium text-green-300">Name</label>
+                                <input type="text" id="nama" class="form-input mt-1" placeholder="e.g. Raka">
+                            </div>
+                            <div>
+                                <label for="nim" class="block text-sm font-medium text-green-300">NIM</label>
+                                <input type="text" id="nim" class="form-input mt-1" placeholder="e.g. G1A025XXX">
+                            </div>
+                        </div>
+                        
+                        <!-- Upload Photo --><div>
+                            <label class="block text-sm font-medium text-green-300">Upload Photo</label>
+                            <div class="mt-1 flex items-center gap-4">
+                                <label for="foto-input" id="foto-label">Choose File</label>
+                                <span id="file-name" class="text-gray-400 text-sm">No file chosen</span>
+                            </div>
+                            <input type="file" id="foto-input" accept="image/*">
+                        </div>
+                        
+                        <!-- Score Input --><h3 class="text-xl font-semibold pt-4 text-blue-400">Score Input (0-100)</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            <div>
+                                <label for="cbt" class="block text-sm font-medium text-gray-300">CBT (50%)</label>
+                                <input type="number" id="cbt" class="form-input mt-1" min="0" max="100" placeholder="80">
+                            </div>
+                            <div>
+                                <label for="soca" class="block text-sm font-medium text-gray-300">SOCA (20%)</label>
+                                <input type="number" id="soca" class="form-input mt-1" min="0" max="100" placeholder="75">
+                            </div>
+                            <div>
+                                <label for="anatomi" class="block text-sm font-medium text-gray-300">Anatomy (11%)</label>
+                                <input type="number" id="anatomi" class="form-input mt-1" min="0" max="100" placeholder="70">
+                            </div>
+                            <div>
+                                <label for="histologi" class="block text-sm font-medium text-gray-300">Histology (8%)</label>
+                                <input type="number" id="histologi" class="form-input mt-1" min="0" max="100" placeholder="85">
+                            </div>
+                            <div>
+                                <label for="fisiologi" class="block text-sm font-medium text-gray-300">Physiology (6%)</label>
+                                <input type="number" id="fisiologi" class="form-input mt-1" min="0" max="100" placeholder="90">
+                            </div>
+                            <div>
+                                <label for="porto" class="block text-sm font-medium text-gray-300">Portfolio (5%)</label>
+                                <input type="number" id="porto" class="form-input mt-1" min="0" max="100" placeholder="100">
+                            </div>
+                        </div>
+                        
+                        <!-- NEW: Display Options --><h3 class="text-xl font-semibold pt-4 text-purple-400">Card Display Options</h3>
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" id="toggle-spiderweb" class="form-checkbox" checked>
+                                <label for="toggle-spiderweb" class="text-gray-300">Show Spiderweb</label>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" id="toggle-badges" class="form-checkbox">
+                                <label for="toggle-badges" class="text-gray-300">Show Badges</label>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons --><div class="flex gap-4 pt-6">
+                            <button type="button" id="generate-btn" class="btn-primary w-full">
+                                Generate Card
+                            </button>
+                        </div>
+                        <div class="flex gap-2 w-full">
+                            <button type="button" id="size-story-btn" class="btn-size-toggle">Story (9:16)</button>
+                            <button type="button" id="size-feed-btn" class="btn-size-toggle">Feed (1:1)</button>
+                        </div>
+                    </form>
+                </div>
+            </div> <!-- End input-container -->
+            
+            <!-- ================== -->
+            <!--   CARD CONTAINER (2/3) -->
+            <!-- ================== -->
+            <div id="card-preview-container" class="flex flex-col items-center gap-4 py-8 lg:py-0 lg:col-span-2">
+                
+                <div id="card-wrapper" class="flex justify-center items-start lg:items-center">
+                    
+                    <!-- Player Card, size controlled by JS/CSS --><div id="player-card" class="rounded-xl relative card-bg-default overflow-hidden">
+                        
+                        <div class="relative z-10 flex flex-col h-full p-4">
+                            <!-- Blurred background image for photo --><div id="card-bg-img" class="absolute inset-0 w-full h-full opacity-10" style="background-size: cover; background-position: center;"></div>
+                            
+                            <!-- Card Title --><div id="card-title" class="text-center text-xs font-bold text-yellow-300 uppercase tracking-widest flex-shrink-0">
+                                Block 1.3 Player Card
+                            </div>
+                            
+                            <!-- OVR, POS, FLAG --><div class="flex justify-between items-center my-2 flex-shrink-0">
+                                <div class="text-left">
+                                    <div class="flex items-end gap-2">
+                                        <div id="card-ovr" class="text-6xl font-black text-white" style="text-shadow: 0 0 10px #6b7280;">??</div>
+                                        <div id="card-grade" class="text-4xl font-black text-gray-500" style="text-shadow: none;">-</div>
+                                    </div>
+                                    <div id="card-pos" class="text-2xl font-bold text-yellow-400 -mt-2">MHS</div>
+                                </div>
+                                <div class="flex flex-col items-center">
+                                    <div id="card-flag" class="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center border-2 border-green-400/50">
+                                        <span class="text-xs font-bold text-green-300">UNSOED</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Photo & Frame --><div id="photo-container" class="h-52 flex-shrink-0 flex justify-center items-center p-4">
+                                <div id="photo-frame" class="w-40 h-40 bg-white/5 rounded-lg shadow-lg p-1 frame-default">
+                                    <img id="card-img" src="https://placehold.co/200x200/374151/FFFFFF?text=FOTO" alt="Player Photo" 
+                                         class="w-full h-full object-cover rounded-md">
+                                </div>
+                            </div>
+                            
+                            <!-- Name & NIM --><div class="text-center mt-2 flex-shrink-0">
+                                <div id="card-name" class="text-2xl font-bold text-white uppercase truncate px-2">NAME</div>
+                                <div id="card-nim" class="text-sm font-semibold text-gray-300">NIM</div>
+                            </div>
+                            
+                            <!-- Feed Mode Badge Container (hidden by default) -->
+                            <div id="badge-container-feed" class="hidden"></div>
+                            
+                            <!-- NEW: Container for Stats & Badges (Scrollable) --><div id="stats-container" class="flex flex-col flex-1 mt-4 min-h-0 overflow-y-auto">
+                                
+                                <!-- Spiderweb Container (Optional) --><div id="spider-chart-container" class="h-48 flex-shrink-0"> <!-- Reduced height --><canvas id="spider-chart"></canvas>
+                                </div>
+                                
+                                <!-- Badges Container (Optional) --><div id="badge-container" class_story="flex flex-col flex-1 min-h-0 pt-2" style="display: none;">
+                                    <h4 class="text-center text-xs font-semibold text-yellow-400 uppercase mb-2 flex-shrink-0">Achievements</h4>
+                                    <div id="card-badges" class="flex flex-wrap justify-center items-start gap-1.5 flex-grow">
+                                        <span class="badge badge-average">
+                                            <span class="badge-icon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" /></svg>
+                                            </span>
+                                            <span class="badge-text">No scores yet</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div> <!-- End card-wrapper -->
+            </div> <!-- End card-preview-container -->
+        </div> <!-- End grid -->
+    </div> <!-- End container -->
+
+    <!-- ================== -->
+    <!--   NEW: CREDITS FOOTER -->
+    <!-- ================== -->
+    <footer class="text-center text-gray-500 text-xs mt-12 pb-4">
+        Made with <span class="text-red-500">&hearts;</span> by 
+        <a href="https://github.com/muqorrobinize" target="_blank" class="text-green-400 hover:underline">muqorrobinize</a>
+        & <a href="https://gemini.google.com/" target="_blank" class="text-blue-400 hover:underline">Gemini</a>.
+        <br>
+        Inspired by <a href="https://www.instagram.com/beenspace" target="_blank" class="text-pink-400 hover:underline">@beenspace</a>.
+    </footer>
+
+    <script>
+        // Global variable to store chart instance
+        let mySpiderChart;
+
+        // Score weights based on BPM
+        const weights = {
+            cbt: 0.50,
+            soca: 0.20,
+            anatomi: 0.11,
+            histologi: 0.08,
+            fisiologi: 0.06,
+            porto: 0.05
+        };
+
+        // Thresholds for badges
+        const thresholds = {
+            digger: 75, // Score for "Digger" badge
+            hater: 56,  // Score (below) for "Hater" badge
+            star: 80,   // Score for SOCA Star
+            pro: 85     // Score for Portfolio Pro
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Input Form
+            const fotoInput = document.getElementById('foto-input');
+            const fileNameSpan = document.getElementById('file-name');
+            const generateBtn = document.getElementById('generate-btn');
+
+            // Output Card
+            const cardImg = document.getElementById('card-img');
+            const cardBgImg = document.getElementById('card-bg-img');
+            
+            // Card Control Buttons
+            const sizeStoryBtn = document.getElementById('size-story-btn');
+            const sizeFeedBtn = document.getElementById('size-feed-btn');
+            
+            // Card Element
+            const playerCard = document.getElementById('player-card');
+            
+            // Checkboxes
+            const toggleSpiderweb = document.getElementById('toggle-spiderweb');
+            const toggleBadges = document.getElementById('toggle-badges');
+
+
+            // --- Event Listener for Photo Upload ---
+            fotoInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    fileNameSpan.textContent = file.name;
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        const imgDataUrl = event.target.result;
+                        cardImg.src = imgDataUrl;
+                        cardBgImg.style.backgroundImage = `url(${imgDataUrl})`;
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    fileNameSpan.textContent = 'No file chosen';
+                    cardImg.src = 'https://placehold.co/200x200/374151/FFFFFF?text=FOTO';
+                    cardBgImg.style.backgroundImage = 'none';
+                }
+            });
+
+            // --- Event Listener for Generate Button ---
+            generateBtn.addEventListener('click', generateCard);
+            
+            // --- NEW: Event Listeners for MUTUAL EXCLUSION Checkboxes ---
+            toggleSpiderweb.addEventListener('change', () => {
+                if (toggleSpiderweb.checked) {
+                    toggleBadges.checked = false;
+                }
+                generateCard();
+            });
+            
+            toggleBadges.addEventListener('change', () => {
+                if (toggleBadges.checked) {
+                    toggleSpiderweb.checked = false;
+                }
+                generateCard();
+            });
+
+            // --- Event Listener for Size Buttons ---
+            sizeStoryBtn.addEventListener('click', () => {
+                playerCard.classList.add('card-story');
+                playerCard.classList.remove('card-feed');
+                
+                sizeStoryBtn.classList.add('active');
+                sizeFeedBtn.classList.remove('active');
+                
+                generateCard();
+            });
+            
+            sizeFeedBtn.addEventListener('click', () => {
+                playerCard.classList.remove('card-story');
+                playerCard.classList.add('card-feed');
+                
+                sizeFeedBtn.classList.add('active');
+                sizeStoryBtn.classList.remove('active');
+
+                generateCard();
+            });
+            
+             // Call generateCard() once on load to initialize the card/chart
+             generateCard();
+             
+             // Set default size to Story
+             sizeStoryBtn.click();
+        });
+
+        // --- Main function to Generate Card ---
+        function generateCard() {
+            // 1. Get all input values
+            const nama = document.getElementById('nama').value || 'NAME';
+            const nim = document.getElementById('nim').value || 'NIM';
+            
+            const cbt = parseFloat(document.getElementById('cbt').value) || 0;
+            const soca = parseFloat(document.getElementById('soca').value) || 0;
+            const anatomi = parseFloat(document.getElementById('anatomi').value) || 0;
+            const histologi = parseFloat(document.getElementById('histologi').value) || 0;
+            const fisiologi = parseFloat(document.getElementById('fisiologi').value) || 0;
+            const porto = parseFloat(document.getElementById('porto').value) || 0;
+            
+            const showSpiderweb = document.getElementById('toggle-spiderweb').checked;
+            const showBadges = document.getElementById('toggle-badges').checked;
+
+            // 2. Update Text (Name & NIM)
+            document.getElementById('card-name').textContent = nama.toUpperCase();
+            document.getElementById('card-nim').textContent = nim.toUpperCase();
+
+            // 3. Calculate OVR (Overall Rating)
+            const ovr = (cbt * weights.cbt) +
+                        (soca * weights.soca) +
+                        (anatomi * weights.anatomi) +
+                        (histologi * weights.histologi) +
+                        (fisiologi * weights.fisiologi) +
+                        (porto * weights.porto);
+            
+            const ovrDisplay = document.getElementById('card-ovr');
+            const calculatedOvr = ovr.toFixed(0);
+            
+            // 4. NEW: Calculate Grade (A-E) and set colors/frames
+            const gradeDisplay = document.getElementById('card-grade');
+            const playerCard = document.getElementById('player-card');
+            const photoFrame = document.getElementById('photo-frame');
+            let grade = '-';
+            let gradeColorClass = 'text-gray-500';
+            let bgClass = 'card-bg-default';
+            let frameClass = 'frame-default';
+            
+            // Remove old bg/frame classes
+            const bgClasses = ['card-bg-default', 'card-bg-a', 'card-bg-b', 'card-bg-c', 'card-bg-d', 'card-bg-e'];
+            const frameClasses = ['frame-default', 'frame-a', 'frame-b', 'frame-c', 'frame-d', 'frame-e'];
+            playerCard.classList.remove(...bgClasses);
+            photoFrame.classList.remove(...frameClasses);
+
+            if (calculatedOvr === '0') {
+                ovrDisplay.textContent = '??';
+                ovrDisplay.style.textShadow = '0 0 10px #6b7280';
+            } else if (ovr >= 85) { // A
+                ovrDisplay.textContent = calculatedOvr;
+                grade = 'A'; 
+                gradeColorClass = 'text-yellow-400'; 
+                ovrDisplay.style.textShadow = '0 0 10px #f7971e';
+                bgClass = 'card-bg-a';
+                frameClass = 'frame-a';
+            } else if (ovr >= 66) { // B
+                ovrDisplay.textContent = calculatedOvr;
+                grade = 'B';
+                gradeColorClass = 'text-green-400';
+                ovrDisplay.style.textShadow = '0 0 10px #22c55e';
+                bgClass = 'card-bg-b';
+                frameClass = 'frame-b';
+            } else if (ovr >= 56) { // C
+                ovrDisplay.textContent = calculatedOvr;
+                grade = 'C';
+                gradeColorClass = 'text-blue-400';
+                ovrDisplay.style.textShadow = '0 0 10px #22c55e';
+                bgClass = 'card-bg-c';
+                frameClass = 'frame-c';
+            } else if (ovr >= 40) { // D
+                ovrDisplay.textContent = calculatedOvr;
+                grade = 'D';
+                gradeColorClass = 'text-orange-500';
+                ovrDisplay.style.textShadow = '0 0 10px #f97316';
+                bgClass = 'card-bg-d';
+                frameClass = 'frame-d';
+            } else if (ovr > 0) { // E
+                ovrDisplay.textContent = calculatedOvr;
+                grade = 'E';
+                gradeColorClass = 'text-red-500';
+                ovrDisplay.style.textShadow = '0 0 10px #ef4444';
+                bgClass = 'card-bg-e';
+                frameClass = 'frame-e';
+            }
+            
+            // Apply new classes
+            playerCard.classList.add(bgClass);
+            photoFrame.classList.add(frameClass);
+            gradeDisplay.textContent = grade;
+            gradeDisplay.className = `text-4xl font-black ${gradeColorClass} transition-colors`;
+
+            // 5. Generate Badges (always generate data)
+            const badgesHTML = generateBadges(ovr, { cbt, soca, anatomi, histologi, fisiologi, porto });
+            document.getElementById('card-badges').innerHTML = badgesHTML;
+            document.getElementById('badge-container-feed').innerHTML = badgesHTML;
+
+
+            // 6. Update Spiderweb Chart (always update data)
+            updateSpiderChart([cbt, soca, anatomi, histologi, fisiologi, porto]);
+            
+            // 7. NEW: Apply Display Options
+            const isFeedMode = playerCard.classList.contains('card-feed');
+            
+            if (isFeedMode) {
+                // Feed Mode: Hide stats, show feed badges
+                document.getElementById('stats-container').style.display = 'none';
+                document.getElementById('badge-container-feed').style.display = 'flex';
+            } else {
+                // Story Mode: Show stats, hide feed badges
+                document.getElementById('stats-container').style.display = 'flex';
+                document.getElementById('badge-container-feed').style.display = 'none';
+                
+                // Follow checkbox options
+                document.getElementById('spider-chart-container').style.display = showSpiderweb ? 'block' : 'none';
+                document.getElementById('badge-container').style.display = showBadges ? 'block' : 'none';
+            }
+        }
+
+        // --- NEW: Icon Helper Function ---
+        function getIcon(name) {
+            const icons = {
+                'default': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" /></svg>',
+                'cbt': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18a.75.75 0 0 0 .75-.75V6.062c0-.622-.504-1.125-1.125-1.125h-1.5a1.125 1.125 0 0 0-1.125 1.125v11.188c0 .414.336.75.75.75H12ZM19.5 12.75a.75.75 0 0 0 .75-.75V10.5a1.125 1.125 0 0 0-1.125-1.125h-1.5a1.125 1.125 0 0 0-1.125 1.125v1.5c0 .414.336.75.75.75h2.25Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 14.25a.75.75 0 0 0 .75-.75V10.5a1.125 1.125 0 0 0-1.125-1.125h-1.5A1.125 1.125 0 0 0 6.75 10.5v3c0 .414.336.75.75.75h2.25Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 1.5a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5A.75.75 0 0 1 12 1.5Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15.626 2.022a.75.75 0 0 1 .53 1.298l-1.06 1.06a.75.75 0 0 1-1.06-1.06l1.06-1.06a.75.75 0 0 1 .53-.238Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M8.374 2.022a.75.75 0 0 0 .53 1.298l-1.06 1.06a.75.75 0 0 0-1.06-1.06l1.06-1.06a.75.75 0 0 0 .53-.238Z" /></svg>',
+                'soca': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.114 11.043C19.114 12.96 17.604 14.5 15.75 14.5h-1.5a3 3 0 0 1-3-3V8.25m.152 9.043C11.402 19.318 9.8 20.25 8.25 20.25c-2.485 0-4.5-2.015-4.5-4.5S5.765 11.25 8.25 11.25c.176 0 .349.016.52.046M13.5 1.5v5.25m0 0l-3-3m3 3 3-3" /></svg>',
+                'anatomy': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>',
+                'histo': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>',
+                'physio': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" /></svg>',
+                'porto': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 6.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM16.5 18.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0Z" /></svg>',
+                'laude': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9a2.25 2.25 0 0 1-2.25-2.25v-9a2.25 2.25 0 0 1 2.25-2.25h9A2.25 2.25 0 0 1 18.75 7.5v9a2.25 2.25 0 0 1-2.25 2.25Z" /></svg>',
+                'remed': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" /></svg>'
+            };
+            return icons[name] || icons['default'];
+        }
+
+        // --- Function to Generate Badges (NOW WITH ICONS) ---
+        function generateBadges(ovr, scores) {
+            let badges = [];
+            
+            const allScoresZero = Object.values(scores).every(score => score === 0);
+
+            if (allScoresZero) {
+                badges.push({ text: 'No scores yet', type: 'average', icon: 'default' });
+            } else {
+                // Component Badges
+                if (scores.anatomi >= thresholds.digger) badges.push({ text: 'Anatomy Digger', type: 'positive', icon: 'anatomy' });
+                else if (scores.anatomi > 0 && scores.anatomi < thresholds.hater) badges.push({ text: 'Anatomy Avoider', type: 'negative', icon: 'anatomy' });
+                
+                if (scores.histologi >= thresholds.digger) badges.push({ text: 'Histo Hunter', type: 'positive', icon: 'histo' });
+                else if (scores.histologi > 0 && scores.histologi < thresholds.hater) badges.push({ text: 'Histo Hassle', type: 'negative', icon: 'histo' });
+
+                if (scores.fisiologi >= thresholds.digger) badges.push({ text: 'Physio Fanatic', type: 'positive', icon: 'physio' });
+                else if (scores.fisiologi > 0 && scores.fisiologi < thresholds.hater) badges.push({ text: 'Physio Foe', type: 'negative', icon: 'physio' });
+                
+                if (scores.soca >= thresholds.star) badges.push({ text: 'SOCA Star', type: 'positive', icon: 'soca' });
+                else if (scores.soca > 0 && scores.soca < thresholds.hater) badges.push({ text: 'SOCA Shy', type: 'negative', icon: 'soca' });
+
+                if (scores.cbt >= thresholds.digger) badges.push({ text: 'CBT Champion', type: 'positive', icon: 'cbt' });
+                else if (scores.cbt > 0 && scores.cbt < thresholds.hater) badges.push({ text: 'CBT Choker', type: 'negative', icon: 'cbt' });
+
+                if (scores.porto >= thresholds.pro) badges.push({ text: 'Portfolio Pro', type: 'positive', icon: 'porto' });
+
+                // OVR Badges (adjusted for A-E grade)
+                if (ovr >= 85) badges.push({ text: 'Grade A - High Honors', type: 'special', icon: 'laude' });
+                else if (ovr >= 66) badges.push({ text: 'Grade B - Distinction', type: 'special', icon: 'laude' });
+                else if (ovr >= 56) badges.push({ text: 'Grade C - Passed', type: 'positive', icon: 'laude' });
+                else if (ovr >= 40) badges.push({ text: 'Grade D - Remedial', type: 'negative', icon: 'remed' });
+                else if (ovr > 0) badges.push({ text: 'Grade E - Remedial', type: 'negative', icon: 'remed' });
+            }
+
+            // Render Badges to HTML String
+            return badges.map(badge => `
+                <span class="badge badge-${badge.type}">
+                    <span class="badge-icon">${getIcon(badge.icon)}</span>
+                    <span class="badge-text">${badge.text}</span>
+                </span>
+            `).join('');
+        }
+
+        // --- Function to Update Spiderweb Chart ---
+        function updateSpiderChart(data) {
+            const ctx = document.getElementById('spider-chart').getContext('2d');
+            
+            // Destroy old chart if exists, to prevent duplication
+            if (mySpiderChart) {
+                mySpiderChart.destroy();
+            }
+
+            mySpiderChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['CBT', 'SOCA', 'ANATOMY', 'HISTOLOGY', 'PHYSIOLOGY', 'PORTFOLIO'],
+                    datasets: [{
+                        label: 'Score',
+                        data: data,
+                        backgroundColor: 'rgba(34, 197, 94, 0.2)',
+                        borderColor: 'rgba(34, 197, 94, 1)',
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: 'rgba(34, 197, 94, 1)',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(34, 197, 94, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(255, 255, 255, 0.3)' },
+                            grid: { color: 'rgba(255, 255, 255, 0.3)' },
+                            pointLabels: {
+                                color: '#FFFFFF',
+                                font: {
+                                    family: "'Poppins', sans-serif",
+                                    size: 9,
+                                    weight: '600'
+                                }
+                            },
+                            ticks: { display: false, beginAtZero: true, min: 0, max: 100, stepSize: 20 },
+                            suggestedMin: 0,
+                            suggestedMax: 100
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>

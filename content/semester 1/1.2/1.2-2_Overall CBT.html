@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jackpot Kognitif - Simulasi CBT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+            background-image:
+                radial-gradient(circle at 20% 20%, rgba(220, 38, 38, 0.1), transparent 30%),
+                radial-gradient(circle at 80% 80%, rgba(202, 138, 4, 0.1), transparent 30%),
+                radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.05), transparent 25%);
+        }
+        .font-display {
+            font-family: 'Playfair Display', serif;
+        }
+        .card {
+            background-color: #2c2c2c;
+            border: 1px solid #444;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+        .option {
+            border: 2px solid #555;
+            transition: all 0.3s ease;
+        }
+        .option:hover {
+            background-color: #3a3a3a;
+            border-color: #ca8a04; /* gold-600 */
+        }
+        .option.selected {
+            background-color: #1e3a8a; /* blue-900 */
+            border-color: #3b82f6; /* blue-500 */
+        }
+        .option.correct {
+            background-color: #166534; /* green-800 */
+            border-color: #22c55e; /* green-500 */
+        }
+        .option.incorrect {
+            background-color: #991b1b; /* red-800 */
+            border-color: #ef4444; /* red-500 */
+        }
+        .nav-btn {
+            border: 1px solid #555;
+            background-color: #333;
+            transition: all 0.2s ease;
+        }
+        .nav-btn.answered {
+            background-color: #1e40af; /* blue-800 */
+            color: white;
+            border-color: #3b82f6; /* blue-500 */
+        }
+        .nav-btn.review {
+            background-color: #f59e0b; /* amber-500 */
+            color: black;
+            border-color: #fcd34d; /* amber-300 */
+        }
+        .nav-btn.current {
+            transform: scale(1.1);
+            border-color: #facc15; /* yellow-400 */
+        }
+        .btn-primary {
+            background: linear-gradient(145deg, #ca8a04, #facc15);
+            color: #1a1a1a;
+            font-weight: bold;
+            border: 1px solid #fde047;
+            box-shadow: 0 2px 5px rgba(250, 204, 21, 0.3);
+        }
+        .btn-secondary {
+             background-color: #4b5563;
+             color: white;
+        }
+        /* Mode selection button style */
+        .mode-btn {
+            transition: all 0.2s ease;
+        }
+        .mode-btn.selected {
+            border-color: #facc15;
+            background-color: #ca8a0422;
+            color: #f0f0f0;
+            transform: scale(1.05);
+        }
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #2c2c2c;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ca8a04;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #facc15;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-6 lg:p-8">
+
+    <!-- Start Screen -->
+    <div id="start-screen" class="max-w-2xl mx-auto text-center p-8 card rounded-lg mt-10 md:mt-16">
+        <h1 class="font-display text-3xl md:text-4xl text-yellow-400 mb-4">♦️PLS 100 GOD♦️</h1>
+        <p class="text-gray-300 mb-8">Doain developer ga remed, Developer pgn liburan cuk. Silakan pilih mode pengerjaan Anda sebelum memulai.</p>
+        
+        <div class="mb-8">
+            <h2 class="text-xl font-bold mb-4 text-yellow-500">Mode Tampilan Jawaban</h2>
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-4" id="feedback-mode-selector">
+                <button data-mode="later" class="mode-btn selected w-48 h-28 p-4 rounded-lg border-2 flex flex-col justify-center items-center">
+                    <span class="font-bold text-lg">Mode Ujian</span>
+                    <span class="text-sm text-gray-400 mt-1">(Lihat hasil di akhir)</span>
+                </button>
+                <button data-mode="immediate" class="mode-btn w-48 h-28 p-4 rounded-lg border-2 border-gray-600 text-gray-400 flex flex-col justify-center items-center">
+                    <span class="font-bold text-lg">Mode Latihan</span>
+                    <span class="text-sm text-gray-400 mt-1">(Jawaban langsung tampil)</span>
+                </button>
+            </div>
+        </div>
+        
+        <button id="start-btn" class="w-full btn-primary py-3 rounded-md text-lg">Mulai Ujian</button>
+    </div>
+
+    <div id="main-container" class="max-w-7xl mx-auto hidden">
+        <!-- Header -->
+        <div class="card rounded-lg p-4 mb-4 flex justify-between items-center">
+            <h1 class="font-display text-2xl md:text-3xl text-yellow-400">♦️ PLS 100 god ♦️</h1>
+            <div id="timer-container" class="text-xl font-bold bg-red-700 text-white px-4 py-2 rounded-md shadow-lg">
+                <span id="timer">90:00</span>
+            </div>
+        </div>
+
+        <div class="flex flex-col lg:flex-row gap-4">
+            <!-- Question Panel -->
+            <div class="card rounded-lg p-6 flex-grow">
+                <div class="flex justify-between items-start mb-4">
+                    <h2 class="text-xl font-bold">Soal #<span id="question-number">1</span></h2>
+                    <div id="review-container">
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox" id="review-checkbox" class="h-5 w-5 rounded bg-gray-700 border-gray-600 text-yellow-500 focus:ring-yellow-600">
+                            <span class="ml-2 text-gray-300">Ragu-ragu</span>
+                        </label>
+                    </div>
+                </div>
+                <p id="question-text" class="text-lg mb-6 leading-relaxed"></p>
+                <div id="options-container" class="space-y-3">
+                    <!-- Options will be injected here -->
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div id="navigation-buttons" class="mt-8 flex justify-between items-center">
+                    <button id="prev-btn" class="btn-secondary px-6 py-2 rounded-md font-semibold">‹ Sebelumnya</button>
+                    <button id="next-btn" class="btn-primary px-6 py-2 rounded-md">Selanjutnya ›</button>
+                </div>
+                 <div id="finish-review-button" class="mt-8 text-center hidden">
+                     <button id="back-to-score-btn" class="btn-primary px-6 py-2 rounded-md">Kembali ke Skor</button>
+                </div>
+            </div>
+
+            <!-- Navigation Grid -->
+            <div class="card rounded-lg p-4 lg:w-80 flex-shrink-0">
+                <h3 class="font-bold text-lg mb-4 text-center text-yellow-500">Navigasi Soal</h3>
+                <div id="nav-grid" class="grid grid-cols-5 gap-2 max-h-96 overflow-y-auto pr-2">
+                    <!-- Navigation buttons will be injected here -->
+                </div>
+                <div class="mt-4">
+                    <button id="finish-btn" class="w-full btn-primary bg-red-600 hover:bg-red-700 text-white py-3 rounded-md">Selesaikan Ujian</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirm-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center hidden z-50">
+        <div class="card rounded-lg p-8 max-w-sm w-full text-center">
+            <h2 class="text-xl font-bold mb-4">Konfirmasi</h2>
+            <p class="mb-6">Apakah Anda yakin ingin menyelesaikan ujian ini?</p>
+            <div class="flex justify-center gap-4">
+                <button id="cancel-finish-btn" class="btn-secondary px-6 py-2 rounded-md">Batal</button>
+                <button id="confirm-finish-btn" class="btn-primary bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-md">Yakin</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Score Modal -->
+    <div id="score-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center hidden z-50">
+        <div class="card rounded-lg p-8 max-w-md w-full text-center transform scale-95 transition-transform duration-300">
+            <h2 class="font-display text-3xl text-yellow-400 mb-4">🏆 Hasil Ujian 🏆</h2>
+            <div class="space-y-4 text-lg my-6">
+                <div class="flex justify-between p-3 bg-gray-700 rounded-md">
+                    <span>Total Soal:</span>
+                    <span class="font-bold" id="total-questions"></span>
+                </div>
+                <div class="flex justify-between p-3 bg-green-900/50 rounded-md">
+                    <span>Jawaban Benar:</span>
+                    <span class="font-bold text-green-400" id="correct-answers"></span>
+                </div>
+                <div class="flex justify-between p-3 bg-red-900/50 rounded-md">
+                    <span>Jawaban Salah:</span>
+                    <span class="font-bold text-red-400" id="incorrect-answers"></span>
+                </div>
+                 <div class="flex justify-between p-3 bg-gray-800 rounded-md">
+                    <span>Tidak Dijawab:</span>
+                    <span class="font-bold" id="unanswered"></span>
+                </div>
+            </div>
+            <div class="text-3xl font-bold p-4 bg-black rounded-lg border-2 border-yellow-500">
+                <span>SKOR ANDA:</span>
+                <span class="text-yellow-400 ml-2" id="final-score"></span>
+            </div>
+            <div class="mt-8 flex justify-center gap-4">
+                <button id="review-answers-btn" class="btn-primary px-6 py-2 rounded-md">Review Jawaban</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        const quizData = [
+            {
+                "id": 1,
+                "question": "Pada mutasi kromosom, istilah 'inversi' mengacu pada....",
+                "options": [
+                    "Penghapusan segmen kromosom",
+                    "Penggandaan segmen kromosom",
+                    "Pemutarbalikan segmen kromosom 180 derajat",
+                    "Perpindahan segmen kromosom ke kromosom non-homolog"
+                ],
+                "answer": 2
+            },
+            {
+                "id": 2,
+                "question": "Seorang pria berusia 58 tahun dirawat di rumah sakit karena masalah pada jantungnya. Pemeriksaan menunjukkan adanya sel-sel otot yang bercabang dan struktur khusus yaitu diskus interkalaris. Apa fungsi dari diskus interkalaris tersebut?",
+                "options": [
+                    "Memisahkan otot jantung agar bekerja sendiri-sendiri",
+                    "Menyimpan kalsium untuk kontraksi otot jantung",
+                    "Menghubungkan sel otot jantung untuk mentransmisikan sinyal listrik secara serempak",
+                    "Membantu perbaikan otot jantung setelah cedera"
+                ],
+                "answer": 2
+            },
+            {
+                "id": 3,
+                "question": "Pada hematopoiesis, limfoid progenitor akan berdiferensiasi menjadi...",
+                "options": ["Limfosit", "Eritrosit", "Makrofag", "Trombosit"],
+                "answer": 0
+            },
+            {
+                "id": 4,
+                "question": "Enzim mempercepat laju reaksi metabolisme di dalam tubuh tanpa ikut bereaksi. Berdasarkan pernyataan tersebut, fungsi enzim adalah sebagai...",
+                "options": ["Protein struktural", "Biokatalisator", "Koenzim", "Hormon"],
+                "answer": 1
+            },
+            {
+                "id": 5,
+                "question": "Manakah di antara sel berikut yang merupakan sel terspesialisasi dan tidak dapat berdiferensiasi lebih lanjut?",
+                "options": ["Leukosit", "Hepatosit", "Sel epidermis", "Sel darah merah (Eritrosit)"],
+                "answer": 3
+            },
+            {
+                "id": 6,
+                "question": "Reseptor yang berperan penting dalam sistem indera manusia seperti penglihatan, penciuman, dan perasa adalah...",
+                "options": [
+                    "Ion Channel-Coupled Receptor",
+                    "Enzyme-Coupled Receptor",
+                    "G-Protein-Coupled Receptor (GPCR)",
+                    "Nuclear Receptor"
+                ],
+                "answer": 2
+            },
+            {
+                "id": 7,
+                "question": "'Sel sayap' (sel tendo) yang pipih karena terjepit di antara lembaran-lembaran serat kolagen dapat ditemukan pada...",
+                "options": [
+                    "Jaringan ikat padat tidak teratur (irregular)",
+                    "Jaringan ikat padat teratur (regular)",
+                    "Jaringan ikat longgar",
+                    "Jaringan retikuler"
+                ],
+                "answer": 1
+            },
+            {
+                "id": 8,
+                "question": "Ketika tubuh terpapar suhu dingin, salah satu respons fisiologis untuk menghasilkan panas adalah...",
+                "options": [
+                    "Vasodilatasi pembuluh darah kulit",
+                    "Berkeringat",
+                    "Menggigil",
+                    "Menghambat metabolisme"
+                ],
+                "answer": 2
+            },
+            {
+                "id": 9,
+                "question": "Seorang pasien mengalami cedera otot. Pemeriksaan menunjukkan bahwa ototnya bereaksi cepat terhadap rangsangan (eksitabilitas) tetapi kehilangan kemampuan untuk meregang secara optimal. Sifat otot yang terganggu adalah...",
+                "options": [
+                    "Kontraktilitas dan elastisitas",
+                    "Eksitabilitas dan konduktivitas",
+                    "Elastisitas dan ekstensibilitas",
+                    "Konduktivitas dan ekstensibilitas"
+                ],
+                "answer": 2
+            },
+            {
+                "id": 10,
+                "question": "Koenzim merupakan molekul organik non-protein yang membantu kerja enzim. Manakah di bawah ini yang merupakan contoh koenzim?",
+                "options": ["Mg²⁺", "Fe³⁺", "NAD (nicotinamide adenine dinucleotide)", "Zn²⁺"],
+                "answer": 2
+            },
+            {
+                "id": 11,
+                "question": "Manakah di antara penyakit berikut yang BUKAN merupakan kelainan kromosom (chromosomal disorder)?",
+                "options": ["Sindrom Down (Trisomi 21)", "Sindrom Turner (Monosomi X)", "Sindrom Edward (Trisomi 18)", "Cystic Fibrosis"],
+                "answer": 3
+            },
+            {
+                "id": 12,
+                "question": "Pada kondisi hipoglikemia (kadar gula darah rendah), respons tubuh yang tepat adalah...",
+                "options": [
+                    "Sel alfa pankreas mengeluarkan glukagon dan terjadi glikogenolisis",
+                    "Sel beta pankreas mengeluarkan insulin",
+                    "Sel alfa pankreas mengeluarkan insulin",
+                    "Sel beta pankreas mengeluarkan glukagon dan terjadi glikogenesis"
+                ],
+                "answer": 0
+            },
+            {
+                "id": 13,
+                "question": "Manakah dari penyakit berikut yang merupakan contoh kelainan gen tunggal (single gene disorder) pada kromosom autosomal?",
+                "options": ["Hemofilia", "Buta warna", "Thalassemia", "Sindrom Klinefelter"],
+                "answer": 2
+            },
+            {
+                "id": 14,
+                "question": "Sel dari sistem mononuklear fagosit yang ditemukan di kulit dan berfungsi dalam respons imun adalah...",
+                "options": ["Sel Kupffer (hati)", "Mikroglia (otak)", "Sel Langerhans (kulit)", "Makrofag alveolar (paru-paru)"],
+                "answer": 2
+            },
+            {
+                "id": 15,
+                "question": "Pengaturan suhu tubuh oleh hipotalamus merupakan contoh mekanisme...",
+                "options": ["Umpan balik positif", "Refleks sederhana", "Umpan balik negatif", "Siklus sel"],
+                "answer": 2
+            },
+            {
+                "id": 16,
+                "question": "Distribusi panas ke seluruh tubuh secara efisien dilaksanakan oleh sistem...",
+                "options": ["Pernapasan", "Pencernaan", "Saraf", "Kardiovaskular"],
+                "answer": 3
+            },
+            {
+                "id": 17,
+                "question": "Jenis tautan sel (cell junction) pada diskus interkalaris otot jantung yang berfungsi utama menghantarkan impuls listrik antar sel adalah...",
+                "options": ["Desmosom", "Hemidesmosom", "Tight Junction", "Gap Junction"],
+                "answer": 3
+            },
+            {
+                "id": 18,
+                "question": "Yang termasuk koenzim adalah...",
+                "options": ["NAD", "Kalsium", "Natrium", "Besi"],
+                "answer": 0
+            },
+            {
+                "id": 19,
+                "question": "Proses pembekuan darah, di mana aktivasi satu trombosit memicu aktivasi trombosit lain dalam sebuah siklus yang menguat, merupakan contoh dari mekanisme...",
+                "options": ["Umpan balik negatif", "Homeostasis statis", "Umpan balik positif", "Keseimbangan osmotik"],
+                "answer": 2
+            },
+            {
+                "id": 20,
+                "question": "Dalam genetika, alel yang sifatnya menutupi ekspresi alel lain disebut...",
+                "options": ["Homozigot", "Heterozigot", "Dominan", "Resesif"],
+                "answer": 2
+            },
+            {
+                "id": 21,
+                "question": "Enzim amilase yang aktif di mulut menjadi tidak aktif ketika sampai di lambung. Hal ini terutama disebabkan oleh...",
+                "options": [
+                    "Suhu lambung yang terlalu tinggi",
+                    "pH lambung yang sangat asam mengubah konformasi enzim",
+                    "Kehadiran enzim pepsin yang menghambat amilase",
+                    "Kurangnya substrat amilum di lambung"
+                ],
+                "answer": 1
+            },
+            {
+                "id": 22,
+                "question": "Jenis komunikasi antar sel di mana sebuah sel melepaskan molekul sinyal yang memengaruhi sel-sel di sekitarnya (tetangga dekat) adalah...",
+                "options": ["Endokrin", "Sinaptik", "Parakrin", "Kontak langsung (Contact-dependent)"],
+                "answer": 2
+            },
+            {
+                "id": 23,
+                "question": "Dalam mekanisme perbaikan DNA (DNA repair), enzim yang berfungsi mengisi celah (gap) dengan menyintesis untai DNA baru menggunakan untai pasangannya sebagai cetakan adalah...",
+                "options": ["DNA ligase", "DNA polimerase", "Helikase", "Nuklease"],
+                "answer": 1
+            },
+            {
+                "id": 24,
+                "question": "Sel epitel berinteraksi dengan membrana basalis di bawahnya melalui struktur adhesi khusus yang disebut...",
+                "options": ["Desmosom", "Hemidesmosom", "Tight junction", "Gap junction"],
+                "answer": 1
+            },
+            {
+                "id": 25,
+                "question": "Pada operon lac E. coli, ketika laktosa tidak ada, protein represor akan mengikat operator dan mencegah transkripsi. Protein represor ini bertindak sebagai...",
+                "options": ["Aktivator transkripsi", "Inhibitor kompetitif", "Regulator transkripsi negatif", "Inducer"],
+                "answer": 2
+            },
+            {
+                "id": 26,
+                "question": "Membran mukosa (mucosae) adalah membran yang...",
+                "options": [
+                    "Membungkus organ dalam rongga perut (peritoneum)",
+                    "Melapisi rongga tubuh yang terbuka ke lingkungan eksternal",
+                    "Membungkus jantung (perikardium)",
+                    "Melapisi permukaan luar otak"
+                ],
+                "answer": 1
+            },
+            {
+                "id": 27,
+                "question": "Protein faktor pertumbuhan yang merupakan molekul sinyal utama dalam mengontrol proses angiogenesis (pembentukan pembuluh darah baru) adalah...",
+                "options": [
+                    "Insulin-like Growth Factor (IGF)",
+                    "Platelet-Derived Growth Factor (PDGF)",
+                    "Vascular Endothelial Growth Factor (VEGF)",
+                    "Epidermal Growth Factor (EGF)"
+                ],
+                "answer": 2
+            },
+            {
+                "id": 28,
+                "question": "Glukosa yang sudah terserap oleh sel epitel mukosa usus tidak bisa kembali ke lumen karena adanya tautan sel yang menyegel ruang antar sel. Tautan ini adalah...",
+                "options": ["Tight junction", "Hemidesmosom", "Desmosom", "Gap junction"],
+                "answer": 0
+            },
+            {
+                "id": 29,
+                "question": "Tekanan hidrostatik, yang mendorong cairan keluar dari kapiler, terutama dipengaruhi oleh...",
+                "options": ["Konsentrasi protein plasma", "Jumlah zat terlarut", "Tekanan yang dihasilkan oleh pompa jantung", "Jumlah elektrolit"],
+                "answer": 2
+            },
+            {
+                "id": 30,
+                "question": "Sel yang telah mati dan tidak dapat beregenerasi kembali pada manusia, sehingga kerusakannya bersifat permanen adalah...",
+                "options": ["Sel rambut pada organ Corti (telinga dalam)", "Hepatosit (sel hati)", "Sel epidermis (kulit)", "Eritrosit (sel darah merah)"],
+                "answer": 0
+            },
+            {
+                "id": 31,
+                "question": "Dalam jaringan ikat, sel yang berfungsi utama untuk mensintesis serat (seperti kolagen dan elastin) dan substansi dasar adalah...",
+                "options": ["Fibroblas", "Sel mast", "Sel plasma", "Makrofag"],
+                "answer": 0
+            },
+            {
+                "id": 32,
+                "question": "Pada tahap replikasi DNA, enzim yang berfungsi menempelkan nukleotida baru untuk membentuk untai DNA baru adalah...",
+                "options": ["Helikase", "Primase", "DNA Polimerase III", "DNA Ligase"],
+                "answer": 2
+            },
+            {
+                "id": 33,
+                "question": "Struktur gen pada organisme prokariotik umumnya terdiri dari...",
+                "options": ["Ekson dan intron", "Hanya intron", "Hanya ekson (sekuens sandi tanpa intron)", "Promotor dan terminator saja"],
+                "answer": 2
+            },
+            {
+                "id": 34,
+                "question": "Otot yang bekerja secara volunter (di bawah kendali sadar) adalah...",
+                "options": ["Otot lambung", "Otot rangka", "Otot jantung", "Otot polos"],
+                "answer": 1
+            },
+            {
+                "id": 35,
+                "question": "Pada struktur gen prokariotik, bagian utama yang menginisiasi transkripsi dan bagian yang mengandung informasi genetik adalah...",
+                "options": ["Promotor dan sekuens sandi", "Promotor dan operator", "Promotor dan kodon stop", "Kodon start dan kodon stop"],
+                "answer": 0
+            },
+            {
+                "id": 36,
+                "question": "Tekanan osmotik dalam suatu larutan terutama dipengaruhi oleh...",
+                "options": ["Ukuran molekul pelarut", "Konsentrasi total zat terlarut", "Suhu larutan", "Volume larutan"],
+                "answer": 1
+            },
+            {
+                "id": 37,
+                "question": "Seorang pasien kehilangan sensasi pada lengan. Pemeriksaan menunjukkan kerusakan pada neuron yang menyalurkan sinyal dari perifer ke sistem saraf pusat. Neuron ini memiliki satu akson pendek yang bercabang dua. Tipe neuron ini adalah...",
+                "options": ["Neuron bipolar", "Neuron multipolar", "Neuron pseudounipolar", "Neuron anaxonik"],
+                "answer": 2
+            },
+            {
+                "id": 38,
+                "question": "Manakah kelainan berikut yang disebabkan oleh mutasi gen tunggal, bukan karena perubahan jumlah atau struktur kromosom?",
+                "options": ["Sindrom Down", "Sindrom Klinefelter", "Cystic Fibrosis", "Sindrom Turner"],
+                "answer": 2
+            },
+            {
+                "id": 39,
+                "question": "Penempelan aktivator dan represor pada DNA diatur oleh molekul efektor. Molekul yang mengikat represor dan menyebabkannya terlepas dari DNA sehingga transkripsi terjadi disebut...",
+                "options": ["Inducer", "Ko-represor", "Aktivator", "Inhibitor"],
+                "answer": 0
+            },
+            {
+                "id": 40,
+                "question": "Perpindahan partikel dari area konsentrasi rendah ke area konsentrasi tinggi yang memerlukan energi disebut...",
+                "options": ["Osmosis", "Difusi", "Transpor aktif", "Transpor pasif"],
+                "answer": 2
+            },
+            {
+                "id": 41,
+                "question": "Diketahui data berikut: Cairan interstitial (Tekanan Osmotik 28 mmHg, Tekanan Hidrostatik 21.3 mmHg), Cairan intravaskuler (Tekanan Osmotik 25 mmHg, Tekanan Hidrostatik 31.3 mmHg). Ke manakah arah pergerakan cairan bersih (netto)?",
+                "options": [
+                    "Dari interstitial ke intravaskuler",
+                    "Dari intravaskuler ke interstitial",
+                    "Tidak ada perpindahan netto",
+                    "Dari intraseluler ke intravaskuler"
+                ],
+                "answer": 1
+            },
+            {
+                "id": 42,
+                "question": "Sel yang bertanggung jawab dalam pembentukan selubung mielin pada sistem saraf perifer (PNS) adalah...",
+                "options": ["Oligodendrosit", "Sel Schwann", "Astrosit", "Mikroglia"],
+                "answer": 1
+            },
+            {
+                "id": 43,
+                "question": "Dalam sistem regulasi gen, komponen apa yang secara langsung berikatan dengan molekul efektor seperti inducer dan ko-represor untuk mengubah aktivitasnya?",
+                "options": ["RNA polimerase", "Protein regulator (aktivator/represor)", "Promotor", "Operator"],
+                "answer": 1
+            },
+            {
+                "id": 44,
+                "question": "Ketika terjadi penurunan suhu tubuh, respons fisiologis yang terjadi untuk mengurangi kehilangan panas dan menghasilkan panas adalah...",
+                "options": ["Vasodilatasi dan berkeringat", "Vasokonstriksi dan menggigil", "Hanya menggigil", "Hanya vasokonstriksi"],
+                "answer": 1
+            },
+            {
+                "id": 45,
+                "question": "Reseptor yang memiliki domain pengikat ligan di luar sel dan domain enzimatik di dalam sel, seperti reseptor tirosin kinase, termasuk dalam kelas...",
+                "options": ["Reseptor Terkopel Protein G", "Reseptor Kanal Ion", "Reseptor Terkopel Enzim", "Reseptor Intraseluler"],
+                "answer": 2
+            },
+            {
+                "id": 46,
+                "question": "Salah satu mekanisme perbaikan DNA yang melibatkan pengenalan, pemotongan, dan penggantian satu basa nitrogen yang rusak (misalnya akibat deaminasi) disebut...",
+                "options": ["Mismatch Repair", "Nucleotide Excision Repair", "Base Excision Repair", "Homologous Recombination"],
+                "answer": 2
+            },
+            {
+                "id": 47,
+                "question": "Pada fase telofase mitosis, peristiwa utama yang terjadi adalah...",
+                "options": [
+                    "Kromosom berjejer di bidang ekuator",
+                    "Kromatid saudara berpisah menuju kutub yang berlawanan",
+                    "Dekondensasi kromosom menjadi kromatin dan terbentuknya kembali selubung inti",
+                    "Pembentukan cincin kontraktil untuk sitokinesis"
+                ],
+                "answer": 2
+            },
+            {
+                "id": 48,
+                "question": "Studi tentang bagaimana perilaku dan lingkungan dapat menyebabkan perubahan yang memengaruhi cara gen bekerja tanpa mengubah urutan DNA itu sendiri disebut...",
+                "options": ["Genomik", "Transkriptomik", "Epigenetika", "Proteomik"],
+                "answer": 2
+            },
+            {
+                "id": 49,
+                "question": "Manakah pernyataan yang paling tepat mengenai pergerakan air?",
+                "options": [
+                    "Air berpindah dari tekanan osmotik tinggi ke rendah (secara osmosis)",
+                    "Air berpindah dari tekanan hidrostatik tinggi ke rendah",
+                    "Difusi adalah perpindahan pelarut dari hipertonik ke hipotonik",
+                    "Transpor aktif adalah perpindahan pelarut"
+                ],
+                "answer": 1
+            },
+            {
+                "id": 50,
+                "question": "Sinyal interseluler pada organisme multiseluler yang mengarahkan sel yang belum matang untuk berkembang menjadi tipe sel yang spesifik dan khusus disebut proses...",
+                "options": ["Pertumbuhan", "Kematian sel (Apoptosis)", "Diferensiasi", "Proliferasi"],
+                "answer": 2
+            },
+            {
+                "id": 51,
+                "question": "Berikut ini adalah contoh molekul sinyal, KECUALI...",
+                "options": ["Air", "Protein (misal: insulin)", "Nukleotida (misal: ATP)", "Gas NO (Nitrat Oksida)"],
+                "answer": 0
+            },
+            {
+                "id": 52,
+                "question": "Selain memberikan dukungan struktural, tulang juga berperan penting sebagai tempat penyimpanan utama mineral...",
+                "options": ["Kalium dan Natrium", "Besi dan Magnesium", "Kalsium dan Fosfat", "Yodium dan Seng"],
+                "answer": 2
+            },
+            {
+                "id": 53,
+                "question": "Bila volume cairan dalam tubuh menurun (dehidrasi), kelenjar hipofisis akan melepaskan hormon yang berfungsi meningkatkan reabsorpsi air di ginjal. Hormon tersebut adalah...",
+                "options": ["Antidiuretic Hormone (ADH)", "Atrial Natriuretic Peptide (ANP)", "Aldosteron", "Glukagon"],
+                "answer": 0
+            },
+            {
+                "id": 54,
+                "question": "Bila volume cairan dan tekanan darah dalam tubuh meningkat, sel-sel di atrium jantung akan melepaskan hormon yang mendorong ekskresi natrium dan air oleh ginjal. Hormon ini adalah...",
+                "options": ["Antidiuretic Hormone (ADH)", "Atrial Natriuretic Peptide (ANP)", "Aldosteron", "Kortisol"],
+                "answer": 1
+            },
+            {
+                "id": 55,
+                "question": "Akibat klinis bila sel darah merah ditempatkan pada larutan hipotonik adalah sel akan...",
+                "options": ["Mengkerut (krenasi)", "Tetap sama ukurannya", "Membengkak dan lisis (pecah)", "Mengalami apoptosis"],
+                "answer": 2
+            },
+            {
+                "id": 56,
+                "question": "Kondisi kelainan jumlah kromosom seperti 45,XO (Sindrom Turner) atau 47,XXY (Sindrom Klinefelter) secara umum disebut...",
+                "options": ["Polimorfisme", "Translokasi", "Aneuploidi", "Poliploidi"],
+                "answer": 2
+            },
+            {
+                "id": 57,
+                "question": "Pada operon lac, ketika laktosa hadir, ia akan mengikat protein represor. Hal ini menyebabkan represor tidak dapat lagi menempel pada daerah DNA yang disebut...",
+                "options": ["Promotor", "Gen struktural", "Operator", "Terminator"],
+                "answer": 2
+            },
+            {
+                "id": 58,
+                "question": "Aneuploidi didefinisikan sebagai...",
+                "options": [
+                    "Mutasi pada gen tunggal",
+                    "Memiliki jumlah kromosom yang abnormal (lebih atau kurang dari normal)",
+                    "Penghapusan basa dalam urutan DNA",
+                    "Rotasi urutan basa pada kromosom"
+                ],
+                "answer": 1
+            },
+            {
+                "id": 59,
+                "question": "Seorang pasien mengalami kram perut dan kontraksi abnormal pada dinding usus. Pemeriksaan histologi menunjukkan sel-sel otot dengan satu inti di tengah dan tidak ber-lurik. Jenis otot ini adalah otot polos. Manakah pernyataan yang benar mengenai otot ini?",
+                "options": [
+                    "Bekerja secara volunter melalui sistem saraf somatik",
+                    "Bekerja secara involunter melalui sistem saraf otonom",
+                    "Memiliki banyak inti di tepi sel",
+                    "Berfungsi utama untuk menggerakkan rangka tubuh"
+                ],
+                "answer": 1
+            },
+            {
+                "id": 60,
+                "question": "Organ limfoid seperti limpa (lien), nodus limfa, dan sumsum tulang memiliki kerangka internal yang terbuat dari jaringan ikat...",
+                "options": ["Areolar", "Adiposa", "Retikuler", "Padat teratur"],
+                "answer": 2
+            },
+            {
+                "id": 61,
+                "question": "Jenis kerusakan DNA yang umum disebabkan oleh radiasi UV dari matahari adalah pembentukan...",
+                "options": ["Dimer timin", "Apurinic site", "Alkilasi basa", "Patahan untai ganda"],
+                "answer": 0
+            },
+            {
+                "id": 62,
+                "question": "Jenis taut antar sel yang memungkinkan penyebaran sinyal listrik dan metabolik secara cepat antar sel-sel otot jantung sehingga dapat berkontraksi serempak adalah...",
+                "options": ["Desmosom", "Hemidesmosom", "Tight junction", "Gap junction"],
+                "answer": 3
+            },
+            {
+                "id": 63,
+                "question": "Perbedaan utama antara jalur apoptosis intrinsik dan ekstrinsik adalah...",
+                "options": [
+                    "Jalur ekstrinsik diinisiasi oleh ligan kematian (seperti FasL), sedangkan jalur intrinsik diinisiasi oleh pelepasan sitokrom c dari mitokondria",
+                    "Jalur ekstrinsik selalu melibatkan kaspase-9, sedangkan intrinsik kaspase-8",
+                    "Hanya jalur intrinsik yang menyebabkan fragmentasi DNA",
+                    "Hanya jalur ekstrinsik yang terjadi pada sel imun"
+                ],
+                "answer": 0
+            },
+            {
+                "id": 64,
+                "question": "Penyakit genetik berbeda dari penyakit keturunan. Manakah pernyataan yang paling tepat?",
+                "options": [
+                    "Semua penyakit genetik adalah penyakit keturunan",
+                    "Penyakit genetik disebabkan oleh mutasi DNA, bisa diturunkan atau terjadi secara spontan (de novo), sedangkan penyakit keturunan selalu diwariskan dari orang tua",
+                    "Penyakit keturunan disebabkan oleh lingkungan, sedangkan penyakit genetik oleh DNA",
+                    "Tidak ada perbedaan antara keduanya"
+                ],
+                "answer": 1
+            },
+            {
+                "id": 65,
+                "question": "Neurofilamen adalah bagian dari sitoskeleton neuron. Apa dampak utama jika terjadi kerusakan pada neurofilamen?",
+                "options": [
+                    "Neuron tidak dapat mempertahankan bentuk dan integritas strukturalnya",
+                    "Aktivitas metabolisme di badan sel (soma) terhenti",
+                    "Sintesis protein pada Retikulum Endoplasma kasar terhenti",
+                    "Transpor molekul sepanjang akson terganggu"
+                ],
+                "answer": 0
+            },
+            {
+                "id": 66,
+                "question": "Manakah di antara sel-sel berikut yang jika rusak pada orang dewasa, kerusakannya bersifat permanen karena sel tersebut tidak dapat diperbaharui atau beregenerasi?",
+                "options": ["Sel rambut pada organ Corti", "Hepatosit", "Sel epidermis", "Eritrosit"],
+                "answer": 0
+            },
+            {
+                "id": 67,
+                "question": "Reseptor yang berperan pada sistem penglihatan (rhodopsin) dan penghidu (olfactory receptors) termasuk dalam famili reseptor...",
+                "options": [
+                    "Enzyme-Coupled Receptors",
+                    "Receptor Guanylyl Cyclases",
+                    "G-Protein-Coupled Receptors (GPCRs)",
+                    "Ion-Channel-Coupled Receptors"
+                ],
+                "answer": 2
+            },
+            {
+                "id": 68,
+                "question": "Nitrat Oksida (NO) dapat menyebabkan relaksasi otot polos pembuluh darah. NO bekerja dengan mengaktifkan enzim intraseluler yang menghasilkan cGMP. Enzim ini adalah...",
+                "options": ["Adenilat siklase", "Guanylyl cyclase", "Fosfolipase C", "Protein kinase A"],
+                "answer": 1
+            },
+            {
+                "id": 69,
+                "question": "Sel yang berfungsi untuk mensintesis dan mempertahankan matriks ekstraseluler (serat kolagen dan elastin) dalam jaringan ikat adalah...",
+                "options": ["Adiposit", "Fibroblas", "Sel mast", "Makrofag"],
+                "answer": 1
+            },
+            {
+                "id": 70,
+                "question": "Sel yang berperan penting dalam memulai respons inflamasi lokal dengan melepaskan granul yang berisi histamin dan heparin adalah...",
+                "options": ["Fibroblas", "Makrofag", "Limfosit", "Sel Mast"],
+                "answer": 3
+            },
+            {
+                "id": 71,
+                "question": "Sel osteoprogenitor berasal dari sel mesenkimal dan dapat berdiferensiasi menjadi osteoblas. Berdasarkan potensinya, sel osteoprogenitor dapat diklasifikasikan sebagai sel punca...",
+                "options": ["Embrionik (pluripoten)", "Totipoten", "Multipotent", "Unipoten"],
+                "answer": 2
+            },
+            {
+                "id": 72,
+                "question": "Perbedaan mendasar antara Embryonic Stem Cell (ESC) dan Adult Stem Cell (ASC) dalam hal potensi diferensiasi adalah...",
+                "options": [
+                    "ESC bersifat pluripoten (dapat menjadi semua jenis sel tubuh), sedangkan ASC bersifat multipoten (terbatas pada beberapa jenis sel)",
+                    "ESC bersifat multipoten, sedangkan ASC bersifat pluripoten",
+                    "ESC dihasilkan pada orang dewasa, sedangkan ASC dari embrio",
+                    "ESC hanya bisa untuk regenerasi saraf, ASC untuk jantung"
+                ],
+                "answer": 0
+            },
+            {
+                "id": 73,
+                "question": "Lapisan jaringan ikat longgar (areolar) yang berada tepat di bawah epitelium membran mukosa disebut...",
+                "options": ["Adventisia", "Serosa", "Lamina propria", "Mesothelium"],
+                "answer": 2
+            },
+            {
+                "id": 74,
+                "question": "Sistem organ yang berfungsi utama dalam ekskresi limbah metabolisme, serta menjaga keseimbangan air, garam, dan pH darah adalah sistem...",
+                "options": ["Urinaria", "Integumen", "Limfatik", "Pencernaan"],
+                "answer": 0
+            },
+            {
+                "id": 75,
+                "question": "Populasi sel 1 menunjukkan ciri sel mengkerut dan inti meluruh tanpa memicu inflamasi. Populasi sel 2 menunjukkan sel membengkak, membran lisis, dan menyebabkan inflamasi. Peristiwa yang terjadi pada populasi sel 1 adalah...",
+                "options": ["Nekrosis", "Apoptosis", "Nekroptosis", "Autofagi"],
+                "answer": 1
+            },
+            {
+                "id": 76,
+                "question": "Menggigil adalah mekanisme tubuh untuk...",
+                "options": [
+                    "Mengeluarkan panas",
+                    "Menghambat pengeluaran panas",
+                    "Membentuk/menghasilkan panas",
+                    "Menghambat pembentukan panas"
+                ],
+                "answer": 2
+            },
+            {
+                "id": 77,
+                "question": "Manakah pernyataan yang TIDAK BENAR mengenai elemen regulator pada gen eukariotik?",
+                "options": [
+                    "Promotor biasanya terletak di bagian upstream (sebelum titik awal transkripsi)",
+                    "TATA box adalah sekuens penting yang terletak di promotor",
+                    "CpG Island umumnya terdapat di bagian promoter (upstream), bukan downstream",
+                    "Enhancer bisa terletak jauh dari gen yang diregulasinya"
+                ],
+                "answer": 2
+            },
+            {
+                "id": 78,
+                "question": "Apa dampak paling mendasar yang dapat terjadi ketika terjadi mutasi pada sekuens sandi (coding sequence) sebuah gen?",
+                "options": [
+                    "Fungsi protein yang dihasilkan dapat terganggu atau hilang",
+                    "Proses transkripsi pasti meningkat",
+                    "Tidak akan pernah terjadi perubahan apapun",
+                    "Sel pasti menjadi lebih sehat"
+                ],
+                "answer": 0
+            },
+            {
+                "id": 79,
+                "question": "Pada saat suhu tubuh mengalami peningkatan, mekanisme untuk mendinginkan tubuh adalah...",
+                "options": [
+                    "Vasokonstriksi dan menggigil",
+                    "Vasodilatasi dan berkeringat",
+                    "Hanya menggigil",
+                    "Hanya vasokonstriksi"
+                ],
+                "answer": 1
+            },
+            {
+                "id": 80,
+                "question": "Hormon steroid merupakan molekul sinyal hidrofobik yang reseptornya berada di dalam sel. Berikut ini yang BUKAN merupakan hormon turunan steroid atau bersifat hidrofobik serupa adalah...",
+                "options": ["Kortisol", "Estradiol", "Testosteron", "Adrenalin (Epinefrin)"],
+                "answer": 3
+            },
+            {
+                "id": 81,
+                "question": "Pada promoter gen prokariotik, sering ditemukan sekuens konsensus sekitar -10 dari titik awal transkripsi, yang dikenal sebagai TATAAT. Sekuens ini juga dikenal sebagai...",
+                "options": ["Pribnow box", "Hogness box", "CAAT box", "GC box"],
+                "answer": 0
+            },
+            {
+                "id": 82,
+                "question": "Terjadi nondisjunction pada saat pembelahan sel yang menyebabkan kelainan jumlah kromosom. Gangguan ini terjadi karena kegagalan pada checkpoint siklus sel yang mengawasi penempelan kromosom pada gelendong mitosis sebelum anafase. Checkpoint yang dimaksud adalah...",
+                "options": [
+                    "Checkpoint G1/S",
+                    "Checkpoint G2/M",
+                    "Spindle checkpoint (Checkpoint M)",
+                    "Checkpoint kerusakan DNA"
+                ],
+                "answer": 2
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let userAnswers = new Array(quizData.length).fill(null);
+        let reviewFlags = new Array(quizData.length).fill(false);
+        let timerInterval;
+        let examFinished = false;
+        let feedbackMode = 'later'; // 'later' or 'immediate'
+
+        const startScreen = document.getElementById('start-screen');
+        const mainContainer = document.getElementById('main-container');
+        const startBtn = document.getElementById('start-btn');
+        const feedbackModeSelector = document.getElementById('feedback-mode-selector');
+
+        const questionNumberEl = document.getElementById('question-number');
+        const questionTextEl = document.getElementById('question-text');
+        const optionsContainerEl = document.getElementById('options-container');
+        const navGridEl = document.getElementById('nav-grid');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const reviewCheckbox = document.getElementById('review-checkbox');
+        const finishBtn = document.getElementById('finish-btn');
+        const confirmModal = document.getElementById('confirm-modal');
+        const scoreModal = document.getElementById('score-modal');
+
+        function showImmediateFeedback() {
+            const question = quizData[currentQuestionIndex];
+            const userAnswer = userAnswers[currentQuestionIndex];
+            const correctAnswer = question.answer;
+            const options = optionsContainerEl.querySelectorAll('.option');
+
+            // Disable all options for this question
+            options.forEach(opt => {
+                opt.style.pointerEvents = 'none'; 
+            });
+
+            // Show correct answer
+            options[correctAnswer].classList.add('correct');
+            
+            // If user was incorrect, show their incorrect choice
+            if (userAnswer !== correctAnswer && userAnswer !== null) {
+                options[userAnswer].classList.add('incorrect');
+            }
+        }
+
+        function selectAnswer(optionIndex) {
+            if (examFinished) return;
+            // Prevent re-answering in immediate feedback mode
+            if (feedbackMode === 'immediate' && userAnswers[currentQuestionIndex] !== null) return;
+
+            userAnswers[currentQuestionIndex] = optionIndex;
+            
+            const options = optionsContainerEl.querySelectorAll('.option');
+            options.forEach(opt => opt.classList.remove('selected'));
+
+            if(feedbackMode === 'later') {
+                 options[optionIndex].classList.add('selected');
+            }
+            
+            updateNavGridButton(currentQuestionIndex);
+
+            if (feedbackMode === 'immediate') {
+                showImmediateFeedback();
+            }
+        }
+
+        function loadQuestion(index) {
+            if (index < 0 || index >= quizData.length) return;
+
+            currentQuestionIndex = index;
+            const question = quizData[index];
+            
+            questionNumberEl.textContent = question.id;
+            questionTextEl.textContent = question.question;
+
+            optionsContainerEl.innerHTML = '';
+            const hasBeenAnswered = userAnswers[index] !== null;
+
+            question.options.forEach((option, i) => {
+                const optionChar = String.fromCharCode(65 + i);
+                const optionEl = document.createElement('div');
+                optionEl.className = 'option p-4 rounded-lg flex items-start';
+                if (!examFinished) {
+                     optionEl.classList.add('cursor-pointer');
+                }
+                optionEl.dataset.index = i;
+                
+                if (hasBeenAnswered && userAnswers[index] === i && feedbackMode === 'later') {
+                    optionEl.classList.add('selected');
+                }
+
+                optionEl.innerHTML = `<span class="font-bold mr-3">${optionChar}.</span> <span>${option}</span>`;
+                optionEl.addEventListener('click', () => selectAnswer(i));
+                optionsContainerEl.appendChild(optionEl);
+            });
+            
+            if (feedbackMode === 'immediate' && hasBeenAnswered) {
+                showImmediateFeedback();
+            }
+            
+            reviewCheckbox.checked = reviewFlags[index];
+            updateNavigation();
+        }
+
+        function setupNavGrid() {
+            quizData.forEach((q, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'nav-btn w-12 h-12 rounded-md font-bold';
+                btn.textContent = q.id;
+                btn.addEventListener('click', () => {
+                     if (examFinished) {
+                         loadQuestionForReview(i)
+                     } else {
+                         loadQuestion(i)
+                     }
+                });
+                navGridEl.appendChild(btn);
+            });
+        }
+        
+        function updateNavGridButton(index) {
+            const btn = navGridEl.children[index];
+            btn.classList.remove('answered', 'review');
+            if (reviewFlags[index]) {
+                btn.classList.add('review');
+            } else if (userAnswers[index] !== null) {
+                btn.classList.add('answered');
+            }
+        }
+
+        function updateNavigation() {
+            prevBtn.disabled = currentQuestionIndex === 0;
+            nextBtn.disabled = currentQuestionIndex === quizData.length - 1;
+            prevBtn.style.opacity = prevBtn.disabled ? '0.5' : '1';
+            nextBtn.style.opacity = nextBtn.disabled ? '0.5' : '1';
+            
+            const navButtons = navGridEl.querySelectorAll('.nav-btn');
+            navButtons.forEach((btn, i) => {
+                btn.classList.remove('current');
+                if (i === currentQuestionIndex) {
+                    btn.classList.add('current');
+                }
+            });
+        }
+
+        function startTimer(duration) {
+            let timer = duration * 60;
+            const timerEl = document.getElementById('timer');
+            timerInterval = setInterval(() => {
+                let minutes = parseInt(timer / 60, 10);
+                let seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                timerEl.textContent = minutes + ":" + seconds;
+
+                if (--timer < 0) {
+                    clearInterval(timerInterval);
+                    finishExam();
+                }
+            }, 1000);
+        }
+        
+        function calculateScore() {
+            let correct = 0;
+            let incorrect = 0;
+            let unanswered = 0;
+
+            for(let i=0; i < quizData.length; i++) {
+                if(userAnswers[i] === null) {
+                    unanswered++;
+                } else if (userAnswers[i] === quizData[i].answer) {
+                    correct++;
+                } else {
+                    incorrect++;
+                }
+            }
+            const score = (correct / quizData.length) * 100;
+            return { correct, incorrect, unanswered, score: Math.round(score) };
+        }
+
+        function finishExam() {
+            examFinished = true;
+            clearInterval(timerInterval);
+            confirmModal.classList.add('hidden');
+            mainContainer.classList.add('hidden');
+
+            const results = calculateScore();
+
+            document.getElementById('total-questions').textContent = quizData.length;
+            document.getElementById('correct-answers').textContent = results.correct;
+            document.getElementById('incorrect-answers').textContent = results.incorrect;
+            document.getElementById('unanswered').textContent = results.unanswered;
+            document.getElementById('final-score').textContent = results.score;
+
+            scoreModal.classList.remove('hidden');
+            // Animate score modal entrance
+            setTimeout(() => {
+                scoreModal.querySelector('.card').classList.remove('scale-95');
+                scoreModal.querySelector('.card').classList.add('scale-100');
+            }, 50);
+        }
+
+        function showReview() {
+            mainContainer.classList.remove('hidden');
+            scoreModal.classList.add('hidden');
+            
+            document.getElementById('navigation-buttons').classList.add('hidden');
+            document.getElementById('finish-review-button').classList.remove('hidden');
+            document.getElementById('review-container').classList.add('hidden');
+            document.getElementById('timer-container').classList.add('hidden');
+            document.getElementById('finish-btn').classList.add('hidden');
+
+            // Disable all options
+            const options = optionsContainerEl.querySelectorAll('.option');
+            options.forEach(opt => opt.style.pointerEvents = 'none');
+            
+            loadQuestionForReview(0);
+        }
+
+        function loadQuestionForReview(index) {
+            if (index < 0 || index >= quizData.length) return;
+
+            currentQuestionIndex = index;
+            const question = quizData[index];
+            const userAnswer = userAnswers[index];
+            const correctAnswer = question.answer;
+
+            questionNumberEl.textContent = question.id;
+            questionTextEl.textContent = question.question;
+
+            optionsContainerEl.innerHTML = '';
+            question.options.forEach((option, i) => {
+                const optionChar = String.fromCharCode(65 + i);
+                const optionEl = document.createElement('div');
+                optionEl.className = 'option p-4 rounded-lg flex items-start';
+                optionEl.dataset.index = i;
+                
+                if (i === correctAnswer) {
+                    optionEl.classList.add('correct');
+                } else if (i === userAnswer) {
+                    optionEl.classList.add('incorrect');
+                }
+                
+                optionEl.innerHTML = `<span class="font-bold mr-3">${optionChar}.</span> <span>${option}</span>`;
+                optionsContainerEl.appendChild(optionEl);
+            });
+            
+            updateNavigation();
+            
+            // Update nav buttons for review mode
+            const navButtons = navGridEl.querySelectorAll('.nav-btn');
+            navButtons.forEach((btn, i) => {
+                btn.classList.remove('answered', 'review');
+                if (userAnswers[i] === quizData[i].answer) {
+                    btn.classList.add('answered'); // green for correct
+                    btn.style.backgroundColor = '#166534';
+                    btn.style.borderColor = '#22c55e';
+                } else if (userAnswers[i] !== null) {
+                    btn.classList.add('review'); // red/yellow for incorrect
+                     btn.style.backgroundColor = '#991b1b';
+                     btn.style.borderColor = '#ef4444';
+                }
+            });
+            navButtons[index].classList.add('current');
+        }
+
+
+        // Event Listeners
+        prevBtn.addEventListener('click', () => {
+             if (examFinished) {
+                 loadQuestionForReview(currentQuestionIndex - 1);
+             } else {
+                 loadQuestion(currentQuestionIndex - 1);
+             }
+        });
+        nextBtn.addEventListener('click', () => {
+             if (examFinished) {
+                 loadQuestionForReview(currentQuestionIndex + 1);
+             } else {
+                 loadQuestion(currentQuestionIndex + 1);
+             }
+        });
+
+        reviewCheckbox.addEventListener('change', (e) => {
+            reviewFlags[currentQuestionIndex] = e.target.checked;
+            updateNavGridButton(currentQuestionIndex);
+        });
+        
+        finishBtn.addEventListener('click', () => confirmModal.classList.remove('hidden'));
+        document.getElementById('cancel-finish-btn').addEventListener('click', () => confirmModal.classList.add('hidden'));
+        document.getElementById('confirm-finish-btn').addEventListener('click', finishExam);
+        document.getElementById('review-answers-btn').addEventListener('click', showReview);
+        document.getElementById('back-to-score-btn').addEventListener('click', () => {
+             mainContainer.classList.add('hidden');
+             scoreModal.classList.remove('hidden');
+        });
+
+        // Initial setup
+        document.addEventListener('DOMContentLoaded', () => {
+            feedbackModeSelector.addEventListener('click', (e) => {
+                const clickedButton = e.target.closest('.mode-btn');
+                if (!clickedButton) return;
+
+                feedbackMode = clickedButton.dataset.mode;
+                
+                document.querySelectorAll('.mode-btn').forEach(btn => {
+                    btn.classList.remove('selected', 'text-gray-400');
+                    btn.classList.add('text-gray-400','border-gray-600');
+                });
+                
+                clickedButton.classList.add('selected');
+                clickedButton.classList.remove('text-gray-400');
+            });
+
+            startBtn.addEventListener('click', () => {
+                startScreen.classList.add('hidden');
+                mainContainer.classList.remove('hidden');
+                setupNavGrid();
+                loadQuestion(0);
+                startTimer(90); // 90 minutes
+            });
+        });
+    </script>
+</body>
+</html>
+

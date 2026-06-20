@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulasi CBT: Histologi Jaringan Saraf</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #19192a; /* Dark Purple */
+            color: #e0e0e0;
+        }
+        .title-font {
+            font-family: 'Cinzel Decorative', serif;
+        }
+        .bg-dark-purple { background-color: #19192a; }
+        .bg-mid-purple { background-color: #2c2c3e; }
+        .bg-light-purple { background-color: #4a4a68; }
+        .text-gold { color: #E6C300; }
+        .border-gold { border-color: #E6C300; }
+        .btn {
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .btn-primary {
+            background-color: #E6C300;
+            color: #19192a;
+            font-weight: bold;
+        }
+        .btn-primary:hover {
+            background-color: #ffd700;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(230, 195, 0, 0.2);
+        }
+        .btn-secondary {
+            background-color: transparent;
+            border: 1px solid #E6C300;
+            color: #E6C300;
+        }
+        .btn-secondary:hover {
+            background-color: rgba(230, 195, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        .nav-item {
+            border: 1px solid #4a4a68;
+            transition: all 0.2s ease;
+        }
+        .nav-item:hover {
+            border-color: #E6C300;
+            background-color: #2c2c3e;
+        }
+        .nav-item.active {
+            background-color: #E6C300;
+            border-color: #E6C300;
+            color: #19192a;
+            font-weight: bold;
+        }
+        .nav-item.answered {
+            background-color: #4a4a68;
+        }
+        .nav-item.flagged {
+            position: relative;
+        }
+        .nav-item.flagged::after {
+            content: '';
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 8px;
+            height: 8px;
+            background-color: #E6C300;
+            border-radius: 50%;
+        }
+        .option.selected {
+            background-color: rgba(230, 195, 0, 0.2);
+            border-color: #E6C300;
+        }
+        .option.correct {
+            background-color: rgba(34, 197, 94, 0.2);
+            border-color: #22c55e;
+        }
+        .option.incorrect {
+            background-color: rgba(239, 68, 68, 0.2);
+            border-color: #ef4444;
+        }
+        /* Custom Checkbox */
+        .custom-checkbox input { display: none; }
+        .custom-checkbox span {
+            height: 20px;
+            width: 20px;
+            border: 1px solid #E6C300;
+            display: inline-block;
+            position: relative;
+            background-color: transparent;
+            border-radius: 3px;
+        }
+        .custom-checkbox input:checked + span::after {
+            content: '✔';
+            font-size: 14px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #E6C300;
+        }
+        /* Flashcard Styles */
+        .card-container {
+            perspective: 1000px;
+        }
+        .card {
+            width: 100%;
+            height: 300px;
+            position: relative;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .card.is-flipped {
+            transform: rotateY(180deg);
+        }
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border-radius: 0.5rem;
+            border: 1px solid #E6C300;
+            background-color: #2c2c3e;
+        }
+        .card-back {
+            transform: rotateY(180deg);
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div id="main-container" class="max-w-7xl mx-auto">
+        <!-- Start Screen -->
+        <div id="start-screen" class="bg-mid-purple rounded-lg p-8 text-center shadow-2xl">
+            <h1 class="text-5xl title-font text-gold mb-4">Ujian Histologi Saraf</h1>
+            <p class="text-lg mb-8 max-w-3xl mx-auto text-gray-300">Selamat datang di sesi eksklusif ini. Uji pemahaman Anda mengenai arsitektur jaringan saraf. Pilih mode Anda untuk memulai.</p>
+            <div class="flex flex-col md:flex-row justify-center gap-4">
+                <button id="start-flashcard-btn" class="btn btn-primary text-lg font-bold py-3 px-8 rounded-lg">Mode Flashcard</button>
+                <button id="start-latihan-btn" class="btn btn-primary text-lg font-bold py-3 px-8 rounded-lg">Mode Latihan</button>
+                <button id="start-ujian-btn" class="btn btn-secondary text-lg font-bold py-3 px-8 rounded-lg">Mode Ujian</button>
+            </div>
+            <p class="mt-8 text-sm text-gray-400">
+                <b>Mode Flashcard:</b> Hafalkan istilah-istilah kunci.<br>
+                <b>Mode Latihan:</b> Dapatkan umpan balik instan setelah menjawab setiap soal.<br>
+                <b>Mode Ujian:</b> Jawab semua soal, hasil akan ditampilkan di akhir sesi.
+            </p>
+        </div>
+
+        <!-- CBT Interface -->
+        <div id="cbt-screen" class="hidden">
+            <header class="bg-mid-purple p-4 rounded-t-lg flex justify-between items-center shadow-lg">
+                <h2 class="text-2xl title-font text-gold">Histologi Jaringan Saraf</h2>
+                <div class="bg-dark-purple px-4 py-2 rounded text-xl font-bold border border-light-purple">
+                    <span id="timer">60:00</span>
+                </div>
+            </header>
+            <div class="flex flex-col md:flex-row gap-4 mt-4">
+                <!-- Question Panel -->
+                <div id="question-panel" class="bg-mid-purple p-6 rounded-b-lg md:rounded-bl-lg md:rounded-br-none flex-grow shadow-lg">
+                    <p class="mb-2 text-sm text-gray-400">Pertanyaan <span id="question-number">1</span> dari 20</p>
+                    <div id="question-text" class="text-lg leading-relaxed mb-6"></div>
+                    <div id="options-container" class="space-y-3"></div>
+                    <div id="feedback-container" class="mt-4 p-3 rounded-md text-sm hidden"></div>
+                </div>
+
+                <!-- Navigation Panel -->
+                <div class="bg-mid-purple p-4 rounded-b-lg md:rounded-r-lg md:rounded-bl-none w-full md:w-80 shadow-lg">
+                    <h3 class="font-bold mb-4 text-center">Navigasi Soal</h3>
+                    <div id="nav-grid" class="grid grid-cols-5 gap-2 mb-4"></div>
+                    <div class="flex items-center justify-start space-x-4 mb-4">
+                         <label class="custom-checkbox flex items-center cursor-pointer">
+                            <input type="checkbox" id="flag-checkbox">
+                            <span class="mr-2"></span>
+                            Ragu-ragu
+                        </label>
+                    </div>
+                    <div class="flex justify-between mb-4">
+                        <button id="prev-btn" class="btn btn-secondary px-4 py-2 rounded-md">&lt; Sebelumnya</button>
+                        <button id="next-btn" class="btn btn-secondary px-4 py-2 rounded-md">Selanjutnya &gt;</button>
+                    </div>
+                    <button id="submit-btn" class="btn btn-primary w-full py-3 rounded-md">Kumpulkan Jawaban</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Result Screen -->
+        <div id="result-screen" class="hidden bg-mid-purple rounded-lg p-8 text-center shadow-2xl">
+             <h1 class="text-5xl title-font text-gold mb-4">Analisis Sesi Selesai</h1>
+             <p class="text-2xl mb-2 text-gray-300">Skor Akhir Anda:</p>
+             <p id="final-score" class="text-7xl font-bold mb-6"></p>
+             <div class="text-lg mb-8">
+                 <span id="correct-count" class="text-green-400"></span> Jawaban Benar &nbsp;&nbsp;&nbsp;
+                 <span id="incorrect-count" class="text-red-400"></span> Jawaban Salah
+             </div>
+             <button id="review-btn" class="btn btn-primary text-lg font-bold py-3 px-8 rounded-lg mb-4">Tinjau Jawaban</button>
+             <button id="restart-btn" class="btn btn-secondary text-lg font-bold py-3 px-8 rounded-lg">Ulangi Sesi</button>
+        </div>
+        
+         <!-- Review Screen -->
+        <div id="review-screen" class="hidden">
+             <button id="back-to-result-btn" class="btn btn-primary text-lg font-bold py-3 px-8 rounded-lg mt-8 mx-auto block">Kembali ke Hasil</button>
+        </div>
+        
+        <!-- Flashcard Screen -->
+        <div id="flashcard-screen" class="hidden bg-mid-purple rounded-lg p-8 shadow-2xl">
+            <h1 class="text-4xl title-font text-gold mb-6 text-center">Mode Flashcard</h1>
+            <div id="flashcard-container" class="card-container cursor-pointer mb-6">
+                <div id="flashcard" class="card">
+                    <div class="card-face card-front text-3xl font-bold"></div>
+                    <div class="card-face card-back"></div>
+                </div>
+            </div>
+            <div class="flex justify-between items-center">
+                <button id="prev-card-btn" class="btn btn-secondary px-6 py-2 rounded-md">&lt; Sebelumnya</button>
+                <p id="card-counter" class="font-semibold"></p>
+                <button id="next-card-btn" class="btn btn-secondary px-6 py-2 rounded-md">Selanjutnya &gt;</button>
+            </div>
+             <button id="back-to-menu-btn" class="btn btn-primary w-full py-3 rounded-md font-bold mt-8">Kembali ke Menu Utama</button>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            { question: "Manakah komponen dari sistem saraf yang berfungsi sebagai pusat pemrosesan informasi utama?", options: ["Sistem Saraf Tepi (SST)", "Sistem Saraf Pusat (SSP)", "Divisi Aferen", "Divisi Eferen"], answer: "Sistem Saraf Pusat (SSP)", explanation: "SSP, yang terdiri dari otak dan sumsum tulang belakang, adalah pusat integrasi dan komando utama sistem saraf." },
+            { question: "Gumpalan granular di dalam badan sel neuron yang merupakan Retikulum Endoplasma Kasar (RE Kasar) yang sangat aktif disebut...", options: ["Badan Golgi", "Badan Nissl", "Neurofilamen", "Bukit Akson"], answer: "Badan Nissl", explanation: "Badan Nissl adalah ciri khas badan sel neuron yang menunjukkan tingkat sintesis protein yang tinggi untuk menopang seluruh sel saraf." },
+            { question: "Struktur neuron yang berfungsi utama sebagai wilayah penerima sinyal dari neuron lain adalah...", options: ["Akson", "Dendrit", "Badan Sel", "Terminal Akson"], answer: "Dendrit", explanation: "Dendrit memiliki banyak cabang yang memperluas permukaan sel untuk menerima sinyal dari ribuan neuron lain." },
+            { question: "Jenis neuron yang memiliki satu juluran tunggal yang keluar dari badan sel lalu bercabang dua, umumnya berfungsi sebagai neuron sensorik, adalah...", options: ["Multipolar", "Bipolar", "Unipolar (Pseudounipolar)", "Anaksonik"], answer: "Unipolar (Pseudounipolar)", explanation: "Struktur unik ini memungkinkan sinyal sensorik dari perifer untuk berjalan langsung ke SSP tanpa harus melewati badan sel." },
+            { question: "Sel glia di SSP yang berfungsi membentuk Sawar Darah Otak (Blood-Brain Barrier) adalah...", options: ["Mikroglia", "Oligodendrosit", "Sel Ependimal", "Astrosit"], answer: "Astrosit", explanation: "Astrosit memiliki 'kaki' (end-feet) yang membungkus kapiler darah di otak, secara ketat mengatur pertukaran zat antara darah dan jaringan otak." },
+            { question: "Fungsi utama dari sel Mikroglia adalah...", options: ["Membentuk selubung mielin", "Mensirkulasikan cairan serebrospinal", "Memberikan dukungan nutrisi", "Bertindak sebagai sel imun (fagositosis)"], answer: "Bertindak sebagai sel imun (fagositosis)", explanation: "Mikroglia adalah makrofag residen di SSP, yang secara aktif membersihkan patogen, sel mati, dan debris." },
+            { question: "Manakah pasangan sel dan fungsinya yang TIDAK TEPAT?", options: ["Oligodendrosit - Membentuk mielin di SSP", "Sel Schwann - Membentuk mielin di SST", "Astrosit - Membentuk Sawar Darah Otak", "Sel Ependimal - Menghantarkan impuls saraf"], answer: "Sel Ependimal - Menghantarkan impuls saraf", explanation: "Sel Ependimal adalah sel glia yang melapisi ventrikel dan tidak menghantarkan impuls; fungsi mereka terkait dengan produksi dan sirkulasi CSF." },
+            { question: "Selubung mielin berfungsi untuk...", options: ["Memberi nutrisi pada akson", "Memperlambat konduksi impuls", "Meningkatkan kecepatan konduksi impuls", "Menyimpan neurotransmitter"], answer: "Meningkatkan kecepatan konduksi impuls", explanation: "Mielin bertindak sebagai isolator listrik, memungkinkan potensial aksi untuk 'melompat' antar Nodus Ranvier (konduksi saltatori), yang jauh lebih cepat." },
+            { question: "Tahap potensial aksi di mana kanal ion Na+ terbuka dan ion Na+ masuk ke dalam sel, membuat bagian dalam membran menjadi positif, disebut...", options: ["Repolarisasi", "Depolarisasi", "Hiperpolarisasi", "Potensial Istirahat"], answer: "Depolarisasi", explanation: "Depolarisasi adalah fase 'naik' dari potensial aksi, di mana influx ion natrium positif secara cepat mengubah potensial membran." },
+            { question: "Peristiwa kunci yang secara langsung memicu pelepasan neurotransmitter dari terminal presinaptik adalah...", options: ["Masuknya ion K+ ke dalam terminal", "Masuknya ion Ca²+ ke dalam terminal", "Keluarnya ion Na+ dari terminal", "Pengikatan neurotransmitter pada reseptor"], answer: "Masuknya ion Ca²+ ke dalam terminal", explanation: "Kedatangan potensial aksi membuka kanal Ca²+ yang peka terhadap voltase. Masuknya Ca²+ adalah sinyal bagi vesikel sinaptik untuk menyatu dengan membran dan melepaskan isinya." },
+            { question: "Neurotransmitter penghambat (inhibitorik) utama di Sistem Saraf Pusat adalah...", options: ["Glutamat", "Asetilkolin", "Norepinefrin", "GABA"], answer: "GABA", explanation: "GABA (Asam Gamma-Aminobutirat) biasanya menyebabkan hiperpolarisasi pada neuron postsinaptik, sehingga lebih sulit bagi neuron tersebut untuk menghasilkan potensial aksi." },
+            { question: "Bagian dari neuron tempat potensial aksi biasanya pertama kali dibangkitkan adalah...", options: ["Dendrit", "Badan Sel", "Bukit Akson (Axon Hillock)", "Terminal Akson"], answer: "Bukit Akson (Axon Hillock)", explanation: "Bukit akson memiliki kepadatan kanal natrium peka voltase yang tertinggi, menjadikannya 'zona pemicu' untuk potensial aksi." },
+            { question: "Neuron sensorik di retina mata yang memiliki satu akson dan satu dendrit adalah contoh klasik dari neuron...", options: ["Multipolar", "Bipolar", "Unipolar", "Interneuron"], answer: "Bipolar", explanation: "Neuron bipolar adalah tipikal untuk jalur sensorik khusus seperti penglihatan, penciuman, dan pendengaran." },
+            { question: "Sel glia yang mengelilingi dan mendukung badan sel neuron di dalam ganglion pada Sistem Saraf Tepi adalah...", options: ["Astrosit", "Sel Schwann", "Sel Satelit", "Mikroglia"], answer: "Sel Satelit", explanation: "Sel satelit memiliki fungsi yang analog dengan astrosit, yaitu mengatur lingkungan mikro di sekitar badan sel neuron, tetapi lokasinya di SST." },
+            { question: "Celah tanpa mielin di sepanjang akson yang memungkinkan terjadinya konduksi saltatori disebut...", options: ["Celah Sinaptik", "Bukit Akson", "Nodus Ranvier", "Badan Nissl"], answer: "Nodus Ranvier", explanation: "Nodus Ranvier adalah satu-satunya tempat di akson bermielin di mana pertukaran ion dapat terjadi, sehingga potensial aksi 'melompat' dari satu nodus ke nodus berikutnya." }
+        ];
+
+        const flashcardData = [
+            { term: "Neuron", definition: "Unit fungsional dasar sistem saraf yang menerima, mengintegrasikan, dan mengirimkan impuls." },
+            { term: "Neuroglia (Sel Glia)", definition: "Sel pendukung di jaringan saraf yang melindungi, memberi nutrisi, dan membantu fungsi neuron." },
+            { term: "Astrosit", definition: "Sel glia di SSP berbentuk bintang yang membentuk Sawar Darah Otak dan mengatur lingkungan neuron." },
+            { term: "Mikroglia", definition: "Sel imun (makrofag) di SSP yang membersihkan debris dan patogen melalui fagositosis." },
+            { term: "Oligodendrosit", definition: "Sel glia di SSP yang membentuk selubung mielin di sekitar beberapa akson." },
+            { term: "Sel Schwann", definition: "Sel glia di SST yang membentuk selubung mielin di sekitar satu segmen akson." },
+            { term: "Sel Ependimal", definition: "Sel epitel yang melapisi ventrikel otak dan membantu sirkulasi cairan serebrospinal (CSF)." },
+            { term: "Sel Satelit", definition: "Sel glia di SST yang mengelilingi dan mendukung badan sel neuron di dalam ganglion." },
+            { term: "Badan Nissl", definition: "Retikulum Endoplasma Kasar yang padat di badan sel neuron, menunjukkan aktivitas sintesis protein yang tinggi." },
+            { term: "Selubung Mielin", definition: "Lapisan isolator lemak di sekitar akson yang mempercepat konduksi impuls saraf." },
+            { term: "Nodus Ranvier", definition: "Celah tanpa mielin di antara segmen selubung mielin, tempat terjadinya lompatan impuls." },
+            { term: "Potensial Aksi", definition: "Sinyal listrik singkat yang merambat di sepanjang akson, juga dikenal sebagai impuls saraf." },
+            { term: "Depolarisasi", definition: "Fase potensial aksi di mana masuknya ion Na+ membuat bagian dalam sel menjadi positif." },
+            { term: "Sinapsis", definition: "Sambungan fungsional antara neuron dengan sel lain tempat transmisi sinyal terjadi." },
+            { term: "Neurotransmitter", definition: "Molekul kimia yang dilepaskan di sinapsis untuk mengirimkan sinyal dari satu neuron ke neuron berikutnya." },
+            { term: "GABA", definition: "Asam Gamma-Aminobutirat, neurotransmitter penghambat (inhibitorik) utama di SSP." },
+            { term: "Glutamat", definition: "Neurotransmitter perangsang (eksitatorik) utama di SSP." }
+        ];
+
+        let currentQuestionIndex = 0;
+        let userAnswers = new Array(quizData.length).fill(null);
+        let flaggedQuestions = new Array(quizData.length).fill(false);
+        let testMode = 'ujian'; 
+        let timerInterval;
+        let currentCardIndex = 0;
+
+        // Element Selectors
+        const startScreen = document.getElementById('start-screen');
+        const cbtScreen = document.getElementById('cbt-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const reviewScreen = document.getElementById('review-screen');
+        const flashcardScreen = document.getElementById('flashcard-screen');
+        
+        // CBT Functions
+        function initTest(mode) {
+            testMode = mode;
+            currentQuestionIndex = 0;
+            userAnswers.fill(null);
+            flaggedQuestions.fill(false);
+            
+            startScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            reviewScreen.classList.add('hidden');
+            flashcardScreen.classList.add('hidden');
+            cbtScreen.classList.remove('hidden');
+
+            renderNavGrid();
+            renderQuestion();
+            startTimer(59, 59);
+        }
+
+        function renderQuestion() {
+            const qData = quizData[currentQuestionIndex];
+            document.getElementById('question-number').textContent = `${currentQuestionIndex + 1} dari ${quizData.length}`;
+            document.getElementById('question-text').textContent = qData.question;
+            
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            qData.options.forEach(optionText => {
+                const optionEl = document.createElement('div');
+                optionEl.textContent = optionText;
+                optionEl.classList.add('option', 'p-3', 'border', 'border-light-purple', 'rounded-md', 'cursor-pointer', 'hover:border-gold');
+                optionEl.addEventListener('click', () => selectAnswer(optionText));
+                if (userAnswers[currentQuestionIndex] === optionText) {
+                    optionEl.classList.add('selected');
+                }
+                optionsContainer.appendChild(optionEl);
+            });
+
+            document.getElementById('flag-checkbox').checked = flaggedQuestions[currentQuestionIndex];
+            updateNavButtons();
+            updateActiveNavItem();
+            
+            document.getElementById('feedback-container').classList.add('hidden');
+            if (testMode === 'latihan' && userAnswers[currentQuestionIndex] !== null) {
+                showImmediateFeedback();
+            }
+        }
+
+        function selectAnswer(selectedOption) {
+            if(testMode === 'latihan' && userAnswers[currentQuestionIndex] !== null) return;
+            userAnswers[currentQuestionIndex] = selectedOption;
+            updateNavGridItem(currentQuestionIndex);
+            if(testMode === 'latihan') {
+                showImmediateFeedback();
+            } else {
+                 renderQuestion();
+            }
+        }
+        
+        function showImmediateFeedback() {
+            const qData = quizData[currentQuestionIndex];
+            const userAnswer = userAnswers[currentQuestionIndex];
+            const isCorrect = userAnswer === qData.answer;
+            const feedbackContainer = document.getElementById('feedback-container');
+            
+            feedbackContainer.innerHTML = `<b>${isCorrect ? 'Benar!' : 'Salah.'}</b> ${qData.explanation}`;
+            feedbackContainer.classList.remove('hidden', 'bg-green-900/50', 'bg-red-900/50');
+            feedbackContainer.classList.add(isCorrect ? 'bg-green-900/50' : 'bg-red-900/50');
+
+            document.querySelectorAll('.option').forEach(optEl => {
+                optEl.style.pointerEvents = 'none'; // Disable further clicks
+                if (optEl.textContent === qData.answer) {
+                    optEl.classList.add('correct');
+                } else if (optEl.textContent === userAnswer) {
+                    optEl.classList.add('incorrect');
+                }
+            });
+        }
+
+        function renderNavGrid() {
+            const navGrid = document.getElementById('nav-grid');
+            navGrid.innerHTML = '';
+            for (let i = 0; i < quizData.length; i++) {
+                const item = document.createElement('div');
+                item.textContent = i + 1;
+                item.classList.add('nav-item', 'w-12', 'h-12', 'flex', 'items-center', 'justify-center', 'cursor-pointer', 'rounded-md');
+                item.addEventListener('click', () => goToQuestion(i));
+                navGrid.appendChild(item);
+            }
+        }
+        
+        function updateNavGridItem(index) {
+            const navItem = document.getElementById('nav-grid').children[index];
+            navItem.classList.remove('answered', 'flagged');
+            if (userAnswers[index] !== null) {
+                navItem.classList.add('answered');
+            }
+            if (flaggedQuestions[index]) {
+                navItem.classList.add('flagged');
+            }
+        }
+
+        function updateActiveNavItem() {
+            document.querySelectorAll('.nav-item').forEach((item, index) => {
+                item.classList.toggle('active', index === currentQuestionIndex);
+            });
+        }
+        
+        function updateNavButtons() {
+            document.getElementById('prev-btn').disabled = currentQuestionIndex === 0;
+            document.getElementById('next-btn').disabled = currentQuestionIndex === quizData.length - 1;
+        }
+
+        function goToQuestion(index) {
+            currentQuestionIndex = index;
+            renderQuestion();
+        }
+
+        function startTimer(minutes, seconds) {
+            const timerEl = document.getElementById('timer');
+            let totalSeconds = minutes * 60 + seconds;
+            timerInterval = setInterval(() => {
+                if (totalSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    submitTest();
+                }
+                const min = Math.floor(totalSeconds / 60);
+                const sec = totalSeconds % 60;
+                timerEl.textContent = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+                totalSeconds--;
+            }, 1000);
+        }
+        
+        function submitTest() {
+            clearInterval(timerInterval);
+            let score = 0;
+            userAnswers.forEach((answer, index) => {
+                if (answer === quizData[index].answer) {
+                    score++;
+                }
+            });
+            
+            const totalScore = Math.round((score / quizData.length) * 100);
+            document.getElementById('final-score').textContent = totalScore;
+            document.getElementById('correct-count').textContent = score;
+            document.getElementById('incorrect-count').textContent = quizData.length - score;
+            
+            cbtScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+        }
+        
+        function renderReview() {
+            resultScreen.classList.add('hidden');
+            reviewScreen.innerHTML = ''; 
+            reviewScreen.classList.remove('hidden');
+            
+            quizData.forEach((qData, index) => {
+                const userAnswer = userAnswers[index] || "Tidak Dijawab";
+                const reviewBlock = document.createElement('div');
+                reviewBlock.classList.add('bg-mid-purple', 'p-6', 'rounded-lg', 'mb-4', 'shadow-lg');
+                reviewBlock.innerHTML = `<p class="mb-2 text-sm text-gray-400">Pertanyaan ${index + 1}</p><p class="text-lg leading-relaxed mb-4">${qData.question}</p><div class="space-y-2">${qData.options.map(opt => `<div class="p-3 border rounded-md ${opt === qData.answer ? 'bg-green-900/50 border-green-700' : (opt === userAnswer ? 'bg-red-900/50 border-red-700' : 'border-light-purple')}">${opt}</div>`).join('')}</div><div class="mt-4 p-3 rounded-md text-sm bg-dark-purple"><b>Jawaban Anda:</b> ${userAnswer} <br><b>Kunci Jawaban:</b> ${qData.answer} <br><b>Penjelasan:</b> ${qData.explanation}</div>`;
+                reviewScreen.appendChild(reviewBlock);
+            });
+             const backBtnClone = document.getElementById('back-to-result-btn').cloneNode(true);
+             reviewScreen.appendChild(backBtnClone);
+             backBtnClone.addEventListener('click', () => {
+                reviewScreen.classList.add('hidden');
+                resultScreen.classList.remove('hidden');
+            });
+        }
+
+        // Flashcard Functions
+        function initFlashcards() {
+            currentCardIndex = 0;
+            startScreen.classList.add('hidden');
+            cbtScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            flashcardScreen.classList.remove('hidden');
+            renderFlashcard();
+        }
+
+        function renderFlashcard() {
+            const card = document.getElementById('flashcard');
+            const cardFront = card.querySelector('.card-front');
+            const cardBack = card.querySelector('.card-back');
+            const cardCounter = document.getElementById('card-counter');
+
+            card.classList.remove('is-flipped');
+            
+            setTimeout(() => {
+                const currentCard = flashcardData[currentCardIndex];
+                cardFront.textContent = currentCard.term;
+                cardBack.textContent = currentCard.definition;
+                cardCounter.textContent = `Kartu ${currentCardIndex + 1} dari ${flashcardData.length}`;
+            }, 150);
+            
+            document.getElementById('prev-card-btn').disabled = currentCardIndex === 0;
+            document.getElementById('next-card-btn').disabled = currentCardIndex === flashcardData.length - 1;
+        }
+
+        // Event Listeners
+        document.getElementById('start-flashcard-btn').addEventListener('click', initFlashcards);
+        document.getElementById('start-latihan-btn').addEventListener('click', () => initTest('latihan'));
+        document.getElementById('start-ujian-btn').addEventListener('click', () => initTest('ujian'));
+        
+        document.getElementById('next-btn').addEventListener('click', () => { if(currentQuestionIndex < quizData.length - 1) goToQuestion(currentQuestionIndex + 1); });
+        document.getElementById('prev-btn').addEventListener('click', () => { if(currentQuestionIndex > 0) goToQuestion(currentQuestionIndex - 1); });
+        
+        document.getElementById('flag-checkbox').addEventListener('change', (e) => {
+            flaggedQuestions[currentQuestionIndex] = e.target.checked;
+            updateNavGridItem(currentQuestionIndex);
+        });
+        document.getElementById('submit-btn').addEventListener('click', () => {
+            if (confirm('Apakah Anda yakin ingin mengumpulkan jawaban Anda?')) {
+                submitTest();
+            }
+        });
+        document.getElementById('restart-btn').addEventListener('click', () => {
+             resultScreen.classList.add('hidden');
+             startScreen.classList.remove('hidden');
+        });
+        document.getElementById('review-btn').addEventListener('click', renderReview);
+        document.getElementById('back-to-result-btn').addEventListener('click', () => {
+            reviewScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+        });
+
+        // Flashcard Event Listeners
+        document.getElementById('flashcard-container').addEventListener('click', () => {
+            document.getElementById('flashcard').classList.toggle('is-flipped');
+        });
+        document.getElementById('next-card-btn').addEventListener('click', () => {
+            if (currentCardIndex < flashcardData.length - 1) {
+                currentCardIndex++;
+                renderFlashcard();
+            }
+        });
+        document.getElementById('prev-card-btn').addEventListener('click', () => {
+            if (currentCardIndex > 0) {
+                currentCardIndex--;
+                renderFlashcard();
+            }
+        });
+        document.getElementById('back-to-menu-btn').addEventListener('click', () => {
+             flashcardScreen.classList.add('hidden');
+             startScreen.classList.remove('hidden');
+        });
+        
+    </script>
+</body>
+</html>

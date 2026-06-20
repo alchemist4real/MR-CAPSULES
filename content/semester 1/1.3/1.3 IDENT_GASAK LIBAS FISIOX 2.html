@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GASAK LIBAS FISIOX 2</title>
+    <!-- Import Google Fonts untuk Tema Manga -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* CSS Reset Sederhana */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'M PLUS Rounded 1c', sans-serif;
+            background-color: #EEEEEE;
+            color: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* --- Style Manga --- */
+        .manga-border {
+            border: 3px solid #000;
+            box-shadow: 6px 6px 0px #000;
+        }
+
+        .manga-button {
+            font-family: 'Bangers', cursive;
+            font-size: 1.25rem;
+            letter-spacing: 1px;
+            background-color: #fff;
+            color: #000;
+            padding: 10px 20px;
+            border: 3px solid #000;
+            box-shadow: 4px 4px 0px #000;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.1s ease;
+            transform: rotate(-2deg);
+            user-select: none;
+        }
+
+        .manga-button:active {
+            transform: translate(4px, 4px) rotate(-2deg);
+            box-shadow: 0px 0px 0px #000;
+        }
+
+        .manga-select {
+            font-family: 'M PLUS Rounded 1c', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            background-color: #fff;
+            border: 3px solid #000;
+            padding: 8px 12px;
+            box-shadow: 4px 4px 0px #000;
+            transform: rotate(1deg);
+            appearance: none;
+            cursor: pointer;
+        }
+
+        /* --- Layout Aplikasi --- */
+        .app-container {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        header {
+            width: 100%;
+            text-align: center;
+            background-color: #fff;
+            padding: 15px;
+            transform: rotate(1deg);
+        }
+
+        header h1 {
+            font-family: 'Bangers', cursive;
+            font-size: 3rem;
+            color: #000;
+            letter-spacing: 2px;
+            text-shadow: 3px 3px 0px #fff, 6px 6px 0px rgba(0,0,0,0.2);
+            line-height: 1.1;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+            background-color: #fff;
+            padding: 15px;
+            transform: rotate(-1deg);
+        }
+
+        .card-container {
+            width: 100%;
+            perspective: 1000px;
+            min-height: 350px;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 350px;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+
+        .card-container.is-flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            background-color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        /* Efek getar manga di latar belakang kartu */
+        .card-front {
+            background-image: repeating-conic-gradient(
+                from 0.25turn at 50% 50%,
+                #fff 0deg 5deg, 
+                #eee 5deg 10deg
+            );
+            /* Ganti 'spin' menjadi 'shake' */
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both infinite;
+            transform: translate3d(0, 0, 0);
+            backface-visibility: hidden;
+            perspective: 1000px;
+        }
+        
+        @keyframes shake {
+          10%, 90% {
+            transform: translate3d(-1px, 0, 0) rotate(0.5deg);
+          }
+          
+          20%, 80% {
+            transform: translate3d(2px, 0, 0) rotate(-0.5deg);
+          }
+        
+          30%, 50%, 70% {
+            transform: translate3d(-3px, 0, 0) rotate(0.5deg);
+          }
+        
+          40%, 60% {
+            transform: translate3d(3px, 0, 0) rotate(-0.5deg);
+          }
+        }
+
+        /* Konten depan untuk menutupi bg animasi */
+        .front-content {
+            position: relative;
+            background: #fff;
+            padding: 20px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+        }
+
+        .card-category {
+            font-family: 'Bangers', cursive;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            background-color: #000;
+            color: #fff;
+            padding: 5px 10px;
+            display: inline-block;
+            align-self: flex-start;
+        }
+
+        .card-question {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-top: 15px;
+            text-align: center;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-answer {
+            font-size: 1.1rem;
+            font-weight: 400;
+            white-space: pre-wrap; /* Agar format jawaban tetap rapi */
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .flip-indicator {
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-align: center;
+            color: #555;
+            align-self: center;
+            margin-top: 10px;
+        }
+
+        .card-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 10px;
+        }
+
+        .card-counter {
+            font-family: 'Bangers', cursive;
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- JUDUL APLIKASI -->
+        <header class="manga-border">
+            <h1>GASAK LIBAS FISIOX 2</h1>
+        </header>
+
+        <!-- KONTROL (FILTER & SHUFFLE) -->
+        <div class="controls manga-border">
+            <select id="categoryFilter" class="manga-select">
+                <option value="Semua">Semua Bab 2</option>
+                <option value="Penglihatan">Indra Penglihatan</option>
+                <option value="Pendengaran">Indra Pendengaran</option>
+            </select>
+            <button id="shuffleBtn" class="manga-button">Acak Kartu!</button>
+        </div>
+
+        <!-- AREA KARTU FLASHCARD -->
+        <div id="cardContainer" class="card-container">
+            <div id="cardInner" class="card-inner">
+                
+                <!-- SISI DEPAN (PERTANYAAN) -->
+                <div class="card-face card-front manga-border">
+                   <div class="front-content manga-border">
+                        <div id="cardCategory" class="card-category">KATEGORI</div>
+                        <div id="cardQuestion" class="card-question">
+                            Memuat pertanyaan...
+                        </div>
+                        <div class="flip-indicator">Klik untuk membalik</div>
+                   </div>
+                </div>
+                
+                <!-- SISI BELAKANG (JAWABAN) -->
+                <div class="card-face card-back manga-border">
+                    <div id="cardAnswer" class="card-answer">
+                        Memuat jawaban...
+                    </div>
+                    <div class="flip-indicator">Klik untuk membalik</div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- NAVIGASI (SEBELUMNYA/BERIKUTNYA & COUNTER) -->
+        <div class="card-navigation">
+            <button id="prevBtn" class="manga-button">&laquo; Sebelumnya</button>
+            <div id="cardCounter" class="card-counter">0 / 0</div>
+            <button id="nextBtn" class="manga-button">Berikutnya &raquo;</button>
+        </div>
+
+    </div>
+
+    <script>
+        // --- DATA FLASHCARD (DARI BAB 2 MODUL - 118 KARTU) ---
+        const flashcardsData = [
+            // Kategori: Indra Penglihatan
+            { question: "Sebutkan 3 lapisan mata dari luar ke dalam!", answer: "1. Tunika Fibrosa (Sklera, Kornea)\n2. Tunika Vaskuler (Koroid, Badan Siliaris, Iris)\n3. Tunika Nervosa (Retina)", category: "Penglihatan" },
+            { question: "Apa saja komponen Tunika Fibrosa?", answer: "Sklera dan Kornea", category: "Penglihatan" },
+            { question: "Apa saja komponen Tunika Vaskuler?", answer: "Koroid, Badan Siliaris, dan Iris", category: "Penglihatan" },
+            { question: "Apa komponen Tunika Nervosa?", answer: "Retina", category: "Penglihatan" },
+            { question: "Apa fungsi Kornea?", answer: "Media refrakta yang letaknya paling luar dan berwarna transparan sehingga dapat ditembus berkas cahaya.", category: "Penglihatan" },
+            { question: "Apa fungsi Sklera?", answer: "Bagian putih mata (jaringan ikat padat) yang berfungsi membentuk bola mata dan melindungi struktur mata di bawahnya.", category: "Penglihatan" },
+            { question: "Apa fungsi Iris?", answer: "Otot polos tipis berpigmen yang memberi warna mata dan mengubah diameter pupil untuk mengatur jumlah cahaya yang masuk.", category: "Penglihatan" },
+            { question: "Apa itu Pupil?", answer: "Lubang bundar di bagian tengah iris sebagai tempat masuknya cahaya ke dalam mata.", category: "Penglihatan" },
+            { question: "Sebutkan 2 otot yang berperan dalam pengaturan diameter pupil!", answer: "1. Otot Sfingter Pupil (Miosis/mengecil)\n2. Otot Radial Pupil (Midriasis/membesar)", category: "Penglihatan" },
+            { question: "Sebutkan 2 komponen utama Badan Siliaris!", answer: "1. Otot Siliaris\n2. Anyaman Kapiler", category: "Penglihatan" },
+            { question: "Apa fungsi Anyaman Kapiler di Badan Siliaris?", answer: "Menghasilkan cairan aqueous.", category: "Penglihatan" },
+            { question: "Apa fungsi Otot Siliaris di Badan Siliaris?", answer: "Membantu fungsi akomodasi dari lensa.", category: "Penglihatan" },
+            { question: "Apa fungsi Koroid?", answer: "Memberikan nutrisi bagi mata dan menyerap cahaya yang tersebar (karena memiliki banyak pigmen & pembuluh darah).", category: "Penglihatan" },
+            { question: "Apa fungsi Lensa?", answer: "Media refrakta transparan yang mampu ber-akomodasi (mengubah bentuk) untuk memfokuskan cahaya agar jatuh tepat di retina.", category: "Penglihatan" },
+            { question: "Apa fungsi Retina?", answer: "Mengandung fotoreseptor (sel batang & kerucut) yang berfungsi mengubah energi cahaya menjadi impuls saraf.", category: "Penglihatan" },
+            { question: "Lapisan retina mana yang mengandung fotoreseptor?", answer: "Lapisan jaringan saraf (sebelah dalam).", category: "Penglihatan" },
+            { question: "Apa fungsi lapisan berpigmen pada retina (sebelah luar)?", answer: "Menyerap cahaya untuk mencegah pantulan/pembuyaran sinar dalam mata (sama seperti koroid).", category: "Penglihatan" },
+            { question: "Apa itu Cairan Aqueous?", answer: "Cairan jernih encer yang berada di camera oculi anterior (antara kornea dan lensa).", category: "Penglihatan" },
+            { question: "Apa fungsi Cairan Aqueous?", answer: "Mempertahankan bentuk bola mata dan menyediakan oksigen serta nutrisi bagi kornea dan lensa (yang avaskular).", category: "Penglihatan" },
+            { question: "Apa itu Cairan Vitreous?", answer: "Cairan mirip gel yang berada di camera oculi posterior (antara lensa dan retina).", category: "Penglihatan" },
+            { question: "Apa fungsi Cairan Vitreous?", answer: "Membantu mempertahankan bentuk bola mata tetap bulat dan menjaga retina tetap melekat di koroid.", category: "Penglihatan" },
+            { question: "Apa itu Diskus Optikus?", answer: "Titik di retina tempat saraf optik keluar dan pembuluh darah berjalan.", category: "Penglihatan" },
+            { question: "Mengapa Diskus Optikus disebut Bintik Buta (Blind Spot)?", answer: "Karena tidak adanya komponen fotoreseptor (sel batang dan sel kerucut) sehingga bayangan tidak dapat dideteksi.", category: "Penglihatan" },
+            { question: "Apa itu Fovea?", answer: "Cekungan kecil di bagian tengah posterior retina, merupakan daerah ketajaman penglihatan paling tinggi.", category: "Penglihatan" },
+            { question: "Mengapa Fovea memiliki ketajaman penglihatan paling tinggi?", answer: "Karena memiliki konsentrasi SEL KERUCUT (Cone) tertinggi di retina.", category: "Penglihatan" },
+            { question: "Apa itu Makula Lutea?", answer: "Daerah yang berada tepat di sekitar fovea, mempunyai ketajaman lebih rendah dari fovea.", category: "Penglihatan" },
+            { question: "Apa itu Visus (Tajam Penglihatan)?", answer: "Kemampuan mata untuk melihat dengan jelas dan tegas.", category: "Penglihatan" },
+            { question: "Berapa visus mata normal menurut Optotype Snellen/Straub?", answer: "6/6", category: "Penglihatan" },
+            { question: "Apa arti interpretasi visus 6/6?", answer: "Penderita bisa membaca huruf pada jarak 6 meter, yang seharusnya dapat dibaca oleh orang normal pada jarak 6 meter.", category: "Penglihatan" },
+            { question: "Apa arti interpretasi visus 6/30?", answer: "Penderita bisa membaca huruf pada jarak 6 meter, yang seharusnya dapat dibaca oleh orang normal pada jarak 30 meter.", category: "Penglihatan" },
+            { question: "Apa arti interpretasi visus 6/60?", answer: "Penderita bisa membaca huruf pada jarak 6 meter, yang seharusnya dapat dibaca oleh orang normal pada jarak 60 meter.", category: "Penglihatan" },
+            { question: "Apa arti visus 1/60 (Visus Hitung Jari)?", answer: "Penderita hanya bisa menghitung jari pada jarak 1 meter, yang seharusnya orang normal bisa lihat pada jarak 60 meter.", category: "Penglihatan" },
+            { question: "Apa arti visus 1/300 (Visus Gerakan Lambaian Tangan)?", answer: "Penderita hanya bisa melihat lambaian tangan pada jarak 1 meter, yang seharusnya bisa dilihat orang normal pada jarak 300 meter.", category: "Penglihatan" },
+            { question: "Apa level visus terendah sebelum buta total?", answer: "Visus Gelap & Terang (Persepsi Cahaya).", category: "Penglihatan" },
+            { question: "Sebutkan 3 faktor yang dapat mempengaruhi visus!", answer: "1. Kelainan refraksi (Miopia, Hipermetropia, dll)\n2. Penyakit mata (Katarak, Glaukoma)\n3. Gangguan media optik (Kornea keruh)\n(Bisa juga: Usia, Penyakit sistemik, Lingkungan)", category: "Penglihatan" },
+            { question: "Langkah 1 Fisiologi Penglihatan: Benda memantulkan cahaya, masuk ke pupil. Apa yang mengatur jumlah cahaya?", answer: "M. Sphincter Pupillae (konstriksi/terang) dan M. Dilator Pupillae (dilatasi/gelap).", category: "Penglihatan" },
+            { question: "Langkah 2 Fisiologi Penglihatan: Cahaya difokuskan oleh Lensa, bayangan jatuh di Retina. Bagaimana sifat bayangannya?", answer: "Terbalik.", category: "Penglihatan" },
+            { question: "Langkah 3 Fisiologi Penglihatan: Bayangan ditangkap Fotoreseptor. Apa fungsi Sel Batang?", answer: "Berfungsi untuk penglihatan hitam putih (skotopik / cahaya redup).", category: "Penglihatan" },
+            { question: "Langkah 3 Fisiologi Penglihatan: Bayangan ditangkap Fotoreseptor. Apa fungsi Sel Kerucut?", answer: "Berfungsi untuk penglihatan warna (fotopik / cahaya terang).", category: "Penglihatan" },
+            { question: "Langkah 4 Fisiologi Penglihatan: Fotopigmen aktif. Apa yang diaktifkan oleh fotopigmen?", answer: "Mengaktifkan Transdusin.", category: "Penglihatan" },
+            { question: "Langkah 5 Fisiologi Penglihatan: Transdusin aktif. Apa yang diaktifkan oleh Transdusin?", answer: "Mengaktifkan enzim intrasel Fosfodiesterase (PDE).", category: "Penglihatan" },
+            { question: "Langkah 6 Fisiologi Penglihatan: Fosfodiesterase aktif. Apa akibatnya pada cGMP?", answer: "Terjadi penurunan cGMP intrasel (karena PDE memecah cGMP).", category: "Penglihatan" },
+            { question: "Langkah 7 Fisiologi Penglihatan: Penurunan cGMP. Apa akibatnya pada Kanal Na+?", answer: "Terjadi PENUTUPAN Kanal Na+.", category: "Penglihatan" },
+            { question: "Langkah 8 Fisiologi Penglihatan: Penutupan Kanal Na+. Apa akibatnya pada membran sel fotoreseptor?", answer: "Terjadi HIPERPOLARISASI (sel menjadi lebih negatif).", category: "Penglihatan" },
+            { question: "Langkah 9 Fisiologi Penglihatan: Hiperpolarisasi. Apa langkah selanjutnya?", answer: "Memicu respon sel bipolar dan unsur sel saraf lain, lalu terjadi penjalaran impuls melalui serabut saraf N. Optikus.", category: "Penglihatan" },
+            { question: "Langkah 10 Fisiologi Penglihatan: Impuls berjalan di N. Optikus. Ke mana impuls dihantarkan di otak?", answer: "Ke Korteks Optik di otak, Area Broadman 17.", category: "Penglihatan" },
+            { question: "Langkah 11 Fisiologi Penglihatan: Impuls sampai di Korteks Optik. Apa yang terjadi?", answer: "Persepsi Melihat.", category: "Penglihatan" },
+            { question: "Apa itu Refraksi?", answer: "Pembelokan berkas cahaya dari 1 medium ke medium lain yang berbeda densitasnya.", category: "Penglihatan" },
+            { question: "Sebutkan 4 Media Refrakta mata secara berurutan!", answer: "1. Kornea\n2. Cairan Aqueous\n3. Lensa\n4. Cairan Vitreous", category: "Penglihatan" },
+            { question: "Apa itu Akomodasi?", answer: "Kemampuan mata (khususnya lensa) untuk menyesuaikan kekuatan lensa agar bayangan benda jatuh tepat di retina pada berbagai jarak.", category: "Penglihatan" },
+            { question: "Saat melihat objek JAUH ( > 6m), bagaimana kondisi otot siliaris?", answer: "Otot Siliaris RELAKSASI (input simpatis).", category: "Penglihatan" },
+            { question: "Saat melihat objek JAUH, bagaimana kondisi Zonula Ciliaris (lig. suspensorium)?", answer: "Zonula Ciliaris MENEGANG (tertarik).", category: "Penglihatan" },
+            { question: "Saat melihat objek JAUH, bagaimana bentuk Lensa?", answer: "Lensa menjadi lebih PIPIH.", category: "Penglihatan" },
+            { question: "Saat melihat objek DEKAT ( < 6m), bagaimana kondisi otot siliaris?", answer: "Otot Siliaris KONTRAKSI (input parasimpatis).", category: "Penglihatan" },
+            { question: "Saat melihat objek DEKAT, bagaimana kondisi Zonula Ciliaris (lig. suspensorium)?", answer: "Zonula Ciliaris MENGENDUR (tidak tegang).", category: "Penglihatan" },
+            { question: "Saat melihat objek DEKAT, bagaimana bentuk Lensa?", answer: "Lensa menjadi lebih CEMBUNG (bulging).", category: "Penglihatan" },
+            { question: "Apa itu Hipermetropia (Rabun Dekat / Farsighted)?", answer: "Bola mata terlalu PENDEK, sehingga titik fokus jatuh di BELAKANG retina. Benda dekat terlihat kabur.", category: "Penglihatan" },
+            { question: "Bagaimana cara mengoreksi Hipermetropia?", answer: "Menggunakan Lensa Cembung (Positif / Konveks) untuk memajukan titik fokus.", category: "Penglihatan" },
+            { question: "Apa itu Miopia (Rabun Jauh / Nearsighted)?", answer: "Bola mata terlalu PANJANG, sehingga titik fokus jatuh di DEPAN retina. Benda jauh terlihat buram.", category: "Penglihatan" },
+            { question: "Bagaimana cara mengoreksi Miopia?", answer: "Menggunakan Lensa Cekung (Negatif / Konkaf) untuk memundurkan titik fokus.", category: "Penglihatan" },
+            { question: "Apa itu Astigmatisma?", answer: "Bentuk lengkung kornea tidak rata atau tidak simetris, sehingga cahaya dibiaskan tidak merata dan tidak fokus ke satu titik. Penglihatan kabur/berbayang.", category: "Penglihatan" },
+            { question: "Apa Teori Penglihatan Warna Young-Helmholtz?", answer: "Teori Triwarna / Tri-reseptor: Ada 3 jenis sel kerucut yang peka terhadap 3 warna dasar (Merah, Hijau, Biru/Ungu).", category: "Penglihatan" },
+            { question: "Tes apa yang umum digunakan untuk menentukan buta warna?", answer: "Buku Ishihara (pseudo-isochromatic plates).", category: "Penglihatan" },
+            { question: "Sebutkan 3 bagian fotoreseptor!", answer: "1. Segmen Luar (mendeteksi cahaya)\n2. Segmen Dalam (metabolik sel)\n3. Terminal Sinaps (menyalurkan sinyal)", category: "Penglihatan" },
+            { question: "Apa nama fotopigmen pada Sel Batang?", answer: "Rhodopsin.", category: "Penglihatan" },
+            { question: "Rhodopsin menyerap semua gelombang cahaya tampak, menghasilkan pandangan...", answer: "Hitam Putih (monokromatik).", category: "Penglihatan" },
+            { question: "Rhodopsin dipecah menjadi apa?", answer: "Scotopsin & Retinal (derivat Vitamin A).", category: "Penglihatan" },
+            { question: "Ada berapa jenis fotopigmen pada Sel Kerucut?", answer: "Tiga jenis (untuk Merah, Hijau, Biru).", category: "Penglihatan" },
+            { question: "Apa yang terjadi saat adaptasi TERANG ke GELAP?", answer: "Rhodopsin (yang pecah saat terang) perlu di-RESINTESIS kembali secara LAMBAT. Mata butuh waktu untuk melihat di gelap.", category: "Penglihatan" },
+            { question: "Apa yang terjadi saat adaptasi GELAP ke TERANG?", answer: "Rhodopsin (yang terkumpul penuh saat gelap) PEMECAHAN-nya terjadi secara CEPAT. Intensitas impuls meningkat tajam, otak mengartikannya sebagai NYERI/SILAU.", category: "Penglihatan" },
+            { question: "Apa itu Lapang Pandang?", answer: "Lapangan penglihatan yang tampak tanpa menggerakkan kepala.", category: "Penglihatan" },
+            { question: "Apa itu Penglihatan Binokular?", answer: "Penglihatan di mana bidang visual kedua mata saling tumpang tindih (overlap).", category: "Penglihatan" },
+            { question: "Berkas sinar dari separuh KIRI lapang pandang jatuh di separuh...?", answer: "Separuh KANAN retina kedua mata (separuh medial retina kiri dan separuh lateral retina kanan).", category: "Penglihatan" },
+            { question: "Berkas sinar dari separuh KANAN lapang pandang jatuh di separuh...?", answer: "Separuh KIRI retina kedua mata (separuh lateral retina kiri dan separuh medial retina kanan).", category: "Penglihatan" },
+            { question: "Serat dari retina bagian mana yang MENYILANG di Kiasma Optikum?", answer: "Serat dari separuh MEDIAL (nasal) retina.", category: "Penglihatan" },
+            { question: "Serat dari retina bagian mana yang TIDAK menyilang di Kiasma Optikum?", answer: "Serat dari separuh LATERAL (temporal) retina.", category: "Penglihatan" },
+            { question: "Traktus Optikus KANAN membawa informasi dari lapang pandang sebelah...?", answer: "Lapang pandang sebelah KIRI (dari separuh kanan retina kedua mata).", category: "Penglihatan" },
+            { question: "Traktus Optikus KIRI membawa informasi dari lapang pandang sebelah...?", answer: "Lapang pandang sebelah KANAN (dari separuh kiri retina kedua mata).", category: "Penglihatan" },
+            { question: "Berapa jarak subjek dari Optotype Snellen saat pemeriksaan visus?", answer: "6 meter", category: "Penglihatan" },
+            { question: "Bagaimana cara menutup mata yang tidak diperiksa saat tes visus?", answer: "Ditutup dengan telapak tangan TANPA menekan bola mata.", category: "Penglihatan" },
+            { question: "Kapan pemeriksaan visus dinyatakan selesai?", answer: "Pada baris huruf terkecil yang masih dapat dibaca dengan lancar tanpa kesalahan (seluruh huruf).", category: "Penglihatan" },
+            { question: "Berapa lama waktu yang diberikan kepada subjek untuk mengenali gambar pada buku Ishihara per halaman?", answer: "10 detik", category: "Penglihatan" },
+            { question: "Apa nama metode pemeriksaan lapang pandang yang membandingkan dengan pemeriksa?", answer: "Metode Konfrontasi", category: "Penglihatan" },
+            { question: "Berapa jarak antara subjek dan pemeriksa pada tes konfrontasi?", answer: "60 cm", category: "Penglihatan" },
+            { question: "Bagaimana posisi mata subjek dan pemeriksa saat tes konfrontasi?", answer: "Mata subjek melihat mata pemeriksa (mata yang berhadapan). Misal: Mata kanan subjek melihat mata kiri pemeriksa.", category: "Penglihatan" },
+            { question: "Bagaimana objek digerakkan pada tes konfrontasi?", answer: "Perlahan-lahan dari perifer ke sentral, dari delapan arah mata angin.", category: "Penglihatan" },
+            { question: "Apa interpretasi hasil tes konfrontasi jika normal?", answer: "Lapang pandang subjek luasnya SAMA dengan lapang pandang pemeriksa (asumsi pemeriksa normal).", category: "Penglihatan" },
+
+            // Kategori: Indra Pendengaran
+            { question: "Sebutkan 3 bagian telinga!", answer: "1. Telinga Luar\n2. Telinga Tengah\n3. Telinga Dalam", category: "Pendengaran" },
+            { question: "Apa saja struktur Telinga Luar?", answer: "Pinna Auricula (daun telinga) dan Meatus Auditorius Eksternus (liang telinga).", category: "Pendengaran" },
+            { question: "Apa fungsi Pinna Auricula (Daun Telinga)?", answer: "Mengumpulkan gelombang suara, menyalurkannya ke liang telinga, dan berperan dalam menentukan lokasi suara.", category: "Pendengaran" },
+            { question: "Apa fungsi Meatus Auditorius Eksternus?", answer: "Mengarahkan gelombang suara ke Membran Timpani.", category: "Pendengaran" },
+            { question: "Struktur apa yang membatasi telinga luar dan telinga tengah?", answer: "Membran Timpani (Gendang Telinga).", category: "Pendengaran" },
+            { question: "Apa fungsi Membran Timpani?", answer: "Bergetar secara sinkron dengan gelombang suara, menyebabkan tulang-tulang telinga tengah bergetar.", category: "Pendengaran" },
+            { question: "Sebutkan 3 Tulang Pendengaran (Ossicula Auditiva) di telinga tengah secara berurutan!", answer: "1. Malleus (menempel di M. Timpani)\n2. Incus\n3. Stapes (menempel di Jendela Oval)", category: "Pendengaran" },
+            { question: "Apa fungsi Tuba Auditiva (Eustachius)?", answer: "Menghubungkan telinga tengah dengan nasofaring; berfungsi menyamakan tekanan udara antara telinga tengah dan lingkungan luar.", category: "Pendengaran" },
+            { question: "Sebutkan 2 bagian utama Telinga Dalam!", answer: "1. Koklea (untuk pendengaran)\n2. Vestibularis (untuk keseimbangan)", category: "Pendengaran" },
+            { question: "Apa itu Jendela Oval (Oval Window)?", answer: "Tempat Stapes menempel, getarannya menyebabkan perilimfe di koklea bergerak.", category: "Pendengaran" },
+            { question: "Sebutkan 3 'skala' (saluran) di dalam Koklea!", answer: "1. Skala Vestibuli (atas)\n2. Skala Media (Duktus Koklearis)\n3. Skala Timpani (bawah)", category: "Pendengaran" },
+            { question: "Cairan apa yang mengisi Skala Vestibuli dan Skala Timpani?", answer: "Perilimfe.", category: "Pendengaran" },
+            { question: "Cairan apa yang mengisi Skala Media (Duktus Koklearis)?", answer: "Endolimfe.", category: "Pendengaran" },
+            { question: "Di mana letak Organ Corti?", answer: "Di dalam Skala Media, 'duduk' di atas Membrana Basilaris.", category: "Pendengaran" },
+            { question: "Apa fungsi Membrana Basilaris?", answer: "Bergetar bersama dengan gerakan perilimfe, tempat melekatnya Organ Corti.", category: "Pendengaran" },
+            { question: "Apa isi dari Organ Corti?", answer: "Mengandung SEL RAMBUT (Hair Cells), yang merupakan reseptor untuk suara.", category: "Pendengaran" },
+            { question: "Apa fungsi Sel Rambut (Organ Corti)?", answer: "Mengubah getaran mekanis (akibat getaran M. Basilaris) menjadi impuls listrik/saraf.", category: "Pendengaran" },
+            { question: "Sebutkan 3 struktur di Aparatus Vestibularis!", answer: "1. Kanalis Semisirkularis (3 buah)\n2. Utrikulus\n3. Sakulus", category: "Pendengaran" },
+            { question: "Apa fungsi Kanalis Semisirkularis?", answer: "Mendeteksi percepatan dan perlambatan ROTASIONAL atau ANGULAR (gerakan memutar kepala).", category: "Pendengaran" },
+            { question: "Apa fungsi Utrikulus?", answer: "Mendeteksi perubahan posisi kepala menjauhi vertikal (misal: miring) & percepatan LINEAR HORIZONTAL.", category: "Pendengaran" },
+            { question: "Apa fungsi Sakulus?", answer: "Mendeteksi perubahan posisi kepala menjauhi horizontal (misal: naik-turun lift) & percepatan LINEAR VERTIKAL.", category: "Pendengaran" },
+            { question: "Apa itu Nada (Pitch) suara? Ditentukan oleh apa?", answer: "Nada ditentukan oleh FREKUENSI getaran (satuan: Hertz / Hz).", category: "Pendengaran" },
+            { question: "Berapa rentang frekuensi yang mampu dideteksi manusia?", answer: "20 hingga 20.000 Hz.", category: "Pendengaran" },
+            { question: "Apa itu Intensitas (Loudness) suara? Ditentukan oleh apa?", answer: "Intensitas ditentukan oleh AMPLITUDO gelombang (satuan: Desibel / dB).", category: "Pendengaran" },
+            { question: "Pada intensitas berapa suara dapat mengakibatkan kerusakan permanen pada koklea?", answer: "Lebih dari 100 dB.", category: "Pendengaran" },
+            { question: "Apa itu Warna Suara (Timbre/Quality)? Ditentukan oleh apa?", answer: "Warna suara ditentukan oleh frekuensi tambahan (OVERTONE) yang mengenai nada dasar.", category: "Pendengaran" },
+            { question: "Langkah 1 Fisiologi Pendengaran: Gelombang suara masuk M. Akustikus Eksterna, mengenai...", answer: "Membran Timpani (menyebabkan getaran).", category: "Pendengaran" },
+            { question: "Langkah 2 Fisiologi Pendengaran: Getaran M. Timpani diteruskan ke...", answer: "Tulang-tulang pendengaran (Malleus -> Incus -> Stapes).", category: "Pendengaran" },
+            { question: "Langkah 3 Fisiologi Pendengaran: Getaran Stapes pada Jendela Oval menimbulkan gelombang tekanan pada...", answer: "Cairan Perilimfa di Skala Vestibuli.", category: "Pendengaran" },
+            { question: "Langkah 4 Fisiologi Pendengaran: Gelombang tekanan di Perilimfa menyebar, lalu menekan...", answer: "Membrana Basilaris (membuatnya bergetar).", category: "Pendengaran" },
+            { question: "Langkah 5 Fisiologi Pendengaran: Vibrasi Membrana Basilaris menyebabkan pergeseran...", answer: "Sel rambut (Organ Corti) terhadap Membrana Tektorial.", category: "Pendengaran" },
+            { question: "Langkah 6 Fisiologi Pendengaran: Pergeseran sel rambut menekuk stereosilia, memicu...", answer: "Terbentuknya impuls listrik (potensial aksi).", category: "Pendengaran" },
+            { question: "Langkah 7 Fisiologi Pendengaran: Impuls listrik diubah jadi impuls saraf, dikirim melalui...", answer: "Nervus Koklearis (N. VIII).", category: "Pendengaran" },
+            { question: "Langkah 8 Fisiologi Pendengaran: Impuls saraf dikirim ke korteks pendengaran di...", answer: "Otak (Lobus Temporalis) untuk diinterpretasikan sebagai suara.", category: "Pendengaran" },
+            { question: "Apa itu Tuli Konduktif (Conductive Hearing Loss/CHL)?", answer: "Gangguan hantaran suara yang terjadi di Telinga LUAR atau Telinga TENGAH.", category: "Pendengaran" },
+            { question: "Apa itu Tuli Sensorineural (Sensorineural Hearing Loss/SNHL)?", answer: "Gangguan yang terjadi pada Telinga DALAM (koklea), N. Auditorius (N.VIII), atau pada pusat pendengaran di otak.", category: "Pendengaran" },
+            { question: "Apa itu Tuli Campuran?", answer: "Kombinasi dari Tuli Konduktif dan Tuli Sensorineural.", category: "Pendengaran" },
+            { question: "Sebutkan 3 jenis Tes Garputala!", answer: "1. Tes Rinne\n2. Tes Weber\n3. Tes Schwabach", category: "Pendengaran" },
+            { question: "Berapa frekuensi garputala yang biasa digunakan?", answer: "512 Hz, 1024 Hz, atau 2048 Hz.", category: "Pendengaran" },
+            { question: "Apa yang dibandingkan pada Tes Rinne?", answer: "Hantaran melalui Udara (Air Conduction / AC) dibandingkan dengan Hantaran melalui Tulang (Bone Conduction / BC) pada telinga yang diperiksa.", category: "Pendengaran" },
+            { question: "Bagaimana cara melakukan Tes Rinne?", answer: "1. Getarkan garputala, letakkan tangkai di PROSESUS MASTOID (BC).\n2. Setelah subjek tidak dengar, pindahkan garputala ke DEPAN LIANG TELINGA (AC).", category: "Pendengaran" },
+            { question: "Interpretasi Tes Rinne POSITIF (+)?", answer: "Pasien MASIH mendengar saat garputala dipindah ke depan telinga (AC > BC).", category: "Pendengaran" },
+            { question: "Apa arti klinis Tes Rinne POSITIF (+)?", answer: "NORMAL atau Tuli Sensorineural (SNHL).", category: "Pendengaran" },
+            { question: "Interpretasi Tes Rinne NEGATIF (-)?", answer: "Pasien TIDAK mendengar saat garputala dipindah ke depan telinga (AC < BC).", category: "Pendengaran" },
+            { question: "Apa arti klinis Tes Rinne NEGATIF (-)?", answer: "Tuli Konduktif (CHL).", category: "Pendengaran" },
+            { question: "Apa yang dibandingkan pada Tes Weber?", answer: "Membandingkan hantaran tulang (BC) telinga kiri dengan telinga kanan.", category: "Pendengaran" },
+            { question: "Bagaimana cara melakukan Tes Weber?", answer: "Letakkan tangkai garputala yang bergetar di DAHI subjek (atau vertex/gigi) di garis axial.", category: "Pendengaran" },
+            { question: "Apa itu Lateralisasi pada Tes Weber?", answer: "Terdengarnya dengungan garputala yang lebih kuat di salah satu sisi.", category: "Pendengaran" },
+            { question: "Interpretasi Tes Weber: Lateralisasi ke telinga yang SAKIT?", answer: "Menunjukkan Tuli Konduktif (CHL) pada telinga yang sakit tersebut.", category: "Pendengaran" },
+            { question: "Interpretasi Tes Weber: Lateralisasi ke telinga yang SEHAT?", answer: "Menunjukkan Tuli Sensorineural (SNHL) pada telinga yang sakit (sisi kontralateral).", category: "Pendengaran" },
+            { question: "Interpretasi Tes Weber: Tidak ada lateralisasi?", answer: "Hasil Normal (terdengar sama kuat) atau Tuli Sensorineural yang simetris.", category: "Pendengaran" },
+            { question: "Apa yang dibandingkan pada Tes Schwabach?", answer: "Membandingkan hantaran tulang (BC) subjek yang diperiksa dengan pemeriksa (yang pendengarannya normal).", category: "Pendengaran" },
+            { question: "Bagaimana cara melakukan Tes Schwabach?", answer: "1. Getarkan garputala, letakkan di prosesus mastoid subjek.\n2. Setelah subjek tidak dengar, pindahkan ke prosesus mastoid pemeriksa.", category: "Pendengaran" },
+            { question: "Apa yang dimaksud 'Pemeriksaan Silang' pada Tes Schwabach?", answer: "Melakukan tes sebaliknya: dari pemeriksa dulu, baru ke subjek (untuk konfirmasi hasil memanjang).", category: "Pendengaran" },
+            { question: "Interpretasi Tes Schwabach: Memanjang?", answer: "BC Subjek > BC Pemeriksa (Subjek masih dengar saat pemeriksa sudah tidak dengar).", category: "Pendengaran" },
+            { question: "Apa arti klinis Tes Schwabach Memanjang?", answer: "Tuli Konduktif (CHL).", category: "Pendengaran" },
+            { question: "Interpretasi Tes Schwabach: Memendek?", answer: "BC Subjek < BC Pemeriksa (Subjek sudah tidak dengar saat pemeriksa masih dengar).", category: "Pendengaran" },
+            { question: "Apa arti klinis Tes Schwabach Memendek?", answer: "Tuli Sensorineural (SNHL).", category: "Pendengaran" },
+            { question: "Interpretasi Tes Schwabach: Normal / Sama dengan?", answer: "BC Subjek = BC Pemeriksa.", category: "Pendengaran" },
+            { question: "Interpretasi Gabungan: Telinga NORMAL", answer: "Rinne: Positif (+)\nWeber: Tidak ada lateralisasi\nSchwabach: Sama dengan pemeriksa", category: "Pendengaran" },
+            { question: "Interpretasi Gabungan: Tuli Konduktif (CHL)", answer: "Rinne: Negatif (-)\nWeber: Lateralisasi ke telinga yang SAKIT\nSchwabach: Memanjang", category: "Pendengaran" },
+            { question: "Interpretasi Gabungan: Tuli Sensorineural (SNHL)", answer: "Rinne: Positif (+)\nWeber: Lateralisasi ke telinga yang SEHAT\nSchwabach: Memendek", category: "Pendengaran" },
+            { question: "Catatan: Pada CHL < 30 dB, Tes Rinne bisa...", answer: "Bernilai POSITIF (palsu). Ini adalah limitasi tes Rinne.", category: "Pendengaran" }
+        ];
+
+
+        // --- LOGIKA APLIKASI ---
+
+        // Variabel Status
+        let currentCardIndex = 0;
+        let activeCards = [...flashcardsData]; // Salinan data yang akan di-filter atau di-shuffle
+        let isFlipped = false;
+
+        // Referensi DOM
+        const cardContainer = document.getElementById('cardContainer');
+        const cardInner = document.getElementById('cardInner');
+        const cardCategory = document.getElementById('cardCategory');
+        const cardQuestion = document.getElementById('cardQuestion');
+        const cardAnswer = document.getElementById('cardAnswer');
+        
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const shuffleBtn = document.getElementById('shuffleBtn');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const cardCounter = document.getElementById('cardCounter');
+
+        // Fungsi untuk menampilkan kartu
+        function showCard(index) {
+            if (activeCards.length === 0) {
+                // Tampilkan jika tidak ada kartu
+                cardCategory.textContent = "Kosong";
+                cardQuestion.textContent = "Tidak ada kartu untuk kategori ini.";
+                cardAnswer.textContent = "Silakan pilih kategori lain.";
+                cardCounter.textContent = "0 / 0";
+                return;
+            }
+
+            // Pastikan index valid
+            if (index < 0) {
+                currentCardIndex = activeCards.length - 1;
+            } else if (index >= activeCards.length) {
+                currentCardIndex = 0;
+            }
+            
+            const card = activeCards[currentCardIndex];
+            
+            // Isi konten kartu
+            cardCategory.textContent = card.category;
+            cardQuestion.textContent = card.question;
+            cardAnswer.textContent = card.answer;
+
+            // Update counter
+            cardCounter.textContent = `${currentCardIndex + 1} / ${activeCards.length}`;
+
+            // Reset flip
+            if (isFlipped) {
+                cardContainer.classList.remove('is-flipped');
+                isFlipped = false;
+            }
+        }
+
+        // Fungsi untuk memuat kartu (awal atau setelah filter/shuffle)
+        function loadCards(cards) {
+            activeCards = [...cards];
+            currentCardIndex = 0;
+            showCard(currentCardIndex);
+        }
+
+        // Fungsi Shuffle (Fisher-Yates)
+        function shuffleCards(cards) {
+            let
+                currentIndex = cards.length,
+                randomIndex;
+            
+            // Selama masih ada elemen untuk di-shuffle
+            while (currentIndex !== 0) {
+                // Ambil elemen yang tersisa
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                
+                // Tukar dengan elemen saat ini
+                [cards[currentIndex], cards[randomIndex]] = [cards[randomIndex], cards[currentIndex]];
+            }
+            return cards;
+        }
+
+        // --- Event Listeners ---
+
+        // Balik kartu saat diklik
+        cardContainer.addEventListener('click', () => {
+            isFlipped = !isFlipped;
+            cardContainer.classList.toggle('is-flipped');
+        });
+
+        // Tombol Berikutnya
+        nextBtn.addEventListener('click', () => {
+            currentCardIndex++;
+            showCard(currentCardIndex);
+        });
+
+        // Tombol Sebelumnya
+        prevBtn.addEventListener('click', () => {
+            currentCardIndex--;
+            showCard(currentCardIndex);
+        });
+
+        // Tombol Shuffle
+        shuffleBtn.addEventListener('click', () => {
+            loadCards(shuffleCards(activeCards));
+        });
+
+        // Filter Kategori
+        categoryFilter.addEventListener('change', (e) => {
+            const category = e.target.value;
+            if (category === "Semua") {
+                loadCards(flashcardsData);
+            } else {
+                const filtered = flashcardsData.filter(card => card.category === category);
+                loadCards(filtered);
+            }
+        });
+
+        // Inisialisasi aplikasi saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCards(flashcardsData);
+        });
+
+    </script>
+</body>
+</html>
+

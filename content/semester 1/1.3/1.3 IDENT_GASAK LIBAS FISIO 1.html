@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcard Fisiologi - Refleks</title>
+    <!-- Impor Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Impor Font Komik dari Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* CSS Kustom untuk Tema Komik */
+        body {
+            font-family: 'Comic Neue', cursive;
+            background-color: #f0f8ff; /* Latar belakang biru muda */
+        }
+
+        /* Judul dengan font 'Bangers' */
+        .comic-title {
+            font-family: 'Bangers', cursive;
+            font-size: 3.5rem;
+            color: #d90429; /* Merah menyala */
+            text-shadow: 3px 3px 0px #000; /* Bayangan hitam tebal */
+            -webkit-text-stroke: 1px #000; /* Garis tepi hitam */
+            letter-spacing: 2px;
+            text-align: center;
+        }
+
+        /* Kontainer untuk efek flip 3D */
+        .flashcard-container {
+            perspective: 1500px;
+        }
+
+        /* Kartu flip */
+        .flashcard {
+            position: relative;
+            width: 100%;
+            height: 350px;
+            transform-style: preserve-3d;
+            transition: transform 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Kelas untuk membalik kartu */
+        .flashcard.is-flipped {
+            transform: rotateY(180deg);
+        }
+
+        /* Bagian depan dan belakang kartu */
+        .flashcard-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+            text-align: center;
+            border: 4px solid #000000;
+            border-radius: 16px;
+            box-shadow: 6px 6px 0px #000000; /* Bayangan tebal */
+        }
+
+        /* Bagian depan (Pertanyaan) */
+        .flashcard-front {
+            background-color: #ffffff; /* Putih */
+        }
+
+        /* Bagian belakang (Jawaban) */
+        .flashcard-back {
+            background-color: #ffd166; /* Kuning cerah */
+            transform: rotateY(180deg);
+        }
+
+        .card-label {
+            font-family: 'Bangers', cursive;
+            font-size: 2rem;
+            letter-spacing: 1px;
+        }
+
+        .card-content {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-top: 12px;
+        }
+
+        /* Tombol dengan gaya komik */
+        .comic-button {
+            font-family: 'Bangers', cursive;
+            font-size: 1.5rem;
+            padding: 12px 24px;
+            border: 3px solid #000000;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 4px 4px 0px #000000;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .comic-button:hover:not(:disabled) {
+            transform: translateY(-2px) translateX(-2px);
+            box-shadow: 6px 6px 0px #000000;
+        }
+
+        .comic-button:active:not(:disabled) {
+            transform: translateY(2px) translateX(2px);
+            box-shadow: 2px 2px 0px #000000;
+        }
+
+        .comic-button:disabled {
+            background-color: #cccccc;
+            color: #666666;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        #prevBtn, #nextBtn {
+            background-color: #06d6a0; /* Hijau mint */
+        }
+
+        #flipBtn {
+            background-color: #ef476f; /* Pink */
+        }
+
+        /* Penghitung kartu */
+        .card-counter {
+            font-family: 'Bangers', cursive;
+            font-size: 2rem;
+            color: #118ab2; /* Biru */
+            margin-top: 16px;
+            text-shadow: 2px 2px 0px #fff;
+            -webkit-text-stroke: 1px #000;
+        }
+
+        /* CSS Baru untuk Dropdown Kategori */
+        .comic-select {
+            font-family: 'Bangers', cursive;
+            font-size: 1.25rem;
+            padding: 10px 16px;
+            border: 3px solid #000000;
+            border-radius: 12px;
+            background-color: #ffffff;
+            box-shadow: 4px 4px 0px #000000;
+            cursor: pointer;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.2em;
+            padding-right: 3rem; /* Ruang untuk ikon panah */
+        }
+        .comic-select:focus {
+            outline: none;
+            box-shadow: 6px 6px 0px #000000;
+        }
+
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4">
+
+    <h1 class="comic-title mb-8">GASAK LIBAS FISIOX 1</h1>
+
+    <div class="w-full max-w-lg">
+        <!-- Kontrol Kategori dan Acak -->
+        <div class="flex flex-col sm:flex-row justify-center sm:justify-between items-center mb-6 space-y-4 sm:space-y-0 sm:space-x-4">
+            <select id="categorySelect" class="comic-select w-full sm:w-auto">
+                <option value="all">Semua Kategori</option>
+                <option value="dasar">Dasar-Dasar Refleks</option>
+                <option value="patella">Refleks Patella</option>
+                <option value="pupil">Refleks Cahaya Pupil</option>
+            </select>
+            <button id="shuffleBtn" class="comic-button bg-blue-500 w-full sm:w-auto">Acak!</button>
+        </div>
+
+        <!-- Kontainer Flashcard -->
+        <div id="flashcard-container" class="flashcard-container mb-6">
+            <div id="flashcard" class="flashcard">
+                <!-- Sisi Depan (Pertanyaan) -->
+                <div class="flashcard-face flashcard-front">
+                    <div>
+                        <span class="card-label" style="color: #0077b6;">Pertanyaan:</span>
+                        <p id="card-front-content" class="card-content">Memuat...</p>
+                    </div>
+                </div>
+                <!-- Sisi Belakang (Jawaban) -->
+                <div class="flashcard-face flashcard-back">
+                    <div>
+                        <span class="card-label" style="color: #d00000;">Jawaban:</span>
+                        <p id="card-back-content" class="card-content">Memuat...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tombol Navigasi -->
+        <div class="flex justify-center space-x-4 mb-4">
+            <button id="flipBtn" class="comic-button">Balik!</button>
+        </div>
+        <div class="flex justify-between">
+            <button id="prevBtn" class="comic-button">ZAP!</button>
+            <button id="nextBtn" class="comic-button">POW!</button>
+        </div>
+
+        <!-- Penghitung Kartu -->
+        <div id="card-counter" class="card-counter text-center">
+            1 / 52
+        </div>
+    </div>
+
+    <script>
+        // --- Data Flashcard (Berdasarkan Modul) ---
+        const allFlashcards = [
+            { q: "Apa definisi dari refleks?", a: "Suatu respons involunter (tidak disadari) terhadap sebuah stimulus.", c: "dasar" },
+            { q: "Sebutkan 5 komponen lengkung refleks!", a: "1. Organ reseptor\n2. Neuron aferen\n3. Pusat refleks\n4. Neuron eferen\n5. Organ efektor", c: "dasar" },
+            { q: "Apa perbedaan refleks fisiologis dan patologis?", a: "Fisiologis: Muncul pada orang normal. \nPatologis: Muncul pada penderita kerusakan sistem saraf (tidak ada pada orang normal).", c: "dasar" },
+            { q: "Di mana letak pusat refleks saraf?", a: "Di batang otak dan di medulla spinalis.", c: "dasar" },
+            { q: "Apa itu refleks kranial? Berikan contoh!", a: "Refleks yang diproses di batang otak. Contoh: Refleks pupil, refleks cahaya, refleks berkedip, refleks muntah, refleks menelan.", c: "dasar" },
+            { q: "Apa itu refleks spinal? Berikan contoh!", a: "Refleks yang diproses di medulla spinalis. Contoh: Refleks biceps, triceps, patella, achilles.", c: "dasar" },
+            { q: "Apa yang dimaksud dengan refleks monosinaptik?", a: "Refleks yang jarasnya hanya memiliki SATU sinaps, yaitu langsung antara neuron sensorik dan neuron motorik.", c: "dasar" },
+            { q: "Apa yang dimaksud dengan refleks polisinaptik?", a: "Refleks yang jarasnya memiliki lebih dari satu sinaps, melibatkan satu atau lebih interneuron di antara neuron sensorik dan motorik.", c: "dasar" },
+            { q: "Apa yang dimaksud dengan 'waktu laten' (latency) refleks?", a: "Waktu tunda antara pemberian stimulus dan munculnya respons. Ini adalah waktu yang dibutuhkan impuls untuk berjalan di sepanjang lengkung refleks.", c: "dasar" },
+            { q: "Apa yang mempengaruhi kekuatan respon refleks?", a: "Kekuatan stimulus (respon bisa bersifat 'graded'/bertingkat) dan tonus otot yang sedang diperiksa.", c: "dasar" },
+            { q: "Apa artinya jika 'zona refleks meluas'?", a: "Ini adalah tanda refleks yang meningkat (hiperaktif), di mana stimulus di area sekitar titik normal juga dapat memicu respons.", c: "dasar" },
+            { q: "Refleks patella adalah contoh dari refleks apa?", a: "Refleks regang (stretch reflex).", c: "patella" },
+            { q: "Apa fungsi dari refleks regang?", a: "Mempertahankan panjang otot agar tetap stabil ketika mengalami peregangan mendadak.", c: "patella" },
+            { q: "Apa nama reseptor yang berperan dalam refleks regang?", a: "Muscle spindle (reseptor regang).", c: "patella" },
+            { q: "Di mana lokasi muscle spindle?", a: "Terletak pada serabut intrafusal otot rangka (contoh: otot quadriceps femoris).", c: "patella" },
+            { q: "Jelaskan mekanisme umum refleks regang!", a: "Otot teregang -> muscle spindle mendeteksi -> impuls saraf aferen -> sinaps di medulla spinalis -> neuron motorik alfa -> impuls eferen -> otot berkontraksi.", c: "patella" },
+            { q: "Apa yang dimaksud dengan inhibisi resiprok?", a: "Mekanisme di mana saat satu otot (agonis) berkontraksi, otot lawannya (antagonis) secara otomatis dihambat agar tidak ikut berkontraksi.", c: "patella" },
+            { q: "Jaras sensorik (aferen) refleks patella berpusat di segmen medulla spinalis mana?", a: "Medula spinalis segmen L2-L4.", c: "patella" },
+            { q: "Mengapa refleks patella disebut refleks monosinaptik?", a: "Karena hanya melibatkan satu sinaps antara neuron sensorik dan neuron motorik.", c: "patella" },
+            { q: "Otot apa yang berkontraksi saat refleks patella?", a: "Otot quadriceps femoris.", c: "patella" },
+            { q: "Gerakan apa yang dihasilkan dari refleks patella?", a: "Ekstensi tungkai bawah (lutut).", c: "patella" },
+            { q: "Otot apa yang menjadi antagonis pada refleks patella dan bagaimana nasibnya?", a: "Otot hamstring. Otot ini dihambat (relaksasi) oleh interneuron inhibitor.", c: "patella" },
+            { q: "Alat apa yang digunakan untuk memeriksa refleks patella?", a: "Palu Refleks (Reflex Hammer).", c: "patella" },
+            { q: "Bagaimana posisi pasien saat pemeriksaan refleks patella?", a: "Pasien duduk santai dengan tungkai menjuntai.", c: "patella" },
+            { q: "Apa respon normal yang diharapkan saat tendon patella diketuk?", a: "Pemeriksa merasakan kontraksi otot quadriceps dan timbul gerakan ekstensi tungkai bawah.", c: "patella" },
+            { q: "Sebutkan skala interpretasi hasil pemeriksaan refleks fisiologis!", a: "0: Tidak ada/hilang\n+/1+: Hipoaktif\n++/2+: Normal\n+++/3+: Hiperaktif tanpa clonus\n++++/4+: Hiperaktif dengan clonus", c: "patella" },
+            { q: "Apa interpretasi untuk hasil '++/2+'?", a: "Normal.", c: "patella" },
+            { q: "Apa interpretasi untuk hasil '0'?", a: "Tidak ada atau hilang.", c: "patella" },
+            { q: "Apa interpretasi untuk hasil '++++/4+'?", a: "Hiperaktif dengan clonus.", c: "patella" },
+            { q: "Apa itu clonus?", a: "Kontraksi berulang pada otot ketika terjadi peregangan, akibat gangguan saraf.", c: "patella" },
+            { q: "Sistem saraf apa yang mengatur diameter pupil?", a: "Sistem saraf simpatis dan parasimpatis.", c: "pupil" },
+            { q: "Apa efek rangsangan SARAF PARASIMPATIS pada pupil?", a: "Menyebabkan kontraksi otot sfingter pupil, sehingga terjadi MIOSIS (pupil mengecil).", c: "pupil" },
+            { q: "Apa efek rangsangan SARAF SIMPATIS pada pupil?", a: "Menyebabkan kontraksi otot radial pupil, sehingga terjadi MIDRIASIS (pupil membesar/dilatasi).", c: "pupil" },
+            { q: "Miosis adalah...", a: "Diameter pupil mengecil.", c: "pupil" },
+            { q: "Midriasis adalah...", a: "Diameter pupil membesar atau berdilatasi.", c: "pupil" },
+            { q: "Sebutkan urutan jaras AFEREN (sensorik) refleks cahaya pupil!", a: "Fotoreseptor (Retina) -> Nervus Optikus (N. II) -> Kiasma Optikum -> Traktus Optikus -> Nukleus Pretektal (di batang otak).", c: "pupil" },
+            { q: "Dari Nukleus Pretektal, sinyal refleks cahaya diteruskan ke mana?", a: "Ke Nukleus Edinger-Westphal di sisi ipsilateral (sisi yang sama) DAN kontralateral (sisi berlawanan).", c: "pupil" },
+            { q: "Sebutkan urutan jaras EFEREN (motorik) refleks cahaya pupil!", a: "Nukleus Edinger-Westphal -> Nervus Okulomotorius (N. III) -> Ganglion Siliaris -> Otot Sfingter Pupil.", c: "pupil" },
+            { q: "Apa respon motorik akhir dari refleks cahaya pupil?", a: "Kontraksi otot sfingter pupil, menyebabkan Miosis (pupil mengecil).", c: "pupil" },
+            { q: "Apa saja dua jenis refleks pupil terhadap cahaya?", a: "Refleks pupil langsung dan refleks pupil konsensual (tidak langsung).", c: "pupil" },
+            { q: "Apa itu refleks pupil LANGSUNG?", a: "Miosis (konstriksi) yang terjadi pada mata yang disinari cahaya secara langsung.", c: "pupil" },
+            { q: "Apa itu refleks pupil KONSENSUAL?", a: "Miosis (konstriksi) yang terjadi pada mata yang TIDAK disinari, namun ikut berkontraksi bersamaan dengan mata yang disinari.", c: "pupil" },
+            { q: "Apa dasar fisiologis terjadinya refleks konsensual?", a: "Karena Nukleus Pretektal mengirimkan impuls ke KEDUA Nukleus Edinger-Westphal (kanan dan kiri) secara bersamaan.", c: "pupil" },
+            { q: "Apa fungsi dari refleks pupil terhadap cahaya?", a: "Melindungi retina dari paparan cahaya yang berlebihan dan membantu mata beradaptasi terhadap perubahan intensitas cahaya.", c: "pupil" },
+            { q: "Berapa rentang diameter normal pupil?", a: "Bervariasi dari sekitar 1,5 mm (miosis) hingga sekitar 8 mm (midriasis).", c: "pupil" },
+            { q: "Alat apa yang digunakan untuk memeriksa refleks cahaya pupil?", a: "Penlight atau sumber cahaya lain.", c: "pupil" },
+            { q: "Bagaimana kondisi ruangan saat pemeriksaan refleks cahaya?", a: "Ruangan dengan cahaya yang redup.", c: "pupil" },
+            { q: "Mengapa subjek diminta untuk melihat jauh saat pemeriksaan refleks cahaya?", a: "Agar tidak terjadi akomodasi dan otot sfingter pupil dalam keadaan relaksasi.", c: "pupil" },
+            { q: "Bagaimana cara memeriksa refleks cahaya LANGSUNG?", a: "Sinari mata dari arah lateral. Amati apakah pupil mata yang disinari tersebut mengalami miosis.", c: "pupil" },
+            { q: "Bagaimana cara memeriksa refleks cahaya KONSENSUAL?", a: "Beri penghalang di antara kedua mata. Sinari satu mata, tetapi amati respon pupil pada mata yang KONTRA-LATERAL (yang tidak disinari).", c: "pupil" },
+            { q: "Apa hasil normal dari refleks cahaya konsensual?", a: "Pupil mata yang tidak disinari (kontralateral) juga akan mengalami miosis.", c: "pupil" }
+        ];
+
+        // --- Variabel Global ---
+        let currentCardIndex = 0;
+        let isFlipped = false;
+        let filteredFlashcards = []; // Array untuk menyimpan kartu yang difilter
+
+        // --- Elemen DOM ---
+        const cardContainer = document.getElementById('flashcard-container');
+        const card = document.getElementById('flashcard');
+        const cardFront = document.getElementById('card-front-content');
+        const cardBack = document.getElementById('card-back-content');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const flipBtn = document.getElementById('flipBtn');
+        const cardCounter = document.getElementById('card-counter');
+        const categorySelect = document.getElementById('categorySelect');
+        const shuffleBtn = document.getElementById('shuffleBtn');
+
+        // --- Fungsi Acak (Fisher-Yates) ---
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // --- Fungsi untuk Memfilter dan Menampilkan Kartu ---
+        function filterAndDisplayCards() {
+            const selectedCategory = categorySelect.value;
+            
+            if (selectedCategory === 'all') {
+                filteredFlashcards = [...allFlashcards];
+            } else {
+                filteredFlashcards = allFlashcards.filter(card => card.c === selectedCategory);
+            }
+            
+            currentCardIndex = 0;
+            updateCard();
+        }
+
+        // --- Fungsi untuk Memperbarui Tampilan Kartu ---
+        function updateCard() {
+            // Cek jika kategori kosong
+            if (filteredFlashcards.length === 0) {
+                cardFront.innerText = "Tidak ada kartu di kategori ini.";
+                cardBack.innerText = "Silakan pilih kategori lain.";
+                cardCounter.innerText = "0 / 0";
+                prevBtn.disabled = true;
+                nextBtn.disabled = true;
+                if (isFlipped) flipCard(); // Pastikan kartu menghadap depan
+                return;
+            }
+
+            const currentCard = filteredFlashcards[currentCardIndex];
+            
+            // Setel teks untuk depan dan belakang
+            cardFront.innerText = currentCard.q;
+            cardBack.innerText = currentCard.a;
+            
+            // Perbarui penghitung
+            cardCounter.innerText = `${currentCardIndex + 1} / ${filteredFlashcards.length}`;
+            
+            // Nonaktifkan tombol di awal atau akhir
+            prevBtn.disabled = currentCardIndex === 0;
+            nextBtn.disabled = currentCardIndex === filteredFlashcards.length - 1;
+            
+            // Balikkan kartu ke depan jika sedang terbalik
+            if (isFlipped) {
+                flipCard();
+            }
+        }
+
+        // --- Fungsi untuk Membalik Kartu ---
+        function flipCard() {
+            isFlipped = !isFlipped;
+            card.classList.toggle('is-flipped');
+        }
+
+        // --- Fungsi untuk Kartu Berikutnya ---
+        function nextCard() {
+            if (currentCardIndex < filteredFlashcards.length - 1) {
+                currentCardIndex++;
+                updateCard();
+            }
+        }
+
+        // --- Fungsi untuk Kartu Sebelumnya ---
+        function prevCard() {
+            if (currentCardIndex > 0) {
+                currentCardIndex--;
+                updateCard();
+            }
+        }
+
+        // --- Event Listeners ---
+        flipBtn.addEventListener('click', flipCard);
+        nextBtn.addEventListener('click', nextCard);
+        prevBtn.addEventListener('click', prevCard);
+        categorySelect.addEventListener('change', filterAndDisplayCards);
+        shuffleBtn.addEventListener('click', () => {
+            shuffleArray(filteredFlashcards);
+            currentCardIndex = 0;
+            updateCard();
+        });
+
+        // --- Inisialisasi Kartu Pertama ---
+        filterAndDisplayCards(); // Ganti updateCard() dengan ini
+
+    </script>
+</body>
+</html>

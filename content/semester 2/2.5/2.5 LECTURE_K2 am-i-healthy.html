@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Am I Healthy? — Quiz Blok 2.5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f8f8f5;--bg2:#f1f1ed;--bg3:#e7e7e2;--bg4:#dcdcd6;
+  --border:rgba(40,55,110,.10);--border2:rgba(40,55,110,.20);
+  --text:#161b2e;--text2:#384068;--text3:#7c85a8;
+  --green:#1f7a4a;--greenbg:rgba(31,122,74,.09);--greenb:rgba(31,122,74,.25);
+  --gold:#7a6010;--goldbg:rgba(122,96,16,.09);--goldb:rgba(122,96,16,.28);
+  --red:#b03030;--redbg:rgba(176,48,48,.08);--redb:rgba(176,48,48,.25);
+  --blue:#1a4faa;--bluebg:rgba(26,79,170,.09);--blueb:rgba(26,79,170,.28);
+  --purp:#4433a0;--purpbg:rgba(68,51,160,.08);--purpb:rgba(68,51,160,.25);
+  --teal:#136ba8;--tealbg:rgba(19,107,168,.08);--tealb:rgba(19,107,168,.25);
+  --r:10px;--rl:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.6;min-height:100vh}
+.app{max-width:900px;margin:0 auto;padding:0 16px 60px}
+header{padding:40px 0 28px;text-align:center}
+.eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--text3);text-transform:uppercase;margin-bottom:10px}
+h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(30px,6vw,54px);letter-spacing:-.03em;line-height:1;margin-bottom:10px}
+h1 span{color:var(--red)}
+.sub{font-size:13px;color:var(--text2);max-width:500px;margin:0 auto}
+.main-tabs{display:flex;gap:3px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:24px}
+.main-tab{flex:1;padding:9px 6px;border-radius:9px;border:none;background:transparent;color:var(--text3);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .18s}
+.main-tab:hover{color:var(--text)}
+.main-tab.active{background:var(--green);color:#fff;font-weight:600}
+.main-panel{display:none}
+.main-panel.active{display:block;animation:fi .2s ease}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.sub-tabs{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:4px;margin-bottom:20px}
+.sub-tab{padding:8px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text3);font-family:'DM Mono',monospace;font-size:10.5px;cursor:pointer;transition:all .18s;text-align:center;line-height:1.4}
+.sub-tab:hover{background:var(--bg3);color:var(--text2);border-color:var(--border2)}
+.sub-tab.active{background:var(--green);color:#fff;border-color:var(--text);font-weight:600}
+.sub-panel{display:none}
+.sub-panel.active{display:block;animation:fi .18s ease}
+.sec-h{font-family:'Syne',sans-serif;font-weight:700;font-size:14.5px;color:var(--text);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.divider{height:1px;background:var(--border);margin:20px 0}
+.note{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:0 var(--r) var(--r) 0;padding:10px 14px;font-size:12.5px;color:var(--text2);line-height:1.65;margin-bottom:10px}
+.note strong{color:var(--text)}
+.note.blue{border-left-color:var(--blue)}
+.note.green{border-left-color:var(--green)}
+.note.red{border-left-color:var(--red)}
+.note.purp{border-left-color:var(--purp)}
+.note.teal{border-left-color:var(--teal)}
+.dtable-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:14px}
+.dtable-wrap table{width:100%;border-collapse:collapse;font-size:12px}
+.dtable-wrap thead tr{background:var(--bg3)}
+.dtable-wrap th{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.05em;color:var(--text3);font-weight:600;padding:8px 12px;text-align:left;border-bottom:1px solid var(--border)}
+.dtable-wrap td{padding:7px 12px;border-bottom:1px solid var(--border);font-family:'DM Mono',monospace;font-size:11px;color:var(--text2)}
+.dtable-wrap td:first-child{color:var(--text);font-weight:600}
+.dtable-wrap tr:last-child td{border-bottom:none}
+.dtable-wrap tr:nth-child(even){background:rgba(40,55,110,.02)}
+.formula{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;font-family:'DM Mono',monospace;font-size:12px;color:var(--text);margin:8px 0;line-height:1.8}
+.formula .fkey{color:var(--text3);margin-right:6px}
+.ind-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:4px}
+.ind-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;position:relative;overflow:hidden}
+.ind-card .stripe{position:absolute;top:0;left:0;width:3px;height:100%}
+.ind-card .ind-name{font-family:'Syne',sans-serif;font-size:12.5px;font-weight:700;margin-bottom:6px}
+.ind-card .ind-desc{font-size:12px;color:var(--text2);margin-bottom:8px;line-height:1.6}
+.ind-table{width:100%;border-collapse:collapse}
+.ind-table td{font-family:'DM Mono',monospace;font-size:10.5px;padding:3px 0;border-bottom:1px solid var(--border)}
+.ind-table tr:last-child td{border-bottom:none}
+.ind-table td:first-child{color:var(--text3);width:120px}
+.ind-table td:last-child{font-weight:600;color:var(--text)}
+/* QUIZ */
+.qconfig{text-align:center;padding:28px 0}
+.qconfig-title{font-family:'Syne',sans-serif;font-weight:700;font-size:18px;margin-bottom:6px}
+.qconfig-sub{font-size:13px;color:var(--text2);margin-bottom:22px}
+.cfg-grid{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:26px}
+.cfg-btn{padding:8px 16px;border-radius:20px;border:2px solid var(--border2);background:var(--bg2);color:var(--text3);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;transition:all .18s}
+.cfg-btn:hover{color:var(--text2)}
+.cfg-btn.sel{background:var(--green);color:#fff;border-color:var(--text);font-weight:600}
+.start-btn{padding:12px 34px;border-radius:var(--r);border:none;background:var(--green);color:var(--bg);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.02em;transition:all .18s}
+.start-btn:hover{background:var(--text)}
+.qheader{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.qnum-display{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);white-space:nowrap}
+.qnum-display strong{color:var(--text);font-size:15px}
+.qscore-display{margin-left:auto;font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);white-space:nowrap}
+.qscore-display strong{color:var(--green);font-size:15px}
+.qtype-pill{display:inline-block;padding:3px 10px;border-radius:10px;font-family:'DM Mono',monospace;font-size:10px;font-weight:600}
+.qcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:20px 22px;margin-bottom:12px}
+.qscen{font-size:13px;color:var(--text2);margin-bottom:10px;line-height:1.65}
+.qdata{font-family:'DM Mono',monospace;font-size:12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:12px;line-height:2}
+.qdata .dv{font-weight:700;color:var(--text)}
+.qdata .da{font-size:10.5px;color:var(--text3);margin-left:4px}
+.qtext{font-size:14px;font-weight:600;color:var(--text);line-height:1.55}
+.opts{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.opt{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-radius:var(--r);border:1.5px solid var(--border2);background:var(--bg);color:var(--text);text-align:left;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.5;transition:all .15s;width:100%}
+.opt:hover:not(:disabled){background:var(--bg3);border-color:rgba(40,55,110,.3)}
+.opt:disabled{cursor:default}
+.opt-key{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;min-width:22px;height:22px;border-radius:6px;background:var(--bg3);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;color:var(--text3);transition:all .15s}
+.opt.correct{background:var(--bluebg);border-color:var(--blueb)}
+.opt.correct .opt-key{background:var(--blue);color:#fff;border-color:var(--blue)}
+.opt.wrong{background:var(--redbg);border-color:var(--redb)}
+.opt.wrong .opt-key{background:var(--red);color:#fff;border-color:var(--red)}
+.opt.reveal{background:var(--bluebg);border-color:var(--blueb);opacity:.75}
+.opt.reveal .opt-key{background:var(--blue);color:#fff;border-color:var(--blue)}
+.expbox{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:12px;font-size:12.5px;color:var(--text2);line-height:1.72;display:none}
+.expbox.show{display:block;animation:fi .2s ease}
+.expbox strong{color:var(--text)}
+.actrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.next-btn{padding:10px 24px;border-radius:var(--r);border:none;background:var(--text);color:var(--bg);font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .18s;display:none}
+.next-btn:hover{background:var(--red)}
+.end-btn{padding:10px 18px;border-radius:var(--r);border:1px solid var(--redb);background:transparent;color:var(--red);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;transition:all .18s;margin-left:auto}
+.end-btn:hover{background:var(--redbg)}
+.results-wrap{text-align:center;padding:28px 12px}
+.res-big{font-family:'Syne',sans-serif;font-size:64px;font-weight:800;color:var(--text);line-height:1;margin-bottom:4px}
+.res-sub{font-family:'DM Mono',monospace;font-size:13px;color:var(--text3);margin-bottom:18px}
+.res-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:20px;text-align:left}
+.res-stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:11px 14px}
+.res-stat .rv{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--text);margin-bottom:2px}
+.res-stat .rl{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)}
+.retry-btn{padding:12px 32px;border-radius:var(--r);border:none;background:var(--text);color:var(--bg);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .18s;margin-bottom:20px}
+.retry-btn:hover{background:var(--red)}
+footer{text-align:center;padding-top:36px;font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="eyebrow">Gaya Hidup Sehat · Blok 2.5 · FK Unsoed</div>
+  <h1>Am I <span style="color:var(--green)">Healthy?</span></h1>
+  <p class="sub">Quiz klinik pengantar gaya hidup sehat — konsep SEHATI, nutrisi, pesan gizi seimbang & FITT.</p>
+</header>
+
+<div class="main-tabs">
+  <button class="main-tab active" onclick="switchMain('materi',this)">📋 Materi</button>
+  <button class="main-tab" onclick="switchMain('quiz',this)">🎯 Quiz</button>
+</div>
+
+<!-- MATERI -->
+<div class="main-panel active" id="mp-materi">
+<div class="sub-tabs">
+<button class="sub-tab active" onclick="switchSub('tab-konsepdasarsehati',this)">Konsep Dasar & Sehati</button>
+<button class="sub-tab " onclick="switchSub('tab-polamakangiziseimbang',this)">Pola Makan & Gizi Seimbang</button>
+<button class="sub-tab " onclick="switchSub('tab-aktivitasfisikvitalforce',this)">Aktivitas Fisik & Vital Force</button>
+</div>
+
+<div class="sub-panel active" id="tab-konsepdasarsehati">
+<div class="sec-h">PENGANTAR HEALTHY LIFE STYLE</div>
+<div class="note">
+Oleh: Diah Krisnansari<br>
+Departemen IKMIKK FK UNSOED
+</div>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Tujuan</div>
+<ul>
+<li>Memahami konsep sehat</li>
+<li>Memahami pola konsumsi dan pola hidup sehat</li>
+<li>Memahami menu gizi seimbang</li>
+<li>Memahami Aturan Isi Piringku (The Rule of Plate)</li>
+<li>Memahami Energi vital manusia</li>
+</ul>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Visi KEMENKES RI</div>
+<div class="note blue">
+Terwujudnya Indonesia yang Berdaulat, Mandiri dan Berkepribadian Berlandaskan Gotong Royong (INDONESIA SEHAT).
+</div>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Konsepsi Kesehatan</div>
+<ul>
+<li><strong>WHO, 1948</strong>: Keadaan sejahtera fisik, mental sosial tanpa ada keluhan sama sekali (cacat / Sakit) (WHO, 2015).</li>
+<li><strong>UU RI N0.23/1992</strong>: Keadaan sejahtera dari badan, jiwa dan sosial yang memungkinkan setiap orang hidup produktif secara sosial ekonomis.</li>
+</ul>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Health</div>
+<ul>
+<li>Kesehatan adalah aspek alami dari vitalitas kehidupan.</li>
+<li>Masyarakat India kuno meyakini: kehidupan yang penuh semangat, sehat, bahagia, dan kreatif hingga seratus tahun lamanya bergantung pada keharmonisan total antara cara hidup dengan Alam serta warisan spiritual kehidupan.</li>
+<li><strong>Gaya Hidup Sehat (Healthy Life Style)</strong>: suatu cara hidup yang menurunkan risiko penyakit serius atau kematian dini (Kumar, 2017).</li>
+</ul>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Peran Gaya Hidup Sehat</div>
+<p>Lifestyle plays an important role in staying healthy strictly and consistently to maintain our physical fitness (Farhud, 2015):</p>
+<ol>
+<li>Eating natural</li>
+<li>Whole food</li>
+<li>Komitmen untuk menghindari konsumsi makanan tinggi lemak dan minyak berlebih</li>
+<li>Kebugaran fisik, membantu melindungi tubuh kita dari penyakit dan menjaga kita tetap kuat serta sehat di masa depan</li>
+<li>Managing your weight</li>
+</ol>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Gaya Hidup</div>
+<ul>
+<li><strong>Gaya hidup</strong> → cara yang digunakan oleh orang, kelompok, dan bangsa, dibentuk dalam teks geografis, ekonomi, politik, budaya, dan agama tertentu.</li>
+<li>Gaya hidup merujuk pada karakteristik penduduk suatu wilayah pada waktu dan tempat tertentu.</li>
+<li>Mencakup perilaku sehari-hari dan fungsi individu dalam pekerjaan, aktivitas, kesenangan, dan diet.</li>
+<li>Gaya hidup sebagai faktor penting Kesehatan menurut WHO, <strong>60% faktor kesehatan individu dan kualitas hidup berkorelasi dengan gaya hidup</strong> (Farhud, 2015).</li>
+</ul>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Perubahan Kehidupan</div>
+<ul>
+<li>Saat ini perubahan besar telah terjadi dalam kehidupan semua orang.</li>
+<li>Malnutrisi, pola makan tidak sehat, merokok, konsumsi alkohol, penyalahgunaan narkoba, stres dan sebagainya, adalah presentasi dari gaya hidup yang tidak sehat.</li>
+<li>→ bentuk gaya hidup yang dominan.</li>
+<li>→ Kehidupan menghadapi tantangan baru seperti teknologi internet dan komunikasi virtual jaringan.</li>
+</ul>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Paradigma Makan</div>
+<div style="text-align:center;">
+<div style="background:#fff;padding:10px;border-radius:8px;margin:10px 0;text-align:center;border:1px solid var(--border);overflow-x:auto;"><svg style="max-width:100%; height:auto;" id="container" width="298.40625" xmlns="http://www.w3.org/2000/svg" class="flowchart" height="205.5" viewBox="0 0 298.40625 205.5" role="graphics-document document" aria-roledescription="flowchart-v2"><style>#container{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#container .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#container .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#container .error-icon{fill:#552222;}#container .error-text{fill:#552222;stroke:#552222;}#container .edge-thickness-normal{stroke-width:1px;}#container .edge-thickness-thick{stroke-width:3.5px;}#container .edge-pattern-solid{stroke-dasharray:0;}#container .edge-thickness-invisible{stroke-width:0;fill:none;}#container .edge-pattern-dashed{stroke-dasharray:3;}#container .edge-pattern-dotted{stroke-dasharray:2;}#container .marker{fill:#333333;stroke:#333333;}#container .marker.cross{stroke:#333333;}#container svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#container p{margin:0;}#container .label{font-family:"trebuchet ms",verdana,arial,sans-serif;color:#333;}#container .cluster-label text{fill:#333;}#container .cluster-label span{color:#333;}#container .cluster-label span p{background-color:transparent;}#container .label text,#container span{fill:#333;color:#333;}#container .node rect,#container .node circle,#container .node ellipse,#container .node polygon,#container .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#container .rough-node .label text,#container .node .label text,#container .image-shape .label,#container .icon-shape .label{text-anchor:middle;}#container .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#container .rough-node .label,#container .node .label,#container .image-shape .label,#container .icon-shape .label{text-align:center;}#container .node.clickable{cursor:pointer;}#container .root .anchor path{fill:#333333!important;stroke-width:0;stroke:#333333;}#container .arrowheadPath{fill:#333333;}#container .edgePath .path{stroke:#333333;stroke-width:1px;}#container .flowchart-link{stroke:#333333;fill:none;}#container .edgeLabel{background-color:rgba(232,232,232, 0.8);text-align:center;}#container .edgeLabel p{background-color:rgba(232,232,232, 0.8);}#container .edgeLabel rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#container .labelBkg{background-color:rgba(232, 232, 232, 0.5);}#container .cluster rect{fill:#ffffde;stroke:#aaaa33;stroke-width:1px;}#container .cluster text{fill:#333;}#container .cluster span{color:#333;}#container div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:12px;background:hsl(80, 100%, 96.2745098039%);border:1px solid #aaaa33;border-radius:2px;pointer-events:none;z-index:100;}#container .flowchartTitleText{text-anchor:middle;font-size:18px;fill:#333;}#container rect.text{fill:none;stroke-width:0;}#container .icon-shape,#container .image-shape{background-color:rgba(232,232,232, 0.8);text-align:center;}#container .icon-shape p,#container .image-shape p{background-color:rgba(232,232,232, 0.8);padding:2px;}#container .icon-shape .label rect,#container .image-shape .label rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#container .label-icon{display:inline-block;height:1em;overflow:visible;vertical-align:-0.125em;}#container .node .label-icon path{fill:currentColor;stroke:revert;stroke-width:revert;}#container .node .neo-node{stroke:#9370DB;}#container [data-look="neo"].node rect,#container [data-look="neo"].cluster rect,#container [data-look="neo"].node polygon{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node path{stroke:#9370DB;stroke-width:1px;}#container [data-look="neo"].node .outer-path{filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node .neo-line path{stroke:#9370DB;filter:none;}#container [data-look="neo"].node circle{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node circle .state-start{fill:#000000;}#container [data-look="neo"].icon-shape .icon{fill:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].icon-shape .icon-neo path{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g><marker id="container_flowchart-v2-pointEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="4.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 5 L 10 10 L 10 0 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointEnd-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="11.5" refY="7" markerUnits="userSpaceOnUse" markerWidth="10.5" markerHeight="14" orient="auto"><path d="M 0 0 L 11.5 7 L 0 14 z" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointStart-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="1" refY="7" markerUnits="userSpaceOnUse" markerWidth="11.5" markerHeight="14" orient="auto"><polygon points="0,7 11.5,14 11.5,0" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></polygon></marker><marker id="container_flowchart-v2-circleEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="11" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-1" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleEnd-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refY="5" refX="12.25" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleStart-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-2" refY="5" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-crossEnd" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="12" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-crossStart" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="-1" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-crossEnd-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="17.7" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5;"></path></marker><marker id="container_flowchart-v2-crossStart-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="-3.5" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5; stroke-dasharray: 1, 0;"></path></marker><g class="root"><g class="clusters"></g><g class="edgePaths"><path d="M83.531,45.766L95.589,45.766C107.646,45.766,131.76,45.766,155.492,45.766C179.224,45.766,202.573,45.766,214.247,45.766L225.922,45.766" id="container-L_A_B_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_A_B_0" data-points="W3sieCI6ODMuNTMxMjUsInkiOjQ1Ljc2NTYyNX0seyJ4IjoxNTUuODc1LCJ5Ijo0NS43NjU2MjV9LHsieCI6MjI5LjkyMTg3NSwieSI6NDUuNzY1NjI1fV0=" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M77.75,165.516L90.771,165.516C103.792,165.516,129.833,165.516,154.245,165.516C178.656,165.516,201.438,165.516,212.828,165.516L224.219,165.516" id="container-L_C_D_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_C_D_0" data-points="W3sieCI6NzcuNzUsInkiOjE2NS41MTU2MjV9LHsieCI6MTU1Ljg3NSwieSI6MTY1LjUxNTYyNX0seyJ4IjoyMjguMjE4NzUsInkiOjE2NS41MTU2MjV9XQ==" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path></g><g class="edgeLabels"><g class="edgeLabel" transform="translate(155.875, 45.765625)"><g class="label" data-id="L_A_B_0" transform="translate(-47.34375, -12)"><foreignObject width="94.6875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"><p>Makan Untuk</p></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(155.875, 165.515625)"><g class="label" data-id="L_C_D_0" transform="translate(-45.6328125, -12)"><foreignObject width="91.265625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"><p>Hidup Untuk</p></span></div></foreignObject></g></g></g><g class="nodes"><g class="node default" id="container-flowchart-A-0" data-look="classic" transform="translate(45.765625, 45.765625)"><circle class="basic label-container" style="" r="37.765625" cx="0" cy="0"></circle><g class="label" style="" transform="translate(-30.265625, -12)"><rect></rect><foreignObject width="60.53125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Manusia</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-B-1" data-look="classic" transform="translate(259.3125, 45.765625)"><circle class="basic label-container" style="" r="29.390625" cx="0" cy="0"></circle><g class="label" style="" transform="translate(-21.890625, -12)"><rect></rect><foreignObject width="43.78125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Hidup</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-C-2" data-look="classic" transform="translate(45.765625, 165.515625)"><circle class="basic label-container" style="" r="31.984375" cx="0" cy="0"></circle><g class="label" style="" transform="translate(-24.484375, -12)"><rect></rect><foreignObject width="48.96875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Hewan</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-D-3" data-look="classic" transform="translate(259.3125, 165.515625)"><circle class="basic label-container" style="" r="31.09375" cx="0" cy="0"></circle><g class="label" style="" transform="translate(-23.59375, -12)"><rect></rect><foreignObject width="47.1875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Makan</p></span></div></foreignObject></g></g></g></g></g><defs><filter id="container-drop-shadow" height="130%" width="130%"><feDropShadow dx="4" dy="4" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs><defs><filter id="container-drop-shadow-small" height="150%" width="150%"><feDropShadow dx="2" dy="2" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs></svg></div>
+</div>
+<p><br></p>
+<div style="text-align:center;">
+<div style="background:#fff;padding:10px;border-radius:8px;margin:10px 0;text-align:center;border:1px solid var(--border);overflow-x:auto;"><svg style="max-width:100%; height:auto;" id="container" width="558.109375" xmlns="http://www.w3.org/2000/svg" class="flowchart" height="70" viewBox="0 0 558.109375 70" role="graphics-document document" aria-roledescription="flowchart-v2"><style>#container{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#container .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#container .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#container .error-icon{fill:#552222;}#container .error-text{fill:#552222;stroke:#552222;}#container .edge-thickness-normal{stroke-width:1px;}#container .edge-thickness-thick{stroke-width:3.5px;}#container .edge-pattern-solid{stroke-dasharray:0;}#container .edge-thickness-invisible{stroke-width:0;fill:none;}#container .edge-pattern-dashed{stroke-dasharray:3;}#container .edge-pattern-dotted{stroke-dasharray:2;}#container .marker{fill:#333333;stroke:#333333;}#container .marker.cross{stroke:#333333;}#container svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#container p{margin:0;}#container .label{font-family:"trebuchet ms",verdana,arial,sans-serif;color:#333;}#container .cluster-label text{fill:#333;}#container .cluster-label span{color:#333;}#container .cluster-label span p{background-color:transparent;}#container .label text,#container span{fill:#333;color:#333;}#container .node rect,#container .node circle,#container .node ellipse,#container .node polygon,#container .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#container .rough-node .label text,#container .node .label text,#container .image-shape .label,#container .icon-shape .label{text-anchor:middle;}#container .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#container .rough-node .label,#container .node .label,#container .image-shape .label,#container .icon-shape .label{text-align:center;}#container .node.clickable{cursor:pointer;}#container .root .anchor path{fill:#333333!important;stroke-width:0;stroke:#333333;}#container .arrowheadPath{fill:#333333;}#container .edgePath .path{stroke:#333333;stroke-width:1px;}#container .flowchart-link{stroke:#333333;fill:none;}#container .edgeLabel{background-color:rgba(232,232,232, 0.8);text-align:center;}#container .edgeLabel p{background-color:rgba(232,232,232, 0.8);}#container .edgeLabel rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#container .labelBkg{background-color:rgba(232, 232, 232, 0.5);}#container .cluster rect{fill:#ffffde;stroke:#aaaa33;stroke-width:1px;}#container .cluster text{fill:#333;}#container .cluster span{color:#333;}#container div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:12px;background:hsl(80, 100%, 96.2745098039%);border:1px solid #aaaa33;border-radius:2px;pointer-events:none;z-index:100;}#container .flowchartTitleText{text-anchor:middle;font-size:18px;fill:#333;}#container rect.text{fill:none;stroke-width:0;}#container .icon-shape,#container .image-shape{background-color:rgba(232,232,232, 0.8);text-align:center;}#container .icon-shape p,#container .image-shape p{background-color:rgba(232,232,232, 0.8);padding:2px;}#container .icon-shape .label rect,#container .image-shape .label rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#container .label-icon{display:inline-block;height:1em;overflow:visible;vertical-align:-0.125em;}#container .node .label-icon path{fill:currentColor;stroke:revert;stroke-width:revert;}#container .node .neo-node{stroke:#9370DB;}#container [data-look="neo"].node rect,#container [data-look="neo"].cluster rect,#container [data-look="neo"].node polygon{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node path{stroke:#9370DB;stroke-width:1px;}#container [data-look="neo"].node .outer-path{filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node .neo-line path{stroke:#9370DB;filter:none;}#container [data-look="neo"].node circle{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node circle .state-start{fill:#000000;}#container [data-look="neo"].icon-shape .icon{fill:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].icon-shape .icon-neo path{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g><marker id="container_flowchart-v2-pointEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="4.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 5 L 10 10 L 10 0 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointEnd-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="11.5" refY="7" markerUnits="userSpaceOnUse" markerWidth="10.5" markerHeight="14" orient="auto"><path d="M 0 0 L 11.5 7 L 0 14 z" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointStart-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="1" refY="7" markerUnits="userSpaceOnUse" markerWidth="11.5" markerHeight="14" orient="auto"><polygon points="0,7 11.5,14 11.5,0" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></polygon></marker><marker id="container_flowchart-v2-circleEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="11" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-1" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleEnd-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refY="5" refX="12.25" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleStart-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-2" refY="5" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-crossEnd" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="12" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-crossStart" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="-1" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-crossEnd-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="17.7" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5;"></path></marker><marker id="container_flowchart-v2-crossStart-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="-3.5" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5; stroke-dasharray: 1, 0;"></path></marker><g class="root"><g class="clusters"></g><g class="edgePaths"><path d="M213.422,35L224.254,35C235.086,35,256.75,35,278.414,35C300.078,35,321.742,35,332.574,35L343.406,35" id="container-L_A_B_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_A_B_0" data-points="W3sieCI6MjA5LjQyMTg3NSwieSI6MzV9LHsieCI6Mjc4LjQxNDA2MjUsInkiOjM1fSx7IngiOjM0Ny40MDYyNSwieSI6MzV9XQ==" data-look="classic" marker-start="url(#container_flowchart-v2-pointStart)" marker-end="url(#container_flowchart-v2-pointEnd)"></path></g><g class="edgeLabels"><g class="edgeLabel" transform="translate(278.4140625, 35)"><g class="label" data-id="L_A_B_0" transform="translate(-43.9921875, -12)"><foreignObject width="87.984375" height="24"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"><p>Modernisasi</p></span></div></foreignObject></g></g></g><g class="nodes"><g class="node default" id="container-flowchart-A-0" data-look="classic" transform="translate(108.7109375, 35)"><rect class="basic label-container" style="" x="-100.7109375" y="-27" width="201.421875" height="54"></rect><g class="label" style="" transform="translate(-70.7109375, -12)"><rect></rect><foreignObject width="141.421875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Makan untuk Hidup</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-B-1" data-look="classic" transform="translate(448.7578125, 35)"><rect class="basic label-container" style="" x="-101.3515625" y="-27" width="202.703125" height="54"></rect><g class="label" style="" transform="translate(-71.3515625, -12)"><rect></rect><foreignObject width="142.703125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Hidup Untuk Makan</p></span></div></foreignObject></g></g></g></g></g><defs><filter id="container-drop-shadow" height="130%" width="130%"><feDropShadow dx="4" dy="4" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs><defs><filter id="container-drop-shadow-small" height="150%" width="150%"><feDropShadow dx="2" dy="2" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs></svg></div>
+</div>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Mahluk Homo Homini Lupus</div>
+<div style="text-align:center;">
+<div style="background:#fff;padding:10px;border-radius:8px;margin:10px 0;text-align:center;border:1px solid var(--border);overflow-x:auto;"><svg style="max-width:100%; height:auto;" id="container" width="100%" xmlns="http://www.w3.org/2000/svg" class="mindmapDiagram" style="max-width: 472.84112548828125px;" viewBox="5 5 472.84112548828125 396.8876953125" role="graphics-document document" aria-roledescription="mindmap"><style>#container{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#container .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#container .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#container .error-icon{fill:#552222;}#container .error-text{fill:#552222;stroke:#552222;}#container .edge-thickness-normal{stroke-width:1px;}#container .edge-thickness-thick{stroke-width:3.5px;}#container .edge-pattern-solid{stroke-dasharray:0;}#container .edge-thickness-invisible{stroke-width:0;fill:none;}#container .edge-pattern-dashed{stroke-dasharray:3;}#container .edge-pattern-dotted{stroke-dasharray:2;}#container .marker{fill:#333333;stroke:#333333;}#container .marker.cross{stroke:#333333;}#container svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#container p{margin:0;}#container .edge{stroke-width:3;}#container .section--1 rect,#container .section--1 path,#container .section--1 circle,#container .section--1 polygon,#container .section--1 path{fill:hsl(240, 100%, 76.2745098039%);}#container .section--1 text{fill:#ffffff;}#container .section--1 span{color:#ffffff;}#container .node-icon--1{font-size:40px;color:#ffffff;}#container .section-edge--1{stroke:hsl(240, 100%, 76.2745098039%);}#container .edge-depth--1{stroke-width:17;}#container .section--1 line{stroke:hsl(60, 100%, 86.2745098039%);stroke-width:3;}#container .disabled,#container .disabled circle,#container .disabled text{fill:lightgray;}#container .disabled text{fill:#efefef;}#container [data-look="neo"].mindmap-node.section--1 rect,#container [data-look="neo"].mindmap-node.section--1 path,#container [data-look="neo"].mindmap-node.section--1 circle,#container [data-look="neo"].mindmap-node.section--1 polygon{fill:hsl(240, 100%, 76.2745098039%);stroke:hsl(240, 100%, 76.2745098039%);stroke-width:1px;}#container [data-look="neo"].section-edge--1{stroke:hsl(240, 100%, 76.2745098039%);}#container [data-look="neo"].mindmap-node.section--1 text{fill:#ffffff;}#container .section-0 rect,#container .section-0 path,#container .section-0 circle,#container .section-0 polygon,#container .section-0 path{fill:hsl(60, 100%, 73.5294117647%);}#container .section-0 text{fill:black;}#container .section-0 span{color:black;}#container .node-icon-0{font-size:40px;color:black;}#container .section-edge-0{stroke:hsl(60, 100%, 73.5294117647%);}#container .edge-depth-0{stroke-width:14;}#container .section-0 line{stroke:hsl(240, 100%, 83.5294117647%);stroke-width:3;}#container .disabled,#container .disabled circle,#container .disabled text{fill:lightgray;}#container .disabled text{fill:#efefef;}#container [data-look="neo"].mindmap-node.section-0 rect,#container [data-look="neo"].mindmap-node.section-0 path,#container [data-look="neo"].mindmap-node.section-0 circle,#container [data-look="neo"].mindmap-node.section-0 polygon{fill:hsl(60, 100%, 73.5294117647%);stroke:hsl(60, 100%, 73.5294117647%);stroke-width:1px;}#container [data-look="neo"].section-edge-0{stroke:hsl(60, 100%, 73.5294117647%);}#container [data-look="neo"].mindmap-node.section-0 text{fill:black;}#container .section-1 rect,#container .section-1 path,#container .section-1 circle,#container .section-1 polygon,#container .section-1 path{fill:hsl(80, 100%, 76.2745098039%);}#container .section-1 text{fill:black;}#container .section-1 span{color:black;}#container .node-icon-1{font-size:40px;color:black;}#container .section-edge-1{stroke:hsl(80, 100%, 76.2745098039%);}#container .edge-depth-1{stroke-width:11;}#container .section-1 line{stroke:hsl(260, 100%, 86.2745098039%);stroke-width:3;}#container .disabled,#container .disabled circle,#container .disabled text{fill:lightgray;}#container .disabled text{fill:#efefef;}#container [data-look="neo"].mindmap-node.section-1 rect,#container [data-look="neo"].mindmap-node.section-1 path,#container [data-look="neo"].mindmap-node.section-1 circle,#container [data-look="neo"].mindmap-node.section-1 polygon{fill:hsl(80, 100%, 76.2745098039%);stroke:hsl(80, 100%, 76.2745098039%);stroke-width:1px;}#container [data-look="neo"].section-edge-1{stroke:hsl(80, 100%, 76.2745098039%);}#container [data-look="neo"].mindmap-node.section-1 text{fill:black;}#container .section-2 rect,#container .section-2 path,#container .section-2 circle,#container .section-2 polygon,#container .section-2 path{fill:hsl(270, 100%, 76.2745098039%);}#container .section-2 text{fill:#ffffff;}#container .section-2 span{color:#ffffff;}#container .node-icon-2{font-size:40px;color:#ffffff;}#container .section-edge-2{stroke:hsl(270, 100%, 76.2745098039%);}#container .edge-depth-2{stroke-width:8;}#container .section-2 line{stroke:hsl(90, 100%, 86.2745098039%);stroke-width:3;}#container .disabled,#container .disabled circle,#container .disabled text{fill:lightgray;}#container .disabled text{fill:#efefef;}#container [data-look="neo"].mindmap-node.section-2 rect,#container [data-look="neo"].mindmap-node.section-2 path,#container [data-look="neo"].mindmap-node.section-2 circle,#container [data-look="neo"].mindmap-node.section-2 polygon{fill:hsl(270, 100%, 76.2745098039%);stroke:hsl(270, 100%, 76.2745098039%);stroke-width:1px;}#container [data-look="neo"].section-edge-2{stroke:hsl(270, 100%, 76.2745098039%);}#container [data-look="neo"].mindmap-node.section-2 text{fill:#ffffff;}#container .section-3 rect,#container .section-3 path,#container .section-3 circle,#container .section-3 polygon,#container .section-3 path{fill:hsl(300, 100%, 76.2745098039%);}#container .section-3 text{fill:black;}#container .section-3 span{color:black;}#container .node-icon-3{font-size:40px;color:black;}#container .section-edge-3{stroke:hsl(300, 100%, 76.2745098039%);}#container .edge-depth-3{stroke-width:5;}#container .section-3 line{stroke:hsl(120, 100%, 86.2745098039%);stroke-width:3;}#container .disabled,#container .disabled circle,#container .disabled text{fill:lightgray;}#container .disabled text{fill:#efefef;}#container [data-look="neo"].mindmap-node.section-3 rect,#container [data-look="neo"].mindmap-node.section-3 path,#container [data-look="neo"].mindmap-node.section-3 circle,#container [data-look="neo"].mindmap-node.section-3 polygon{fill:hsl(300, 100%, 76.2745098039%);stroke:hsl(300, 100%, 76.2745098039%);stroke-width:1px;}#container [data-look="neo"].section-edge-3{stroke:hsl(300, 100%, 76.2745098039%);}#container [data-look="neo"].mindmap-node.section-3 text{fill:black;}#container .section-4 rect,#container .section-4 path,#container .section-4 circle,#container .section-4 polygon,#container .section-4 path{fill:hsl(330, 100%, 76.2745098039%);}#container .section-4 text{fill:black;}#container .section-4 span{color:black;}#container .node-icon-4{font-size:40px;color:black;}#container .section-edge-4{stroke:hsl(330, 100%, 76.2745098039%);}#container .edge-depth-4{stroke-width:2;}#container .section-4 line{stroke:hsl(150, 100%, 86.2745098039%);stroke-width:3;}#container .disabled,#container .disabled circle,#container .disabled text{fill:lightgray;}#container .disabled text{fill:#efefef;}#container [data-look="neo"].mindmap-node.section-4 rect,#container [data-look="neo"].mindmap-node.section-4 path,#container [data-look="neo"].mindmap-node.section-4 circle,#container [data-look="neo"].mindmap-node.section-4 polygon{fill:hsl(330, 100%, 76.2745098039%);stroke:hsl(330, 100%, 76.2745098039%);stroke-width:1px;}#container [data-look="neo"].section-edge-4{stroke:hsl(330, 100%, 76.2745098039%);}#container [data-look="neo"].mindmap-node.section-4 text{fill:black;}#container .section-5 rect,#container .section-5 path,#container .section-5 circle,#container .section-5 polygon,#container .section-5 path{fill:hsl(0, 100%, 76.2745098039%);}#container .section-5 text{fill:black;}#container .section-5 span{color:black;}#container .node-icon-5{font-size:40px;color:black;}#container .section-edge-5{stroke:hsl(0, 100%, 76.2745098039%);}#container .edge-depth-5{stroke-width:-1;}#container .section-5 line{stroke:hsl(180, 100%, 86.2745098039%);stroke-width:3;}#container .disabled,#container .disabled circle,#container .disabled text{fill:lightgray;}#container .disabled text{fill:#efefef;}#container [data-look="neo"].mindmap-node.section-5 rect,#container [data-look="neo"].mindmap-node.section-5 path,#container [data-look="neo"].mindmap-node.section-5 circle,#container [data-look="neo"].mindmap-node.section-5 polygon{fill:hsl(0, 100%, 76.2745098039%);stroke:hsl(0, 100%, 76.2745098039%);stroke-width:1px;}#container [data-look="neo"].section-edge-5{stroke:hsl(0, 100%, 76.2745098039%);}#container [data-look="neo"].mindmap-node.section-5 text{fill:black;}#container .section-6 rect,#container .section-6 path,#container .section-6 circle,#container .section-6 polygon,#container .section-6 path{fill:hsl(30, 100%, 76.2745098039%);}#container .section-6 text{fill:black;}#container .section-6 span{color:black;}#container .node-icon-6{font-size:40px;color:black;}#container .section-edge-6{stroke:hsl(30, 100%, 76.2745098039%);}#container .edge-depth-6{stroke-width:-4;}#container .section-6 line{stroke:hsl(210, 100%, 86.2745098039%);stroke-width:3;}#container .disabled,#container .disabled circle,#container .disabled text{fill:lightgray;}#container .disabled text{fill:#efefef;}#container [data-look="neo"].mindmap-node.section-6 rect,#container [data-look="neo"].mindmap-node.section-6 path,#container [data-look="neo"].mindmap-node.section-6 circle,#container [data-look="neo"].mindmap-node.section-6 polygon{fill:hsl(30, 100%, 76.2745098039%);stroke:hsl(30, 100%, 76.2745098039%);stroke-width:1px;}#container [data-look="neo"].section-edge-6{stroke:hsl(30, 100%, 76.2745098039%);}#container [data-look="neo"].mindmap-node.section-6 text{fill:black;}#container .section-7 rect,#container .section-7 path,#container .section-7 circle,#container .section-7 polygon,#container .section-7 path{fill:hsl(90, 100%, 76.2745098039%);}#container .section-7 text{fill:black;}#container .section-7 span{color:black;}#container .node-icon-7{font-size:40px;color:black;}#container .section-edge-7{stroke:hsl(90, 100%, 76.2745098039%);}#container .edge-depth-7{stroke-width:-7;}#container .section-7 line{stroke:hsl(270, 100%, 86.2745098039%);stroke-width:3;}#container .disabled,#container .disabled circle,#container .disabled text{fill:lightgray;}#container .disabled text{fill:#efefef;}#container [data-look="neo"].mindmap-node.section-7 rect,#container [data-look="neo"].mindmap-node.section-7 path,#container [data-look="neo"].mindmap-node.section-7 circle,#container [data-look="neo"].mindmap-node.section-7 polygon{fill:hsl(90, 100%, 76.2745098039%);stroke:hsl(90, 100%, 76.2745098039%);stroke-width:1px;}#container [data-look="neo"].section-edge-7{stroke:hsl(90, 100%, 76.2745098039%);}#container [data-look="neo"].mindmap-node.section-7 text{fill:black;}#container .section-8 rect,#container .section-8 path,#container .section-8 circle,#container .section-8 polygon,#container .section-8 path{fill:hsl(150, 100%, 76.2745098039%);}#container .section-8 text{fill:black;}#container .section-8 span{color:black;}#container .node-icon-8{font-size:40px;color:black;}#container .section-edge-8{stroke:hsl(150, 100%, 76.2745098039%);}#container .edge-depth-8{stroke-width:-10;}#container .section-8 line{stroke:hsl(330, 100%, 86.2745098039%);stroke-width:3;}#container .disabled,#container .disabled circle,#container .disabled text{fill:lightgray;}#container .disabled text{fill:#efefef;}#container [data-look="neo"].mindmap-node.section-8 rect,#container [data-look="neo"].mindmap-node.section-8 path,#container [data-look="neo"].mindmap-node.section-8 circle,#container [data-look="neo"].mindmap-node.section-8 polygon{fill:hsl(150, 100%, 76.2745098039%);stroke:hsl(150, 100%, 76.2745098039%);stroke-width:1px;}#container [data-look="neo"].section-edge-8{stroke:hsl(150, 100%, 76.2745098039%);}#container [data-look="neo"].mindmap-node.section-8 text{fill:black;}#container .section-9 rect,#container .section-9 path,#container .section-9 circle,#container .section-9 polygon,#container .section-9 path{fill:hsl(180, 100%, 76.2745098039%);}#container .section-9 text{fill:black;}#container .section-9 span{color:black;}#container .node-icon-9{font-size:40px;color:black;}#container .section-edge-9{stroke:hsl(180, 100%, 76.2745098039%);}#container .edge-depth-9{stroke-width:-13;}#container .section-9 line{stroke:hsl(0, 100%, 86.2745098039%);stroke-width:3;}#container .disabled,#container .disabled circle,#container .disabled text{fill:lightgray;}#container .disabled text{fill:#efefef;}#container [data-look="neo"].mindmap-node.section-9 rect,#container [data-look="neo"].mindmap-node.section-9 path,#container [data-look="neo"].mindmap-node.section-9 circle,#container [data-look="neo"].mindmap-node.section-9 polygon{fill:hsl(180, 100%, 76.2745098039%);stroke:hsl(180, 100%, 76.2745098039%);stroke-width:1px;}#container [data-look="neo"].section-edge-9{stroke:hsl(180, 100%, 76.2745098039%);}#container [data-look="neo"].mindmap-node.section-9 text{fill:black;}#container .section-10 rect,#container .section-10 path,#container .section-10 circle,#container .section-10 polygon,#container .section-10 path{fill:hsl(210, 100%, 76.2745098039%);}#container .section-10 text{fill:black;}#container .section-10 span{color:black;}#container .node-icon-10{font-size:40px;color:black;}#container .section-edge-10{stroke:hsl(210, 100%, 76.2745098039%);}#container .edge-depth-10{stroke-width:-16;}#container .section-10 line{stroke:hsl(30, 100%, 86.2745098039%);stroke-width:3;}#container .disabled,#container .disabled circle,#container .disabled text{fill:lightgray;}#container .disabled text{fill:#efefef;}#container [data-look="neo"].mindmap-node.section-10 rect,#container [data-look="neo"].mindmap-node.section-10 path,#container [data-look="neo"].mindmap-node.section-10 circle,#container [data-look="neo"].mindmap-node.section-10 polygon{fill:hsl(210, 100%, 76.2745098039%);stroke:hsl(210, 100%, 76.2745098039%);stroke-width:1px;}#container [data-look="neo"].section-edge-10{stroke:hsl(210, 100%, 76.2745098039%);}#container [data-look="neo"].mindmap-node.section-10 text{fill:black;}#container .section-root rect,#container .section-root path,#container .section-root circle,#container .section-root polygon{fill:hsl(240, 100%, 46.2745098039%);}#container .section-root text{fill:#ffffff;}#container .section-root span{color:#ffffff;}#container .icon-container{height:100%;display:flex;justify-content:center;align-items:center;}#container .edge{fill:none;}#container .mindmap-node-label{dy:1em;alignment-baseline:middle;text-anchor:middle;dominant-baseline:middle;text-align:center;}#container [data-look="neo"].mindmap-node{filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].mindmap-node.section-root rect,#container [data-look="neo"].mindmap-node.section-root path,#container [data-look="neo"].mindmap-node.section-root circle,#container [data-look="neo"].mindmap-node.section-root polygon{fill:hsl(240, 100%, 46.2745098039%);}#container [data-look="neo"].mindmap-node.section-root .text-inner-tspan{fill:#ffffff;}#container .node .neo-node{stroke:#9370DB;}#container [data-look="neo"].node rect,#container [data-look="neo"].cluster rect,#container [data-look="neo"].node polygon{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node path{stroke:#9370DB;stroke-width:1px;}#container [data-look="neo"].node .outer-path{filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node .neo-line path{stroke:#9370DB;filter:none;}#container [data-look="neo"].node circle{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node circle .state-start{fill:#000000;}#container [data-look="neo"].icon-shape .icon{fill:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].icon-shape .icon-neo path{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g><marker id="container_mindmap-pointEnd" class="marker mindmap" viewBox="0 0 10 10" refX="5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="container_mindmap-pointStart" class="marker mindmap" viewBox="0 0 10 10" refX="4.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 5 L 10 10 L 10 0 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="container_mindmap-pointEnd-margin" class="marker mindmap" viewBox="0 0 11.5 14" refX="11.5" refY="7" markerUnits="userSpaceOnUse" markerWidth="10.5" markerHeight="14" orient="auto"><path d="M 0 0 L 11.5 7 L 0 14 z" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></path></marker><marker id="container_mindmap-pointStart-margin" class="marker mindmap" viewBox="0 0 11.5 14" refX="1" refY="7" markerUnits="userSpaceOnUse" markerWidth="11.5" markerHeight="14" orient="auto"><polygon points="0,7 11.5,14 11.5,0" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></polygon></marker><g class="subgraphs"></g><g class="edgePaths"><path d="M234.526,200.468L247.21,192.369C259.894,184.269,285.262,168.071,310.63,151.872C335.999,135.673,361.367,119.475,374.051,111.375L386.735,103.276" id="container-edge_0_1" class="edge-thickness-normal edge-pattern-solid edge section-edge-0 edge-depth-1" style="undefined;;;undefined" data-edge="true" data-et="edge" data-id="edge_0_1" data-points="W3sieCI6MjM0LjUyNTYzNjY0NDIyMTUyLCJ5IjoyMDAuNDY4MDM4NDg4OTMwMzh9LHsieCI6MzEwLjYzMDM5ODgzNzM1MDA3LCJ5IjoxNTEuODcyMDkyNTI3MzE3ODh9LHsieCI6Mzg2LjczNTE2MTAzMDQ3ODYsInkiOjEwMy4yNzYxNDY1NjU3MDUzN31d" data-look="classic"></path><path d="M236.849,207.529L251.211,206.557C265.572,205.586,294.295,203.643,323.018,201.701C351.742,199.758,380.465,197.816,394.826,196.844L409.188,195.873" id="container-edge_0_2" class="edge-thickness-normal edge-pattern-solid edge section-edge-1 edge-depth-1" style="undefined;;;undefined" data-edge="true" data-et="edge" data-id="edge_0_2" data-points="W3sieCI6MjM2Ljg0OTAwNDU1NDIwMDMsInkiOjIwNy41Mjg1ODEyMzg3Mjk5NH0seyJ4IjozMjMuMDE4MzkyODY3MjY3NSwieSI6MjAxLjcwMDc4ODA3NjYwNjV9LHsieCI6NDA5LjE4Nzc4MTE4MDMzNDcsInkiOjE5NS44NzI5OTQ5MTQ0ODMwNn1d" data-look="classic"></path><path d="M233.196,218.39L245.337,228.96C257.478,239.531,281.759,260.671,306.041,281.811C330.322,302.951,354.604,324.092,366.744,334.662L378.885,345.232" id="container-edge_0_3" class="edge-thickness-normal edge-pattern-solid edge section-edge-2 edge-depth-1" style="undefined;;;undefined" data-edge="true" data-et="edge" data-id="edge_0_3" data-points="W3sieCI6MjMzLjE5NjI5NDU4MjIzNDEyLCJ5IjoyMTguMzkwMzAxMTM4MjAyNDN9LHsieCI6MzA2LjA0MDc1NjQ4NDQ5MDIsInkiOjI4MS44MTEwNjEwNzk0MzU5fSx7IngiOjM3OC44ODUyMTgzODY3NDYyNiwieSI6MzQ1LjIzMTgyMTAyMDY2OTR9XQ==" data-look="classic"></path><path d="M211.567,219.43L200.154,231.478C188.741,243.525,165.916,267.62,143.09,291.714C120.264,315.809,97.439,339.904,86.026,351.951L74.613,363.998" id="container-edge_0_4" class="edge-thickness-normal edge-pattern-solid edge section-edge-3 edge-depth-1" style="undefined;;;undefined" data-edge="true" data-et="edge" data-id="edge_0_4" data-points="W3sieCI6MjExLjU2NzIxMzY2ODg0NjYsInkiOjIxOS40MzAyMTcyNDc1NjA4NX0seyJ4IjoxNDMuMDkwMDMzODk3MjgzNzcsInkiOjI5MS43MTQyMTg3NjM2NTEyfSx7IngiOjc0LjYxMjg1NDEyNTcyMDk2LCJ5IjozNjMuOTk4MjIwMjc5NzQxNn1d" data-look="classic"></path><path d="M210.206,199.126L201.199,191.863C192.192,184.601,174.177,170.075,156.163,155.55C138.148,141.025,120.134,126.5,111.126,119.238L102.119,111.975" id="container-edge_0_5" class="edge-thickness-normal edge-pattern-solid edge section-edge-4 edge-depth-1" style="undefined;;;undefined" data-edge="true" data-et="edge" data-id="edge_0_5" data-points="W3sieCI6MjEwLjIwNjExNzU4MDAzNjA1LCJ5IjoxOTkuMTI1NTUwNDk4NjA1NDN9LHsieCI6MTU2LjE2MjY3NDkwNDQ4MTYzLCJ5IjoxNTUuNTUwNDYwNjUxOTUzNTl9LHsieCI6MTAyLjExOTIzMjIyODkyNzI2LCJ5IjoxMTEuOTc1MzcwODA1MzAxNzR9XQ==" data-look="classic"></path><path d="M223.59,193.638L224.991,181.41C226.391,169.182,229.192,144.726,231.993,120.27C234.794,95.814,237.595,71.359,238.996,59.131L240.396,46.903" id="container-edge_0_6" class="edge-thickness-normal edge-pattern-solid edge section-edge-5 edge-depth-1" style="undefined;;;undefined" data-edge="true" data-et="edge" data-id="edge_0_6" data-points="W3sieCI6MjIzLjU5MDA0NTM1MzI4OTM2LCJ5IjoxOTMuNjM4MTc0MzU5MDIxM30seyJ4IjoyMzEuOTkzMTU5ODI5Nzg4NzQsInkiOjEyMC4yNzAzNzMyMTUyMDI0OH0seyJ4IjoyNDAuMzk2Mjc0MzA2Mjg4MTIsInkiOjQ2LjkwMjU3MjA3MTM4MzY3fV0=" data-look="classic"></path></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" data-id="edge_0_1" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="edge_0_2" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="edge_0_3" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="edge_0_4" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="edge_0_5" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="edge_0_6" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g></g><g class="nodes"><g class="node mindmap-node section-root section--1" id="container-node_0" data-look="classic" transform="translate(221.88319279456755, 208.54074643040497)"><circle class="basic label-container" style="" r="110" cx="0" cy="0"></circle><g class="label" style="" transform="translate(-100, -24)"><rect></rect><foreignObject width="200" height="48"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table; white-space: break-spaces; line-height: 1.5; max-width: 200px; text-align: center; width: 200px;"><span class="nodeLabel markdown-node-label"><p>Mahluk Homo Homini Lupus</p></span></div></foreignObject></g></g><g class="node mindmap-node section-0" id="container-node_1" data-look="classic" transform="translate(399.3776048801326, 95.20343862423078)"><path id="container-node_1" class="node-bkg node-0" style="" d="M-44.2265625 12
+    v-24
+    q0,-5 5,-5
+    h78.453125
+    q5,0 5,5
+    v24
+    q0,5 -5,5
+    h-78.453125
+    q-5,0 -5,-5
+    Z"></path><line class="node-line-" x1="-44.2265625" y1="17" x2="44.2265625" y2="17"></line><g class="label" style="" transform="translate(-24.2265625, -12)"><rect></rect><foreignObject width="48.453125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel markdown-node-label"><p>makan</p></span></div></foreignObject></g></g><g class="node mindmap-node section-1" id="container-node_2" data-look="classic" transform="translate(424.15359293996744, 194.86082972280803)"><path id="container-node_2" class="node-bkg node-0" style="" d="M-43.6875 12
+    v-24
+    q0,-5 5,-5
+    h77.375
+    q5,0 5,5
+    v24
+    q0,5 -5,5
+    h-77.375
+    q-5,0 -5,-5
+    Z"></path><line class="node-line-" x1="-43.6875" y1="17" x2="43.6875" y2="17"></line><g class="label" style="" transform="translate(-23.6875, -12)"><rect></rect><foreignObject width="47.375" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel markdown-node-label"><p>materi</p></span></div></foreignObject></g></g><g class="node mindmap-node section-2" id="container-node_3" data-look="classic" transform="translate(390.19832017441286, 355.0813757284668)"><path id="container-node_3" class="node-bkg node-0" style="" d="M-58.9453125 12
+    v-24
+    q0,-5 5,-5
+    h107.890625
+    q5,0 5,5
+    v24
+    q0,5 -5,5
+    h-107.890625
+    q-5,0 -5,-5
+    Z"></path><line class="node-line-" x1="-58.9453125" y1="17" x2="58.9453125" y2="17"></line><g class="label" style="" transform="translate(-38.9453125, -12)"><rect></rect><foreignObject width="77.890625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel markdown-node-label"><p>Kendaraan</p></span></div></foreignObject></g></g><g class="node mindmap-node section-3" id="container-node_4" data-look="classic" transform="translate(64.296875, 374.88769109689747)"><path id="container-node_4" class="node-bkg node-0" style="" d="M-49.296875 12
+    v-24
+    q0,-5 5,-5
+    h88.59375
+    q5,0 5,5
+    v24
+    q0,5 -5,5
+    h-88.59375
+    q-5,0 -5,-5
+    Z"></path><line class="node-line-" x1="-49.296875" y1="17" x2="49.296875" y2="17"></line><g class="label" style="" transform="translate(-29.296875, -12)"><rect></rect><foreignObject width="58.59375" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel markdown-node-label"><p>berlibur</p></span></div></foreignObject></g></g><g class="node mindmap-node section-4" id="container-node_5" data-look="classic" transform="translate(90.44215701439578, 102.5601748735022)"><path id="container-node_5" class="node-bkg node-0" style="" d="M-48.6484375 12
+    v-24
+    q0,-5 5,-5
+    h87.296875
+    q5,0 5,5
+    v24
+    q0,5 -5,5
+    h-87.296875
+    q-5,0 -5,-5
+    Z"></path><line class="node-line-" x1="-48.6484375" y1="17" x2="48.6484375" y2="17"></line><g class="label" style="" transform="translate(-28.6484375, -12)"><rect></rect><foreignObject width="57.296875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel markdown-node-label"><p>pakaian</p></span></div></foreignObject></g></g><g class="node mindmap-node section-5" id="container-node_6" data-look="classic" transform="translate(242.10312686500993, 32)"><path id="container-node_6" class="node-bkg node-0" style="" d="M-59.640625 12
+    v-24
+    q0,-5 5,-5
+    h109.28125
+    q5,0 5,5
+    v24
+    q0,5 -5,5
+    h-109.28125
+    q-5,0 -5,-5
+    Z"></path><line class="node-line-" x1="-59.640625" y1="17" x2="59.640625" y2="17"></line><g class="label" style="" transform="translate(-39.640625, -12)"><rect></rect><foreignObject width="79.28125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel markdown-node-label"><p>Kebutuhan</p></span></div></foreignObject></g></g></g></g><defs><filter id="container-drop-shadow" height="130%" width="130%"><feDropShadow dx="4" dy="4" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs><defs><filter id="container-drop-shadow-small" height="150%" width="150%"><feDropShadow dx="2" dy="2" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs></svg></div>
+</div>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Variable of Life Style</div>
+<p>Berbagai variabel gaya hidup memiliki pengaruh klinis dan fisiologis yang signifikan terhadap kesehatan individu:</p>
+<ol>
+<li><strong>Diet and Body Mass Index (BMI):</strong> Asupan diet tidak sehat (tinggi karbohidrat sederhana dan lemak jenuh) meningkatkan risiko sindrom metabolik, dislipidemia, dan obesitas yang memengaruhi angka morbiditas kardiovaskular (Zarrin et al., 2020).</li>
+<li><strong>Exercise:</strong> Aktivitas fisik rutin terbukti memodulasi respons inflamasi sistemik, meningkatkan sensitivitas insulin, dan memelihara massa otot (Sarcopenia prevention).</li>
+<li><strong>Sleep:</strong> Kurang tidur mengganggu keseimbangan sirkadian, menurunkan efikasi sistem imun bawaan dan adaptif, serta memengaruhi profil hormonal.</li>
+<li><strong>Sexual behavior:</strong> Perilaku seksual yang aman sangat krusial dalam pencegahan <i>Sexually Transmitted Infections</i> (STIs) seperti HIV/AIDS dan HPV.</li>
+<li><strong>Substance abuse & Medication abuse:</strong> Penyalahgunaan zat atau obat menginduksi neurotoksisitas kronis, disfungsi hepar (hepatitis toksik, sirosis), dan merusak profil farmakokinetik fisiologis.</li>
+<li><strong>Aplikasi teknologi modern:</strong> Paparan berlebihan terhadap gawai dapat memicu <i>digital eye strain</i> dan menekan pelepasan melatonin akibat pajanan <i>blue light</i>.</li>
+<li><strong>Recreation & Study:</strong> Keseimbangan rekreasi dan stres kognitif (dari belajar/bekerja) mengatur level kortisol. Kortisol basal yang terjaga akan mencegah <i>allostatic load</i> berlebih yang menekan imunitas (Farhud, 2015).</li>
+</ol>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Konsep SEHAT dan SEHATI</div>
+<div style="text-align:center;">
+<div style="background:#fff;padding:10px;border-radius:8px;margin:10px 0;text-align:center;border:1px solid var(--border);overflow-x:auto;"><svg style="max-width:100%; height:auto;" version="1.1" baseProfile="full" width="176.0" height="97.0" viewBox="0 0 176 97" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ev="http://www.w3.org/2001/xml-events">
+	<desc >venn
+	    A(&quot;Diet&quot;)
+	    B(&quot;Exercise&quot;)
+	    C(&quot;Attitude&quot;)
+	    A -- B -- C : &quot;SEHAT&quot;</desc>
+	<g stroke-width="1.0" text-align="left" font="12pt Helvetica, Arial, sans-serif" font-size="12pt" font-family="Helvetica" font-weight="bold" font-style="normal">
+		<g font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" stroke-width="3.0" stroke-linejoin="round" stroke-linecap="round" stroke="#33322E">
+			<g stroke="transparent" fill="transparent">
+				<rect x="0.0" y="0.0" height="97.0" width="176.0" stroke="none"></rect>
+			</g>
+			<g transform="translate(8, 8)" fill="#33322E" text-align="left">
+				<text x="0.0" y="14.1" stroke="none">venn</text>
+				<text x="0.0" y="30.3" stroke="none">A(&quot;Diet&quot;)</text>
+				<text x="0.0" y="46.5" stroke="none">B(&quot;Exercise&quot;)</text>
+				<text x="0.0" y="62.7" stroke="none">C(&quot;Attitude&quot;)</text>
+				<text x="0.0" y="78.9" stroke="none">A -- B -- C : &quot;SEHAT&quot;</text>
+				
+			</g>
+		</g>
+	</g>
+</svg></div>
+
+</div>
+
+<div class="note green">
+<strong>SEHATI:</strong><br>
+<strong>S</strong> : Seimbang gizi<br>
+<strong>E</strong> : Enyahkan rokok<br>
+<strong>H</strong> : Hindari stress<br>
+<strong>A</strong> : Awasi tekanan darah<br>
+<strong>T</strong> : Teratur berolah raga<br>
+<strong>I</strong> : Istirahat yang cukup ( 5 – 7 Jam / hari )
+</div>
+
+<div class="divider"></div>
+</div>
+<div class="sub-panel " id="tab-polamakangiziseimbang">
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Pola Konsumsi Makanan</div>
+<ul>
+<li>Hasil budaya masyarakat yang dipengaruhi oleh faktor lingkungan dan manusia.</li>
+<li>Kebiasaan makan keluarga harus diperhatikan sesuai dengan pendapatan dan pengetahuan gizi.</li>
+</ul>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Pola Makan</div>
+<ul>
+<li>Susunan <strong>jenis</strong>, <strong>jumlah</strong> dan <strong>jam (waktu)</strong> pangan yang dikonsumsi seseorang atau kelompok orang pada waktu tertentu.</li>
+<li>→ Sikap : afektif</li>
+<li>→ Kepercayaan : kognitif</li>
+</ul>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Pola Hidup yang Sehat</div>
+<ul>
+<li>Selaras dengan alam (natural)</li>
+<li>Banyak minum air putih</li>
+<li>Olah raga teratur</li>
+<li>Sinar matahari vitamin D / udara segar</li>
+<li>Kontrol emosi dan tingkah laku yang baik</li>
+<li>Hindari rokok, alkohol dan obat terlarang</li>
+<li>Pilih makanan organik</li>
+</ul>
+
+<div class="note red">
+<strong>Zat Kimia Karsinogenik dalam Asap Rokok:</strong><br>
+Secara klinis, asap rokok mengandung banyak zat toksik dan karsinogenik yang dapat memicu mutasi DNA dan menginduksi keganasan pada sel epitel (onkogenesis). Beberapa contoh karsinogen spesifik antara lain <strong>Benzopyrene</strong> (mengikat DNA p53), <strong>Dimethylnitrosamine</strong>, <strong>Vinyl Chloride</strong>, <strong>Arsenic</strong>, <strong>Cadmium</strong>, dan isotop radioaktif <strong>Polonium-210</strong> (Hecht, 2012). Selain itu, terdapat bahan beracun lainnya seperti Karbon Monoksida (mengikat hemoglobin menurunkan oksigenasi) dan Tar yang melumpuhkan silia saluran napas.
+</div>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Keuntungan Hidup dan Perilaku Sehat</div>
+<p>Secara medis, adaptasi gaya hidup sehat memberikan manfaat fisiologis yang nyata melalui perbaikan sirkulasi sistemik dan modulasi hormonal:</p>
+<ul>
+<li><strong>Fungsi Kognitif dan Performa:</strong> Sirkulasi serebral yang optimal dari aktivitas fisik teratur memastikan oksigenasi dan suplai glukosa yang stabil ke otak, meningkatkan neuroplastisitas sehingga memperbaiki konsentrasi belajar dan <i>good performance</i> harian.</li>
+<li><strong>Regulasi Berat Badan dan Imunitas:</strong> Pola makan seimbang menjaga homeostasis <i>Body Mass Index</i> (BMI) dengan mengontrol simpanan adiposa viseral. Hal ini mencegah inflamasi derajat rendah dan memperkuat sel imun untuk mencegah penyakit.</li>
+<li><strong>Fisiologi Tidur dan Mental:</strong> Keseimbangan sirkadian memperbaiki pelepasan melatonin, sehingga meningkatkan kualitas tidur fase <i>deep sleep</i>. Olahraga dan diet bergizi merangsang pelepasan endorfin, serotonin, dan dopamin, yang secara langsung berfungsi menurunkan depresi, kecemasan, serta membangun kepercayaan diri (Farhud, 2015).</li>
+</ul>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Kebutuhan Gizi</div>
+<p>Kebutuhan gizi bersifat dinamis dan bervariasi bergantung pada profil klinis dan fisiologis individu:</p>
+<ul>
+<li><strong>Tingkat Aktivitas dan Pekerjaan:</strong> Menentukan Laju Metabolisme Basal (BMR) dan pengeluaran energi total harian.</li>
+<li><strong>Jenis Kelamin & Komposisi Tubuh:</strong> Pria umumnya membutuhkan asupan kalori lebih besar akibat massa otot (<i>lean mass</i>) yang lebih tinggi dibandingkan jaringan adiposa.</li>
+<li><strong>Kondisi Klinis (Penyembuhan Penyakit):</strong> Fase pemulihan pasca trauma atau infeksi membutuhkan asupan ekstra makronutrien (terutama protein) untuk regenerasi jaringan dan sintesis antibodi.</li>
+</ul>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Menu Seimbang</div>
+<p>Menu seimbang wajib mengakomodasi distribusi makronutrien sebagai penyedia energi utama sekaligus mikronutrien (vitamin dan mineral) yang vital untuk katalisis reaksi enzimatik (Kemenkes RI, 2014):</p>
+<ul>
+<li><strong>Karbohidrat (1 g = 4 kkal):</strong> Sumber utama pembentukan glukosa darah dan cadangan glikogen.</li>
+<li><strong>Protein (1 g = 4 kkal):</strong> Esensial untuk sintesis otot, enzim, dan pertahanan humoral (imunoglobulin).</li>
+<li><strong>Lemak (1 g = 9 kkal):</strong> Sebagai pelarut vitamin (A, D, E, K), isolasi termal, dan prekusor hormon steroid.</li>
+<li><strong>Mikronutrien (Zat Besi, Zinc, Kalsium, Vitamin):</strong> Berperan sebagai kofaktor metabolisme, memelihara densitas tulang, dan mencegah anemia.</li>
+</ul>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Recommended Dietary Allowances (RDA)</div>
+<ul>
+<li>AKG Energi : Pria &plusmn;2000-2500 kal, Wanita &plusmn;1500-1900 kal (Kemenkes RI, 2019)</li>
+<li>AKG Protein : 1,5 - 2,0 gr/kg BB/hari (untuk pemeliharaan massa otot)</li>
+<li>AKG Lemak : 15-30% dari kebutuhan energi total (Kemenkes RI, 2019)</li>
+</ul>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">13 Pesan Gizi Seimbang</div>
+<p>Berdasarkan pedoman gizi klinis (Kemenkes RI, 2014):</p>
+<ol>
+<li>Memakan aneka ragam makanan setiap hari.</li>
+<li>Memakan makanan untuk memenuhi kecukupan energi.</li>
+<li>Memakan makanan sumber karbohidrat setengah dari kebutuhan energi.</li>
+<li>Membatasi konsumsi lemak dan minyak sampai 25% dari kecukupan energi.</li>
+<li>Menggunakan garam beryodium.</li>
+<li>Memakan makanan sumber zat besi.</li>
+<li>Memberikan ASI saja pada bayi sampai umur 6 bulan dan berikan MP-ASI sesudahnya.</li>
+<li>Membiasakan makan pagi.</li>
+<li>Minum air bersih yang aman dan cukup jumlahnya.</li>
+<li>Melakukan aktivitas fisik secara teratur.</li>
+<li>Menghindari minuman yang beralkohol.</li>
+<li>Memakan makanan yang aman bagi kesehatan.</li>
+<li>Membaca label pada makanan yang dikemas.</li>
+</ol>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Healthy Food Pyramid</div>
+<div style="text-align:center;">
+<div style="background:#fff;padding:10px;border-radius:8px;margin:10px 0;text-align:center;border:1px solid var(--border);overflow-x:auto;"><svg style="max-width:100%; height:auto;" id="container" width="276" xmlns="http://www.w3.org/2000/svg" class="flowchart" height="430" viewBox="0 0 276 430" role="graphics-document document" aria-roledescription="flowchart-v2"><style>#container{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#container .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#container .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#container .error-icon{fill:#552222;}#container .error-text{fill:#552222;stroke:#552222;}#container .edge-thickness-normal{stroke-width:1px;}#container .edge-thickness-thick{stroke-width:3.5px;}#container .edge-pattern-solid{stroke-dasharray:0;}#container .edge-thickness-invisible{stroke-width:0;fill:none;}#container .edge-pattern-dashed{stroke-dasharray:3;}#container .edge-pattern-dotted{stroke-dasharray:2;}#container .marker{fill:#333333;stroke:#333333;}#container .marker.cross{stroke:#333333;}#container svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#container p{margin:0;}#container .label{font-family:"trebuchet ms",verdana,arial,sans-serif;color:#333;}#container .cluster-label text{fill:#333;}#container .cluster-label span{color:#333;}#container .cluster-label span p{background-color:transparent;}#container .label text,#container span{fill:#333;color:#333;}#container .node rect,#container .node circle,#container .node ellipse,#container .node polygon,#container .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#container .rough-node .label text,#container .node .label text,#container .image-shape .label,#container .icon-shape .label{text-anchor:middle;}#container .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#container .rough-node .label,#container .node .label,#container .image-shape .label,#container .icon-shape .label{text-align:center;}#container .node.clickable{cursor:pointer;}#container .root .anchor path{fill:#333333!important;stroke-width:0;stroke:#333333;}#container .arrowheadPath{fill:#333333;}#container .edgePath .path{stroke:#333333;stroke-width:1px;}#container .flowchart-link{stroke:#333333;fill:none;}#container .edgeLabel{background-color:rgba(232,232,232, 0.8);text-align:center;}#container .edgeLabel p{background-color:rgba(232,232,232, 0.8);}#container .edgeLabel rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#container .labelBkg{background-color:rgba(232, 232, 232, 0.5);}#container .cluster rect{fill:#ffffde;stroke:#aaaa33;stroke-width:1px;}#container .cluster text{fill:#333;}#container .cluster span{color:#333;}#container div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:12px;background:hsl(80, 100%, 96.2745098039%);border:1px solid #aaaa33;border-radius:2px;pointer-events:none;z-index:100;}#container .flowchartTitleText{text-anchor:middle;font-size:18px;fill:#333;}#container rect.text{fill:none;stroke-width:0;}#container .icon-shape,#container .image-shape{background-color:rgba(232,232,232, 0.8);text-align:center;}#container .icon-shape p,#container .image-shape p{background-color:rgba(232,232,232, 0.8);padding:2px;}#container .icon-shape .label rect,#container .image-shape .label rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#container .label-icon{display:inline-block;height:1em;overflow:visible;vertical-align:-0.125em;}#container .node .label-icon path{fill:currentColor;stroke:revert;stroke-width:revert;}#container .node .neo-node{stroke:#9370DB;}#container [data-look="neo"].node rect,#container [data-look="neo"].cluster rect,#container [data-look="neo"].node polygon{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node path{stroke:#9370DB;stroke-width:1px;}#container [data-look="neo"].node .outer-path{filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node .neo-line path{stroke:#9370DB;filter:none;}#container [data-look="neo"].node circle{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node circle .state-start{fill:#000000;}#container [data-look="neo"].icon-shape .icon{fill:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].icon-shape .icon-neo path{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g><marker id="container_flowchart-v2-pointEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="4.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 5 L 10 10 L 10 0 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointEnd-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="11.5" refY="7" markerUnits="userSpaceOnUse" markerWidth="10.5" markerHeight="14" orient="auto"><path d="M 0 0 L 11.5 7 L 0 14 z" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointStart-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="1" refY="7" markerUnits="userSpaceOnUse" markerWidth="11.5" markerHeight="14" orient="auto"><polygon points="0,7 11.5,14 11.5,0" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></polygon></marker><marker id="container_flowchart-v2-circleEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="11" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-1" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleEnd-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refY="5" refX="12.25" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleStart-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-2" refY="5" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-crossEnd" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="12" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-crossStart" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="-1" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-crossEnd-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="17.7" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5;"></path></marker><marker id="container_flowchart-v2-crossStart-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="-3.5" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5; stroke-dasharray: 1, 0;"></path></marker><g class="root"><g class="clusters"></g><g class="edgePaths"><path d="M138,368L138,363.833C138,359.667,138,351.333,138,343.667C138,336,138,329,138,325.5L138,322" id="container-L_A_B_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_A_B_0" data-points="W3sieCI6MTM4LCJ5IjozNjh9LHsieCI6MTM4LCJ5IjozNDN9LHsieCI6MTM4LCJ5IjozMTh9XQ==" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M138,240L138,235.833C138,231.667,138,223.333,138,215.667C138,208,138,201,138,197.5L138,194" id="container-L_B_C_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_B_C_0" data-points="W3sieCI6MTM4LCJ5IjoyNDB9LHsieCI6MTM4LCJ5IjoyMTV9LHsieCI6MTM4LCJ5IjoxOTB9XQ==" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M138,112L138,107.833C138,103.667,138,95.333,138,87.667C138,80,138,73,138,69.5L138,66" id="container-L_C_D_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_C_D_0" data-points="W3sieCI6MTM4LCJ5IjoxMTJ9LHsieCI6MTM4LCJ5Ijo4N30seyJ4IjoxMzgsInkiOjYyfV0=" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" data-id="L_A_B_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_B_C_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_C_D_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g></g><g class="nodes"><g class="node default" id="container-flowchart-A-0" data-look="classic" transform="translate(138, 395)"><rect class="basic label-container" style="" x="-103.2109375" y="-27" width="206.421875" height="54"></rect><g class="label" style="" transform="translate(-73.2109375, -12)"><rect></rect><foreignObject width="146.421875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Grains: 6 serves/day</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-B-1" data-look="classic" transform="translate(138, 279)"><rect class="basic label-container" style="" x="-130" y="-39" width="260" height="78"></rect><g class="label" style="" transform="translate(-100, -24)"><rect></rect><foreignObject width="200" height="48"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table; white-space: break-spaces; line-height: 1.5; max-width: 200px; text-align: center; width: 200px;"><span class="nodeLabel"><p>Vegetables: 3 serves/day &amp; Fruit: 2 serves/day</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-C-3" data-look="classic" transform="translate(138, 151)"><rect class="basic label-container" style="" x="-130" y="-39" width="260" height="78"></rect><g class="label" style="" transform="translate(-100, -24)"><rect></rect><foreignObject width="200" height="48"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table; white-space: break-spaces; line-height: 1.5; max-width: 200px; text-align: center; width: 200px;"><span class="nodeLabel"><p>Milk: 2 serves/day &amp; Meat, Fish, Beans: 2 serves/day</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-D-5" data-look="classic" transform="translate(138, 35)"><rect class="basic label-container" style="" x="-81.0703125" y="-27" width="162.140625" height="54"></rect><g class="label" style="" transform="translate(-51.0703125, -12)"><rect></rect><foreignObject width="102.140625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Oils: sparingly</p></span></div></foreignObject></g></g></g></g></g><defs><filter id="container-drop-shadow" height="130%" width="130%"><feDropShadow dx="4" dy="4" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs><defs><filter id="container-drop-shadow-small" height="150%" width="150%"><feDropShadow dx="2" dy="2" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs></svg></div>
+</div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Grains (6 serves a day)</div>
+<p>Bread, rice, cereal, bread roll, pasta.</p>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Vegetables (3 serves a day)</div>
+<p>Tomato, mushroom, potato, zucchini, capsicum, carrot, onion, lettuce, cucumber, peas, pumpkin.</p>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Fruit (2 serves a day)</div>
+<p>Pear, cherries, banana, plum, orange, apple, grapes, strawberry, lemon.</p>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Milk (2 serves a day)</div>
+<p>Milk, cream, yoghurt, ice-cream, cheese.</p>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Meat, Fish and Beans (2 serves a day)</div>
+<p>Ham, chop, chicken, peanut butter, hamburger, baked beans, tuna, corn, popcorn.</p>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Isi Piringku (The Plate Rule)</div>
+<div style="text-align:center;">
+<div style="background:#fff;padding:10px;border-radius:8px;margin:10px 0;text-align:center;border:1px solid var(--border);overflow-x:auto;"><svg style="max-width:100%; height:auto;" id="container" width="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 739.859375 450" style="max-width: 739.859375px;" role="graphics-document document" aria-roledescription="pie"><style>#container{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#container .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#container .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#container .error-icon{fill:#552222;}#container .error-text{fill:#552222;stroke:#552222;}#container .edge-thickness-normal{stroke-width:1px;}#container .edge-thickness-thick{stroke-width:3.5px;}#container .edge-pattern-solid{stroke-dasharray:0;}#container .edge-thickness-invisible{stroke-width:0;fill:none;}#container .edge-pattern-dashed{stroke-dasharray:3;}#container .edge-pattern-dotted{stroke-dasharray:2;}#container .marker{fill:#333333;stroke:#333333;}#container .marker.cross{stroke:#333333;}#container svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#container p{margin:0;}#container .pieCircle{stroke:black;stroke-width:2px;opacity:0.7;}#container .pieOuterCircle{stroke:black;stroke-width:2px;fill:none;}#container .pieTitleText{text-anchor:middle;font-size:25px;fill:black;font-family:"trebuchet ms",verdana,arial,sans-serif;}#container .slice{font-family:"trebuchet ms",verdana,arial,sans-serif;fill:#333;font-size:17px;}#container .legend text{fill:black;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:17px;}#container .node .neo-node{stroke:#9370DB;}#container [data-look="neo"].node rect,#container [data-look="neo"].cluster rect,#container [data-look="neo"].node polygon{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node path{stroke:#9370DB;stroke-width:1px;}#container [data-look="neo"].node .outer-path{filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node .neo-line path{stroke:#9370DB;filter:none;}#container [data-look="neo"].node circle{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node circle .state-start{fill:#000000;}#container [data-look="neo"].icon-shape .icon{fill:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].icon-shape .icon-neo path{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g></g><g transform="translate(225,225)"><circle cx="0" cy="0" r="186" class="pieOuterCircle"></circle><path d="M0,-185A185,185,0,0,1,162.117,89.124L0,0Z" fill="#ECECFF" class="pieCircle"></path><path d="M162.117,89.124A185,185,0,0,1,-156.201,99.128L0,0Z" fill="#ffffde" class="pieCircle"></path><path d="M-156.201,99.128A185,185,0,0,1,-162.117,-89.124L0,0Z" fill="hsl(80, 100%, 56.2745098039%)" class="pieCircle"></path><path d="M-162.117,-89.124A185,185,0,0,1,0,-185L0,0Z" fill="hsl(240, 100%, 86.2745098039%)" class="pieCircle"></path><text transform="translate(119.4279562467972,-70.629496435364)" class="slice" style="text-anchor: middle;">33%</text><text transform="translate(4.3582428220902845,138.68153525074527)" class="slice" style="text-anchor: middle;">33%</text><text transform="translate(-138.68153525074527,4.3582428220902925)" class="slice" style="text-anchor: middle;">17%</text><text transform="translate(-70.62949643536388,-119.42795624679725)" class="slice" style="text-anchor: middle;">17%</text><text x="0" y="-200" class="pieTitleText">Isi Piringku (The Plate Rule)</text><g class="legend" transform="translate(216,-44)"><rect width="18" height="18" style="fill: rgb(236, 236, 255); stroke: rgb(236, 236, 255);"></rect><text x="22" y="14">Makanan Pokok (Karbohidrat)</text></g><g class="legend" transform="translate(216,-22)"><rect width="18" height="18" style="fill: rgb(255, 255, 222); stroke: rgb(255, 255, 222);"></rect><text x="22" y="14">Sayuran</text></g><g class="legend" transform="translate(216,0)"><rect width="18" height="18" style="fill: rgb(181, 255, 32); stroke: rgb(181, 255, 32);"></rect><text x="22" y="14">Lauk-pauk (Protein)</text></g><g class="legend" transform="translate(216,22)"><rect width="18" height="18" style="fill: rgb(185, 185, 255); stroke: rgb(185, 185, 255);"></rect><text x="22" y="14">Buah-buahan</text></g></g></svg></div>
+</div>
+<p>Pedoman <i>Isi Piringku</i> merepresentasikan keseimbangan rasio karbohidrat, protein, sayuran, dan buah dalam satu porsi makan harian (Kemenkes RI, 2014).<br>
+Contoh: Makan siang &plusmn; 700 kalori</p>
+<ol>
+<li><strong>Makanan Pokok (Nasi dan Penukarnya)</strong>: 150 gr Nasi = 3 centong nasi = 3 buah sedang kentang (300 gr) = 1 1/2 gelas mie kering (75 gr)</li>
+<li><strong>Lauk Pauk</strong>:
+    <ul>
+        <li>Lauk Hewani: 75 gr Ikan kembung = 2 potong sedang ayam tanpa kulit (80 gr) = 1 butir telur ayam ukuran besar (55 gr) = 2 potong daging sapi sedang (70 gr)</li>
+        <li>Lauk Nabati: 100 gr Tahu = 2 potong sedang tempe (50 gr)</li>
+    </ul>
+</li>
+<li><strong>Sayuran</strong>: 150 gr = 1 mangkok sedang</li>
+<li><strong>Buah</strong>: 150 gr pepaya = 2 potong sedang = 2 buah jeruk sedang (110 gr) = 1 buah kecil pisang ambon (50 gr)</li>
+</ol>
+<div class="note">
+Dilengkapi dengan cuci tangan pakai sabun, aktivitas fisik 30 menit per hari, dan minum air 8 gelas sehari (GERMAS).
+</div>
+
+<div class="divider"></div>
+</div>
+<div class="sub-panel " id="tab-aktivitasfisikvitalforce">
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Upaya Healthy Life Style</div>
+<ol>
+<li>Aktivitas Fisik</li>
+<li>Konsumsi Buah dan Sayur</li>
+<li>Tidak Merokok</li>
+<li>Tidak Mengkonsumsi Minuman Beralkohol</li>
+<li>Medical Check Up (MCU) Berkala</li>
+<li>Menjaga Kebersihan Lingkungan</li>
+<li>Menggunakan Jamban</li>
+</ol>
+
+<div class="note warning">
+<strong>Junk Food - Boleh, Namun Sesekali</strong><br>
+Porsi <i>junk food</i> (makanan cepat saji padat kalori namun minim mikronutrien) cenderung meningkat drastis seiring waktu, berkontribusi langsung pada krisis obesitas global akibat asupan natrium dan lemak trans yang tinggi (Zarrin et al., 2020).
+</div>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Aktivitas Fisik</div>
+<p>Gerakan fisik yang dilakukan oleh otot rangka dan sistem penunjangnya (kardiorespirasi) yang membutuhkan pengeluaran energi.</p>
+<ul>
+<li><strong>Prinsip FITT:</strong>
+    <ul>
+        <li><strong>F</strong>requency: Seberapa sering latihan dilakukan (misalnya 3-5 kali per minggu).</li>
+        <li><strong>I</strong>ntensity: Tingkat kesulitan beban latihan (ringan, sedang, berat) berdasarkan <i>Target Heart Rate</i>.</li>
+        <li><strong>T</strong>ime: Durasi latihan setiap sesi (rekomendasi minimal 30 menit/hari).</li>
+        <li><strong>T</strong>ype: Jenis olahraga yang dilakukan (contoh: aerobik, resistensi, atau fleksibilitas).</li>
+    </ul>
+</li>
+<li><strong>Aktivitas fisik internal:</strong> Metabolisme basal organ-organ vital (jantung, paru, ginjal) saat tubuh dalam keadaan istirahat penuh.</li>
+<li><strong>Aktivitas fisik eksternal:</strong> Pergerakan sadar dari otot somatik sehari-hari yang memicu kontraksi otot dan menstimulasi peningkatan konsumsi oksigen (VO2).</li>
+</ul>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Vital Force</div>
+<p>Konsep <i>Vital Force</i> (Energi Vital) menggambarkan keseimbangan holistik manusia yang terbagi atas berbagai dimensi energi penyokong kehidupan (Vithoulkas, 2017).</p>
+<div style="text-align:center;">
+<div style="background:#fff;padding:10px;border-radius:8px;margin:10px 0;text-align:center;border:1px solid var(--border);overflow-x:auto;"><svg style="max-width:100%; height:auto;" id="container" width="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 602.3108520507812 450" style="max-width: 602.3108520507812px;" role="graphics-document document" aria-roledescription="pie"><style>#container{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#container .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#container .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#container .error-icon{fill:#552222;}#container .error-text{fill:#552222;stroke:#552222;}#container .edge-thickness-normal{stroke-width:1px;}#container .edge-thickness-thick{stroke-width:3.5px;}#container .edge-pattern-solid{stroke-dasharray:0;}#container .edge-thickness-invisible{stroke-width:0;fill:none;}#container .edge-pattern-dashed{stroke-dasharray:3;}#container .edge-pattern-dotted{stroke-dasharray:2;}#container .marker{fill:#333333;stroke:#333333;}#container .marker.cross{stroke:#333333;}#container svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#container p{margin:0;}#container .pieCircle{stroke:black;stroke-width:2px;opacity:0.7;}#container .pieOuterCircle{stroke:black;stroke-width:2px;fill:none;}#container .pieTitleText{text-anchor:middle;font-size:25px;fill:black;font-family:"trebuchet ms",verdana,arial,sans-serif;}#container .slice{font-family:"trebuchet ms",verdana,arial,sans-serif;fill:#333;font-size:17px;}#container .legend text{fill:black;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:17px;}#container .node .neo-node{stroke:#9370DB;}#container [data-look="neo"].node rect,#container [data-look="neo"].cluster rect,#container [data-look="neo"].node polygon{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node path{stroke:#9370DB;stroke-width:1px;}#container [data-look="neo"].node .outer-path{filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node .neo-line path{stroke:#9370DB;filter:none;}#container [data-look="neo"].node circle{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node circle .state-start{fill:#000000;}#container [data-look="neo"].icon-shape .icon{fill:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].icon-shape .icon-neo path{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g></g><g transform="translate(225,225)"><circle cx="0" cy="0" r="186" class="pieOuterCircle"></circle><path d="M0,-185A185,185,0,1,1,0,185L0,0Z" fill="#ECECFF" class="pieCircle"></path><path d="M0,185A185,185,0,0,1,-175.945,57.168L0,0Z" fill="#ffffde" class="pieCircle"></path><path d="M-175.945,57.168A185,185,0,0,1,-108.74,-149.668L0,0Z" fill="hsl(80, 100%, 56.2745098039%)" class="pieCircle"></path><path d="M-108.74,-149.668A185,185,0,0,1,0,-185L0,0Z" fill="hsl(240, 100%, 86.2745098039%)" class="pieCircle"></path><text transform="translate(138.75,3.0808688933348094e-14)" class="slice" style="text-anchor: middle;">50%</text><text transform="translate(-81.55520375558064,112.25110796952396)" class="slice" style="text-anchor: middle;">20%</text><text transform="translate(-131.95909163595257,-42.876107969523936)" class="slice" style="text-anchor: middle;">20%</text><text transform="translate(-42.87610796952397,-131.95909163595255)" class="slice" style="text-anchor: middle;">10%</text><text x="0" y="-200" class="pieTitleText">Vital Force</text><g class="legend" transform="translate(216,-44)"><rect width="18" height="18" style="fill: rgb(236, 236, 255); stroke: rgb(236, 236, 255);"></rect><text x="22" y="14">SPIRITUAL</text></g><g class="legend" transform="translate(216,-22)"><rect width="18" height="18" style="fill: rgb(255, 255, 222); stroke: rgb(255, 255, 222);"></rect><text x="22" y="14">EMOSIONAL</text></g><g class="legend" transform="translate(216,0)"><rect width="18" height="18" style="fill: rgb(181, 255, 32); stroke: rgb(181, 255, 32);"></rect><text x="22" y="14">MENTAL</text></g><g class="legend" transform="translate(216,22)"><rect width="18" height="18" style="fill: rgb(185, 185, 255); stroke: rgb(185, 185, 255);"></rect><text x="22" y="14">FISIKAL</text></g></g></svg></div>
+</div>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Healthy Life Style Summary</div>
+<p>Gaya hidup sehat:</p>
+<ol>
+<li>Dapat melakukan aktivitas sesuai passion.</li>
+<li>Kontrol hidup lebih baik (bekerja, pola tidur, istirahat).</li>
+<li>Pengendali penyakit kronis (kolesterol tinggi, hipertensi, diabetes, stress dan penurunan stamina).</li>
+</ol>
+
+<div class="divider"></div>
+<div class="sec-h">DAFTAR PUSTAKA</div>
+<p>Farhud, D. D., 2015. Impact of Lifestyle on Health. <i>Iranian Journal of Public Health</i>, 44(11), pp.1442-1444.</p>
+<p>Hecht, S. S., 2012. Lung carcinogenesis by tobacco smoke. <i>International Journal of Cancer</i>, 131(12), pp.2724-2732.</p>
+<p>Kemenkes RI, 2014. <i>Pedoman Gizi Seimbang</i>. Jakarta: Kementerian Kesehatan Republik Indonesia.</p>
+<p>Kemenkes RI, 2019. <i>Peraturan Menteri Kesehatan Republik Indonesia Nomor 28 Tahun 2019 tentang Angka Kecukupan Gizi yang Dianjurkan untuk Masyarakat Indonesia</i>. Jakarta: Kementerian Kesehatan Republik Indonesia.</p>
+<p>Kumar, K., 2017. Importance of Healthy Life Style in Healthy living. <i>Juniper Online Journal Public Health</i>, 2(5).</p>
+<p>Vithoulkas, G., 2017. The concept of the "Vital Force" in homeopathy. <i>Journal of Medicine and Life</i>, 10(3), pp.277-279.</p>
+<p>WHO, 2015. <i>Healthy Living</i>. Geneva: World Health Organization.</p>
+<p>Zarrin, R., Ijadpanah, A. and Omidian, M., 2020. Association of dietary patterns with the risk of metabolic syndrome. <i>Clinical Nutrition Research</i>, 9(2), pp.100-111.</p>
+</div>
+
+</div>
+
+<!-- QUIZ -->
+<div class="main-panel" id="mp-quiz">
+  <div id="qconfig" class="qconfig">
+    <div class="qconfig-title">Mulai Sesi Quiz</div>
+    <div class="qconfig-sub">Pilih topik (multi-pilih)</div>
+    <div class="cfg-grid" id="cfg-grid">
+<button class="cfg-btn sel" data-type="pool_konsep_kesehatan">Konsep Kesehatan</button>
+<button class="cfg-btn sel" data-type="pool_paradigma_sehati">Paradigma Sehati</button>
+<button class="cfg-btn sel" data-type="pool_karsinogen_rokok">Karsinogen Rokok</button>
+<button class="cfg-btn sel" data-type="pool_fisiologis">Fisiologis</button>
+<button class="cfg-btn sel" data-type="pool_gizi_makro">Gizi Makro</button>
+<button class="cfg-btn sel" data-type="pool_rda_pesan_gizi">Rda Pesan Gizi</button>
+<button class="cfg-btn sel" data-type="pool_piringku_pyramid">Piringku Pyramid</button>
+<button class="cfg-btn sel" data-type="pool_fitt_vital_force">Fitt Vital Force</button>
+<button class="cfg-btn sel" data-type="pool_clinical_cases">Clinical Cases</button>
+<button class="cfg-btn sel" data-type="pool_clinical_cases_advanced">Clinical Cases Advanced</button>
+
+</div>
+    <button class="start-btn" onclick="startSession()">Mulai →</button>
+  </div>
+  <div id="qactive" style="display:none">
+    <div class="qheader">
+      <div class="qnum-display">Soal ke-<strong id="qnum">1</strong></div>
+      <div id="qpill" class="qtype-pill"></div>
+      <div class="qscore-display"><strong id="qscore">0</strong> benar</div>
+    </div>
+    <div class="qcard">
+      <div id="qscen" class="qscen" style="display:none"></div>
+      <div id="qdata" class="qdata" style="display:none"></div>
+      <div id="qtext" class="qtext"></div>
+    </div>
+    <div class="opts" id="opts"></div>
+    <div class="expbox" id="expbox"></div>
+    <div class="actrow">
+      <button class="next-btn" id="nextbtn" onclick="nextQ()">Soal Berikutnya →</button>
+      <button class="end-btn" onclick="endSession()">Akhiri Sesi</button>
+    </div>
+  </div>
+  <div id="qresults" style="display:none">
+    <div class="results-wrap">
+      <div class="res-big" id="res-pct">—</div>
+      <div class="res-sub" id="res-sub">—</div>
+      <div class="res-grid" id="res-grid"></div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:20px">
+        <button class="retry-btn" style="margin-bottom:0" onclick="restartQuiz()">Coba Lagi</button>
+        <button class="retry-btn" style="margin-bottom:0;background:var(--green)" onclick="downloadCert()">⬇ Unduh Sertifikat</button>
+      </div>
+      <div class="dtable-wrap" style="margin-bottom:14px"><table><thead><tr><th>Topik</th><th>Soal</th><th>Benar</th></tr></thead><tbody id="res-bytype"></tbody></table></div>
+      <div class="dtable-wrap"><table><thead><tr><th>#</th><th>Soal (ringkas)</th><th>Jawaban Benar</th><th>Hasil</th></tr></thead><tbody id="res-tbody"></tbody></table></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div>am i healthy? · Blok 2.5 · FK Unsoed</div>
+  <div style="margin-top:5px">crafted by alchemist4real · <a href="https://174-three.vercel.app" target="_blank" style="color:var(--text3);text-decoration:none;border-bottom:1px dashed var(--text3);transition:color .18s" onmouseover="this.style.color='var(--blue)'" onmouseout="this.style.color='var(--text3)'">check other quizzes → 174 archive ↗</a></div>
+</footer>
+</div>
+
+<script>
+// ═══ TAB ═══
+window.switchMain=function(id,b){document.querySelectorAll('.main-panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.main-tab').forEach(x=>x.classList.remove('active'));document.getElementById('mp-'+id).classList.add('active');b.classList.add('active');};
+window.switchSub=function(id,b){document.querySelectorAll('.sub-panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.sub-tab').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');b.classList.add('active');};
+window.startSession=startSession;window.nextQ=nextQ;window.endSession=endSession;window.restartQuiz=restartQuiz;
+
+// ═══ CONFIG ═══
+const activeTypes=new Set(['pool_konsep_kesehatan','pool_paradigma_sehati','pool_karsinogen_rokok','pool_fisiologis','pool_gizi_makro','pool_rda_pesan_gizi','pool_piringku_pyramid','pool_fitt_vital_force','pool_clinical_cases','pool_clinical_cases_advanced']);
+document.querySelectorAll('.cfg-btn').forEach(b=>{b.addEventListener('click',()=>{const t=b.dataset.type;if(activeTypes.has(t)){if(activeTypes.size===1)return;activeTypes.delete(t);b.classList.remove('sel');}else{activeTypes.add(t);b.classList.add('sel');}});});
+
+// ═══ UTILS ═══
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const shuf=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]];}return b;};
+const KEYS='ABCDE'.split('');
+function stripHtml(s){return s.replace(/<[^>]*>/g,'');}
+// Pool-based sequential picker (no repeat until exhausted)
+function makePicker(pool){let idx=[];return function(){if(idx.length>=pool.length)idx=[];const av=pool.map((_,i)=>i).filter(i=>!idx.includes(i));const si=rnd(av);idx.push(si);return pool[si];};}
+
+// ═══════════════════════════════════════
+// BANKS
+// ═══════════════════════════════════════
+const pool_konsep_kesehatan = [
+        {
+            q: "Menurut WHO (1948), keadaan sejahtera fisik, mental, dan sosial tanpa ada keluhan cacat atau sakit sama sekali disebut sebagai...",
+            a: "Kesehatan",
+            opt: ["Kesehatan", "Kebugaran", "Gaya hidup", "Kapasitas fungsional", "Homeostasis"],
+            exc: "Menurut WHO 1948, kesehatan adalah keadaan sejahtera fisik, mental sosial tanpa ada keluhan sama sekali (cacat/sakit)."
+        },
+        {
+            q: "UU RI No. 23/1992 menambahkan satu aspek penting dalam definisi kesehatan selain fisik, jiwa, dan sosial, yaitu memungkinkan setiap orang untuk...",
+            a: "Hidup produktif secara sosial ekonomis",
+            opt: ["Hidup produktif secara sosial ekonomis", "Mencapai aktualisasi diri maksimal", "Terbebas dari penyakit menular", "Berkembang sesuai potensi genetik", "Berinteraksi tanpa hambatan fisik"],
+            exc: "UU RI N0.23/1992: Keadaan sejahtera dari badan, jiwa dan sosial yang memungkinkan setiap orang hidup produktif secara sosial ekonomis."
+        },
+        {
+            q: "Masyarakat India kuno meyakini bahwa kehidupan yang penuh semangat dan kreatif hingga 100 tahun bergantung pada...",
+            a: "Keharmonisan total antara cara hidup dengan alam serta warisan spiritual",
+            opt: ["Keharmonisan total antara cara hidup dengan alam serta warisan spiritual", "Konsumsi ramuan herbal harian dan meditasi", "Pengendalian pikiran melalui puasa berkala", "Latihan fisik intensif sejak usia muda", "Pola makan vegetarian secara ketat"],
+            exc: "Masyarakat India kuno meyakini kehidupan yang penuh semangat bergantung pada keharmonisan total antara cara hidup dengan Alam serta warisan spiritual."
+        },
+        {
+            q: "Definisi gaya hidup sehat (Healthy Life Style) menurut Kumar (2017) secara spesifik bertujuan untuk...",
+            a: "Menurunkan risiko penyakit serius atau kematian dini",
+            opt: ["Menurunkan risiko penyakit serius atau kematian dini", "Meningkatkan BMR (Basal Metabolic Rate) secara stabil", "Memperpanjang telomer DNA", "Mengurangi angka morbiditas penyakit infeksi", "Mencapai berat badan ideal sesuai BMI"],
+            exc: "Gaya Hidup Sehat (Healthy Life Style): suatu cara hidup yang menurunkan risiko penyakit serius atau kematian dini (Kumar, 2017)."
+        },
+        {
+            q: "Menurut WHO, berapa persentase faktor kesehatan individu dan kualitas hidup yang berkorelasi langsung dengan gaya hidup?",
+            a: "60%",
+            opt: ["60%", "40%", "50%", "70%", "80%"],
+            exc: "Gaya hidup sebagai faktor penting Kesehatan menurut WHO, 60% faktor kesehatan individu dan kualitas hidup berkorelasi dengan gaya hidup."
+        },
+        {
+            q: "Manakah dari berikut ini yang BUKAN merupakan bentuk gaya hidup dominan yang tidak sehat di era modern saat ini?",
+            a: "Konsumsi whole food",
+            opt: ["Konsumsi whole food", "Pola makan tidak sehat", "Merokok", "Penyalahgunaan narkoba", "Stres"],
+            exc: "Malnutrisi, pola makan tidak sehat, merokok, alkohol, narkoba, stres adalah presentasi gaya hidup tidak sehat. Whole food adalah bagian dari gaya hidup sehat."
+        },
+        {
+            q: "Dalam menghadapi kehidupan modern, tantangan baru yang memengaruhi gaya hidup sehat individu meliputi...",
+            a: "Teknologi internet dan komunikasi virtual jaringan",
+            opt: ["Teknologi internet dan komunikasi virtual jaringan", "Penurunan angka harapan hidup", "Urbanisasi ke pedesaan", "Peningkatan konsumsi makanan organik", "Perubahan iklim global secara langsung"],
+            exc: "Kehidupan menghadapi tantangan baru seperti teknologi internet dan komunikasi virtual jaringan yang mengubah gaya hidup."
+        },
+        {
+            q: "Visi KEMENKES RI untuk mewujudkan INDONESIA SEHAT dilandaskan pada prinsip...",
+            a: "Gotong Royong",
+            opt: ["Gotong Royong", "Keadilan Sosial", "Pembangunan Berkelanjutan", "Kesetaraan Gender", "Demokrasi Pancasila"],
+            exc: "Visi KEMENKES RI: Terwujudnya Indonesia yang Berdaulat, Mandiri dan Berkepribadian Berlandaskan Gotong Royong (INDONESIA SEHAT)."
+        }
+    ];
+const pick_pool_konsep_kesehatan = makePicker(pool_konsep_kesehatan);
+const pool_paradigma_sehati = [
+        {
+            q: "Dalam paradigma makan, kelompok yang memandang makanan sebagai bahan bakar untuk sekadar mempertahankan fungsi fisiologis diilustrasikan sebagai kelompok...",
+            a: "Makan untuk Hidup",
+            opt: ["Makan untuk Hidup", "Hidup untuk Makan", "Makan untuk Emosi", "Hidup untuk Bertahan", "Makan Tradisional"],
+            exc: "Paradigma membagi menjadi 'Makan untuk Hidup' (fungsi dasar, diilustrasikan antara hewan/manusia) dan 'Hidup untuk Makan' (akibat modernisasi)."
+        },
+        {
+            q: "Modernisasi seringkali menggeser paradigma dari 'Makan untuk Hidup' menjadi...",
+            a: "Hidup untuk Makan",
+            opt: ["Hidup untuk Makan", "Makan Cepat Saji", "Makan untuk Status", "Makan Fungsional", "Hidup Tanpa Makan"],
+            exc: "Bagan paradigma menunjukkan pergeseran dari 'Makan untuk Hidup' ke 'Hidup Untuk Makan' karena modernisasi."
+        },
+        {
+            q: "Konsep SEHATI merupakan singkatan dari beberapa prinsip. Huruf 'S' pada SEHATI merujuk pada...",
+            a: "Seimbang gizi",
+            opt: ["Seimbang gizi", "Sering berolahraga", "Sayangi jantung", "Sinar matahari pagi", "Selalu bahagia"],
+            exc: "SEHATI: S=Seimbang gizi, E=Enyahkan rokok, H=Hindari stress, A=Awasi tekanan darah, T=Teratur berolahraga, I=Istirahat cukup."
+        },
+        {
+            q: "Berdasarkan prinsip SEHATI, berapa lama istirahat (tidur) yang dianjurkan per hari?",
+            a: "5 – 7 Jam",
+            opt: ["5 – 7 Jam", "4 – 6 Jam", "6 – 8 Jam", "7 – 9 Jam", "8 – 10 Jam"],
+            exc: "Huruf I pada SEHATI: Istirahat yang cukup (5 – 7 Jam / hari)."
+        },
+        {
+            q: "Dalam akronim SEHATI, tindakan pencegahan kardiovaskular spesifik yang disebutkan pada huruf 'A' adalah...",
+            a: "Awasi tekanan darah",
+            opt: ["Awasi tekanan darah", "Awasi kadar gula darah", "Awasi kolesterol", "Aktivitas fisik setiap hari", "Atur pola makan"],
+            exc: "A dalam SEHATI berarti 'Awasi tekanan darah'."
+        },
+        {
+            q: "Pola makan seseorang atau kelompok dibentuk oleh sikap dan kepercayaan. Kepercayaan terhadap suatu makanan termasuk ke dalam aspek...",
+            a: "Kognitif",
+            opt: ["Kognitif", "Afektif", "Psikomotor", "Lingkungan", "Sosial"],
+            exc: "Pola makan dipengaruhi Sikap (afektif) dan Kepercayaan (kognitif)."
+        },
+        {
+            q: "Susunan jenis, jumlah, dan jam (waktu) pangan yang dikonsumsi seseorang pada waktu tertentu disebut...",
+            a: "Pola Makan",
+            opt: ["Pola Makan", "Pola Konsumsi", "Status Gizi", "RDA", "Isi Piringku"],
+            exc: "Pola Makan adalah susunan jenis, jumlah dan jam (waktu) pangan yang dikonsumsi."
+        },
+        {
+            q: "Hasil budaya masyarakat terkait makanan yang dipengaruhi oleh lingkungan dan interaksi manusia dikenal sebagai...",
+            a: "Pola Konsumsi",
+            opt: ["Pola Konsumsi", "Pola Makan", "Budaya Pangan", "Paradigma Makan", "Gizi Seimbang"],
+            exc: "Pola Konsumsi Makanan adalah Hasil budaya masyarakat yang dipengaruhi oleh faktor lingkungan dan manusia."
+        }
+    ];
+const pick_pool_paradigma_sehati = makePicker(pool_paradigma_sehati);
+const pool_karsinogen_rokok = [
+        {
+            q: "Asap rokok mengandung zat karsinogenik spesifik yang dapat mengikat DNA p53, sehingga memicu mutasi. Zat tersebut adalah...",
+            a: "Benzopyrene",
+            opt: ["Benzopyrene", "Dimethylnitrosamine", "Vinyl Chloride", "Polonium-210", "Tar"],
+            exc: "Benzopyrene secara spesifik disebutkan dapat mengikat DNA p53."
+        },
+        {
+            q: "Selain bahan kimia, asap rokok juga mengandung isotop radioaktif karsinogenik yang dapat menginduksi keganasan paru, yaitu...",
+            a: "Polonium-210",
+            opt: ["Polonium-210", "Uranium-235", "Radium-226", "Iodium-131", "Strontium-90"],
+            exc: "Isotop radioaktif dalam asap rokok adalah Polonium-210."
+        },
+        {
+            q: "Zat beracun dalam rokok yang bekerja dengan mengikat hemoglobin dan secara signifikan menurunkan oksigenasi jaringan adalah...",
+            a: "Karbon Monoksida",
+            opt: ["Karbon Monoksida", "Tar", "Nikotin", "Cadmium", "Arsenic"],
+            exc: "Karbon Monoksida mengikat hemoglobin menurunkan oksigenasi."
+        },
+        {
+            q: "Komponen dalam asap rokok yang bertanggung jawab langsung atas kelumpuhan silia saluran napas, sehingga mengganggu klirens mukosiliar adalah...",
+            a: "Tar",
+            opt: ["Tar", "Nikotin", "Benzopyrene", "Dimethylnitrosamine", "Vinyl Chloride"],
+            exc: "Tar melumpuhkan silia saluran napas."
+        },
+        {
+            q: "Seorang pasien perokok berat datang dengan batuk kronis. Secara patofisiologis, kerusakan silia pernapasan pasien ini terutama disebabkan oleh akumulasi...",
+            a: "Tar",
+            opt: ["Tar", "Karbon monoksida", "Benzopyrene", "Radikal bebas", "Polonium-210"],
+            exc: "Tar adalah komponen yang melumpuhkan silia saluran napas."
+        },
+        {
+            q: "Mutasi pada gen p53 sering ditemukan pada kanker paru akibat merokok. Komponen asap rokok manakah yang paling berkaitan dengan mekanisme ini?",
+            a: "Benzopyrene",
+            opt: ["Benzopyrene", "Polonium-210", "Karbon monoksida", "Arsenic", "Tar"],
+            exc: "Benzopyrene mengikat DNA p53 dan memicu mutasi."
+        },
+        {
+            q: "Berikut ini adalah zat kimia karsinogenik dalam asap rokok, KECUALI...",
+            a: "Aflatoksin",
+            opt: ["Aflatoksin", "Dimethylnitrosamine", "Vinyl Chloride", "Arsenic", "Cadmium"],
+            exc: "Aflatoksin adalah karsinogen dari jamur (Aspergillus), bukan dari asap rokok. Yang ada di rokok: Dimethylnitrosamine, Vinyl chloride, Arsenic, Cadmium."
+        }
+    ];
+const pick_pool_karsinogen_rokok = makePicker(pool_karsinogen_rokok);
+const pool_fisiologis = [
+        {
+            q: "Aktivitas fisik teratur dapat memperbaiki fungsi kognitif dan performa belajar. Secara fisiologis, hal ini dimediasi oleh...",
+            a: "Sirkulasi serebral optimal yang memastikan oksigenasi dan suplai glukosa stabil",
+            opt: ["Sirkulasi serebral optimal yang memastikan oksigenasi dan suplai glukosa stabil", "Peningkatan sekresi hormon kortisol", "Penurunan volume cairan cerebrospinal", "Akumulasi asam laktat di ganglia basalis", "Hipertrofi lobus oksipitalis"],
+            exc: "Fungsi Kognitif: Sirkulasi serebral yang optimal dari aktivitas fisik teratur memastikan oksigenasi dan suplai glukosa yang stabil ke otak, meningkatkan neuroplastisitas."
+        },
+        {
+            q: "Pola makan seimbang berperan dalam imunitas dengan cara...",
+            a: "Mengontrol simpanan adiposa viseral untuk mencegah inflamasi derajat rendah",
+            opt: ["Mengontrol simpanan adiposa viseral untuk mencegah inflamasi derajat rendah", "Meningkatkan produksi eritrosit di sumsum tulang", "Memicu hiperplasia sel T sitotoksik secara non-spesifik", "Meningkatkan pH darah menjadi lebih basa", "Menekan produksi antibodi monoklonal"],
+            exc: "Regulasi BB dan Imunitas: Pola makan seimbang menjaga homeostasis BMI dengan mengontrol simpanan adiposa viseral, yang mencegah inflamasi derajat rendah."
+        },
+        {
+            q: "Keseimbangan sirkadian sangat penting untuk kualitas tidur fase deep sleep karena memperbaiki pelepasan hormon...",
+            a: "Melatonin",
+            opt: ["Melatonin", "Kortisol", "Adrenalin", "Tiroksin", "Aldosteron"],
+            exc: "Keseimbangan sirkadian memperbaiki pelepasan melatonin, sehingga meningkatkan kualitas tidur fase deep sleep."
+        },
+        {
+            q: "Olahraga dan diet bergizi merangsang pelepasan neurotransmiter yang berfungsi menurunkan depresi dan kecemasan, yaitu...",
+            a: "Endorfin, serotonin, dan dopamin",
+            opt: ["Endorfin, serotonin, dan dopamin", "Asetilkolin, norepinefrin, dan glutamat", "GABA, histamin, dan substansi P", "Melatonin, kortisol, dan epinefrin", "Oksitosin, prolaktin, dan ADH"],
+            exc: "Olahraga dan diet merangsang pelepasan endorfin, serotonin, dan dopamin (Farhud, 2015)."
+        }
+    ];
+const pick_pool_fisiologis = makePicker(pool_fisiologis);
+const pool_gizi_makro = [
+        {
+            q: "Fase pemulihan pasca trauma atau infeksi membutuhkan asupan ekstra makronutrien tertentu untuk regenerasi jaringan dan sintesis antibodi. Makronutrien yang paling krusial dalam kondisi ini adalah...",
+            a: "Protein",
+            opt: ["Protein", "Karbohidrat", "Lemak jenuh", "Vitamin C", "Zat Besi"],
+            exc: "Kondisi Klinis: Fase pemulihan pasca trauma/infeksi membutuhkan asupan ekstra protein untuk regenerasi jaringan dan sintesis antibodi."
+        },
+        {
+            q: "Berapakah nilai kalori yang dihasilkan dari 1 gram lemak?",
+            a: "9 kkal",
+            opt: ["9 kkal", "4 kkal", "7 kkal", "5 kkal", "12 kkal"],
+            exc: "Lemak (1 g = 9 kkal)."
+        },
+        {
+            q: "Karbohidrat merupakan sumber utama energi. Berapakah kalori yang dihasilkan dari 1 gram karbohidrat?",
+            a: "4 kkal",
+            opt: ["4 kkal", "9 kkal", "7 kkal", "2 kkal", "0 kkal"],
+            exc: "Karbohidrat (1 g = 4 kkal)."
+        },
+        {
+            q: "Fungsi utama lemak dalam tubuh selain sebagai isolasi termal dan prekursor hormon steroid adalah...",
+            a: "Pelarut vitamin A, D, E, K",
+            opt: ["Pelarut vitamin A, D, E, K", "Membentuk antibodi", "Sumber cadangan glikogen utama", "Sintesis enzim pencernaan", "Katalisis reaksi enzimatik"],
+            exc: "Lemak berfungsi sebagai pelarut vitamin (A, D, E, K), isolasi termal, dan prekusor hormon steroid."
+        },
+        {
+            q: "Pria umumnya membutuhkan asupan kalori lebih besar dibandingkan wanita karena...",
+            a: "Massa otot (lean mass) yang lebih tinggi dibandingkan jaringan adiposa",
+            opt: ["Massa otot (lean mass) yang lebih tinggi dibandingkan jaringan adiposa", "Kapasitas paru yang lebih besar", "Tingkat stres psikologis yang lebih tinggi", "Rasio tulang dan tulang rawan yang berbeda", "Frekuensi denyut jantung basal yang lebih cepat"],
+            exc: "Pria membutuhkan asupan kalori lebih besar akibat massa otot (lean mass) yang lebih tinggi."
+        },
+        {
+            q: "Zat besi, zinc, kalsium, dan vitamin diklasifikasikan sebagai mikronutrien. Peran utama kalsium dan zat besi adalah...",
+            a: "Memelihara densitas tulang dan mencegah anemia",
+            opt: ["Memelihara densitas tulang dan mencegah anemia", "Prekursor hormon steroid dan isolasi termal", "Sintesis otot dan enzim", "Sumber pembentukan glukosa darah", "Pelarut vitamin larut lemak"],
+            exc: "Mikronutrien berperan sebagai kofaktor metabolisme, memelihara densitas tulang (Kalsium), dan mencegah anemia (Zat Besi)."
+        }
+    ];
+const pick_pool_gizi_makro = makePicker(pool_gizi_makro);
+const pool_rda_pesan_gizi = [
+        {
+            q: "Berdasarkan AKG (Kemenkes RI, 2019), berapa rentang kebutuhan energi harian rata-rata untuk pria dewasa?",
+            a: "2000 - 2500 kalori",
+            opt: ["2000 - 2500 kalori", "1500 - 1900 kalori", "2500 - 3000 kalori", "1000 - 1500 kalori", "3000 - 3500 kalori"],
+            exc: "AKG Energi: Pria 2000-2500 kal."
+        },
+        {
+            q: "Untuk pemeliharaan massa otot, Angka Kecukupan Gizi (AKG) untuk protein yang dianjurkan adalah...",
+            a: "1,5 - 2,0 gr/kg BB/hari",
+            opt: ["1,5 - 2,0 gr/kg BB/hari", "0,8 - 1,0 gr/kg BB/hari", "2,5 - 3,0 gr/kg BB/hari", "0,5 - 0,8 gr/kg BB/hari", "3,0 - 4,0 gr/kg BB/hari"],
+            exc: "AKG Protein : 1,5 - 2,0 gr/kg BB/hari (untuk pemeliharaan massa otot)."
+        },
+        {
+            q: "Batas anjuran konsumsi lemak berdasarkan kecukupan energi total (Kemenkes RI, 2019) adalah sebesar...",
+            a: "15-30%",
+            opt: ["15-30%", "10-15%", "30-45%", "40-50%", "Kurang dari 5%"],
+            exc: "AKG Lemak : 15-30% dari kebutuhan energi total."
+        },
+        {
+            q: "Menurut 13 Pesan Gizi Seimbang Kemenkes RI (2014), konsumsi makanan sumber karbohidrat dianjurkan sebesar...",
+            a: "Setengah dari kebutuhan energi",
+            opt: ["Setengah dari kebutuhan energi", "Seperempat dari kebutuhan energi", "75% dari kebutuhan energi", "10% dari kebutuhan energi", "Sama dengan kebutuhan lemak"],
+            exc: "Pesan Gizi 3: Memakan makanan sumber karbohidrat setengah dari kebutuhan energi."
+        },
+        {
+            q: "Salah satu dari 13 Pesan Gizi Seimbang menekankan penggunaan garam khusus, yaitu...",
+            a: "Garam beryodium",
+            opt: ["Garam beryodium", "Garam Himalaya", "Garam laut murni", "Garam rendah natrium", "Garam diet"],
+            exc: "Pesan Gizi 5: Menggunakan garam beryodium."
+        },
+        {
+            q: "Pemberian ASI menurut Pedoman Gizi Seimbang harus dilakukan secara eksklusif sampai bayi berumur...",
+            a: "6 bulan",
+            opt: ["6 bulan", "4 bulan", "12 bulan", "2 tahun", "3 bulan"],
+            exc: "Pesan Gizi 7: Memberikan ASI saja pada bayi sampai umur 6 bulan dan berikan MP-ASI sesudahnya."
+        }
+    ];
+const pick_pool_rda_pesan_gizi = makePicker(pool_rda_pesan_gizi);
+const pool_piringku_pyramid = [
+        {
+            q: "Menurut Healthy Food Pyramid, berapakah porsi harian yang direkomendasikan untuk Grains (biji-bijian/karbohidrat)?",
+            a: "6 serves a day",
+            opt: ["6 serves a day", "3 serves a day", "2 serves a day", "4 serves a day", "8 serves a day"],
+            exc: "Grains: 6 serves a day."
+        },
+        {
+            q: "Dalam Healthy Food Pyramid, porsi harian untuk sayuran (vegetables) dan buah (fruit) secara berurutan adalah...",
+            a: "Sayuran 3 serves/day, Buah 2 serves/day",
+            opt: ["Sayuran 3 serves/day, Buah 2 serves/day", "Sayuran 2 serves/day, Buah 3 serves/day", "Sayuran 4 serves/day, Buah 2 serves/day", "Sayuran 5 serves/day, Buah 5 serves/day", "Sayuran 1 serve/day, Buah 1 serve/day"],
+            exc: "Vegetables: 3 serves a day. Fruit: 2 serves a day."
+        },
+        {
+            q: "Menurut pedoman Isi Piringku dari Kemenkes RI, dalam satu piring makan, proporsi makanan pokok dan sayuran masing-masing adalah...",
+            a: "33% makanan pokok dan 33% sayuran",
+            opt: ["33% makanan pokok dan 33% sayuran", "50% makanan pokok dan 25% sayuran", "25% makanan pokok dan 25% sayuran", "50% makanan pokok dan 50% sayuran", "33% makanan pokok dan 17% sayuran"],
+            exc: "Isi Piringku: 33% Makanan Pokok, 33% Sayuran, 17% Lauk-pauk, 17% Buah."
+        },
+        {
+            q: "Dalam pedoman Isi Piringku, jika seseorang makan siang dengan total kalori sekitar 700 kalori, setara dengan berapakah porsi 150 gram sayuran?",
+            a: "1 mangkok sedang",
+            opt: ["1 mangkok sedang", "2 mangkok sedang", "Setengah mangkok sedang", "3 sendok makan", "1 piring penuh"],
+            exc: "Sayuran: 150 gr = 1 mangkok sedang."
+        },
+        {
+            q: "Porsi 150 gram nasi pada Isi Piringku setara dengan...",
+            a: "3 centong nasi atau 3 buah sedang kentang",
+            opt: ["3 centong nasi atau 3 buah sedang kentang", "1 centong nasi atau 1 buah kentang", "2 centong nasi atau 1 buah kentang", "4 centong nasi atau 2 buah kentang", "5 centong nasi atau 4 buah kentang"],
+            exc: "Makanan Pokok: 150 gr Nasi = 3 centong nasi = 3 buah sedang kentang."
+        },
+        {
+            q: "Selain panduan porsi makan, GERMAS dalam pedoman Isi Piringku juga melengkapi anjuran untuk minum air sebanyak...",
+            a: "8 gelas sehari",
+            opt: ["8 gelas sehari", "10 gelas sehari", "12 gelas sehari", "4 gelas sehari", "6 gelas sehari"],
+            exc: "Dilengkapi dengan ... minum air 8 gelas sehari (GERMAS)."
+        }
+    ];
+const pick_pool_piringku_pyramid = makePicker(pool_piringku_pyramid);
+const pool_fitt_vital_force = [
+        {
+            q: "Dalam prinsip FITT untuk aktivitas fisik, 'I' merujuk pada Intensity yang diukur berdasarkan...",
+            a: "Target Heart Rate",
+            opt: ["Target Heart Rate", "Basal Metabolic Rate", "Body Mass Index", "Respiratory Rate", "Blood Pressure"],
+            exc: "Intensity: Tingkat kesulitan beban latihan berdasarkan Target Heart Rate."
+        },
+        {
+            q: "Menurut pedoman FITT, berapakah rekomendasi durasi minimal ('Time') untuk aktivitas fisik setiap harinya?",
+            a: "Minimal 30 menit",
+            opt: ["Minimal 30 menit", "Minimal 15 menit", "Minimal 60 menit", "Minimal 45 menit", "Minimal 90 menit"],
+            exc: "Time: Durasi latihan setiap sesi (rekomendasi minimal 30 menit/hari)."
+        },
+        {
+            q: "Aktivitas fisik yang mencakup metabolisme basal organ-organ vital (jantung, paru, ginjal) saat tubuh istirahat penuh disebut...",
+            a: "Aktivitas fisik internal",
+            opt: ["Aktivitas fisik internal", "Aktivitas fisik eksternal", "Basal Metabolic Rate", "Aktivitas aerobik", "Homeostasis dinamis"],
+            exc: "Aktivitas fisik internal: Metabolisme basal organ-organ vital saat tubuh dalam keadaan istirahat penuh."
+        },
+        {
+            q: "Konsep Vital Force (Energi Vital) dari Vithoulkas (2017) membagi dimensi energi kehidupan. Persentase terbesar dari Vital Force adalah pada dimensi...",
+            a: "Spiritual (50%)",
+            opt: ["Spiritual (50%)", "Emosional (20%)", "Mental (20%)", "Fisikal (10%)", "Sosial (50%)"],
+            exc: "Vital Force pie chart: Spiritual 50%, Emosional 20%, Mental 20%, Fisikal 10%."
+        },
+        {
+            q: "Menurut diagram konsep Vital Force, dimensi Fisikal memiliki kontribusi sebesar...",
+            a: "10%",
+            opt: ["10%", "20%", "33%", "50%", "5%"],
+            exc: "Vital Force: Fisikal 10%."
+        }
+    ];
+const pick_pool_fitt_vital_force = makePicker(pool_fitt_vital_force);
+const pool_clinical_cases = [
+        {
+            q: "Seorang pria, 55 tahun, datang dengan keluhan batuk kronis dan sesak napas. Pasien memiliki riwayat merokok 2 bungkus/hari selama 30 tahun. Hasil lab menunjukkan mutasi genetik pada epitel bronkus. Berdasarkan patogenesis karsinogen dalam rokok, zat manakah yang secara langsung mengikat DNA p53 dan memicu onkogenesis pada pasien ini?",
+            a: "Benzopyrene",
+            opt: ["Benzopyrene", "Dimethylnitrosamine", "Karbon monoksida", "Tar", "Vinyl Chloride"],
+            exc: "Benzopyrene adalah karsinogen dalam asap rokok yang mengikat DNA p53 dan menginduksi mutasi."
+        },
+        {
+            q: "Wanita, 45 tahun, didiagnosis dengan sindrom metabolik. Dokter menyarankan modifikasi gaya hidup berdasarkan pedoman Isi Piringku (1 piring). Sesuai proporsi, jumlah kalori dari karbohidrat (makanan pokok) yang dianjurkan dalam visualisasi Isi Piringku adalah sekitar...",
+            a: "33% dari total isi piring",
+            opt: ["33% dari total isi piring", "50% dari total isi piring", "17% dari total isi piring", "25% dari total isi piring", "10% dari total isi piring"],
+            exc: "Isi Piringku: Makanan Pokok 33%, Sayuran 33%, Lauk 17%, Buah 17%."
+        },
+        {
+            q: "Seorang mahasiswa kedokteran berusia 21 tahun merasa kesulitan berkonsentrasi belajar dan sering lupa. Ia memutuskan untuk mulai berolahraga lari setiap pagi. Secara medis, adaptasi gaya hidup sehat berupa aktivitas fisik teratur ini meningkatkan konsentrasi belajarnya melalui mekanisme...",
+            a: "Optimalisasi sirkulasi serebral yang menyuplai oksigen dan glukosa, memicu neuroplastisitas",
+            opt: ["Optimalisasi sirkulasi serebral yang menyuplai oksigen dan glukosa, memicu neuroplastisitas", "Peningkatan deposit lemak viseral serebral", "Penurunan perfusi korteks prefrontal", "Akumulasi glutamat pada celah sinaps", "Pelepasan melatonin di pagi hari"],
+            exc: "Aktivitas fisik teratur memastikan oksigenasi dan suplai glukosa stabil ke otak, meningkatkan neuroplastisitas sehingga memperbaiki konsentrasi belajar."
+        },
+        {
+            q: "Seorang laki-laki, 35 tahun, sedang dalam masa pemulihan pasca operasi trauma abdomen akibat kecelakaan. Laju metabolisme basal (BMR) pasien meningkat. Dokter bedah menyarankan asupan diet ekstra untuk regenerasi jaringan parut dan sintesis imunoglobulin. Berdasarkan pesan gizi, asupan makronutrien apakah yang harus ditingkatkan?",
+            a: "Protein",
+            opt: ["Protein", "Karbohidrat", "Lemak jenuh", "Vitamin A", "Zat Besi"],
+            exc: "Fase pemulihan pasca trauma atau infeksi membutuhkan asupan ekstra makronutrien (terutama protein) untuk regenerasi jaringan dan sintesis antibodi."
+        },
+        {
+            q: "Seorang remaja putri berusia 16 tahun datang ke Puskesmas dengan keluhan pucat, mudah lelah, dan letih. Hasil lab: Hb 9,0 g/dL (anemia). Untuk mencegah dan mengatasi kondisinya, dokter menyarankan konsumsi mikronutrien tertentu yang berperan sebagai kofaktor metabolisme hematopoiesis. Mikronutrien tersebut adalah...",
+            a: "Zat besi",
+            opt: ["Zat besi", "Kalsium", "Zinc", "Magnesium", "Kalium"],
+            exc: "Zat besi memelihara densitas tulang (Kalsium) dan mencegah anemia."
+        },
+        {
+            q: "Seorang direktur perusahaan, 50 tahun, datang dengan keluhan sering insomnia (sulit tidur fase deep sleep) dan cemas. Pasien memiliki rutinitas yang sangat buruk dan jarang terkena sinar matahari. Dokter menjelaskan bahwa keseimbangan ritme sirkadiannya terganggu. Hormon apakah yang pelepasannya menurun pada pasien ini?",
+            a: "Melatonin",
+            opt: ["Melatonin", "Endorfin", "Serotonin", "Dopamin", "Adrenalin"],
+            exc: "Keseimbangan sirkadian memperbaiki pelepasan melatonin, sehingga meningkatkan kualitas tidur fase deep sleep."
+        },
+        {
+            q: "Pasien pria, 40 tahun, BMI 32 kg/m2 (Obesitas), berniat menurunkan berat badan. Dokter merekomendasikan olahraga aerobik ringan-sedang selama 45 menit setiap hari. Berdasarkan prinsip FITT, 45 menit per hari merujuk pada elemen...",
+            a: "Time",
+            opt: ["Time", "Frequency", "Intensity", "Type", "Target"],
+            exc: "Time: Durasi latihan setiap sesi (rekomendasi minimal 30 menit/hari). 45 menit adalah komponen Time."
+        },
+        {
+            q: "Seorang pasien wanita dengan keluhan sering merasa cemas (anxiety) dan depresi ringan dianjurkan untuk mengubah gaya hidup dengan olahraga teratur dan diet whole food. Secara biologis, gaya hidup tersebut membantu mengatasi depresinya dengan cara merangsang pelepasan neurotransmiter...",
+            a: "Endorfin, serotonin, dan dopamin",
+            opt: ["Endorfin, serotonin, dan dopamin", "Kortisol dan adrenalin", "Asetilkolin dan glutamat", "Melatonin dan prolaktin", "Histamin dan substansi P"],
+            exc: "Olahraga dan diet bergizi merangsang pelepasan endorfin, serotonin, dan dopamin."
+        },
+        {
+            q: "Seorang pasien lansia dirawat di ruang ICU dan berada dalam kondisi istirahat penuh di tempat tidur (bedridden). Pengeluaran energinya saat ini murni digunakan untuk metabolisme basal organ vital seperti jantung, paru, dan ginjal. Jenis pengeluaran energi ini disebut...",
+            a: "Aktivitas fisik internal",
+            opt: ["Aktivitas fisik internal", "Aktivitas fisik eksternal", "Aktivitas fisik fungsional", "Metabolisme aktif kinetik", "Termogenesis adaptif"],
+            exc: "Aktivitas fisik internal: Metabolisme basal organ-organ vital (jantung, paru, ginjal) saat tubuh dalam keadaan istirahat penuh."
+        },
+        {
+            q: "Seorang ibu membawa anaknya untuk konsultasi gizi. Anaknya sering mengonsumsi burger dan kentang goreng (junk food). Dokter menjelaskan bahaya konsumsi porsi junk food berlebih. Apa komponen utama pada junk food yang berkontribusi langsung pada obesitas dan sindrom metabolik menurut Zarrin et al. (2020)?",
+            a: "Natrium dan lemak trans yang tinggi namun minim mikronutrien",
+            opt: ["Natrium dan lemak trans yang tinggi namun minim mikronutrien", "Protein nabati murni tanpa serat", "Karbohidrat kompleks yang tidak dapat dicerna", "Banyaknya kandungan air dan mineral esensial", "Hanya mengandung kalori protein hewani"],
+            exc: "Junk food adalah makanan padat kalori namun minim mikronutrien, tinggi asupan natrium dan lemak trans yang berkontribusi pada krisis obesitas."
+        },
+        {
+            q: "Seorang praktisi homeopati sedang menganalisis pasien menggunakan pendekatan holistik berdasarkan teori Vithoulkas (2017). Praktisi tersebut fokus pada aspek spiritual, emosional, mental, dan fisik dari pasien. Konsep yang digunakan oleh praktisi tersebut dikenal sebagai...",
+            a: "Vital Force",
+            opt: ["Vital Force", "Homeostasis Total", "Yin dan Yang", "Paradigma Makan", "Konsepsi Kesehatan WHO"],
+            exc: "Konsep Vital Force (Energi Vital) menggambarkan keseimbangan holistik manusia yang terbagi atas dimensi spiritual, emosional, mental, dan fisik."
+        },
+        {
+            q: "Pria, 60 tahun, menderita PPOK berat dengan riwayat merokok puluhan tahun. Pada bronkoskopi ditemukan silia epitel bronkus yang atrofi dan lumpuh. Substansi toksik spesifik dalam asap rokok yang paling bertanggung jawab atas kelumpuhan silia ini adalah...",
+            a: "Tar",
+            opt: ["Tar", "Nikotin", "Karbon monoksida", "Benzopyrene", "Vinyl Chloride"],
+            exc: "Tar melumpuhkan silia saluran napas."
+        },
+        {
+            q: "Seorang binaragawan sedang menghitung AKG (Angka Kecukupan Gizi) protein hariannya. Dengan berat badan 80 kg, berapakah rentang asupan protein yang dianjurkan untuk pemeliharaan massa ototnya?",
+            a: "120 - 160 gram/hari",
+            opt: ["120 - 160 gram/hari", "80 - 100 gram/hari", "200 - 240 gram/hari", "60 - 80 gram/hari", "40 - 60 gram/hari"],
+            exc: "AKG Protein : 1,5 - 2,0 gr/kg BB/hari. 80 x 1.5 = 120. 80 x 2 = 160."
+        },
+        {
+            q: "Seorang perawat sedang memberikan edukasi gizi dengan panduan Isi Piringku untuk seorang pasien diabetes. Pasien bertanya berapa banyak buah yang harus ia konsumsi dalam satu piring makanannya. Jawaban yang tepat berdasarkan persentase piring adalah...",
+            a: "17%",
+            opt: ["17%", "33%", "50%", "25%", "10%"],
+            exc: "Buah pada Isi Piringku mencakup 17%."
+        },
+        {
+            q: "Berdasarkan pedoman 13 Pesan Gizi Seimbang, langkah yang paling ditekankan untuk mencegah gangguan tiroid (GAKI) di masyarakat adalah...",
+            a: "Menggunakan garam beryodium",
+            opt: ["Menggunakan garam beryodium", "Memakan makanan sumber zat besi", "Menghindari alkohol", "Membiasakan sarapan pagi", "Memakan aneka ragam makanan"],
+            exc: "Pesan Gizi ke-5: Menggunakan garam beryodium, yang sangat penting untuk mencegah gangguan tiroid."
+        }
+    ];
+const pick_pool_clinical_cases = makePicker(pool_clinical_cases);
+const pool_clinical_cases_advanced = [
+        {
+            q: "Seorang pasien, laki-laki 65 tahun, didiagnosis menderita hipertensi dan hiperkolesterolemia. Dokter menyarankan modifikasi gaya hidup (Healthy Life Style Summary). Manfaat utama pengadopsian gaya hidup sehat pada pasien kronis seperti ini adalah...",
+            a: "Pengendali penyakit kronis seperti hipertensi dan kolesterol tinggi",
+            opt: ["Pengendali penyakit kronis seperti hipertensi dan kolesterol tinggi", "Menyembuhkan penyakit kronis secara instan", "Menghentikan penggunaan semua obat medis", "Mengubah profil genetik secara keseluruhan", "Meningkatkan BMR hingga 200%"],
+            exc: "Healthy Life Style Summary: Pengendali penyakit kronis (kolesterol tinggi, hipertensi, diabetes)."
+        },
+        {
+            q: "Seorang guru, 40 tahun, mengeluh sering lelah dan stres (burnout). Ia disarankan untuk makan 'natural dan whole food' dan berolahraga teratur. Rekomendasi ini didasarkan pada temuan Farhud (2015) bahwa gaya hidup sehat membantu...",
+            a: "Kebugaran fisik, melindungi tubuh dari penyakit, dan menjaga tetap kuat",
+            opt: ["Kebugaran fisik, melindungi tubuh dari penyakit, dan menjaga tetap kuat", "Menurunkan kecerdasan intelektual sementara", "Memperlambat siklus sirkadian", "Meningkatkan sekresi adrenalin kronis", "Mengurangi kebutuhan cairan harian"],
+            exc: "Peran gaya hidup sehat (Farhud, 2015): Eating natural, whole food, kebugaran fisik melindungi tubuh."
+        },
+        {
+            q: "Seorang atlet renang sering merasa lemas di akhir latihan. Ahli gizi menganalisis porsi karbohidratnya yang terlalu rendah. Berdasarkan 13 Pesan Gizi Seimbang, makanan sumber karbohidrat seharusnya mencukupi...",
+            a: "Setengah dari kebutuhan energi",
+            opt: ["Setengah dari kebutuhan energi", "Seperempat dari kebutuhan energi", "1/3 dari kebutuhan energi", "3/4 dari kebutuhan energi", "Sama persis dengan asupan protein"],
+            exc: "Pesan Gizi 3: Memakan makanan sumber karbohidrat setengah dari kebutuhan energi."
+        },
+        {
+            q: "Pasien pria 50 tahun, perokok berat, bertanya kepada dokter mengenai risiko keracunan Karbon Monoksida (CO) dalam darah. Dokter menjelaskan patofisiologi efek CO, yaitu...",
+            a: "Mengikat hemoglobin sehingga menurunkan oksigenasi jaringan",
+            opt: ["Mengikat hemoglobin sehingga menurunkan oksigenasi jaringan", "Melumpuhkan silia saluran napas", "Mengikat DNA p53 sehingga memicu onkogenesis", "Menyebabkan penumpukan cairan interstisial", "Meningkatkan absorbsi zat besi dalam lambung"],
+            exc: "CO mengikat hemoglobin menurunkan oksigenasi."
+        },
+        {
+            q: "Sebuah program kesehatan di puskesmas menggalakkan kampanye 'Pola Makan Seimbang' berdasarkan aspek psikologis masyarakat. Faktor kognitif yang memengaruhi pola makan suatu kelompok adalah...",
+            a: "Kepercayaan terhadap suatu makanan",
+            opt: ["Kepercayaan terhadap suatu makanan", "Sikap afektif terhadap bentuk makanan", "Ketersediaan finansial harian", "Letak geografis lingkungan tinggal", "Faktor hormonal individual"],
+            exc: "Kepercayaan (belief) termasuk dalam aspek kognitif dari pola makan."
+        },
+        {
+            q: "Seorang remaja pria sangat jarang terkena paparan sinar matahari pagi karena selalu bermain game di kamar. Risiko gaya hidup ini terutama berkaitan dengan defisiensi sintesis vitamin...",
+            a: "Vitamin D",
+            opt: ["Vitamin D", "Vitamin A", "Vitamin E", "Vitamin K", "Vitamin C"],
+            exc: "Pola Hidup yang Sehat meliputi paparan sinar matahari (vitamin D) / udara segar."
+        },
+        {
+            q: "Seorang wanita hamil berusia 28 tahun mengeluh sering kram otot dan anemia ringan. Selain suplemen zat besi, dokter menyarankan asupan mikronutrien lain untuk densitas tulang janin dan ibu, yaitu...",
+            a: "Kalsium",
+            opt: ["Kalsium", "Vitamin C", "Asam sulfat", "Natrium", "Fluorida"],
+            exc: "Mikronutrien memelihara densitas tulang (Kalsium) dan mencegah anemia (Zat besi)."
+        },
+        {
+            q: "Sesuai panduan 'Isi Piringku', seorang anak yang makan siang diberikan 1 mangkuk sayuran (150 gram). Porsi buah pepaya yang seimbang untuk melengkapinya (17% vs 33% atau 1:2 dari sayur) kira-kira adalah...",
+            a: "150 gr pepaya (2 potong sedang)",
+            opt: ["150 gr pepaya (2 potong sedang)", "300 gr pepaya", "50 gr pepaya", "1 buah besar pisang", "Setengah potong kecil apel"],
+            exc: "Di slide: Buah 150 gr pepaya = 2 potong sedang. (Porsinya setara beratnya dengan sayur di contoh menu 700 kalori meskipun proporsinya 1/6 piring)."
+        },
+        {
+            q: "Dalam sebuah survei gaya hidup, dilaporkan angka malnutrisi, konsumsi alkohol, dan stres sangat tinggi pada suatu wilayah urban. Menurut WHO, kondisi ini merupakan...",
+            a: "Bentuk gaya hidup tidak sehat yang dominan akibat perubahan kehidupan",
+            opt: ["Bentuk gaya hidup tidak sehat yang dominan akibat perubahan kehidupan", "Bentuk evolusi fisiologis manusia urban", "Konsekuensi logis dari penurunan BMR", "Adaptasi psikologis terhadap lingkungan", "Manifestasi dari Vital Force mental tinggi"],
+            exc: "Malnutrisi, rokok, alkohol, stres adalah presentasi gaya hidup tidak sehat (bentuk gaya hidup dominan saat ini)."
+        },
+        {
+            q: "Dalam paradigma kesehatan, makan untuk mempertahankan fungsi biologis tanpa memandang kenikmatan gastronomi diidentikkan dengan konsep...",
+            a: "Makan untuk Hidup",
+            opt: ["Makan untuk Hidup", "Hidup untuk Makan", "Makan untuk Emosi", "Paradigma Modern", "Homeostasis Pangan"],
+            exc: "Paradigma makan: Makan untuk Hidup."
+        },
+        {
+            q: "Manusia yang telah mengalami modernisasi cenderung beralih paradigma makannya. Bagan menunjukkan pergeseran ke arah...",
+            a: "Hidup untuk Makan",
+            opt: ["Hidup untuk Makan", "Makan Organik Eksklusif", "Makan Fungsional Reduktif", "Makan untuk Tumbuh", "Berpuasa untuk Sehat"],
+            exc: "Modernisasi -> Hidup Untuk Makan."
+        },
+        {
+            q: "Seorang pekerja tambang memiliki aktivitas fisik eksternal yang sangat berat. Menurut fisiologi, peningkatan aktivitas sadar dari otot somatiknya akan langsung menstimulasi...",
+            a: "Peningkatan konsumsi oksigen (VO2)",
+            opt: ["Peningkatan konsumsi oksigen (VO2)", "Penurunan denyut jantung istirahat (bradikardia)", "Penurunan sekresi endorfin", "Penyusutan massa otot (lean mass)", "Penekanan sistem kardiorespirasi"],
+            exc: "Aktivitas fisik eksternal: pergerakan sadar otot somatik yang memicu kontraksi otot dan menstimulasi peningkatan konsumsi oksigen (VO2)."
+        },
+        {
+            q: "Wanita 35 tahun, mencoba diet ekstrem tanpa karbohidrat sama sekali. Dokter memperingatkan hal ini berbahaya karena fungsi karbohidrat (1 g = 4 kkal) yang sangat spesifik untuk...",
+            a: "Sumber utama pembentukan glukosa darah dan cadangan glikogen",
+            opt: ["Sumber utama pembentukan glukosa darah dan cadangan glikogen", "Pelarut vitamin A, D, E, K", "Katalisis reaksi enzimatik", "Sintesis antibodi humoral", "Pemeliharaan densitas tulang"],
+            exc: "Karbohidrat: Sumber utama pembentukan glukosa darah dan cadangan glikogen."
+        },
+        {
+            q: "Pemulihan pasca operasi membutuhkan protein tinggi karena fungsi protein (1 g = 4 kkal) sebagai...",
+            a: "Sintesis otot, enzim, dan pertahanan humoral (imunoglobulin)",
+            opt: ["Sintesis otot, enzim, dan pertahanan humoral (imunoglobulin)", "Sumber energi instan lebih dari 9 kkal/gram", "Cadangan lemak subkutan", "Mempercepat penurunan suhu tubuh basal", "Membentuk asam klorida lambung secara langsung"],
+            exc: "Protein esensial untuk sintesis otot, enzim, dan pertahanan humoral."
+        },
+        {
+            q: "Masyarakat pedesaan memiliki kebiasaan makan bersama dengan menu lokal yang sudah turun-temurun. Hal ini mencerminkan bahwa pola konsumsi makanan adalah...",
+            a: "Hasil budaya masyarakat yang dipengaruhi oleh lingkungan dan manusia",
+            opt: ["Hasil budaya masyarakat yang dipengaruhi oleh lingkungan dan manusia", "Insting genetik bawaan", "Program dari pemerintah pusat semata", "Bawaan dari letak geografis absolut", "Indikator tingkat pendidikan tertinggi"],
+            exc: "Pola Konsumsi Makanan: Hasil budaya masyarakat yang dipengaruhi faktor lingkungan dan manusia."
+        },
+        {
+            q: "Seorang pasien dianjurkan makan beraneka ragam makanan setiap hari sesuai Pesan Gizi Seimbang. Pesan ini berada di urutan ke...",
+            a: "Pertama (1)",
+            opt: ["Pertama (1)", "Kelima (5)", "Ketiga (3)", "Kesepuluh (10)", "Ketigabelas (13)"],
+            exc: "Pesan Gizi 1: Memakan aneka ragam makanan setiap hari."
+        },
+        {
+            q: "Bayi berusia 4 bulan sering diberi air putih dan madu oleh neneknya. Dokter melarang karena melanggar Pesan Gizi Seimbang nomor 7, yaitu...",
+            a: "Memberikan ASI saja pada bayi sampai umur 6 bulan",
+            opt: ["Memberikan ASI saja pada bayi sampai umur 6 bulan", "Membiasakan makan pagi pada bayi", "Membatasi konsumsi lemak dan minyak", "Membaca label pada makanan", "Menggunakan garam beryodium"],
+            exc: "Pesan 7: Memberikan ASI saja pada bayi sampai umur 6 bulan (ASI Eksklusif)."
+        },
+        {
+            q: "Healthy Food Pyramid menempatkan kelompok 'Meat, Fish, and Beans' pada rekomendasi porsi harian sebesar...",
+            a: "2 serves a day",
+            opt: ["2 serves a day", "3 serves a day", "6 serves a day", "1 serve a day", "Sparingly (sangat dibatasi)"],
+            exc: "Meat, Fish and Beans (2 serves a day)."
+        },
+        {
+            q: "Minyak (Oils) pada Healthy Food Pyramid direkomendasikan untuk dikonsumsi dalam jumlah...",
+            a: "Sparingly (sangat dibatasi)",
+            opt: ["Sparingly (sangat dibatasi)", "2 serves a day", "3 serves a day", "Sama dengan sayuran", "Hanya minyak zaitun 10 porsi sehari"],
+            exc: "Puncak piramida: Oils: sparingly."
+        },
+        {
+            q: "Menurut Pedoman Gizi Seimbang, aktivitas fisik secara teratur ditekankan pada pesan gizi nomor...",
+            a: "Pesan 10",
+            opt: ["Pesan 10", "Pesan 1", "Pesan 3", "Pesan 12", "Pesan 7"],
+            exc: "Pesan Gizi 10: Melakukan aktivitas fisik secara teratur."
+        },
+        {
+            q: "Di samping makanan hewani seperti ikan kembung dan ayam, lauk nabati dalam Isi Piringku seperti tempe sangat dianjurkan. Pada menu ± 700 kalori, porsi tempe yang setara adalah...",
+            a: "2 potong sedang (50 gr)",
+            opt: ["2 potong sedang (50 gr)", "5 potong besar (150 gr)", "1 potong kecil (10 gr)", "Setengah potong sedang", "1 balok tempe utuh"],
+            exc: "Lauk Nabati: 100 gr Tahu = 2 potong sedang tempe (50 gr)."
+        },
+        {
+            q: "Gerakan Masyarakat Hidup Sehat (GERMAS) dalam penerapan 'Isi Piringku' mengamanatkan beberapa pilar tambahan selain pola makan, KECUALI...",
+            a: "Tidur 12 jam sehari",
+            opt: ["Tidur 12 jam sehari", "Cuci tangan pakai sabun", "Aktivitas fisik 30 menit per hari", "Minum air 8 gelas sehari", "Semua opsi benar (bukan kecuali)"],
+            exc: "Tidur 12 jam bukan bagian GERMAS (GERMAS Isi piringku: cuci tangan, aktivitas 30mnt, air 8 gelas)."
+        },
+        {
+            q: "Konsep SEHATI menganjurkan untuk menghindari stres. Hal ini selaras dengan manfaat fisiologis yang mencegah pelepasan berlebih hormon stres dari korteks adrenal, yaitu...",
+            a: "Kortisol",
+            opt: ["Kortisol", "Melatonin", "Serotonin", "Insulin", "Tiroksin"],
+            exc: "Stres memicu kortisol berlebih."
+        },
+        {
+            q: "H dalam singkatan SEHATI adalah...",
+            a: "Hindari stress",
+            opt: ["Hindari stress", "Hindari junk food", "Hindari alkohol", "Hanya makan organik", "Hati-hati obat-obatan"],
+            exc: "H = Hindari stress."
+        },
+        {
+            q: "E dalam singkatan SEHATI adalah...",
+            a: "Enyahkan rokok",
+            opt: ["Enyahkan rokok", "Enyahkan lemak trans", "Edukasi gizi dini", "Eksposur sinar matahari", "Energi seimbang"],
+            exc: "E = Enyahkan rokok."
+        },
+        {
+            q: "Asap rokok mengandung karsinogen spesifik Dimethylnitrosamine. Paparan karsinogen ini utamanya berisiko menginduksi keganasan pada...",
+            a: "Sel epitel (onkogenesis)",
+            opt: ["Sel epitel (onkogenesis)", "Sel otot lurik (rhabdomyosarcoma)", "Sel darah merah (polisitemia)", "Sel tulang (osteosarkoma)", "Selaput meninges otak"],
+            exc: "Zat karsinogenik memicu mutasi DNA dan menginduksi keganasan pada sel epitel (onkogenesis)."
+        },
+        {
+            q: "Seorang pasien dengan BMI 18.5 (batas bawah normal) berencana membangun otot (bulking) dan berlatih resistensi. Prinsip latihan yang berfokus pada 'seberapa sering latihan dilakukan dalam seminggu' merupakan komponen FITT bagian...",
+            a: "Frequency",
+            opt: ["Frequency", "Intensity", "Time", "Type", "Target"],
+            exc: "Frequency: Seberapa sering latihan dilakukan."
+        },
+        {
+            q: "Olahraga resistensi (angkat beban) dan aerobik (lari) merupakan pilihan program latihan. Dalam prinsip FITT, pemilihan aktivitas ini masuk dalam kategori...",
+            a: "Type",
+            opt: ["Type", "Time", "Frequency", "Intensity", "Training"],
+            exc: "Type: Jenis olahraga yang dilakukan (contoh: aerobik, resistensi)."
+        },
+        {
+            q: "Pesan Gizi nomor 13 sangat relevan bagi masyarakat di era modern yang sering berbelanja di minimarket, yaitu...",
+            a: "Membaca label pada makanan yang dikemas",
+            opt: ["Membaca label pada makanan yang dikemas", "Menghindari minuman beralkohol", "Memakan makanan yang aman", "Minum air bersih 8 gelas", "Memakan makanan sumber zat besi"],
+            exc: "Pesan 13: Membaca label pada makanan yang dikemas."
+        },
+        {
+            q: "Zat besi (Fe) adalah kofaktor esensial dalam tubuh manusia, utamanya dibutuhkan untuk sintesis...",
+            a: "Hemoglobin",
+            opt: ["Hemoglobin", "Kolagen", "Mielin", "Glikogen", "Bilirubin"],
+            exc: "Zat besi -> mencegah anemia (komponen utama Hemoglobin)."
+        },
+        {
+            q: "Menurut Kumar (2017), mempraktikkan 'Healthy Life Style' secara konsisten bertujuan akhir untuk...",
+            a: "Menurunkan risiko penyakit serius atau kematian dini",
+            opt: ["Menurunkan risiko penyakit serius atau kematian dini", "Mencapai keabadian fisik", "Mengubah profil DNA menjadi dominan", "Menghilangkan stres sepenuhnya", "Menurunkan berat badan secara drastis dalam waktu singkat"],
+            exc: "Gaya Hidup Sehat: cara hidup menurunkan risiko penyakit serius atau kematian dini."
+        },
+        {
+            q: "Kehidupan modern membawa tantangan kesehatan baru seperti kurang gerak akibat pemakaian layar gawai (screen time). Hal ini termasuk presentasi dari...",
+            a: "Gaya hidup tidak sehat akibat teknologi komunikasi virtual",
+            opt: ["Gaya hidup tidak sehat akibat teknologi komunikasi virtual", "Penyakit keturunan autosomal dominan", "Efek samping obat obatan kronis", "Malnutrisi mikronutrien akut", "Gangguan ritme sirkadian bawaan"],
+            exc: "Tantangan baru teknologi internet dan komunikasi virtual jaringan yang memicu gaya hidup tidak sehat."
+        },
+        {
+            q: "Seorang ahli gizi memberikan diet 2000 kalori. 15-30% kalori tersebut harus berasal dari lemak. Jika pasien mengambil batas atas (30%), maka asupan lemak harian adalah 600 kalori. Setara dengan berapa gram lemak asupan tersebut?",
+            a: "66,6 gram",
+            opt: ["66,6 gram", "150 gram", "50 gram", "100 gram", "75 gram"],
+            exc: "1 gram lemak = 9 kkal. 600 / 9 = 66,6 gram."
+        },
+        {
+            q: "Rekomendasi asupan karbohidrat adalah 50% dari energi total (Pesan gizi 3). Jika energi total 2000 kkal, asupan energi dari karbohidrat adalah 1000 kkal. Dalam gram, ini setara dengan...",
+            a: "250 gram",
+            opt: ["250 gram", "111 gram", "500 gram", "100 gram", "200 gram"],
+            exc: "1 gram karbo = 4 kkal. 1000 / 4 = 250 gram."
+        }
+    ];
+const pick_pool_clinical_cases_advanced = makePicker(pool_clinical_cases_advanced);
+
+
+// ═══ DISPATCHER ═══
+function makeQ(type){
+    
+        if(type === 'pool_konsep_kesehatan') {
+            const item = pick_pool_konsep_kesehatan();
+            if(!item) return null; // Safety check
+            return {
+                type: 'pool_konsep_kesehatan',
+                typeName: 'Konsep Kesehatan',
+                tpColor: 'var(--green)',
+                tpBg: 'var(--greenbg)',
+                scenario: null,
+                rawData: null,
+                q: item.q || item.question || 'No Question',
+                opts: shuf(item.opt || item.options || [item.a || item.ans]),
+                ans: item.a || item.answer || item.ans || 'No Answer',
+                exp: item.exc || item.explanation || item.exp || ''
+            };
+        }
+        
+        if(type === 'pool_paradigma_sehati') {
+            const item = pick_pool_paradigma_sehati();
+            if(!item) return null; // Safety check
+            return {
+                type: 'pool_paradigma_sehati',
+                typeName: 'Paradigma Sehati',
+                tpColor: 'var(--green)',
+                tpBg: 'var(--greenbg)',
+                scenario: null,
+                rawData: null,
+                q: item.q || item.question || 'No Question',
+                opts: shuf(item.opt || item.options || [item.a || item.ans]),
+                ans: item.a || item.answer || item.ans || 'No Answer',
+                exp: item.exc || item.explanation || item.exp || ''
+            };
+        }
+        
+        if(type === 'pool_karsinogen_rokok') {
+            const item = pick_pool_karsinogen_rokok();
+            if(!item) return null; // Safety check
+            return {
+                type: 'pool_karsinogen_rokok',
+                typeName: 'Karsinogen Rokok',
+                tpColor: 'var(--green)',
+                tpBg: 'var(--greenbg)',
+                scenario: null,
+                rawData: null,
+                q: item.q || item.question || 'No Question',
+                opts: shuf(item.opt || item.options || [item.a || item.ans]),
+                ans: item.a || item.answer || item.ans || 'No Answer',
+                exp: item.exc || item.explanation || item.exp || ''
+            };
+        }
+        
+        if(type === 'pool_fisiologis') {
+            const item = pick_pool_fisiologis();
+            if(!item) return null; // Safety check
+            return {
+                type: 'pool_fisiologis',
+                typeName: 'Fisiologis',
+                tpColor: 'var(--green)',
+                tpBg: 'var(--greenbg)',
+                scenario: null,
+                rawData: null,
+                q: item.q || item.question || 'No Question',
+                opts: shuf(item.opt || item.options || [item.a || item.ans]),
+                ans: item.a || item.answer || item.ans || 'No Answer',
+                exp: item.exc || item.explanation || item.exp || ''
+            };
+        }
+        
+        if(type === 'pool_gizi_makro') {
+            const item = pick_pool_gizi_makro();
+            if(!item) return null; // Safety check
+            return {
+                type: 'pool_gizi_makro',
+                typeName: 'Gizi Makro',
+                tpColor: 'var(--green)',
+                tpBg: 'var(--greenbg)',
+                scenario: null,
+                rawData: null,
+                q: item.q || item.question || 'No Question',
+                opts: shuf(item.opt || item.options || [item.a || item.ans]),
+                ans: item.a || item.answer || item.ans || 'No Answer',
+                exp: item.exc || item.explanation || item.exp || ''
+            };
+        }
+        
+        if(type === 'pool_rda_pesan_gizi') {
+            const item = pick_pool_rda_pesan_gizi();
+            if(!item) return null; // Safety check
+            return {
+                type: 'pool_rda_pesan_gizi',
+                typeName: 'Rda Pesan Gizi',
+                tpColor: 'var(--green)',
+                tpBg: 'var(--greenbg)',
+                scenario: null,
+                rawData: null,
+                q: item.q || item.question || 'No Question',
+                opts: shuf(item.opt || item.options || [item.a || item.ans]),
+                ans: item.a || item.answer || item.ans || 'No Answer',
+                exp: item.exc || item.explanation || item.exp || ''
+            };
+        }
+        
+        if(type === 'pool_piringku_pyramid') {
+            const item = pick_pool_piringku_pyramid();
+            if(!item) return null; // Safety check
+            return {
+                type: 'pool_piringku_pyramid',
+                typeName: 'Piringku Pyramid',
+                tpColor: 'var(--green)',
+                tpBg: 'var(--greenbg)',
+                scenario: null,
+                rawData: null,
+                q: item.q || item.question || 'No Question',
+                opts: shuf(item.opt || item.options || [item.a || item.ans]),
+                ans: item.a || item.answer || item.ans || 'No Answer',
+                exp: item.exc || item.explanation || item.exp || ''
+            };
+        }
+        
+        if(type === 'pool_fitt_vital_force') {
+            const item = pick_pool_fitt_vital_force();
+            if(!item) return null; // Safety check
+            return {
+                type: 'pool_fitt_vital_force',
+                typeName: 'Fitt Vital Force',
+                tpColor: 'var(--green)',
+                tpBg: 'var(--greenbg)',
+                scenario: null,
+                rawData: null,
+                q: item.q || item.question || 'No Question',
+                opts: shuf(item.opt || item.options || [item.a || item.ans]),
+                ans: item.a || item.answer || item.ans || 'No Answer',
+                exp: item.exc || item.explanation || item.exp || ''
+            };
+        }
+        
+        if(type === 'pool_clinical_cases') {
+            const item = pick_pool_clinical_cases();
+            if(!item) return null; // Safety check
+            return {
+                type: 'pool_clinical_cases',
+                typeName: 'Clinical Cases',
+                tpColor: 'var(--green)',
+                tpBg: 'var(--greenbg)',
+                scenario: null,
+                rawData: null,
+                q: item.q || item.question || 'No Question',
+                opts: shuf(item.opt || item.options || [item.a || item.ans]),
+                ans: item.a || item.answer || item.ans || 'No Answer',
+                exp: item.exc || item.explanation || item.exp || ''
+            };
+        }
+        
+        if(type === 'pool_clinical_cases_advanced') {
+            const item = pick_pool_clinical_cases_advanced();
+            if(!item) return null; // Safety check
+            return {
+                type: 'pool_clinical_cases_advanced',
+                typeName: 'Clinical Cases Advanced',
+                tpColor: 'var(--green)',
+                tpBg: 'var(--greenbg)',
+                scenario: null,
+                rawData: null,
+                q: item.q || item.question || 'No Question',
+                opts: shuf(item.opt || item.options || [item.a || item.ans]),
+                ans: item.a || item.answer || item.ans || 'No Answer',
+                exp: item.exc || item.explanation || item.exp || ''
+            };
+        }
+        
+    return {type:'dummy', typeName:'End of Pool', tpColor:'gray', tpBg:'lightgray', q:'No more questions', opts:['A'], ans:'A', exp:''};
+}
+
+// ═══ SESSION ═══
+let typeQueue=[],sessIdx=0,sessScore=0,sessLog=[],currentQ=null;
+function nextType(){if(!typeQueue.length){const t=[...activeTypes];for(let i=t.length-1;i>0;i--){const j=0|Math.random()*(i+1);[t[i],t[j]]=[t[j],t[i]];}typeQueue=[...t];}return typeQueue.shift();}
+function startSession(){
+  sessIdx=0;sessScore=0;sessLog=[];typeQueue=[];
+  document.getElementById('qconfig').style.display='none';
+  document.getElementById('qresults').style.display='none';
+  document.getElementById('qactive').style.display='block';
+  renderQ();
+}
+function renderQ(){
+  const q=makeQ(nextType());currentQ=q;
+  document.getElementById('qnum').textContent=sessIdx+1;
+  document.getElementById('qscore').textContent=sessScore;
+  const pill=document.getElementById('qpill');
+  pill.textContent=q.typeName;pill.style.background=q.tpBg;pill.style.color=q.tpColor;pill.style.border=`1px solid ${q.tpColor}44`;
+  const scen=document.getElementById('qscen');
+  if(q.scenario){scen.innerHTML=`<strong>Kasus:</strong> ${q.scenario}`;scen.style.display='block';}else scen.style.display='none';
+  const db=document.getElementById('qdata');
+  if(q.rawData){db.innerHTML=q.rawData;db.style.display='block';}else db.style.display='none';
+  document.getElementById('qtext').innerHTML=q.q;
+  const og=document.getElementById('opts');og.innerHTML='';
+  q.opts.forEach((opt,i)=>{
+    const btn=document.createElement('button');btn.className='opt';
+    btn.innerHTML=`<span class="opt-key">${KEYS[i]}</span><span>${opt}</span>`;
+    btn.onclick=()=>selectAns(opt,q,btn);og.appendChild(btn);
+  });
+  const ebox=document.getElementById('expbox');ebox.classList.remove('show');ebox.style.display='none';
+  document.getElementById('nextbtn').style.display='none';
+}
+function selectAns(chosen,q,clickedBtn){
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  const correct=stripHtml(chosen)===stripHtml(q.ans);
+  if(correct)sessScore++;
+  document.querySelectorAll('.opt').forEach(b=>{
+    const label=b.querySelector('span:last-child').innerHTML;
+    if(stripHtml(label)===stripHtml(q.ans)){
+      if(b===clickedBtn&&correct)b.classList.add('correct');
+      else if(b!==clickedBtn)b.classList.add('reveal');
+      else b.classList.add('correct');
+    }
+    if(b===clickedBtn&&!correct)b.classList.add('wrong');
+  });
+  const ebox=document.getElementById('expbox');
+  ebox.innerHTML=`<div style="margin-bottom:7px;font-weight:700;color:${correct?'var(--blue)':'var(--red)'}">${correct?'✅ Benar!':'❌ Kurang tepat.'} Jawaban: <strong>${q.ans}</strong></div>${q.exp}`;
+  ebox.style.display='block';setTimeout(()=>ebox.classList.add('show'),10);
+  sessLog.push({idx:sessIdx+1,type:q.typeName,q:q.q.replace(/<[^>]+>/g,'').slice(0,55)+'…',ans:q.ans,correct});
+  document.getElementById('qscore').textContent=sessScore;
+  document.getElementById('nextbtn').style.display='inline-block';
+}
+function nextQ(){sessIdx++;document.getElementById('expbox').style.display='none';document.getElementById('expbox').classList.remove('show');renderQ();}
+function endSession(){
+  document.getElementById('qactive').style.display='none';document.getElementById('qresults').style.display='block';
+  const total=sessLog.length;if(!total){restartQuiz();return;}
+  const pct=Math.round((sessScore/total)*100);
+  document.getElementById('res-pct').textContent=pct+'%';
+  document.getElementById('res-sub').textContent=`${sessScore} / ${total} soal benar`;
+  const byType={};
+  sessLog.forEach(l=>{if(!byType[l.type])byType[l.type]={total:0,correct:0};byType[l.type].total++;if(l.correct)byType[l.type].correct++;});
+  const rg=document.getElementById('res-grid');rg.innerHTML='';
+  const medal=pct>=80?'🏆':pct>=60?'👍':'📚';
+  [{v:medal,l:'Nilai'},{v:pct+'%',l:'Persentase'},{v:sessScore+'',l:'Benar'},{v:(total-sessScore)+'',l:'Salah'},{v:total+'',l:'Total'}].forEach(s=>{
+    const d=document.createElement('div');d.className='res-stat';
+    d.innerHTML=`<div class="rv">${s.v}</div><div class="rl">${s.l}</div>`;rg.appendChild(d);
+  });
+  document.getElementById('res-bytype').innerHTML=Object.entries(byType).map(([t,v])=>{
+    const p=Math.round((v.correct/v.total)*100);const c=p>=80?'var(--blue)':p>=60?'var(--gold)':'var(--red)';
+    return`<tr><td>${t}</td><td>${v.total}</td><td style="color:${c};font-weight:700">${v.correct} (${p}%)</td></tr>`;
+  }).join('');
+  document.getElementById('res-tbody').innerHTML=sessLog.map(l=>`<tr><td>${l.idx}</td><td>${l.q}</td><td>${l.ans}</td><td style="color:${l.correct?'var(--green)':'var(--red)'}">${l.correct?'✅':'❌'}</td></tr>`).join('');
+}
+function restartQuiz(){typeQueue=[];document.getElementById('qresults').style.display='none';document.getElementById('qconfig').style.display='block';}
+
+function downloadCert(){
+  const total=sessLog.length;
+  const pct=Math.round((sessScore/total)*100);
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+  const medal=pct>=80?'LULUS':pct>=60?'CUKUP':'PERLU BELAJAR LAGI';
+  const medalColor=pct>=80?'#1f7a4a':pct>=60?'#7a6010':'#b03030';
+  const byType={};
+  sessLog.forEach(l=>{if(!byType[l.type])byType[l.type]={total:0,correct:0};byType[l.type].total++;if(l.correct)byType[l.type].correct++;});
+  const rows=Object.entries(byType).map(([t,v])=>{
+    const p=Math.round(v.correct/v.total*100);
+    const bar=Math.round(p*1.4);
+    const bc=p>=80?'#1f7a4a':p>=60?'#7a6010':'#b03030';
+    return`<tr><td style="padding:5px 8px;font-size:11px;color:#384068;width:200px">${t}</td><td style="padding:5px 8px"><div style="background:#e7e7e2;border-radius:4px;height:10px;width:140px"><div style="background:${bc};width:${bar}px;height:10px;border-radius:4px"></div></div></td><td style="padding:5px 8px;font-size:11px;font-weight:700;color:${bc}">${v.correct}/${v.total} (${p}%)</td></tr>`;
+  }).join('');
+
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="680" height="520" font-family="Georgia,serif">
+  <defs>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <path d="M 28 0 L 0 0 0 28" fill="none" stroke="#e0ddd5" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+  <rect width="680" height="520" fill="#fdfdf9"/>
+  <rect width="680" height="520" fill="url(#grid)"/>
+  <rect x="20" y="20" width="640" height="480" rx="12" fill="none" stroke="#b03030" stroke-width="2"/>
+  <rect x="26" y="26" width="628" height="468" rx="9" fill="none" stroke="#b03030" stroke-width="0.5" opacity="0.4"/>
+
+  <text x="340" y="66" text-anchor="middle" font-size="11" letter-spacing="4" fill="#7c85a8" font-family="Georgia,serif">SERTIFIKAT PENYELESAIAN KUIS</text>
+  <line x1="120" y1="74" x2="260" y2="74" stroke="#b03030" stroke-width="0.8"/>
+  <circle cx="340" cy="74" r="3" fill="#b03030"/>
+  <line x1="420" y1="74" x2="560" y2="74" stroke="#b03030" stroke-width="0.8"/>
+
+  <text x="340" y="116" text-anchor="middle" font-size="34" font-weight="bold" fill="#161b2e" font-family="Georgia,serif">Am I Fertile?</text>
+  <text x="340" y="138" text-anchor="middle" font-size="11" fill="#7c85a8" letter-spacing="2" font-family="Georgia,serif">ANALISIS SEMEN · PK BLOK 2.3 · FK UNSOED</text>
+
+  <line x1="100" y1="152" x2="580" y2="152" stroke="#e0ddd5" stroke-width="1"/>
+
+  <text x="340" y="185" text-anchor="middle" font-size="13" fill="#384068" font-family="Georgia,serif">Telah menyelesaikan sesi quiz dengan hasil</text>
+
+  <rect x="230" y="196" width="220" height="80" rx="8" fill="none" stroke="${medalColor}" stroke-width="1.5"/>
+  <text x="340" y="245" text-anchor="middle" font-size="52" font-weight="bold" fill="${medalColor}" font-family="Georgia,serif">${pct}%</text>
+  <text x="340" y="265" text-anchor="middle" font-size="10" fill="${medalColor}" letter-spacing="3" font-family="Georgia,serif">${medal}</text>
+
+  <text x="340" y="300" text-anchor="middle" font-size="12" fill="#384068" font-family="Georgia,serif">${sessScore} soal benar dari ${total} soal · ${dateStr}</text>
+
+  <line x1="100" y1="314" x2="580" y2="314" stroke="#e0ddd5" stroke-width="1"/>
+  <text x="340" y="332" text-anchor="middle" font-size="10" fill="#7c85a8" letter-spacing="2" font-family="Georgia,serif">DISTRIBUSI SKOR PER TOPIK</text>
+
+  <foreignObject x="80" y="340" width="520" height="120">
+    <div xmlns="http://www.w3.org/1999/xhtml">
+      <table style="width:100%;border-collapse:collapse">${rows}</table>
+    </div>
+  </foreignObject>
+
+  <line x1="100" y1="472" x2="580" y2="472" stroke="#e0ddd5" stroke-width="1"/>
+  <text x="340" y="490" text-anchor="middle" font-size="10" fill="#7c85a8" font-family="Georgia,serif">174 Archive · 174-three.vercel.app · WHO 6th Ed. 2021</text>
+</svg>`;
+
+  const blob=new Blob([svg],{type:'image/svg+xml'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`am-i-fertile-${pct}pct.svg`;
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+window.downloadCert=downloadCert;
+</script>
+</body>
+</html>

@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Am I Nurtured? — Quiz Blok 2.5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f8f8f5;--bg2:#f1f1ed;--bg3:#e7e7e2;--bg4:#dcdcd6;
+  --border:rgba(40,55,110,.10);--border2:rgba(40,55,110,.20);
+  --text:#161b2e;--text2:#384068;--text3:#7c85a8;
+  --green:#1f7a4a;--greenbg:rgba(31,122,74,.09);--greenb:rgba(31,122,74,.25);
+  --gold:#7a6010;--goldbg:rgba(122,96,16,.09);--goldb:rgba(122,96,16,.28);
+  --red:#b03030;--redbg:rgba(176,48,48,.08);--redb:rgba(176,48,48,.25);
+  --blue:#1a4faa;--bluebg:rgba(26,79,170,.09);--blueb:rgba(26,79,170,.28);
+  --purp:#4433a0;--purpbg:rgba(68,51,160,.08);--purpb:rgba(68,51,160,.25);
+  --teal:#136ba8;--tealbg:rgba(19,107,168,.08);--tealb:rgba(19,107,168,.25);
+  --r:10px;--rl:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.6;min-height:100vh}
+.app{max-width:900px;margin:0 auto;padding:0 16px 60px}
+header{padding:40px 0 28px;text-align:center}
+.eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--text3);text-transform:uppercase;margin-bottom:10px}
+h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(30px,6vw,54px);letter-spacing:-.03em;line-height:1;margin-bottom:10px}
+h1 span{color:var(--red)}
+.sub{font-size:13px;color:var(--text2);max-width:500px;margin:0 auto}
+.main-tabs{display:flex;gap:3px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:24px}
+.main-tab{flex:1;padding:9px 6px;border-radius:9px;border:none;background:transparent;color:var(--text3);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .18s}
+.main-tab:hover{color:var(--text)}
+.main-tab.active{background:var(--blue);color:#fff;font-weight:600}
+.main-panel{display:none}
+.main-panel.active{display:block;animation:fi .2s ease}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.sub-tabs{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:4px;margin-bottom:20px}
+.sub-tab{padding:8px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text3);font-family:'DM Mono',monospace;font-size:10.5px;cursor:pointer;transition:all .18s;text-align:center;line-height:1.4}
+.sub-tab:hover{background:var(--bg3);color:var(--text2);border-color:var(--border2)}
+.sub-tab.active{background:var(--blue);color:#fff;border-color:var(--text);font-weight:600}
+.sub-panel{display:none}
+.sub-panel.active{display:block;animation:fi .18s ease}
+.sec-h{font-family:'Syne',sans-serif;font-weight:700;font-size:14.5px;color:var(--text);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.divider{height:1px;background:var(--border);margin:20px 0}
+.note{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:0 var(--r) var(--r) 0;padding:10px 14px;font-size:12.5px;color:var(--text2);line-height:1.65;margin-bottom:10px}
+.note strong{color:var(--text)}
+.note.blue{border-left-color:var(--blue)}
+.note.green{border-left-color:var(--green)}
+.note.red{border-left-color:var(--red)}
+.note.purp{border-left-color:var(--purp)}
+.note.teal{border-left-color:var(--teal)}
+.dtable-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:14px}
+.dtable-wrap table{width:100%;border-collapse:collapse;font-size:12px}
+.dtable-wrap thead tr{background:var(--bg3)}
+.dtable-wrap th{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.05em;color:var(--text3);font-weight:600;padding:8px 12px;text-align:left;border-bottom:1px solid var(--border)}
+.dtable-wrap td{padding:7px 12px;border-bottom:1px solid var(--border);font-family:'DM Mono',monospace;font-size:11px;color:var(--text2)}
+.dtable-wrap td:first-child{color:var(--text);font-weight:600}
+.dtable-wrap tr:last-child td{border-bottom:none}
+.dtable-wrap tr:nth-child(even){background:rgba(40,55,110,.02)}
+.formula{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;font-family:'DM Mono',monospace;font-size:12px;color:var(--text);margin:8px 0;line-height:1.8}
+.formula .fkey{color:var(--text3);margin-right:6px}
+.ind-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:4px}
+.ind-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;position:relative;overflow:hidden}
+.ind-card .stripe{position:absolute;top:0;left:0;width:3px;height:100%}
+.ind-card .ind-name{font-family:'Syne',sans-serif;font-size:12.5px;font-weight:700;margin-bottom:6px}
+.ind-card .ind-desc{font-size:12px;color:var(--text2);margin-bottom:8px;line-height:1.6}
+.ind-table{width:100%;border-collapse:collapse}
+.ind-table td{font-family:'DM Mono',monospace;font-size:10.5px;padding:3px 0;border-bottom:1px solid var(--border)}
+.ind-table tr:last-child td{border-bottom:none}
+.ind-table td:first-child{color:var(--text3);width:120px}
+.ind-table td:last-child{font-weight:600;color:var(--text)}
+/* QUIZ */
+.qconfig{text-align:center;padding:28px 0}
+.qconfig-title{font-family:'Syne',sans-serif;font-weight:700;font-size:18px;margin-bottom:6px}
+.qconfig-sub{font-size:13px;color:var(--text2);margin-bottom:22px}
+.cfg-grid{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:26px}
+.cfg-btn{padding:8px 16px;border-radius:20px;border:2px solid var(--border2);background:var(--bg2);color:var(--text3);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;transition:all .18s}
+.cfg-btn:hover{color:var(--text2)}
+.cfg-btn.sel{background:var(--blue);color:#fff;border-color:var(--text);font-weight:600}
+.start-btn{padding:12px 34px;border-radius:var(--r);border:none;background:var(--blue);color:var(--bg);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.02em;transition:all .18s}
+.start-btn:hover{background:var(--text)}
+.qheader{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.qnum-display{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);white-space:nowrap}
+.qnum-display strong{color:var(--text);font-size:15px}
+.qscore-display{margin-left:auto;font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);white-space:nowrap}
+.qscore-display strong{color:var(--green);font-size:15px}
+.qtype-pill{display:inline-block;padding:3px 10px;border-radius:10px;font-family:'DM Mono',monospace;font-size:10px;font-weight:600}
+.qcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:20px 22px;margin-bottom:12px}
+.qscen{font-size:13px;color:var(--text2);margin-bottom:10px;line-height:1.65}
+.qdata{font-family:'DM Mono',monospace;font-size:12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:12px;line-height:2}
+.qdata .dv{font-weight:700;color:var(--text)}
+.qdata .da{font-size:10.5px;color:var(--text3);margin-left:4px}
+.qtext{font-size:14px;font-weight:600;color:var(--text);line-height:1.55}
+.opts{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.opt{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-radius:var(--r);border:1.5px solid var(--border2);background:var(--bg);color:var(--text);text-align:left;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.5;transition:all .15s;width:100%}
+.opt:hover:not(:disabled){background:var(--bg3);border-color:rgba(40,55,110,.3)}
+.opt:disabled{cursor:default}
+.opt-key{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;min-width:22px;height:22px;border-radius:6px;background:var(--bg3);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;color:var(--text3);transition:all .15s}
+.opt.correct{background:var(--bluebg);border-color:var(--blueb)}
+.opt.correct .opt-key{background:var(--blue);color:#fff;border-color:var(--blue)}
+.opt.wrong{background:var(--redbg);border-color:var(--redb)}
+.opt.wrong .opt-key{background:var(--red);color:#fff;border-color:var(--red)}
+.opt.reveal{background:var(--bluebg);border-color:var(--blueb);opacity:.75}
+.opt.reveal .opt-key{background:var(--blue);color:#fff;border-color:var(--blue)}
+.expbox{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:12px;font-size:12.5px;color:var(--text2);line-height:1.72;display:none}
+.expbox.show{display:block;animation:fi .2s ease}
+.expbox strong{color:var(--text)}
+.actrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.next-btn{padding:10px 24px;border-radius:var(--r);border:none;background:var(--text);color:var(--bg);font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .18s;display:none}
+.next-btn:hover{background:var(--red)}
+.end-btn{padding:10px 18px;border-radius:var(--r);border:1px solid var(--redb);background:transparent;color:var(--red);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;transition:all .18s;margin-left:auto}
+.end-btn:hover{background:var(--redbg)}
+.results-wrap{text-align:center;padding:28px 12px}
+.res-big{font-family:'Syne',sans-serif;font-size:64px;font-weight:800;color:var(--text);line-height:1;margin-bottom:4px}
+.res-sub{font-family:'DM Mono',monospace;font-size:13px;color:var(--text3);margin-bottom:18px}
+.res-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:20px;text-align:left}
+.res-stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:11px 14px}
+.res-stat .rv{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--text);margin-bottom:2px}
+.res-stat .rl{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)}
+.retry-btn{padding:12px 32px;border-radius:var(--r);border:none;background:var(--text);color:var(--bg);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .18s;margin-bottom:20px}
+.retry-btn:hover{background:var(--red)}
+footer{text-align:center;padding-top:36px;font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="eyebrow">Perbaikan Gizi · Blok 2.5 · FK Unsoed</div>
+  <h1>Am I <span style="color:var(--blue)">Nurtured?</span></h1>
+  <p class="sub">Quiz program gizi masyarakat, stunting, Isi Piringku, dan intervensi gizi UNICEF.</p>
+</header>
+
+<div class="main-tabs">
+  <button class="main-tab active" onclick="switchMain('materi',this)">📋 Materi</button>
+  <button class="main-tab" onclick="switchMain('quiz',this)">🎯 Quiz</button>
+</div>
+
+<!-- MATERI -->
+<div class="main-panel active" id="mp-materi">
+<div class="sub-tabs">
+<button class="sub-tab active" onclick="switchSub('tab-gizimasyarakat',this)">Gizi Masyarakat</button>
+</div>
+
+<div class="sub-panel active" id="tab-gizimasyarakat">
+<div class="sec-h">Perbaikan Gizi Masyarakat</div>
+
+<div class="note">
+<strong>Oleh:</strong> Madya Ardi Wicaksono<br>
+Departemen IKM-IKK, FK UNSOED
+</div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Capaian Pembelajaran</div>
+
+<p>Mahasiswa diharapkan mampu menjelaskan:</p>
+<ol>
+<li>
+<p>Promosi dan pendidikan gizi masyarakat</p>
+</li>
+<li>
+<p>Pemberian suplementasi gizi</p>
+</li>
+<li>
+<p>Pelayanan kesehatan dan masalah gizi</p>
+</li>
+<li>
+<p>Pemberdayaan masyarakat di bidang pangan dan gizi</p>
+</li>
+<li>
+<p>Jaminan sosial yang mendukung perbaikan pangan dan gizi</p>
+</li>
+</ol>
+<div class="divider"></div>
+
+<div class="sec-h">1. Kualitas Gizi Masyarakat</div>
+
+<p>Kualitas gizi dipengaruhi oleh asupan pangan dan gizi (intake) dan dibandingkan dengan Kebutuhan Gizi (Angka Kecukupan Gizi / AKG). Rentang kualitas gizi masyarakat terbentang dari kematian akibat kekurangan gizi (under/defisiensi), kondisi normal (optimal), hingga kematian akibat kelebihan gizi (toksisitas/over).</p>
+<div class="note blue">
+<strong>Visualisasi Kualitas Gizi Masyarakat</strong>
+<br><br>
+<div style="background:#fff;padding:10px;border-radius:8px;margin:10px 0;text-align:center;border:1px solid var(--border);overflow-x:auto;"><svg style="max-width:100%; height:auto;" id="container" width="707.71875" xmlns="http://www.w3.org/2000/svg" class="flowchart" height="198" viewBox="0 0 707.71875 198" role="graphics-document document" aria-roledescription="flowchart-v2"><style>#container{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#container .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#container .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#container .error-icon{fill:#552222;}#container .error-text{fill:#552222;stroke:#552222;}#container .edge-thickness-normal{stroke-width:1px;}#container .edge-thickness-thick{stroke-width:3.5px;}#container .edge-pattern-solid{stroke-dasharray:0;}#container .edge-thickness-invisible{stroke-width:0;fill:none;}#container .edge-pattern-dashed{stroke-dasharray:3;}#container .edge-pattern-dotted{stroke-dasharray:2;}#container .marker{fill:#333333;stroke:#333333;}#container .marker.cross{stroke:#333333;}#container svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#container p{margin:0;}#container .label{font-family:"trebuchet ms",verdana,arial,sans-serif;color:#333;}#container .cluster-label text{fill:#333;}#container .cluster-label span{color:#333;}#container .cluster-label span p{background-color:transparent;}#container .label text,#container span{fill:#333;color:#333;}#container .node rect,#container .node circle,#container .node ellipse,#container .node polygon,#container .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#container .rough-node .label text,#container .node .label text,#container .image-shape .label,#container .icon-shape .label{text-anchor:middle;}#container .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#container .rough-node .label,#container .node .label,#container .image-shape .label,#container .icon-shape .label{text-align:center;}#container .node.clickable{cursor:pointer;}#container .root .anchor path{fill:#333333!important;stroke-width:0;stroke:#333333;}#container .arrowheadPath{fill:#333333;}#container .edgePath .path{stroke:#333333;stroke-width:1px;}#container .flowchart-link{stroke:#333333;fill:none;}#container .edgeLabel{background-color:rgba(232,232,232, 0.8);text-align:center;}#container .edgeLabel p{background-color:rgba(232,232,232, 0.8);}#container .edgeLabel rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#container .labelBkg{background-color:rgba(232, 232, 232, 0.5);}#container .cluster rect{fill:#ffffde;stroke:#aaaa33;stroke-width:1px;}#container .cluster text{fill:#333;}#container .cluster span{color:#333;}#container div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:12px;background:hsl(80, 100%, 96.2745098039%);border:1px solid #aaaa33;border-radius:2px;pointer-events:none;z-index:100;}#container .flowchartTitleText{text-anchor:middle;font-size:18px;fill:#333;}#container rect.text{fill:none;stroke-width:0;}#container .icon-shape,#container .image-shape{background-color:rgba(232,232,232, 0.8);text-align:center;}#container .icon-shape p,#container .image-shape p{background-color:rgba(232,232,232, 0.8);padding:2px;}#container .icon-shape .label rect,#container .image-shape .label rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#container .label-icon{display:inline-block;height:1em;overflow:visible;vertical-align:-0.125em;}#container .node .label-icon path{fill:currentColor;stroke:revert;stroke-width:revert;}#container .node .neo-node{stroke:#9370DB;}#container [data-look="neo"].node rect,#container [data-look="neo"].cluster rect,#container [data-look="neo"].node polygon{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node path{stroke:#9370DB;stroke-width:1px;}#container [data-look="neo"].node .outer-path{filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node .neo-line path{stroke:#9370DB;filter:none;}#container [data-look="neo"].node circle{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node circle .state-start{fill:#000000;}#container [data-look="neo"].icon-shape .icon{fill:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].icon-shape .icon-neo path{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g><marker id="container_flowchart-v2-pointEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="4.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 5 L 10 10 L 10 0 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointEnd-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="11.5" refY="7" markerUnits="userSpaceOnUse" markerWidth="10.5" markerHeight="14" orient="auto"><path d="M 0 0 L 11.5 7 L 0 14 z" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointStart-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="1" refY="7" markerUnits="userSpaceOnUse" markerWidth="11.5" markerHeight="14" orient="auto"><polygon points="0,7 11.5,14 11.5,0" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></polygon></marker><marker id="container_flowchart-v2-circleEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="11" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-1" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleEnd-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refY="5" refX="12.25" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleStart-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-2" refY="5" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-crossEnd" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="12" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-crossStart" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="-1" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-crossEnd-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="17.7" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5;"></path></marker><marker id="container_flowchart-v2-crossStart-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="-3.5" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5; stroke-dasharray: 1, 0;"></path></marker><g class="root"><g class="clusters"></g><g class="edgePaths"><path d="M170.078,35L174.245,35C178.411,35,186.745,35,195.013,35C203.281,35,211.484,35,215.586,35L219.688,35" id="container-L_A_B_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_A_B_0" data-points="W3sieCI6MTcwLjA3ODEyNSwieSI6MzV9LHsieCI6MTk1LjA3ODEyNSwieSI6MzV9LHsieCI6MjIzLjY4NzUsInkiOjM1fV0=" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M386.109,35L390.878,35C395.646,35,405.182,35,413.493,36.325C421.803,37.651,428.888,40.302,432.43,41.627L435.972,42.953" id="container-L_B_C_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_B_C_0" data-points="W3sieCI6Mzg2LjEwOTM3NSwieSI6MzV9LHsieCI6NDE0LjcxODc1LCJ5IjozNX0seyJ4Ijo0MzkuNzE4NzUsInkiOjQ0LjM1NDgzODcwOTY3NzQxNn1d" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M389.719,151L393.885,151C398.052,151,406.385,151,414.094,149.675C421.803,148.349,428.888,145.698,432.43,144.373L435.972,143.047" id="container-L_D_C_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_D_C_0" data-points="W3sieCI6Mzg5LjcxODc1LCJ5IjoxNTF9LHsieCI6NDE0LjcxODc1LCJ5IjoxNTF9LHsieCI6NDM5LjcxODc1LCJ5IjoxNDEuNjQ1MTYxMjkwMzIyNn1d" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" data-id="L_A_B_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_B_C_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_D_C_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g></g><g class="nodes"><g class="node default" id="container-flowchart-A-0" data-look="classic" transform="translate(89.0390625, 35)"><rect class="basic label-container" style="" x="-81.0390625" y="-27" width="162.078125" height="54"></rect><g class="label" style="" transform="translate(-51.0390625, -12)"><rect></rect><foreignObject width="102.078125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Intake Pangan</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-B-1" data-look="classic" transform="translate(304.8984375, 35)"><rect class="basic label-container" style="" x="-81.2109375" y="-27" width="162.421875" height="54"></rect><g class="label" style="" transform="translate(-51.2109375, -12)"><rect></rect><foreignObject width="102.421875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Intake Zat Gizi</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-C-3" data-look="classic" transform="translate(569.71875, 93)"><rect class="basic label-container" style="" x="-130" y="-51" width="260" height="102"></rect><g class="label" style="" transform="translate(-100, -36)"><rect></rect><foreignObject width="200" height="72"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table; white-space: break-spaces; line-height: 1.5; max-width: 200px; text-align: center; width: 200px;"><span class="nodeLabel"><p>Status Gizi<br/>    (Over, Normal, Under, Death)</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-D-4" data-look="classic" transform="translate(304.8984375, 151)"><rect class="basic label-container" style="" x="-84.8203125" y="-39" width="169.640625" height="78"></rect><g class="label" style="" transform="translate(-54.8203125, -24)"><rect></rect><foreignObject width="109.640625" height="48"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Kebutuhan Gizi <br/> AKG</p></span></div></foreignObject></g></g></g></g></g><defs><filter id="container-drop-shadow" height="130%" width="130%"><feDropShadow dx="4" dy="4" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs><defs><filter id="container-drop-shadow-small" height="150%" width="150%"><feDropShadow dx="2" dy="2" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs></svg></div>
+</div>
+
+<div class="divider"></div>
+
+<div class="sec-h">2. Situasi Gizi di Indonesia</div>
+
+<p>Indonesia merupakan salah satu negara dengan beban masalah gizi ganda yang menjadi tantangan utama, yakni tingginya kasus <b>stunting</b> dan <b>anemia</b>, bersamaan dengan kasus gizi lebih atau obesitas.</p>
+<div class="dtable-wrap">
+<div class="dtable-wrap"><table>
+    <thead>
+        <tr>
+            <th>Kondisi (Tantangan Utama)</th>
+            <th>Prevalensi / Angka Kasus</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Bayi Lahir BBLR (Berat Badan Lahir Rendah)</td>
+            <td>280.000 bayi</td>
+        </tr>
+        <tr>
+            <td>Anak Balita Stunting</td>
+            <td>1 dari 5 anak (Terlalu pendek untuk usianya)</td>
+        </tr>
+        <tr>
+            <td>Anak Balita Wasting</td>
+            <td>1 dari 12 anak (Terlalu kurus untuk usianya)</td>
+        </tr>
+        <tr>
+            <td>Kegemukan atau Obesitas (Balita)</td>
+            <td>1 Juta balita</td>
+        </tr>
+        <tr>
+            <td>ASI Eksklusif (Bayi 0-5 bulan)</td>
+            <td>68,6%</td>
+        </tr>
+    </tbody>
+</table></div>
+</div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Tren Malnutrisi Anak di Indonesia & Target SSGI</div>
+
+<ul>
+<li>
+<p><b>Stunting:</b> 37,2% (2013) &rarr; 30,8% (2018) &rarr; 27,7% (2019) &rarr; 24,4% (2021) &rarr; 21,6% (2022) &rarr; 21,5% (2023)</p>
+</li>
+<li>
+<p><b>Wasting:</b> 12,1% (2013) &rarr; 10,2% (2018) &rarr; 7,4% (2019) &rarr; 7,1% (2021) &rarr; 7,7% (2022) &rarr; 8,5% (2023)</p>
+</li>
+<li>
+<p><b>Kegemukan/Obesitas:</b> 11,9% (2013) &rarr; 8% (2018) &rarr; 4,5% (2019) &rarr; 3,8% (2021) &rarr; 3,5% (2022) &rarr; 4,2% (2023)</p>
+</li>
+<li>
+<p><b>Anemia Ibu Hamil:</b> 37,1% (2013) &rarr; 48,9% (2018)</p>
+</li>
+<li>
+<p><b>Obesitas Penduduk Usia 18+ tahun:</b> 14,8% (2013) &rarr; 21,8% (2018)</p>
+</li>
+</ul>
+<div class="note green">
+<strong>Target Nasional:</strong> Prevalensi Stunting Nasional (SSGI) ditargetkan turun menjadi <strong>19,8%</strong> pada tahun 2025.
+</div>
+
+<div class="divider"></div>
+
+<div class="sec-h">3. Solusi Kerangka Konseptual Gizi (Adaptasi UNICEF)</div>
+
+<p>Kerangka pemecahan masalah (Solusi) didasarkan pada kerangka konsep penyebab masalah gizi oleh UNICEF (1990) &amp; Ruel (2008), yang mencakup Intervensi Spesifik (Jangka Pendek) dan Intervensi Sensitif (Jangka Panjang).</p>
+<div class="note">
+<strong>Kerangka Masalah & Intervensi Gizi</strong>
+<br><br>
+<div style="background:#fff;padding:10px;border-radius:8px;margin:10px 0;text-align:center;border:1px solid var(--border);overflow-x:auto;"><svg style="max-width:100%; height:auto;" id="container" width="711.21875" xmlns="http://www.w3.org/2000/svg" class="flowchart" height="822" viewBox="0 0 711.21875 822" role="graphics-document document" aria-roledescription="flowchart-v2"><style>#container{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#container .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#container .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#container .error-icon{fill:#552222;}#container .error-text{fill:#552222;stroke:#552222;}#container .edge-thickness-normal{stroke-width:1px;}#container .edge-thickness-thick{stroke-width:3.5px;}#container .edge-pattern-solid{stroke-dasharray:0;}#container .edge-thickness-invisible{stroke-width:0;fill:none;}#container .edge-pattern-dashed{stroke-dasharray:3;}#container .edge-pattern-dotted{stroke-dasharray:2;}#container .marker{fill:#333333;stroke:#333333;}#container .marker.cross{stroke:#333333;}#container svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#container p{margin:0;}#container .label{font-family:"trebuchet ms",verdana,arial,sans-serif;color:#333;}#container .cluster-label text{fill:#333;}#container .cluster-label span{color:#333;}#container .cluster-label span p{background-color:transparent;}#container .label text,#container span{fill:#333;color:#333;}#container .node rect,#container .node circle,#container .node ellipse,#container .node polygon,#container .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#container .rough-node .label text,#container .node .label text,#container .image-shape .label,#container .icon-shape .label{text-anchor:middle;}#container .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#container .rough-node .label,#container .node .label,#container .image-shape .label,#container .icon-shape .label{text-align:center;}#container .node.clickable{cursor:pointer;}#container .root .anchor path{fill:#333333!important;stroke-width:0;stroke:#333333;}#container .arrowheadPath{fill:#333333;}#container .edgePath .path{stroke:#333333;stroke-width:1px;}#container .flowchart-link{stroke:#333333;fill:none;}#container .edgeLabel{background-color:rgba(232,232,232, 0.8);text-align:center;}#container .edgeLabel p{background-color:rgba(232,232,232, 0.8);}#container .edgeLabel rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#container .labelBkg{background-color:rgba(232, 232, 232, 0.5);}#container .cluster rect{fill:#ffffde;stroke:#aaaa33;stroke-width:1px;}#container .cluster text{fill:#333;}#container .cluster span{color:#333;}#container div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:12px;background:hsl(80, 100%, 96.2745098039%);border:1px solid #aaaa33;border-radius:2px;pointer-events:none;z-index:100;}#container .flowchartTitleText{text-anchor:middle;font-size:18px;fill:#333;}#container rect.text{fill:none;stroke-width:0;}#container .icon-shape,#container .image-shape{background-color:rgba(232,232,232, 0.8);text-align:center;}#container .icon-shape p,#container .image-shape p{background-color:rgba(232,232,232, 0.8);padding:2px;}#container .icon-shape .label rect,#container .image-shape .label rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#container .label-icon{display:inline-block;height:1em;overflow:visible;vertical-align:-0.125em;}#container .node .label-icon path{fill:currentColor;stroke:revert;stroke-width:revert;}#container .node .neo-node{stroke:#9370DB;}#container [data-look="neo"].node rect,#container [data-look="neo"].cluster rect,#container [data-look="neo"].node polygon{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node path{stroke:#9370DB;stroke-width:1px;}#container [data-look="neo"].node .outer-path{filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node .neo-line path{stroke:#9370DB;filter:none;}#container [data-look="neo"].node circle{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node circle .state-start{fill:#000000;}#container [data-look="neo"].icon-shape .icon{fill:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].icon-shape .icon-neo path{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}#container .default&gt;*{fill:rgb(249, 249, 249)!important;stroke:rgb(51, 51, 51)!important;stroke-width:1px!important;}#container .default span{fill:rgb(249, 249, 249)!important;stroke:rgb(51, 51, 51)!important;stroke-width:1px!important;}#container .redBox&gt;*{fill:rgb(255, 204, 204)!important;stroke:rgb(255, 0, 0)!important;stroke-width:2px!important;}#container .redBox span{fill:rgb(255, 204, 204)!important;stroke:rgb(255, 0, 0)!important;stroke-width:2px!important;}#container .orangeBox&gt;*{fill:rgb(255, 229, 204)!important;stroke:rgb(255, 153, 0)!important;stroke-width:2px!important;}#container .orangeBox span{fill:rgb(255, 229, 204)!important;stroke:rgb(255, 153, 0)!important;stroke-width:2px!important;}#container .greenCircle&gt;*{fill:rgb(204, 255, 204)!important;stroke:rgb(0, 153, 0)!important;stroke-width:2px!important;}#container .greenCircle span{fill:rgb(204, 255, 204)!important;stroke:rgb(0, 153, 0)!important;stroke-width:2px!important;}#container .greyBox&gt;*{fill:rgb(230, 230, 230)!important;stroke:rgb(102, 102, 102)!important;stroke-width:1px!important;}#container .greyBox span{fill:rgb(230, 230, 230)!important;stroke:rgb(102, 102, 102)!important;stroke-width:1px!important;}</style><g><marker id="container_flowchart-v2-pointEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="4.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 5 L 10 10 L 10 0 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointEnd-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="11.5" refY="7" markerUnits="userSpaceOnUse" markerWidth="10.5" markerHeight="14" orient="auto"><path d="M 0 0 L 11.5 7 L 0 14 z" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointStart-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="1" refY="7" markerUnits="userSpaceOnUse" markerWidth="11.5" markerHeight="14" orient="auto"><polygon points="0,7 11.5,14 11.5,0" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></polygon></marker><marker id="container_flowchart-v2-circleEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="11" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-1" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleEnd-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refY="5" refX="12.25" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleStart-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-2" refY="5" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-crossEnd" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="12" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-crossStart" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="-1" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-crossEnd-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="17.7" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5;"></path></marker><marker id="container_flowchart-v2-crossStart-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="-3.5" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5; stroke-dasharray: 1, 0;"></path></marker><g class="root"><g class="clusters"></g><g class="edgePaths"><path d="M200.75,60.782L189.224,65.152C177.698,69.522,154.646,78.261,143.12,86.13C131.594,94,131.594,101,131.594,104.5L131.594,108" id="container-L_Status_Asupan_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_Status_Asupan_0" data-points="W3sieCI6MjAwLjc1LCJ5Ijo2MC43ODIzMDkwNTA1MjExNjR9LHsieCI6MTMxLjU5Mzc1LCJ5Ijo4N30seyJ4IjoxMzEuNTkzNzUsInkiOjExMn1d" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M311.574,62L318.182,66.167C324.789,70.333,338.004,78.667,344.611,91.5C351.219,104.333,351.219,121.667,351.219,139C351.219,156.333,351.219,173.667,367.6,187.342C383.981,201.017,416.744,211.033,433.125,216.042L449.507,221.05" id="container-L_Status_Kesehatan_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_Status_Kesehatan_0" data-points="W3sieCI6MzExLjU3NDA2ODUwOTYxNTM2LCJ5Ijo2Mn0seyJ4IjozNTEuMjE4NzUsInkiOjg3fSx7IngiOjM1MS4yMTg3NSwieSI6MTM5fSx7IngiOjM1MS4yMTg3NSwieSI6MTkxfSx7IngiOjQ1My4zMzIwMzEyNSwieSI6MjIyLjIxOTU4NjEzNzIwNH1d" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M237.724,152.807L286.654,159.173C335.583,165.538,433.442,178.269,481.696,188.147C529.95,198.024,528.599,205.048,527.924,208.56L527.248,212.072" id="container-L_Asupan_Kesehatan_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_Asupan_Kesehatan_0" data-points="W3sieCI6MjMzLjc1NzgxMjUsInkiOjE1Mi4yOTEwNjI3OTAxMjk1fSx7IngiOjUzMS4zMDA3ODEyNSwieSI6MTkxfSx7IngiOjUyNi40OTMwODg5NDIzMDc3LCJ5IjoyMTZ9XQ==" data-look="classic" marker-start="url(#container_flowchart-v2-pointStart)" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M121.209,166L119.607,170.167C118.004,174.333,114.799,182.667,113.196,195.5C111.594,208.333,111.594,225.667,111.594,243C111.594,260.333,111.594,277.667,111.594,289.833C111.594,302,111.594,309,111.594,312.5L111.594,316" id="container-L_Asupan_Akses_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_Asupan_Akses_0" data-points="W3sieCI6MTIxLjIwOTEzNDYxNTM4NDYxLCJ5IjoxNjZ9LHsieCI6MTExLjU5Mzc1LCJ5IjoxOTF9LHsieCI6MTExLjU5Mzc1LCJ5IjoyNDN9LHsieCI6MTExLjU5Mzc1LCJ5IjoyOTV9LHsieCI6MTExLjU5Mzc1LCJ5IjozMjB9XQ==" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M183.288,166L191.265,170.167C199.243,174.333,215.197,182.667,223.175,195.5C231.152,208.333,231.152,225.667,231.152,243C231.152,260.333,231.152,277.667,238.539,290.191C245.925,302.716,260.698,310.432,268.085,314.29L275.472,318.148" id="container-L_Asupan_Pola_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_Asupan_Pola_0" data-points="W3sieCI6MTgzLjI4NzYzNTIxNjM0NjE2LCJ5IjoxNjZ9LHsieCI6MjMxLjE1MjM0Mzc1LCJ5IjoxOTF9LHsieCI6MjMxLjE1MjM0Mzc1LCJ5IjoyNDN9LHsieCI6MjMxLjE1MjM0Mzc1LCJ5IjoyOTV9LHsieCI6Mjc5LjAxNzA1MjI4MzY1Mzg3LCJ5IjozMjB9XQ==" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M453.332,268.408L441.476,272.84C429.62,277.272,405.908,286.136,390.395,294.261C374.883,302.386,367.57,309.772,363.914,313.465L360.258,317.158" id="container-L_Kesehatan_Pola_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_Kesehatan_Pola_0" data-points="W3sieCI6NDUzLjMzMjAzMTI1LCJ5IjoyNjguNDA3ODc5NTg3NzY3OH0seyJ4IjozODIuMTk1MzEyNSwieSI6Mjk1fSx7IngiOjM1Ny40NDMyMDkxMzQ2MTUzNiwieSI6MzIwfV0=" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M549.041,270L553.322,274.167C557.603,278.333,566.165,286.667,570.446,294.333C574.727,302,574.727,309,574.727,312.5L574.727,316" id="container-L_Kesehatan_Air_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_Kesehatan_Air_0" data-points="W3sieCI6NTQ5LjA0MTA5MDc0NTE5MjMsInkiOjI3MH0seyJ4Ijo1NzQuNzI2NTYyNSwieSI6Mjk1fSx7IngiOjU3NC43MjY1NjI1LCJ5IjozMjB9XQ==" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M111.594,374L111.594,378.167C111.594,382.333,111.594,390.667,134.333,400.23C157.072,409.793,202.551,420.586,225.291,425.982L248.03,431.378" id="container-L_Akses_Kelembagaan_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_Akses_Kelembagaan_0" data-points="W3sieCI6MTExLjU5Mzc1LCJ5IjozNzR9LHsieCI6MTExLjU5Mzc1LCJ5IjozOTl9LHsieCI6MjUxLjkyMTg3NSwieSI6NDMyLjMwMjEwMDA0NjM1MDc0fV0=" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M330.711,374L330.711,378.167C330.711,382.333,330.711,390.667,330.711,398.333C330.711,406,330.711,413,330.711,416.5L330.711,420" id="container-L_Pola_Kelembagaan_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_Pola_Kelembagaan_0" data-points="W3sieCI6MzMwLjcxMDkzNzUsInkiOjM3NH0seyJ4IjozMzAuNzEwOTM3NSwieSI6Mzk5fSx7IngiOjMzMC43MTA5Mzc1LCJ5Ijo0MjR9XQ==" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M574.727,374L574.727,378.167C574.727,382.333,574.727,390.667,547.841,400.563C520.955,410.459,467.184,421.918,440.298,427.647L413.412,433.376" id="container-L_Air_Kelembagaan_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_Air_Kelembagaan_0" data-points="W3sieCI6NTc0LjcyNjU2MjUsInkiOjM3NH0seyJ4Ijo1NzQuNzI2NTYyNSwieSI6Mzk5fSx7IngiOjQwOS41LCJ5Ijo0MzQuMjA5OTYzNTAxMzEyN31d" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M330.711,478L330.711,482.167C330.711,486.333,330.711,494.667,330.711,502.333C330.711,510,330.711,517,330.711,520.5L330.711,524" id="container-L_Kelembagaan_Politik_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_Kelembagaan_Politik_0" data-points="W3sieCI6MzMwLjcxMDkzNzUsInkiOjQ3OH0seyJ4IjozMzAuNzEwOTM3NSwieSI6NTAzfSx7IngiOjMzMC43MTA5Mzc1LCJ5Ijo1Mjh9XQ==" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M330.711,582L330.711,586.167C330.711,590.333,330.711,598.667,330.711,606.333C330.711,614,330.711,621,330.711,624.5L330.711,628" id="container-L_Politik_Ekonomi_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_Politik_Ekonomi_0" data-points="W3sieCI6MzMwLjcxMDkzNzUsInkiOjU4Mn0seyJ4IjozMzAuNzEwOTM3NSwieSI6NjA3fSx7IngiOjMzMC43MTA5Mzc1LCJ5Ijo2MzJ9XQ==" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M330.711,686L330.711,690.167C330.711,694.333,330.711,702.667,330.711,710.333C330.711,718,330.711,725,330.711,728.5L330.711,732" id="container-L_Ekonomi_SumberDaya_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_Ekonomi_SumberDaya_0" data-points="W3sieCI6MzMwLjcxMDkzNzUsInkiOjY4Nn0seyJ4IjozMzAuNzEwOTM3NSwieSI6NzExfSx7IngiOjMzMC43MTA5Mzc1LCJ5Ijo3MzZ9XQ==" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" data-id="L_Status_Asupan_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_Status_Kesehatan_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_Asupan_Kesehatan_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_Asupan_Akses_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_Asupan_Pola_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_Kesehatan_Pola_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_Kesehatan_Air_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_Akses_Kelembagaan_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_Pola_Kelembagaan_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_Air_Kelembagaan_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_Kelembagaan_Politik_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_Politik_Ekonomi_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_Ekonomi_SumberDaya_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g></g><g class="nodes"><g class="node default redBox" id="container-flowchart-Status-0" data-look="classic" transform="translate(268.7578125, 35)"><rect class="basic label-container" style="fill:#ffcccc !important;stroke:#ff0000 !important;stroke-width:2px !important" x="-68.0078125" y="-27" width="136.015625" height="54"></rect><g class="label" style="" transform="translate(-38.0078125, -12)"><rect></rect><foreignObject width="76.015625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Status Gizi</p></span></div></foreignObject></g></g><g class="node default orangeBox" id="container-flowchart-Asupan-1" data-look="classic" transform="translate(131.59375, 139)"><rect class="basic label-container" style="fill:#ffe5cc !important;stroke:#ff9900 !important;stroke-width:2px !important" x="-102.1640625" y="-27" width="204.328125" height="54"></rect><g class="label" style="" transform="translate(-72.1640625, -12)"><rect></rect><foreignObject width="144.328125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Asupan Pangan/Gizi</p></span></div></foreignObject></g></g><g class="node default orangeBox" id="container-flowchart-Kesehatan-2" data-look="classic" transform="translate(521.30078125, 243)"><rect class="basic label-container" style="fill:#ffe5cc !important;stroke:#ff9900 !important;stroke-width:2px !important" x="-67.96875" y="-27" width="135.9375" height="54"></rect><g class="label" style="" transform="translate(-37.96875, -12)"><rect></rect><foreignObject width="75.9375" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Kesehatan</p></span></div></foreignObject></g></g><g class="node default greenCircle" id="container-flowchart-Akses-9" data-look="classic" transform="translate(111.59375, 347)"><rect class="basic label-container" style="fill:#ccffcc !important;stroke:#009900 !important;stroke-width:2px !important;shape:circle !important" x="-103.59375" y="-27" width="207.1875" height="54"></rect><g class="label" style="" transform="translate(-73.59375, -12)"><rect></rect><foreignObject width="147.1875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Aksesibilitas Pangan</p></span></div></foreignObject></g></g><g class="node default greenCircle" id="container-flowchart-Pola-10" data-look="classic" transform="translate(330.7109375, 347)"><rect class="basic label-container" style="fill:#ccffcc !important;stroke:#009900 !important;stroke-width:2px !important;shape:circle !important" x="-65.5234375" y="-27" width="131.046875" height="54"></rect><g class="label" style="" transform="translate(-35.5234375, -12)"><rect></rect><foreignObject width="71.046875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Pola Asuh</p></span></div></foreignObject></g></g><g class="node default greenCircle" id="container-flowchart-Air-11" data-look="classic" transform="translate(574.7265625, 347)"><rect class="basic label-container" style="fill:#ccffcc !important;stroke:#009900 !important;stroke-width:2px !important;shape:circle !important" x="-128.4921875" y="-27" width="256.984375" height="54"></rect><g class="label" style="" transform="translate(-98.4921875, -12)"><rect></rect><foreignObject width="196.984375" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Air Minum, Sanitasi, Yankes</p></span></div></foreignObject></g></g><g class="node default greyBox" id="container-flowchart-Kelembagaan-20" data-look="classic" transform="translate(330.7109375, 451)"><rect class="basic label-container" style="fill:#e6e6e6 !important;stroke:#666 !important;stroke-width:1px !important" x="-78.7890625" y="-27" width="157.578125" height="54"></rect><g class="label" style="" transform="translate(-48.7890625, -12)"><rect></rect><foreignObject width="97.578125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Kelembagaan</p></span></div></foreignObject></g></g><g class="node default greyBox" id="container-flowchart-Politik-21" data-look="classic" transform="translate(330.7109375, 555)"><rect class="basic label-container" style="fill:#e6e6e6 !important;stroke:#666 !important;stroke-width:1px !important" x="-100.5546875" y="-27" width="201.109375" height="54"></rect><g class="label" style="" transform="translate(-70.5546875, -12)"><rect></rect><foreignObject width="141.109375" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Politik dan Ideologi</p></span></div></foreignObject></g></g><g class="node default greyBox" id="container-flowchart-Ekonomi-22" data-look="classic" transform="translate(330.7109375, 659)"><rect class="basic label-container" style="fill:#e6e6e6 !important;stroke:#666 !important;stroke-width:1px !important" x="-99.1484375" y="-27" width="198.296875" height="54"></rect><g class="label" style="" transform="translate(-69.1484375, -12)"><rect></rect><foreignObject width="138.296875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Kebijakan Ekonomi</p></span></div></foreignObject></g></g><g class="node default greyBox" id="container-flowchart-SumberDaya-23" data-look="classic" transform="translate(330.7109375, 775)"><rect class="basic label-container" style="fill:#e6e6e6 !important;stroke:#666 !important;stroke-width:1px !important" x="-130" y="-39" width="260" height="78"></rect><g class="label" style="" transform="translate(-100, -24)"><rect></rect><foreignObject width="200" height="48"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table; white-space: break-spaces; line-height: 1.5; max-width: 200px; text-align: center; width: 200px;"><span class="nodeLabel"><p>Sumberdaya, Lingkungan, Teknologi, Penduduk</p></span></div></foreignObject></g></g></g></g></g><defs><filter id="container-drop-shadow" height="130%" width="130%"><feDropShadow dx="4" dy="4" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs><defs><filter id="container-drop-shadow-small" height="150%" width="150%"><feDropShadow dx="2" dy="2" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs></svg></div>
+</div>
+
+<ul>
+<li>
+<p><b>Intervensi Spesifik (30%):</b> Berfokus pada penyebab langsung (Asupan Pangan dan Kesehatan). Contoh: Penanganan balita gizi buruk, Suplementasi mikronutrien &amp; fortifikasi, serta Kebersihan diri.</p>
+</li>
+<li>
+<p><b>Intervensi Sensitif (70%):</b> Berfokus pada penyebab tidak langsung dan akar masalah. Contoh: Ketahanan pangan, Sistem kesehatan, Jaminan sosial, Air bersih dan Sanitasi, Gender, Pembangunan, Pengentasan Kemiskinan, Tata Kelola Pemerintahan, dan Pelestarian Lingkungan.</p>
+</li>
+</ul>
+<div class="divider"></div>
+
+<div class="sec-h">4. Promosi Gizi</div>
+
+<p>Promosi gizi adalah bentuk promosi kesehatan dengan topik spesifik mengenai gizi yang bertujuan meningkatkan kemampuan masyarakat untuk memelihara kesehatan.</p>
+<ul>
+<li>
+<p>Berupa kegiatan edukasi dan penyebaran informasi untuk meningkatkan pemahaman serta mengubah perilaku masyarakat agar menerapkan pola hidup sehat (seperti mengonsumsi makanan beraneka ragam).</p>
+</li>
+<li>
+<p>Berfokus pada kampanye <b>4 Pilar Gizi Seimbang</b> ("Isi Piringku") dan gaya hidup aktif, serta Pesan Umum Gizi Seimbang (PUGS).</p>
+</li>
+</ul>
+<div class="note blue">
+<strong>Siklus Promosi Gizi</strong>
+<br><br>
+<div style="background:#fff;padding:10px;border-radius:8px;margin:10px 0;text-align:center;border:1px solid var(--border);overflow-x:auto;"><svg style="max-width:100%; height:auto;" id="container" width="252.41015625" xmlns="http://www.w3.org/2000/svg" class="flowchart" height="633.171875" viewBox="0 0 252.41015625 633.171875" role="graphics-document document" aria-roledescription="flowchart-v2"><style>#container{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#container .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#container .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#container .error-icon{fill:#552222;}#container .error-text{fill:#552222;stroke:#552222;}#container .edge-thickness-normal{stroke-width:1px;}#container .edge-thickness-thick{stroke-width:3.5px;}#container .edge-pattern-solid{stroke-dasharray:0;}#container .edge-thickness-invisible{stroke-width:0;fill:none;}#container .edge-pattern-dashed{stroke-dasharray:3;}#container .edge-pattern-dotted{stroke-dasharray:2;}#container .marker{fill:#333333;stroke:#333333;}#container .marker.cross{stroke:#333333;}#container svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#container p{margin:0;}#container .label{font-family:"trebuchet ms",verdana,arial,sans-serif;color:#333;}#container .cluster-label text{fill:#333;}#container .cluster-label span{color:#333;}#container .cluster-label span p{background-color:transparent;}#container .label text,#container span{fill:#333;color:#333;}#container .node rect,#container .node circle,#container .node ellipse,#container .node polygon,#container .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#container .rough-node .label text,#container .node .label text,#container .image-shape .label,#container .icon-shape .label{text-anchor:middle;}#container .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#container .rough-node .label,#container .node .label,#container .image-shape .label,#container .icon-shape .label{text-align:center;}#container .node.clickable{cursor:pointer;}#container .root .anchor path{fill:#333333!important;stroke-width:0;stroke:#333333;}#container .arrowheadPath{fill:#333333;}#container .edgePath .path{stroke:#333333;stroke-width:1px;}#container .flowchart-link{stroke:#333333;fill:none;}#container .edgeLabel{background-color:rgba(232,232,232, 0.8);text-align:center;}#container .edgeLabel p{background-color:rgba(232,232,232, 0.8);}#container .edgeLabel rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#container .labelBkg{background-color:rgba(232, 232, 232, 0.5);}#container .cluster rect{fill:#ffffde;stroke:#aaaa33;stroke-width:1px;}#container .cluster text{fill:#333;}#container .cluster span{color:#333;}#container div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:12px;background:hsl(80, 100%, 96.2745098039%);border:1px solid #aaaa33;border-radius:2px;pointer-events:none;z-index:100;}#container .flowchartTitleText{text-anchor:middle;font-size:18px;fill:#333;}#container rect.text{fill:none;stroke-width:0;}#container .icon-shape,#container .image-shape{background-color:rgba(232,232,232, 0.8);text-align:center;}#container .icon-shape p,#container .image-shape p{background-color:rgba(232,232,232, 0.8);padding:2px;}#container .icon-shape .label rect,#container .image-shape .label rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#container .label-icon{display:inline-block;height:1em;overflow:visible;vertical-align:-0.125em;}#container .node .label-icon path{fill:currentColor;stroke:revert;stroke-width:revert;}#container .node .neo-node{stroke:#9370DB;}#container [data-look="neo"].node rect,#container [data-look="neo"].cluster rect,#container [data-look="neo"].node polygon{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node path{stroke:#9370DB;stroke-width:1px;}#container [data-look="neo"].node .outer-path{filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node .neo-line path{stroke:#9370DB;filter:none;}#container [data-look="neo"].node circle{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node circle .state-start{fill:#000000;}#container [data-look="neo"].icon-shape .icon{fill:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].icon-shape .icon-neo path{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g><marker id="container_flowchart-v2-pointEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="4.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 5 L 10 10 L 10 0 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointEnd-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="11.5" refY="7" markerUnits="userSpaceOnUse" markerWidth="10.5" markerHeight="14" orient="auto"><path d="M 0 0 L 11.5 7 L 0 14 z" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointStart-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="1" refY="7" markerUnits="userSpaceOnUse" markerWidth="11.5" markerHeight="14" orient="auto"><polygon points="0,7 11.5,14 11.5,0" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></polygon></marker><marker id="container_flowchart-v2-circleEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="11" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-1" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleEnd-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refY="5" refX="12.25" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleStart-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-2" refY="5" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-crossEnd" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="12" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-crossStart" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="-1" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-crossEnd-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="17.7" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5;"></path></marker><marker id="container_flowchart-v2-crossStart-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="-3.5" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5; stroke-dasharray: 1, 0;"></path></marker><g class="root"><g class="clusters"></g><g class="edgePaths"><path d="M107.988,79.984L107.988,84.151C107.988,88.318,107.988,96.651,107.988,104.318C107.988,111.984,107.988,118.984,107.988,122.484L107.988,125.984" id="container-L_Sasaran_Media_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_Sasaran_Media_0" data-points="W3sieCI6MTA3Ljk4ODI4MTI1LCJ5Ijo3OS45ODQzNzV9LHsieCI6MTA3Ljk4ODI4MTI1LCJ5IjoxMDQuOTg0Mzc1fSx7IngiOjEwNy45ODgyODEyNSwieSI6MTI5Ljk4NDM3NX1d" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M123.414,184.579L126.42,189.472C129.425,194.365,135.435,204.151,138.44,212.544C141.445,220.938,141.445,227.938,141.445,231.438L141.445,234.938" id="container-L_Media_Tujuan_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_Media_Tujuan_0" data-points="W3sieCI6MTIzLjQxNDQ1NjU4MTk2NDI1LCJ5IjoxODQuNTc4Njc3Mjc1NzgyMDd9LHsieCI6MTQxLjQ0NTMxMjUsInkiOjIxMy45Mzc1fSx7IngiOjE0MS40NDUzMTI1LCJ5IjoyMzguOTM3NX1d" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M158.106,298.072L161.135,303.021C164.164,307.97,170.223,317.868,175.676,327.14C181.129,336.412,185.977,345.059,188.401,349.383L190.826,353.706" id="container-L_Tujuan_Metode_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_Tujuan_Metode_0" data-points="W3sieCI6MTU4LjEwNjA5MDkzNTg5MzEyLCJ5IjoyOTguMDcxNTE1NjA3MzA2OX0seyJ4IjoxNzYuMjgxMjUsInkiOjMyNy43NjU2MjV9LHsieCI6MTkyLjc4MTc1NDMyODQ4NTUzLCJ5IjozNTcuMTk0ODk1NzY3MzAyNH1d" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M215.469,353.242L216.18,348.996C216.892,344.75,218.315,336.258,219.027,322.526C219.738,308.794,219.738,289.823,219.738,270.852C219.738,251.88,219.738,232.909,219.738,214.344C219.738,195.779,219.738,177.62,219.738,159.461C219.738,141.302,219.738,123.143,206.964,107.092C194.19,91.04,168.641,77.096,155.867,70.124L143.092,63.152" id="container-L_Metode_Sasaran_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_Metode_Sasaran_0" data-points="W3sieCI6MjE1LjQ2ODc5MTg1OTcxOTgzLCJ5IjozNTMuMjQyNDY4NzIxMDYyNX0seyJ4IjoyMTkuNzM4MjgxMjUsInkiOjMyNy43NjU2MjV9LHsieCI6MjE5LjczODI4MTI1LCJ5IjoyNzAuODUxNTYyNX0seyJ4IjoyMTkuNzM4MjgxMjUsInkiOjIxMy45Mzc1fSx7IngiOjIxOS43MzgyODEyNSwieSI6MTU5LjQ2MDkzNzV9LHsieCI6MjE5LjczODI4MTI1LCJ5IjoxMDQuOTg0Mzc1fSx7IngiOjEzOS41ODExODg2MjY0ODM2LCJ5Ijo2MS4yMzUzMjQyMzcxNTA5Nn1d" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M79.962,66.575L72.017,72.976C64.072,79.378,48.183,92.181,40.238,107.662C32.293,123.143,32.293,141.302,32.293,159.461C32.293,177.62,32.293,195.779,32.293,214.344C32.293,232.909,32.293,251.88,32.293,270.852C32.293,289.823,32.293,308.794,32.293,328.225C32.293,347.656,32.293,367.547,32.293,387.438C32.293,407.328,32.293,427.219,34.859,442.151C37.425,457.083,42.556,467.057,45.122,472.045L47.688,477.032" id="container-L_Sasaran_Status_0" class="edge-thickness-normal edge-pattern-dotted edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_Sasaran_Status_0" data-points="W3sieCI6NzkuOTYyMDExNzU5MSwieSI6NjYuNTc0NjA5NDEzMDQxMjJ9LHsieCI6MzIuMjkyOTY4NzUsInkiOjEwNC45ODQzNzV9LHsieCI6MzIuMjkyOTY4NzUsInkiOjE1OS40NjA5Mzc1fSx7IngiOjMyLjI5Mjk2ODc1LCJ5IjoyMTMuOTM3NX0seyJ4IjozMi4yOTI5Njg3NSwieSI6MjcwLjg1MTU2MjV9LHsieCI6MzIuMjkyOTY4NzUsInkiOjMyNy43NjU2MjV9LHsieCI6MzIuMjkyOTY4NzUsInkiOjM4Ny40Mzc1fSx7IngiOjMyLjI5Mjk2ODc1LCJ5Ijo0NDcuMTA5Mzc1fSx7IngiOjQ5LjUxODA2MjgyOTYyOTQ2NCwieSI6NDgwLjU4ODM3MzM3ODY1MzE2fV0=" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M92.562,184.579L89.557,189.472C86.552,194.365,80.542,204.151,77.536,218.53C74.531,232.909,74.531,251.88,74.531,270.852C74.531,289.823,74.531,308.794,74.531,328.225C74.531,347.656,74.531,367.547,74.531,387.438C74.531,407.328,74.531,427.219,74.882,440.729C75.233,454.239,75.936,461.368,76.287,464.933L76.638,468.497" id="container-L_Media_Status_0" class="edge-thickness-normal edge-pattern-dotted edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_Media_Status_0" data-points="W3sieCI6OTIuNTYyMTA1OTE4MDM1NzUsInkiOjE4NC41Nzg2NzcyNzU3ODIwN30seyJ4Ijo3NC41MzEyNSwieSI6MjEzLjkzNzV9LHsieCI6NzQuNTMxMjUsInkiOjI3MC44NTE1NjI1fSx7IngiOjc0LjUzMTI1LCJ5IjozMjcuNzY1NjI1fSx7IngiOjc0LjUzMTI1LCJ5IjozODcuNDM3NX0seyJ4Ijo3NC41MzEyNSwieSI6NDQ3LjEwOTM3NX0seyJ4Ijo3Ny4wMjk4NDI1MTc4NjA1MiwieSI6NDcyLjQ3Nzg5NzE1NzkwMjZ9XQ==" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M129.284,300.358L127.402,304.926C125.519,309.494,121.754,318.63,119.871,333.143C117.988,347.656,117.988,367.547,117.988,387.438C117.988,407.328,117.988,427.219,116.613,441.338C115.237,455.458,112.486,463.806,111.111,467.981L109.735,472.155" id="container-L_Tujuan_Status_0" class="edge-thickness-normal edge-pattern-dotted edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_Tujuan_Status_0" data-points="W3sieCI6MTI5LjI4NDM2Mzc1MDM1NDc3LCJ5IjozMDAuMzU3ODExMTczMTYwOX0seyJ4IjoxMTcuOTg4MjgxMjUsInkiOjMyNy43NjU2MjV9LHsieCI6MTE3Ljk4ODI4MTI1LCJ5IjozODcuNDM3NX0seyJ4IjoxMTcuOTg4MjgxMjUsInkiOjQ0Ny4xMDkzNzV9LHsieCI6MTA4LjQ4MzI0NTgyNjAzNzIzLCJ5Ijo0NzUuOTU0MDc3OTQ2ODM0OH1d" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M209.738,422.109L209.738,426.276C209.738,430.443,209.738,438.776,199.295,451.411C188.853,464.046,167.967,480.982,157.524,489.45L147.081,497.918" id="container-L_Metode_Status_0" class="edge-thickness-normal edge-pattern-dotted edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_Metode_Status_0" data-points="W3sieCI6MjA5LjczODI4MTI1LCJ5Ijo0MjIuMTA5Mzc1fSx7IngiOjIwOS43MzgyODEyNSwieSI6NDQ3LjEwOTM3NX0seyJ4IjoxNDMuOTc0NTQzMDExMTk4NzMsInkiOjUwMC40Mzc2NDY0MzQ5MDIyNn1d" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" data-id="L_Sasaran_Media_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_Media_Tujuan_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_Tujuan_Metode_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_Metode_Sasaran_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_Sasaran_Status_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_Media_Status_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_Tujuan_Status_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_Metode_Status_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g></g><g class="nodes"><g class="node default" id="container-flowchart-Sasaran-0" data-look="classic" transform="translate(107.98828125, 43.9921875)"><circle class="basic label-container" style="fill:#ffc107 !important;stroke:#fff !important" r="35.9921875" cx="0" cy="0"></circle><g class="label" style="color:#fff !important" transform="translate(-28.4921875, -12)"><rect></rect><foreignObject width="56.984375" height="24"><div style="color: rgb(255, 255, 255) !important; display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span style="color:#fff !important" class="nodeLabel"><p>Sasaran</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-Media-1" data-look="classic" transform="translate(107.98828125, 159.4609375)"><circle class="basic label-container" style="fill:#4caf50 !important;stroke:#fff !important" r="29.4765625" cx="0" cy="0"></circle><g class="label" style="color:#fff !important" transform="translate(-21.9765625, -12)"><rect></rect><foreignObject width="43.953125" height="24"><div style="color: rgb(255, 255, 255) !important; display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span style="color:#fff !important" class="nodeLabel"><p>Media</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-Tujuan-2" data-look="classic" transform="translate(141.4453125, 270.8515625)"><circle class="basic label-container" style="fill:#00bcd4 !important;stroke:#fff !important" r="31.9140625" cx="0" cy="0"></circle><g class="label" style="color:#fff !important" transform="translate(-24.4140625, -12)"><rect></rect><foreignObject width="48.828125" height="24"><div style="color: rgb(255, 255, 255) !important; display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span style="color:#fff !important" class="nodeLabel"><p>Tujuan</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-Metode-3" data-look="classic" transform="translate(209.73828125, 387.4375)"><circle class="basic label-container" style="fill:#3f51b5 !important;stroke:#fff !important" r="34.671875" cx="0" cy="0"></circle><g class="label" style="color:#fff !important" transform="translate(-27.171875, -12)"><rect></rect><foreignObject width="54.34375" height="24"><div style="color: rgb(255, 255, 255) !important; display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span style="color:#fff !important" class="nodeLabel"><p>Metode</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-Status-4" data-look="classic" transform="translate(84.53125, 548.640625)"><circle class="basic label-container" style="fill:#999 !important;stroke:#fff !important" r="76.53125" cx="0" cy="0"></circle><g class="label" style="color:#fff !important" transform="translate(-69.03125, -12)"><rect></rect><foreignObject width="138.0625" height="24"><div style="color: rgb(255, 255, 255) !important; display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span style="color:#fff !important" class="nodeLabel"><p>Status Gizi Optimal</p></span></div></foreignObject></g></g></g></g></g><defs><filter id="container-drop-shadow" height="130%" width="130%"><feDropShadow dx="4" dy="4" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs><defs><filter id="container-drop-shadow-small" height="150%" width="150%"><feDropShadow dx="2" dy="2" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs></svg></div>
+</div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Isi Piringku & 10 Pesan Gizi Seimbang</div>
+
+<p>Konsep "Isi Piringku" menggantikan slogan 4 Sehat 5 Sempurna dan berfokus pada keseimbangan porsi sekali makan (contoh: makan siang &plusmn; 700 kalori).</p>
+<div class="note green">
+<div style="background:#fff;padding:10px;border-radius:8px;margin:10px 0;text-align:center;border:1px solid var(--border);overflow-x:auto;"><svg style="max-width:100%; height:auto;" id="container" width="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 709.984375 450" style="max-width: 709.984375px;" role="graphics-document document" aria-roledescription="pie"><style>#container{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#container .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#container .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#container .error-icon{fill:#552222;}#container .error-text{fill:#552222;stroke:#552222;}#container .edge-thickness-normal{stroke-width:1px;}#container .edge-thickness-thick{stroke-width:3.5px;}#container .edge-pattern-solid{stroke-dasharray:0;}#container .edge-thickness-invisible{stroke-width:0;fill:none;}#container .edge-pattern-dashed{stroke-dasharray:3;}#container .edge-pattern-dotted{stroke-dasharray:2;}#container .marker{fill:#333333;stroke:#333333;}#container .marker.cross{stroke:#333333;}#container svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#container p{margin:0;}#container .pieCircle{stroke:black;stroke-width:2px;opacity:0.7;}#container .pieOuterCircle{stroke:black;stroke-width:2px;fill:none;}#container .pieTitleText{text-anchor:middle;font-size:25px;fill:black;font-family:"trebuchet ms",verdana,arial,sans-serif;}#container .slice{font-family:"trebuchet ms",verdana,arial,sans-serif;fill:#333;font-size:17px;}#container .legend text{fill:black;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:17px;}#container .node .neo-node{stroke:#9370DB;}#container [data-look="neo"].node rect,#container [data-look="neo"].cluster rect,#container [data-look="neo"].node polygon{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node path{stroke:#9370DB;stroke-width:1px;}#container [data-look="neo"].node .outer-path{filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node .neo-line path{stroke:#9370DB;filter:none;}#container [data-look="neo"].node circle{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node circle .state-start{fill:#000000;}#container [data-look="neo"].icon-shape .icon{fill:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].icon-shape .icon-neo path{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g></g><g transform="translate(225,225)"><circle cx="0" cy="0" r="186" class="pieOuterCircle"></circle><path d="M0,-185A185,185,0,0,1,160.408,92.164L0,0Z" fill="#ECECFF" class="pieCircle"></path><path d="M160.408,92.164A185,185,0,0,1,-159.826,93.17L0,0Z" fill="#ffffde" class="pieCircle"></path><path d="M-159.826,93.17A185,185,0,0,1,-160.408,-92.164L0,0Z" fill="hsl(80, 100%, 56.2745098039%)" class="pieCircle"></path><path d="M-160.408,-92.164A185,185,0,0,1,0,-185L0,0Z" fill="hsl(240, 100%, 86.2745098039%)" class="pieCircle"></path><text transform="translate(120.08830957260639,-69.50079426879849)" class="slice" style="text-anchor: middle;">33%</text><text transform="translate(0.4358952636657708,138.74931529675783)" class="slice" style="text-anchor: middle;">33%</text><text transform="translate(-138.74931529675783,0.43589526366577924)" class="slice" style="text-anchor: middle;">17%</text><text transform="translate(-69.50079426879856,-120.08830957260636)" class="slice" style="text-anchor: middle;">17%</text><text x="0" y="-200" class="pieTitleText">Komposisi Isi Piringku Sekali Makan</text><g class="legend" transform="translate(216,-44)"><rect width="18" height="18" style="fill: rgb(236, 236, 255); stroke: rgb(236, 236, 255);"></rect><text x="22" y="14">Makanan Pokok (Nasi, dll)</text></g><g class="legend" transform="translate(216,-22)"><rect width="18" height="18" style="fill: rgb(255, 255, 222); stroke: rgb(255, 255, 222);"></rect><text x="22" y="14">Sayuran</text></g><g class="legend" transform="translate(216,0)"><rect width="18" height="18" style="fill: rgb(181, 255, 32); stroke: rgb(181, 255, 32);"></rect><text x="22" y="14">Lauk Pauk</text></g><g class="legend" transform="translate(216,22)"><rect width="18" height="18" style="fill: rgb(185, 185, 255); stroke: rgb(185, 185, 255);"></rect><text x="22" y="14">Buah-buahan</text></g></g></svg></div>
+<br><br>
+<strong>Proporsi Sekali Makan (Panduan Germas):</strong>
+<ul>
+<li><strong>Makanan Pokok:</strong> 1/3 piring (cth: 150 gr nasi / 3 centong = 3 buah sedang kentang / 300 gr = 1.5 gelas mie kering / 75 gr)</li>
+<li><strong>Sayuran:</strong> 1/3 piring (cth: 150 gr / 1 mangkok sedang)</li>
+<li><strong>Lauk Pauk:</strong> 1/6 piring (Lauk hewani cth: 75 gr Ikan / 2 potong sedang, 1 butir telur. Lauk nabati cth: 100 gr Tahu / 2 potong)</li>
+<li><strong>Buah-buahan:</strong> 1/6 piring (cth: 150 gr pepaya / 2 potong sedang)</li>
+</ul>
+<br>
+Serta dianjurkan untuk <strong>cuci tangan pakai sabun</strong>, melakukan <strong>aktivitas fisik 30 menit per hari</strong>, dan <strong>minum air 8 gelas sehari</strong>.
+</div>
+
+<p><b>10 Pesan Gizi Seimbang:</b></p>
+<ol>
+<li>
+<p>Syukuri &amp; nikmati aneka ragam makanan</p>
+</li>
+<li>
+<p>Banyak makan sayuran dan cukup buah-buahan</p>
+</li>
+<li>
+<p>Biasakan konsumsi lauk pauk yang mengandung protein tinggi</p>
+</li>
+<li>
+<p>Biasakan mengkonsumsi aneka ragam makanan pokok</p>
+</li>
+<li>
+<p>Batasi konsumsi pangan manis, asin dan berlemak</p>
+</li>
+<li>
+<p>Biasakan sarapan</p>
+</li>
+<li>
+<p>Biasakan minum air putih yang cukup dan aman</p>
+</li>
+<li>
+<p>Biasakan membaca label pada kemasan pangan</p>
+</li>
+<li>
+<p>Cuci tangan pakai sabun dengan air bersih mengalir</p>
+</li>
+<li>
+<p>Lakukan aktivitas fisik yang cukup dan pertahankan berat badan normal</p>
+</li>
+</ol>
+<div class="divider"></div>
+
+<div class="sec-h">5. Suplementasi dan Fortifikasi Gizi</div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Suplementasi Gizi</div>
+
+<ul>
+<li>
+<p>Adalah proses penambahan zat gizi (vitamin, mineral, asam amino, dll) ke dalam tubuh untuk melengkapi nutrisi yang kurang.</p>
+</li>
+<li>
+<p>Dapat bersifat individual maupun komunal.</p>
+</li>
+<li>
+<p>Berfungsi mencegah dan mengatasi defisiensi, mendukung pertumbuhan, serta meningkatkan kesehatan populasi secara keseluruhan.</p>
+</li>
+<li>
+<p><b>Contoh:</b> Suplementasi vitamin A (setiap bulan Februari &amp; Agustus), Suplementasi zat besi (Fe) bagi remaja putri dan ibu hamil.</p>
+</li>
+</ul>
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Fortifikasi Gizi</div>
+
+<ul>
+<li>
+<p>Adalah proses penambahan zat gizi mikro secara sengaja ke dalam bahan pangan yang dikonsumsi secara luas.</p>
+</li>
+<li>
+<p><b>Tujuan:</b> Meningkatkan kualitas gizi makanan dan mencegah atau mengatasi kekurangan nutrisi di masyarakat <em>tanpa mengubah pola makan sehari-hari</em>.</p>
+</li>
+<li>
+<p><b>Contoh:</b> </p>
+</li>
+<li>
+<p>Vitamin A pada minyak goreng</p>
+</li>
+<li>
+<p>Fe pada tepung terigu</p>
+</li>
+<li>
+<p>Iodium pada garam</p>
+</li>
+</ul>
+<div class="divider"></div>
+
+<div class="sec-h">6. Pelayanan Kesehatan & Masalah Gizi</div>
+
+<p>Pelayanan kesehatan dan masalah gizi saling berkaitan erat. Gizi yang buruk akan memperburuk kondisi medis dan menghambat penyembuhan. Layanan kesehatan terpadu berfungsi untuk mengidentifikasi dan menangani malnutrisi (seperti stunting dan wasting) melalui skrining, intervensi diet, dan penyuluhan gizi guna mencapai status kesehatan yang optimal.</p>
+<p><b>Bentuk Pelayanan Gizi:</b></p>
+<ol>
+<li>
+<p><b>Skrining Gizi Rutin:</b> Pemeriksaan awal oleh tenaga kesehatan untuk mendeteksi risiko malnutrisi sejak dini pada balita, ibu hamil, dan pasien rawat inap.</p>
+</li>
+<li>
+<p><b>Konseling dan Edukasi Gizi:</b> Sesi konsultasi untuk menyusun pola makan dan diet yang disesuaikan dengan kondisi medis (seperti diabetes atau pemulihan pasca operasi).</p>
+</li>
+<li>
+<p><b>Program Suplementasi dan PMT:</b> Pemberian Makanan Tambahan (PMT) serta vitamin untuk menanggulangi anemia, Kekurangan Energi Kronis (KEK), dan stunting.</p>
+</li>
+<li>
+<p><b>Pelayanan Kesehatan Ibu dan Anak (KIA):</b> Pemantauan tumbuh kembang anak secara berkala serta pemeriksaan kesehatan ibu hamil untuk memutus siklus malnutrisi.</p>
+</li>
+</ol>
+<div class="divider"></div>
+
+<div class="sec-h">7. Pemberdayaan Masyarakat Bidang Pangan & Gizi</div>
+
+<p>Pemberdayaan merupakan upaya sistematis untuk meningkatkan kemandirian warga dalam mengelola, memproduksi, dan mengonsumsi makanan yang aman, beragam, serta bernutrisi.
+Ini dilakukan dengan memanfaatkan potensi lokal guna menekan angka rawan pangan dan memperkuat ketahanan keluarga (&rarr; bagaimana masyarakat bisa memperoleh bahan pangan yang bergizi tinggi namun murah &amp; mudah dijangkau).</p>
+<p><b>Program Pemberdayaan:</b></p>
+<ul>
+<li>
+<p><b>Pekarangan Pangan Lestari (P2L):</b> Memanfaatkan pekarangan rumah untuk menanam sayuran, buah-buahan, dan tanaman obat guna memenuhi kebutuhan gizi harian secara mandiri.</p>
+</li>
+<li>
+<p><b>Kebun dan Dapur Gizi:</b> Mengembangkan area tanam komunitas yang hasilnya diolah bersama menjadi makanan bergizi bagi kelompok rentan seperti balita dan ibu hamil.</p>
+</li>
+<li>
+<p><b>Edukasi dan Penyuluhan:</b> Pelatihan pengolahan pangan lokal (seperti umbi dan jagung) agar memiliki nilai gizi tinggi, higienis, dan menarik.</p>
+</li>
+<li>
+<p><b>Penguatan Posyandu:</b> Mengintegrasikan edukasi gizi dengan pemantauan tumbuh kembang anak untuk mencegah masalah stunting dan malnutrisi.</p>
+</li>
+<li>
+<p><b>Diversifikasi Pangan:</b> Mengurangi ketergantungan pada satu jenis makanan pokok dan menggalakkan konsumsi sumber karbohidrat, protein, serta vitamin berbasis bahan pangan lokal.</p>
+</li>
+</ul>
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Pertimbangan Pemberdayaan</div>
+<div class="note">
+<strong>Segitiga Pertimbangan Pemberdayaan:</strong>
+<br><br>
+<div style="background:#fff;padding:10px;border-radius:8px;margin:10px 0;text-align:center;border:1px solid var(--border);overflow-x:auto;"><svg style="max-width:100%; height:auto;" id="container" width="422.10546875" xmlns="http://www.w3.org/2000/svg" class="flowchart" height="278" viewBox="0 0 422.10546875 278" role="graphics-document document" aria-roledescription="flowchart-v2"><style>#container{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#container .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#container .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#container .error-icon{fill:#552222;}#container .error-text{fill:#552222;stroke:#552222;}#container .edge-thickness-normal{stroke-width:1px;}#container .edge-thickness-thick{stroke-width:3.5px;}#container .edge-pattern-solid{stroke-dasharray:0;}#container .edge-thickness-invisible{stroke-width:0;fill:none;}#container .edge-pattern-dashed{stroke-dasharray:3;}#container .edge-pattern-dotted{stroke-dasharray:2;}#container .marker{fill:#333333;stroke:#333333;}#container .marker.cross{stroke:#333333;}#container svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#container p{margin:0;}#container .label{font-family:"trebuchet ms",verdana,arial,sans-serif;color:#333;}#container .cluster-label text{fill:#333;}#container .cluster-label span{color:#333;}#container .cluster-label span p{background-color:transparent;}#container .label text,#container span{fill:#333;color:#333;}#container .node rect,#container .node circle,#container .node ellipse,#container .node polygon,#container .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#container .rough-node .label text,#container .node .label text,#container .image-shape .label,#container .icon-shape .label{text-anchor:middle;}#container .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#container .rough-node .label,#container .node .label,#container .image-shape .label,#container .icon-shape .label{text-align:center;}#container .node.clickable{cursor:pointer;}#container .root .anchor path{fill:#333333!important;stroke-width:0;stroke:#333333;}#container .arrowheadPath{fill:#333333;}#container .edgePath .path{stroke:#333333;stroke-width:1px;}#container .flowchart-link{stroke:#333333;fill:none;}#container .edgeLabel{background-color:rgba(232,232,232, 0.8);text-align:center;}#container .edgeLabel p{background-color:rgba(232,232,232, 0.8);}#container .edgeLabel rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#container .labelBkg{background-color:rgba(232, 232, 232, 0.5);}#container .cluster rect{fill:#ffffde;stroke:#aaaa33;stroke-width:1px;}#container .cluster text{fill:#333;}#container .cluster span{color:#333;}#container div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:12px;background:hsl(80, 100%, 96.2745098039%);border:1px solid #aaaa33;border-radius:2px;pointer-events:none;z-index:100;}#container .flowchartTitleText{text-anchor:middle;font-size:18px;fill:#333;}#container rect.text{fill:none;stroke-width:0;}#container .icon-shape,#container .image-shape{background-color:rgba(232,232,232, 0.8);text-align:center;}#container .icon-shape p,#container .image-shape p{background-color:rgba(232,232,232, 0.8);padding:2px;}#container .icon-shape .label rect,#container .image-shape .label rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#container .label-icon{display:inline-block;height:1em;overflow:visible;vertical-align:-0.125em;}#container .node .label-icon path{fill:currentColor;stroke:revert;stroke-width:revert;}#container .node .neo-node{stroke:#9370DB;}#container [data-look="neo"].node rect,#container [data-look="neo"].cluster rect,#container [data-look="neo"].node polygon{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node path{stroke:#9370DB;stroke-width:1px;}#container [data-look="neo"].node .outer-path{filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node .neo-line path{stroke:#9370DB;filter:none;}#container [data-look="neo"].node circle{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node circle .state-start{fill:#000000;}#container [data-look="neo"].icon-shape .icon{fill:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].icon-shape .icon-neo path{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g><marker id="container_flowchart-v2-pointEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="4.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 5 L 10 10 L 10 0 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointEnd-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="11.5" refY="7" markerUnits="userSpaceOnUse" markerWidth="10.5" markerHeight="14" orient="auto"><path d="M 0 0 L 11.5 7 L 0 14 z" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointStart-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="1" refY="7" markerUnits="userSpaceOnUse" markerWidth="11.5" markerHeight="14" orient="auto"><polygon points="0,7 11.5,14 11.5,0" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></polygon></marker><marker id="container_flowchart-v2-circleEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="11" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-1" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleEnd-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refY="5" refX="12.25" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleStart-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-2" refY="5" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-crossEnd" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="12" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-crossStart" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="-1" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-crossEnd-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="17.7" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5;"></path></marker><marker id="container_flowchart-v2-crossStart-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="-3.5" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5; stroke-dasharray: 1, 0;"></path></marker><g class="root"><g class="clusters"></g><g class="edgePaths"><path d="M54.506,216L52.903,211.833C51.301,207.667,48.096,199.333,46.493,186.5C44.891,173.667,44.891,156.333,44.891,139C44.891,121.667,44.891,104.333,55.497,91.057C66.103,77.781,87.315,68.562,97.921,63.953L108.527,59.343" id="container-L_Potensi_Target_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_Potensi_Target_0" data-points="W3sieCI6NTQuNTA2MDA5NjE1Mzg0NjEsInkiOjIxNn0seyJ4Ijo0NC44OTA2MjUsInkiOjE5MX0seyJ4Ijo0NC44OTA2MjUsInkiOjEzOX0seyJ4Ijo0NC44OTA2MjUsInkiOjg3fSx7IngiOjExMi4xOTUzMTI1LCJ5Ijo1Ny43NDg5Mzg5NDg3NDMwNn1d" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M222.062,216L212.475,211.833C202.888,207.667,183.713,199.333,174.126,186.5C164.539,173.667,164.539,156.333,164.539,139C164.539,121.667,164.539,104.333,164.539,92.167C164.539,80,164.539,73,164.539,69.5L164.539,66" id="container-L_Lokasi_Target_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_Lokasi_Target_0" data-points="W3sieCI6MjIyLjA2MjM0OTc1OTYxNTQsInkiOjIxNn0seyJ4IjoxNjQuNTM5MDYyNSwieSI6MTkxfSx7IngiOjE2NC41MzkwNjI1LCJ5IjoxMzl9LHsieCI6MTY0LjUzOTA2MjUsInkiOjg3fSx7IngiOjE2NC41MzkwNjI1LCJ5Ijo2Mn1d" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M339.16,112L339.16,107.833C339.16,103.667,339.16,95.333,319.42,85.288C299.679,75.243,260.198,63.486,240.457,57.607L220.716,51.729" id="container-L_Masalah_Target_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_Masalah_Target_0" data-points="W3sieCI6MzM5LjE2MDE1NjI1LCJ5IjoxMTJ9LHsieCI6MzM5LjE2MDE1NjI1LCJ5Ijo4N30seyJ4IjoyMTYuODgyODEyNSwieSI6NTAuNTg3MzIwNzYxNDcwMTQ2fV0=" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M121.781,225.03L139.736,219.358C157.691,213.686,193.602,202.343,220.343,192.505C247.084,182.667,264.655,174.333,273.441,170.167L282.227,166" id="container-L_Potensi_Masalah_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_Potensi_Masalah_0" data-points="W3sieCI6MTIxLjc4MTI1LCJ5IjoyMjUuMDI5NTY2MDAxNDcxMTh9LHsieCI6MjI5LjUxMTcxODc1LCJ5IjoxOTF9LHsieCI6MjgyLjIyNzMxMzcwMTkyMzEsInkiOjE2Nn1d" data-look="classic"></path><path d="M317.923,216L323.129,211.833C328.336,207.667,338.748,199.333,343.153,191C347.558,182.667,345.955,174.333,345.154,170.167L344.352,166" id="container-L_Lokasi_Masalah_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_Lokasi_Masalah_0" data-points="W3sieCI6MzE3LjkyMzMwMjI4MzY1Mzg3LCJ5IjoyMTZ9LHsieCI6MzQ5LjE2MDE1NjI1LCJ5IjoxOTF9LHsieCI6MzQ0LjM1MjQ2Mzk0MjMwNzcsInkiOjE2Nn1d" data-look="classic"></path></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" data-id="L_Potensi_Target_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_Lokasi_Target_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_Masalah_Target_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_Potensi_Masalah_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_Lokasi_Masalah_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g></g><g class="nodes"><g class="node default" id="container-flowchart-Potensi-0" data-look="classic" transform="translate(64.890625, 243)"><rect class="basic label-container" style="fill:#26c6da !important;stroke:#fff !important" x="-56.890625" y="-27" width="113.78125" height="54"></rect><g class="label" style="color:#fff !important" transform="translate(-26.890625, -12)"><rect></rect><foreignObject width="53.78125" height="24"><div style="color: rgb(255, 255, 255) !important; display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span style="color:#fff !important" class="nodeLabel"><p>Potensi</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-Target-1" data-look="classic" transform="translate(164.5390625, 35)"><rect class="basic label-container" style="fill:#4285f4 !important;stroke:#fff !important" x="-52.34375" y="-27" width="104.6875" height="54"></rect><g class="label" style="color:#fff !important" transform="translate(-22.34375, -12)"><rect></rect><foreignObject width="44.6875" height="24"><div style="color: rgb(255, 255, 255) !important; display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span style="color:#fff !important" class="nodeLabel"><p>Target</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-Lokasi-2" data-look="classic" transform="translate(284.1875, 243)"><rect class="basic label-container" style="fill:#66bb6a !important;stroke:#fff !important" x="-112.40625" y="-27" width="224.8125" height="54"></rect><g class="label" style="color:#fff !important" transform="translate(-82.40625, -12)"><rect></rect><foreignObject width="164.8125" height="24"><div style="color: rgb(255, 255, 255) !important; display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span style="color:#fff !important" class="nodeLabel"><p>Lokasi &amp; Skala Wilayah</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-Masalah-4" data-look="classic" transform="translate(339.16015625, 139)"><rect class="basic label-container" style="fill:#66bb6a !important;stroke:#fff !important" x="-74.9453125" y="-27" width="149.890625" height="54"></rect><g class="label" style="color:#fff !important" transform="translate(-44.9453125, -12)"><rect></rect><foreignObject width="89.890625" height="24"><div style="color: rgb(255, 255, 255) !important; display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span style="color:#fff !important" class="nodeLabel"><p>Masalah Gizi</p></span></div></foreignObject></g></g></g></g></g><defs><filter id="container-drop-shadow" height="130%" width="130%"><feDropShadow dx="4" dy="4" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs><defs><filter id="container-drop-shadow-small" height="150%" width="150%"><feDropShadow dx="2" dy="2" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs></svg></div>
+<br><br>
+Dalam menentukan target, perlu mempertimbangkan <strong>Potensi</strong> yang ada, <strong>Lokasi & Skala Wilayah</strong>, serta <strong>Masalah Gizi</strong> spesifik yang sedang dihadapi.
+</div>
+
+<div class="divider"></div>
+
+<div class="sec-h">Daftar Pustaka</div>
+<div class="note">
+
+1. Kementerian Kesehatan RI. (2014). <em>Pedoman Gizi Seimbang</em>. Jakarta: Kemenkes RI. <sup>[1]</sup><br>
+
+2. UNICEF. (1990). <em>Strategy for Improved Nutrition of Children and Women in Developing Countries</em>. New York: UNICEF. <sup>[2]</sup><br>
+
+3. Ruel, M. T. (2008). <em>Addressing the Underlying and Basic Causes of Child Undernutrition in Developing Countries: What Works and Why?</em>. Ministry of Foreign Affairs, Danida. <sup>[3]</sup><br>
+
+4. Kementerian Kesehatan RI. (2024). <em>Hasil Survei Status Gizi Indonesia (SSGI) 2023-2024</em>. Jakarta: Kemenkes RI. <sup>[4]</sup>
+</div>
+</div>
+
+</div>
+
+<!-- QUIZ -->
+<div class="main-panel" id="mp-quiz">
+  <div id="qconfig" class="qconfig">
+    <div class="qconfig-title">Mulai Sesi Quiz</div>
+    <div class="qconfig-sub">Pilih topik (multi-pilih)</div>
+    <div class="cfg-grid" id="cfg-grid">
+<button class="cfg-btn sel" data-type="pool_kualitas_gizi">Kualitas Gizi</button>
+<button class="cfg-btn sel" data-type="pool_situasi_gizi">Situasi Gizi</button>
+<button class="cfg-btn sel" data-type="pool_kerangka_solusi">Kerangka Solusi</button>
+<button class="cfg-btn sel" data-type="pool_promosi_gizi">Promosi Gizi</button>
+<button class="cfg-btn sel" data-type="pool_suplemen_fortifikasi">Suplemen Fortifikasi</button>
+<button class="cfg-btn sel" data-type="pool_yankes_gizi">Yankes Gizi</button>
+<button class="cfg-btn sel" data-type="pool_pemberdayaan">Pemberdayaan</button>
+<button class="cfg-btn sel" data-type="pool_clinical_cases">Clinical Cases</button>
+
+</div>
+    <button class="start-btn" onclick="startSession()">Mulai →</button>
+  </div>
+  <div id="qactive" style="display:none">
+    <div class="qheader">
+      <div class="qnum-display">Soal ke-<strong id="qnum">1</strong></div>
+      <div id="qpill" class="qtype-pill"></div>
+      <div class="qscore-display"><strong id="qscore">0</strong> benar</div>
+    </div>
+    <div class="qcard">
+      <div id="qscen" class="qscen" style="display:none"></div>
+      <div id="qdata" class="qdata" style="display:none"></div>
+      <div id="qtext" class="qtext"></div>
+    </div>
+    <div class="opts" id="opts"></div>
+    <div class="expbox" id="expbox"></div>
+    <div class="actrow">
+      <button class="next-btn" id="nextbtn" onclick="nextQ()">Soal Berikutnya →</button>
+      <button class="end-btn" onclick="endSession()">Akhiri Sesi</button>
+    </div>
+  </div>
+  <div id="qresults" style="display:none">
+    <div class="results-wrap">
+      <div class="res-big" id="res-pct">—</div>
+      <div class="res-sub" id="res-sub">—</div>
+      <div class="res-grid" id="res-grid"></div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:20px">
+        <button class="retry-btn" style="margin-bottom:0" onclick="restartQuiz()">Coba Lagi</button>
+        <button class="retry-btn" style="margin-bottom:0;background:var(--green)" onclick="downloadCert()">⬇ Unduh Sertifikat</button>
+      </div>
+      <div class="dtable-wrap" style="margin-bottom:14px"><table><thead><tr><th>Topik</th><th>Soal</th><th>Benar</th></tr></thead><tbody id="res-bytype"></tbody></table></div>
+      <div class="dtable-wrap"><table><thead><tr><th>#</th><th>Soal (ringkas)</th><th>Jawaban Benar</th><th>Hasil</th></tr></thead><tbody id="res-tbody"></tbody></table></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div>am i nurtured? · Blok 2.5 · FK Unsoed</div>
+  <div style="margin-top:5px">crafted by alchemist4real · <a href="https://174-three.vercel.app" target="_blank" style="color:var(--text3);text-decoration:none;border-bottom:1px dashed var(--text3);transition:color .18s" onmouseover="this.style.color='var(--blue)'" onmouseout="this.style.color='var(--text3)'">check other quizzes → 174 archive ↗</a></div>
+</footer>
+</div>
+
+<script>
+// ═══ TAB ═══
+window.switchMain=function(id,b){document.querySelectorAll('.main-panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.main-tab').forEach(x=>x.classList.remove('active'));document.getElementById('mp-'+id).classList.add('active');b.classList.add('active');};
+window.switchSub=function(id,b){document.querySelectorAll('.sub-panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.sub-tab').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');b.classList.add('active');};
+window.startSession=startSession;window.nextQ=nextQ;window.endSession=endSession;window.restartQuiz=restartQuiz;
+
+// ═══ CONFIG ═══
+const activeTypes=new Set(['pool_kualitas_gizi','pool_situasi_gizi','pool_kerangka_solusi','pool_promosi_gizi','pool_suplemen_fortifikasi','pool_yankes_gizi','pool_pemberdayaan','pool_clinical_cases']);
+document.querySelectorAll('.cfg-btn').forEach(b=>{b.addEventListener('click',()=>{const t=b.dataset.type;if(activeTypes.has(t)){if(activeTypes.size===1)return;activeTypes.delete(t);b.classList.remove('sel');}else{activeTypes.add(t);b.classList.add('sel');}});});
+
+// ═══ UTILS ═══
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const shuf=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]];}return b;};
+const KEYS='ABCDE'.split('');
+function stripHtml(s){return s.replace(/<[^>]*>/g,'');}
+// Pool-based sequential picker (no repeat until exhausted)
+function makePicker(pool){let idx=[];return function(){if(idx.length>=pool.length)idx=[];const av=pool.map((_,i)=>i).filter(i=>!idx.includes(i));const si=rnd(av);idx.push(si);return pool[si];};}
+
+// ═══════════════════════════════════════
+// BANKS
+// ═══════════════════════════════════════
+const pool_kualitas_gizi = [\n    {\n      q: `Berdasarkan konsep kualitas gizi masyarakat, apakah dua faktor utama yang saling dibandingkan untuk menentukan status gizi suatu kelompok atau individu?`,\n      a: `Asupan pangan dan gizi (intake) dibandingkan dengan Kebutuhan Gizi (Angka Kecukupan Gizi / AKG)`,\n      options: [`Berat badan dibandingkan dengan usia`, `Tinggi badan dibandingkan dengan usia`, `Asupan pangan dan gizi (intake) dibandingkan dengan Kebutuhan Gizi (Angka Kecukupan Gizi / AKG)`, `Asupan kalori harian dibandingkan dengan pengeluaran energi melalui aktivitas fisik`, `Jumlah zat gizi makro dibandingkan dengan zat gizi mikro`],\n      p: `Kualitas gizi dipengaruhi oleh asupan pangan dan gizi (intake) dan dibandingkan dengan Kebutuhan Gizi (Angka Kecukupan Gizi / AKG).`\n    },\n    {\n      q: `Seorang ahli gizi sedang mengkaji data mortalitas di sebuah wilayah. Ditemukan adanya angka kematian yang disebabkan oleh penyakit jantung koroner dan diabetes melitus tipe 2 yang terkait erat dengan obesitas sentral. Dalam rentang kualitas gizi masyarakat, kondisi ini termasuk ke dalam kategori...`,\n      a: `Kematian akibat kelebihan gizi (toksisitas/over)`,\n      options: [`Kematian akibat kekurangan gizi (under/defisiensi)`, `Kondisi normal (optimal)`, `Kematian akibat kelebihan gizi (toksisitas/over)`, `Defisiensi mikronutrien spesifik`, `Transisi epidemiologi nutrisi ganda`],\n      p: `Rentang kualitas gizi terbentang dari kematian akibat kekurangan gizi (under/defisiensi), kondisi normal (optimal), hingga kematian akibat kelebihan gizi (toksisitas/over).`\n    },\n    {\n      q: `Di sebuah desa terpencil, banyak balita mengalami marasmus dan kwashiorkor yang berujung pada tingginya angka kematian balita. Dalam spektrum kualitas gizi masyarakat, kondisi kematian ini diistilahkan sebagai...`,\n      a: `Kematian akibat kekurangan gizi (under/defisiensi)`,\n      options: [`Kematian akibat kelebihan gizi (toksisitas/over)`, `Kematian akibat malabsorpsi`, `Kematian akibat kekurangan gizi (under/defisiensi)`, `Kematian akibat defisiensi vitamin larut lemak`, `Kematian akibat gangguan genetik metabolisme`],\n      p: `Spektrum kualitas gizi mencakup kematian akibat kekurangan gizi (under/defisiensi) di salah satu ujung ekstremnya.`\n    },\n    {\n      q: `Status gizi yang ideal dalam populasi dicapai ketika asupan gizi seimbang dengan kebutuhannya tanpa menyebabkan toksisitas atau defisiensi. Kondisi ini disebut...`,\n      a: `Kondisi normal (optimal)`,\n      options: [`Kondisi surplus moderat`, `Kondisi normal (optimal)`, `Kondisi adaptasi metabolik`, `Kondisi defisiensi subklinis`, `Kondisi under-weight`],\n      p: `Rentang kualitas gizi terbentang dari defisiensi, normal (optimal), hingga over (toksisitas).`\n    },\n    {\n      q: `Dalam visualisasi flowchart masalah gizi, Status Gizi dipengaruhi oleh Intake Pangan dan Intake Zat Gizi, yang dibandingkan terhadap...`,\n      a: `Kebutuhan Gizi / AKG`,\n      options: [`Angka Metabolisme Basal (AMB)`, `Total Energy Expenditure (TEE)`, `Kebutuhan Gizi / AKG`, `Tingkat Aktivitas Fisik (PAL)`, `Indeks Massa Tubuh (IMT)`],\n      p: `Intake dibandingkan dengan Kebutuhan Gizi (AKG) untuk menentukan status gizi.`\n    },\n  ];
+const pick_pool_kualitas_gizi = makePicker(pool_kualitas_gizi);
+const pool_situasi_gizi = [\n    {\n      q: `Menurut data yang dilaporkan, berapakah estimasi prevalensi balita stunting di Indonesia yang sering dijadikan acuan edukasi gizi di tingkat puskesmas?`,\n      a: `1 dari 5 anak (Terlalu pendek untuk usianya)`,\n      options: [`1 dari 12 anak (Terlalu kurus untuk usianya)`, `1 dari 5 anak (Terlalu pendek untuk usianya)`, `1 dari 3 anak (Terlalu pendek untuk usianya)`, `1 dari 10 anak (Terlalu kurus untuk usianya)`, `1 dari 4 anak (Kegemukan/Obesitas)`],\n      p: `Tantangan balita stunting di Indonesia adalah sekitar 1 dari 5 anak (terlalu pendek untuk usianya).`\n    },\n    {\n      q: `Berdasarkan data tantangan gizi utama di Indonesia, berapa prevalensi anak balita wasting?`,\n      a: `1 dari 12 anak (Terlalu kurus untuk usianya)`,\n      options: [`1 dari 5 anak`, `1 dari 3 anak`, `1 dari 12 anak (Terlalu kurus untuk usianya)`, `1 dari 20 anak`, `1 dari 10 anak`],\n      p: `Anak Balita Wasting: 1 dari 12 anak (Terlalu kurus untuk usianya).`\n    },\n    {\n      q: `Berapakah angka bayi lahir dengan BBLR (Berat Badan Lahir Rendah) di Indonesia yang menjadi beban masalah gizi nasional?`,\n      a: `280.000 bayi`,\n      options: [`120.000 bayi`, `500.000 bayi`, `280.000 bayi`, `1.000.000 bayi`, `50.000 bayi`],\n      p: `Bayi Lahir BBLR (Berat Badan Lahir Rendah): 280.000 bayi.`\n    },\n    {\n      q: `Indonesia saat ini menghadapi masalah ganda (double burden) dalam gizi masyarakat. Salah satu masalah adalah tingginya angka kegemukan atau obesitas pada balita. Berapakah perkiraan jumlah balita yang mengalami kondisi ini?`,\n      a: `1 Juta balita`,\n      options: [`280.000 balita`, `500.000 balita`, `1 Juta balita`, `2 Juta balita`, `1 dari 12 balita`],\n      p: `Kegemukan atau Obesitas (Balita): 1 Juta balita.`\n    },\n    {\n      q: `Pemerintah menetapkan target nasional untuk menurunkan prevalensi stunting berdasarkan Survei Status Gizi Indonesia (SSGI). Berapakah target penurunan prevalensi stunting nasional pada tahun 2025?`,\n      a: `19,8%`,\n      options: [`14%`, `19,8%`, `21,5%`, `24,4%`, `10,2%`],\n      p: `Target Nasional: Prevalensi Stunting Nasional (SSGI) ditargetkan turun menjadi 19,8% pada tahun 2025.`\n    },\n    {\n      q: `Berdasarkan tren prevalensi anemia ibu hamil di Indonesia, terjadi peningkatan prevalensi dari tahun 2013 ke tahun 2018. Berapakah angka prevalensi pada tahun 2018?`,\n      a: `48,9%`,\n      options: [`37,1%`, `48,9%`, `21,8%`, `24,4%`, `14,8%`],\n      p: `Anemia Ibu Hamil: 37,1% (2013) menjadi 48,9% (2018).`\n    },\n    {\n      q: `Survei Status Gizi Indonesia (SSGI) mencatat perkembangan angka stunting dari tahun ke tahun. Berapakah prevalensi stunting pada tahun 2023?`,\n      a: `21,5%`,\n      options: [`24,4%`, `21,6%`, `21,5%`, `19,8%`, `30,8%`],\n      p: `Stunting: ... 24,4% (2021) -> 21,6% (2022) -> 21,5% (2023).`\n    },\n    {\n      q: `Angka prevalensi ASI Eksklusif untuk bayi 0-5 bulan di Indonesia tercatat sebesar...`,\n      a: `68,6%`,\n      options: [`50,2%`, `68,6%`, `75,4%`, `80,1%`, `48,9%`],\n      p: `ASI Eksklusif (Bayi 0-5 bulan): 68,6%.`\n    },\n    {\n      q: `Seorang dokter puskesmas mengkaji data epidemiologi gizi penduduk dewasa. Diketahui obesitas penduduk usia 18+ tahun mengalami peningkatan signifikan dari tahun 2013 ke 2018. Angkanya meningkat dari 14,8% menjadi...`,\n      a: `21,8%`,\n      options: [`18,5%`, `21,8%`, `25,4%`, `30,8%`, `48,9%`],\n      p: `Obesitas Penduduk Usia 18+ tahun: 14,8% (2013) menjadi 21,8% (2018).`\n    },\n    {\n      q: `Wasting pada anak balita menunjukkan tren fluktuatif di Indonesia. Berdasarkan data terbaru tahun 2023, prevalensi wasting tercatat sebesar...`,\n      a: `8,5%`,\n      options: [`7,1%`, `7,7%`, `8,5%`, `10,2%`, `12,1%`],\n      p: `Wasting: ... 7,1% (2021) -> 7,7% (2022) -> 8,5% (2023).`\n    },\n  ];
+const pick_pool_situasi_gizi = makePicker(pool_situasi_gizi);
+const pool_kerangka_solusi = [\n    {\n      q: `Menurut kerangka konseptual gizi adaptasi UNICEF, penanganan balita gizi buruk dan suplementasi mikronutrien termasuk dalam kategori intervensi...`,\n      a: `Intervensi Spesifik`,\n      options: [`Intervensi Sensitif`, `Intervensi Spesifik`, `Intervensi Struktural`, `Intervensi Promotif Primer`, `Intervensi Akar Masalah`],\n      p: `Intervensi Spesifik (30%) berfokus pada penyebab langsung (Asupan Pangan dan Kesehatan). Contoh: Penanganan balita gizi buruk, Suplementasi mikronutrien.`\n    },\n    {\n      q: `Berdasarkan kerangka masalah dan intervensi gizi UNICEF, intervensi yang berfokus pada penyebab tidak langsung dan akar masalah serta memiliki kontribusi keberhasilan hingga 70% disebut...`,\n      a: `Intervensi Sensitif`,\n      options: [`Intervensi Langsung`, `Intervensi Spesifik`, `Intervensi Kuratif`, `Intervensi Sensitif`, `Intervensi Preventif Klinis`],\n      p: `Intervensi Sensitif (70%): Berfokus pada penyebab tidak langsung dan akar masalah.`\n    },\n    {\n      q: `Pembangunan sistem penyediaan air bersih dan sanitasi di desa-desa lokus stunting merupakan contoh nyata dari...`,\n      a: `Intervensi Sensitif`,\n      options: [`Intervensi Spesifik`, `Intervensi Sensitif`, `Intervensi Jangka Pendek`, `Pelayanan Gizi Langsung`, `Suplementasi Gizi`],\n      p: `Intervensi Sensitif meliputi penyediaan Air bersih dan Sanitasi, Ketahanan pangan, dll.`\n    },\n    {\n      q: `Seorang dokter meresepkan suplemen zat besi (Fe) dan asam folat kepada ibu hamil yang menderita anemia di poli KIA. Tindakan ini secara konseptual merupakan bagian dari...`,\n      a: `Intervensi Spesifik`,\n      options: [`Intervensi Sensitif`, `Intervensi Akar Masalah`, `Intervensi Sosio-ekonomi`, `Intervensi Pembangunan Berkelanjutan`, `Intervensi Spesifik`],\n      p: `Suplementasi mikronutrien adalah contoh intervensi spesifik (berfokus pada asupan pangan/kesehatan langsung).`\n    },\n    {\n      q: `Program pengentasan kemiskinan dan pemberian Bantuan Langsung Tunai (BLT) untuk meningkatkan daya beli pangan masyarakat miskin digolongkan sebagai...`,\n      a: `Intervensi Sensitif`,\n      options: [`Intervensi Spesifik`, `Intervensi Klinis`, `Intervensi Jangka Pendek`, `Intervensi Sensitif`, `Intervensi Terpadu Kesehatan`],\n      p: `Pengentasan Kemiskinan dan Jaminan Sosial adalah contoh Intervensi Sensitif yang menyasar akar masalah.`\n    },\n    {\n      q: `Pemerintah daerah mengadakan penyuluhan cuci tangan pakai sabun (CTPS) dan kampanye kebersihan diri untuk mencegah diare berulang pada anak balita yang dapat menyebabkan malnutrisi. Program ini termasuk...`,\n      a: `Intervensi Spesifik`,\n      options: [`Intervensi Sensitif`, `Intervensi Struktural Lingkungan`, `Intervensi Spesifik`, `Intervensi Pertanian`, `Intervensi Jaminan Sosial`],\n      p: `Kebersihan diri termasuk dalam Intervensi Spesifik karena berfokus pada kesehatan secara langsung sebagai penyebab langsung malnutrisi.`\n    },\n    {\n      q: `Dalam menyelesaikan masalah stunting, intervensi spesifik memberikan kontribusi seberapa besar terhadap keberhasilan pemecahan masalah?`,\n      a: `30%`,\n      options: [`10%`, `30%`, `50%`, `70%`, `90%`],\n      p: `Intervensi Spesifik menyumbang 30%, sedangkan Intervensi Sensitif 70%.`\n    },\n    {\n      q: `Program ketahanan pangan melalui diversifikasi pertanian dan lumbung desa merupakan contoh program...`,\n      a: `Intervensi Sensitif`,\n      options: [`Intervensi Spesifik`, `Intervensi Terapeutik`, `Intervensi Spesifik Jangka Pendek`, `Intervensi Medis`, `Intervensi Sensitif`],\n      p: `Ketahanan pangan adalah intervensi sensitif.`\n    },\n    {\n      q: `Sebuah LSM bidang gizi melakukan advokasi agar kebijakan cuti melahirkan diperpanjang menjadi 6 bulan penuh guna mendukung ASI Eksklusif, yang juga merupakan isu kesetaraan gender di tempat kerja. Intervensi ini termasuk dalam ranah...`,\n      a: `Intervensi Sensitif`,\n      options: [`Intervensi Spesifik`, `Intervensi Mikronutrien`, `Intervensi Kesehatan Langsung`, `Intervensi Medis Kuratif`, `Intervensi Sensitif`],\n      p: `Kebijakan terkait gender, sistem ketenagakerjaan, dan tata kelola pemerintahan masuk ke dalam Intervensi Sensitif.`\n    },\n    {\n      q: `Intervensi spesifik dalam kerangka konsep gizi UNICEF pada umumnya dianggap sebagai langkah penanganan...`,\n      a: `Jangka Pendek`,\n      options: [`Jangka Pendek`, `Jangka Menengah`, `Jangka Panjang`, `Seumur Hidup`, `Struktural`],\n      p: `Kerangka konsep menyebutkan Intervensi Spesifik (Jangka Pendek) dan Intervensi Sensitif (Jangka Panjang).`\n    },\n  ];
+const pick_pool_kerangka_solusi = makePicker(pool_kerangka_solusi);
+const pool_promosi_gizi = [\n    {\n      q: `Slogan 4 Sehat 5 Sempurna saat ini telah digantikan oleh konsep yang lebih mengedepankan keseimbangan porsi sekali makan. Konsep tersebut dinamakan...`,\n      a: `Isi Piringku`,\n      options: [`Pedoman Gizi Lengkap`, `Piring Makanku`, `Isi Piringku`, `Gizi Cukup 4 Bintang`, `MyPlate Indonesia`],\n      p: `Konsep Isi Piringku menggantikan slogan 4 Sehat 5 Sempurna dan berfokus pada keseimbangan porsi sekali makan.`\n    },\n    {\n      q: `Menurut panduan "Isi Piringku" (Germas) untuk sekali makan (± 700 kalori), berapakah proporsi sayuran yang dianjurkan dalam satu piring?`,\n      a: `1/3 piring`,\n      options: [`1/2 piring`, `1/3 piring`, `1/4 piring`, `1/6 piring`, `2/3 piring`],\n      p: `Sayuran: 1/3 piring (cth: 150 gr / 1 mangkok sedang).`\n    },\n    {\n      q: `Dalam panduan "Isi Piringku", proporsi lauk pauk (sumber protein hewani dan nabati) dan buah-buahan masing-masing adalah...`,\n      a: `1/6 piring`,\n      options: [`1/2 piring`, `1/3 piring`, `1/4 piring`, `1/6 piring`, `1/8 piring`],\n      p: `Lauk Pauk: 1/6 piring; Buah-buahan: 1/6 piring.`\n    },\n    {\n      q: `Berdasarkan "Isi Piringku", 1/3 bagian piring diisi oleh makanan pokok. Jumlah ini setara dengan...`,\n      a: `150 gr nasi (3 centong) atau 3 buah sedang kentang`,\n      options: [`100 gr nasi (2 centong) atau 1 mangkok bihun`, `150 gr nasi (3 centong) atau 3 buah sedang kentang`, `200 gr nasi (4 centong) atau 1 buah ubi`, `75 gr kentang atau 1/2 piring mie`, `50 gr jagung atau 1 centong nasi`],\n      p: `Makanan Pokok: 1/3 piring (cth: 150 gr nasi / 3 centong = 3 buah sedang kentang = 1.5 gelas mie kering / 75 gr).`\n    },\n    {\n      q: `Selain proporsi makanan, panduan Germas "Isi Piringku" juga menganjurkan kebiasaan sehat lainnya. Berapa lama aktivitas fisik yang dianjurkan per hari?`,\n      a: `30 menit`,\n      options: [`15 menit`, `20 menit`, `30 menit`, `45 menit`, `60 menit`],\n      p: `Serta dianjurkan cuci tangan pakai sabun, aktivitas fisik 30 menit per hari, dan minum air 8 gelas sehari.`\n    },\n    {\n      q: `Berapa banyak konsumsi air minum yang direkomendasikan setiap hari menurut pedoman Gizi Seimbang?`,\n      a: `8 gelas`,\n      options: [`4 gelas`, `6 gelas`, `8 gelas`, `10 gelas`, `12 gelas`],\n      p: `Minum air 8 gelas sehari.`\n    },\n    {\n      q: `Pesan nomor 5 dari "10 Pesan Gizi Seimbang" menekankan pembatasan pada tiga komponen pangan yang berisiko menyebabkan penyakit tidak menular. Apakah komponen tersebut?`,\n      a: `Pangan manis, asin, dan berlemak`,\n      options: [`Pangan asam, pedas, dan berlemak`, `Karbohidrat simpleks, protein tinggi, dan natrium`, `Pangan manis, asin, dan berlemak`, `Makanan olahan pabrik, pewarna, dan pengawet`, `Kafein, alkohol, dan pemanis buatan`],\n      p: `Pesan 5: Batasi konsumsi pangan manis, asin dan berlemak.`\n    },\n    {\n      q: `Salah satu dari 10 Pesan Gizi Seimbang adalah himbauan untuk mengenali kandungan pada makanan kemasan yang dibeli di pasaran. Pesan tersebut berbunyi...`,\n      a: `Biasakan membaca label pada kemasan pangan`,\n      options: [`Biasakan mencuci makanan sebelum dimasak`, `Biasakan membaca label pada kemasan pangan`, `Hindari produk dengan MSG dan pengawet buatan`, `Gunakan kemasan ramah lingkungan`, `Jangan konsumsi pangan lewat tanggal kadaluarsa`],\n      p: `Pesan 8: Biasakan membaca label pada kemasan pangan.`\n    },\n    {\n      q: `Seorang edukator gizi di Posyandu selalu mengingatkan agar warga minum air yang aman dan cukup. Ini selaras dengan pesan umum gizi seimbang (PUGS) nomor...`,\n      a: `7`,\n      options: [`5`, `6`, `7`, `8`, `9`],\n      p: `Pesan 7: Biasakan minum air putih yang cukup dan aman.`\n    },\n    {\n      q: `Dalam "Isi Piringku", contoh takaran untuk lauk nabati dalam proporsi 1/6 piring adalah...`,\n      a: `100 gr Tahu / 2 potong`,\n      options: [`50 gr Tempe / 1 potong`, `100 gr Tahu / 2 potong`, `150 gr Kacang tanah`, `75 gr Ikan`, `1 butir telur`],\n      p: `Lauk nabati cth: 100 gr Tahu / 2 potong.`\n    },\n    {\n      q: `Empat Pilar Gizi Seimbang yang menjadi dasar promosi gizi antara lain mencakup penganekaragaman makanan, penerapan perilaku hidup bersih, aktivitas fisik, dan...`,\n      a: `Mempertahankan berat badan normal`,\n      options: [`Membatasi konsumsi karbohidrat`, `Mempertahankan berat badan normal`, `Mengonsumsi suplemen harian`, `Tidur cukup 8 jam`, `Menghindari stres`],\n      p: `Pilar ke-4 gizi seimbang (tersirat dalam pesan ke-10): Lakukan aktivitas fisik yang cukup dan pertahankan berat badan normal (memantau BB secara teratur).`\n    },\n  ];
+const pick_pool_promosi_gizi = makePicker(pool_promosi_gizi);
+const pool_suplemen_fortifikasi = [\n    {\n      q: `Pemberian kapsul vitamin A dosis tinggi kepada balita setiap bulan Februari dan Agustus di Posyandu merupakan contoh dari...`,\n      a: `Suplementasi gizi`,\n      options: [`Fortifikasi gizi`, `Diversifikasi pangan`, `Suplementasi gizi`, `Dietary assessment`, `Kompensasi gizi`],\n      p: `Suplementasi gizi: penambahan zat gizi ke dalam tubuh (contoh: Vitamin A setiap Februari & Agustus).`\n    },\n    {\n      q: `Penambahan zat besi (Fe) pada tepung terigu secara masal oleh produsen makanan untuk mencegah anemia di masyarakat disebut...`,\n      a: `Fortifikasi gizi`,\n      options: [`Suplementasi gizi`, `Substitusi gizi`, `Fortifikasi gizi`, `Modifikasi pangan`, `Adulterasi pangan`],\n      p: `Fortifikasi gizi: penambahan zat gizi mikro secara sengaja ke dalam bahan pangan (contoh: Fe pada tepung terigu).`\n    },\n    {\n      q: `Tujuan utama dari fortifikasi pangan di masyarakat adalah...`,\n      a: `Meningkatkan kualitas gizi makanan tanpa mengubah pola makan sehari-hari`,\n      options: [`Memberikan terapi dosis tinggi secara langsung kepada individu sakit`, `Meningkatkan kualitas gizi makanan tanpa mengubah pola makan sehari-hari`, `Menggantikan konsumsi sayuran dan buah segar`, `Menurunkan harga bahan pokok di pasar`, `Memperpanjang masa simpan makanan (preservasi)`],\n      p: `Tujuan Fortifikasi: Meningkatkan kualitas gizi makanan ... tanpa mengubah pola makan sehari-hari.`\n    },\n    {\n      q: `Program pemberian tablet tambah darah (Fe) pada remaja putri (Rematri) di sekolah-sekolah merupakan strategi penanggulangan anemia melalui...`,\n      a: `Suplementasi gizi`,\n      options: [`Edukasi gizi`, `Pemberian Makanan Tambahan (PMT)`, `Suplementasi gizi`, `Fortifikasi pangan`, `Diversifikasi konsumsi`],\n      p: `Contoh suplementasi: Suplementasi zat besi (Fe) bagi remaja putri dan ibu hamil.`\n    },\n    {\n      q: `Garam di Indonesia diwajibkan untuk ditambahkan unsur iodium guna mencegah GAKY (Gangguan Akibat Kekurangan Yodium). Kebijakan ini adalah bentuk implementasi dari...`,\n      a: `Fortifikasi gizi`,\n      options: [`Suplementasi iodium oral`, `Fortifikasi gizi`, `Terapi pengganti hormon`, `Diet modifikasi`, `Keamanan pangan`],\n      p: `Contoh fortifikasi: Iodium pada garam.`\n    },\n    {\n      q: `Minyak goreng kelapa sawit di Indonesia umumnya ditambahkan dengan vitamin tertentu untuk mengatasi defisiensi gizi mikro. Vitamin apakah yang lazim difortifikasi pada minyak goreng?`,\n      a: `Vitamin A`,\n      options: [`Vitamin B1`, `Vitamin C`, `Vitamin A`, `Vitamin K`, `Asam Folat`],\n      p: `Contoh Fortifikasi: Vitamin A pada minyak goreng.`\n    },\n    {\n      q: `Manakah pernyataan yang paling tepat membedakan antara suplementasi dan fortifikasi?`,\n      a: `Suplementasi memberikan zat gizi langsung ke tubuh (seperti kapsul/tablet), sedangkan fortifikasi menambahkan zat gizi mikro ke dalam bahan pangan masal.`,\n      options: [`Suplementasi menambahkan zat gizi mikro ke bahan pangan masal, sedangkan fortifikasi melalui tablet.`, `Suplementasi bertujuan jangka panjang tanpa campur tangan tenaga medis, fortifikasi harus dengan resep dokter.`, `Suplementasi memberikan zat gizi langsung ke tubuh (seperti kapsul/tablet), sedangkan fortifikasi menambahkan zat gizi mikro ke dalam bahan pangan masal.`, `Suplementasi hanya untuk ibu hamil, fortifikasi hanya untuk balita.`, `Suplementasi dapat mengubah rasa makanan, fortifikasi tidak.`],\n      p: `Suplementasi: penambahan ke dalam tubuh; Fortifikasi: penambahan ke dalam bahan pangan.`\n    },\n  ];
+const pick_pool_suplemen_fortifikasi = makePicker(pool_suplemen_fortifikasi);
+const pool_yankes_gizi = [\n    {\n      q: `Pemeriksaan awal oleh tenaga kesehatan untuk mendeteksi risiko malnutrisi sejak dini pada balita, ibu hamil, dan pasien rawat inap disebut dengan...`,\n      a: `Skrining Gizi Rutin`,\n      options: [`Diagnosis Medis Gizi`, `Skrining Gizi Rutin`, `Konseling Diet`, `Surveilans Epidemiologi Gizi`, `Pemantauan Status Gizi (PSG)`],\n      p: `Skrining Gizi Rutin: Pemeriksaan awal oleh nakes untuk mendeteksi risiko malnutrisi...`\n    },\n    {\n      q: `Seorang pasien diabetes melitus tipe 2 dirujuk ke poli gizi untuk menyusun pola makan yang tepat dan aman agar gula darahnya terkontrol. Layanan kesehatan gizi yang diberikan oleh ahli gizi di poli tersebut adalah...`,\n      a: `Konseling dan Edukasi Gizi`,\n      options: [`Skrining Gizi`, `Program Suplementasi`, `Konseling dan Edukasi Gizi`, `Pelayanan Kesehatan Ibu dan Anak`, `Terapi Gizi Parenteral`],\n      p: `Konseling dan Edukasi Gizi: Sesi konsultasi untuk menyusun pola makan dan diet disesuaikan dengan kondisi medis (seperti diabetes).`\n    },\n    {\n      q: `Untuk menanggulangi ibu hamil dengan Kekurangan Energi Kronis (KEK), Puskesmas biasanya memberikan program khusus berupa...`,\n      a: `Pemberian Makanan Tambahan (PMT) dan Suplementasi`,\n      options: [`Isolasi Medis Klinis`, `Pemberian Makanan Tambahan (PMT) dan Suplementasi`, `Pelatihan Pertanian Lokal`, `Fortifikasi Mandiri`, `Rujukan Operatif Ponek`],\n      p: `Program Suplementasi dan PMT: untuk menanggulangi anemia, KEK, dan stunting.`\n    },\n    {\n      q: `Pemantauan tumbuh kembang anak balita secara berkala (seperti menimbang BB dan mengukur TB di Posyandu/Puskesmas) bertujuan untuk memutus siklus malnutrisi. Hal ini merupakan bagian dari pilar...`,\n      a: `Pelayanan Kesehatan Ibu dan Anak (KIA)`,\n      options: [`Skrining Gizi Pasien Rawat Inap`, `Suplementasi Kuratif`, `Pelayanan Kesehatan Ibu dan Anak (KIA)`, `Rehabilitasi Gizi Buruk`, `Konseling Spesialis Gizi`],\n      p: `Pelayanan KIA: Pemantauan tumbuh kembang anak secara berkala serta pemeriksaan ibu hamil untuk memutus siklus malnutrisi.`\n    },\n    {\n      q: `Keterkaitan antara pelayanan kesehatan dan gizi sangat erat. Pasien bedah yang memiliki status gizi buruk akan berisiko mengalami...`,\n      a: `Kondisi medis yang memburuk dan hambatan penyembuhan luka pasca operasi`,\n      options: [`Peningkatan metabolisme basal secara ekstrim`, `Kondisi medis yang memburuk dan hambatan penyembuhan luka pasca operasi`, `Kecepatan pemulihan yang berlebihan`, `Resistensi insulin permanen`, `Hipervitaminosis akut`],\n      p: `Gizi yang buruk akan memperburuk kondisi medis dan menghambat penyembuhan.`\n    },\n  ];
+const pick_pool_yankes_gizi = makePicker(pool_yankes_gizi);
+const pool_pemberdayaan = [\n    {\n      q: `Upaya sistematis untuk meningkatkan kemandirian warga dalam mengelola, memproduksi, dan mengonsumsi makanan yang aman, beragam, serta bernutrisi disebut...`,\n      a: `Pemberdayaan Masyarakat Bidang Pangan & Gizi`,\n      options: [`Intervensi Sensitif Terpusat`, `Pemberdayaan Masyarakat Bidang Pangan & Gizi`, `Bantuan Sosial Pangan Nasional`, `Ketahanan Pangan Makro`, `Promosi Kesehatan Pasif`],\n      p: `Pemberdayaan merupakan upaya sistematis untuk meningkatkan kemandirian warga dalam mengelola, memproduksi...`\n    },\n    {\n      q: `Ibu-ibu di Desa Sukatani memanfaatkan halaman depan dan belakang rumahnya untuk menanam bayam, cabai, tomat, serta kolam lele kecil menggunakan polybag dan ember. Program pemberdayaan ini dikenal dengan istilah...`,\n      a: `Pekarangan Pangan Lestari (P2L)`,\n      options: [`Lumbung Desa Mandiri`, `Pekarangan Pangan Lestari (P2L)`, `Dapur Umum Gizi`, `Diversifikasi Pangan Makro`, `Fortifikasi Lokal`],\n      p: `P2L: Memanfaatkan pekarangan rumah untuk menanam sayuran... untuk memenuhi kebutuhan gizi harian.`\n    },\n    {\n      q: `Mengembangkan area tanam komunitas di lahan desa yang hasilnya dipanen lalu diolah bersama-sama untuk diberikan sebagai PMT kepada balita stunting di desa tersebut adalah wujud dari program...`,\n      a: `Kebun dan Dapur Gizi`,\n      options: [`Kebun dan Dapur Gizi`, `Pekarangan Pangan Lestari`, `Diversifikasi Pangan Harian`, `Food Estate`, `Ketahanan Pangan Skala Nasional`],\n      p: `Kebun dan Dapur Gizi: Mengembangkan area tanam komunitas yang hasilnya diolah bersama menjadi makanan bergizi bagi kelompok rentan.`\n    },\n    {\n      q: `Pemerintah daerah mengkampanyekan agar masyarakat tidak hanya bergantung pada beras sebagai sumber karbohidrat, tetapi juga mengonsumsi jagung, singkong, dan sagu yang kaya serat. Gerakan ini merupakan bentuk dari...`,\n      a: `Diversifikasi Pangan`,\n      options: [`Modifikasi Pangan`, `Fortifikasi Pangan`, `Suplementasi Karbohidrat`, `Diversifikasi Pangan`, `Ekstensifikasi Pangan`],\n      p: `Diversifikasi Pangan: Mengurangi ketergantungan pada satu jenis makanan pokok dan menggalakkan konsumsi sumber karbohidrat lokal lain.`\n    },\n    {\n      q: `Integrasi edukasi gizi dengan pemantauan tumbuh kembang anak untuk mencegah stunting di tingkat desa paling efektif dilakukan melalui penguatan kelembagaan...`,\n      a: `Posyandu`,\n      options: [`Puskesmas Pembantu`, `Posyandu`, `Polindes`, `Balai Desa`, `Kecamatan`],\n      p: `Penguatan Posyandu: Mengintegrasikan edukasi gizi dengan pemantauan tumbuh kembang anak.`\n    },\n    {\n      q: `Dalam menentukan target program pemberdayaan masyarakat bidang pangan, digunakan suatu kerangka pikir bernama "Segitiga Pertimbangan Pemberdayaan". Tiga elemen utama dalam segitiga tersebut adalah...`,\n      a: `Potensi, Lokasi & Skala Wilayah, serta Masalah Gizi`,\n      options: [`Dana, Tenaga Ahli, dan Infrastruktur`, `Potensi, Lokasi & Skala Wilayah, serta Masalah Gizi`, `Sikap, Pengetahuan, dan Praktik (KAP)`, `Status Gizi, Anggaran, dan Dukungan Politik`, `Akses, Ketersediaan, dan Pemanfaatan`],\n      p: `Segitiga Pertimbangan Pemberdayaan: Potensi, Lokasi & Skala Wilayah, serta Masalah Gizi spesifik.`\n    },\n  ];
+const pick_pool_pemberdayaan = makePicker(pool_pemberdayaan);
+const pool_clinical_cases = [\n    {\n      q: `Seorang wanita usia 24 tahun dengan usia kehamilan 16 minggu datang ke Puskesmas. Hasil lab menunjukkan Hb 9.8 g/dL (Anemia). Dokter memberikan edukasi porsi makan yang seimbang dan memberikan tablet tambah darah (Fe) untuk diminum setiap hari. Pemberian tablet tambah darah dalam skenario ini termasuk intervensi apa dalam penanganan gizi ganda di Indonesia?`,\n      a: `Intervensi Spesifik`,\n      options: [`Intervensi Sensitif`, `Intervensi Spesifik`, `Pemberdayaan Masyarakat`, `Fortifikasi Gizi`, `Diversifikasi Pangan`],\n      p: `Suplementasi Fe pada ibu hamil adalah upaya menangani penyebab langsung (kesehatan ibu) sehingga tergolong Intervensi Spesifik.`\n    },\n    {\n      q: `Di sebuah desa pesisir, ditemukan angka prevalensi wasting balita sebesar 15% (jauh di atas rata-rata nasional). Desa tersebut sulit mengakses air bersih dan tidak memiliki jamban yang layak. Puskesmas setempat bekerja sama dengan Dinas PUPR untuk membangun sumur bor komunal dan sanitasi MCK. Tindakan kerja sama lintas sektor ini disebut sebagai...`,\n      a: `Intervensi Sensitif`,\n      options: [`Intervensi Spesifik`, `Intervensi Kuratif Medis`, `Intervensi Surveilans`, `Intervensi Sensitif`, `Intervensi Rehabilitatif KIA`],\n      p: `Penyediaan air bersih dan sanitasi adalah Intervensi Sensitif yang menyasar akar masalah gizi.`\n    },\n    {\n      q: `Seorang kader posyandu melihat banyak ibu balita yang memberi makan anaknya dengan nasi dan kuah sayur saja tanpa lauk protein hewani karena alasan ekonomi. Kader tersebut kemudian memotivasi ibu-ibu untuk membudidayakan lele dalam ember (budikdamber) dan menanam kangkung di atasnya di halaman rumah mereka. Langkah inovatif kader ini adalah contoh nyata dari program...`,\n      a: `Pekarangan Pangan Lestari (P2L)`,\n      options: [`Diversifikasi Pangan Pokok`, `Pekarangan Pangan Lestari (P2L)`, `Fortifikasi Pangan Lokal`, `Suplementasi Protein Skala Mikro`, `Skrining Gizi Komunal`],\n      p: `Budikdamber di pekarangan rumah untuk memenuhi kebutuhan protein & sayur adalah aplikasi dari P2L (Pekarangan Pangan Lestari).`\n    },\n    {\n      q: `Dalam kegiatan penyuluhan, dr. Andi menjelaskan bahwa seorang pria dewasa dengan aktivitas fisik sedang ingin menata piring makan siangnya. Berdasarkan "Isi Piringku", dr. Andi menyarankan agar pria tersebut membagi piringnya sedemikian rupa. Jika setengah piring pertama diisi makanan pokok dan sayuran, bagaimanakah proporsi setengah piring lainnya?`,\n      a: `1/6 piring lauk pauk (sumber protein) dan 1/6 piring buah-buahan`,\n      options: [`1/4 piring sayuran tambahan dan 1/4 piring daging`, `1/3 piring lauk pauk hewani dan 1/6 piring lauk nabati`, `1/6 piring lauk pauk (sumber protein) dan 1/6 piring buah-buahan`, `1/2 piring didominasi karbohidrat kompleks`, `1/4 piring buah-buahan dan 1/4 piring susu`],\n      p: `Isi piringku: 1/3 Makanan pokok, 1/3 Sayuran, 1/6 Lauk pauk, 1/6 Buah. Jadi setengah piring lainnya adalah 1/6 lauk dan 1/6 buah.`\n    },\n    {\n      q: `Puskesmas "Sehat Selalu" menemukan prevalensi balita stunting di wilayah kerjanya mencapai 26%. Kepala puskesmas mengetahui target nasional SSGI 2025 mengharuskan angka stunting turun drastis. Berapa persen target prevalensi stunting nasional tahun 2025 yang harus dijadikan patokan oleh Kepala Puskesmas tersebut?`,\n      a: `19,8%`,\n      options: [`24,4%`, `21,5%`, `14,0%`, `19,8%`, `10,0%`],\n      p: `Target Nasional SSGI tahun 2025 adalah 19,8%.`\n    },\n    {\n      q: `Seorang anak laki-laki usia 3 tahun dibawa ibunya ke Puskesmas karena terlihat sangat kurus, tulang rusuk menonjol, dan otot tampak menyusut (wasting). Dokter mendiagnosis KEP berat (marasmus) dan segera memasukkan anak ke program tatalaksana gizi buruk dengan F-75 dan F-100. Pendekatan ini menurut kerangka UNICEF berkontribusi sekitar 30% terhadap penyelesaian masalah gizi dan dikategorikan sebagai...`,\n      a: `Intervensi Spesifik`,\n      options: [`Intervensi Sensitif`, `Intervensi Spesifik`, `Intervensi Pemberdayaan`, `Intervensi Ketahanan Pangan`, `Intervensi Psiko-Sosial`],\n      p: `Penanganan balita gizi buruk adalah intervensi spesifik (penanganan klinis langsung).`\n    },\n    {\n      q: `Dalam program pencegahan stunting jangka panjang, pemerintah mewajibkan perusahaan garam untuk menambahkan Iodium pada produk garam yang diedarkan di pasar. Strategi yang dilakukan pemerintah ini paling tepat disebut...`,\n      a: `Fortifikasi Gizi`,\n      options: [`Substitusi Pangan`, `Pemberian Makanan Tambahan`, `Fortifikasi Gizi`, `Suplementasi Massal`, `Diversifikasi Mineral`],\n      p: `Penambahan mikronutrien pada bahan pangan (seperti garam beryodium) adalah fortifikasi.`\n    },\n    {\n      q: `Ibu Ani, 45 tahun, didiagnosis menderita Obesitas dengan BMI 32 kg/m2 dan pre-diabetes. Ia mendaftar ke ahli gizi di Rumah Sakit. Ahli gizi mewawancarai kebiasaan makan Ibu Ani dan menyusun menu harian yang rendah karbohidrat sederhana, tinggi serat, dan membatasi lemak jenuh. Layanan kesehatan gizi yang sedang diterima Ibu Ani adalah...`,\n      a: `Konseling dan Edukasi Gizi`,\n      options: [`Skrining Gizi Rutin`, `Pemberian Makanan Tambahan`, `Konseling dan Edukasi Gizi`, `Pemantauan Terapi Medikamentosa`, `Rehabilitasi Gizi Intervensi Sensitif`],\n      p: `Menyusun pola makan dan diet disesuaikan dengan kondisi medis adalah Konseling dan Edukasi Gizi.`\n    },\n    {\n      q: `Sebuah wilayah pegunungan memiliki produksi ubi jalar ungu yang sangat melimpah, namun angka stunting di wilayah tersebut cukup tinggi karena masyarakat jarang mengonsumsi protein dan sayuran hijau. Pemda setempat berinisiatif melatih kader desa untuk membuat kue basah berbahan ubi ungu yang dicampur dengan telur bebek lokal dan daun kelor, yang kemudian dibagikan rutin di posyandu. Program ini menggunakan kerangka...`,\n      a: `Segitiga Pertimbangan Pemberdayaan (Potensi, Lokasi, Masalah)`,\n      options: [`Segitiga Epidemiologi`, `Segitiga Pertimbangan Pemberdayaan (Potensi, Lokasi, Masalah)`, `Kerangka Intervensi Sensitif Semata`, `Kerangka Suplementasi Vitamin A`, `Skrining KIA`],\n      p: `Memanfaatkan potensi lokal (ubi, telur bebek, kelor) di lokasi spesifik (pegunungan) untuk masalah spesifik (stunting) adalah aplikasi dari Segitiga Pertimbangan Pemberdayaan.`\n    },\n    {\n      q: `Hasil Riset Kesehatan Dasar dan SSGI menunjukkan bahwa selain stunting, 1 juta balita di Indonesia juga mengalami kegemukan. Anak balita yang obesitas berisiko tinggi menderita penyakit kardiometabolik di usia dewasa. Sesuai dengan "Siklus Promosi Gizi" dan pedoman Gizi Seimbang, pesan nomor 10 menyarankan keluarga untuk...`,\n      a: `Melakukan aktivitas fisik yang cukup dan mempertahankan berat badan normal`,\n      options: [`Banyak makan sayuran dan cukup buah-buahan`, `Biasakan konsumsi lauk pauk yang mengandung protein tinggi`, `Batasi konsumsi pangan manis, asin dan berlemak`, `Melakukan aktivitas fisik yang cukup dan mempertahankan berat badan normal`, `Biasakan membaca label pada kemasan pangan`],\n      p: `Pesan 10 berfokus pada aktivitas fisik dan mempertahankan BB normal, sangat relevan untuk pencegahan obesitas.`\n    },\n    {\n      q: `Di Bulan Februari, kader Posyandu Melati membagikan kapsul merah muda kepada anak usia 6-11 bulan dan kapsul merah kepada anak usia 12-59 bulan. Kegiatan rutin yang menyasar perbaikan gizi masyarakat ini ditujukan untuk mencegah penyakit rabun senja dan meningkatkan imunitas. Intervensi ini adalah...`,\n      a: `Suplementasi Vitamin A`,\n      options: [`Fortifikasi Vitamin A`, `Suplementasi Vitamin C`, `Suplementasi Zat Besi`, `Suplementasi Vitamin A`, `Imunisasi Campak-Rubella`],\n      p: `Bulan Februari dan Agustus adalah bulan suplementasi Vitamin A nasional di Posyandu.`\n    },\n    {\n      q: `Di sebuah sekolah menengah, petugas puskesmas memberikan edukasi tentang bahaya konsumsi boba dan camilan keripik secara berlebihan. Petugas tersebut mengacu pada Pesan Gizi Seimbang nomor 5. Apa pesan utama yang disampaikan?`,\n      a: `Batasi konsumsi pangan manis, asin dan berlemak`,\n      options: [`Biasakan sarapan pagi dengan karbohidrat`, `Banyak makan sayuran dan cukup buah-buahan`, `Batasi konsumsi pangan manis, asin dan berlemak`, `Syukuri dan nikmati aneka ragam makanan`, `Biasakan minum air putih yang cukup dan aman`],\n      p: `Pesan ke-5: Batasi konsumsi pangan manis, asin dan berlemak.`\n    },\n    {\n      q: `Seorang wanita hamil di desa x mengalami letih, lesu, dan sering pusing. Kadar Hb nya 10 g/dl. Bidan desa menganjurkan ibu ini untuk mengonsumsi bayam, hati ayam, dan tablet tambah darah. Jika melihat kerangka konsep UNICEF, saran bidan terkait konsumsi tablet tambah darah ini ditargetkan untuk memperbaiki...`,\n      a: `Penyebab langsung gizi (Intake Pangan dan Kesehatan)`,\n      options: [`Akar masalah ekonomi keluarga`, `Penyebab tidak langsung (Ketahanan pangan tingkat rumah tangga)`, `Penyebab langsung gizi (Intake Pangan dan Kesehatan)`, `Pemberdayaan potensi lokal`, `Sanitasi dan akses pelayanan air bersih`],\n      p: `Suplementasi mikronutrien (tablet tambah darah) termasuk Intervensi Spesifik yang mengatasi penyebab langsung (Asupan zat gizi dan kesehatan ibu).`\n    },\n  ];
+const pick_pool_clinical_cases = makePicker(pool_clinical_cases);
+
+
+// ═══ DISPATCHER ═══
+function makeQ(type){
+    
+        if(type === 'pool_kualitas_gizi') {
+            const item = pick_pool_kualitas_gizi();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'pool_kualitas_gizi',
+                typeName: 'Kualitas Gizi',
+                tpColor: 'var(--blue)',
+                tpBg: 'var(--bluebg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+        if(type === 'pool_situasi_gizi') {
+            const item = pick_pool_situasi_gizi();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'pool_situasi_gizi',
+                typeName: 'Situasi Gizi',
+                tpColor: 'var(--blue)',
+                tpBg: 'var(--bluebg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+        if(type === 'pool_kerangka_solusi') {
+            const item = pick_pool_kerangka_solusi();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'pool_kerangka_solusi',
+                typeName: 'Kerangka Solusi',
+                tpColor: 'var(--blue)',
+                tpBg: 'var(--bluebg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+        if(type === 'pool_promosi_gizi') {
+            const item = pick_pool_promosi_gizi();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'pool_promosi_gizi',
+                typeName: 'Promosi Gizi',
+                tpColor: 'var(--blue)',
+                tpBg: 'var(--bluebg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+        if(type === 'pool_suplemen_fortifikasi') {
+            const item = pick_pool_suplemen_fortifikasi();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'pool_suplemen_fortifikasi',
+                typeName: 'Suplemen Fortifikasi',
+                tpColor: 'var(--blue)',
+                tpBg: 'var(--bluebg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+        if(type === 'pool_yankes_gizi') {
+            const item = pick_pool_yankes_gizi();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'pool_yankes_gizi',
+                typeName: 'Yankes Gizi',
+                tpColor: 'var(--blue)',
+                tpBg: 'var(--bluebg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+        if(type === 'pool_pemberdayaan') {
+            const item = pick_pool_pemberdayaan();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'pool_pemberdayaan',
+                typeName: 'Pemberdayaan',
+                tpColor: 'var(--blue)',
+                tpBg: 'var(--bluebg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+        if(type === 'pool_clinical_cases') {
+            const item = pick_pool_clinical_cases();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'pool_clinical_cases',
+                typeName: 'Clinical Cases',
+                tpColor: 'var(--blue)',
+                tpBg: 'var(--bluebg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+    return {type:'dummy', typeName:'End of Pool', tpColor:'gray', tpBg:'lightgray', q:'No more questions', opts:['A'], ans:'A', exp:''};
+}
+
+// ═══ SESSION ═══
+let typeQueue=[],sessIdx=0,sessScore=0,sessLog=[],currentQ=null;
+function nextType(){if(!typeQueue.length){const t=[...activeTypes];for(let i=t.length-1;i>0;i--){const j=0|Math.random()*(i+1);[t[i],t[j]]=[t[j],t[i]];}typeQueue=[...t];}return typeQueue.shift();}
+function startSession(){
+  sessIdx=0;sessScore=0;sessLog=[];typeQueue=[];
+  document.getElementById('qconfig').style.display='none';
+  document.getElementById('qresults').style.display='none';
+  document.getElementById('qactive').style.display='block';
+  renderQ();
+}
+function renderQ(){
+  const q=makeQ(nextType());currentQ=q;
+  document.getElementById('qnum').textContent=sessIdx+1;
+  document.getElementById('qscore').textContent=sessScore;
+  const pill=document.getElementById('qpill');
+  pill.textContent=q.typeName;pill.style.background=q.tpBg;pill.style.color=q.tpColor;pill.style.border=`1px solid ${q.tpColor}44`;
+  const scen=document.getElementById('qscen');
+  if(q.scenario){scen.innerHTML=`<strong>Kasus:</strong> ${q.scenario}`;scen.style.display='block';}else scen.style.display='none';
+  const db=document.getElementById('qdata');
+  if(q.rawData){db.innerHTML=q.rawData;db.style.display='block';}else db.style.display='none';
+  document.getElementById('qtext').innerHTML=q.q;
+  const og=document.getElementById('opts');og.innerHTML='';
+  q.opts.forEach((opt,i)=>{
+    const btn=document.createElement('button');btn.className='opt';
+    btn.innerHTML=`<span class="opt-key">${KEYS[i]}</span><span>${opt}</span>`;
+    btn.onclick=()=>selectAns(opt,q,btn);og.appendChild(btn);
+  });
+  const ebox=document.getElementById('expbox');ebox.classList.remove('show');ebox.style.display='none';
+  document.getElementById('nextbtn').style.display='none';
+}
+function selectAns(chosen,q,clickedBtn){
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  const correct=stripHtml(chosen)===stripHtml(q.ans);
+  if(correct)sessScore++;
+  document.querySelectorAll('.opt').forEach(b=>{
+    const label=b.querySelector('span:last-child').innerHTML;
+    if(stripHtml(label)===stripHtml(q.ans)){
+      if(b===clickedBtn&&correct)b.classList.add('correct');
+      else if(b!==clickedBtn)b.classList.add('reveal');
+      else b.classList.add('correct');
+    }
+    if(b===clickedBtn&&!correct)b.classList.add('wrong');
+  });
+  const ebox=document.getElementById('expbox');
+  ebox.innerHTML=`<div style="margin-bottom:7px;font-weight:700;color:${correct?'var(--blue)':'var(--red)'}">${correct?'✅ Benar!':'❌ Kurang tepat.'} Jawaban: <strong>${q.ans}</strong></div>${q.exp}`;
+  ebox.style.display='block';setTimeout(()=>ebox.classList.add('show'),10);
+  sessLog.push({idx:sessIdx+1,type:q.typeName,q:q.q.replace(/<[^>]+>/g,'').slice(0,55)+'…',ans:q.ans,correct});
+  document.getElementById('qscore').textContent=sessScore;
+  document.getElementById('nextbtn').style.display='inline-block';
+}
+function nextQ(){sessIdx++;document.getElementById('expbox').style.display='none';document.getElementById('expbox').classList.remove('show');renderQ();}
+function endSession(){
+  document.getElementById('qactive').style.display='none';document.getElementById('qresults').style.display='block';
+  const total=sessLog.length;if(!total){restartQuiz();return;}
+  const pct=Math.round((sessScore/total)*100);
+  document.getElementById('res-pct').textContent=pct+'%';
+  document.getElementById('res-sub').textContent=`${sessScore} / ${total} soal benar`;
+  const byType={};
+  sessLog.forEach(l=>{if(!byType[l.type])byType[l.type]={total:0,correct:0};byType[l.type].total++;if(l.correct)byType[l.type].correct++;});
+  const rg=document.getElementById('res-grid');rg.innerHTML='';
+  const medal=pct>=80?'🏆':pct>=60?'👍':'📚';
+  [{v:medal,l:'Nilai'},{v:pct+'%',l:'Persentase'},{v:sessScore+'',l:'Benar'},{v:(total-sessScore)+'',l:'Salah'},{v:total+'',l:'Total'}].forEach(s=>{
+    const d=document.createElement('div');d.className='res-stat';
+    d.innerHTML=`<div class="rv">${s.v}</div><div class="rl">${s.l}</div>`;rg.appendChild(d);
+  });
+  document.getElementById('res-bytype').innerHTML=Object.entries(byType).map(([t,v])=>{
+    const p=Math.round((v.correct/v.total)*100);const c=p>=80?'var(--blue)':p>=60?'var(--gold)':'var(--red)';
+    return`<tr><td>${t}</td><td>${v.total}</td><td style="color:${c};font-weight:700">${v.correct} (${p}%)</td></tr>`;
+  }).join('');
+  document.getElementById('res-tbody').innerHTML=sessLog.map(l=>`<tr><td>${l.idx}</td><td>${l.q}</td><td>${l.ans}</td><td style="color:${l.correct?'var(--green)':'var(--red)'}">${l.correct?'✅':'❌'}</td></tr>`).join('');
+}
+function restartQuiz(){typeQueue=[];document.getElementById('qresults').style.display='none';document.getElementById('qconfig').style.display='block';}
+
+function downloadCert(){
+  const total=sessLog.length;
+  const pct=Math.round((sessScore/total)*100);
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+  const medal=pct>=80?'LULUS':pct>=60?'CUKUP':'PERLU BELAJAR LAGI';
+  const medalColor=pct>=80?'#1f7a4a':pct>=60?'#7a6010':'#b03030';
+  const byType={};
+  sessLog.forEach(l=>{if(!byType[l.type])byType[l.type]={total:0,correct:0};byType[l.type].total++;if(l.correct)byType[l.type].correct++;});
+  const rows=Object.entries(byType).map(([t,v])=>{
+    const p=Math.round(v.correct/v.total*100);
+    const bar=Math.round(p*1.4);
+    const bc=p>=80?'#1f7a4a':p>=60?'#7a6010':'#b03030';
+    return`<tr><td style="padding:5px 8px;font-size:11px;color:#384068;width:200px">${t}</td><td style="padding:5px 8px"><div style="background:#e7e7e2;border-radius:4px;height:10px;width:140px"><div style="background:${bc};width:${bar}px;height:10px;border-radius:4px"></div></div></td><td style="padding:5px 8px;font-size:11px;font-weight:700;color:${bc}">${v.correct}/${v.total} (${p}%)</td></tr>`;
+  }).join('');
+
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="680" height="520" font-family="Georgia,serif">
+  <defs>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <path d="M 28 0 L 0 0 0 28" fill="none" stroke="#e0ddd5" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+  <rect width="680" height="520" fill="#fdfdf9"/>
+  <rect width="680" height="520" fill="url(#grid)"/>
+  <rect x="20" y="20" width="640" height="480" rx="12" fill="none" stroke="#b03030" stroke-width="2"/>
+  <rect x="26" y="26" width="628" height="468" rx="9" fill="none" stroke="#b03030" stroke-width="0.5" opacity="0.4"/>
+
+  <text x="340" y="66" text-anchor="middle" font-size="11" letter-spacing="4" fill="#7c85a8" font-family="Georgia,serif">SERTIFIKAT PENYELESAIAN KUIS</text>
+  <line x1="120" y1="74" x2="260" y2="74" stroke="#b03030" stroke-width="0.8"/>
+  <circle cx="340" cy="74" r="3" fill="#b03030"/>
+  <line x1="420" y1="74" x2="560" y2="74" stroke="#b03030" stroke-width="0.8"/>
+
+  <text x="340" y="116" text-anchor="middle" font-size="34" font-weight="bold" fill="#161b2e" font-family="Georgia,serif">Am I Nurtured?</text>
+  <text x="340" y="138" text-anchor="middle" font-size="11" fill="#7c85a8" letter-spacing="2" font-family="Georgia,serif">PERBAIKAN GIZI · BLOK 2.5 · FK UNSOED</text>
+
+  <line x1="100" y1="152" x2="580" y2="152" stroke="#e0ddd5" stroke-width="1"/>
+
+  <text x="340" y="185" text-anchor="middle" font-size="13" fill="#384068" font-family="Georgia,serif">Telah menyelesaikan sesi quiz dengan hasil</text>
+
+  <rect x="230" y="196" width="220" height="80" rx="8" fill="none" stroke="${medalColor}" stroke-width="1.5"/>
+  <text x="340" y="245" text-anchor="middle" font-size="52" font-weight="bold" fill="${medalColor}" font-family="Georgia,serif">${pct}%</text>
+  <text x="340" y="265" text-anchor="middle" font-size="10" fill="${medalColor}" letter-spacing="3" font-family="Georgia,serif">${medal}</text>
+
+  <text x="340" y="300" text-anchor="middle" font-size="12" fill="#384068" font-family="Georgia,serif">${sessScore} soal benar dari ${total} soal · ${dateStr}</text>
+
+  <line x1="100" y1="314" x2="580" y2="314" stroke="#e0ddd5" stroke-width="1"/>
+  <text x="340" y="332" text-anchor="middle" font-size="10" fill="#7c85a8" letter-spacing="2" font-family="Georgia,serif">DISTRIBUSI SKOR PER TOPIK</text>
+
+  <foreignObject x="80" y="340" width="520" height="120">
+    <div xmlns="http://www.w3.org/1999/xhtml">
+      <table style="width:100%;border-collapse:collapse">${rows}</table>
+    </div>
+  </foreignObject>
+
+  <line x1="100" y1="472" x2="580" y2="472" stroke="#e0ddd5" stroke-width="1"/>
+  <text x="340" y="490" text-anchor="middle" font-size="10" fill="#7c85a8" font-family="Georgia,serif">Am I Nurtured? · Blok 2.5 · FK Unsoed</text>
+</svg>`;
+
+  const blob=new Blob([svg],{type:'image/svg+xml'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`am-i-nurtured-${pct}pct.svg`;
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+window.downloadCert=downloadCert;
+</script>
+</body>
+</html>

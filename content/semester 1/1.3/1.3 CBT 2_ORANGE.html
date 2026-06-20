@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis CBT 1.4 - Orange Edition (102 Soal)</title>
+    <!-- Impor Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Impor Google Font (Inter & Poppins) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@500;700&display=swap" rel="stylesheet">
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        /* CSS Kustom - Tema Orange Warm Glassmorphism */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #ff9966 0%, #ff5e62 100%);
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --text-primary: #ffffff;
+            --text-secondary: #fff0e6;
+            --btn-primary: #e65100;
+            --btn-primary-hover: #ff6d00;
+            --correct: #4ade80;
+            --incorrect: #ef4444;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--primary-gradient);
+            color: var(--text-primary);
+            user-select: none; /* Mencegah copy paste instan untuk mode ujian */
+            padding: 1rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Scrollbar kustom */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 4px;
+        }
+
+        /* Kontainer utama bergaya "glass" */
+        .quiz-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+            padding: 2rem;
+            width: 95%;
+            max-width: 900px;
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1, h2, h3 {
+            font-family: 'Poppins', sans-serif;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Tombol Aksi Utama */
+        .action-btn {
+            background-color: white;
+            color: #d35400; /* Warna teks oranye tua */
+            border: none;
+            padding: 1rem 1.5rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border-radius: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            background-color: #fff5f0;
+        }
+
+        .action-btn:active {
+            transform: translateY(0);
+        }
+
+        .action-btn:disabled {
+            background-color: rgba(255,255,255,0.5);
+            color: #999;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Tombol Navigasi Kecil */
+        .nav-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.4);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Tombol Opsi Jawaban */
+        .option-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            width: 100%;
+            text-align: left;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            border-radius: 0.75rem;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.2s;
+            position: relative;
+            font-weight: 500;
+        }
+
+        .option-btn:hover:not(.disabled) {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateX(4px);
+        }
+
+        /* State Jawaban */
+        .option-btn.correct {
+            background: rgba(74, 222, 128, 0.8) !important; /* Green */
+            border-color: #22c55e !important;
+            color: #003300;
+        }
+        
+        .option-btn.incorrect {
+            background: rgba(239, 68, 68, 0.8) !important; /* Red */
+            border-color: #dc2626 !important;
+        }
+
+        .option-btn.disabled {
+            cursor: default;
+            opacity: 0.8;
+        }
+
+        /* Kotak Penjelasan (Feedback) */
+        .explanation-box {
+            background: rgba(0, 0, 0, 0.2);
+            border-left: 4px solid #fcd34d; /* Yellow accent */
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Flashcard Styles */
+        .flashcard {
+            perspective: 1000px;
+            height: 400px;
+            cursor: pointer;
+        }
+        
+        .flashcard-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        
+        .flashcard.flipped .flashcard-inner {
+            transform: rotateY(180deg);
+        }
+        
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+        
+        .flashcard-back {
+            transform: rotateY(180deg);
+            background: rgba(255,255,255,0.25);
+            align-items: flex-start;
+            text-align: left;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background: #fff;
+            width: 0%;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        /* Utility */
+        .hidden { display: none !important; }
+
+    </style>
+</head>
+<body>
+
+    <!-- 1. Layar Mulai -->
+    <div id="start-screen" class="quiz-container text-center flex flex-col items-center justify-center min-h-[500px]">
+        <div class="mb-8 p-4 bg-white/10 rounded-full">
+            <i class="ph ph-brain text-6xl text-white"></i>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-bold mb-2">CBT BLOK 1.4</h1>
+        <h2 class="text-xl text-orange-100 mb-8 font-medium">Neuroanatomi & Endokrin (Orange Edition)</h2>
+        
+        <div class="grid gap-4 w-full max-w-md">
+            <button onclick="startMode('flashcard')" class="action-btn group">
+                <i class="ph ph-cards text-2xl group-hover:scale-110 transition"></i>
+                Mode Flashcard
+            </button>
+            <button onclick="startMode('practice')" class="action-btn group">
+                <i class="ph ph-student text-2xl group-hover:scale-110 transition"></i>
+                Mode Latihan (Bahas Langsung)
+            </button>
+            <button onclick="startMode('exam')" class="action-btn group">
+                <i class="ph ph-timer text-2xl group-hover:scale-110 transition"></i>
+                Mode Ujian (Simulasi)
+            </button>
+        </div>
+        <p class="mt-8 text-sm opacity-70">Total 102 Soal | Est. Waktu 50 Menit</p>
+    </div>
+
+    <!-- 2. Layar Kuis (Latihan & Ujian) -->
+    <div id="quiz-screen" class="quiz-container hidden">
+        <!-- Header Kuis -->
+        <div class="flex justify-between items-end mb-2">
+            <div class="text-sm font-semibold text-orange-100">Soal <span id="current-q-num">1</span> / <span id="total-q-num">102</span></div>
+            <div class="text-sm font-bold bg-white/20 px-3 py-1 rounded-lg" id="score-badge">Skor: 0</div>
+        </div>
+        
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div id="quiz-progress-bar" class="progress-bar"></div>
+        </div>
+
+        <!-- Area Soal -->
+        <div class="mb-6 min-h-[100px]">
+            <h3 id="question-text" class="text-xl md:text-2xl font-semibold leading-relaxed"></h3>
+        </div>
+
+        <!-- Opsi Jawaban -->
+        <div id="options-container" class="flex flex-col gap-2">
+            <!-- Buttons generated by JS -->
+        </div>
+
+        <!-- Feedback / Penjelasan (Hanya Mode Latihan) -->
+        <div id="feedback-container" class="hidden explanation-box">
+            <h4 class="font-bold text-yellow-300 mb-1 flex items-center gap-2"><i class="ph ph-info"></i> Pembahasan:</h4>
+            <p id="feedback-text" class="text-white/90"></p>
+        </div>
+
+        <!-- Kontrol Navigasi -->
+        <div class="flex justify-between mt-8 pt-4 border-t border-white/20">
+            <button id="prev-btn" onclick="navigateQuestion(-1)" class="nav-btn flex items-center gap-2 disabled:opacity-50" disabled>
+                <i class="ph ph-arrow-left"></i> Sebelumnya
+            </button>
+            
+            <button onclick="backToMenu()" class="nav-btn bg-red-500/20 border-red-400/40 hover:bg-red-500/40">
+                Menu
+            </button>
+
+            <button id="next-btn" onclick="navigateQuestion(1)" class="nav-btn flex items-center gap-2 bg-orange-500/40 border-orange-400 hover:bg-orange-500/60">
+                Selanjutnya <i class="ph ph-arrow-right"></i>
+            </button>
+            
+            <button id="finish-btn" onclick="finishQuiz()" class="nav-btn bg-green-500/40 border-green-400 hover:bg-green-500/60 hidden">
+                Selesai <i class="ph ph-check-circle"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 3. Layar Flashcard -->
+    <div id="flashcard-screen" class="quiz-container hidden flex flex-col items-center">
+        <div class="w-full flex justify-between mb-4">
+            <span class="text-orange-100 font-bold">Flashcard Mode</span>
+            <span id="fc-progress">1 / 102</span>
+        </div>
+
+        <!-- Kartu -->
+        <div class="flashcard w-full mb-6" onclick="this.classList.toggle('flipped')">
+            <div class="flashcard-inner">
+                <!-- Depan -->
+                <div class="flashcard-front">
+                    <span class="uppercase text-xs tracking-widest opacity-70 mb-4">Pertanyaan</span>
+                    <p id="fc-question" class="text-xl font-bold">Loading...</p>
+                    <p class="mt-8 text-sm opacity-60 animate-pulse">(Ketuk untuk balik)</p>
+                </div>
+                <!-- Belakang -->
+                <div class="flashcard-back">
+                    <span class="uppercase text-xs tracking-widest opacity-70 mb-2 w-full border-b border-white/20 pb-2">Jawaban & Pembahasan</span>
+                    <div id="fc-answer" class="text-lg mb-4 font-bold text-green-300"></div>
+                    <div id="fc-explanation" class="text-sm leading-relaxed opacity-90"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigasi Flashcard -->
+        <div class="flex gap-4 w-full justify-center">
+            <button onclick="navFlashcard(-1)" class="action-btn text-sm py-2"><i class="ph ph-caret-left"></i> Prev</button>
+            <button onclick="backToMenu()" class="nav-btn">Menu</button>
+            <button onclick="navFlashcard(1)" class="action-btn text-sm py-2">Next <i class="ph ph-caret-right"></i></button>
+        </div>
+    </div>
+
+    <!-- 4. Layar Hasil -->
+    <div id="result-screen" class="quiz-container hidden text-center">
+        <h2 class="text-3xl font-bold mb-2">Hasil Kuis</h2>
+        <div class="text-6xl font-bold my-8" id="final-score">80</div>
+        <p class="text-orange-100 mb-8">Nilai Akhir Anda</p>
+        
+        <div class="grid grid-cols-2 gap-4 mb-8 text-left bg-white/10 p-4 rounded-xl">
+            <div>
+                <span class="block text-xs opacity-70">Benar</span>
+                <span id="result-correct" class="text-xl font-bold text-green-400">0</span>
+            </div>
+            <div>
+                <span class="block text-xs opacity-70">Salah</span>
+                <span id="result-incorrect" class="text-xl font-bold text-red-400">0</span>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-3">
+            <button onclick="startMode(currentMode)" class="action-btn w-full">Ulangi Kuis</button>
+            <button onclick="backToMenu()" class="nav-btn w-full justify-center">Kembali ke Menu Utama</button>
+        </div>
+    </div>
+
+    <script>
+        // --- DATABASE SOAL (102 SOAL) ---
+        // Diekstrak dari PDF, dirapikan, dan dilengkapi pembahasannya.
+        const questions = [
+            {
+                q: "Seorang pasien mengalami stres akut setelah mengalami kecelakaan. Pemeriksaan menunjukkan peningkatan denyut jantung dan kadar glukosa darah. Hormon yang bekerja dominan dalam kondisi akut ini adalah?",
+                o: ["Glukagon", "Epinefrin", "Kortisol", "Insulin", "Tiroksin"],
+                a: "Epinefrin",
+                exp: "<b>Epinefrin (Adrenalin)</b> disekresikan oleh medula adrenal sebagai respons cepat (fight or flight) terhadap stres akut. Efeknya meliputi peningkatan denyut jantung, vasokonstriksi, dan glikogenolisis (meningkatkan gula darah). Kortisol bekerja untuk stres jangka panjang."
+            },
+            {
+                q: "Pada sakulus dan utrikulus terdapat epitel sensoris. Epitel yang ujungnya berbentuk piala dan banyak dibungkus oleh serabut aferen (nerve chalice) adalah...",
+                o: ["Hair cell tipe I", "Hair cell tipe II", "Marginal cell", "Light cell", "Dark cell"],
+                a: "Hair cell tipe I",
+                exp: "<b>Hair cell tipe I</b> berbentuk seperti botol dengan dasar bulat dan dikelilingi oleh ujung saraf aferen berbentuk piala (chalice). Tipe II berbentuk silinder dengan inervasi bouton biasa."
+            },
+            {
+                q: "Hipoglikemia merupakan dampak utama dan berbahaya dari kelebihan hormon...",
+                o: ["Kortisol", "Glukagon", "Insulin", "Epinefrin", "Aldosteron"],
+                a: "Insulin",
+                exp: "<b>Insulin</b> menurunkan kadar glukosa darah dengan memfasilitasi masuknya glukosa ke dalam sel. Kelebihan insulin (misal: overdosis atau insulinoma) menyebabkan hipoglikemia berat."
+            },
+            {
+                q: "Fungsi dari papila fungiformis pada lidah adalah...",
+                o: ["Reseptor pahit saja", "Reseptor mekanik murni", "Membentuk V lingual", "Tempat kuncup rasa (taste buds)", "Tidak memiliki taste bud"],
+                a: "Tempat kuncup rasa (taste buds)",
+                exp: "<b>Papila fungiformis</b> tersebar di permukaan dorsal lidah, berbentuk jamur, dan mengandung kuncup rasa (taste buds), biasanya sekitar 3-5 per papila. Papila sirkumvalata yang membentuk huruf V."
+            },
+            {
+                q: "Hormon aldosteron dihasilkan oleh lapisan korteks adrenal bagian...",
+                o: ["Zona fasikulata", "Zona glomerulosa", "Zona retikularis", "Medulla", "Kapsula"],
+                a: "Zona glomerulosa",
+                exp: "<b>Zona glomerulosa</b> (lapisan terluar korteks) menghasilkan mineralokortikoid (Aldosteron). Zona fasikulata menghasilkan glukokortikoid (Kortisol), dan retikularis menghasilkan androgen."
+            },
+            {
+                q: "Pasien datang dengan keluhan mata sering kering (xerophthalmia). Keluhan tersebut kemungkinan besar akibat kelainan fungsi pada...",
+                o: ["Duktus nasolakrimalis", "Glandula lakrimalis", "Saccus lakrimalis", "Canalis lacrimalis", "Punctum lakrimalis"],
+                a: "Glandula lakrimalis",
+                exp: "<b>Glandula lakrimalis</b> adalah produsen utama air mata. Gangguan sekresinya menyebabkan mata kering. Struktur lain (duktus, saccus) adalah saluran pembuangan (drainase)."
+            },
+            {
+                q: "Seseorang mencium bau parfum dan teringat memori masa lalu atau merasa sedih. Hal tersebut karena sistem olfaktori berhubungan erat dengan...",
+                o: ["Korteks orbitofrontal", "Korteks motorik", "Sistem limbik", "Sistem vestibuler", "Cerebellum"],
+                a: "Sistem limbik",
+                exp: "Traktus olfaktorius memproyeksikan sinyal langsung ke <b>Sistem Limbik</b> (amigdala dan hipokampus), yang merupakan pusat emosi dan memori, sebelum ke korteks."
+            },
+            {
+                q: "Struktur telinga luar yang berfungsi mengumpulkan gelombang suara dan mengarahkannya ke liang telinga adalah...",
+                o: ["Membran tympani", "Meatus acusticus externus", "Pinna (Auricula)", "Cochlea", "Tuba Eustachius"],
+                a: "Pinna (Auricula)",
+                exp: "<b>Pinna (Daun Telinga)</b> berfungsi menangkap dan memusatkan gelombang suara untuk masuk ke Meatus Acusticus Externus."
+            },
+            {
+                q: "Kelenjar parathyroid menghasilkan hormon yang berfungsi meningkatkan kadar kalsium darah, yaitu...",
+                o: ["Calcitonin", "PTH (Parathyroid Hormone)", "TSH", "Tiroksin", "Aldosteron"],
+                a: "PTH (Parathyroid Hormone)",
+                exp: "<b>PTH</b> meningkatkan kalsium darah dengan menstimulasi osteoklas (tulang), meningkatkan reabsorpsi Ca di ginjal, dan sintesis Vit D. Kalsitonin (dari Tiroid) justru menurunkannya."
+            },
+            {
+                q: "Pusat termoregulasi berada di hipotalamus. Apabila tubuh terpapar suhu dingin, mekanisme kompensasi yang terjadi adalah...",
+                o: ["Sekresi TSH meningkat", "Sekresi ADH meningkat", "Vasodilatasi perifer", "Berkeringat", "Sekresi Insulin meningkat"],
+                a: "Sekresi TSH meningkat",
+                exp: "Pada suhu dingin, hipotalamus merangsang <b>TSH</b> -> Tiroid -> Tiroksin meningkat untuk menaikkan laju metabolisme (termogenesis). Juga terjadi menggigil dan vasokonstriksi."
+            },
+            {
+                q: "Pada proses penglihatan, ketika cahaya mengenai rodopsin di sel batang, terjadi perubahan konformasi Retinal dari...",
+                o: ["11-cis menjadi all-trans", "All-trans menjadi 11-cis", "Opsin menjadi Retinal", "Retinal menjadi Opsin", "GMP menjadi cGMP"],
+                a: "11-cis menjadi all-trans",
+                exp: "Fotoisomerisasi: Foton mengubah <b>11-cis-retinal</b> menjadi <b>all-trans-retinal</b>, yang memicu pelepasan opsin dan transduksi sinyal."
+            },
+            {
+                q: "Tuba auditiva (Eustachius) menghubungkan telinga tengah dengan nasofaring. Epitel yang melapisi tuba ini adalah...",
+                o: ["Epitel skuamus simpleks", "Epitel transisional", "Epitel kolumner pseudokompleks bersilia", "Epitel kuboid selapis", "Epitel berlapis gepeng"],
+                a: "Epitel kolumner pseudokompleks bersilia",
+                exp: "Seperti saluran napas (respiratori), tuba Eustachius dilapisi <b>epitel kolumner pseudokompleks bersilia (respiratory epithelium)</b> dengan sel goblet."
+            },
+            {
+                q: "Aksis hipotalamus-hipofisis yang mengatur fungsi reproduksi (gonad) melibatkan hormon...",
+                o: ["GHRH -> FSH", "CRH -> ACTH", "GnRH -> FSH & LH", "TRH -> TSH", "Somatostatin -> GH"],
+                a: "GnRH -> FSH & LH",
+                exp: "<b>GnRH</b> (Gonadotropin Releasing Hormone) dari hipotalamus memicu hipofisis anterior melepas FSH dan LH untuk organ reproduksi."
+            },
+            {
+                q: "Hormon pertumbuhan (Growth Hormone) produksinya distimulasi oleh hormon hipotalamus yaitu...",
+                o: ["GHIH", "GHRH", "GnRH", "CRH", "TRH"],
+                a: "GHRH",
+                exp: "<b>GHRH</b> (Growth Hormone Releasing Hormone) menstimulasi sekresi GH. Sebaliknya, Somatostatin (GHIH) menghambatnya."
+            },
+            {
+                q: "Komunikasi antar sel saraf yang menggunakan zat kimia (neurotransmitter) di celah sinaps disebut...",
+                o: ["Komunikasi Endokrin", "Komunikasi Parakrin", "Komunikasi Sinaptik", "Komunikasi Langsung", "Komunikasi Autokrin"],
+                a: "Komunikasi Sinaptik",
+                exp: "<b>Komunikasi Sinaptik</b> melibatkan pelepasan neurotransmitter dari neuron presinaps ke celah sinaps untuk mempengaruhi sel postsinaps."
+            },
+            {
+                q: "Pasien 40 tahun mengeluh sulit melihat objek dekat (presbiopia). Hal ini disebabkan penurunan elastisitas lensa dan kelemahan fungsi...",
+                o: ["Otot siliaris", "Otot rektus medial", "Otot dilator pupil", "Otot sfingter pupil", "Kornea"],
+                a: "Otot siliaris",
+                exp: "Akomodasi diatur oleh kontraksi <b>otot siliaris</b>. Pada presbiopia, lensa mengeras dan otot siliaris kurang efektif mengubah kelengkungan lensa."
+            },
+            {
+                q: "Organ telinga luar yang berfungsi sebagai saluran penghantar bunyi ke membran timpani adalah...",
+                o: ["Tuba Eustachius", "Meatus Acusticus Externus", "Koklea", "Kanalis Semisirkularis", "Vestibulum"],
+                a: "Meatus Acusticus Externus",
+                exp: "<b>Meatus Acusticus Externus</b> (liang telinga) menyalurkan gelombang suara dari pinna menuju membran timpani."
+            },
+            {
+                q: "Bagian dari tunika fibrosa mata yang transparan dan berfungsi sebagai media refraksi utama (kekuatan bias terbesar) adalah...",
+                o: ["Sclera", "Kornea", "Lensa", "Retina", "Iris"],
+                a: "Kornea",
+                exp: "<b>Kornea</b> adalah bagian transparan dari tunika fibrosa dan menyumbang sekitar 2/3 kekuatan refraksi mata."
+            },
+            {
+                q: "Manakah hormon berikut yang disintesis di hipotalamus (nukleus supraoptik/paraventrikular) lalu disimpan di hipofisis posterior?",
+                o: ["ACTH", "GH", "FSH", "ADH & Oksitosin", "Prolaktin"],
+                a: "ADH & Oksitosin",
+                exp: "Hipofisis posterior (neurohipofisis) hanya menyimpan dan melepas hormon yang dibuat di hipotalamus: <b>ADH (Vasopresin) dan Oksitosin</b>."
+            },
+            {
+                q: "Hormon steroid utama yang berperan dalam perkembangan karakteristik seks sekunder pria adalah...",
+                o: ["Estrogen", "Progesteron", "Testosteron", "Prolaktin", "Aldosteron"],
+                a: "Testosteron",
+                exp: "<b>Testosteron</b> diproduksi oleh sel Leydig testis dan bertanggung jawab atas ciri maskulin dan spermatogenesis."
+            },
+            {
+                q: "Urutan aliran air mata (drainase lakrimal) yang benar adalah...",
+                o: ["Glandula -> Punctum -> Kanalikuli -> Saccus -> Ductus Nasolakrimalis", "Saccus -> Glandula -> Ductus", "Punctum -> Saccus -> Kanalikuli", "Ductus -> Saccus -> Punctum", "Meatus nasi -> Ductus -> Saccus"],
+                a: "Glandula -> Punctum -> Kanalikuli -> Saccus -> Ductus Nasolakrimalis",
+                exp: "Air mata masuk ke <b>Punctum</b> -> mengalir lewat <b>Kanalikuli</b> -> ditampung di <b>Saccus Lakrimalis</b> -> turun lewat <b>Duktus Nasolakrimalis</b> ke hidung."
+            },
+            {
+                q: "Mekanisme tubuh untuk mempertahankan panas saat suhu lingkungan rendah (dingin) meliputi...",
+                o: ["Vasodilatasi dan berkeringat", "Vasokonstriksi kulit dan menggigil", "Peningkatan respirasi", "Penurunan metabolisme", "Relaksasi otot erektor pili"],
+                a: "Vasokonstriksi kulit dan menggigil",
+                exp: "Tubuh menahan panas dengan <b>vasokonstriksi</b> (mengurangi aliran darah ke kulit) dan memproduksi panas dengan <b>menggigil</b> (termogenesis otot)."
+            },
+            {
+                q: "Nukleus di hipotalamus yang terutama berfungsi mensintesis hormon Oksitosin adalah...",
+                o: ["Nukleus Supraoptikus", "Nukleus Paraventrikularis", "Nukleus Arkuata", "Nukleus Suprachiasmatic", "Corpus Mamillare"],
+                a: "Nukleus Paraventrikularis",
+                exp: "Meskipun tumpang tindih, <b>Nukleus Paraventrikularis</b> dominan memproduksi Oksitosin, sedangkan Supraoptikus dominan ADH."
+            },
+            {
+                q: "Makula pada Utrikulus berfungsi mendeteksi...",
+                o: ["Percepatan rotasi", "Percepatan linear vertikal", "Percepatan linear horizontal", "Suara frekuensi tinggi", "Suara frekuensi rendah"],
+                a: "Percepatan linear horizontal",
+                exp: "<b>Utrikulus</b> mendeteksi percepatan linear horizontal (misal: mobil maju). Sakulus mendeteksi vertikal (lift)."
+            },
+            {
+                q: "Hormon yang berperan utama dalam homeostasis kalsium dan fosfat adalah...",
+                o: ["Somatostatin", "Melatonin", "Aldosteron", "Tiroksin", "Parathyroid Hormone (PTH)"],
+                a: "Parathyroid Hormone (PTH)",
+                exp: "<b>PTH</b> adalah regulator utama kadar kalsium (menaikkan) dan fosfat (menurunkan) dalam darah."
+            },
+            {
+                q: "Kelenjar Bowman (Glandula Olfactoria) di mukosa hidung berfungsi untuk...",
+                o: ["Menghasilkan mukus untuk melarutkan zat odoran", "Menghasilkan sel saraf baru", "Menghasilkan hormon", "Menghangatkan udara", "Menyaring debu kasar"],
+                a: "Menghasilkan mukus untuk melarutkan zat odoran",
+                exp: "Agar bisa tercium, partikel bau harus larut. <b>Kelenjar Bowman</b> menghasilkan sekret serosa untuk melarutkan molekul bau tersebut."
+            },
+            {
+                q: "Untuk melakukan akomodasi melihat objek dekat, otot siliaris akan...",
+                o: ["Relaksasi", "Berkontraksi", "Memanjang", "Atrofi", "Tidak berubah"],
+                a: "Berkontraksi",
+                exp: "Saat melihat dekat, <b>otot siliaris berkontraksi</b>, menyebabkan zonula zinn kendor, dan lensa menjadi cembung (daya bias naik)."
+            },
+            {
+                q: "Fungsi utama M. Orbicularis Oculi adalah...",
+                o: ["Menutup kelopak mata", "Membuka kelopak mata", "Menggerakkan bola mata ke atas", "Dilatasi pupil", "Akomodasi"],
+                a: "Menutup kelopak mata",
+                exp: "<b>M. Orbicularis Oculi</b> adalah otot sfingter di kelopak mata yang berfungsi untuk menutup mata (berkedip/memajam)."
+            },
+            {
+                q: "Duktus nasolakrimalis bermuara di rongga hidung pada bagian...",
+                o: ["Meatus nasi superior", "Meatus nasi medius", "Meatus nasi inferior", "Vestibulum nasi", "Choanae"],
+                a: "Meatus nasi inferior",
+                exp: "Air mata dari duktus nasolakrimalis mengalir keluar di <b>Meatus Nasi Inferior</b> (di bawah concha inferior)."
+            },
+            {
+                q: "Sel di adenohipofisis yang berfungsi memproduksi hormon pertumbuhan (GH) disebut...",
+                o: ["Somatotropik", "Gonadotropik", "Tirotropik", "Kortikotropik", "Laktotropik"],
+                a: "Somatotropik",
+                exp: "Sel <b>Somatotropik</b> (Somatotrophs) adalah sel terbanyak di hipofisis anterior dan memproduksi Somatotropin (GH)."
+            },
+            {
+                q: "Saat melihat objek yang JAUH, mekanisme akomodasi yang terjadi adalah...",
+                o: ["Otot siliaris kontraksi, lensa cembung", "Otot siliaris relaksasi, lensa memipih", "Pupil miosis", "Zonula zinn kendor", "Lensa menebal"],
+                a: "Otot siliaris relaksasi, lensa memipih",
+                exp: "Untuk melihat jauh, mata butuh bias rendah. <b>Otot siliaris relaksasi</b> -> zonula zinn tegang -> lensa ditarik menjadi pipih/datar."
+            },
+            {
+                q: "Kadar TSH yang tinggi dalam darah biasanya dipicu oleh...",
+                o: ["Kadar T3/T4 yang tinggi", "Kadar T3/T4 yang rendah", "Kadar Glukosa tinggi", "Kadar Kalsium rendah", "Stress akut"],
+                a: "Kadar T3/T4 yang rendah",
+                exp: "Melalui umpan balik negatif, jika kadar hormon tiroid (T3/T4) <b>rendah</b>, hipofisis akan merespons dengan meningkatkan sekresi TSH."
+            },
+            {
+                q: "Gangguan telinga dalam yang ditandai dengan trias: Vertigo, Tinnitus, dan Tuli sensorineural fluktuatif adalah...",
+                o: ["Otitis Media", "Tuli Konduksi", "Sindrom Meniere", "Presbikusis", "Otosklerosis"],
+                a: "Sindrom Meniere",
+                exp: "<b>Sindrom Meniere</b> disebabkan hidrops endolimfatik (kelebihan cairan endolimfe) yang menyebabkan vertigo, telinga berdenging, dan tuli."
+            },
+            {
+                q: "Saat menelan, otot yang berfungsi membuka muara Tuba Eustachius untuk menyamakan tekanan adalah...",
+                o: ["M. Stapedius", "M. Tensor Veli Palatini", "M. Orbicularis Oris", "M. Masseter", "M. Temporalis"],
+                a: "M. Tensor Veli Palatini",
+                exp: "<b>M. Tensor Veli Palatini</b> (dan Levator Veli Palatini) berkontraksi saat menelan/menguap, menarik dinding tuba eustachius agar terbuka."
+            },
+            {
+                q: "Pasien pasca operasi gigi bungsu (odontektomi) mengalami mati rasa pada lidah depan. Saraf yang kemungkinan cedera (neuropraxia) adalah...",
+                o: ["N. Lingualis", "N. Hypoglossus", "N. Glossopharyngeus", "N. Vagus", "N. Facialis motorik"],
+                a: "N. Lingualis",
+                exp: "<b>N. Lingualis</b> (cabang V3) membawa sensasi raba lidah anterior 2/3 dan berjalan dekat akar gigi geraham bawah."
+            },
+            {
+                q: "Dalam kuncup rasa (taste bud), struktur berupa rambut halus yang terpapar zat kimia di porus disebut...",
+                o: ["Mikrovili (Taste hairs)", "Silia", "Flagel", "Dendrit", "Akson"],
+                a: "Mikrovili (Taste hairs)",
+                exp: "Ujung sel reseptor pengecap memiliki <b>mikrovili</b> yang menonjol ke taste pore untuk berikatan dengan molekul rasa."
+            },
+            {
+                q: "Vaskularisasi utama pankreas berasal dari cabang arteri...",
+                o: ["A. Celiaca & A. Mesenterica Superior", "A. Renalis", "A. Iliaca", "A. Femoralis", "A. Carotis"],
+                a: "A. Celiaca & A. Mesenterica Superior",
+                exp: "Pankreas didarahi oleh cabang <b>A. Celiaca</b> (melalui A. Splenica & Gastroduodenal) dan <b>A. Mesenterica Superior</b> (Pancreaticoduodenal inf)."
+            },
+            {
+                q: "Sel fotoreseptor di retina yang sangat sensitif terhadap cahaya redup (penglihatan malam) adalah...",
+                o: ["Sel Kerucut (Cone)", "Sel Batang (Rod)", "Sel Ganglion", "Sel Bipolar", "Sel Amakrin"],
+                a: "Sel Batang (Rod)",
+                exp: "<b>Sel Batang (Rod)</b> mengandung rodopsin dan sangat sensitif cahaya, berfungsi untuk scotopic vision (malam/gelap), tapi tidak warna."
+            },
+            {
+                q: "Hormon MSH (Melanocyte Stimulating Hormone) berfungsi utama untuk...",
+                o: ["Meningkatkan pigmentasi kulit", "Meningkatkan gula darah", "Pertumbuhan tulang", "Sekresi susu", "Ovulasi"],
+                a: "Meningkatkan pigmentasi kulit",
+                exp: "<b>MSH</b> merangsang melanosit untuk memproduksi melanin, yang menggelapkan kulit."
+            },
+            {
+                q: "Efek Hormon Paratiroid (PTH) pada ginjal adalah...",
+                o: ["Meningkatkan ekskresi Kalsium", "Meningkatkan reabsorpsi Fosfat", "Meningkatkan reabsorpsi Kalsium", "Menghambat pembentukan Vitamin D", "Meningkatkan reabsorpsi Glukosa"],
+                a: "Meningkatkan reabsorpsi Kalsium",
+                exp: "Di ginjal, PTH bekerja <b>meningkatkan reabsorpsi Ca2+</b> (agar tidak terbuang di urin) dan menurunkan reabsorpsi Fosfat."
+            },
+            {
+                q: "Hormon Vasopresin (ADH) terutama dihasilkan oleh nukleus hipotalamus yaitu...",
+                o: ["Nukleus Supraoptikus", "Nukleus Paraventrikularis", "Nukleus Arkuata", "Nukleus Suprachiasmatic", "Corpus Mamillare"],
+                a: "Nukleus Supraoptikus",
+                exp: "<b>Nukleus Supraoptikus</b> adalah produsen utama ADH (antidiuretik), sedangkan Paraventrikularis dominan Oksitosin."
+            },
+            {
+                q: "Struktur berikut berfungsi sebagai resonator suara, KECUALI...",
+                o: ["Faring", "Cavum nasi", "Sinus paranasal", "Cavum oris", "Paru-paru"],
+                a: "Paru-paru",
+                exp: "Paru-paru adalah *sumber* aliran udara (power), bukan resonator. Resonator (penguat gema) adalah rongga di atas pita suara (faring, mulut, hidung)."
+            },
+            {
+                q: "Sel folikel tiroid mengambil ion iodida dari darah melawan gradien konsentrasi melalui mekanisme...",
+                o: ["Difusi sederhana", "Transpor aktif sekunder (Na+/I- symporter)", "Osmosis", "Pinositosis", "Difusi terfasilitasi"],
+                a: "Transpor aktif sekunder (Na+/I- symporter)",
+                exp: "Iodida ditangkap (trapping) menggunakan pompa <b>NIS (Sodium-Iodide Symporter)</b> yang merupakan transpor aktif."
+            },
+            {
+                q: "Inervasi parasimpatis yang memicu sekresi kelenjar air mata (lakrimasi) dibawa oleh...",
+                o: ["N. Facialis (N. VII)", "N. Trigeminus (N. V)", "N. Oculomotorius (N. III)", "N. Opticus (N. II)", "N. Vagus (N. X)"],
+                a: "N. Facialis (N. VII)",
+                exp: "Serabut parasimpatis sekretomotorik berasal dari <b>N. Facialis</b> (via N. Petrosus Major -> Ganglion Pterygopalatina)."
+            },
+            {
+                q: "Koneksi langsung traktus olfaktorius ke amigdala (sistem limbik) menjelaskan fenomena...",
+                o: ["Ketajaman penciuman", "Adaptasi bau", "Hubungan bau dengan emosi/memori", "Bersin saat mencium bau tajam", "Diskriminasi jenis bau"],
+                a: "Hubungan bau dengan emosi/memori",
+                exp: "Sistem limbik mengatur emosi. Karena saraf bau langsung kesana, bau seringkali memicu <b>respons emosional atau ingatan</b> yang kuat."
+            },
+            {
+                q: "Otot Levator Palpebrae Superioris yang berfungsi mengangkat kelopak mata diinervasi oleh...",
+                o: ["N. Oculomotorius (N. III)", "N. Facialis (N. VII)", "N. Trigeminus (N. V)", "N. Abducens (N. VI)", "Saraf Simpatis"],
+                a: "N. Oculomotorius (N. III)",
+                exp: "<b>N. III (Oculomotorius)</b> menginervasi levator palpebrae. Jika lumpuh, terjadi ptosis (kelopak mata turun)."
+            },
+            {
+                q: "Struktur vestibular yang berfungsi mendeteksi percepatan linear vertikal (seperti naik lift) adalah...",
+                o: ["Makula Utrikulus", "Makula Sakulus", "Krista Ampullaris", "Koklea", "Organ Corti"],
+                a: "Makula Sakulus",
+                exp: "<b>Makula Sakulus</b> berorientasi vertikal, sehingga sensitif terhadap gravitasi dan percepatan vertikal."
+            },
+            {
+                q: "Endotelium kornea memiliki pompa metabolik aktif yang berfungsi untuk...",
+                o: ["Menjaga kornea tetap dehidrasi (kering relatif) agar jernih", "Memberi nutrisi ke lensa", "Menghasilkan air mata", "Mengatur tekanan bola mata", "Membentuk humor akuos"],
+                a: "Menjaga kornea tetap dehidrasi (kering relatif) agar jernih",
+                exp: "Agar transparan, stroma kornea harus relatif kering (deturgescence). <b>Pompa endotel</b> memompa air keluar dari stroma ke humor akuos."
+            },
+            {
+                q: "Hormon katekolamin (Epinefrin/Norepinefrin) dari medula adrenal berfungsi untuk respons terhadap...",
+                o: ["Stres jangka pendek (akut)", "Stres jangka panjang (kronis)", "Pertumbuhan tulang", "Siklus tidur", "Metabolisme kalsium"],
+                a: "Stres jangka pendek (akut)",
+                exp: "Medula adrenal adalah bagian dari sistem simpatis, merespons <b>stres akut</b>. Korteks adrenal (kortisol) merespons stres kronis."
+            },
+            {
+                q: "Penumpukan serumen (kotoran telinga) biasanya terjadi di...",
+                o: ["Meatus Acusticus Externus (pars cartilaginea)", "Telinga tengah", "Membran timpani", "Tuba Eustachius", "Koklea"],
+                a: "Meatus Acusticus Externus (pars cartilaginea)",
+                exp: "Kelenjar seruminosa hanya ada di <b>sepertiga luar (pars cartilaginea)</b> liang telinga, tempat serumen diproduksi."
+            },
+            {
+                q: "Secara anatomis, kelenjar paratiroid biasanya berjumlah... dan terletak di posterior kelenjar tiroid.",
+                o: ["2 pasang (4 buah)", "1 buah", "2 buah", "6 buah", "Tidak tentu"],
+                a: "2 pasang (4 buah)",
+                exp: "Manusia normalnya memiliki <b>4 kelenjar paratiroid</b> (2 superior, 2 inferior) yang menempel di belakang tiroid."
+            },
+            {
+                q: "Jika terjadi kerusakan pada Chorda Tympani (cabang N. VII) sebelah kiri, pasien akan mengeluh...",
+                o: ["Hilang rasa kecap pada 2/3 depan lidah kiri", "Hilang rasa kecap pada 1/3 belakang lidah", "Lidah miring ke kanan", "Mulut kering total", "Tidak bisa menelan"],
+                a: "Hilang rasa kecap pada 2/3 depan lidah kiri",
+                exp: "<b>Chorda tympani</b> membawa serat pengecap untuk 2/3 anterior lidah ipsilateral."
+            },
+            {
+                q: "Otot telinga tengah yang berfungsi meredam suara keras dengan membatasi gerakan stapes adalah...",
+                o: ["M. Tensor Tympani", "M. Stapedius", "M. Digastricus", "M. Stylohyoideus", "M. Masseter"],
+                a: "M. Stapedius",
+                exp: "<b>M. Stapedius</b> berkontraksi saat suara keras (refleks akustik) untuk menarik stapes agar tidak bergetar terlalu kuat."
+            },
+            {
+                q: "Organ yang berfungsi sebagai artikulator utama dalam pembentukan kata-kata adalah...",
+                o: ["Lidah, bibir, dan gigi", "Laring", "Faring", "Paru-paru", "Hidung"],
+                a: "Lidah, bibir, dan gigi",
+                exp: "Laring menghasilkan suara dasar (fonasi), sedangkan <b>lidah, bibir, dan gigi</b> memodifikasinya menjadi kata-kata (artikulasi)."
+            },
+            {
+                q: "Perbedaan utama sistem endokrin dibandingkan sistem saraf adalah...",
+                o: ["Respons lambat, durasi panjang, via darah", "Respons cepat, durasi pendek, via impuls", "Hanya mempengaruhi otot", "Tidak menggunakan reseptor", "Sinyal listrik murni"],
+                a: "Respons lambat, durasi panjang, via darah",
+                exp: "<b>Sistem endokrin</b> menggunakan hormon lewat darah (lambat tapi tahan lama), sedangkan saraf menggunakan impuls listrik (cepat tapi sebentar)."
+            },
+            {
+                q: "Aldosteron meningkatkan reabsorpsi Natrium dengan cara berikatan dengan reseptor di...",
+                o: ["Sitoplasma/Inti sel (Reseptor Intraseluler)", "Membran sel (G-protein)", "Mitokondria", "Ribosom", "Retikulum Endoplasma"],
+                a: "Sitoplasma/Inti sel (Reseptor Intraseluler)",
+                exp: "Aldosteron adalah hormon steroid. Hormon steroid menembus membran sel dan berikatan dengan <b>reseptor intraseluler</b> untuk memengaruhi ekspresi gen."
+            },
+            {
+                q: "Efek fisiologis utama hormon tiroid (T3/T4) adalah...",
+                o: ["Meningkatkan laju metabolisme basal (BMR)", "Menurunkan kadar gula darah", "Menghambat pertumbuhan", "Meningkatkan simpanan lemak", "Memicu tidur"],
+                a: "Meningkatkan laju metabolisme basal (BMR)",
+                exp: "Hormon tiroid adalah regulator utama metabolisme tubuh, meningkatkan konsumsi oksigen dan produksi panas (kalorigenik)."
+            },
+            {
+                q: "Proyeksi jalur olfaktorius langsung ke sistem limbik bertanggung jawab untuk...",
+                o: ["Mengaitkan bau dengan emosi", "Membedakan bau tajam", "Adaptasi reseptor", "Regenerasi sel", "Menyaring debu"],
+                a: "Mengaitkan bau dengan emosi",
+                exp: "Hubungan langsung ke amigdala/hipokampus membuat bau sangat kuat dalam memicu <b>emosi dan memori</b>."
+            },
+            {
+                q: "Kelenjar pineal (Epifisis) aktif mensekresikan hormon Melatonin pada kondisi...",
+                o: ["Gelap (malam hari)", "Terang (siang hari)", "Stress", "Lapar", "Kenyang"],
+                a: "Gelap (malam hari)",
+                exp: "Sekresi melatonin dihambat oleh cahaya dan dipicu oleh <b>kegelapan</b>, mengatur ritme sirkadian (siklus tidur-bangun)."
+            },
+            {
+                q: "Transduksi sinyal pada reseptor penghidu (olfaktori) melibatkan protein G yang mengaktifkan enzim...",
+                o: ["Adenilat siklase -> cAMP", "Fosfolipase C", "Tirosin kinase", "Guanylate cyclase", "ATPase"],
+                a: "Adenilat siklase -> cAMP",
+                exp: "Odoran mengaktifkan Protein G(olf) -> <b>Adenilat siklase</b> -> cAMP naik -> kanal kation terbuka -> depolarisasi."
+            },
+            {
+                q: "Kondisi anosmia (hilang penciuman) sering disebabkan oleh cedera kepala berupa fraktur pada...",
+                o: ["Lamina cribrosa os ethmoidale", "Os temporale", "Os occipitale", "Mandibula", "Os zygomaticum"],
+                a: "Lamina cribrosa os ethmoidale",
+                exp: "Saraf olfaktorius menembus lubang-lubang kecil di <b>lamina cribrosa</b>. Fraktur di sini bisa memotong serabut saraf tersebut."
+            },
+            {
+                q: "Pengambilan iodida oleh tiroid disebut 'Iodide Trapping'. Proses ini membutuhkan...",
+                o: ["Energi (ATP) dan Transporter Na+/I-", "Difusi pasif", "Protein channel biasa", "Hormon insulin", "Enzim peroksidase"],
+                a: "Energi (ATP) dan Transporter Na+/I-",
+                exp: "Ini adalah transpor aktif sekunder yang memanfaatkan gradien Na+ (dari pompa Na/K ATPase) melalui <b>NIS (Sodium Iodide Symporter)</b>."
+            },
+            {
+                q: "Saat mata melihat objek jauh, kondisi lensa adalah...",
+                o: ["Memipih (datar)", "Mencembung (bulat)", "Opaque", "Bergetar", "Tidak ada lensa"],
+                a: "Memipih (datar)",
+                exp: "Melihat jauh = bias rendah. Lensa ditarik oleh zonula zinn (karena otot siliaris relaks) menjadi <b>pipih</b>."
+            },
+            {
+                q: "Nervus Oculomotorius (N. III) menginervasi otot-otot berikut, KECUALI...",
+                o: ["M. Rectus Lateralis", "M. Rectus Superior", "M. Rectus Inferior", "M. Rectus Medialis", "M. Obliquus Inferior"],
+                a: "M. Rectus Lateralis",
+                exp: "<b>M. Rectus Lateralis</b> diinervasi oleh N. VI (Abducens). M. Obliquus Superior oleh N. IV (Trochlearis). Sisanya N. III."
+            },
+            {
+                q: "Secara histologis, kelenjar tiroid dibungkus oleh kapsul yang merupakan lanjutan dari...",
+                o: ["Fascia pretrachealis", "Fascia superficialis", "Dermis kulit", "Perikondrium", "Pleura"],
+                a: "Fascia pretrachealis",
+                exp: "Kapsul tiroid (capsula propria & spuria) berasal dari lapisan <b>fascia colli profunda (lamina pretrachealis)</b>."
+            },
+            {
+                q: "Stimulus utama sekresi insulin oleh sel beta pankreas adalah...",
+                o: ["Hiperglikemia (Gula darah tinggi)", "Hipoglikemia", "Kadar asam lemak rendah", "Somatostatin", "Adrenalin"],
+                a: "Hiperglikemia (Gula darah tinggi)",
+                exp: "Insulin disekresikan saat kadar <b>glukosa darah meningkat</b> (setelah makan) untuk menyimpannya ke dalam sel."
+            },
+            {
+                q: "Sel F (PP cells) pada pulau Langerhans pankreas menghasilkan hormon...",
+                o: ["Polipeptida Pankreas", "Insulin", "Glukagon", "Somatostatin", "Ghrelin"],
+                a: "Polipeptida Pankreas",
+                exp: "Sel F memproduksi <b>Pancreatic Polypeptide</b> yang mengatur sekresi eksokrin pankreas."
+            },
+            {
+                q: "Kondisi hiperglikemia akan menstimulasi sekresi...",
+                o: ["Insulin", "Glukagon", "Adrenalin", "Kortisol", "GH"],
+                a: "Insulin",
+                exp: "Jelas, <b>Insulin</b> adalah satu-satunya hormon utama penurun gula darah (hipoglikemik)."
+            },
+            {
+                q: "Hordeolum eksternum (bintitan luar) adalah peradangan pada kelenjar...",
+                o: ["Kelenjar Zeiss atau Moll", "Kelenjar Meibom", "Kelenjar Lakrimal", "Kelenjar Tiroid", "Kelenjar Getah Bening"],
+                a: "Kelenjar Zeiss atau Moll",
+                exp: "Hordeolum eksternum terjadi di folikel bulu mata (Kelenjar <b>Zeiss/Moll</b>). Kalau internum di Kelenjar Meibom (di balik kelopak)."
+            },
+            {
+                q: "Hormon Kalsitonin bekerja menurunkan kalsium darah. Hormon ini dihasilkan oleh...",
+                o: ["Sel Parafolikuler (Sel C) Tiroid", "Sel Folikel Tiroid", "Kelenjar Paratiroid", "Ginjal", "Tulang"],
+                a: "Sel Parafolikuler (Sel C) Tiroid",
+                exp: "<b>Sel C (Parafolikuler)</b> di antara folikel tiroid menghasilkan Kalsitonin. Sel folikel menghasilkan T3/T4."
+            },
+            {
+                q: "Fungsi utama kornea mata adalah sebagai...",
+                o: ["Media refraksi (pembiasan) utama", "Pengatur jumlah cahaya", "Tempat fotoreseptor", "Pemberi warna mata", "Penghasil air mata"],
+                a: "Media refraksi (pembiasan) utama",
+                exp: "<b>Kornea</b> menyumbang kekuatan bias terbesar (+40 Dioptri) karena perbedaan indeks bias yang besar dengan udara."
+            },
+            {
+                q: "Saraf kranial yang membawa impuls penglihatan dari retina ke otak adalah...",
+                o: ["N. Opticus (N. II)", "N. Oculomotorius (N. III)", "N. Trochlearis (N. IV)", "N. Trigeminus (N. V)", "N. Abducens (N. VI)"],
+                a: "N. Opticus (N. II)",
+                exp: "<b>N. Opticus</b> adalah saraf sensorik khusus untuk penglihatan."
+            },
+            {
+                q: "Sel parenkim utama pada kelenjar pineal yang memproduksi melatonin disebut...",
+                o: ["Pinealosit", "Pituisit", "Astrosit", "Melanosit", "Hepatosit"],
+                a: "Pinealosit",
+                exp: "<b>Pinealosit</b> adalah sel sekretorik fungsional dari kelenjar pineal."
+            },
+            {
+                q: "Cairan di dalam duktus koklearis (skala media) yang kaya akan ion Kalium (K+) adalah...",
+                o: ["Endolimfe", "Perilimfe", "Cairan Serebrospinal", "Plasma darah", "Humor akuos"],
+                a: "Endolimfe",
+                exp: "<b>Endolimfe</b> unik karena konsentrasi K+ nya sangat tinggi (mirip cairan intrasel), penting untuk depolarisasi sel rambut."
+            },
+            {
+                q: "Jika seseorang memiliki polip yang menyumbat hidung kanan, namun masih bisa mencium bau, artinya...",
+                o: ["Hidung kiri dan jaras olfaktorius kiri berfungsi baik", "Penciuman diproses di otak kanan saja", "Polip menghasilkan bau", "Bau masuk lewat mulut", "Saraf kanan pindah ke kiri"],
+                a: "Hidung kiri dan jaras olfaktorius kiri berfungsi baik",
+                exp: "Penciuman adalah ipsilateral (satu sisi). Jika kanan buntu tapi masih membau, berarti sisi <b>kiri normal</b>."
+            },
+            {
+                q: "Transporter glukosa di otot rangka yang sensitif terhadap insulin dan kontraksi otot adalah...",
+                o: ["GLUT-4", "GLUT-1", "GLUT-2", "SGLT-1", "SGLT-2"],
+                a: "GLUT-4",
+                exp: "<b>GLUT-4</b> tersimpan di vesikel dan baru pindah ke membran sel jika ada Insulin atau saat olahraga (kontraksi)."
+            },
+            {
+                q: "Deposisi kalsium ke tulang (menurunkan kalsium darah) dirangsang oleh hormon...",
+                o: ["Kalsitonin", "PTH", "Kortisol", "Glukagon", "Adrenalin"],
+                a: "Kalsitonin",
+                exp: "<b>Kalsitonin</b> menghambat osteoklas dan memicu penimbunan kalsium di tulang."
+            },
+            {
+                q: "Kehilangan kemampuan mengecap rasa (Ageusia) biasanya disebabkan kerusakan pada...",
+                o: ["Taste buds atau saraf pengecap (VII, IX, X)", "Saraf Olfaktorius", "Gigi geligi", "Otot lidah", "Kelenjar liur"],
+                a: "Taste buds atau saraf pengecap (VII, IX, X)",
+                exp: "Ageusia adalah hilangnya fungsi <b>kuncup rasa</b> atau saraf yang menghantarkannya."
+            },
+            {
+                q: "Hormon yang berperan menurunkan kadar gula darah saat hiperglikemia adalah...",
+                o: ["Insulin", "Glukagon", "Kortisol", "GH", "Epinefrin"],
+                a: "Insulin",
+                exp: "<b>Insulin</b> adalah hormon anabolik utama yang menurunkan glukosa darah."
+            },
+            {
+                q: "Bentuk epitel sel folikel tiroid pada kondisi normal (inaktif/istirahat) biasanya adalah...",
+                o: ["Kuboid selapis (Simple cuboidal)", "Pipih selapis", "Kolumner", "Transisional", "Berlapis"],
+                a: "Kuboid selapis (Simple cuboidal)",
+                exp: "Normalnya <b>kuboid</b>. Jika sangat aktif menjadi kolumner, jika sangat inaktif menjadi pipih."
+            },
+            {
+                q: "Stimulus fisiologis utama pelepasan ADH (Vasopresin) adalah...",
+                o: ["Peningkatan osmolaritas plasma (darah kental)", "Minum banyak air", "Darah encer", "Suhu dingin", "Tidur"],
+                a: "Peningkatan osmolaritas plasma (darah kental)",
+                exp: "Osmoreseptor di hipotalamus mendeteksi <b>kenaikan osmolaritas</b> (dehidrasi), memicu ADH untuk menahan air."
+            },
+            {
+                q: "Pupil mengalami midriasis (melebar) pada kondisi...",
+                o: ["Cahaya redup/gelap (aktivasi simpatis)", "Cahaya terang", "Tidur", "Melihat dekat", "Santai"],
+                a: "Cahaya redup/gelap (aktivasi simpatis)",
+                exp: "Di tempat gelap atau saat takut (simpatis), M. Dilator Pupillae berkontraksi menyebabkan <b>midriasis</b>."
+            },
+            {
+                q: "Bagian kelenjar adrenal yang mensintesis katekolamin (epinefrin) adalah...",
+                o: ["Medula Adrenal", "Zona Glomerulosa", "Zona Fasikulata", "Zona Retikularis", "Kapsul"],
+                a: "Medula Adrenal",
+                exp: "<b>Medula</b> adalah bagian tengah yang berfungsi seperti ganglion simpatis, menghasilkan adrenalin."
+            },
+            {
+                q: "Berikut adalah organ yang terlibat dalam pembentukan suara (fonasi & resonansi), KECUALI...",
+                o: ["Esofagus (Kerongkongan)", "Paru-paru", "Laring (Pita suara)", "Faring", "Rongga mulut"],
+                a: "Esofagus (Kerongkongan)",
+                exp: "<b>Esofagus</b> adalah saluran makan, tidak terlibat langsung dalam produksi suara normal. Paru (sumber angin), Laring (sumber bunyi), Faring (resonator)."
+            },
+            {
+                q: "Inervasi motorik untuk M. Levator Palpebrae Superioris berasal dari...",
+                o: ["N. Oculomotorius (III)", "N. Facialis (VII)", "N. Trigeminus (V)", "N. Trochlearis (IV)", "N. Abducens (VI)"],
+                a: "N. Oculomotorius (III)",
+                exp: "Otot pengangkat kelopak mata dipersarafi oleh <b>N. III</b>. N. VII menutup mata (Orbicularis)."
+            },
+            {
+                q: "Peran cavum oris (rongga mulut) dalam pembentukan suara adalah sebagai...",
+                o: ["Resonator dan Artikulator", "Sumber getaran", "Sumber udara", "Pusat saraf", "Penerima suara"],
+                a: "Resonator dan Artikulator",
+                exp: "Mulut mengubah bentuk untuk <b>resonansi</b> dan lidah/bibir bergerak untuk <b>artikulasi</b> huruf."
+            },
+            {
+                q: "Mekanisme pelepasan panas tubuh (termolisis) meliputi...",
+                o: ["Radiasi, Konduksi, Konveksi, Evaporasi", "Menggigil", "Piloereksi", "Vasokonstriksi", "Makan banyak"],
+                a: "Radiasi, Konduksi, Konveksi, Evaporasi",
+                exp: "Panas dibuang lewat fisik: <b>Radiasi</b> (pancaran), <b>Konveksi</b> (angin), <b>Konduksi</b> (sentuhan), dan <b>Evaporasi</b> (keringat)."
+            },
+            {
+                q: "Hipofisis cerebri terletak di dasar otak pada cekungan tulang sphenoid yang disebut...",
+                o: ["Sella Tursica", "Crista Galli", "Foramen Magnum", "Sinus Kavernosus", "Orbita"],
+                a: "Sella Tursica",
+                exp: "Hipofisis duduk manis di <b>Sella Tursica</b> (kursi turki) tulang sphenoid."
+            },
+            {
+                q: "Pasien dengan pupil yang tetap midriasis (lebar) walau disinari cahaya terang, kemungkinan mengalami kelumpuhan pada...",
+                o: ["M. Sfingter Pupil (Parasimpatis/N. III)", "M. Dilator Pupil", "M. Ciliaris", "Retina", "Kornea"],
+                a: "M. Sfingter Pupil (Parasimpatis/N. III)",
+                exp: "Refleks cahaya mengecilkan pupil via <b>M. Sfingter Pupil</b>. Jika lumpuh, pupil tetap lebar."
+            },
+            {
+                q: "Secara kimiawi, hormon insulin termasuk golongan...",
+                o: ["Polipeptida / Protein", "Steroid", "Amine", "Lemak", "Vitamin"],
+                a: "Polipeptida / Protein",
+                exp: "Insulin adalah hormon <b>protein/peptida</b>, sehingga tidak bisa diminum (rusak oleh asam lambung), harus disuntik."
+            },
+            {
+                q: "Hormon berikut dihasilkan oleh hipofisis anterior (Adenohipofisis), KECUALI...",
+                o: ["ADH (Vasopresin)", "TSH", "ACTH", "FSH", "Prolaktin"],
+                a: "ADH (Vasopresin)",
+                exp: "<b>ADH</b> dibuat di hipotalamus dan dilepas di hipofisis posterior. Sisanya murni buatan anterior."
+            },
+            {
+                q: "Hormon pelepas (Releasing Hormone) seperti TRH, CRH, GnRH dihasilkan oleh...",
+                o: ["Hipotalamus", "Hipofisis Anterior", "Tiroid", "Adrenal", "Gonad"],
+                a: "Hipotalamus",
+                exp: "<b>Hipotalamus</b> adalah 'Master of Master', mengirim hormon 'Releasing' ke hipofisis."
+            },
+            {
+                q: "Struktur di telinga dalam yang mendeteksi keseimbangan dinamis (rotasi kepala) adalah...",
+                o: ["Krista Ampullaris (di Kanalis Semisirkularis)", "Makula Utrikulus", "Makula Sakulus", "Organ Corti", "Helicotrema"],
+                a: "Krista Ampullaris (di Kanalis Semisirkularis)",
+                exp: "Rotasi (geleng/angguk) menggerakkan endolimfe di kanalis semisirkularis yang menstimulasi <b>Krista Ampullaris</b>."
+            },
+            {
+                q: "Kelenjar sebasea (minyak) yang bermuara langsung ke folikel bulu mata disebut...",
+                o: ["Kelenjar Zeiss", "Kelenjar Moll", "Kelenjar Meibom", "Kelenjar Lakrimal", "Kelenjar Bowman"],
+                a: "Kelenjar Zeiss",
+                exp: "<b>Kelenjar Zeiss</b> adalah kelenjar sebasea (minyak) folikel bulu mata. Moll adalah kelenjar keringat (apokrin)."
+            },
+            {
+                q: "Siklus sirkadian (tidur-bangun) diatur oleh hormon melatonin yang dihasilkan oleh sel...",
+                o: ["Pinealosit (Kelenjar Pineal)", "Pituist", "Laktotrof", "Sel Beta", "Sel Sertoli"],
+                a: "Pinealosit (Kelenjar Pineal)",
+                exp: "<b>Pinealosit</b> memproduksi melatonin saat gelap."
+            },
+            {
+                q: "Insulin meningkatkan ambilan glukosa otot dengan cara mentranslokasi transporter tipe...",
+                o: ["GLUT-4", "GLUT-2", "GLUT-1", "SGLT-1", "Aquaporin"],
+                a: "GLUT-4",
+                exp: "<b>GLUT-4</b> adalah transporter glucose insulin-dependent di otot dan lemak."
+            },
+            {
+                q: "Dinding anterior kavum timpani (telinga tengah) berbatasan langsung dengan pembuluh darah besar yaitu...",
+                o: ["Arteri Carotis Interna", "Vena Jugularis Interna", "Arteri Vertebralis", "Sinus Sigmoid", "Aorta"],
+                a: "Arteri Carotis Interna",
+                exp: "Dinding depan kavum timpani berbatasan dengan kanal <b>A. Carotis Interna</b>. (Bawah: V. Jugularis)."
+            },
+            {
+                q: "Hormon Prolaktin memiliki fungsi utama...",
+                o: ["Merangsang produksi ASI (Laktasi)", "Kontraksi uterus", "Ovulasi", "Libido", "Spermatogenesis"],
+                a: "Merangsang produksi ASI (Laktasi)",
+                exp: "<b>Prolaktin</b> -> Produksi susu. Oksitosin -> Pancaran susu (let-down)."
+            },
+            {
+                q: "Bagian telinga luar (Meatus Acusticus Externus) terdiri dari...",
+                o: ["1/3 luar kartilago, 2/3 dalam tulang", "Seluruhnya tulang", "Seluruhnya kartilago", "1/2 otot, 1/2 tulang", "Mukosa saja"],
+                a: "1/3 luar kartilago, 2/3 dalam tulang",
+                exp: "Liang telinga bagian luar bersifat elastis (<b>kartilago</b>), bagian dalam keras (<b>tulang temporal</b>)."
+            },
+            {
+                q: "Otot mata ekstrinsik yang diinervasi oleh N. III (Oculomotorius) adalah...",
+                o: ["Rectus Superior, Inferior, Medialis, & Obliquus Inferior", "Semua Rectus", "Hanya Obliquus", "Rectus Lateralis & Superior", "Semua otot mata"],
+                a: "Rectus Superior, Inferior, Medialis, & Obliquus Inferior",
+                exp: "N. III mengurus sebagian besar otot mata, kecuali Rectus Lateralis (VI) dan Obliquus Superior (IV)."
+            },
+            {
+                q: "Sel Alfa pankreas mensekresikan Glukagon. Mekanisme kerjanya disebut sekresi...",
+                o: ["Endokrin", "Eksokrin", "Autokrin", "Parakrin", "Holokrin"],
+                a: "Endokrin",
+                exp: "Karena glukagon masuk ke aliran darah untuk organ jauh (hepar), ini adalah sekresi <b>Endokrin</b>."
+            },
+            {
+                q: "Pengukuran suhu inti tubuh (Core Temperature) yang paling akurat secara klinis biasanya melalui...",
+                o: ["Rektal (Anus)", "Aksila (Ketiak)", "Oral (Mulut)", "Kulit dahi", "Tangan"],
+                a: "Rektal (Anus)",
+                exp: "Suhu <b>rektal</b> dianggap paling mendekati suhu inti tubuh dibandingkan oral atau aksila yang dipengaruhi lingkungan."
+            }
+        ];
+
+        // --- VARIABEL GLOBAL ---
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userAnswers = new Array(questions.length).fill(null); // Menyimpan jawaban user
+        let currentMode = '';
+
+        // --- REFERENSI DOM ---
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const flashcardScreen = document.getElementById('flashcard-screen');
+        const resultScreen = document.getElementById('result-screen');
+        
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const feedbackContainer = document.getElementById('feedback-container');
+        const feedbackText = document.getElementById('feedback-text');
+        
+        const currentQNum = document.getElementById('current-q-num');
+        const totalQNum = document.getElementById('total-q-num');
+        const scoreBadge = document.getElementById('score-badge');
+        const progressBar = document.getElementById('quiz-progress-bar');
+        
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const finishBtn = document.getElementById('finish-btn');
+
+        // Flashcard Elements
+        const fcQuestion = document.getElementById('fc-question');
+        const fcAnswer = document.getElementById('fc-answer');
+        const fcExplanation = document.getElementById('fc-explanation');
+        const fcProgress = document.getElementById('fc-progress');
+
+        // --- FUNGSI UTAMA ---
+
+        function startMode(mode) {
+            currentMode = mode;
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = new Array(questions.length).fill(null);
+            
+            // Reset UI
+            startScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            
+            if (mode === 'flashcard') {
+                flashcardScreen.classList.remove('hidden');
+                renderFlashcard();
+            } else {
+                quizScreen.classList.remove('hidden');
+                // Acak soal jika diinginkan, tapi di sini urut saja sesuai PDF
+                renderQuestion();
+            }
+        }
+
+        function backToMenu() {
+            quizScreen.classList.add('hidden');
+            flashcardScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+        }
+
+        // --- LOGIKA KUIS (LATIHAN & UJIAN) ---
+
+        function renderQuestion() {
+            const q = questions[currentQuestionIndex];
+            
+            // Update Header
+            currentQNum.innerText = currentQuestionIndex + 1;
+            totalQNum.innerText = questions.length;
+            scoreBadge.innerText = `Skor: ${score}`;
+            scoreBadge.classList.toggle('hidden', currentMode === 'exam'); // Sembunyikan skor saat ujian
+            
+            const percent = ((currentQuestionIndex + 1) / questions.length) * 100;
+            progressBar.style.width = `${percent}%`;
+
+            // Render Soal
+            questionText.innerHTML = q.q;
+            
+            // Render Opsi
+            optionsContainer.innerHTML = '';
+            feedbackContainer.classList.add('hidden');
+
+            // Clone opsi untuk diacak (opsional), saat ini urut saja atau acak sederhana
+            let opts = [...q.o];
+            if (currentMode === 'exam') {
+                // Acak opsi hanya saat ujian agar tidak hapalan posisi
+                opts.sort(() => Math.random() - 0.5);
+            }
+
+            opts.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                
+                // Cek apakah sudah dijawab sebelumnya (untuk navigasi back)
+                const existingAns = userAnswers[currentQuestionIndex];
+                if (existingAns) {
+                    btn.classList.add('disabled');
+                    btn.disabled = true;
+                    
+                    if (currentMode === 'practice') {
+                        if (opt === q.a) btn.classList.add('correct');
+                        if (opt === existingAns && opt !== q.a) btn.classList.add('incorrect');
+                    } else {
+                        // Exam mode: tandai yang dipilih saja (netral)
+                        if (opt === existingAns) btn.style.background = 'rgba(255,255,255,0.4)';
+                    }
+                } else {
+                    btn.onclick = () => handleAnswer(opt, btn, q);
+                }
+
+                optionsContainer.appendChild(btn);
+            });
+
+            // Tampilkan feedback jika sudah dijawab di mode latihan
+            if (currentMode === 'practice' && userAnswers[currentQuestionIndex]) {
+                showFeedback(q);
+            }
+
+            // Update Navigasi Buttons
+            prevBtn.disabled = currentQuestionIndex === 0;
+            if (currentQuestionIndex === questions.length - 1) {
+                nextBtn.classList.add('hidden');
+                finishBtn.classList.remove('hidden');
+            } else {
+                nextBtn.classList.remove('hidden');
+                finishBtn.classList.add('hidden');
+            }
+        }
+
+        function handleAnswer(selectedOpt, btnElem, questionObj) {
+            // Simpan jawaban
+            userAnswers[currentQuestionIndex] = selectedOpt;
+            
+            // Disable semua tombol
+            const allBtns = optionsContainer.querySelectorAll('.option-btn');
+            allBtns.forEach(b => {
+                b.classList.add('disabled');
+                b.disabled = true;
+            });
+
+            const isCorrect = selectedOpt === questionObj.a;
+            
+            if (isCorrect) {
+                score++;
+                if(currentMode === 'practice') btnElem.classList.add('correct');
+            } else {
+                if(currentMode === 'practice') {
+                    btnElem.classList.add('incorrect');
+                    // Cari jawaban benar untuk di-highlight
+                    allBtns.forEach(b => {
+                        if (b.innerText === questionObj.a) b.classList.add('correct');
+                    });
+                }
+            }
+
+            // Update Skor Realtime (Practice)
+            scoreBadge.innerText = `Skor: ${score}`;
+
+            // Mode Logic
+            if (currentMode === 'practice') {
+                showFeedback(questionObj);
+            } else {
+                // Exam: highlight pilihan user (netral)
+                btnElem.style.background = 'rgba(255,255,255,0.4)';
+            }
+        }
+
+        function showFeedback(qObj) {
+            feedbackText.innerHTML = qObj.exp;
+            feedbackContainer.classList.remove('hidden');
+        }
+
+        function navigateQuestion(direction) {
+            currentQuestionIndex += direction;
+            renderQuestion();
+        }
+
+        function finishQuiz() {
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            
+            const finalEl = document.getElementById('final-score');
+            const correctEl = document.getElementById('result-correct');
+            const incorrectEl = document.getElementById('result-incorrect');
+            
+            // Animasi angka
+            let currentVal = 0;
+            const interval = setInterval(() => {
+                currentVal++;
+                finalEl.innerText = currentVal;
+                if (currentVal >= score) clearInterval(interval);
+            }, 20);
+
+            correctEl.innerText = score;
+            incorrectEl.innerText = questions.length - score;
+        }
+
+        // --- LOGIKA FLASHCARD ---
+
+        function renderFlashcard() {
+            const q = questions[currentQuestionIndex];
+            document.querySelector('.flashcard').classList.remove('flipped');
+            
+            fcProgress.innerText = `${currentQuestionIndex + 1} / ${questions.length}`;
+            
+            setTimeout(() => {
+                fcQuestion.innerHTML = q.q;
+                fcAnswer.innerText = q.a;
+                fcExplanation.innerHTML = q.exp;
+            }, 200); // Delay sedikit agar transisi halus saat flip balik
+        }
+
+        function navFlashcard(dir) {
+            const newIndex = currentQuestionIndex + dir;
+            if (newIndex >= 0 && newIndex < questions.length) {
+                currentQuestionIndex = newIndex;
+                renderFlashcard();
+            }
+        }
+
+    </script>
+</body>
+</html>

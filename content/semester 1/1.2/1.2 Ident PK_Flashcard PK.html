@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcard Patologi Klinik</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #81C784;
+            --background-start: #a8e063;
+            --background-end: #56ab2f;
+            --card-bg: rgba(255, 255, 255, 0.15);
+            --text-color: #ffffff;
+            --border-color: rgba(255, 255, 255, 0.2);
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--background-start), var(--background-end));
+            color: var(--text-color);
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px var(--shadow-color);
+        }
+
+        .filters {
+            margin-bottom: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--secondary-color);
+            border-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .flashcard-container {
+            perspective: 1000px;
+            width: 100%;
+            max-width: 500px;
+            height: 300px;
+            margin: 0 auto;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            cursor: pointer;
+        }
+        
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            border-radius: 15px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px 0 var(--shadow-color);
+        }
+        
+        .flashcard-front {
+            /* No specific styles needed */
+        }
+
+        .flashcard-back {
+            transform: rotateY(180deg);
+        }
+        
+        .card-content {
+            font-size: 1.2rem;
+            font-weight: 400;
+        }
+
+        .card-category {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            font-size: 0.8rem;
+            font-weight: 300;
+            opacity: 0.8;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 2rem;
+            width: 100%;
+        }
+        
+        .nav-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 3rem;
+            cursor: pointer;
+            padding: 0 20px;
+            transition: transform 0.2s;
+        }
+
+        .nav-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        #card-counter {
+            font-size: 1.2rem;
+            margin: 0 20px;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            .flashcard-container {
+                height: 350px;
+            }
+            .card-content {
+                font-size: 1rem;
+            }
+            .filter-btn {
+                padding: 8px 15px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Flashcard Patologi Klinik</h1>
+        <div class="filters" id="filters">
+            <!-- Filter buttons will be generated here -->
+        </div>
+
+        <div class="flashcard-container">
+            <div class="flashcard" id="flashcard">
+                <div class="flashcard-face flashcard-front">
+                    <div class="card-category" id="front-category">Kategori</div>
+                    <div class="card-content" id="front-content">Konten Depan</div>
+                </div>
+                <div class="flashcard-face flashcard-back">
+                     <div class="card-category" id="back-category">Kategori</div>
+                    <div class="card-content" id="back-content">Konten Belakang</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prev-btn">&laquo;</button>
+            <span id="card-counter">1 / 100</span>
+            <button class="nav-btn" id="next-btn">&raquo;</button>
+        </div>
+         <div class="navigation" style="margin-top: 1rem;">
+            <button class="filter-btn" id="shuffle-btn">Acak Kartu</button>
+        </div>
+    </div>
+
+    <script>
+        const flashcardsData = [
+            // Kategori: Istilah Umum
+            { category: 'Istilah', front: 'Hemoglobin (Hb)', back: 'Protein dalam sel darah merah yang membawa oksigen dari paru-paru ke seluruh tubuh.' },
+            { category: 'Istilah', front: 'Hematokrit (Ht)', back: 'Persentase volume sel darah merah terhadap volume total darah, dinyatakan dalam %.' },
+            { category: 'Istilah', front: 'Leukosit', back: 'Sel darah putih, bagian dari sistem kekebalan tubuh yang melawan infeksi.' },
+            { category: 'Istilah', front: 'Eritrosit', back: 'Sel darah merah, berfungsi untuk transportasi oksigen.' },
+            { category: 'Istilah', front: 'Laju Endap Darah (LED)', back: 'Kecepatan sel darah merah mengendap dalam tabung vertikal selama satu jam, indikator inflamasi.' },
+            { category: 'Istilah', front: 'MCV (Mean Corpuscular Volume)', back: 'Volume eritrosit rata-rata, menunjukkan ukuran sel darah merah (normositik, mikrositik, makrositik).' },
+            { category: 'Istilah', front: 'MCH (Mean Corpuscular Hemoglobin)', back: 'Berat hemoglobin rata-rata per eritrosit.' },
+            { category: 'Istilah', front: 'MCHC (Mean Corpuscular Hemoglobin Concentration)', back: 'Konsentrasi hemoglobin rata-rata per unit volume eritrosit (normokromik, hipokromik).' },
+            { category: 'Istilah', front: 'Differential Count', back: 'Hitung jenis leukosit untuk mengetahui persentase tiap jenis sel darah putih.' },
+            { category: 'Istilah', front: 'Hemostasis', back: 'Proses penghentian perdarahan yang melibatkan vaskuler, trombosit, dan faktor koagulasi.' },
+            { category: 'Istilah', front: 'Aglutinasi', back: 'Penggumpalan sel (misalnya eritrosit) akibat reaksi antigen-antibodi.' },
+            { category: 'Istilah', front: 'Poliaglutinasi', back: 'Aglutinasi eritrosit oleh semua serum ABO dewasa normal. Dapat hilang dengan penambahan NaCl fisiologis.' },
+            { category: 'Istilah', front: 'Koagulopati', back: 'Kelainan pada sistem pembekuan darah yang menyebabkan perdarahan atau trombosis berlebihan.' },
+            { category: 'Istilah', front: 'Petechiae', back: 'Bintik-bintik merah kecil pada kulit akibat perdarahan kapiler di bawah kulit.' },
+            
+            // Kategori: Jenis Pemeriksaan
+            { category: 'Jenis Pemeriksaan', front: 'Pemeriksaan Hb Metode Sahli', back: 'Metode kolorimetri visual untuk mengukur Hb dengan mengubahnya menjadi asam hematin menggunakan HCl 0,1 N.' },
+            { category: 'Jenis Pemeriksaan', front: 'Hitung Jumlah Leukosit (Metode Turk)', back: 'Menghitung jumlah sel leukosit per mm³ darah menggunakan bilik hitung dan larutan Turk yang melisiskan eritrosit.' },
+            { category: 'Jenis Pemeriksaan', front: 'LED Metode Westergreen', back: 'Mengukur laju endap darah dalam pipet Westergreen menggunakan darah sitrat.' },
+            { category: 'Jenis Pemeriksaan', front: 'Pemeriksaan Golongan Darah (Slide Test)', back: 'Menentukan golongan darah ABO dan Rhesus berdasarkan reaksi aglutinasi antara antigen pada eritrosit dengan serum anti (antibodi).' },
+            { category: 'Jenis Pemeriksaan', front: 'Hitung Jumlah Eritrosit (Metode Hayem)', back: 'Menghitung jumlah sel eritrosit per mm³ darah menggunakan bilik hitung dan larutan Hayem sebagai pengencer.' },
+            { category: 'Jenis Pemeriksaan', front: 'Pemeriksaan Hematokrit (Metode Mikro)', back: 'Mengukur nilai Ht menggunakan tabung kapiler yang disentrifugasi dengan kecepatan tinggi.' },
+            { category: 'Jenis Pemeriksaan', front: 'Uji Rumple Leed (Tourniquet Test)', back: 'Uji penyaring untuk mendeteksi kelainan vaskuler dan trombosit dengan membendung vena dan mengamati munculnya petechiae.' },
+            { category: 'Jenis Pemeriksaan', front: 'Waktu Perdarahan (Bleeding Time) Metode Duke', back: 'Mengukur lamanya waktu perdarahan setelah tusukan standar pada cuping telinga.' },
+            { category: 'Jenis Pemeriksaan', front: 'Waktu Pembekuan (Clotting Time) Metode Lee & White', back: 'Mengukur waktu yang diperlukan darah vena untuk membeku dalam tabung reaksi.' },
+            
+            // Kategori: Alat & Bahan
+            { category: 'Alat & Bahan', front: 'Hemometer Sahli', back: 'Satu set alat terdiri dari tabung pengencer, tabung standar warna, pipet Hb, pipet HCl, dan batang pengaduk.' },
+            { category: 'Alat & Bahan', front: 'Pipet Leukosit (Thoma)', back: 'Pipet dengan bola putih di dalamnya, memiliki skala 0,5, 1, dan 11 untuk pengenceran darah.' },
+            { category: 'Alat & Bahan', front: 'Pipet Eritrosit (Thoma)', back: 'Pipet dengan bola merah di dalamnya, memiliki skala 0,5, 1, dan 101 untuk pengenceran darah.' },
+            { category: 'Alat & Bahan', front: 'Bilik Hitung (Improved Neubauer)', back: 'Kaca objek khusus dengan garis-garis berukuran presisi untuk menghitung sel secara mikroskopis.' },
+            { category: 'Alat & Bahan', front: 'Tabung Westergreen', back: 'Pipet panjang dengan skala 0-200 mm yang digunakan untuk pemeriksaan LED.' },
+            { category: 'Alat & Bahan', front: 'Sentrifuge Mikrohematokrit', back: 'Alat pemutar berkecepatan tinggi (sekitar 16.000 rpm) untuk memadatkan eritrosit dalam tabung kapiler.' },
+            { category: 'Alat & Bahan', front: 'Tensimeter & Stetoskop', back: 'Digunakan dalam pemeriksaan Rumple Leed untuk mengukur dan mempertahankan tekanan bendungan.' },
+            { category: 'Alat & Bahan', front: 'Lancet', back: 'Jarum steril untuk membuat tusukan pada kulit (misalnya pada ujung jari atau cuping telinga).' },
+            
+            // Kategori: Reagen
+            { category: 'Reagen', front: 'HCl 0,1 N', back: 'Asam klorida, digunakan dalam metode Sahli untuk mengubah hemoglobin menjadi asam hematin yang berwarna coklat.' },
+            { category: 'Reagen', front: 'Larutan Turk', back: 'Komposisi: Gentian Violet 1%, Asam Asetat Glasial, Aquadest. Melisiskan eritrosit dan mewarnai inti leukosit.' },
+            { category: 'Reagen', front: 'Larutan Hayem', back: 'Komposisi: Na₂SO₄, NaCl, HgCl₂. Larutan isotonis yang digunakan sebagai pengencer untuk hitung eritrosit.' },
+            { category: 'Reagen', front: 'Natrium Sitrat 3,8%', back: 'Antikoagulan yang digunakan untuk pemeriksaan LED metode Westergreen dengan perbandingan 1 bagian sitrat : 4 bagian darah.' },
+            { category: 'Reagen', front: 'Serum Anti-A', back: 'Mengandung antibodi anti-A (biasanya berwarna biru), akan mengaglutinasi eritrosit dengan antigen A.' },
+            { category: 'Reagen', front: 'Serum Anti-B', back: 'Mengandung antibodi anti-B (biasanya berwarna kuning), akan mengaglutinasi eritrosit dengan antigen B.' },
+            { category: 'Reagen', front: 'Serum Anti-AB', back: 'Mengandung antibodi anti-A dan anti-B (tidak berwarna), sebagai kontrol.' },
+            { category: 'Reagen', front: 'Serum Anti-D', back: 'Mengandung antibodi anti-D, untuk menentukan Rhesus positif (jika aglutinasi) atau negatif (jika tidak aglutinasi).' },
+
+            // Kategori: Prosedur
+            { category: 'Prosedur', front: 'Prinsip Pemeriksaan Hb Sahli', back: 'Hemoglobin diubah oleh HCl 0,1 N menjadi asam hematin, kemudian diencerkan dengan aquadest hingga warnanya sama dengan standar.' },
+            { category: 'Prosedur', front: 'Perhitungan Jumlah Leukosit', back: 'Jumlah sel x 1/volume bilik x faktor pengenceran. Contoh: (Jumlah sel di 4 kotak besar / 4) x 10 x pengenceran.' },
+            { category: 'Prosedur', front: 'Perhitungan Jumlah Eritrosit', back: 'Jumlah sel x 1/volume bilik x faktor pengenceran. Contoh: (Jumlah sel di 80 kotak kecil / 80) x 400 x 10 x pengenceran.' },
+            { category: 'Prosedur', front: 'Arah Hitung Jenis Leukosit', back: 'Dilakukan pada zona hitung (zone V/even zone) sediaan apus darah tepi dengan pola zig-zag atau berkelok (battlement).' },
+            { category: 'Prosedur', front: 'Interpretasi Golongan Darah A', back: 'Aglutinasi pada Anti-A, tidak ada aglutinasi pada Anti-B.' },
+            { category: 'Prosedur', front: 'Interpretasi Golongan Darah B', back: 'Tidak ada aglutinasi pada Anti-A, aglutinasi pada Anti-B.' },
+            { category: 'Prosedur', front: 'Interpretasi Golongan Darah AB', back: 'Aglutinasi pada Anti-A dan Anti-B.' },
+            { category: 'Prosedur', front: 'Interpretasi Golongan Darah O', back: 'Tidak ada aglutinasi pada Anti-A dan Anti-B.' },
+            { category: 'Prosedur', front: 'Tekanan Uji Rumple Leed', back: 'Bendungan dipertahankan pada tekanan pertengahan antara sistol dan diastol (maksimal 100 mmHg) selama 10 menit.' },
+            { category: 'Prosedur', front: 'Penilaian Uji Rumple Leed', back: 'Positif jika timbul ≥ 10 petechiae pada area pengamatan (lingkaran diameter 5 cm di lengan bawah).' },
+            { category: 'Prosedur', front: 'Perhitungan MCV', back: '(Hematokrit (%) / Jumlah Eritrosit (juta)) x 10' },
+            { category: 'Prosedur', front: 'Perhitungan MCH', back: '(Hemoglobin (gr%) / Jumlah Eritrosit (juta)) x 10' },
+            { category: 'Prosedur', front: 'Perhitungan MCHC', back: '(Hemoglobin (gr%) / Hematokrit (%)) x 100' },
+            
+            // Kategori: Nilai Rujukan
+            { category: 'Nilai Rujukan', front: 'Hb Dewasa Laki-laki', back: '12,5 - 18,0 gr%' },
+            { category: 'Nilai Rujukan', front: 'Hb Dewasa Wanita', back: '11,5 - 16,5 gr%' },
+            { category: 'Nilai Rujukan', front: 'Hb Bayi < 3 bulan', back: '13,5 - 19,5 gr%' },
+            { category: 'Nilai Rujukan', front: 'Jumlah Leukosit Dewasa', back: '4.000 - 11.000 /mm³' },
+            { category: 'Nilai Rujukan', front: 'Jumlah Leukosit Bayi Baru Lahir', back: '9.000 - 30.000 /mm³ (sumber lain: 0-25 ribu)' },
+            { category: 'Nilai Rujukan', front: 'Jumlah Eritrosit Dewasa Laki-laki', back: '4,5 - 6,5 juta/mm³' },
+            { category: 'Nilai Rujukan', front: 'Jumlah Eritrosit Dewasa Wanita', back: '3,9 - 5,6 juta/mm³' },
+            { category: 'Nilai Rujukan', front: 'Hematokrit (Ht) Laki-laki', back: '47 ± 7 % (40-54%)' },
+            { category: 'Nilai Rujukan', front: 'Hematokrit (Ht) Wanita', back: '42 ± 5 % (37-47%)' },
+            { category: 'Nilai Rujukan', front: 'LED Westergreen Pria', back: '0 - 15 mm/jam' },
+            { category: 'Nilai Rujukan', front: 'LED Westergreen Wanita', back: '0 - 20 mm/jam' },
+            { category: 'Nilai Rujukan', front: 'Neutrofil Segmen', back: '50 - 70 %' },
+            { category: 'Nilai Rujukan', front: 'Neutrofil Stab/Batang', back: '2 - 5 %' },
+            { category: 'Nilai Rujukan', front: 'Limfosit', back: '20 - 40 %' },
+            { category: 'Nilai Rujukan', front: 'Monosit', back: '1 - 6 %' },
+            { category: 'Nilai Rujukan', front: 'Eosinofil', back: '1 - 4 %' },
+            { category: 'Nilai Rujukan', front: 'Basofil', back: '0 - 1 %' },
+            { category: 'Nilai Rujukan', front: 'MCV (Volume Eritrosit Rata-rata)', back: 'Laki-laki: 73.4-91.0 fL, Perempuan: 71.8-92.0 fL' },
+            { category: 'Nilai Rujukan', front: 'MCH (Hb Eritrosit Rata-rata)', back: 'Laki-laki: 24.2-31.2 pg, Perempuan: 22.6-31.0 pg' },
+            { category: 'Nilai Rujukan', front: 'MCHC (KHER)', back: 'Laki-laki: 31.9-36.0 %, Perempuan: 30.8-35.2 %' },
+            { category: 'Nilai Rujukan', front: 'Waktu Perdarahan (Duke)', back: '1 - 3 menit' },
+            { category: 'Nilai Rujukan', front: 'Waktu Pembekuan (Lee & White)', back: '9 - 15 menit' },
+            
+            // Tambahan untuk memenuhi 100+
+            { category: 'Istilah', front: 'Antikoagulan', back: 'Zat yang mencegah pembekuan darah. Contoh: EDTA, Natrium Sitrat, Heparin.' },
+            { category: 'Istilah', front: 'EDTA (Ethylenediaminetetraacetic acid)', back: 'Antikoagulan yang paling umum digunakan untuk pemeriksaan hematologi rutin karena menjaga morfologi sel dengan baik.' },
+            { category: 'Istilah', front: 'Anemia', back: 'Kondisi di mana jumlah sel darah merah atau konsentrasi hemoglobin di dalamnya lebih rendah dari normal.' },
+            { category: 'Istilah', front: 'Leukositosis', back: 'Peningkatan jumlah leukosit di atas nilai normal, seringkali menandakan infeksi.' },
+            { category: 'Istilah', front: 'Leukopenia', back: 'Penurunan jumlah leukosit di bawah nilai normal.' },
+            { category: 'Istilah', front: 'Trombositopenia', back: 'Penurunan jumlah trombosit, dapat meningkatkan risiko perdarahan.' },
+            { category: 'Istilah', front: 'Trombositosis', back: 'Peningkatan jumlah trombosit, dapat meningkatkan risiko pembekuan darah.' },
+            { category: 'Istilah', front: 'Mikrositik', back: 'Ukuran eritrosit lebih kecil dari normal (MCV rendah).' },
+            { category: 'Istilah', front: 'Makrositik', back: 'Ukuran eritrosit lebih besar dari normal (MCV tinggi).' },
+            { category: 'Istilah', front: 'Hipokromik', back: 'Eritrosit tampak lebih pucat karena konsentrasi hemoglobin yang rendah (MCHC rendah).' },
+            { category: 'Jenis Pemeriksaan', front: 'Pemeriksaan Darah Rutin', back: 'Pemeriksaan hematologi dasar yang mencakup kadar Hb, Ht, jumlah eritrosit, indeks eritrosit, jumlah leukosit, dan hitung jenis.' },
+            { category: 'Alat & Bahan', front: 'Kaca Objek (Object Glass)', back: 'Kaca tipis datar yang digunakan untuk meletakkan spesimen yang akan diamati di bawah mikroskop.' },
+            { category: 'Alat & Bahan', front: 'Kaca Penutup (Cover Glass)', back: 'Kaca tipis persegi yang digunakan untuk menutupi spesimen pada kaca objek.' },
+            { category: 'Prosedur', front: 'Pengenceran untuk Hitung Leukosit', back: 'Umumnya 10x (darah sampai tanda 1) atau 20x (darah sampai tanda 0,5).' },
+            { category: 'Prosedur', front: 'Pengenceran untuk Hitung Eritrosit', back: 'Umumnya 100x (darah sampai tanda 1) atau 200x (darah sampai tanda 0,5).' },
+            { category: 'Prosedur', front: 'Waktu Inkubasi Hb Sahli', back: 'Campuran darah dan HCl didiamkan selama 1-3 menit untuk pembentukan asam hematin yang sempurna.' },
+            { category: 'Prosedur', front: 'Cara Mengisi Bilik Hitung', back: 'Cairan dari pipet diteteskan ke celah antara bilik hitung dan kaca penutup, biarkan terisi oleh daya kapilaritas.' },
+            { category: 'Prosedur', front: 'Pentingnya Membuang 3 Tetes Pertama', back: 'Untuk membuang cairan pengencer murni yang berada di ujung pipet dan tidak tercampur dengan darah.' },
+            { category: 'Nilai Rujukan', front: 'Trombosit', back: '150.000 - 450.000 /mm³' },
+            { category: 'Istilah', front: 'Zona Hitung Sediaan Apus', back: 'Area di mana eritrosit tersebar merata, sedikit tumpang tindih, dan memiliki area pucat di tengah (central pallor).' },
+            { category: 'Kesalahan Pemeriksaan', front: 'Kesalahan Umum Hitung Sel Manual', back: 'Pengambilan sampel tidak tepat, pengenceran salah, pengisian bilik hitung berlebih/kurang, kesalahan identifikasi sel.' },
+            { category: 'Kesalahan Pemeriksaan', front: 'Sumber Kesalahan LED', back: 'Tabung miring, gelembung udara, suhu ruangan tinggi, getaran, sampel tidak segar.' },
+            { category: 'Kesalahan Pemeriksaan', front: 'Positif Palsu Rumple Leed', back: 'Dapat disebabkan oleh bekas gigitan nyamuk atau noda lain pada kulit.' },
+            { category: 'Istilah', front: 'Antigen', back: 'Substansi (biasanya protein) pada permukaan sel yang dapat merangsang respons imun. Contoh: Antigen A dan B pada eritrosit.' },
+            { category: 'Istilah', front: 'Antibodi', back: 'Protein dalam plasma yang bereaksi secara spesifik dengan antigen. Contoh: Antibodi Anti-A dan Anti-B.' },
+            { category: 'Prosedur', front: 'Aturan Landsteiner', back: 'Jika suatu antigen (aglutinogen) terdapat pada eritrosit seseorang, maka aglutinin yang berlawanan tidak terdapat dalam plasmanya.' },
+            { category: 'Istilah', front: 'Rhesus (Rh) Factor', back: 'Antigen protein yang ditemukan pada permukaan sel darah merah. Jika Anda memilikinya, Anda Rh-positif. Jika tidak, Anda Rh-negatif.' },
+            { category: 'Alat & Bahan', front: 'Kertas Saring', back: 'Digunakan dalam pemeriksaan Bleeding Time untuk menyerap tetesan darah setiap 30 detik tanpa menyentuh luka.' },
+            { category: 'Prosedur', front: 'Perawatan Pipet Thoma', back: 'Segera cuci dengan aquadest, bilas dengan aseton, dan keringkan setelah digunakan untuk mencegah sumbatan.' },
+            { category: 'Prosedur', front: 'Perawatan Bilik Hitung', back: 'Bersihkan dengan deterjen ringan dan air, bilas dengan alkohol, dan keringkan dengan kain halus. Jangan digosok kasar.' }
+        ];
+
+        let currentCards = [...flashcardsData];
+        let currentIndex = 0;
+
+        const flashcard = document.getElementById('flashcard');
+        const frontContent = document.getElementById('front-content');
+        const backContent = document.getElementById('back-content');
+        const frontCategory = document.getElementById('front-category');
+        const backCategory = document.getElementById('back-category');
+        const cardCounter = document.getElementById('card-counter');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const shuffleBtn = document.getElementById('shuffle-btn');
+        const filtersContainer = document.getElementById('filters');
+        
+        function updateCard() {
+            if (currentCards.length === 0) {
+                frontContent.textContent = 'Tidak ada kartu untuk kategori ini.';
+                backContent.textContent = 'Silakan pilih kategori lain.';
+                frontCategory.textContent = 'Kosong';
+                backCategory.textContent = 'Kosong';
+                cardCounter.textContent = '0 / 0';
+                return;
+            }
+
+            const cardData = currentCards[currentIndex];
+            frontCategory.textContent = cardData.category;
+            backCategory.textContent = cardData.category;
+            frontContent.innerHTML = cardData.front; // Use innerHTML to render line breaks if any
+            backContent.innerHTML = cardData.back;
+            cardCounter.textContent = `${currentIndex + 1} / ${currentCards.length}`;
+            flashcard.classList.remove('flipped');
+        }
+
+        function createFilters() {
+            const categories = ['Semua', ...new Set(flashcardsData.map(card => card.category))];
+            categories.forEach(category => {
+                const button = document.createElement('button');
+                button.classList.add('filter-btn');
+                button.textContent = category;
+                if (category === 'Semua') {
+                    button.classList.add('active');
+                }
+                button.addEventListener('click', () => {
+                    document.querySelector('.filter-btn.active').classList.remove('active');
+                    button.classList.add('active');
+                    filterCards(category);
+                });
+                filtersContainer.appendChild(button);
+            });
+        }
+
+        function filterCards(category) {
+            if (category === 'Semua') {
+                currentCards = [...flashcardsData];
+            } else {
+                currentCards = flashcardsData.filter(card => card.category === category);
+            }
+            currentIndex = 0;
+            updateCard();
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        flashcard.addEventListener('click', () => {
+            flashcard.classList.toggle('flipped');
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentCards.length > 0) {
+              currentIndex = (currentIndex + 1) % currentCards.length;
+              updateCard();
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentCards.length > 0) {
+              currentIndex = (currentIndex - 1 + currentCards.length) % currentCards.length;
+              updateCard();
+            }
+        });
+        
+        shuffleBtn.addEventListener('click', () => {
+            shuffleArray(currentCards);
+            currentIndex = 0;
+            updateCard();
+        });
+
+        // Initialize
+        createFilters();
+        updateCard();
+
+    </script>
+</body>
+</html>

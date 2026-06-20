@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Vaskularisasi SSP - 20 Soal</title>
+    <!-- Impor Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Impor Google Font (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* CSS Kustom - Tema Merah Anggur & Abu-abu (Baru) */
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Palet warna abu-abu gelap/merah */
+            background: linear-gradient(135deg, #4b5358 0%, #212529 100%);
+            color: #ffffff;
+            user-select: none;
+            padding: 1rem;
+            transition: all 0.2s;
+            overflow-y: auto;
+        }
+
+        /* Kontainer utama bergaya "glass" */
+        .quiz-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
+            padding: 1.5rem 2rem;
+            width: 90%;
+            max-width: 800px;
+        }
+
+        /* Styling Teks Umum */
+        h1, .text-3xl, .text-4xl {
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        p, .text-lg, span { color: #f1faee; }
+        
+        #progress-text, #score-text, #final-score-text, #flashcard-progress {
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        /* Tombol aksi (Mulai/Ulangi/Menu) - Aksen Merah Terang */
+        .action-btn {
+            font-family: 'Inter', sans-serif;
+            text-transform: uppercase;
+            background-color: #d90429; /* Aksen Merah */
+            border: none;
+            padding: 0.9rem 1.5rem;
+            box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            color: #ffffff; /* Teks putih */
+            font-weight: 700;
+            font-size: 1rem;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.75rem;
+        }
+        .action-btn:hover {
+            background-color: #ef233c; /* Hover lebih cerah */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.15);
+        }
+        .action-btn:active {
+            box-shadow: none;
+            transform: translateY(0px);
+        }
+        .action-btn:disabled {
+            background-color: #888;
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* Tombol kembali ke menu - Merah Tua */
+        .back-to-menu-btn {
+            background-color: #a41623; /* Merah Tua */
+            color: #ffffff;
+            font-size: 0.9rem;
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+        }
+        .back-to-menu-btn:hover { background-color: #ba2732; }
+
+        /* Tombol Opsi Jawaban (Frosted Glass) */
+        .option-btn {
+            font-family: 'Inter', sans-serif;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: block;
+            width: 100%;
+            margin-bottom: 1rem;
+            text-align: left;
+            padding: 1.25rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-radius: 0.75rem;
+        }
+        .option-btn:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Style untuk jawaban yg dipilih di Mode Ujian */
+        .option-btn.selected {
+            background: rgba(217, 4, 41, 0.6); /* Merah transparan */
+            border-color: #d90429;
+        }
+        
+        /* Status Jawaban (Solid - Hijau/Merah) */
+        .option-btn.correct {
+            background-color: #2d6a4f; /* Hijau Tua */
+            color: #ffffff;
+            border: none;
+        }
+        .option-btn.incorrect {
+            background-color: #9b2226; /* Merah Marun */
+            color: #ffffff;
+            border: none;
+        }
+        .option-btn.disabled { pointer-events: none; }
+        
+        /* Teks Pertanyaan */
+        #question-text {
+            font-size: 1.125rem;
+            line-height: 1.75;
+            min-height: 100px;
+            margin-bottom: 2rem;
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        /* --- Style untuk Flashcard & Penjelasan Latihan --- */
+        #flashcard {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-height: 300px;
+            padding: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.1);
+            border-radius: 1rem;
+        }
+        
+        #flashcard-front, #flashcard-back {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #ffffff;
+        }
+        
+        .card-label {
+            font-size: 0.75rem;
+            color: #f1f1f1;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        
+        /* Kontainer untuk penjelasan */
+        #flashcard-answer-list, #explanation-container, .review-explanations {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .flashcard-option-detailed {
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .flashcard-option-detailed strong {
+            display: block;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 0.25rem;
+        }
+        .flashcard-option-detailed span {
+            font-size: 0.85rem;
+            color: #f1faee;
+            line-height: 1.5;
+        }
+        .flashcard-option-detailed.correct {
+            background: rgba(45, 106, 79, 0.8); /* Hijau transparan */
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        .flashcard-option-detailed.correct span { color: #ffffff; }
+        .flashcard-option-detailed.incorrect {
+            background: rgba(155, 34, 38, 0.7); /* Merah Marun transparan */
+            border-color: rgba(255, 255, 255, 0.2);
+            opacity: 0.9;
+        }
+        
+        /* Style untuk Layar Review */
+        .review-card {
+            background: rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .review-question {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .review-options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        @media (min-width: 768px) {
+            .review-options-grid { grid-template-columns: 1fr 1fr; }
+        }
+        .review-option {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            border: 1px solid transparent;
+        }
+        .review-option.neutral {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+            opacity: 0.7;
+        }
+        .review-option.correct {
+            background: #2d6a4f; /* Hijau Tua */
+            border-color: #2d6a4f;
+            font-weight: 600;
+        }
+        .review-option.chosen-wrong {
+            background: #9b2226; /* Merah Marun */
+            border-color: #9b2226;
+            font-weight: 600;
+            text-decoration: line-through;
+        }
+        .review-explanations { margin-top: 1.5rem; }
+        
+        .hidden { display: none; }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+
+    <!-- 1. Layar Mulai (Pilih Mode) -->
+    <div id="start-screen" class="quiz-container text-center">
+        <h1 class="text-3xl md:text-4xl mb-6">KUIS VASKULARISASI SSP</h1>
+        <p class="mb-10 text-lg">Materi 4 - 20 SOAL</p>
+        <div class="flex flex-col">
+            <button id="start-flashcard-btn" class="action-btn">Mode Flashcard</button>
+            <button id="start-practice-btn" class="action-btn">Mode Latihan</button>
+            <button id="start-exam-btn" class="action-btn">Mode Ujian</button>
+        </div>
+    </div>
+
+    <!-- 2. Layar Kuis (Latihan & Ujian) (Tersembunyi) -->
+    <div id="quiz-screen" class="quiz-container hidden w-full max-w-4xl">
+        <!-- Info Progress & Skor -->
+        <div class="flex justify-between items-center mb-6">
+            <span id="progress-text">Soal 1 / 20</span>
+            <span id="score-text">Skor: 0</span>
+        </div>
+        
+        <!-- Area Soal -->
+        <div id="question-text">
+            Memuat pertanyaan...
+        </div>
+
+        <!-- Area Opsi Jawaban -->
+        <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Opsi akan ditambahkan oleh JavaScript -->
+        </div>
+        
+        <!-- Area Penjelasan (Hanya Mode Latihan) -->
+        <div id="explanation-container" class="mt-6">
+            <!-- Penjelasan akan muncul di sini -->
+        </div>
+        
+        <!-- Tombol Lanjut (Hanya Mode Latihan) -->
+        <div class="text-center mt-8">
+            <button id="next-question-btn" class="action-btn text-lg hidden">
+                Lanjut
+            </button>
+            <button class="back-to-menu-btn action-btn">Kembali ke Menu</button>
+        </div>
+    </div>
+    
+    <!-- 3. Layar Flashcard (Tersembunyi) -->
+    <div id="flashcard-screen" class="quiz-container hidden w-full max-w-2xl">
+        <!-- Progress Flashcard -->
+        <span id="flashcard-progress" class="block text-center mb-6">1 / 20</span>
+        
+        <!-- Flashcard -->
+        <div id="flashcard">
+            <div id="flashcard-front">
+                <span class="card-label">Istilah / Pertanyaan</span>
+                <p>Memuat...</p>
+            </div>
+            <div id="flashcard-back" class="hidden">
+                <span class="card-label">Penjelasan</span>
+                <div id="flashcard-answer-list">
+                    <!-- Konten diisi secara sinkron -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navigasi Flashcard -->
+        <div class="flex justify-between mt-6">
+            <button id="flashcard-prev" class="action-btn text-lg">&lt; Prev</button>
+            <button id="flashcard-flip" class="action-btn text-lg">Balik</button>
+            <button id="flashcard-next" class="action-btn text-lg">Next &gt;</button>
+        </div>
+        
+        <div class="text-center mt-6">
+            <button class="back-to-menu-btn action-btn">Kembali ke Menu</button>
+        </div>
+    </div>
+
+
+    <!-- 4. Layar Hasil (Tersembunyi) -->
+    <div id="result-screen" class="quiz-container text-center hidden">
+        <h1 class="text-3xl mb-6">KUIS SELESAI!</h1>
+        <p id="final-score-text" class="text-4xl my-10">SKOR ANDA: 0 / 20</p>
+        <!-- Tombol Review BARU -->
+        <div class="flex flex-col md:flex-row justify-center gap-4">
+            <button id="review-button" class="action-btn text-xl hidden">Review Kuis</button>
+            <button id="restart-button" class="action-btn text-xl">Ulangi Kuis</button>
+        </div>
+        <button class="back-to-menu-btn action-btn mt-6">Kembali ke Menu</button>
+    </div>
+    
+    <!-- 5. Layar Review BARU (Tersembunyi) -->
+    <div id="review-screen" class="quiz-container hidden w-full max-w-4xl">
+        <h1 class="text-3xl mb-6 text-center">Review Kuis Anda</h1>
+        
+        <!-- Kontainer untuk semua soal review -->
+        <div id="review-container" class="flex flex-col gap-6 max-h-[70vh] overflow-y-auto pr-2">
+            <!-- Soal review akan di-generate di sini -->
+        </div>
+        
+        <div class="text-center mt-8 flex flex-col md:flex-row justify-center gap-4">
+             <button id="restart-from-review" class="action-btn text-xl">Ulangi Kuis</button>
+             <button class="back-to-menu-btn action-btn">Kembali ke Menu</button>
+        </div>
+    </div>
+
+    <script>
+        // --- Data Soal (BAGIAN 4: Vaskularisasi Pars Centralis) ---
+        const questions = [
+            { // 1
+                question: "Dua sistem arteri utama yang mendarahi otak adalah...",
+                options: ["A. Carotis Interna dan A. Carotis Externa", "A. Carotis Interna dan A. Vertebralis", "A. Cerebri Media dan A. Cerebri Posterior", "A. Vertebralis dan A. Basilaris"],
+                correct: "A. Carotis Interna dan A. Vertebralis",
+                explanations: {
+                    "A. Carotis Interna dan A. Carotis Externa": "SALAH. A. Carotis Externa mendarahi wajah dan kulit kepala (SCALP), bukan otak.",
+                    "A. Carotis Interna dan A. Vertebralis": "BENAR. A. Carotis Interna membentuk sistem anterior, dan A. Vertebralis membentuk sistem posterior.",
+                    "A. Cerebri Media dan A. Cerebri Posterior": "SALAH. Ini adalah cabang-cabang dari sistem utama, bukan sistem utamanya.",
+                    "A. Vertebralis dan A. Basilaris": "SALAH. A. Basilaris adalah hasil gabungan dari A. Vertebralis, keduanya bagian dari sistem posterior."
+                }
+            },
+            { // 2
+                question: "Arteri Cerebri Anterior (ACA) dan Arteri Cerebri Media (ACM) adalah cabang-cabang terminal utama dari...",
+                options: ["A. Carotis Interna", "A. Carotis Externa", "A. Basilaris", "A. Vertebralis"],
+                correct: "A. Carotis Interna",
+                explanations: {
+                    "A. Carotis Interna": "BENAR. Setelah masuk ke tengkorak, A. Carotis Interna (sistem anterior) bercabang menjadi ACA dan ACM.",
+                    "A. Carotis Externa": "SALAH. Ini mendarahi struktur superfisial kepala.",
+                    "A. Basilaris": "SALAH. A. Basilaris bercabang menjadi A. Cerebri Posterior (ACP).",
+                    "A. Vertebralis": "SALAH. A. Vertebralis bergabung membentuk A. Basilaris."
+                }
+            },
+            { // 3
+                question: "Kedua Arteri Vertebralis bergabung di dasar batang otak (pons) untuk membentuk satu arteri besar, yaitu...",
+                options: ["A. Carotis Interna", "A. Cerebri Posterior", "A. Basilaris", "A. Communicans Posterior"],
+                correct: "A. Basilaris",
+                explanations: {
+                    "A. Carotis Interna": "SALAH. Ini adalah sistem anterior yang terpisah.",
+                    "A. Cerebri Posterior": "SALAH. A. Basilaris bercabang menjadi ACP, bukan sebaliknya.",
+                    "A. Basilaris": "BENAR. Kedua A. Vertebralis (sistem posterior) menyatu di foramen magnum/pons menjadi A. Basilaris.",
+                    "A. Communicans Posterior": "SALAH. Ini adalah arteri penghubung di Sirkulus Willisi."
+                }
+            },
+            { // 4
+                question: "Arteri terbesar yang mendarahi sebagian besar permukaan lateral hemisfer serebri, termasuk area bahasa dan motorik, adalah...",
+                options: ["Arteri Cerebri Anterior (ACA)", "Arteri Cerebri Media (ACM)", "Arteri Cerebri Posterior (ACP)", "Arteri Meningea Media"],
+                correct: "Arteri Cerebri Media (ACM)",
+                explanations: {
+                    "Arteri Cerebri Anterior (ACA)": "SALAH. ACA mendarahi permukaan medial (bagian tengah) lobus frontalis dan parietalis.",
+                    "Arteri Cerebri Media (ACM)": "BENAR. ACM adalah arteri terbesar dan paling sering tersumbat (stroke), mendarahi area lateral yang luas, termasuk area Broca dan Wernicke (bahasa).",
+                    "Arteri Cerebri Posterior (ACP)": "SALAH. ACP mendarahi lobus occipitalis (visual) dan bagian inferior temporalis.",
+                    "Arteri Meningea Media": "SALAH. Ini mendarahi duramater, bukan jaringan otak."
+                }
+            },
+            { // 5
+                question: "Lobus occipitalis, yang merupakan pusat penglihatan (visual), terutama menerima suplai darah dari...",
+                options: ["Arteri Cerebri Anterior (ACA)", "Arteri Cerebri Media (ACM)", "Arteri Cerebri Posterior (ACP)", "Arteri Basilaris"],
+                correct: "Arteri Cerebri Posterior (ACP)",
+                explanations: {
+                    "Arteri Cerebri Anterior (ACA)": "SALAH. ACA mendarahi bagian depan-tengah (medial frontal/parietal).",
+                    "Arteri Cerebri Media (ACM)": "SALAH. ACM mendarahi bagian samping (lateral).",
+                    "Arteri Cerebri Posterior (ACP)": "BENAR. ACP, cabang dari A. Basilaris (sistem posterior), mendarahi bagian belakang otak, yaitu lobus occipitalis.",
+                    "Arteri Basilaris": "SALAH. A. Basilaris adalah sumbernya, tetapi ACP adalah arteri yang mendarahi lobus tersebut."
+                }
+            },
+            { // 6
+                question: "Sirkulus Arteriosus Willisi adalah anastomosis vital yang menghubungkan...",
+                options: ["Sistem Arteri Karotis dan Sistem Vena Jugularis", "Sistem Arteri Anterior (Karotis) dan Sistem Arteri Posterior (Vertebrobasilaris)", "Sinus Sagittalis Superior dan Sinus Transversus", "A. Carotis Interna dan A. Carotis Externa"],
+                correct: "Sistem Arteri Anterior (Karotis) dan Sistem Arteri Posterior (Vertebrobasilaris)",
+                explanations: {
+                    "Sistem Arteri Karotis dan Sistem Vena Jugularis": "SALAH. Ini menghubungkan arteri dengan vena, yang tidak terjadi di Sirkulus Willisi.",
+                    "Sistem Arteri Anterior (Karotis) dan Sistem Arteri Posterior (Vertebrobasilaris)": "BENAR. Sirkulus ini (melalui AComA dan PComA) menyediakan jalur kolateral antara suplai darah depan dan belakang.",
+                    "Sinus Sagittalis Superior dan Sinus Transversus": "SALAH. Ini adalah bagian dari sistem drainase vena (sinus).",
+                    "A. Carotis Interna dan A. Carotis Externa": "SALAH. A. Carotis Externa tidak masuk ke Sirkulus Willisi."
+                }
+            },
+            { // 7
+                question: "Dalam Sirkulus Willisi, arteri yang menghubungkan Arteri Cerebri Anterior (ACA) kanan dan kiri adalah...",
+                options: ["Arteri Communicans Anterior (AComA)", "Arteri Communicans Posterior (PComA)", "Arteri Basilaris", "Arteri Cerebri Media (ACM)"],
+                correct: "Arteri Communicans Anterior (AComA)",
+                explanations: {
+                    "Arteri Communicans Anterior (AComA)": "BENAR. AComA adalah arteri penghubung pendek yang menyatukan kedua ACA di garis tengah.",
+                    "Arteri Communicans Posterior (PComA)": "SALAH. PComA menghubungkan sistem anterior ke posterior (Karotis ke ACP).",
+                    "Arteri Basilaris": "SALAH. Ini adalah arteri utama sistem posterior.",
+                    "Arteri Cerebri Media (ACM)": "SALAH. Ini adalah cabang terminal."
+                }
+            },
+            { // 8
+                question: "Dalam Sirkulus Willisi, arteri yang menghubungkan sistem Karotis (anterior) dengan Arteri Cerebri Posterior (posterior) adalah...",
+                options: ["Arteri Communicans Anterior (AComA)", "Arteri Communicans Posterior (PComA)", "Arteri Vertebralis", "Arteri Cerebri Media (ACM)"],
+                correct: "Arteri Communicans Posterior (PComA)",
+                explanations: {
+                    "Arteri Communicans Anterior (AComA)": "SALAH. AComA menghubungkan ACA kanan dan kiri.",
+                    "Arteri Communicans Posterior (PComA)": "BENAR. PComA menjembatani A. Carotis Interna (atau cabangnya) dengan A. Cerebri Posterior (ACP), menghubungkan suplai darah depan dan belakang.",
+                    "Arteri Vertebralis": "SALAH. Ini adalah sumber sistem posterior.",
+                    "Arteri Cerebri Media (ACM)": "SALAH. Ini adalah cabang terminal."
+                }
+            },
+            { // 9
+                question: "Arteri Meningea Media, yang mendarahi duramater, adalah cabang dari...",
+                options: ["A. Carotis Interna", "A. Carotis Externa (via A. Maxillaris)", "A. Vertebralis", "A. Basilaris"],
+                correct: "A. Carotis Externa (via A. Maxillaris)",
+                explanations: {
+                    "A. Carotis Interna": "SALAH. A. Carotis Interna mendarahi otak (parenkim).",
+                    "A. Carotis Externa (via A. Maxillaris)": "BENAR. Arteri untuk pelindung (meninges) berasal dari A. Carotis Externa; A. Meningea Media adalah cabang dari A. Maxillaris, yang merupakan cabang dari A. Carotis Externa.",
+                    "A. Vertebralis": "SALAH. Ini mendarahi otak (sistem posterior).",
+                    "A. Basilaris": "SALAH. Ini mendarahi otak (sistem posterior)."
+                }
+            },
+            { // 10
+                question: "Robeknya Arteri Meningea Media akibat fraktur tengkorak paling sering menyebabkan...",
+                options: ["Epidural Hematoma (EDH)", "Subdural Hematoma (SDH)", "Subarachnoid Hemorrhage (SAH)", "Intracerebral Hemorrhage (ICH)"],
+                correct: "Epidural Hematoma (EDH)",
+                explanations: {
+                    "Epidural Hematoma (EDH)": "BENAR. A. Meningea Media berjalan di ruang epidural. Robekannya (arteri) menyebabkan perdarahan bertekanan tinggi yang cepat di ruang ini.",
+                    "Subdural Hematoma (SDH)": "SALAH. SDH disebabkan oleh robeknya vena (bridging veins).",
+                    "Subarachnoid Hemorrhage (SAH)": "SALAH. SAH disebabkan oleh pecahnya aneurisma di ruang subarachnoid.",
+                    "Intracerebral Hemorrhage (ICH)": "SALAH. ICH adalah perdarahan di dalam jaringan otak."
+                }
+            },
+            { // 11
+                question: "Cabang-cabang arteri kecil dari ACM yang menembus ke nukleus basalis dan kapsula interna, yang pecahnya sering menyebabkan stroke hemoragik (ICH), adalah...",
+                options: ["Arteri Communicans Posterior", "Arteri Lentikulostriata", "Arteri Meningea Media", "Bridging Veins"],
+                correct: "Arteri Lentikulostriata",
+                explanations: {
+                    "Arteri Communicans Posterior": "SALAH. Ini adalah bagian dari Sirkulus Willisi.",
+                    "Arteri Lentikulostriata": "BENAR. Ini adalah arteri-arteri 'end-artery' (tanpa kolateral) yang kecil dan rentan pecah akibat hipertensi kronis, menyebabkan perdarahan di dalam struktur dalam otak (ICH).",
+                    "Arteri Meningea Media": "SALAH. Ini mendarahi duramater (menyebabkan EDH).",
+                    "Bridging Veins": "SALAH. Ini adalah vena (menyebabkan SDH)."
+                }
+            },
+            { // 12
+                question: "Darah vena dari korteks serebri dikumpulkan oleh Vena Superfisial, yang kemudian menjadi 'Bridging Veins' saat melintasi...",
+                options: ["Ruang Epidural", "Ruang Subdural", "Ruang Subarachnoid", "Parenkim Otak"],
+                correct: "Ruang Subdural",
+                explanations: {
+                    "Ruang Epidural": "SALAH. Vena ini tidak melintasi ruang epidural.",
+                    "Ruang Subdural": "BENAR. 'Bridging veins' adalah bagian vena yang menjembatani ruang subdural (potensial) untuk bermuara ke sinus vena duramatris.",
+                    "Ruang Subarachnoid": "SALAH. Vena superfisial berjalan di ruang subarachnoid, tetapi 'bridging vein' adalah segmen spesifik yang menembus arachnoidea dan melintasi ruang subdural.",
+                    "Parenkim Otak": "SALAH. Ini adalah jaringan otak."
+                }
+            },
+            { // 13
+                question: "Subdural Hematoma (SDH) paling sering disebabkan oleh robeknya...",
+                options: ["Arteri Meningea Media (Arteri)", "Bridging Veins (Vena)", "Aneurisma Sirkulus Willisi (Arteri)", "Arteri Lentikulostriata (Arteri)"],
+                correct: "Bridging Veins (Vena)",
+                explanations: {
+                    "Arteri Meningea Media (Arteri)": "SALAH. Ini menyebabkan EDH (Epidural).",
+                    "Bridging Veins (Vena)": "BENAR. Trauma akselerasi-deselerasi merobek vena-vena ini di ruang subdural, menyebabkan perdarahan vena yang lambat.",
+                    "Aneurisma Sirkulus Willisi (Arteri)": "SALAH. Ini menyebabkan SAH (Subarachnoid).",
+                    "Arteri Lentikulostriata (Arteri)": "SALAH. Ini menyebabkan ICH (Intracerebral)."
+                }
+            },
+            { // 14
+                question: "Perdarahan akibat pecahnya aneurisma pada Sirkulus Willisi terjadi di...",
+                options: ["Ruang Epidural", "Ruang Subdural", "Ruang Subarachnoid", "Ruang Intracerebral"],
+                correct: "Ruang Subarachnoid",
+                explanations: {
+                    "Ruang Epidural": "SALAH. Ini lokasi EDH (A. Meningea Media).",
+                    "Ruang Subdural": "SALAH. Ini lokasi SDH (Bridging Veins).",
+                    "Ruang Subarachnoid": "BENAR. Sirkulus Willisi terletak di ruang subarachnoid (yang normalnya berisi LCS). Pecahnya aneurisma di sini menyebabkan darah arteri menyebar ke seluruh ruang subarachnoid (SAH).",
+                    "Ruang Intracerebral": "SALAH. Ini lokasi ICH."
+                }
+            },
+            { // 15
+                question: "Sinus Vena Duramatris yang berjalan di tepi atas Falx Cerebri adalah...",
+                options: ["Sinus Sagittalis Superior", "Sinus Sagittalis Inferior", "Sinus Rectus", "Sinus Transversus"],
+                correct: "Sinus Sagittalis Superior",
+                explanations: {
+                    "Sinus Sagittalis Superior": "BENAR. Ini adalah sinus besar di garis tengah atas, di dalam Falx Cerebri, yang juga menerima LCS.",
+                    "Sinus Sagittalis Inferior": "SALAH. Ini berjalan di tepi bawah (inferior) Falx Cerebri.",
+                    "Sinus Rectus": "SALAH. Ini berada di pertemuan Falx Cerebri dan Tentorium Cerebelli.",
+                    "Sinus Transversus": "SALAH. Ini berjalan secara horizontal di tepi Tentorium Cerebelli."
+                }
+            },
+            { // 16
+                question: "Tempat pertemuan Sinus Sagittalis Superior dan Sinus Rectus di bagian belakang kepala disebut...",
+                options: ["Confluens Sinuum", "Sinus Sigmoideus", "Sinus Cavernosus", "Vena Jugularis Interna"],
+                correct: "Confluens Sinuum",
+                explanations: {
+                    "Confluens Sinuum": "BENAR. 'Confluens' berarti pertemuan. Ini adalah titik di mana sinus-sinus utama (SSS dan Rectus) bertemu sebelum mengalir ke Sinus Transversus.",
+                    "Sinus Sigmoideus": "SALAH. Ini adalah kelanjutan dari Sinus Transversus.",
+                    "Sinus Cavernosus": "SALAH. Ini terletak di dasar tengkorak, bukan di belakang.",
+                    "Vena Jugularis Interna": "SALAH. Ini adalah vena akhir setelah sinus."
+                }
+            },
+            { // 17
+                question: "Sinus Vena Duramatris yang berbentuk 'S' dan mengalirkan darah langsung ke Vena Jugularis Interna adalah...",
+                options: ["Sinus Sagittalis Superior", "Sinus Rectus", "Sinus Transversus", "Sinus Sigmoideus"],
+                correct: "Sinus Sigmoideus",
+                explanations: {
+                    "Sinus Sagittalis Superior": "SALAH. Ini mengalir ke Confluens Sinuum.",
+                    "Sinus Rectus": "SALAH. Ini mengalir ke Confluens Sinuum.",
+                    "Sinus Transversus": "SALAH. Ini mengalir ke Sinus Sigmoideus.",
+                    "Sinus Sigmoideus": "BENAR. Sinus ini adalah kelanjutan berbentuk 'S' dari Sinus Transversus yang mengarah ke bawah menuju Foramen Jugularis untuk menjadi V. Jugularis Interna."
+                }
+            },
+            { // 18
+                question: "Semua darah vena dari sistem sinus duramatris pada akhirnya akan bermuara ke...",
+                options: ["Vena Cava Superior", "Vena Jugularis Interna", "Vena Jugularis Externa", "Aorta"],
+                correct: "Vena Jugularis Interna",
+                explanations: {
+                    "Vena Cava Superior": "SALAH. V. Jugularis Interna bermuara ke V. Brachiocephalica, yang kemudian baru membentuk V. Cava Superior. Tujuan *langsung* dari sinus adalah V. Jugularis Interna.",
+                    "Vena Jugularis Interna": "BENAR. Ini adalah pembuluh vena kolektor utama yang mengalirkan darah dari dalam tengkorak (via Sinus Sigmoideus).",
+                    "Vena Jugularis Externa": "SALAH. Ini mengalirkan darah dari wajah dan kulit kepala, bukan dari dalam otak.",
+                    "Aorta": "SALAH. Aorta adalah arteri."
+                }
+            },
+            { // 19
+                question: "Sinus Vena kompleks yang terletak di dasar tengkorak, yang dilewati oleh A. Carotis Interna dan beberapa saraf kranial, adalah...",
+                options: ["Sinus Sagittalis Superior", "Confluens Sinuum", "Sinus Sigmoideus", "Sinus Cavernosus"],
+                correct: "Sinus Cavernosus",
+                explanations: {
+                    "Sinus Sagittalis Superior": "SALAH. Ini berada di puncak tengkorak (kalvaria).",
+                    "Confluens Sinuum": "SALAH. Ini berada di belakang (occipital).",
+                    "Sinus Sigmoideus": "SALAH. Ini berada di belakang-bawah.",
+                    "Sinus Cavernosus": "BENAR. Ini adalah sinus unik di fossa cranii media (dasar tengkorak) yang memiliki struktur internal seperti spons (cavern) dan dilewati oleh struktur-struktur penting (A. Carotis Interna, N. III, IV, V1, V2, VI)."
+                }
+            },
+            { // 20
+                question: "Manakah pasangan yang TEPAT antara jenis perdarahan dan pembuluh darah yang robek?",
+                options: ["EDH - Bridging Veins", "SDH - A. Meningea Media", "SAH - Aneurisma Sirkulus Willisi", "ICH - Sinus Vena"],
+                correct: "SAH - Aneurisma Sirkulus Willisi",
+                explanations: {
+                    "EDH - Bridging Veins": "SALAH. EDH (Epidural) disebabkan oleh A. Meningea Media.",
+                    "SDH - A. Meningea Media": "SALAH. SDH (Subdural) disebabkan oleh Bridging Veins.",
+                    "SAH - Aneurisma Sirkulus Willisi": "BENAR. SAH (Subarachnoid) paling sering disebabkan oleh pecahnya aneurisma arteri di Sirkulus Willisi, yang terletak di ruang subarachnoid.",
+                    "ICH - Sinus Vena": "SALAH. ICH (Intracerebral) disebabkan oleh pecahnya arteri di dalam parenkim (misal: A. Lentikulostriata)."
+                }
+            }
+        ];
+
+
+        // --- Variabel Status Kuis ---
+        let currentQuestionIndex = 0;
+        let score = 0;
+        const totalQuestions = questions.length;
+        let currentMode = 'exam'; // 'exam', 'practice', 'flashcard'
+        let currentFlashcardIndex = 0; // Untuk mode flashcard
+        let userAnswers = []; // BARU: Untuk menyimpan jawaban mode ujian
+
+        // --- Referensi Elemen DOM ---
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const flashcardScreen = document.getElementById('flashcard-screen');
+        const reviewScreen = document.getElementById('review-screen'); // BARU
+        
+        // Tombol Menu Utama
+        const startFlashcardBtn = document.getElementById('start-flashcard-btn');
+        const startPracticeBtn = document.getElementById('start-practice-btn');
+        const startExamBtn = document.getElementById('start-exam-btn');
+        
+        // Tombol Hasil
+        const restartButton = document.getElementById('restart-button');
+        const reviewButton = document.getElementById('review-button'); // BARU
+        
+        // Elemen Kuis
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const progressText = document.getElementById('progress-text');
+        const scoreText = document.getElementById('score-text');
+        const finalScoreText = document.getElementById('final-score-text');
+        const nextQuestionButton = document.getElementById('next-question-btn');
+        const explanationContainer = document.getElementById('explanation-container');
+        
+        // Elemen Flashcard
+        const flashcard = document.getElementById('flashcard');
+        const flashcardFront = document.getElementById('flashcard-front');
+        const flashcardBack = document.getElementById('flashcard-back');
+        const flashcardAnswerList = document.getElementById('flashcard-answer-list');
+        const flashcardProgress = document.getElementById('flashcard-progress');
+        const flashcardPrev = document.getElementById('flashcard-prev');
+        const flashcardFlip = document.getElementById('flashcard-flip');
+        const flashcardNext = document.getElementById('flashcard-next');
+        
+        // Elemen Review BARU
+        const reviewContainer = document.getElementById('review-container');
+        const restartFromReviewBtn = document.getElementById('restart-from-review');
+        
+        // Tombol Kembali ke Menu
+        const backToMenuButtons = document.querySelectorAll('.back-to-menu-btn');
+        
+        // --- Fungsi Navigasi Utama ---
+
+        function showMainMenu() {
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            flashcardScreen.classList.add('hidden');
+            reviewScreen.classList.add('hidden'); // BARU
+            startScreen.classList.remove('hidden');
+            document.body.classList.add('items-center');
+            document.body.classList.remove('pt-10');
+        }
+
+        function setBodyActive() {
+            document.body.classList.remove('items-center');
+            document.body.classList.add('pt-10');
+        }
+
+        // --- Logika Mode Flashcard ---
+
+        function startFlashcardMode() {
+            currentFlashcardIndex = 0;
+            startScreen.classList.add('hidden');
+            flashcardScreen.classList.remove('hidden');
+            setBodyActive();
+            showFlashcard();
+        }
+
+        function showFlashcard() {
+            const question = questions[currentFlashcardIndex];
+            flashcardFront.querySelector('p').innerText = question.question;
+            flashcardAnswerList.innerHTML = ''; 
+            flashcardFront.classList.remove('hidden');
+            flashcardBack.classList.add('hidden');
+            flashcardProgress.innerText = `${currentFlashcardIndex + 1} / ${totalQuestions}`;
+            flashcardPrev.disabled = currentFlashcardIndex === 0;
+            flashcardNext.disabled = currentFlashcardIndex === totalQuestions - 1;
+        }
+
+        function flipFlashcard() {
+            const isFlippingToBack = flashcardBack.classList.contains('hidden');
+            if (isFlippingToBack) {
+                const q = questions[currentFlashcardIndex];
+                renderFlashcardExplanations(q.explanations, q.correct);
+            }
+            flashcardFront.classList.toggle('hidden');
+            flashcardBack.classList.toggle('hidden');
+        }
+        
+        function renderFlashcardExplanations(explanationsObj, correctTerm) {
+            flashcardAnswerList.innerHTML = ''; 
+            const sortedTerms = Object.keys(explanationsObj).sort((a, b) => (a === correctTerm ? -1 : b === correctTerm ? 1 : 0));
+            sortedTerms.forEach(term => {
+                const explanation = explanationsObj[term];
+                const isCorrect = (term === correctTerm);
+                renderSingleExplanation(term, explanation, isCorrect, flashcardAnswerList);
+            });
+        }
+        
+        function prevFlashcard() {
+            if (currentFlashcardIndex > 0) {
+                currentFlashcardIndex--;
+                showFlashcard();
+            }
+        }
+
+        function nextFlashcard() {
+            if (currentFlashcardIndex < totalQuestions - 1) {
+                currentFlashcardIndex++;
+                showFlashcard();
+            }
+        }
+
+        // --- Logika Mode Kuis (Latihan & Ujian) ---
+
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = []; // BARU: Kosongkan riwayat jawaban
+            
+            startScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            reviewScreen.classList.add('hidden'); // BARU
+            quizScreen.classList.remove('hidden');
+            nextQuestionButton.classList.add('hidden');
+            
+            setBodyActive();
+            showQuestion();
+        }
+        
+        function startPracticeMode() {
+            currentMode = 'practice';
+            startQuiz();
+        }
+        
+        function startExamMode() {
+            currentMode = 'exam';
+            startQuiz();
+        }
+
+        function showQuestion() {
+            optionsContainer.innerHTML = '';
+            explanationContainer.innerHTML = ''; 
+            nextQuestionButton.classList.add('hidden');
+            
+            const question = questions[currentQuestionIndex];
+            questionText.innerText = question.question;
+            progressText.innerText = `Soal ${currentQuestionIndex + 1} / ${totalQuestions}`;
+            
+            // Mode Latihan menunjukkan skor real-time, Mode Ujian tidak
+            if (currentMode === 'practice') {
+                 scoreText.innerText = `Skor: ${score}`;
+            } else {
+                 scoreText.innerText = `Skor: -`;
+            }
+            
+            // Opsi tidak di-shuffle agar konsisten dengan penjelasan (opsional, tapi lebih mudah di-debug)
+            // const shuffledOptions = [...question.options].sort(() => Math.random() - 0.5);
+            const options = question.options;
+
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.innerText = option;
+                button.classList.add('option-btn');
+                button.addEventListener('click', () => selectAnswer(option, button));
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function selectAnswer(selectedOption, buttonEl) {
+            const correctAnwer = questions[currentQuestionIndex].correct;
+
+            // Nonaktifkan semua tombol opsi
+            const optionButtons = optionsContainer.querySelectorAll('.option-btn');
+            optionButtons.forEach(btn => btn.classList.add('disabled'));
+            
+            // Simpan jawaban (untuk kedua mode)
+            userAnswers[currentQuestionIndex] = {
+                chosen: selectedOption,
+                correct: correctAnwer,
+                isCorrect: selectedOption === correctAnwer
+            };
+
+            // Logika lanjut berdasarkan mode
+            if (currentMode === 'practice') {
+                // --- MODE LATIHAN ---
+                if (selectedOption === correctAnwer) {
+                    score++;
+                    buttonEl.classList.add('correct');
+                } else {
+                    buttonEl.classList.add('incorrect');
+                    optionButtons.forEach(btn => {
+                        if (btn.innerText === correctAnwer) {
+                            btn.classList.add('correct');
+                        }
+                    });
+                }
+                scoreText.innerText = `Skor: ${score}`;
+                nextQuestionButton.classList.remove('hidden');
+                renderPracticeExplanation(selectedOption, correctAnwer);
+                
+            } else {
+                // --- MODE UJIAN (LOGIKA BARU) ---
+                // 1. Hanya sorot jawaban yang dipilih
+                buttonEl.classList.add('selected');
+                
+                // 2. Tidak ada feedback benar/salah
+                
+                // 3. Auto-lanjut setelah delay singkat
+                setTimeout(goToNextQuestion, 500); 
+            }
+        }
+        
+        function renderPracticeExplanation(chosenOption, correctOption) {
+            explanationContainer.innerHTML = ''; 
+            const explanations = questions[currentQuestionIndex].explanations;
+            const correctExplanation = explanations[correctOption];
+            
+            // Tampilkan penjelasan untuk semua opsi, tandai yang benar dan yang dipilih salah
+            Object.keys(explanations).forEach(term => {
+                const explanation = explanations[term];
+                const isCorrect = (term === correctOption);
+                const isChosen = (term === chosenOption);
+                
+                // Hanya tampilkan yang benar dan yang salah dipilih (jika beda)
+                if(isCorrect || (isChosen && !isCorrect)) {
+                     renderSingleExplanation(term, explanation, isCorrect, explanationContainer);
+                }
+            });
+        }
+        
+        // Fungsi render yang dibagikan
+        function renderSingleExplanation(term, explanation, isCorrect, targetElement) {
+            const optionEl = document.createElement('div');
+            optionEl.classList.add('flashcard-option-detailed');
+            
+            if (isCorrect) {
+                optionEl.classList.add('correct');
+            } else {
+                optionEl.classList.add('incorrect');
+            }
+            
+            optionEl.innerHTML = `
+                <strong>${term}</strong>
+                <span>${explanation}</span>
+            `;
+            targetElement.appendChild(optionEl);
+        }
+        
+        function goToNextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < totalQuestions) {
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            
+            let finalScore = 0;
+            
+            if (currentMode === 'exam') {
+                // Hitung skor dari array userAnswers
+                finalScore = userAnswers.filter(answer => answer.isCorrect).length;
+                reviewButton.classList.remove('hidden'); // Tampilkan tombol review
+            } else {
+                // Ambil skor real-time dari mode latihan
+                finalScore = score;
+                reviewButton.classList.add('hidden'); // Sembunyikan tombol review
+            }
+            
+            finalScoreText.innerText = `SKOR ANDA: ${finalScore} / ${totalQuestions}`;
+            document.body.classList.add('items-center');
+            document.body.classList.remove('pt-10');
+        }
+        
+        // --- FUNGSI REVIEW BARU ---
+        
+        function showReviewScreen() {
+            resultScreen.classList.add('hidden');
+            reviewScreen.classList.remove('hidden');
+            reviewContainer.innerHTML = ''; // Kosongkan review sebelumnya
+            setBodyActive(); // Agar tidak terpusat
+            
+            questions.forEach((question, index) => {
+                const userAnswer = userAnswers[index] || { chosen: null }; // Tangani jika soal tidak terjawab
+                
+                // Buat kartu review
+                const reviewCard = document.createElement('div');
+                reviewCard.classList.add('review-card');
+                
+                // Buat HTML untuk opsi
+                let optionsHTML = '';
+                question.options.forEach(option => {
+                    let optionClass = 'review-option neutral';
+                    if (option === question.correct) {
+                        optionClass = 'review-option correct';
+                    } else if (option === userAnswer.chosen) {
+                        optionClass = 'review-option chosen-wrong';
+                    }
+                    
+                    optionsHTML += `<div class="${optionClass}">${option}</div>`;
+                });
+                
+                // Buat HTML untuk penjelasan
+                let explanationsHTML = '';
+                const explanations = question.explanations;
+                const correctTerm = question.correct;
+                
+                // Urutkan penjelasan agar yang benar selalu di atas, diikuti yang salah (jika dipilih)
+                const sortedTerms = Object.keys(explanations).sort((a, b) => {
+                    if (a === correctTerm) return -1;
+                    if (b === correctTerm) return 1;
+                    if (a === userAnswer.chosen) return -1;
+                    if (b === userAnswer.chosen) return 1;
+                    return 0;
+                });
+                
+                sortedTerms.forEach(term => {
+                    const explanation = explanations[term];
+                    const isCorrect = (term === correctTerm);
+                    
+                    let explanationClass = 'flashcard-option-detailed';
+                    if (isCorrect) {
+                        explanationClass += ' correct';
+                    } else {
+                        explanationClass += ' incorrect';
+                    }
+                    
+                    explanationsHTML += `
+                        <div class="${explanationClass}">
+                            <strong>${term}</strong>
+                            <span>${explanation}</span>
+                        </div>
+                    `;
+                });
+                
+
+                // Gabungkan semuanya
+                reviewCard.innerHTML = `
+                    <div class="review-question">Soal ${index + 1}: ${question.question}</div>
+                    <div class="review-options-grid">${optionsHTML}</div>
+                    <div class="review-explanations">${explanationsHTML}</div>
+                `;
+                
+                reviewContainer.appendChild(reviewCard);
+            });
+        }
+
+        // --- Event Listeners ---
+        
+        // Menu Utama
+        startFlashcardBtn.addEventListener('click', startFlashcardMode);
+        startPracticeBtn.addEventListener('click', startPracticeMode);
+        startExamBtn.addEventListener('click', startExamMode);
+        
+        // Layar Hasil
+        restartButton.addEventListener('click', startQuiz); // Mengulangi mode terakhir
+        reviewButton.addEventListener('click', showReviewScreen); // BARU
+        
+        // Layar Review BARU
+        restartFromReviewBtn.addEventListener('click', startQuiz);
+        
+        // Layar Kuis
+        nextQuestionButton.addEventListener('click', goToNextQuestion);
+        
+        // Layar Flashcard
+        flashcard.addEventListener('click', flipFlashcard);
+        flashcardFlip.addEventListener('click', flipFlashcard);
+        flashcardPrev.addEventListener('click', prevFlashcard);
+        flashcardNext.addEventListener('click', nextFlashcard);
+        
+        // Tombol Kembali ke Menu (Global)
+        backToMenuButtons.forEach(button => {
+            button.addEventListener('click', showMainMenu);
+        });
+
+    </script>
+</body>
+</html>

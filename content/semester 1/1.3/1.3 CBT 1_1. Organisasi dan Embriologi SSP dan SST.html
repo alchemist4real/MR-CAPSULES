@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Embriologi SSP/SST - 35 Soal</title>
+    <!-- Impor Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Impor Google Font (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* CSS Kustom - Tema Glassmorphism Gelap (Kontras Tinggi) */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #4a6888 100%);
+            color: #ffffff;
+            user-select: none;
+            padding: 1rem;
+            transition: all 0.2s;
+            overflow-y: auto;
+        }
+
+        /* Kontainer utama bergaya "glass" */
+        .quiz-container {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+            padding: 1.5rem 2rem;
+            width: 90%;
+            max-width: 800px;
+        }
+
+        /* Styling Teks Umum */
+        h1, .text-3xl, .text-4xl {
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        p, .text-lg, span { color: #ecf0f1; }
+        
+        #progress-text, #score-text, #final-score-text, #flashcard-progress {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        /* Tombol aksi (Mulai/Ulangi/Menu) - Solid Oranye */
+        .action-btn {
+            font-family: 'Inter', sans-serif;
+            text-transform: uppercase;
+            background-color: #e67e22;
+            border: none;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 1.25rem;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.75rem;
+        }
+        .action-btn:hover {
+            background-color: #f39c12;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.2);
+        }
+        .action-btn:active {
+            box-shadow: none;
+            transform: translateY(0px);
+        }
+        .action-btn:disabled {
+            background-color: #888;
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* Tombol kembali ke menu - Oranye Gelap */
+        .back-to-menu-btn {
+            background-color: #d35400;
+            font-size: 1rem;
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+        }
+        .back-to-menu-btn:hover { background-color: #e67e22; }
+
+        /* Tombol Opsi Jawaban (Frosted Glass) */
+        .option-btn {
+            font-family: 'Inter', sans-serif;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: block;
+            width: 100%;
+            margin-bottom: 1rem;
+            text-align: left;
+            padding: 1.25rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-radius: 0.75rem;
+        }
+        .option-btn:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* BARU: Style untuk jawaban yg dipilih di Mode Ujian */
+        .option-btn.selected {
+            background: rgba(243, 156, 18, 0.6); /* Oranye transparan */
+            border-color: #f39c12;
+        }
+        
+        /* Status Jawaban (Solid - Hijau/Merah universal) */
+        .option-btn.correct {
+            background-color: #27ae60;
+            color: #ffffff;
+            border: none;
+        }
+        .option-btn.incorrect {
+            background-color: #c0392b;
+            color: #ffffff;
+            border: none;
+        }
+        .option-btn.disabled { pointer-events: none; }
+        
+        /* Teks Pertanyaan */
+        #question-text {
+            font-size: 1.125rem;
+            line-height: 1.75;
+            min-height: 100px;
+            margin-bottom: 2rem;
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        /* --- Style untuk Flashcard & Penjelasan Latihan --- */
+        #flashcard {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-height: 300px;
+            padding: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.1);
+            border-radius: 1rem;
+        }
+        
+        #flashcard-front, #flashcard-back {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #ffffff;
+        }
+        
+        .card-label {
+            font-size: 0.75rem;
+            color: #bdc3c7;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        
+        /* Kontainer untuk penjelasan */
+        #flashcard-answer-list, #explanation-container, .review-explanations {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .flashcard-option-detailed {
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .flashcard-option-detailed strong {
+            display: block;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 0.25rem;
+        }
+        .flashcard-option-detailed span {
+            font-size: 0.85rem;
+            color: #ecf0f1;
+            line-height: 1.5;
+        }
+        .flashcard-option-detailed.correct {
+            background: rgba(39, 174, 96, 0.8);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        .flashcard-option-detailed.correct span { color: #ffffff; }
+        .flashcard-option-detailed.incorrect {
+            background: rgba(192, 57, 43, 0.7);
+            border-color: rgba(255, 255, 255, 0.2);
+            opacity: 0.9;
+        }
+        
+        /* BARU: Style untuk Layar Review */
+        .review-card {
+            background: rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .review-question {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .review-options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        @media (min-width: 768px) {
+            .review-options-grid { grid-template-columns: 1fr 1fr; }
+        }
+        .review-option {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            border: 1px solid transparent;
+        }
+        .review-option.neutral {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+            opacity: 0.7;
+        }
+        .review-option.correct {
+            background: #27ae60;
+            border-color: #2ecc71;
+            font-weight: 600;
+        }
+        .review-option.chosen-wrong {
+            background: #c0392b;
+            border-color: #e74c3c;
+            font-weight: 600;
+            text-decoration: line-through;
+        }
+        .review-explanations { margin-top: 1.5rem; }
+        
+        .hidden { display: none; }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+
+    <!-- 1. Layar Mulai (Pilih Mode) -->
+    <div id="start-screen" class="quiz-container text-center">
+        <h1 class="text-3xl md:text-4xl mb-6">KUIS EMBRIOLOGI</h1>
+        <p class="mb-10 text-lg">SSP & SST - 35 SOAL</p>
+        <div class="flex flex-col">
+            <button id="start-flashcard-btn" class="action-btn">Mode Flashcard</button>
+            <button id="start-practice-btn" class="action-btn">Mode Latihan</button>
+            <button id="start-exam-btn" class="action-btn">Mode Ujian</button>
+        </div>
+    </div>
+
+    <!-- 2. Layar Kuis (Latihan & Ujian) (Tersembunyi) -->
+    <div id="quiz-screen" class="quiz-container hidden w-full max-w-4xl">
+        <!-- Info Progress & Skor -->
+        <div class="flex justify-between items-center mb-6">
+            <span id="progress-text">Soal 1 / 35</span>
+            <span id="score-text">Skor: 0</span>
+        </div>
+        
+        <!-- Area Soal -->
+        <div id="question-text">
+            Memuat pertanyaan...
+        </div>
+
+        <!-- Area Opsi Jawaban -->
+        <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Opsi akan ditambahkan oleh JavaScript -->
+        </div>
+        
+        <!-- Area Penjelasan (Hanya Mode Latihan) -->
+        <div id="explanation-container" class="mt-6">
+            <!-- Penjelasan akan muncul di sini -->
+        </div>
+        
+        <!-- Tombol Lanjut (Hanya Mode Latihan) -->
+        <div class="text-center mt-8">
+            <button id="next-question-btn" class="action-btn text-lg hidden">
+                Lanjut
+            </button>
+            <button class="back-to-menu-btn action-btn">Kembali ke Menu</button>
+        </div>
+    </div>
+    
+    <!-- 3. Layar Flashcard (Tersembunyi) -->
+    <div id="flashcard-screen" class="quiz-container hidden w-full max-w-2xl">
+        <!-- Progress Flashcard -->
+        <span id="flashcard-progress" class="block text-center mb-6">1 / 35</span>
+        
+        <!-- Flashcard -->
+        <div id="flashcard">
+            <div id="flashcard-front">
+                <span class="card-label">Istilah / Pertanyaan</span>
+                <p>Memuat...</p>
+            </div>
+            <div id="flashcard-back" class="hidden">
+                <span class="card-label">Penjelasan</span>
+                <div id="flashcard-answer-list">
+                    <!-- Konten diisi secara sinkron -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navigasi Flashcard -->
+        <div class="flex justify-between mt-6">
+            <button id="flashcard-prev" class="action-btn text-lg">&lt; Prev</button>
+            <button id="flashcard-flip" class="action-btn text-lg">Balik</button>
+            <button id="flashcard-next" class="action-btn text-lg">Next &gt;</button>
+        </div>
+        
+        <div class="text-center mt-6">
+            <button class="back-to-menu-btn action-btn">Kembali ke Menu</button>
+        </div>
+    </div>
+
+
+    <!-- 4. Layar Hasil (Tersembunyi) -->
+    <div id="result-screen" class="quiz-container text-center hidden">
+        <h1 class="text-3xl mb-6">KUIS SELESAI!</h1>
+        <p id="final-score-text" class="text-4xl my-10">SKOR ANDA: 0 / 35</p>
+        <!-- Tombol Review BARU -->
+        <div class="flex flex-col md:flex-row justify-center gap-4">
+            <button id="review-button" class="action-btn text-xl hidden">Review Kuis</button>
+            <button id="restart-button" class="action-btn text-xl">Ulangi Kuis</button>
+        </div>
+        <button class="back-to-menu-btn action-btn mt-6">Kembali ke Menu</button>
+    </div>
+    
+    <!-- 5. Layar Review BARU (Tersembunyi) -->
+    <div id="review-screen" class="quiz-container hidden w-full max-w-4xl">
+        <h1 class="text-3xl mb-6 text-center">Review Kuis Anda</h1>
+        
+        <!-- Kontainer untuk semua soal review -->
+        <div id="review-container" class="flex flex-col gap-6 max-h-[70vh] overflow-y-auto pr-2">
+            <!-- Soal review akan di-generate di sini -->
+        </div>
+        
+        <div class="text-center mt-8 flex flex-col md:flex-row justify-center gap-4">
+             <button id="restart-from-review" class="action-btn text-xl">Ulangi Kuis</button>
+             <button class="back-to-menu-btn action-btn">Kembali ke Menu</button>
+        </div>
+    </div>
+
+    <script>
+        // --- Data Soal (BAGIAN 1: Organisasi dan Embriologi SSP & SST) ---
+        // Penjelasan ditambahkan secara hardcoded
+        const questions = [
+            { // 1
+                question: "Manakah dari berikut ini yang HANYA termasuk dalam Susunan Saraf Pusat (SSP)?",
+                options: ["Otak, Medulla Spinalis, dan Ganglia", "Otak dan Medulla Spinalis", "Saraf Kranial dan Saraf Spinal", "Ganglia dan Saraf Tepi", "Otak dan Saraf Kranial"],
+                correct: "Otak dan Medulla Spinalis",
+                explanations: {
+                    "Otak, Medulla Spinalis, dan Ganglia": "SALAH. Ganglia (kumpulan badan sel saraf di luar SSP) adalah bagian dari Susunan Saraf Tepi (SST).",
+                    "Otak dan Medulla Spinalis": "BENAR. SSP (Sistem Saraf Pusat) secara definisi hanya terdiri dari otak (ensefalon) dan medula spinalis (sumsum tulang belakang).",
+                    "Saraf Kranial dan Saraf Spinal": "SALAH. Ini adalah komponen utama dari Susunan Saraf Tepi (SST), yang membawa sinyal ke dan dari SSP.",
+                    "Ganglia dan Saraf Tepi": "SALAH. Ini adalah deskripsi lain dari Susunan Saraf Tepi (SST).",
+                    "Otak dan Saraf Kranial": "SALAH. Saraf kranial (bagian dari SST) terhubung ke otak (bagian dari SSP), tetapi tidak HANYA SSP."
+                }
+            },
+            { // 2
+                question: "Susunan Saraf Tepi (SST) terdiri dari...",
+                options: ["Otak dan Medulla Spinalis", "Saraf Kranial, Saraf Spinal, dan Ganglia", "Hanya Saraf Kranial dan Saraf Spinal", "Vesikula Otak", "Nukleus dan Traktus"],
+                correct: "Saraf Kranial, Saraf Spinal, dan Ganglia",
+                explanations: {
+                    "Otak dan Medulla Spinalis": "SALAH. Ini adalah definisi dari Susunan Saraf Pusat (SSP).",
+                    "Saraf Kranial, Saraf Spinal, dan Ganglia": "BENAR. SST mencakup semua jaringan saraf di luar SSP, termasuk saraf kranial (12 pasang), saraf spinal (31 pasang), dan ganglia terkait.",
+                    "Hanya Saraf Kranial dan Saraf Spinal": "SALAH. Definisi ini kurang lengkap karena tidak menyertakan Ganglia, yang merupakan bagian penting dari SST.",
+                    "Vesikula Otak": "SALAH. Ini adalah struktur embriologis dari otak (SSP).",
+                    "Nukleus dan Traktus": "SALAH. Nukleus (kumpulan badan sel) dan Traktus (kumpulan akson) adalah istilah untuk struktur di dalam SSP."
+                }
+            },
+            { // 3
+                question: "Struktur embriologis primer yang menjadi cikal bakal seluruh Susunan Saraf Pusat adalah...",
+                options: ["Krista Neuralis (Neural Crest)", "Notokorda", "Tabung Neural (Neural Tube)", "Ektoderm", "Mesoderm"],
+                correct: "Tabung Neural (Neural Tube)",
+                explanations: {
+                    "Krista Neuralis (Neural Crest)": "SALAH. Krista neuralis adalah cikal bakal sebagian besar Susunan Saraf Tepi (SST), bukan SSP.",
+                    "Notokorda": "SALAH. Notokorda adalah struktur mesodermal yang menginduksi pembentukan tabung neural, tetapi tidak menjadi SSP itu sendiri.",
+                    "Tabung Neural (Neural Tube)": "BENAR. Tabung neural (berasal dari ektoderm) adalah struktur embriologis yang berdiferensiasi menjadi seluruh otak dan medula spinalis (SSP).",
+                    "Ektoderm": "SALAH. Ektoderm adalah lapisan germinal luar yang luas. SSP berasal dari bagian spesifiknya (neuroektoderm), tetapi ektoderm juga membentuk kulit.",
+                    "Mesoderm": "SALAH. Mesoderm adalah lapisan tengah yang membentuk otot, tulang, dan jaringan ikat."
+                }
+            },
+            { // 4
+                question: "Sebagian besar komponen Susunan Saraf Tepi (SST), termasuk ganglia dan sel Schwann, berasal dari struktur embriologis...",
+                options: ["Tabung Neural (Neural Tube)", "Notokorda", "Krista Neuralis (Neural Crest)", "Endoderm", "Plakoda Optik"],
+                correct: "Krista Neuralis (Neural Crest)",
+                explanations: {
+                    "Tabung Neural (Neural Tube)": "SALAH. Tabung neural membentuk Susunan Saraf Pusat (SSP).",
+                    "Notokorda": "SALAH. Notokorda adalah struktur penginduksi yang terletak di bawah tabung neural.",
+                    "Krista Neuralis (Neural Crest)": "BENAR. Sel-sel krista neuralis bermigrasi untuk membentuk hampir seluruh SST, termasuk neuron sensorik, ganglia otonom, dan sel pendukung seperti sel Schwann.",
+                    "Endoderm": "SALAH. Endoderm adalah lapisan dalam yang membentuk saluran pencernaan dan pernapasan.",
+                    "Plakoda Optik": "SALAH. Ini adalah penebalan ektoderm yang berkembang menjadi lensa mata."
+                }
+            },
+            { // 5
+                question: "Pada minggu keempat perkembangan, tabung neural berdiferensiasi menjadi tiga vesikula otak primer, yaitu:",
+                options: ["Telencephalon, Diencephalon, Mesencephalon", "Prosencephalon, Mesencephalon, Rhombencephalon", "Cerebrum, Cerebellum, Batang Otak", "Ektoderm, Mesoderm, Endoderm", "Vesikula Optik, Vesikula Otik, Vesikula Serebral"],
+                correct: "Prosencephalon, Mesencephalon, Rhombencephalon",
+                explanations: {
+                    "Telencephalon, Diencephalon, Mesencephalon": "SALAH. Ini adalah campuran vesikula sekunder (Telen-, Dien-) dan primer (Mes-).",
+                    "Prosencephalon, Mesencephalon, Rhombencephalon": "BENAR. Ini adalah tiga vesikula otak primer (otak depan, otak tengah, dan otak belakang).",
+                    "Cerebrum, Cerebellum, Batang Otak": "SALAH. Ini adalah struktur otak dewasa, bukan vesikula primer.",
+                    "Ektoderm, Mesoderm, Endoderm": "SALAH. Ini adalah tiga lapisan germinal primer.",
+                    "Vesikula Optik, Vesikula Otik, Vesikula Serebral": "SALAH. Vesikula optik dan otik terkait dengan perkembangan mata dan telinga."
+                }
+            },
+            { // 6
+                question: "Prosencephalon (otak depan) selanjutnya akan membelah menjadi dua vesikula sekunder, yaitu:",
+                options: ["Metencephalon dan Myelencephalon", "Telencephalon dan Diencephalon", "Mesencephalon dan Metencephalon", "Cerebrum dan Thalamus", "Telencephalon dan Mesencephalon"],
+                correct: "Telencephalon dan Diencephalon",
+                explanations: {
+                    "Metencephalon dan Myelencephalon": "SALAH. Ini adalah turunan dari Rhombencephalon (otak belakang).",
+                    "Telencephalon dan Diencephalon": "BENAR. Prosencephalon (otak depan) membelah menjadi Telencephalon (yang akan menjadi hemisfer serebral) dan Diencephalon (yang akan menjadi talamus, dll.).",
+                    "Mesencephalon dan Metencephalon": "SALAH. Ini adalah vesikula yang berbeda.",
+                    "Cerebrum dan Thalamus": "SALAH. Ini adalah struktur dewasa, bukan vesikula sekunder.",
+                    "Telencephalon dan Mesencephalon": "SALAH. Mesencephalon adalah vesikula primer tersendiri."
+                }
+            },
+            { // 7
+                question: "Rhombencephalon (otak belakang) akan berdiferensiasi lebih lanjut menjadi...",
+                options: ["Telencephalon dan Diencephalon", "Metencephalon dan Myelencephalon", "Cerebellum dan Pons", "Pons dan Medulla Oblongata", "Mesencephalon dan Myelencephalon"],
+                correct: "Metencephalon dan Myelencephalon",
+                explanations: {
+                    "Telencephalon dan Diencephalon": "SALAH. Ini adalah turunan dari Prosencephalon (otak depan).",
+                    "Metencephalon dan Myelencephalon": "BENAR. Rhombencephalon (otak belakang) membelah menjadi Metencephalon (menjadi pons & cerebellum) dan Myelencephalon (menjadi medula oblongata).",
+                    "Cerebellum dan Pons": "SALAH. Ini adalah struktur dewasa turunan dari Metencephalon.",
+                    "Pons dan Medulla Oblongata": "SALAH. Ini adalah struktur dewasa turunan dari Metencephalon dan Myelencephalon.",
+                    "Mesencephalon dan Myelencephalon": "SALAH. Mesencephalon adalah vesikula primer tersendiri."
+                }
+            },
+            { // 8
+                question: "Struktur otak dewasa yang merupakan turunan dari Telencephalon adalah...",
+                options: ["Thalamus dan Hypothalamus", "Cerebellum dan Pons", "Medulla Oblongata", "Hemisfer Cerebri (Korteks Serebral)", "Midbrain (Otak Tengah)"],
+                correct: "Hemisfer Cerebri (Korteks Serebral)",
+                explanations: {
+                    "Thalamus dan Hypothalamus": "SALAH. Ini adalah turunan dari Diencephalon.",
+                    "Cerebellum dan Pons": "SALAH. Ini adalah turunan dari Metencephalon.",
+                    "Medulla Oblongata": "SALAH. Ini adalah turunan dari Myelencephalon.",
+                    "Hemisfer Cerebri (Korteks Serebral)": "BENAR. Telencephalon berkembang pesat menjadi dua hemisfer serebri yang besar, mencakup korteks, ganglia basalis, dan hipokampus.",
+                    "Midbrain (Otak Tengah)": "SALAH. Ini adalah turunan dari Mesencephalon."
+                }
+            },
+            { // 9
+                question: "Thalamus, Hypothalamus, dan Epithalamus (termasuk kelenjar pineal) adalah struktur otak dewasa yang berasal dari vesikula...",
+                options: ["Telencephalon", "Diencephalon", "Mesencephalon", "Metencephalon", "Myelencephalon"],
+                correct: "Diencephalon",
+                explanations: {
+                    "Telencephalon": "SALAH. Ini berkembang menjadi hemisfer serebri.",
+                    "Diencephalon": "BENAR. Diencephalon adalah bagian dari otak depan (Prosencephalon) yang membentuk struktur inti seperti talamus, hipotalamus, dan epitalamus.",
+                    "Mesencephalon": "SALAH. Ini berkembang menjadi otak tengah (midbrain).",
+                    "Metencephalon": "SALAH. Ini berkembang menjadi pons dan cerebellum.",
+                    "Myelencephalon": "SALAH. Ini berkembang menjadi medula oblongata."
+                }
+            },
+            { // 10
+                question: "Vesikula otak sekunder yang berkembang menjadi Cerebellum dan Pons adalah...",
+                options: ["Telencephalon", "Diencephalon", "Mesencephalon", "Metencephalon", "Myelencephalon"],
+                correct: "Metencephalon",
+                explanations: {
+                    "Telencephalon": "SALAH. Ini berkembang menjadi hemisfer serebri.",
+                    "Diencephalon": "SALAH. Ini berkembang menjadi talamus, hipotalamus, dll.",
+                    "Mesencephalon": "SALAH. Ini adalah vesikula primer (yang juga sekunder) yang menjadi otak tengah.",
+                    "Metencephalon": "BENAR. Metencephalon adalah bagian dari otak belakang (Rhombencephalon) yang berdiferensiasi menjadi cerebellum dan pons.",
+                    "Myelencephalon": "SALAH. Ini berkembang menjadi medula oblongata."
+                }
+            },
+            { // 11
+                question: "Medulla Oblongata adalah struktur batang otak yang berasal dari vesikula otak paling kaudal, yaitu...",
+                options: ["Telencephalon", "Diencephalon", "Mesencephalon", "Metencephalon", "Myelencephalon"],
+                correct: "Myelencephalon",
+                explanations: {
+                    "Telencephalon": "SALAH. Ini adalah bagian paling rostral (depan).",
+                    "Diencephalon": "SALAH. Ini berada di antara telencephalon dan mesencephalon.",
+                    "Mesencephalon": "SALAH. Ini adalah otak tengah.",
+                    "Metencephalon": "SALAH. Ini berada di atas myelencephalon, membentuk pons dan cerebellum.",
+                    "Myelencephalon": "BENAR. Ini adalah vesikula otak belakang yang paling kaudal (bawah), yang terhubung langsung dengan medula spinalis."
+                }
+            },
+            { // 12
+                question: "Vesikula otak primer manakah yang TIDAK membelah lebih lanjut dan tetap menjadi struktur tunggal di otak dewasa (otak tengah/midbrain)?",
+                options: ["Prosencephalon", "Mesencephalon", "Rhombencephalon", "Telencephalon", "Diencephalon"],
+                correct: "Mesencephalon",
+                explanations: {
+                    "Prosencephalon": "SALAH. Ini membelah menjadi Telencephalon dan Diencephalon.",
+                    "Mesencephalon": "BENAR. Mesencephalon (otak tengah) adalah satu-satunya vesikula primer yang tidak membelah lagi menjadi vesikula sekunder.",
+                    "Rhombencephalon": "SALAH. Ini membelah menjadi Metencephalon dan Myelencephalon.",
+                    "Telencephalon": "SALAH. Ini adalah vesikula sekunder.",
+                    "Diencephalon": "SALAH. Ini adalah vesikula sekunder."
+                }
+            },
+            { // 13
+                question: "Rongga di dalam Telencephalon yang berisi cairan serebrospinal akan berkembang menjadi...",
+                options: ["Ventrikel Lateral", "Ventrikel Ketiga", "Akuaduktus Serebral", "Ventrikel Keempat", "Kanalis Sentralis"],
+                correct: "Ventrikel Lateral",
+                explanations: {
+                    "Ventrikel Lateral": "BENAR. Dua rongga besar di dalam hemisfer serebri (turunan Telencephalon) adalah ventrikel lateral (I dan II).",
+                    "Ventrikel Ketiga": "SALAH. Ini adalah rongga di dalam Diencephalon.",
+                    "Akuaduktus Serebral": "SALAH. Ini adalah saluran sempit di dalam Mesencephalon.",
+                    "Ventrikel Keempat": "SALAH. Ini adalah rongga di dalam Rhombencephalon (pons, cerebellum, medula).",
+                    "Kanalis Sentralis": "SALAH. Ini adalah saluran sempit di tengah medula spinalis."
+                }
+            },
+            { // 14
+                question: "Ventrikel Ketiga (Third Ventricle) adalah rongga berisi CSS yang ditemukan di tengah-tengah struktur turunan...",
+                options: ["Telencephalon", "Diencephalon", "Mesencephalon", "Metencephalon", "Myelencephalon"],
+                correct: "Diencephalon",
+                explanations: {
+                    "Telencephalon": "SALAH. Rongganya adalah Ventrikel Lateral.",
+                    "Diencephalon": "BENAR. Ventrikel ketiga adalah rongga pipih yang terletak di antara dua sisi talamus (struktur utama Diencephalon).",
+                    "Mesencephalon": "SALAH. Rongganya adalah Akuaduktus Serebral.",
+                    "Metencephalon": "SALAH. Rongganya (bersama Myelencephalon) adalah Ventrikel Keempat.",
+                    "Myelencephalon": "SALAH. Rongganya (bersama Metencephalon) adalah Ventrikel Keempat."
+                }
+            },
+            { // 15
+                question: "Akuaduktus Serebral (Saluran Sylvius) yang sempit dan menghubungkan ventrikel ketiga dan keempat, berjalan melalui...",
+                options: ["Diencephalon", "Mesencephalon", "Pons", "Cerebellum", "Medulla Oblongata"],
+                correct: "Mesencephalon",
+                explanations: {
+                    "Diencephalon": "SALAH. Ini berisi Ventrikel Ketiga.",
+                    "Mesencephalon": "BENAR. Akuaduktus serebral adalah saluran sempit yang merupakan sisa rongga dari vesikula Mesencephalon (otak tengah).",
+                    "Pons": "SALAH. Pons terletak di depan Ventrikel Keempat.",
+                    "Cerebellum": "SALAH. Cerebellum terletak di belakang Ventrikel Keempat.",
+                    "Medulla Oblongata": "SALAH. Ini terletak di bawah Ventrikel Keempat."
+                }
+            },
+            { // 16
+                question: "Rongga di dalam Rhombencephalon (mencakup Pons, Cerebellum, dan Medulla) akan membentuk...",
+                options: ["Ventrikel Lateral", "Ventrikel Ketiga", "Akuaduktus Serebral", "Ventrikel Keempat", "Kanalis Sentralis"],
+                correct: "Ventrikel Keempat",
+                explanations: {
+                    "Ventrikel Lateral": "SALAH. Ini ada di dalam Telencephalon.",
+                    "Ventrikel Ketiga": "SALAH. Ini ada di dalam Diencephalon.",
+                    "Akuaduktus Serebral": "SALAH. Ini ada di dalam Mesencephalon.",
+                    "Ventrikel Keempat": "BENAR. Rongga dari Rhombencephalon (Metencephalon dan Myelencephalon) melebar untuk membentuk ventrikel keempat.",
+                    "Kanalis Sentralis": "SALAH. Ini adalah rongga di dalam Medula Spinalis."
+                }
+            },
+            { // 17
+                question: "Kelainan kongenital yang disebabkan oleh kegagalan penutupan neuroporus anterior (rostral) adalah...",
+                options: ["Spina Bifida Occulta", "Meningomyelocele", "Anencephaly", "Hydrocephalus", "Microcephaly"],
+                correct: "Anencephaly",
+                explanations: {
+                    "Spina Bifida Occulta": "SALAH. Ini disebabkan oleh kegagalan penutupan neuroporus posterior (kaudal).",
+                    "Meningomyelocele": "SALAH. Ini adalah jenis spina bifida (kegagalan penutupan posterior).",
+                    "Anencephaly": "BENAR. Kegagalan penutupan ujung kepala (anterior/rostral) dari tabung neural menyebabkan otak depan tidak terbentuk, suatu kondisi fatal yang disebut anencephaly.",
+                    "Hydrocephalus": "SALAH. Ini adalah penumpukan CSS, seringkali sekunder akibat penyumbatan, bukan kegagalan penutupan primer.",
+                    "Microcephaly": "SALAH. Ini adalah ukuran kepala kecil, yang bisa memiliki banyak penyebab, tetapi bukan definisi dari kegagalan penutupan neuroporus anterior."
+                }
+            },
+            { // 18
+                question: "Spina Bifida adalah kelainan kongenital yang terjadi akibat kegagalan penutupan...",
+                options: ["Neuroporus Anterior (Rostral)", "Neuroporus Posterior (Kaudal)", "Vesikula Otak", "Krista Neuralis", "Notokorda"],
+                correct: "Neuroporus Posterior (Kaudal)",
+                explanations: {
+                    "Neuroporus Anterior (Rostral)": "SALAH. Kegagalan penutupan ini menyebabkan Anencephaly.",
+                    "Neuroporus Posterior (Kaudal)": "BENAR. Kegagalan penutupan ujung ekor (posterior/kaudal) dari tabung neural menyebabkan cacat pada tulang belakang dan medula spinalis, yang dikenal sebagai Spina Bifida.",
+                    "Vesikula Otak": "SALAH. Ini adalah struktur yang terbentuk setelah tabung neural menutup.",
+                    "Krista Neuralis": "SALAH. Cacat pada krista neuralis menyebabkan kelainan SST (neuroblastoma, dll.) tetapi bukan spina bifida.",
+                    "Notokorda": "SALAH. Notokorda menginduksi penutupan, tetapi spina bifida adalah cacat pada tabung neural itu sendiri."
+                }
+            },
+            { // 19
+                question: "Lengkungan (fleksura) tajam yang memisahkan otak depan (Prosencephalon) dari batang otak primitif (Mesencephalon) disebut...",
+                options: ["Fleksura Servikal", "Fleksura Sefalik (Cranial Flexure)", "Fleksura Pontin", "Fleksura Kaudal", "Fleksura Lumbal"],
+                correct: "Fleksura Sefalik (Cranial Flexure)",
+                explanations: {
+                    "Fleksura Servikal": "SALAH. Ini adalah lengkungan antara Rhombencephalon (otak belakang) dan Medula Spinalis.",
+                    "Fleksura Sefalik (Cranial Flexure)": "BENAR. Ini adalah lengkungan primer yang paling tajam, terjadi di tingkat Mesencephalon, yang memisahkan otak depan dari otak tengah.",
+                    "Fleksura Pontin": "SALAH. Ini adalah lengkungan sekunder yang muncul kemudian, membagi Rhombencephalon.",
+                    "Fleksura Kaudal": "SALAH. Istilah ini tidak umum digunakan untuk fleksura otak primer.",
+                    "Fleksura Lumbal": "SALAH. Ini merujuk pada lengkungan tulang belakang, bukan otak."
+                }
+            },
+            { // 20
+                question: "Secara fungsional, 'Sistem Saraf Somatik' dan 'Sistem Saraf Otonom' adalah pembagian dari...",
+                options: ["Susunan Saraf Pusat (SSP)", "Susunan Saraf Tepi (SST)", "Sistem Saraf Embriologis", "Vesikula Otak", "Hanya Otak"],
+                correct: "Susunan Saraf Tepi (SST)",
+                explanations: {
+                    "Susunan Saraf Pusat (SSP)": "SALAH. SSP adalah pembagian anatomis (otak dan medula spinalis).",
+                    "Susunan Saraf Tepi (SST)": "BENAR. SST dibagi secara fungsional menjadi divisi Somatik (volunter/sadar, ke otot rangka) dan Otonom (involunter/tidak sadar, ke organ dalam).",
+                    "Sistem Saraf Embriologis": "SALAH. Ini merujuk pada pembagian vesikula (misal: Prosencephalon).",
+                    "Vesikula Otak": "SALAH. Ini adalah pembagian embriologis dari SSP.",
+                    "Hanya Otak": "SALAH. Pembagian ini melibatkan saraf di seluruh tubuh."
+                }
+            },
+            
+            // --- SOAL TAMBAHAN (21-35) ---
+            
+            { // 21
+                question: "Manakah dari sel glia berikut yang berfungsi membentuk sawar darah otak (blood-brain barrier) di SSP?",
+                options: ["Oligodendrosit", "Mikroglia", "Sel Ependim", "Astrosit", "Sel Schwann"],
+                correct: "Astrosit",
+                explanations: {
+                    "Oligodendrosit": "SALAH. Oligodendrosit berfungsi membentuk mielin di SSP.",
+                    "Mikroglia": "SALAH. Mikroglia berfungsi sebagai sel imun (fagosit) di SSP.",
+                    "Sel Ependim": "SALAH. Sel Ependim melapisi ventrikel dan memproduksi cairan serebrospinal.",
+                    "Astrosit": "BENAR. Astrosit memiliki 'kaki perivaskular' yang menyelimuti kapiler dan berkontribusi besar dalam pembentukan sawar darah otak.",
+                    "Sel Schwann": "SALAH. Sel Schwann berada di SST, bukan SSP, dan berfungsi membentuk mielin di SST."
+                }
+            },
+            { // 22
+                question: "Sel glia yang berfungsi membentuk selubung mielin di Susunan Saraf Tepi (SST) adalah...",
+                options: ["Astrosit", "Oligodendrosit", "Sel Satelit", "Mikroglia", "Sel Schwann"],
+                correct: "Sel Schwann",
+                explanations: {
+                    "Astrosit": "SALAH. Astrosit adalah sel pendukung di SSP yang membentuk sawar darah otak.",
+                    "Oligodendrosit": "SALAH. Oligodendrosit membentuk mielin di SSP, bukan SST. Satu oligodendrosit bisa memielinasi beberapa akson.",
+                    "Sel Satelit": "SALAH. Sel satelit adalah sel pendukung di SST, tetapi fungsinya menyokong badan sel di ganglion.",
+                    "Mikroglia": "SALAH. Mikroglia adalah sel imun di SSP.",
+                    "Sel Schwann": "BENAR. Sel Schwann membungkus akson di SST untuk membentuk selubung mielin. Satu sel Schwann hanya memielinasi satu segmen akson."
+                }
+            },
+            { // 23
+                question: "Struktur di ektoderm yang menjadi penanda dimulainya proses Gastrulasi pada minggu ke-3 adalah...",
+                options: ["Notokord", "Primitive Streak (Garis Primitif)", "Neural Plate (Lempeng Saraf)", "Blastodisc", "Morula"],
+                correct: "Primitive Streak (Garis Primitif)",
+                explanations: {
+                    "Notokord": "SALAH. Notokord terbentuk dari mesoderm setelah gastrulasi dimulai.",
+                    "Primitive Streak (Garis Primitif)": "BENAR. Gastrulasi, proses pembentukan 3 lapisan germinal, dimulai dengan terbentuknya primitive streak, tempat sel ektoderm bermigrasi ke dalam.",
+                    "Neural Plate (Lempeng Saraf)": "SALAH. Neural plate terbentuk setelah gastrulasi, sebagai hasil induksi dari notokord.",
+                    "Blastodisc": "SALAH. Blastodisc adalah struktur 2 lapis (ektoderm & endoderm) sebelum gastrulasi.",
+                    "Morula": "SALAH. Morula adalah tahap bola sel padat sebelum blastulasi."
+                }
+            },
+            { // 24
+                question: "Struktur dari mesoderm yang berperan PENTING menginduksi ektoderm di atasnya untuk menebal menjadi lempeng saraf (neural plate) adalah...",
+                options: ["Krista Neuralis", "Tabung Neural", "Notokord", "Primitive Streak", "Endoderm"],
+                correct: "Notokord",
+                explanations: {
+                    "Krista Neuralis": "SALAH. Krista neuralis adalah turunan dari ektoderm, bukan penginduksi.",
+                    "Tabung Neural": "SALAH. Tabung neural adalah hasil dari induksi, bukan penginduksinya.",
+                    "Notokord": "BENAR. Notokord adalah batang dari sel-sel mesoderm di garis tengah yang melepaskan sinyal kimia (menginduksi) ektoderm di atasnya untuk memulai proses neurulasi.",
+                    "Primitive Streak": "SALAH. Primitive streak adalah tempat gastrulasi terjadi, sebelum induksi neurulasi.",
+                    "Endoderm": "SALAH. Endoderm adalah lapisan germinal bawah."
+                }
+            },
+            { // 25
+                question: "Pada perkembangan medulla spinalis, struktur apakah yang memisahkan Plat Alar (sensorik) dari Plat Basal (motorik)?",
+                options: ["Kanalis Sentralis", "Zona Marginal", "Sulcus Limitans", "Neuroporus Kaudalis", "Rhombic Lips"],
+                correct: "Sulcus Limitans",
+                explanations: {
+                    "Kanalis Sentralis": "SALAH. Ini adalah rongga di tengah medulla spinalis.",
+                    "Zona Marginal": "SALAH. Ini adalah lapisan terluar (substansia alba).",
+                    "Sulcus Limitans": "BENAR. Ini adalah alur longitudinal di dinding lateral tabung saraf yang memisahkan area dorsal (Alar/sensorik) dari area ventral (Basal/motorik).",
+                    "Neuroporus Kaudalis": "SALAH. Ini adalah lubang di ujung tabung saraf.",
+                    "Rhombic Lips": "SALAH. Ini adalah struktur di otak belakang yang membentuk serebelum."
+                }
+            },
+            { // 26
+                question: "Plat Alar (bagian dorsal) dari tabung saraf akan berkembang menjadi struktur yang memiliki fungsi utama...",
+                options: ["Motorik Somatik", "Motorik Viseral (Otonom)", "Sensorik", "Menghubungkan hemisfer", "Memproduksi mielin"],
+                correct: "Sensorik",
+                explanations: {
+                    "Motorik Somatik": "SALAH. Ini adalah fungsi dari Plat Basal (kornu ventralis).",
+                    "Motorik Viseral (Otonom)": "SALAH. Ini juga fungsi dari Plat Basal (kornu lateralis).",
+                    "Sensorik": "BENAR. Plat Alar menerima input sensorik dan berkembang menjadi kornu dorsalis (tanduk abu-abu belakang) di medulla spinalis dan nukleus sensorik di batang otak.",
+                    "Menghubungkan hemisfer": "SALAH. Ini adalah fungsi corpus callosum.",
+                    "Memproduksi mielin": "SALAH. Ini adalah fungsi oligodendrosit."
+                }
+            },
+            { // 27
+                question: "Plat Basal (bagian ventral) dari tabung saraf akan berkembang menjadi kornu (tanduk) di medulla spinalis yang berfungsi sebagai...",
+                options: ["Pusat relay sensorik", "Pusat motorik", "Jalur substansia alba", "Sawar darah otak", "Pusat refleks visual"],
+                correct: "Pusat motorik",
+                explanations: {
+                    "Pusat relay sensorik": "SALAH. Ini adalah fungsi dari Plat Alar (kornu dorsalis).",
+                    "Pusat motorik": "BENAR. Plat Basal berkembang menjadi kornu ventralis (motorik somatik) dan kornu lateralis (motorik otonom), tempat badan sel neuron motorik berada.",
+                    "Jalur substansia alba": "SALAH. Ini adalah Zona Marginal, bukan Plat Basal (yang menjadi substansia grisea).",
+                    "Sawar darah otak": "SALAH. Ini adalah fungsi astrosit.",
+                    "Pusat refleks visual": "SALAH. Ini adalah fungsi colliculus superior (turunan Mesencephalon)."
+                }
+            },
+            { // 28
+                question: "Selama perkembangan medulla spinalis, badan sel neuron (neuroblas) bermigrasi dari Zona Ventrikular untuk membentuk...",
+                options: ["Zona Marginal (Substansia Alba)", "Zona Intermediet (Substansia Grisea)", "Sel Ependim", "Kanalis Sentralis", "Notokord"],
+                correct: "Zona Intermediet (Substansia Grisea)",
+                explanations: {
+                    "Zona Marginal (Substansia Alba)": "SALAH. Zona marginal adalah lapisan terluar yang berisi akson, bukan badan sel.",
+                    "Zona Intermediet (Substansia Grisea)": "BENAR. Sel-sel dari Zona Ventrikular (lapisan terdalam) bermigrasi ke luar untuk membentuk Zona Intermediet (Lapisan Mantel), yang menjadi substansia grisea (badan sel).",
+                    "Sel Ependim": "SALAH. Sel ependim adalah sisa dari Zona Ventrikular yang tidak bermigrasi.",
+                    "Kanalis Sentralis": "SALAH. Ini adalah rongga, bukan lapisan sel.",
+                    "Notokord": "SALAH. Notokord adalah struktur mesodermal yang terpisah."
+                }
+            },
+            { // 29
+                question: "Serebelum (otak kecil) berkembang dari penebalan bagian dorsal Plat Alar yang disebut...",
+                options: ["Tectum", "Tegmentum", "Corpus Striatum", "Rhombic Lips (Bibir Rombik)", "Infundibulum"],
+                correct: "Rhombic Lips (Bibir Rombik)",
+                explanations: {
+                    "Tectum": "SALAH. Tectum (colliculi) adalah turunan Plat Alar dari Mesencephalon.",
+                    "Tegmentum": "SALAH. Tegmentum adalah turunan Plat Basal dari Mesencephalon.",
+                    "Corpus Striatum": "SALAH. Ini adalah struktur di dalam Telencephalon.",
+                    "Rhombic Lips (Bibir Rombik)": "BENAR. Ini adalah penebalan di bagian dorsal-lateral dari Plat Alar Metencephalon, yang tumbuh dan menyatu untuk membentuk serebelum.",
+                    "Infundibulum": "SALAH. Ini adalah turunan Diencephalon yang membentuk hipofisis posterior."
+                }
+            },
+            { // 30
+                question: "Kelenjar Hipofisis (Pituitari) memiliki dua asal embriologi. Lobus anterior (Adenohipofisis) berasal dari...",
+                options: ["Ektoderm atap mulut (Kantung Rathke)", "Neuroektoderm Diencephalon (Infundibulum)", "Sel Krista Neuralis", "Mesoderm", "Plat Alar Myelencephalon"],
+                correct: "Ektoderm atap mulut (Kantung Rathke)",
+                explanations: {
+                    "Ektoderm atap mulut (Kantung Rathke)": "BENAR. Adenohipofisis berasal dari ektoderm permukaan (atap mulut primitif) yang tumbuh ke atas.",
+                    "Neuroektoderm Diencephalon (Infundibulum)": "SALAH. Ini adalah asal dari lobus posterior (Neurohipofisis).",
+                    "Sel Krista Neuralis": "SALAH. Krista neuralis tidak membentuk hipofisis.",
+                    "Mesoderm": "SALAH. Hipofisis berasal dari ektoderm.",
+                    "Plat Alar Myelencephalon": "SALAH. Ini membentuk nukleus sensorik di medula oblongata."
+                }
+            },
+            { // 31
+                question: "Pada Telencephalon, berkas akson masif (Kapsula Interna) tumbuh dan membagi Corpus Striatum menjadi...",
+                options: ["Talamus dan Hipotalamus", "Pons dan Serebelum", "Nukleus Kaudatus dan Nukleus Lentiformis", "Colliculus Superior dan Inferior", "Nukleus Grasilis dan Kuneatus"],
+                correct: "Nukleus Kaudatus dan Nukleus Lentiformis",
+                explanations: {
+                    "Talamus dan Hipotalamus": "SALAH. Ini adalah struktur Diencephalon.",
+                    "Pons dan Serebelum": "SALAH. Ini adalah struktur Metencephalon.",
+                    "Nukleus Kaudatus dan Nukleus Lentiformis": "BENAR. Corpus Striatum adalah massa substansia grisea di dasar Telencephalon yang dibagi oleh Kapsula Interna menjadi dua nukleus tersebut (bagian dari ganglia basalis).",
+                    "Colliculus Superior dan Inferior": "SALAH. Ini adalah Tectum di Mesencephalon.",
+                    "Nukleus Grasilis dan Kuneatus": "SALAH. Ini adalah nukleus sensorik di Myelencephalon (medula oblongata)."
+                }
+            },
+            { // 32
+                question: "Pada orang dewasa, ujung kaudal dari Medulla Spinalis (Conus Medullaris) umumnya berada di level vertebra...",
+                options: ["Koksigeal (Tulang Ekor)", "Sakral 2 (S2)", "Lumbal 5 (L5)", "Lumbal 1-2 (L1-L2)", "Torakal 12 (T12)"],
+                correct: "Lumbal 1-2 (L1-L2)",
+                explanations: {
+                    "Koksigeal (Tulang Ekor)": "SALAH. Ini adalah posisi pada embrio bulan ke-3, sebelum pertumbuhan diferensial.",
+                    "Sakral 2 (S2)": "SALAH. Ini mungkin level ujung kantung dural, tapi bukan medulla spinalis.",
+                    "Lumbal 5 (L5)": "SALAH. Ini terlalu rendah. Posisi ini ada pada bayi baru lahir (sekitar L3).",
+                    "Lumbal 1-2 (L1-L2)": "BENAR. Karena kolumna vertebralis tumbuh lebih cepat daripada tabung saraf, ujung medulla spinalis 'tertarik' ke atas dan berakhir di L1-L2 pada orang dewasa.",
+                    "Torakal 12 (T12)": "SALAH. Ini sedikit terlalu tinggi, L1-L2 adalah level yang paling umum diterima."
+                }
+            },
+            { // 33
+                question: "Manakah dari berikut ini yang BUKAN merupakan turunan dari Sel Krista Neuralis (Neural Crest Cells)?",
+                options: ["Melanosit (Sel Pigmen Kulit)", "Medula Adrenal (Sel Kromafin)", "Ganglion Radiks Dorsalis", "Sel Schwann", "Neuron Motorik (di Kornu Ventralis)"],
+                correct: "Neuron Motorik (di Kornu Ventralis)",
+                explanations: {
+                    "Melanosit (Sel Pigmen Kulit)": "SALAH. Ini adalah turunan krista neuralis yang bermigrasi jauh.",
+                    "Medula Adrenal (Sel Kromafin)": "SALAH. Ini adalah turunan krista neuralis (dianggap sebagai ganglion simpatik termodifikasi).",
+                    "Ganglion Radiks Dorsalis": "SALAH. Neuron sensorik di ganglion ini adalah turunan klasik krista neuralis.",
+                    "Sel Schwann": "SALAH. Sel glia di SST ini berasal dari krista neuralis.",
+                    "Neuron Motorik (di Kornu Ventralis)": "BENAR. Neuron motorik berasal dari Plat Basal di dalam Tabung Neural (SSP), bukan dari Krista Neuralis (SST)."
+                }
+            },
+            { // 34
+                question: "Sistem Saraf Simpatik berasal dari neuron preganglion di level...",
+                options: ["Kraniosakral (Otak dan Sakrum S2-S4)", "Torakolumbal (T1 - L3)", "Hanya Saraf Kranial", "Hanya Medulla Spinalis bagian Servikal", "Seluruh Medulla Spinalis"],
+                correct: "Torakolumbal (T1 - L3)",
+                explanations: {
+                    "Kraniosakral (Otak dan Sakrum S2-S4)": "SALAH. Ini adalah asal dari Sistem Saraf Parasimpatik.",
+                    "Torakolumbal (T1 - L3)": "BENAR. Sistem simpatik disebut juga sistem torakolumbal karena badan sel preganglionnya berada di kornu lateralis medulla spinalis dari T1 hingga L2/L3.",
+                    "Hanya Saraf Kranial": "SALAH. Ini hanya bagian dari sistem parasimpatik.",
+                    "Hanya Medulla Spinalis bagian Servikal": "SALAH. Bagian servikal tidak memiliki output otonom primer.",
+                    "Seluruh Medulla Spinalis": "SALAH. Outputnya terbatas pada T1-L3 (simpatik) dan S2-S4 (parasimpatik)."
+                }
+            },
+            { // 35
+                question: "Manakah ciri khas dari Sistem Saraf Parasimpatik?",
+                options: ["Serabut preganglion pendek, postganglion panjang", "Berasal dari level Torakolumbal", "Ganglion terletak dekat dengan organ target", "Ganglion terletak dekat dengan medulla spinalis (Rantai Paravertebral)", "Menggunakan Norepinefrin di organ target"],
+                correct: "Ganglion terletak dekat dengan organ target",
+                explanations: {
+                    "Serabut preganglion pendek, postganglion panjang": "SALAH. Ini adalah ciri khas sistem Simpatik.",
+                    "Berasal dari level Torakolumbal": "SALAH. Ini adalah ciri khas sistem Simpatik.",
+                    "Ganglion terletak dekat dengan organ target": "BENAR. Sistem parasimpatik memiliki serabut preganglion yang panjang (dari otak/sakrum) dan ganglion terminal yang terletak di dalam atau sangat dekat dengan organ target.",
+                    "Ganglion terletak dekat dengan medulla spinalis (Rantai Paravertebral)": "SALAH. Ini adalah ciri khas sistem Simpatik.",
+                    "Menggunakan Norepinefrin di organ target": "SALAH. Sistem parasimpatik utamanya menggunakan Asetilkolin (ACh) di organ target."
+                }
+            }
+        ];
+
+
+        // --- Variabel Status Kuis ---
+        let currentQuestionIndex = 0;
+        let score = 0;
+        const totalQuestions = questions.length;
+        let currentMode = 'exam'; // 'exam', 'practice', 'flashcard'
+        let currentFlashcardIndex = 0; // Untuk mode flashcard
+        let userAnswers = []; // BARU: Untuk menyimpan jawaban mode ujian
+
+        // --- Referensi Elemen DOM ---
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const flashcardScreen = document.getElementById('flashcard-screen');
+        const reviewScreen = document.getElementById('review-screen'); // BARU
+        
+        // Tombol Menu Utama
+        const startFlashcardBtn = document.getElementById('start-flashcard-btn');
+        const startPracticeBtn = document.getElementById('start-practice-btn');
+        const startExamBtn = document.getElementById('start-exam-btn');
+        
+        // Tombol Hasil
+        const restartButton = document.getElementById('restart-button');
+        const reviewButton = document.getElementById('review-button'); // BARU
+        
+        // Elemen Kuis
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const progressText = document.getElementById('progress-text');
+        const scoreText = document.getElementById('score-text');
+        const finalScoreText = document.getElementById('final-score-text');
+        const nextQuestionButton = document.getElementById('next-question-btn');
+        const explanationContainer = document.getElementById('explanation-container');
+        
+        // Elemen Flashcard
+        const flashcard = document.getElementById('flashcard');
+        const flashcardFront = document.getElementById('flashcard-front');
+        const flashcardBack = document.getElementById('flashcard-back');
+        const flashcardAnswerList = document.getElementById('flashcard-answer-list');
+        const flashcardProgress = document.getElementById('flashcard-progress');
+        const flashcardPrev = document.getElementById('flashcard-prev');
+        const flashcardFlip = document.getElementById('flashcard-flip');
+        const flashcardNext = document.getElementById('flashcard-next');
+        
+        // Elemen Review BARU
+        const reviewContainer = document.getElementById('review-container');
+        const restartFromReviewBtn = document.getElementById('restart-from-review');
+        
+        // Tombol Kembali ke Menu
+        const backToMenuButtons = document.querySelectorAll('.back-to-menu-btn');
+        
+        // --- Fungsi Navigasi Utama ---
+
+        function showMainMenu() {
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            flashcardScreen.classList.add('hidden');
+            reviewScreen.classList.add('hidden'); // BARU
+            startScreen.classList.remove('hidden');
+            document.body.classList.add('items-center');
+            document.body.classList.remove('pt-10');
+        }
+
+        function setBodyActive() {
+            document.body.classList.remove('items-center');
+            document.body.classList.add('pt-10');
+        }
+
+        // --- Logika Mode Flashcard ---
+
+        function startFlashcardMode() {
+            currentFlashcardIndex = 0;
+            startScreen.classList.add('hidden');
+            flashcardScreen.classList.remove('hidden');
+            setBodyActive();
+            showFlashcard();
+        }
+
+        function showFlashcard() {
+            const question = questions[currentFlashcardIndex];
+            flashcardFront.querySelector('p').innerText = question.question;
+            flashcardAnswerList.innerHTML = ''; 
+            flashcardFront.classList.remove('hidden');
+            flashcardBack.classList.add('hidden');
+            flashcardProgress.innerText = `${currentFlashcardIndex + 1} / ${totalQuestions}`;
+            flashcardPrev.disabled = currentFlashcardIndex === 0;
+            flashcardNext.disabled = currentFlashcardIndex === totalQuestions - 1;
+        }
+
+        function flipFlashcard() {
+            const isFlippingToBack = flashcardBack.classList.contains('hidden');
+            if (isFlippingToBack) {
+                const q = questions[currentFlashcardIndex];
+                renderFlashcardExplanations(q.explanations, q.correct);
+            }
+            flashcardFront.classList.toggle('hidden');
+            flashcardBack.classList.toggle('hidden');
+        }
+        
+        function renderFlashcardExplanations(explanationsObj, correctTerm) {
+            flashcardAnswerList.innerHTML = ''; 
+            const sortedTerms = Object.keys(explanationsObj).sort((a, b) => (a === correctTerm ? -1 : b === correctTerm ? 1 : 0));
+            sortedTerms.forEach(term => {
+                const explanation = explanationsObj[term];
+                const isCorrect = (term === correctTerm);
+                renderSingleExplanation(term, explanation, isCorrect, flashcardAnswerList);
+            });
+        }
+        
+        function prevFlashcard() {
+            if (currentFlashcardIndex > 0) {
+                currentFlashcardIndex--;
+                showFlashcard();
+            }
+        }
+
+        function nextFlashcard() {
+            if (currentFlashcardIndex < totalQuestions - 1) {
+                currentFlashcardIndex++;
+                showFlashcard();
+            }
+        }
+
+        // --- Logika Mode Kuis (Latihan & Ujian) ---
+
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = []; // BARU: Kosongkan riwayat jawaban
+            
+            startScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            reviewScreen.classList.add('hidden'); // BARU
+            quizScreen.classList.remove('hidden');
+            nextQuestionButton.classList.add('hidden');
+            
+            setBodyActive();
+            showQuestion();
+        }
+        
+        function startPracticeMode() {
+            currentMode = 'practice';
+            startQuiz();
+        }
+        
+        function startExamMode() {
+            currentMode = 'exam';
+            startQuiz();
+        }
+
+        function showQuestion() {
+            optionsContainer.innerHTML = '';
+            explanationContainer.innerHTML = ''; 
+            nextQuestionButton.classList.add('hidden');
+            
+            const question = questions[currentQuestionIndex];
+            questionText.innerText = question.question;
+            progressText.innerText = `Soal ${currentQuestionIndex + 1} / ${totalQuestions}`;
+            
+            // Mode Latihan menunjukkan skor real-time, Mode Ujian tidak
+            if (currentMode === 'practice') {
+                 scoreText.innerText = `Skor: ${score}`;
+            } else {
+                 scoreText.innerText = `Skor: -`;
+            }
+            
+            const shuffledOptions = [...question.options].sort(() => Math.random() - 0.5);
+
+            shuffledOptions.forEach(option => {
+                const button = document.createElement('button');
+                button.innerText = option;
+                button.classList.add('option-btn');
+                button.addEventListener('click', () => selectAnswer(option, button));
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function selectAnswer(selectedOption, buttonEl) {
+            const correctAnwer = questions[currentQuestionIndex].correct;
+
+            // Nonaktifkan semua tombol opsi
+            const optionButtons = optionsContainer.querySelectorAll('.option-btn');
+            optionButtons.forEach(btn => btn.classList.add('disabled'));
+            
+            // Simpan jawaban (untuk kedua mode)
+            // Mode Latihan menyimpan skor, Mode Ujian menyimpan pilihan
+            userAnswers[currentQuestionIndex] = {
+                chosen: selectedOption,
+                correct: correctAnwer,
+                isCorrect: selectedOption === correctAnwer
+            };
+
+            // Logika lanjut berdasarkan mode
+            if (currentMode === 'practice') {
+                // --- MODE LATIHAN ---
+                if (selectedOption === correctAnwer) {
+                    score++;
+                    buttonEl.classList.add('correct');
+                } else {
+                    buttonEl.classList.add('incorrect');
+                    optionButtons.forEach(btn => {
+                        if (btn.innerText === correctAnwer) {
+                            btn.classList.add('correct');
+                        }
+                    });
+                }
+                scoreText.innerText = `Skor: ${score}`;
+                nextQuestionButton.classList.remove('hidden');
+                renderPracticeExplanation(selectedOption, correctAnwer);
+                
+            } else {
+                // --- MODE UJIAN (LOGIKA BARU) ---
+                // 1. Hanya sorot jawaban yang dipilih
+                buttonEl.classList.add('selected');
+                
+                // 2. Tidak ada feedback benar/salah
+                
+                // 3. Auto-lanjut setelah delay singkat
+                setTimeout(goToNextQuestion, 500); 
+            }
+        }
+        
+        function renderPracticeExplanation(chosenOption, correctOption) {
+            explanationContainer.innerHTML = ''; 
+            const explanations = questions[currentQuestionIndex].explanations;
+            const correctExplanation = explanations[correctOption];
+            renderSingleExplanation(correctOption, correctExplanation, true, explanationContainer);
+            
+            if (chosenOption !== correctOption) {
+                const chosenExplanation = explanations[chosenOption];
+                if (chosenExplanation) {
+                     renderSingleExplanation(chosenOption, chosenExplanation, false, explanationContainer);
+                }
+            }
+        }
+        
+        // Fungsi render yang dibagikan
+        function renderSingleExplanation(term, explanation, isCorrect, targetElement) {
+            const optionEl = document.createElement('div');
+            optionEl.classList.add('flashcard-option-detailed');
+            
+            if (isCorrect) {
+                optionEl.classList.add('correct');
+            } else {
+                optionEl.classList.add('incorrect');
+            }
+            
+            optionEl.innerHTML = `
+                <strong>${term}</strong>
+                <span>${explanation}</span>
+            `;
+            targetElement.appendChild(optionEl);
+        }
+        
+        function goToNextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < totalQuestions) {
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            
+            let finalScore = 0;
+            
+            if (currentMode === 'exam') {
+                // Hitung skor dari array userAnswers
+                finalScore = userAnswers.filter(answer => answer.isCorrect).length;
+                reviewButton.classList.remove('hidden'); // Tampilkan tombol review
+            } else {
+                // Ambil skor real-time dari mode latihan
+                finalScore = score;
+                reviewButton.classList.add('hidden'); // Sembunyikan tombol review
+            }
+            
+            finalScoreText.innerText = `SKOR ANDA: ${finalScore} / ${totalQuestions}`;
+            document.body.classList.add('items-center');
+            document.body.classList.remove('pt-10');
+        }
+        
+        // --- FUNGSI REVIEW BARU ---
+        
+        function showReviewScreen() {
+            resultScreen.classList.add('hidden');
+            reviewScreen.classList.remove('hidden');
+            reviewContainer.innerHTML = ''; // Kosongkan review sebelumnya
+            setBodyActive(); // Agar tidak terpusat
+            
+            questions.forEach((question, index) => {
+                const userAnswer = userAnswers[index] || { chosen: null }; // Tangani jika soal tidak terjawab
+                
+                // Buat kartu review
+                const reviewCard = document.createElement('div');
+                reviewCard.classList.add('review-card');
+                
+                // Buat HTML untuk opsi
+                let optionsHTML = '';
+                question.options.forEach(option => {
+                    let optionClass = 'review-option neutral';
+                    if (option === question.correct) {
+                        optionClass = 'review-option correct';
+                    } else if (option === userAnswer.chosen) {
+                        optionClass = 'review-option chosen-wrong';
+                    }
+                    
+                    optionsHTML += `<div class="${optionClass}">${option}</div>`;
+                });
+                
+                // Buat HTML untuk penjelasan
+                let explanationsHTML = '';
+                const explanations = question.explanations;
+                const correctTerm = question.correct;
+                const sortedTerms = Object.keys(explanations).sort((a, b) => (a === correctTerm ? -1 : b === correctTerm ? 1 : 0));
+                
+                sortedTerms.forEach(term => {
+                    const explanation = explanations[term];
+                    const isCorrect = (term === correctTerm);
+                    
+                    let explanationClass = 'flashcard-option-detailed';
+                    if (isCorrect) {
+                        explanationClass += ' correct';
+                    } else {
+                        explanationClass += ' incorrect';
+                    }
+                    
+                    explanationsHTML += `
+                        <div class="${explanationClass}">
+                            <strong>${term}</strong>
+                            <span>${explanation}</span>
+                        </div>
+                    `;
+                });
+                
+
+                // Gabungkan semuanya
+                reviewCard.innerHTML = `
+                    <div class="review-question">Soal ${index + 1}: ${question.question}</div>
+                    <div class="review-options-grid">${optionsHTML}</div>
+                    <div class="review-explanations">${explanationsHTML}</div>
+                `;
+                
+                reviewContainer.appendChild(reviewCard);
+            });
+        }
+
+        // --- Event Listeners ---
+        
+        // Menu Utama
+        startFlashcardBtn.addEventListener('click', startFlashcardMode);
+        startPracticeBtn.addEventListener('click', startPracticeMode);
+        startExamBtn.addEventListener('click', startExamMode);
+        
+        // Layar Hasil
+        restartButton.addEventListener('click', startQuiz); // Mengulangi mode terakhir
+        reviewButton.addEventListener('click', showReviewScreen); // BARU
+        
+        // Layar Review BARU
+        restartFromReviewBtn.addEventListener('click', startQuiz);
+        
+        // Layar Kuis
+        nextQuestionButton.addEventListener('click', goToNextQuestion);
+        
+        // Layar Flashcard
+        flashcard.addEventListener('click', flipFlashcard);
+        flashcardFlip.addEventListener('click', flipFlashcard);
+        flashcardPrev.addEventListener('click', prevFlashcard);
+        flashcardNext.addEventListener('click', nextFlashcard);
+        
+        // Tombol Kembali ke Menu (Global)
+        backToMenuButtons.forEach(button => {
+            button.addEventListener('click', showMainMenu);
+        });
+
+    </script>
+</body>
+</html>

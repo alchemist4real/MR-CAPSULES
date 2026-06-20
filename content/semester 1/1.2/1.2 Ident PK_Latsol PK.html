@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Patologi Klinik - Gamified</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #81C784;
+            --background-start: #a8e063;
+            --background-end: #56ab2f;
+            --card-bg: rgba(255, 255, 255, 0.15);
+            --text-color: #ffffff;
+            --border-color: rgba(255, 255, 255, 0.2);
+            --shadow-color: rgba(0, 0, 0, 0.15);
+            --correct-color: #43A047;
+            --incorrect-color: #E53935;
+            --timer-color: #FFC107;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--background-start), var(--background-end));
+            color: var(--text-color);
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 4px var(--shadow-color);
+        }
+        
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 0 10px;
+        }
+
+        #progress-container {
+            width: 100%;
+            height: 10px;
+            background-color: rgba(0,0,0,0.2);
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+        
+        #progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: var(--primary-color);
+            border-radius: 5px;
+            transition: width 0.3s ease-in-out;
+        }
+        
+        #score-display, #question-counter {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .quiz-container {
+            width: 100%;
+            padding: 30px;
+            border-radius: 15px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px 0 var(--shadow-color);
+            position: relative;
+        }
+        
+        #timer-container {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 60px;
+            background-color: var(--timer-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+            border: 4px solid white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        #question-text {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+            font-weight: 600;
+            min-height: 100px;
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 2rem;
+        }
+
+        .option-btn {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+        
+        .option-btn:hover:not([disabled]) {
+             background: rgba(255, 255, 255, 0.25);
+             transform: translateY(-2px);
+        }
+        
+        .option-btn.correct {
+            background-color: var(--correct-color);
+            border-color: var(--correct-color);
+            transform: scale(1.05);
+        }
+        
+        .option-btn.incorrect {
+            background-color: var(--incorrect-color);
+            border-color: var(--incorrect-color);
+        }
+        
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        #results-container {
+            display: none;
+            text-align: center;
+        }
+        
+        #results-title {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        #final-score {
+            font-size: 3rem;
+            color: var(--timer-color);
+            margin: 1rem 0;
+            font-weight: 700;
+        }
+
+        #retry-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            background: var(--primary-color);
+            color: var(--text-color);
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            margin-top: 1.5rem;
+        }
+        
+        #retry-btn:hover {
+            background: var(--secondary-color);
+            transform: translateY(-3px);
+        }
+        
+        #feedback-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8rem;
+            font-weight: 700;
+            text-shadow: 0 0 20px rgba(0,0,0,0.5);
+            z-index: 100;
+            pointer-events: none;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.3s ease-in-out;
+        }
+
+        #feedback-overlay.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8rem; }
+            .quiz-container { padding: 20px; }
+            #question-text { font-size: 1.2rem; min-height: 80px; }
+            .options-container { grid-template-columns: 1fr; }
+            #feedback-overlay { font-size: 5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="feedback-overlay"></div>
+    <div class="container">
+        <h1>Kuis Patologi Klinik</h1>
+
+        <div id="game-area">
+             <div class="quiz-header">
+                <div id="question-counter">Soal 1/100</div>
+                <div id="score-display">Skor: 0</div>
+            </div>
+            <div id="progress-container">
+                <div id="progress-bar"></div>
+            </div>
+            <div class="quiz-container" id="quiz-container">
+                <div id="timer-container">15</div>
+                <h2 id="question-text">Question text goes here</h2>
+                <div class="options-container" id="options-container"></div>
+            </div>
+        </div>
+        
+        <div class="quiz-container" id="results-container">
+            <h2 id="results-title">Kuis Selesai!</h2>
+            <p style="font-size: 1.2rem;">Skor Akhir Anda:</p>
+            <p id="final-score">0</p>
+            <button id="retry-btn">Main Lagi</button>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            // Definitions & Terms
+            { question: "Protein dalam sel darah merah yang berfungsi mengangkut oksigen disebut...", options: ["Albumin", "Hemoglobin", "Fibrinogen", "Globulin"], answer: "Hemoglobin" },
+            { question: "Persentase volume eritrosit dalam darah disebut...", options: ["Hemoglobin", "Leukosit", "Hematokrit", "Trombosit"], answer: "Hematokrit" },
+            { question: "Indikator inflamasi yang diukur dari kecepatan pengendapan eritrosit adalah...", options: ["MCV", "MCH", "LED", "Ht"], answer: "LED" },
+            { question: "Ukuran rata-rata volume eritrosit disebut...", options: ["MCH", "MCV", "MCHC", "LED"], answer: "MCV" },
+            { question: "Kondisi di mana ukuran eritrosit lebih kecil dari normal disebut...", options: ["Makrositik", "Normositik", "Mikrositik", "Hipokromik"], answer: "Mikrositik" },
+            { question: "Penggumpalan eritrosit akibat reaksi antigen-antibodi disebut...", options: ["Hemolisis", "Koagulasi", "Aglutinasi", "Presipitasi"], answer: "Aglutinasi" },
+            { question: "Bintik-bintik merah kecil pada kulit akibat perdarahan kapiler disebut...", options: ["Purpura", "Ekimoses", "Petechiae", "Hematoma"], answer: "Petechiae" },
+            { question: "Zat yang berfungsi mencegah pembekuan darah disebut...", options: ["Koagulan", "Antikoagulan", "Prokoagulan", "Agregat"], answer: "Antikoagulan" },
+            { question: "Peningkatan jumlah leukosit di atas nilai normal, seringkali menandakan infeksi, disebut...", options: ["Leukopenia", "Leukositosis", "Anemia", "Trombositosis"], answer: "Leukositosis" },
+            { question: "Antikoagulan yang paling umum digunakan untuk pemeriksaan hematologi rutin karena menjaga morfologi sel adalah...", options: ["Heparin", "Natrium Sitrat", "EDTA", "Oksalat"], answer: "EDTA" },
+            
+            // Reagents
+            { question: "Larutan yang digunakan untuk melisiskan eritrosit pada hitung jumlah leukosit adalah...", options: ["Hayem", "Turk", "Gower", "Rees-Ecker"], answer: "Turk" },
+            { question: "Pada metode Sahli, reagen yang digunakan untuk mengubah Hb menjadi asam hematin adalah...", options: ["Aquadest", "Natrium Sitrat", "HCl 0,1 N", "Asam Asetat"], answer: "HCl 0,1 N" },
+            { question: "Antikoagulan yang digunakan untuk pemeriksaan LED metode Westergreen adalah...", options: ["EDTA", "Heparin", "Natrium Sitrat 3,8%", "Kalium Oksalat"], answer: "Natrium Sitrat 3,8%" },
+            { question: "Larutan pengencer isotonis yang digunakan untuk hitung jumlah eritrosit adalah...", options: ["Larutan Turk", "Larutan Hayem", "HCl 0,1 N", "Natrium Klorida 0,9%"], answer: "Larutan Hayem" },
+            { question: "Serum yang akan mengaglutinasi eritrosit dengan antigen A adalah...", options: ["Anti-B", "Anti-D", "Anti-A", "Anti-AB"], answer: "Anti-A" },
+            { question: "Serum Anti-A umumnya diberi warna...", options: ["Kuning", "Merah", "Tidak berwarna", "Biru"], answer: "Biru" },
+            { question: "Serum Anti-B umumnya diberi warna...", options: ["Biru", "Kuning", "Tidak berwarna", "Hijau"], answer: "Kuning" },
+            { question: "Komponen larutan Turk yang berfungsi mewarnai inti leukosit adalah...", options: ["Asam Asetat Glasial", "Aquadest", "Gentian Violet", "NaCl"], answer: "Gentian Violet" },
+            { question: "Serum yang digunakan untuk menentukan Rhesus adalah...", options: ["Anti-A", "Anti-B", "Anti-AB", "Anti-D"], answer: "Anti-D" },
+            { question: "Perbandingan campuran darah dengan Natrium Sitrat 3,8% untuk pemeriksaan LED adalah...", options: ["1 bagian darah : 4 bagian sitrat", "4 bagian darah : 1 bagian sitrat", "1 bagian darah : 1 bagian sitrat", "9 bagian darah : 1 bagian sitrat"], answer: "4 bagian darah : 1 bagian sitrat" },
+            
+            // Methods & Procedures
+            { question: "Metode pemeriksaan Hb yang membandingkan warna asam hematin dengan standar visual adalah...", options: ["Cyanmethemoglobin", "Sahli", "Tallquist", "Oksihemoglobin"], answer: "Sahli" },
+            { question: "Bilik hitung yang umum digunakan untuk menghitung sel darah secara manual adalah...", options: ["Westergreen", "Wintrobe", "Improved Neubauer", "Thoma"], answer: "Improved Neubauer" },
+            { question: "Pada hitung leukosit, sel dihitung pada kotak...", options: ["Kecil di tengah", "Besar di 4 sudut", "Seluruh area", "Kecil di 4 sudut"], answer: "Besar di 4 sudut" },
+            { question: "Uji penyaring untuk mendeteksi kelainan vaskuler dan trombosit dengan membendung vena disebut...", options: ["Waktu Perdarahan", "Waktu Pembekuan", "Uji Rumple Leed", "Protrombin Time"], answer: "Uji Rumple Leed" },
+            { question: "Metode pengukuran waktu perdarahan dengan menusuk cuping telinga disebut...", options: ["Ivy", "Lee & White", "Duke", "Westergreen"], answer: "Duke" },
+            { question: "Zona pada sediaan apus darah yang paling baik untuk evaluasi morfologi sel adalah...", options: ["Zona tebal (Thick zone)", "Zona tipis (Thin zone)", "Zona merata (Even zone)", "Ekor sediaan (Tail)"], answer: "Zona merata (Even zone)" },
+            { question: "Pada Uji Rumple Leed, tekanan bendungan dipertahankan selama...", options: ["1 menit", "5 menit", "10 menit", "15 menit"], answer: "10 menit" },
+            { question: "Pengenceran yang umum digunakan untuk hitung eritrosit adalah...", options: ["10x", "20x", "100x", "200x"], answer: "200x" },
+            { question: "Setelah darah dicampur HCl pada metode Sahli, campuran didiamkan selama...", options: ["10-15 detik", "30 detik", "1-3 menit", "5 menit"], answer: "1-3 menit" },
+            { question: "Langkah pertama yang harus dilakukan setelah mengisi pipet Thoma dengan darah adalah...", options: ["Mengisap larutan pengencer", "Mengocok pipet", "Membersihkan darah di ujung pipet", "Membuang 3 tetes pertama"], answer: "Membersihkan darah di ujung pipet" },
+
+            // Interpretations
+            { question: "Jika darah pasien menunjukkan aglutinasi pada serum Anti-A dan Anti-B, golongan darahnya adalah...", options: ["A", "B", "AB", "O"], answer: "AB" },
+            { question: "Jika darah pasien tidak menunjukkan aglutinasi pada serum Anti-A maupun Anti-B, golongan darahnya adalah...", options: ["A", "B", "AB", "O"], answer: "O" },
+            { question: "Hasil Uji Rumple Leed dianggap positif jika ditemukan...", options: ["< 5 petechiae", "≥ 10 petechiae", "Memar", "Tidak ada petechiae"], answer: "≥ 10 petechiae" },
+            { question: "Nilai MCV yang tinggi (makrositik) dan MCH yang tinggi dapat ditemukan pada anemia...", options: ["Defisiensi besi", "Penyakit kronis", "Megaloblastik", "Thalassemia"], answer: "Megaloblastik" },
+            { question: "Peningkatan nilai LED yang sangat tinggi sering dikaitkan dengan...", options: ["Infeksi virus ringan", "Alergi", "Multiple Myeloma", "Dehidrasi"], answer: "Multiple Myeloma" },
+            { question: "Hasil hitung jenis menunjukkan Neutrofil 80%, Limfosit 15%, Monosit 4%, Eosinofil 1%. Kondisi ini disebut...", options: ["Limfositosis", "Neutrofilia", "Eosinofilia", "Monositosis"], answer: "Neutrofilia" },
+            { question: "Aglutinasi pada serum Anti-D menunjukkan Rhesus...", options: ["Positif", "Negatif", "Lemah", "Tidak dapat ditentukan"], answer: "Positif" },
+            { question: "Jika darah pasien menunjukkan aglutinasi pada serum Anti-B saja, golongan darahnya adalah...", options: ["A", "B", "AB", "O"], answer: "B" },
+            { question: "Nilai MCHC yang rendah (hipokromik) khas ditemukan pada...", options: ["Anemia defisiensi B12", "Anemia aplastik", "Anemia defisiensi besi", "Sferositosis herediter"], answer: "Anemia defisiensi besi" },
+            { question: "Waktu perdarahan (Bleeding Time) yang memanjang dapat menunjukkan adanya gangguan pada...", options: ["Faktor koagulasi intrinsik", "Fungsi trombosit atau vaskuler", "Faktor koagulasi ekstrinsik", "Sistem fibrinolitik"], answer: "Fungsi trombosit atau vaskuler" },
+
+            // Reference Values
+            { question: "Nilai rujukan normal Hemoglobin untuk wanita dewasa adalah...", options: ["10,5-13,5 gr%", "11,5-16,5 gr%", "12,5-18,0 gr%", "13,5-19,5 gr%"], answer: "11,5-16,5 gr%" },
+            { question: "Rentang normal jumlah leukosit pada orang dewasa adalah...", options: ["1.000-3.000/mm³", "4.000-11.000/mm³", "12.000-15.000/mm³", "15.000-20.000/mm³"], answer: "4.000-11.000/mm³" },
+            { question: "Nilai normal waktu perdarahan (Bleeding Time) metode Duke adalah...", options: ["1-3 menit", "5-8 menit", "9-15 menit", "< 1 menit"], answer: "1-3 menit" },
+            { question: "Rentang normal Hematokrit untuk pria dewasa adalah...", options: ["32-42%", "37-47%", "40-54%", "50-60%"], answer: "40-54%" },
+            { question: "Nilai rujukan LED metode Westergreen untuk pria adalah...", options: ["0-5 mm/jam", "0-15 mm/jam", "0-20 mm/jam", "0-25 mm/jam"], answer: "0-15 mm/jam" },
+            { question: "Persentase normal Limfosit dalam sirkulasi darah dewasa adalah...", options: ["1-6%", "10-20%", "20-40%", "50-70%"], answer: "20-40%" },
+            { question: "Persentase normal Neutrofil Segmen dalam sirkulasi darah dewasa adalah...", options: ["1-6%", "20-40%", "40-50%", "50-70%"], answer: "50-70%" },
+            { question: "Nilai normal waktu pembekuan (Clotting Time) metode Lee & White adalah...", options: ["1-3 menit", "3-6 menit", "5-8 menit", "9-15 menit"], answer: "9-15 menit" },
+            { question: "Rentang normal jumlah eritrosit untuk wanita dewasa adalah...", options: ["2,9-4,6 juta/mm³", "3,9-5,6 juta/mm³", "4,5-6,5 juta/mm³", "5,0-7,0 juta/mm³"], answer: "3,9-5,6 juta/mm³" },
+            { question: "Jumlah trombosit normal pada orang dewasa adalah...", options: ["50.000-100.000/mm³", "150.000-450.000/mm³", "500.000-750.000/mm³", ">1.000.000/mm³"], answer: "150.000-450.000/mm³" },
+            
+            // Calculations 1
+            { question: "Dihitung 200 sel leukosit dalam 4 kotak besar bilik hitung dengan pengenceran 20x. Berapakah jumlah leukosit/mm³?", options: ["5.000", "10.000", "2.500", "20.000"], answer: "10.000" }, // (200/4) * 10 * 20 = 50 * 200 = 10000
+            { question: "Hasil lab: Ht = 45%, Eritrosit = 5 juta/mm³. Berapakah nilai MCV?", options: ["80 fL", "90 fL", "100 fL", "110 fL"], answer: "90 fL" }, // (45/5)*10
+            { question: "Hasil lab: Hb = 15 gr%, Eritrosit = 5 juta/mm³. Berapakah nilai MCH?", options: ["25 pg", "30 pg", "35 pg", "40 pg"], answer: "30 pg" }, // (15/5)*10
+            { question: "Hasil lab: Hb = 12 gr%, Ht = 36%. Berapakah nilai MCHC?", options: ["30%", "33.3%", "36%", "40%"], answer: "33.3%" }, // (12/36)*100
+            { question: "Dihitung 500 sel eritrosit di 5 kotak sedang (total 80 kotak kecil) dengan pengenceran 200x. Berapa jumlah eritrosit/mm³?", options: ["5.000.000", "2.500.000", "4.000.000", "6.250.000"], answer: "5.000.000" }, // 500 * 10 * 1000 -> not standard. (500/80) * 400 * 10 * 200 -> incorrect formula in prompt. Correct is 500 * 10 (depth) * 5 (from 1/5th of the central square) * 200 (dilution) = 5,000,000
+            
+            // Errors & Troubleshooting
+            { question: "Apa efek jika terdapat gelembung udara dalam pipet Westergreen saat pemeriksaan LED?", options: ["Hasil lebih tinggi", "Hasil lebih rendah", "Tidak ada efek", "Darah membeku"], answer: "Hasil lebih rendah" },
+            { question: "Memijit-mijit jari terlalu keras saat pengambilan darah kapiler dapat menyebabkan...", options: ["Hasil tinggi palsu", "Hasil rendah palsu", "Hemokonsentrasi", "Tidak berpengaruh"], answer: "Hasil rendah palsu" },
+            { question: "Jika tabung LED diletakkan miring, hasil yang didapat akan...", options: ["Lebih rendah dari seharusnya", "Lebih tinggi dari seharusnya", "Akurat", "Tidak dapat dibaca"], answer: "Lebih tinggi dari seharusnya" },
+            { question: "Kesalahan pengenceran pada hitung sel akan menyebabkan kesalahan yang bersifat...", options: ["Acak", "Sistematis", "Minimal", "Dapat diabaikan"], answer: "Sistematis" },
+            { question: "Penggunaan antikoagulan yang tidak tepat atau perbandingan yang salah dapat menyebabkan...", options: ["Perubahan warna reagen", "Aglutinasi non-spesifik", "Gumpalan mikro (clot)", "Peningkatan presisi"], answer: "Gumpalan mikro (clot)" },
+
+            // Calculations 2
+            { question: "Dihitung 120 sel leukosit dalam 4 kotak besar bilik hitung dengan pengenceran 10x. Berapakah jumlah leukosit/mm³?", options: ["3.000", "6.000", "1.500", "12.000"], answer: "3.000" }, // (120/4) * 10 * 10 = 30 * 100 = 3000
+            { question: "Hasil lab: Ht = 30%, Eritrosit = 3 juta/mm³. Nilai MCV pasien ini adalah...", options: ["80 fL", "90 fL", "100 fL", "110 fL"], answer: "100 fL" }, // (30/3)*10
+            { question: "Hasil lab: Hb = 9 gr%, Eritrosit = 3 juta/mm³. Nilai MCH pasien ini adalah...", options: ["25 pg", "30 pg", "35 pg", "40 pg"], answer: "30 pg" }, // (9/3)*10
+            { question: "Hasil lab: Hb = 14 gr%, Ht = 40%. Nilai MCHC pasien ini adalah...", options: ["32%", "35%", "38%", "40%"], answer: "35%" }, // (14/40)*100
+            { question: "Pada tekanan sistol 120 mmHg dan diastol 80 mmHg, berapa tekanan yang digunakan untuk Uji Rumple Leed?", options: ["80 mmHg", "120 mmHg", "100 mmHg", "40 mmHg"], answer: "100 mmHg" }, // (120+80)/2
+
+            // Miscellaneous Advanced
+            { question: "Alat yang memiliki bola putih di dalamnya dan skala 0,5-1-11 digunakan untuk...", options: ["Hitung Eritrosit", "Hitung Trombosit", "Hitung Leukosit", "Mengukur Hb"], answer: "Hitung Leukosit" },
+            { question: "Metode mikrohematokrit menggunakan sentrifuge dengan kecepatan sekitar...", options: ["3.000 rpm", "5.000 rpm", "10.000 rpm", "16.000 rpm"], answer: "16.000 rpm" },
+            { question: "Pada hitung eritrosit, sel dihitung pada kotak...", options: ["Besar di 4 sudut", "Kecil di 5 area tengah", "Seluruh 9 kotak besar", "Kecil di 4 sudut"], answer: "Kecil di 5 area tengah" },
+            { question: "Pemeriksaan waktu pembekuan (Clotting time) menilai jalur...", options: ["Ekstravaskuler", "Intravaskuler", "Intrinsik dan bersama", "Ekstrinsik dan bersama"], answer: "Intrinsik dan bersama" },
+            { question: "Poliaglutinasi dapat dibedakan dari aglutinasi sejati dengan menambahkan...", options: ["Aquadest", "Serum Anti-AB", "NaCl Fisiologis", "Albumin"], answer: "NaCl Fisiologis" },
+            { question: "Keuntungan metode mikrohematokrit dibandingkan makrohematokrit adalah...", options: ["Lebih akurat", "Waktu lebih cepat & sampel lebih sedikit", "Tidak perlu sentrifuge", "Dapat mengukur LED sekaligus"], answer: "Waktu lebih cepat & sampel lebih sedikit" },
+            { question: "Dalam sediaan apus, sel leukosit yang memiliki inti berbentuk tapal kuda atau batang adalah...", options: ["Limfosit", "Neutrofil segmen", "Monosit", "Neutrofil batang (stab)"], answer: "Neutrofil batang (stab)" },
+            { question: "Sel leukosit terbesar dalam sirkulasi darah tepi adalah...", options: ["Limfosit", "Basofil", "Neutrofil", "Monosit"], answer: "Monosit" },
+            { question: "Granula pada Eosinofil akan berwarna ... dengan pewarnaan Wright.", options: ["Biru gelap", "Merah-oranye", "Ungu", "Tidak berwarna"], answer: "Merah-oranye" },
+            { question: "Sel yang berperan penting dalam reaksi alergi dan mengandung histamin dalam granulanya adalah...", options: ["Eosinofil", "Limfosit", "Basofil", "Monosit"], answer: "Basofil" },
+
+            // Calculations 3
+            { question: "Dihitung 80 sel leukosit dalam 4 kotak besar bilik hitung dengan pengenceran 20x. Berapakah jumlah leukosit/mm³?", options: ["4.000", "8.000", "2.000", "1.600"], answer: "4.000" }, // (80/4) * 10 * 20 = 20 * 200 = 4000
+            { question: "Seorang pasien memiliki MCV 75 fL dan MCHC 30%. Morfologi eritrositnya adalah...", options: ["Normositik Normokrom", "Makrositik Normokrom", "Mikrositik Hipokrom", "Normositik Hipokrom"], answer: "Mikrositik Hipokrom" },
+            { question: "Hasil lab: Hb = 16 gr%, Ht = 50%. Berapakah nilai MCHC?", options: ["32%", "34%", "36%", "30%"], answer: "32%" }, // (16/50)*100
+            { question: "Hasil lab: Eritrosit = 4 juta/mm³, Hb = 12 gr%. Berapakah nilai MCH?", options: ["25 pg", "28 pg", "30 pg", "32 pg"], answer: "30 pg" }, // (12/4)*10
+            { question: "Jika tabung I pada metode Lee & White membeku dalam 8 menit dan tabung II dalam 10 menit, waktu pembekuannya adalah...", options: ["8 menit", "10 menit", "9 menit", "18 menit"], answer: "9 menit" }, // (8+10)/2
+            
+            // Final Set - Mixed
+            { question: "Aturan yang menyatakan bahwa jika antigen ada pada eritrosit, antibodi lawannya tidak ada di plasma, disebut...", options: ["Hukum Mendel", "Aturan Landsteiner", "Prinsip Hardy-Weinberg", "Dalton's Law"], answer: "Aturan Landsteiner" },
+            { question: "Faktor apa yang paling mempengaruhi laju endap darah?", options: ["Jumlah leukosit", "Ukuran eritrosit", "Konsentrasi protein plasma (fibrinogen)", "Jumlah trombosit"], answer: "Konsentrasi protein plasma (fibrinogen)" },
+            { question: "Saat melakukan BT metode Duke, kertas saring digunakan untuk menyerap darah setiap...", options: ["10 detik", "15 detik", "30 detik", "60 detik"], answer: "30 detik" },
+            { question: "Membuang 3 tetes pertama dari pipet Thoma bertujuan untuk...", options: ["Memastikan campuran homogen", "Membuang cairan pengencer murni", "Membersihkan ujung pipet", "Mengurangi gelembung udara"], answer: "Membuang cairan pengencer murni" },
+            { question: "Volume total bilik hitung Improved Neubauer (9 kotak besar) adalah...", options: ["0.1 µL", "0.9 µL", "1.0 µL", "9.0 µL"], answer: "0.9 µL" },
+            { question: "Sel darah yang tidak memiliki inti saat matang di sirkulasi adalah...", options: ["Leukosit", "Eritrosit", "Limfosit", "Monosit"], answer: "Eritrosit" },
+            { question: "Apa tujuan penambahan Asam Asetat Glasial pada larutan Turk?", options: ["Mewarnai inti leukosit", "Melisiskan membran eritrosit", "Mencegah pembekuan", "Sebagai pengencer"], answer: "Melisiskan membran eritrosit" },
+            { question: "Darah vena untuk pemeriksaan waktu pembekuan (CT) diambil secara...", options: ["Acak", "Steril", "Lege artis (bersih, tanpa banyak trauma)", "Cepat tanpa torniket"], answer: "Lege artis (bersih, tanpa banyak trauma)" },
+            { question: "Penilaian Uji Rumple Leed dilakukan pada area...", options: ["Punggung tangan", "Telapak tangan", "Lengan atas dekat ketiak", "Volar lengan bawah"], answer: "Volar lengan bawah" },
+            { question: "Pemeriksaan darah rutin secara umum tidak mencakup...", options: ["Kadar Hemoglobin", "Jumlah Leukosit", "Kadar Glukosa", "Nilai Hematokrit"], answer: "Kadar Glukosa" },
+        ];
+
+        const TIME_PER_QUESTION = 15;
+        let shuffledQuestions, currentQuestionIndex, score, timerInterval, timeLeft;
+
+        const gameArea = document.getElementById('game-area');
+        const resultsContainer = document.getElementById('results-container');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const retryBtn = document.getElementById('retry-btn');
+        const scoreDisplay = document.getElementById('score-display');
+        const finalScoreDisplay = document.getElementById('final-score');
+        const questionCounter = document.getElementById('question-counter');
+        const progressBar = document.getElementById('progress-bar');
+        const timerDisplay = document.getElementById('timer-container');
+        const feedbackOverlay = document.getElementById('feedback-overlay');
+
+        function startQuiz() {
+            shuffledQuestions = [...quizData].sort(() => Math.random() - 0.5);
+            // For dev purpose, let's keep it short
+            // shuffledQuestions = shuffledQuestions.slice(0, 10); 
+            currentQuestionIndex = 0;
+            score = 0;
+            resultsContainer.style.display = 'none';
+            gameArea.style.display = 'block';
+            updateScoreDisplay();
+            setNextQuestion();
+        }
+
+        function setNextQuestion() {
+            resetState();
+            if (currentQuestionIndex < shuffledQuestions.length) {
+                showQuestion(shuffledQuestions[currentQuestionIndex]);
+                updateProgress();
+                startTimer();
+            } else {
+                showResults();
+            }
+        }
+        
+        function startTimer() {
+            timeLeft = TIME_PER_QUESTION;
+            timerDisplay.textContent = timeLeft;
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerDisplay.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeout();
+                }
+            }, 1000);
+        }
+        
+        function handleTimeout() {
+            showFeedback(false); // Timeout is incorrect
+            disableOptions(true); // Disable and show correct answer
+        }
+
+        function updateProgress() {
+             questionCounter.textContent = `Soal ${currentQuestionIndex + 1}/${shuffledQuestions.length}`;
+             const progressPercentage = ((currentQuestionIndex + 1) / shuffledQuestions.length) * 100;
+             progressBar.style.width = `${progressPercentage}%`;
+        }
+        
+        function updateScoreDisplay() {
+            scoreDisplay.textContent = `Skor: ${score}`;
+        }
+
+        function showQuestion(question) {
+            questionText.textContent = question.question;
+            question.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-btn');
+                button.addEventListener('click', selectAnswer);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function resetState() {
+            clearInterval(timerInterval);
+            while (optionsContainer.firstChild) {
+                optionsContainer.removeChild(optionsContainer.firstChild);
+            }
+        }
+
+        function selectAnswer(e) {
+            clearInterval(timerInterval);
+            const selectedBtn = e.target;
+            const isCorrect = selectedBtn.textContent === shuffledQuestions[currentQuestionIndex].answer;
+            
+            if (isCorrect) {
+                const points = 500 + (timeLeft * 10);
+                score += points;
+                updateScoreDisplay();
+            }
+            
+            showFeedback(isCorrect);
+            disableOptions(isCorrect, selectedBtn);
+        }
+        
+        function disableOptions(isCorrect, selectedBtn = null) {
+             Array.from(optionsContainer.children).forEach(button => {
+                if (button.textContent === shuffledQuestions[currentQuestionIndex].answer) {
+                    button.classList.add('correct');
+                } else if (button === selectedBtn) {
+                    button.classList.add('incorrect');
+                }
+                button.disabled = true;
+            });
+             setTimeout(() => {
+                currentQuestionIndex++;
+                setNextQuestion();
+            }, 1500); // Wait 1.5 seconds before next question
+        }
+
+        function showFeedback(isCorrect) {
+            if (isCorrect) {
+                feedbackOverlay.textContent = "Benar!";
+                feedbackOverlay.style.color = 'var(--correct-color)';
+            } else {
+                feedbackOverlay.textContent = "Salah!";
+                feedbackOverlay.style.color = 'var(--incorrect-color)';
+            }
+            feedbackOverlay.classList.add('show');
+            setTimeout(() => {
+                feedbackOverlay.classList.remove('show');
+            }, 1000);
+        }
+        
+        function showResults() {
+             gameArea.style.display = 'none';
+             resultsContainer.style.display = 'block';
+             finalScoreDisplay.textContent = score;
+        }
+        
+        retryBtn.addEventListener('click', startQuiz);
+
+        startQuiz();
+    </script>
+</body>
+</html>

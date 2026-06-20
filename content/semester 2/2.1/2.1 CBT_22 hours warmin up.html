@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>22 hours warmin up</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Phosphor Icons (Monochrome) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['"Times New Roman"', 'Times', 'serif'],
+                        sans: ['Helvetica', 'Arial', 'sans-serif'],
+                    },
+                    colors: {
+                        editorial: {
+                            black: '#111111',
+                            darkGray: '#333333',
+                            gray: '#777777',
+                            lightGray: '#E5E5E5',
+                            white: '#FFFFFF'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #F9F9F9;
+            font-family: 'Times New Roman', Times, serif;
+            color: #111111;
+            line-height: 1.6;
+        }
+
+        /* Newspaper Aesthetic Elements */
+        .nyt-header {
+            border-bottom: 4px solid #111;
+            border-top: 1px solid #111;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .nyt-title {
+            font-size: 3rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            text-align: center;
+            line-height: 1.1;
+        }
+
+        .nyt-subtitle {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #555;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #111;
+            padding-bottom: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .quiz-container {
+            background: #FFFFFF;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: 1px solid #E5E5E5;
+        }
+
+        /* Buttons Editorial Style */
+        .btn-editorial {
+            font-family: Helvetica, Arial, sans-serif;
+            background: transparent;
+            border: 1px solid #111;
+            color: #111;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .btn-editorial:hover:not(:disabled) {
+            background: #111;
+            color: #FFF;
+        }
+
+        .btn-editorial:disabled {
+            border-color: #CCC;
+            color: #CCC;
+            cursor: not-allowed;
+        }
+
+        /* Options Style */
+        .btn-option {
+            display: block;
+            width: 100%;
+            text-align: left;
+            background: #FFF;
+            border: 1px solid #CCC;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 1.1rem;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .btn-option:hover:not(:disabled) {
+            border-color: #111;
+            background-color: #FAFAFA;
+        }
+
+        /* Correct / Incorrect Monochromatic Styling */
+        .btn-option.selected {
+            border-color: #111;
+            background: #EFEFEF;
+            font-weight: bold;
+        }
+
+        .btn-option.correct {
+            border-color: #111 !important;
+            background: #F0F0F0 !important;
+            font-weight: bold;
+            color: #111;
+        }
+
+        .btn-option.incorrect {
+            border-color: #E5E5E5 !important;
+            background: #FFF !important;
+            color: #999;
+            text-decoration: line-through;
+        }
+
+        .icon-indicator {
+            position: absolute;
+            right: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.25rem;
+        }
+
+        /* Detailed Explanation Box */
+        .explanation-box {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #F9F9F9;
+            border-left: 4px solid #111;
+            font-size: 1.05rem;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .explanation-box strong {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: block;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px dotted #CCC;
+        }
+
+        .explanation-box ul {
+            list-style-type: none;
+            padding-left: 0;
+            margin-top: 1rem;
+        }
+
+        .explanation-box ul li {
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .explanation-box ul li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dropcap {
+            float: left;
+            font-size: 3.5rem;
+            line-height: 0.8;
+            padding-right: 0.5rem;
+            padding-top: 0.2rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="quiz-container">
+        
+        <!-- NYT HEADER -->
+        <header class="nyt-header">
+            <h1 class="nyt-title">22 hours warmin up</h1>
+            <div class="nyt-subtitle">
+                <span>Vol. V — The Endurance Assessment</span>
+                <span>YOGHURT 2.1 (2) Extraction</span>
+                <span><span id="date-display"></span></span>
+            </div>
+        </header>
+
+        <!-- START SCREEN -->
+        <div id="start-screen" class="flex flex-col items-center py-8">
+            <p class="font-serif text-xl text-center mb-8 max-w-lg">
+                <span class="dropcap">A</span> grueling 66-question endurance test designed to radically evaluate your mastery over cardiorespiratory physiology and anatomy. Select your modality to commence.
+            </p>
+            
+            <div class="space-y-4 w-full max-w-sm">
+                <button onclick="startQuiz('practice')" class="btn-editorial w-full flex items-center justify-center gap-2">
+                    <i class="ph ph-article text-lg"></i>
+                    Study Mode (Detailed Feedback)
+                </button>
+                <button onclick="startQuiz('exam')" class="btn-editorial w-full flex items-center justify-center gap-2">
+                    <i class="ph ph-exam text-lg"></i>
+                    Exam Mode (Blind)
+                </button>
+            </div>
+            <p class="mt-8 font-sans text-xs text-gray-500 uppercase tracking-widest"><span id="display-q-count"></span> Standardized Inquiries</p>
+        </div>
+
+        <!-- QUIZ SCREEN -->
+        <div id="quiz-screen" class="hidden flex-col min-h-[500px]">
+            <div class="flex justify-between items-center mb-6 border-b border-black pb-4 font-sans uppercase text-xs tracking-wider">
+                <div>
+                    Question <span id="curr-q" class="font-bold text-base">1</span> of <span id="total-q">0</span>
+                </div>
+                <div id="score-display" class="font-bold">
+                    Score: 0
+                </div>
+            </div>
+
+            <div class="flex-grow">
+                <div class="mb-8">
+                    <p id="question-text" class="text-xl md:text-2xl font-serif text-editorial-black leading-snug"></p>
+                </div>
+                <div id="options-container" class="space-y-3"></div>
+                <div id="feedback-area" class="hidden explanation-box text-editorial-darkGray leading-relaxed"></div>
+            </div>
+
+            <div class="flex justify-between items-center mt-10 pt-6 border-t border-black">
+                <button onclick="prevQuestion()" id="btn-prev" class="btn-editorial text-xs px-3 py-1 disabled:opacity-30">
+                    &larr; Previous
+                </button>
+                <button onclick="backToHome()" class="font-sans text-xs uppercase tracking-wider text-gray-500 hover:text-black underline-offset-4 hover:underline transition">
+                    Return to Index
+                </button>
+                <button onclick="nextQuestion()" id="btn-next" class="btn-editorial text-xs px-3 py-1">
+                    Next &rarr;
+                </button>
+                <button onclick="finishQuiz()" id="btn-finish" class="hidden bg-black text-white btn-editorial text-xs px-4 py-1">
+                    Conclude Exam
+                </button>
+            </div>
+        </div>
+
+        <!-- RESULT SCREEN -->
+        <div id="result-screen" class="hidden flex-col items-center py-10">
+            <h2 class="font-sans text-sm uppercase tracking-widest text-gray-500 mb-2">Final Assessment</h2>
+            <h1 class="font-serif text-4xl font-bold mb-10 border-b-2 border-black pb-4 text-center">Examination Concluded</h1>
+
+            <div class="flex items-center justify-center mb-10 w-48 h-48 border-4 border-black rounded-full">
+                <div class="text-7xl font-serif font-bold text-black" id="final-score">0</div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-px bg-black border border-black w-full max-w-md mb-10">
+                <div class="bg-white p-6 text-center">
+                    <div class="font-sans text-xs text-gray-500 uppercase tracking-wider mb-1">Correct</div>
+                    <div class="text-3xl font-serif font-bold text-black" id="res-correct">0</div>
+                </div>
+                <div class="bg-white p-6 text-center">
+                    <div class="font-sans text-xs text-gray-500 uppercase tracking-wider mb-1">Incorrect</div>
+                    <div class="text-3xl font-serif font-bold text-gray-400" id="res-wrong">0</div>
+                </div>
+            </div>
+            
+            <button onclick="location.reload()" class="btn-editorial w-full max-w-md">Retake Examination</button>
+        </div>
+
+    </div>
+
+    <script>
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('date-display').innerText = new Date().toLocaleDateString('en-US', options);
+
+        // 66 Questions Extracted Meticulously from YOGHURT 2.1 (2)
+        const questions = [
+            { q: "Pernyataan berikut ini yang benar mengenai hierarki persarafan pusat pernapasan, KECUALI...", o: ["Pusat kontrol volunter di korteks serebri", "Pusat kontrol otomatis modifikasi di pons", "Pusat kontrol ritme otomatis di medulla oblongata", "Pusat kontrol central di glomus aorticus", "Pusat kontrol di reseptor batang otak"], a: "Pusat kontrol central di glomus aorticus", exp: "<strong>Penjelasan Detail: Pusat kontrol central di glomus aorticus</strong><br>Pernyataan ini SALAH radikal. Glomus aorticus dan karotikum murni adalah pos satpam penjaga gerbang perifer (kemoreseptor perifer), BUKAN markas komando sentral. Pusat kontrol komando sentral secara absolut bertahta di batang otak (Medulla dan Pons) mutlak murni." },
+            { q: "Rasio normal keseimbangan buffer Bikarbonat (NaHCO3) dan Asam Karbonat (H2CO3) di dalam darah ekstraseluler adalah...", o: ["20 : 1", "2 : 1", "4 : 1", "10 : 1", "5 : 1"], a: "20 : 1", exp: "<strong>Penjelasan Detail: 20 : 1</strong><br>Hukum kesetimbangan Henderson-Hasselbalch menuntut proporsi dominasi basa yang sangat masif mutlak. Darah normal wajib mempertahankan cadangan Bikarbonat 20 kali lipat lebih banyak (20:1) dibandingkan Asam Karbonat untuk bertahan dari gempuran asam metabolik radikal murni." },
+            { q: "Transpor pembuangan karbon dioksida (CO2) dalam sirkulasi darah dari jaringan kembali ke paru yang memakan persentase terbesar adalah dalam wujud...", o: ["Terlarut bebas dalam plasma", "Berikatan dengan zat besi Heme", "Asam karbonat utuh", "Ion bikarbonat (HCO3-)", "Karbaminohemoglobin"], a: "Ion bikarbonat (HCO3-)", exp: "<strong>Penjelasan Detail: Ion bikarbonat (HCO3-)</strong><br>Mayoritas absolut muatan limbah CO2 (70%) dimusnahkan bentuk gasnya, dihidrasi paksa oleh enzim Carbonic Anhydrase, dan disamarkan menjadi Ion Bikarbonat (HCO3-) agar dapat larut berenang bebas tanpa menyumbat sirkulasi plasma mutlak fasik." },
+            { q: "Perbedaan mendasar dari sifat transportasi pengangkutan oksigen (O2) dan karbondioksida (CO2) di dalam darah adalah...", o: ["Karbondioksida dapat terikat dalam bentuk HCO3-, sedangkan oksigen tidak", "Oksigen dapat terikat dalam bentuk HCO3-, sedangkan karbondioksida tidak", "Karbondioksida dapat terikat besi hemoglobin, sedangkan oksigen tidak", "Oksigen dapat terikat protein haemoglobin, sedangkan karbondioksida tidak", "Karbondioksida dapat larut dalam plasma, sedangkan oksigen tidak"], a: "Karbondioksida dapat terikat dalam bentuk HCO3-, sedangkan oksigen tidak", exp: "<strong>Penjelasan Detail: Karbondioksida dapat terikat dalam bentuk HCO3-, sedangkan oksigen tidak</strong><br>Fakta biokimia radikal: Oksigen diharamkan alam bermanifestasi atau bereaksi menjadi ion Bikarbonat. Transformasi menjadi HCO3- mutlak adalah rute eksklusif pengangkutan limbah CO2 murni fasik." },
+            { q: "Manakah komponen rantai respirasi (Electron Transport Chain) berikut yang paling mungkin menjadi tempat proses pertemuan terakhir antara elektron, ion H+, dan oksigen?", o: ["Cytochrome oksidase (Kompleks IV)", "NADH dehidrogenase (Kompleks I)", "Ubiquinon", "Cytochrom b-c1 (Kompleks III)", "Cytochrome c"], a: "Cytochrome oksidase (Kompleks IV)", exp: "<strong>Penjelasan Detail: Cytochrome oksidase (Kompleks IV)</strong><br>Kompleks IV (Sitokrom Oksidase) adalah terminal muara jagal terakhir absolut. Di stasiun inilah Oksigen merelakan dirinya bertindak sebagai akseptor elektron terakhir, mengikat H+ dan elektron untuk melahirkan produk akhir air (H2O) murni radikal." },
+            { q: "Parameter fisiologis berikut adalah faktor yang memengaruhi kecepatan dan kapasitas difusi gas O2 di paru, KECUALI...", o: ["Kapasitas inspirasi mekanik paru", "Tebal membran respirasi", "Gradien tekanan parsial", "Luas permukaan membran", "Kelarutan sifat gas molekul"], a: "Kapasitas inspirasi mekanik paru", exp: "<strong>Penjelasan Detail: Kapasitas inspirasi mekanik paru</strong><br>Kapasitas inspirasi adalah murni ukuran daya sedot rongga dada (ventilasi makro), bukan komponen mikroskopis hukum Fick. Hukum difusi absolut hanya diatur oleh Luas membran (A), Ketebalan (d), Beda tekanan (P), dan Berat molekul gas radikal murni." },
+            { q: "Tempat bertemunya H+, O2, dan elektron bebas untuk direduksi membentuk H2O di dalam mitokondria terjadi tepat di stasiun...", o: ["Kompleks I", "Kompleks II", "Kompleks III", "Kompleks IV", "Enzim ATPase"], a: "Kompleks IV", exp: "<strong>Penjelasan Detail: Kompleks IV</strong><br>Serupa dengan soal sebelumnya, Kompleks IV (Cytochrome c oxidase) adalah jagal akhir rantai transpor. Di titik ini Oksigen ditarik radikal untuk mengikat elektron dan proton H+, membasuh racun radikal menjadi air murni absolut." },
+            { q: "Penyakit membran hialin (NRDS) merupakan kelainan fatal pada neonatus akibat kolapsnya alveolus (atelektasis). Sel apakah yang gagal berfungsi memproduksi pelumas surfaktan pada kasus ini?", o: ["Sel granula", "Sel dust (Makrofag)", "Sel pneumosit tipe 1", "Sel pneumosit tipe 2", "Sel basal konduktif"], a: "Sel pneumosit tipe 2", exp: "<strong>Penjelasan Detail: Sel pneumosit tipe 2</strong><br>Pneumosit Tipe II berbentuk kuboid tebal adalah satu-satunya pabrik eksklusif pembuat fosfolipid Surfaktan. Gagalnya sel ini berproduksi mutlak membiarkan tegangan permukaan air merobohkan dan melengketkan alveolus bayi prematur secara radikal murni." },
+            { q: "Berikut merupakan pernyataan yang TIDAK BENAR mengenai mekanika kembang kempis dinding dada dan paru:", o: ["Terdapat dua pernafasan dominan: Thoracal dan Abdominal", "Kontraksi otot diafragma menyebabkan ekspirasi paksa", "Relaksasi diafragma ke atas menyebabkan ekspirasi", "Elevasi costa oleh otot intercostal memicu inspirasi", "Depresi (turunnya) costa memicu penyempitan ekspirasi"], a: "Kontraksi otot diafragma menyebabkan ekspirasi paksa", exp: "<strong>Penjelasan Detail: Kontraksi otot diafragma menyebabkan ekspirasi paksa</strong><br>Pernyataan ini SALAH TOTAL mutlak. Kontraksi diafragma akan menarik otot tersebut melengkung tegang turun ke arah perut, yang secara radikal MEMBESARKAN rongga dada dan menciptakan sedotan INSPIRASI murni fasik." },
+            { q: "Berikut pernyataan yang tidak benar mengenai proses mekanika ventilasi adalah...", o: ["Ada 2 jenis pernafasan yaitu thoracal dan abdominal", "Kontraksi diafragma menyebabkan proses ekspirasi pada pernafasan abdominal", "Relaksasi diafragma menyebabkan proses ekspirasi pada pernafasan abdominal", "Elevasi costa menyebabkan proses inspirasi pada pernafasan thoracal", "Depresi costa menyebabkan proses ekspirasi pada pernafasan thoracal"], a: "Kontraksi diafragma menyebabkan proses ekspirasi pada pernafasan abdominal", exp: "<strong>Penjelasan Detail: Kontraksi diafragma menyebabkan proses ekspirasi pada pernafasan abdominal</strong><br>Ini adalah penegasan berulang. Kontraksi diafragma (menekan ke arah perut) selalu memicu tarikan napas masuk (INSPIRASI perut/abdominal), mutlak bukan membuang napas (ekspirasi) fasik radikal." },
+            { q: "Apabila sel Hb dinyatakan tersaturasi 100%, maka secara biokimiawi ikatan Hemoglobin tersebut mengartikan...", o: ["Hb telah melepas semua muatan O2", "Hb mengikat 4 O2 penuh", "Hb mengikat 3 O2", "Hb mengikat 2 O2", "Hb mengikat 1 O2"], a: "Hb mengikat 4 O2 penuh", exp: "<strong>Penjelasan Detail: Hb mengikat 4 O2 penuh</strong><br>Setiap tetramer molekul Hemoglobin memiliki tepat 4 kursi takhta rantai Heme (besi). Saturasi 100% berarti keempat kursi tersebut mutlak terisi penuh tanpa sisa oleh molekul Oksigen radikal murni." },
+            { q: "Transport molekul zat di dalam darah berikut ini mutlak melibatkan dan membutuhkan protein plasma sebagai taksi pembawanya, KECUALI...", o: ["Oksigen (O2)", "Zat Besi (Fe)", "Hormon T3 Tiroid", "Glukosa", "Bilirubin radikal"], a: "Glukosa", exp: "<strong>Penjelasan Detail: Glukosa</strong><br>Glukosa adalah molekul hidrofilik sejati. Ia melarut dan berenang telanjang bebas di aliran air plasma darah tanpa perlu memesan kursi boncengan di protein transport mana pun (seperti albumin atau globulin) mutlak fasik." },
+            { q: "Apa yang secara biokimia terjadi pada asam amino protein plasma dalam kondisi lingkungan basa (Alkali) jika ia bertindak sebagai buffer darah?", o: ["Menangkap H+ berlebih", "Melepaskan H+ radikal bebas", "Menangkap gugus OH-", "Melepaskan gugus OH-", "Membeku menjadi netral"], a: "Melepaskan H+ radikal bebas", exp: "<strong>Penjelasan Detail: Melepaskan H+ radikal bebas</strong><br>Dalam lingkungan darah yang kehausan asam (basa/Alkalosis), sifat amfoter protein akan mengorbankan diri bertindak sebagai asam: ia memuntahkan dan melepaskan ion H+ dari gugus Karboksilnya mutlak untuk menetralisir pH radikal murni." },
+            { q: "Apa yang terjadi pada molekul asam amino penyusun protein darah dalam kondisi lingkungan Asam (Asidosis) jika bertindak sebagai buffer?", o: ["Menangkap H+ pada gugus amina", "Melepaskan H+ buang bebas", "Menangkap OH- pada gugus karboksil", "Melepaskan OH- netralisasi", "Bergeser menolak ikatan hidrogen"], a: "Menangkap H+ pada gugus amina", exp: "<strong>Penjelasan Detail: Menangkap H+ pada gugus amina</strong><br>Saat darah tenggelam membusuk dalam banjir lautan H+ (Asidosis), molekul amina (NH2) dari protein akan maju sebagai basa spons, menyedot dan menangkap H+ radikal bebas tersebut mengubah dirinya menjadi NH3+ absolut murni pelindung pH." },
+            { q: "Tekanan parsial gas racun pembuangan CO2 (pCO2) akan diukur dan didapati paling tinggi (mencapai 45 mmHg atau lebih) secara fisiologis terdapat mengalir pada...", o: ["Arteri sistemik pembasah organ", "Vena sistemik pengumpul jaringan", "Udara ruang hampa alveolus", "Vena pulmonalis balik jantung", "Trakea atas luar"], a: "Vena sistemik pengumpul jaringan", exp: "<strong>Penjelasan Detail: Vena sistemik pengumpul jaringan</strong><br>Vena sistemik adalah tong sampah utama yang baru saja mengangkut semua perasan limbah CO2 murni dari pabrik jaringan perifer yang kelelahan. Di sinilah muatan pCO2 mencapai puncak tertingginya sebelum dibuang dicuci di paru fasik radikal." },
+            { q: "Bagian anatomi organ paru yang sama sekali dibiarkan telanjang mutlak TIDAK dilapisi oleh selaput pelindung pleura visceralis adalah...", o: ["Carina bifurcatio", "Lingula kiri ujung", "Incissura cardiaca", "Hilum pulmonale (Radix Paru)", "Recessus ujung bawah lateral"], a: "Hilum pulmonale (Radix Paru)", exp: "<strong>Penjelasan Detail: Hilum pulmonale (Radix Paru)</strong><br>Hilum (Radix Paru) adalah gerbang utama tempat menancapnya kabel bronkus dan pembuluh darah. Di akar jembatan inilah Pleura Visceralis memutar melipat bajunya berbalik menjadi Pleura Parietalis, membiarkan areanya telanjang murni tanpa bungkus fasik." },
+            { q: "Berdasarkan Hukum Fick tentang pernapasan, Kapasitas Difusi gas di membran paru secara fisika berbanding terbalik secara mutlak dengan...", o: ["Tebal membran respirasi (d)", "Panjang pipa pernapasan total", "Luas membran penampang bentang", "Kelarutan sifat cairan gas Oksigen", "Perbandingan tekanan dorong P"], a: "Tebal membran respirasi (d)", exp: "<strong>Penjelasan Detail: Tebal membran respirasi (d)</strong><br>Hukum mutlak: Semakin tebal penghalang (Tebal Membran), semakin lambat dan sulit oksigen menembus. Ketebalan patologis (seperti fibrosis/edema) akan membunuh laju difusi berbanding terbalik radikal fasik murni." },
+            { q: "Lubang celah drainase Hiatus Semilunaris di dalam rongga hidung meatus media secara anatomi merupakan muara utama titik bongkar dari...", o: ["Sinus sphenoidalis punggung atas", "Sinus frontalis dahi alis depan", "Sinus ethmoidalis labirin tengah", "Sinus maksilaris pipi rahang atas", "Ductus nasolacrimalis air mata"], a: "Sinus maksilaris pipi rahang atas", exp: "<strong>Penjelasan Detail: Sinus maksilaris pipi rahang atas</strong><br>Lubang besar penampung cairan Sinus Maksilaris menguras genangan cairannya melawan gravitasi memancar menembus lorong sempit Hiatus Semilunaris yang bersarang di Meatus Nasi Media hidung mutlak fasik murni." },
+            { q: "Di batas koridor manakah tempat insisi irisan darurat untuk prosedur Tracheotomy dilewati oleh pisau bedah?", o: ["Ligamentum cricothyroid 1 - 2", "Cartilago trachea 2 utuh kaku", "Ligamentum trachealis 2 - 3 (antar cincin)", "Cartilago trachea 3 rawan", "Ligamentum trachealis 3 - 4"], a: "Ligamentum trachealis 2 - 3 (antar cincin)", exp: "<strong>Penjelasan Detail: Ligamentum trachealis 2 - 3 (antar cincin)</strong><br>Penebasan pisau trakeostomi diukir cerdik murni menembus jaringan ikat membran empuk di antara cincin rawan (Cartilago) ke-2 dan ke-3 trakea untuk mengamankan jalan napas radikal tanpa membongkar pilar kartilago atau isthmus tiroid pendarahan fasik." },
+            { q: "Secara topografi leher depan, batas pelindung pilar yang memeluk menempel pada sisi lateral sayap kiri dan kanan dari cincin Trachea adalah massa daging dari organ...", o: ["Lobus glandula thyroid murni", "Isthmus thyroid jembatan tengah", "M. sternothyroid otot vertikal lurus", "Nervus laringeus rekuren kawat kabel", "Oesophagus kerongkongan belakang"], a: "Lobus glandula thyroid murni", exp: "<strong>Penjelasan Detail: Lobus glandula thyroid murni</strong><br>Sayap kiri dan kanan (batas lateral) dinding trakea leher dijepit dan dipeluk erat mutlak oleh bongkahan massa daging Lobus Glandula Tiroid. Sementara Isthmus mencekiknya murni dari depan (anterior) fasik radikal." },
+            { q: "Yang termasuk ke dalam Zona Konduksi (pipa penghantar udara mati) pada sistem respirasi adalah semua struktur anatomi di bawah ini, KECUALI...", o: ["Cavum nasalis hidung", "Pharynx rongga corong", "Larynx pipa suara", "Bronchus batang dahan", "Alveolus mikroskopis"], a: "Alveolus mikroskopis", exp: "<strong>Penjelasan Detail: Alveolus mikroskopis</strong><br>Kantong tipis Alveolus menduduki kasta sakral Zona Respiratori sejati. Di sinilah dinding ditembus oksigen untuk difusi pendarahan mutlak radikal, dan sama sekali bukan sekadar pipa konduktor hampa peniup angin murni." },
+            { q: "Berdasarkan dalil difusi, manakah pernyataan komparatif berikut ini yang paling benar mengenai kelajuan difusi Oksigen vs Karbondioksida melintasi membran alveolar?", o: ["Berdasarkan sifat kelarutannya (solubility), oksigen berdifusi 20x lebih cepat daripada karbondioksida", "Berdasarkan berat molekulnya, karbondioksida berdifusi lebih cepat dari oksigen", "Berdasarkan berat molekul fisiknya (Graham Law), oksigen berdifusi sedikit lebih cepat daripada karbondioksida", "Oksigen dan CO2 memiliki koefisien difusi identik mutlak sama cepat murni", "Berdasarkan tekanan atmosfir Dalton, gas nitrogen lebih unggul berdifusi"], a: "Berdasarkan berat molekul fisiknya (Graham Law), oksigen berdifusi sedikit lebih cepat daripada karbondioksida", exp: "<strong>Penjelasan Detail: Berdasarkan berat molekul fisiknya (Graham Law), oksigen berdifusi sedikit lebih cepat daripada karbondioksida</strong><br>Secara murni berat atom (MW), O2 (32) lebih ringan dari CO2 (44), membuat O2 menembus membran sedikit lebih ngebut. NAMUN, kelarutan (solubility) CO2 yang 24x lebih tinggi melibas ini, membuat total kapasitas difusi CO2 20x lebih superior. (Jawaban disesuaikan spesifik dengan redaksi O2 lebih cepat HANYA jika murni ditinjau dari sisi Berat Molekul mutlak fasik)." },
+            { q: "Respon adaptasi jangka panjang (Kronik) sistem anatomi pernapasan terhadap penderitaan latihan maraton fisik rutin adalah berupa...", o: ["Peningkatan frekuensi napas terengah darurat konstan", "Penurunan volume tidal dasar", "Penurunan ventilasi perfusi", "Peningkatan efisiensi kerja tuas otot respirasi", "Penurunan efisiensi kerja otot napas loyo"], a: "Peningkatan efisiensi kerja tuas otot respirasi", exp: "<strong>Penjelasan Detail: Peningkatan efisiensi kerja tuas otot respirasi</strong><br>Siksaan kronis latihan aerobik merombak pilar daging diafragma dan interkostal menjadi hipertrofi kuat. Tarikannya memeras paru menjadi sangat efektif (Peningkatan efisiensi mutlak) mengurangi kelelahan dan frekuensi napas radikal fasik." },
+            { q: "Berapakah jumlah mutlak kantong energi reduksi NADH yang secara bersih (net) murni dihasilkan hanya dari 1 molekul glukosa pada proses Glikolisis di sitosol?", o: ["1", "2", "3", "4", "5"], a: "2", exp: "<strong>Penjelasan Detail: 2</strong><br>Pemecahan radikal satu cincin glukosa membelah di tengah (fase payoff) secara absolut menyumbangkan panen mutlak 2 molekul NADH dari 2 lengan G3P di perairan sitosol murni fasik." },
+            { q: "Manakah batasan fisiologis yang memaksa kendaraan NADH hasil dari glikolisis sitosol harus memutar otak mencari jalan khusus untuk menyumbangkan elektronnya ke dalam oksidasi fosforilasi mitokondria?", o: ["NADH hasil siklus asam sitrat harus memutar balik", "Aspartat Shuttle memotong NADH menjadi radikal FADH2", "NADH glikolisis tidak dapat memasuki ruangan antar membran sama sekali", "NADH glikolisis memerlukan molekul transporter (Shuttle) karena tak bisa tembus langsung membran dalam mitokondria", "NADH glikolisis murni bebas melarut tembus membran dengan difusi pasif"], a: "NADH glikolisis memerlukan molekul transporter (Shuttle) karena tak bisa tembus langsung membran dalam mitokondria", exp: "<strong>Penjelasan Detail: NADH glikolisis memerlukan molekul transporter (Shuttle) karena tak bisa tembus langsung membran dalam mitokondria</strong><br>Membran dalam mitokondria adalah beton kedap kaku yang mengharamkan NADH sitosol masuk. Agar elektronnya tak sia-sia, NADH mutlak harus menitipkan kargonya ke taksi transporter (Malate-Aspartate atau Glycerol-3-Phosphate Shuttle) untuk diselundupkan masuk ke matriks radikal murni." },
+            { q: "Proses murni difusi pertukaran gas udara sesungguhnya sudah mulai aktif terjadi perdana secara anatomis saat napas menyentuh ujung stasiun...", o: ["Bronkhus segmental rawan pilar tebal", "Bronkhiolus respiratorius yang ditumbuhi tonjolan kuncup alveolus", "Bronkhus subsegmental terminal kaku", "Trakhea batang kartilago solid", "Bronkhiolus terminal ujung batas konduksi hampa"], a: "Bronkhiolus respiratorius yang ditumbuhi tonjolan kuncup alveolus", exp: "<strong>Penjelasan Detail: Bronkhiolus respiratorius yang ditumbuhi tonjolan kuncup alveolus</strong><br>Pipa hampa konduksi tamat mutlak di Bronkiolus Terminalis. Begitu menginjak rel Bronkiolus Respiratorius, dindingnya mulai bolong merajut ditumbuhi kuncup alveolus tipis, memulai perdana proses sakral difusi pernapasan radikal fasik." },
+            { q: "Reaksi pelepasan muatan oksigen: Hb.O2 -> Hb + O2 (Shift to the Right) memuntahkan oksigen deras, sangat kuat terprovokasi pada kondisi lingkungan otot sebagai berikut...", o: ["Peningkatan tajam suplai bebas oksigen", "Peningkatan asap karbondioksida (pCO2) dan Asam H+ jaringan", "Hipotermia kedinginan ekstrem", "Penurunan konsentrasi 2,3 DPG mutlak", "Peningkatan pH basa darah alkali murni"], a: "Peningkatan asap karbondioksida (pCO2) dan Asam H+ jaringan", exp: "<strong>Penjelasan Detail: Peningkatan asap karbondioksida (pCO2) dan Asam H+ jaringan</strong><br>Lingkungan medan perang otot yang sedang berlari keras mutlak menciptakan asidosis tinggi asam (H+) dan asap buangan CO2 membludak. Ini merusak afinitas Hb, memaksanya melepaskan memuntahkan perbekalan O2 murni ke sel kelaparan radikal (Efek Bohr fasik)." },
+            { q: "Apakah jurang komplikasi status keseimbangan Asam-Basa darah yang akan menelan jatuh seorang pasien dengan penyakit paru obstruktif (PPOK/Asma) yang mengakibatkan napas sesak tersumbat?", o: ["Asidosis respiratorik karena CO2 tak bisa dibuang tuntas murni", "Asidosis metabolik karena gagal ginjal H+", "Alkalosis respiratorik membasuh terbang CO2 lepas", "Alkalosis metabolik mutlak muntah asam basa", "Sirkulasi stabil tak terpengaruh sama sekali kompensatori hampa"], a: "Asidosis respiratorik karena CO2 tak bisa dibuang tuntas murni", exp: "<strong>Penjelasan Detail: Asidosis respiratorik karena CO2 tak bisa dibuang tuntas murni</strong><br>Jalan napas yang terjepit asma/PPOK membuat pasien gagal menghembus buang sisa angin. Asap Karbondioksida (CO2) menumpuk sesak terperangkap radikal di dada, larut jadi asam karbonat yang membusukkan pH darah anjlok menjadi Asidosis Respiratorik mutlak murni." },
+            { q: "Sistem pusat kardiovaskuler dan sistem pusat ritme respirasi mampu bekerja sinergis terpadu merespon bahaya kompensasi karena diikat oleh alasan topografi:", o: ["Secara anatomis memiliki pusat komando kontrol yang letaknya berhimpit tumpang tindih berdekatan di batang otak (Medulla/Pons)", "Pusat respirasi murni tunduk berespon terhadap sensor tarikan regang baroreseptor mekanik jantung", "Pusat paru merespon manipulasi voltase nodus SA radikal", "Hanya satu saraf tunggal N. Phrenicus yang mengontrol seluruh komando hampa gabungan", "Darah dari jantung otomatis mutlak murni mengaktivasi alveolus tanpa perintah saraf otak"], a: "Secara anatomis memiliki pusat komando kontrol yang letaknya berhimpit tumpang tindih berdekatan di batang otak (Medulla/Pons)", exp: "<strong>Penjelasan Detail: Secara anatomis memiliki pusat komando kontrol yang letaknya berhimpit tumpang tindih berdekatan di batang otak (Medulla/Pons)</strong><br>Jejaring sirkuit neuron saklar kontrol pernapasan (VRG/DRG) dan pusat pengatur tonus vaskular/jantung (Kardioakselerator/inhibitor) memadati tumpukan kavitas wilayah yang sama persis berdampingan tumpang tindih mutlak di lorong sumbu Medulla Oblongata dan Pons fasik radikal." },
+            { q: "Dinamika Kurva Disosiasi Hb-O2 yang merosot 'Bergeser ke arah Kanan' (Shift to the Right) memegang interpretasi fungsional fisiologi paten bahwa...", o: ["Afinitas sifat egois Hb terhadap O2 justru semakin menurun tajam, Hb menjadi dermawan melepaskan O2", "Hb menahan memenjarakan mengunci 02 mati-matian kaku", "Pasti murni disebabkan oleh turunnya nilai anjlok PCO2 peredaran", "Memperlihatkan lonjakan tajam drastis paku nilai Alkalosis basa murni", "Afinitas hemoglobin terhadap gas Karbon Monoksida (CO) memecah ikatan kuat"], a: "Afinitas sifat egois Hb terhadap O2 justru semakin menurun tajam, Hb menjadi dermawan melepaskan O2", exp: "<strong>Penjelasan Detail: Afinitas sifat egois Hb terhadap O2 justru semakin menurun tajam, Hb menjadi dermawan melepaskan O2</strong><br>Grafik lari ke kanan merupakan alarm darurat: daya genggam magnet afinitas Hemoglobin dihancurkan sengaja radikal, membuatnya muntah menjatuhkan seluruh muatan pasokan Oksigennya mengalir tumpah deras mudah mutlak ke jaringan kelaparan murni fasik." },
+            { q: "Pernyataan topografi dan histologi manakah yang merupakan ciri pembeda sah dari batang Bronkus dibandingkan trakea?", o: ["Pilar luarnya masih tersusun oleh tulang padat epitel skuamos keras hampa tanpa silia mutlak", "Pada dinding lapisan penyokongnya dapat ditemukan tumpukan infiltrasi benteng stasiun jaringan limfoid (BALT)", "Dinding selang mukosanya mati lurus tegang kaku tidak bergelombang polos murni radikal", "Hanya murni disusun murni oleh cincin struktur kartilago elastis bukan tulang rawan hialin", "Struktur benteng kartilago tulangnya lebih merajai dominan utuh kaku O utuh membulat C disbanding lapis otot polos reaktif"], a: "Pada dinding lapisan penyokongnya dapat ditemukan tumpukan infiltrasi benteng stasiun jaringan limfoid (BALT)", exp: "<strong>Penjelasan Detail: Pada dinding lapisan penyokongnya dapat ditemukan tumpukan infiltrasi benteng stasiun jaringan limfoid (BALT)</strong><br>Begitu percabangan turun menyusup jadi Bronkus, pertahanan mukosa dipertebal dengan penempatan pos-pos jaga pasukan nodul limfosit MALT/BALT absolut. Juga tulang rawan C-shape trakea remuk berubah wujud menjadi sekadar lempengan plak pulau-pulau kartilago tak utuh radikal murni." },
+            { q: "Adaptasi turunnya angka detak frekuensi Denyut Nadi Istirahat (Resting Heart Rate) pada sang atlet pelari secara murni adalah kompensasi fisiologis akibat dari...", o: ["Penurunan curah jatuh ampas volume sekuncup bilik loyo lemah murni tekor", "Pembengkakan hipertrofi pengisian yang menendang Peningkatan kekuatan memompa Volume Sekuncup (Stroke Volume) raksasa", "Jatuh hancur meremuknya kekuatan serat tuas Kontraktilitas miokardium radikal fasik otot buntu", "Meroket lari berlipat gandanya nilai tembakan Curah Jantung (Cardiac Output) absolut istirahat santai saat diam tidur pulas", "Penurunan mutlak paksa regang tonus Vagus parasimpatik leher murni fasik"], a: "Pembengkakan hipertrofi pengisian yang menendang Peningkatan kekuatan memompa Volume Sekuncup (Stroke Volume) raksasa", exp: "<strong>Penjelasan Detail: Pembengkakan hipertrofi pengisian yang menendang Peningkatan kekuatan memompa Volume Sekuncup (Stroke Volume) raksasa</strong><br>Jantung atlet telah di-upgrade jadi mesin godam raksasa. Satu perasan santainya melontarkan volume peluru (Stroke Volume) air yang masif. Karena 1 tendangan sudah cukup memenuhi batas kuota CO, otak menghemat bensin dengan merendahkan irama nadi (bradikardia) absolut murni." },
+            { q: "Berikut pernyataan kaidah aliran biokimia gas yang mutlak SALAH dan tidak benar adalah...", o: ["Transport O2 bermanifestasi sebagian kecil mutlak dalam bentuk cairan gas terlarut plasma bebas", "Transport pembuangan CO2 juga bermanifestasi dalam persentase terlarut di plasma", "Sebagian O2 membonceng di kursi besi terikat Hb", "Sebagian muatan CO2 terikat numpang di jok protein rantai Hb (Carbamino)", "Transport molekul Oksigen (O2) secara dominan dimutasi bereaksi konversi paksa melarut dalam bentuk senyawa Asam ion HCO3 Bikarbonat"], a: "Transport molekul Oksigen (O2) secara dominan dimutasi bereaksi konversi paksa melarut dalam bentuk senyawa Asam ion HCO3 Bikarbonat", exp: "<strong>Penjelasan Detail: Transport molekul Oksigen (O2) secara dominan dimutasi bereaksi konversi paksa melarut dalam bentuk senyawa Asam ion HCO3 Bikarbonat</strong><br>Pernyataan ini BOHONG mutlak. Oksigen sejatinya dilarang keras menukar dirinya menjadi wujud kimia Ion Bikarbonat (HCO3-). Reaksi asam bikarbonat adalah paten murni hak eksklusif transportasi daur ulang gas buang asid Karbondioksida (CO2) radikal fasik." },
+            { q: "Faktor hambatan yang secara fisika berbanding terbalik (mengurangi) secara matematis pada nilai hasil daya Kapasitas Difusi gas (D) Oksigen di alveoli paru adalah...", o: ["Kapasitas luas bentang tikar permadani membran respirasi (A)", "Ketebalan timbunan barikade dinding membran alveolus respirasi (d)", "Angka koefisien mutlak perbedaan tekanan parsial sedot pompa gradien gas dorong (P) murni", "Tingkat koefisien gampang Kelarutan sifat cair leleh menembus gas (S)", "Luas permukaan dinding kapiler bersentuhan lekat paru radikal absolut mutlak"], a: "Ketebalan timbunan barikade dinding membran alveolus respirasi (d)", exp: "<strong>Penjelasan Detail: Ketebalan timbunan barikade dinding membran alveolus respirasi (d)</strong><br>Rumus difusi absolut Fick menetapkan pembagi (denominator) tunggal penurun difusi: Ketebalan membran 'd'. Jika dinding menebal kaku (fibrosis edema), daya tembus gas seketika remuk tersedak berbanding terbalik secara radikal mutlak." },
+            { q: "Nama alias medis bagi bentuk struktur protein Hemoglobin yang sedang mengosongkan diri murni tak mengandung memeluk ikatan membonceng satupun molekul oksigen disebut...", o: ["Methemoglobin berkarat cacat fasik murni utuh", "Oxyhemoglobin merangkul mutlak oksigen ganda penuh", "Carbaminohemoglobin bonceng kargo limbah murni kotor punggung globin radikal", "Deoxyhemoglobin (Reduced Hb) tegang hampa relaks O2", "Karboksihemoglobin ikat mati letal asap racun murni CO radikal"], a: "Deoxyhemoglobin (Reduced Hb) tegang hampa relaks O2", exp: "<strong>Penjelasan Detail: Deoxyhemoglobin (Reduced Hb) tegang hampa relaks O2</strong><br>Hemoglobin kosong melompong (Deoxyhemoglobin) belum bersentuhan murni dengan udara kaya Oksigen paru, mempertahankan postur Tense (tegang)-nya merayap menembus vena menanti dipasok ulang peluru merahnya mutlak radikal." },
+            { q: "Pusat-pusat pengatur komando hierarki di otak berikut adalah pusat pernapasan murni (Respiratory Center), KECUALI...", o: ["Pusat pengatur kontrol ritmik medullary respirasi dasar irama otonom bawah murni", "Pusat Apneustic di pons memperpanjang durasi napas", "Pusat Pneumotaksik pontine menghentikan potong limit ekspirasi fasik", "Pusat Takipneustik", "Area VRG ventral mengontrol ritme paksa dorong kencang perut mutlak ekspirasi radikal"], a: "Pusat Takipneustik", exp: "<strong>Penjelasan Detail: Pusat Takipneustik</strong><br>Tidak ada satupun literatur peta neurologi dunia yang pernah menamakan batang otaknya 'Pusat Takipneustik'. Takipnea hanyalah murni istilah patologis untuk napas yang memburu cepat lari, bukan nama anatomi pemancar saklar pusat komando otak fasik radikal mutlak." },
+            { q: "Pernyataan komprehensif manakah berikut ini yang paling benar mengenai sifat mutlak skor angka serapan oksigen VO2 max?", o: ["VO2 max hanyalah indikator murni terukur fungsi kuat neuromuskuler persendian tuas motorik", "VO2 max merupakan angka parameter indikator emas fungsi kebugaran tangki raksasa kardiorespirasi dan neuromuskuler, dan absolut merupakan hasil capaian adaptasi pembesaran tangki karena siksaan latihan fisik aerobik", "VO2 max merupakan produk mutlak murni dari adaptasi siksaan angkat berat murni latihan fisik anaerobik resistensi barbel radikal", "Murni sekadar refleksi frekuensi jantung berlari memacu tembak Nodus SA", "Tidak mempedulikan luapan isi ekstraksi murni oksigen otot sel perifer radikal"], a: "VO2 max merupakan angka parameter indikator emas fungsi kebugaran tangki raksasa kardiorespirasi dan neuromuskuler, dan absolut merupakan hasil capaian adaptasi pembesaran tangki karena siksaan latihan fisik aerobik", exp: "<strong>Penjelasan Detail: VO2 max merupakan angka parameter indikator emas fungsi kebugaran tangki raksasa kardiorespirasi dan neuromuskuler...</strong><br>Skor metrik VO2 Max adalah stempel mahkota ukur ksatria sejati. Ia menyatukan murni gabungan daya pompa godam jantung menembak, kapasitas paru menyerap hisap lebar, dan kehausan mesin mitokondria otot mencuri membakar O2, yang semata bisa digenjot maksimal mutlak melalui tempaan napas panjang Aerobik fasik." },
+            { q: "Manakah mesin pintu protein komplek transpor elektron berikut yang secara presisi paling mutlak menjadi lorong tempat ion proton H+ jatuh deras kembali masuk menerobos ke matriks mitokondria, lalu energinya diperas untuk mengikat reaksi sakral pembentukan kantong ATP?", o: ["Komplek I pintu awal redoks jatuh NADH mutlak", "Enzim turbin mutlak ATP sintase pemutar baling-baling pengikat fosforilasi murni radikal", "Komplek II pintu lemah hampa cadangan FADH2 fasik", "Komplek III jembatan transit transfer pemompa pompa proton buang", "Komplek IV titik kumpul oksigen pembasuh limbah murni air mutlak fasik"], a: "Enzim turbin mutlak ATP sintase pemutar baling-baling pengikat fosforilasi murni radikal", exp: "<strong>Penjelasan Detail: Enzim turbin mutlak ATP sintase pemutar baling-baling pengikat fosforilasi murni radikal</strong><br>ATP Sintase adalah kincir turbin air terjun biologi. Ketika bendungan gradient Proton H+ di ruang antar membran jebol jatuh memutar turbin baling-baling ini kembali ke matriks, gaya puntir kinetiknya memaku keras memeras serbuk Fosfat merekat pada ADP untuk mencetak uang tunai energi kehidupan (ATP) mutlak radikal." },
+            { q: "Berikut ini adalah hak paten kodrat penciptaan sistem tubuh respirasi pernapasan manusia murni, KECUALI...", o: ["Sebagai mesin utama pertukaran difusi sakral gas respirasi O2 dan CO2", "Sebagai bellow pompa hidraulik udara fungsi ventilasi kembang kempis", "Mesin penyokong produksi getaran pita fungsi ponasi suara vokal laring absolut", "Sebagai gardu utama barikade makrofag dan silia pembersih untuk fungsi pertahanan", "Bukan semua jawaban di atas"], a: "Bukan semua jawaban di atas", exp: "<strong>Penjelasan Detail: Bukan semua jawaban di atas</strong><br>Seluruh opsi dari A hingga D merangkum murni tugas hakiki multitalenta sistem respirasi radikal. Tak ada fungsi yang terlarang, sehingga yang salah (kecuali) adalah pernyataan menyangkal bahwa tidak ada yang benar (Bukan semua jawaban di atas) fasik mutlak." },
+            { q: "Respons letupan akut instan adrenergik sistem kardiovaskuler manusia pada detik-detik pertama menginjak tuas pedal lari olahraga fisik ekstrem adalah...", o: ["Peningkatan tajam pacu kelistrikan memburu takikardia Denyut nadi radikal seketika", "Peningkatan pelebaran meroket murni mutlak denyut nadi istirahat dasar", "Penurunan jatuh bradikardia merendah denyut nadi istirahat pulas", "Hipertrofi pelebaran mutlak otot ventrikel raksasa fasik murni menampung volume sekuncup", "Penebalan mengkaku letupan daya pukul kontraktilitas sel tebing miokardium pamit jangka panjang murni mutlak"], a: "Peningkatan tajam pacu kelistrikan memburu takikardia Denyut nadi radikal seketika", exp: "<strong>Penjelasan Detail: Peningkatan tajam pacu kelistrikan memburu takikardia Denyut nadi radikal seketika</strong><br>Ledakan pecutan respons darurat murni sistem saraf tempur simpatis akut menyuntikkan epinefrin seketika meloncatkan meroketkan rotasi dinamo irama pompa nadi (HR) saat otot berteriak minta suplai pembakaran cepat. Adaptasi istirahat dan otot baru terjadi tahunan kronik fasik murni." },
+            { q: "Struktur ubin pembatas apakah yang sangat sakral membentang luas paling lebar menutupi alveolus dan murni difungsikan untuk mencetak setipis mungkin barikade membran respirasi pencipta area difusi?", o: ["Epitel skuamosa gepeng mikroskopis tipis alveolar sel tipe I murni radikal", "Epitel kuboid tebal penyembur perasan busa surfaktan alveolar tipe II fasik", "Pabrik kelenjar lendir basah lekat sekresi sel goblet pelumas konduktif", "Sinyal kabel raba neuro sikat reseptor sel brush sensor mutlak", "Kelenjar parakrin hormon lokal penyuntik sel granula kecil pekat murni"], a: "Epitel skuamosa gepeng mikroskopis tipis alveolar sel tipe I murni radikal", exp: "<strong>Penjelasan Detail: Epitel skuamosa gepeng mikroskopis tipis alveolar sel tipe I murni radikal</strong><br>Pneumosit tipe I didesain dipipihkan radikal setipis lembaran plastik skuamosa simpleks (hanya 0.1 mikron). Ia memblokir memeluk 97% dinding balon alveolus agar Oksigen gampang tembus menggilas membran tanpa hambatan tebal radikal mutlak." },
+            { q: "Berdasarkan topografi kavitas dada, struktur organ limfoid imunologis pembentuk T-cell yang terletak paling menonjol menghuni menduduki celah ruang depan Mediastinum Anterior (khususnya masif membesar pada anak) adalah...", o: ["Corong otot saluran makan Oesophagus bagian leher turun punggung belakang murni", "Kelenjar Thymus benteng antibodi radikal di balik tameng tulang sternum dada atas", "Tiang tebal merah selang Aorta ascendens dan arch penembak murni letupan cor", "Bilik utuh Jantung sentral Cor absolut di ruang medius fasik", "Bifurcatio belahan pipa nafas besar bronkus primer lobar hilum"], a: "Kelenjar Thymus benteng antibodi radikal di balik tameng tulang sternum dada atas", exp: "<strong>Penjelasan Detail: Kelenjar Thymus benteng antibodi radikal di balik tameng tulang sternum dada atas</strong><br>Ruang anterior hanya sebuah koridor gepeng murni di belakang tameng Sternum. Hanya pada usia belia kompartemen ini disesaki organ pengolah limfosit mutlak (Kelenjar Thymus) yang layu tenggelam di makan lemak saat puber. Esofagus dan Aorta bermukim di tebing posterior fasik radikal." },
+            { q: "Rambut sikat tebal pertahanan fisik pertama yang berfungsi sebagai penyaring kasar memfilter debu serangga dan memblok kotoran pada pintu gerbang sistem respirasi manusia disebut Vibrissae. Di manakah struktur jaring kawat ini tertanam murni?", o: ["Lorong labirin atap koridor relung Sinus nasal tengkorak murni fasik", "Serambi koridor pintu gerbang Vestibulum nasi rongga cuping hidung luar", "Bongkahan tebing lekuk rawan daging hidung Konka conchae aliran", "Atap saraf kuning mukosa cium detektor Area olfactorius plafon", "Matriks sarang perasan lendir seromukosa Lamina propria ikat subendotel radikal"], a: "Serambi koridor pintu gerbang Vestibulum nasi rongga cuping hidung luar", exp: "<strong>Penjelasan Detail: Serambi koridor pintu gerbang Vestibulum nasi rongga cuping hidung luar</strong><br>Bulu rambut pelindung mutlak (Vibrissae) ditanam bertengger eksklusif tepat di lorong teras masuk serambi luar perbatasan (Vestibulum Nasi). Mereka memblok barikade fisik mutlak kotoran makro sebelum jatuh menyeberang masuk ke bagian tabung dalam mukosa licin fasik." },
+            { q: "Di antara berbagai barisan pasukan sel epitel pernapasan, sel langka apakah yang murni berfungsi sebagai agen Neuroepitel memendam pelet paket peptida hormon penyuntik pembawa impuls pengatur lumen vaskular lokal pernapasan?", o: ["Pabrik muntahan pelumas getah silia basah sel goblet kental hampa saraf murni", "Kabel raba mekanik mikrovili penerima guncangan murni sel brush taktil sensor", "Ksatria hormon pemegang butir pelet amina biogenik serabut mutlak sel granula kecil (Kulchitsky cells)", "Sel cadangan pembelah perombak pluripoten cetak kloning cetak murni sel stem basal", "Barikade dinding tiang pilar kolumner pseudokompleks berambut penyapu silia eskalator lendir"], a: "Ksatria hormon pemegang butir pelet amina biogenik serabut mutlak sel granula kecil (Kulchitsky cells)", exp: "<strong>Penjelasan Detail: Ksatria hormon pemegang butir pelet amina biogenik serabut mutlak sel granula kecil (Kulchitsky cells)</strong><br>Sel Granula Kecil (Kulchitsky) di dasar epitel merupakan pos intel neuroendokrin difus. Granulanya menimbun epinefrin/serotonin radikal yang memecut mengatur jepit dilatasi otot selang kapiler dan kelenjar di sekitarnya mutlak murni fasik." },
+            { q: "Di laboratorium uji olahraga kedokteran, penggaris parameter skor emas paling absolut mutlak untuk mengukur tangki kebugaran memeras kapasitas paru dan pompa daya jantung atlet diukur dicatat divalidasi resmi dengan...", o: ["Metrik beban tuas uji Tes angkat beban mesin besi anaerobik lokal kaku murni", "Trek langkah lari mekanik kasar tanpa alat ukur tangki murni", "Standar emas rasio volume hisap paru skor angka radikal absolut VO2 max maksimal peras batas ambang", "Tekanan letup manset Sphygmomanometer radikal sistol lari", "Tes kapasitas tampung hampa vital tiup spirometri mati diam hampa absolut"], a: "Standar emas rasio volume hisap paru skor angka radikal absolut VO2 max maksimal peras batas ambang", exp: "<strong>Penjelasan Detail: Standar emas rasio volume hisap paru skor angka radikal absolut VO2 max maksimal peras batas ambang</strong><br>VO2 Max secara medis mutlak menjadi stempel penguji mesin tangki kardiorespirasi total untuk melihat titik puncak ambang (Volume Oksigen Maksimal) atlet dalam menambang dan mentranspor pembakaran gas O2 ke otot saat berlari panik ekstrem radikal." },
+            { q: "Seorang pasien di ICU terekam Analisis Gas Darahnya menukik murni: pH 7.53 (Tinggi basa), pCO2: 20 mm Hg (Anjlok drastis terbuang), H2CO3: 15 mEq/L (Turun). Diagnosis gangguan lautan asam basa darah mematikan orang tersebut mengarah mutlak pada...", o: ["Asidosis respiratorik karena tahan gas napas radikal mutlak paru sesak hampa", "Alkalosis respiratorik (pH basa radikal dari sapuan cuci napas gas pCO2) dibantu kompensasi tekor buang ginjal H2CO3", "Syok turun krisis mati jatuh asidosis sel H+ pH anjlok drastis hancur murni", "Alkalosis metabolik murni muntah asam lambung pencernaan buang radikal ginjal mati", "Asidosis asam lambung kental syok laktat jaringan lari mutlak letih fasik"], a: "Alkalosis respiratorik (pH basa radikal dari sapuan cuci napas gas pCO2) dibantu kompensasi tekor buang ginjal H2CO3", exp: "<strong>Penjelasan Detail: Alkalosis respiratorik (pH basa radikal dari sapuan cuci napas gas pCO2) dibantu kompensasi tekor buang ginjal H2CO3</strong><br>Lonjakan drastis pH (Alkalosis) membuktikan darah membusuk basa. Akar pemicunya ditunjuk telak oleh luruhnya angka pCO2 (gas hilang dicuci napas hiperventilasi). Angka buang H2CO3 yang ikut direndahkan merupakan kompensasi pasrah ginjal menekan basa murni agar tak makin mematikan fasik radikal." },
+            { q: "Adaptasi hemodinamik instan sesaat sistem kardiovaskuler manusia pada letupan saat-saat pertama lari awal olahraga (Respon Akut) adalah...", o: ["Peningkatan daya lari volume sekuncup seketika (Stroke Volume) dihela letupan tajam takikardia radikal curah ejeksi", "Lonjakan angka istirahat bradikardia hampa santai radikal denyut nadi panjang lambat murni", "Hancur luruhnya angka jatuh laju ritme tegang nadi murni memanjang turun waktu berlari", "Penebalan tebing benteng koridor kaku hipertrofi radikal mutlak", "Aterosklerosis penyempitan radikal flek bengkak murni dinding letal mutlak kronik"], a: "Peningkatan daya lari volume sekuncup seketika (Stroke Volume) dihela letupan tajam takikardia radikal curah ejeksi", exp: "<strong>Penjelasan Detail: Peningkatan daya lari volume sekuncup seketika (Stroke Volume) dihela letupan tajam takikardia radikal curah ejeksi</strong><br>Otot tungkai yang berlari panik langsung menuntut banjir pasokan bensin O2. Kabel simpatis otak merespon kilat memecut Nodus SA untuk menginjak tuas gas Takikardia, memeras tendangan Jantung memompa godam sekuncup kilat saat itu juga absolut murni." },
+            { q: "Penurunan permanen denyut nadi di waktu santai istirahat (Bradikardia fungsional) pada atlet kaliber kelas dunia merupakan kompensasi efisiensi mekanis otot jantung hasil dari...", o: ["Penyempitan syok runtuhnya perasan letup ejeksi curah hampa volume sekuncup (Stroke Volume) anjlok radikal murni", "Hipertrofi pelebaran mekar bilik otot ventrikel ksatria meningkatkan porsi tonjokan mutlak daya Volume Sekuncup peluru raksasa radikal", "Jatuh remuknya gaya peras loyo mati Penurunan kuat tajam pamit Kontraktilitas miokardium hampa murni absolut", "Gagal membuang menumpuk membengkak memutus suplai curah ejeksi aliran output pompa Cardiac Output mati mutlak", "Pelebaran membengkak aneurisma lemah syok regang radikal otot dinding gagal jantung murni"], a: "Hipertrofi pelebaran mekar bilik otot ventrikel ksatria meningkatkan porsi tonjokan mutlak daya Volume Sekuncup peluru raksasa radikal", exp: "<strong>Penjelasan Detail: Hipertrofi pelebaran mekar bilik otot ventrikel ksatria meningkatkan porsi tonjokan mutlak daya Volume Sekuncup peluru raksasa radikal</strong><br>Ventrikel atlet berlari bertahun-tahun direnovasi menjadi pilar daging tebal membesar (Hipertrofi). Kantong ini mampu memeras peluru sekuncup (SV) curah luar biasa masif hanya dengan 1 putaran peras santai. Karenanya irama ritme detaknya diizinkan mutlak melambat hemat energi tidur radikal fasik." },
+            { q: "Bentuk adaptasi modifikasi biologis hasil kerja jangka panjang merespon tempaan siksaan keras latihan fisik (Respon Kronik Sistem Respirasi) diukur dalam bentukan...", o: ["Memuntahkan cadangan peninggian mengejar curah terengah panik lonjakan frekuensi nafas laju cepat mutlak radikal", "Kematian syok penyempitan volume sedot hampa buang perasan Volume Tidal mengkerut anjlok absolut", "Terpotongnya pasokan luapan angin sedot mati loyo penurunan ventilasi mekanik hampa hancur murni", "Kapasitas vital paru maksimal melebar memeras optimal dan peningkatan mutlak efisiensi daya tuas otot interkostal dinding respirasi", "Dinding dada menjadi kaku batu runtuh melemah hancur mutlak Penurunan memar tonus loyo efisiensi kerja otot dinding napas"], a: "Kapasitas vital paru maksimal melebar memeras optimal dan peningkatan mutlak efisiensi daya tuas otot interkostal dinding respirasi", exp: "<strong>Penjelasan Detail: Kapasitas vital paru maksimal melebar memeras optimal dan peningkatan mutlak efisiensi daya tuas otot interkostal dinding respirasi</strong><br>Tuas tarikan otot dada dan diafragma seorang perenang dibentuk sekeras baja. Tarikan napas mereka sedemikian sangat efisien murni menghela hisap kapasitas balon tangki paru absolut lebih lebar kuat beringas, sehingga dada tak cepat letih terengah lelah radikal fasik." },
+            { q: "Sumber sisa muatan energi elektron yang membonceng di kantong kendaraan FADH2 dari siklus Krebs akan merapat memindahkan menjatuhkan 2 elektron kargonya mutlak ke stasiun protein penjaga pintu gerbang kompleks...", o: ["Komplek I raksasa pintu pertama penyedot jatuh elektron mutlak truk awal NADH radikal", "Turbin pompa paku gedoran air mesin ATP sintase pencetak koin murni mutlak", "Komplek II cadangan perantara rel stasiun samping pinggir murni mutlak khusus FADH2", "Komplek III jembatan penyebarang tembak lompat cytochrome c reductase", "Komplek IV muara lubang pembunuh pelempar oksida pengikatan air fasik utuh"], a: "Komplek II cadangan perantara rel stasiun samping pinggir murni mutlak khusus FADH2", exp: "<strong>Penjelasan Detail: Komplek II cadangan perantara rel stasiun samping pinggir murni mutlak khusus FADH2</strong><br>Truk tangki FADH2 (berbeda dari NADH) tidak diizinkan alam berlabuh membongkar muatan di Kompleks I utama. Ia diturunkan jabatannya menyerahkan memuntahkan kargonya murni mutlak di pintu stasiun samping cadangan Kompleks II tanpa memompa proton radikal H+ sama sekali di titik itu fasik." },
+            { q: "Berapakah takaran mutlak produksi pencetakan raksasa molekul lumbung energi antara (NADH dan FADH2) yang dihasilkan dari pemerasan habis setiap pembakaran 1 molekul induk glukosa utuh murni di dalam putaran tungku dua siklus Asam Sitrat Krebs?", o: ["Pecahan tipis membelah 1 molekul NADH dan murni buang 1 FADH2 cadangan fasik", "Jatuhan remuk 2 kantong kargo truk NADH dan ganda lebur 2 FADH2 absolut murni radikal", "Nilai 3 tembakan NADH mutlak dan bongkar 1 truk FADH2 saja untuk per satu molekul glukosa", "6 armada kantong raksasa NADH dan dorongan sepasang 2 mesin FADH2 murni hasil ganda putaran 2 piruvat", "Mutlak murni nihil absen hampa kantong tanpa memeras sisa letupan kargo pembakaran uap absolut sama sekali murni"], a: "6 armada kantong raksasa NADH dan dorongan sepasang 2 mesin FADH2 murni hasil ganda putaran 2 piruvat", exp: "<strong>Penjelasan Detail: 6 armada kantong raksasa NADH dan dorongan sepasang 2 mesin FADH2 murni hasil ganda putaran 2 piruvat</strong><br>Pembelahan 1 Cincin Glukosa melahirkan kembar 2 molekul Piruvat (Asetil-KoA) yang akan membakar memeras mutlak DUA KALI putaran roda siklus Krebs. Satu putarannya meludahkan 3 NADH & 1 FADH2; maka total tangkapan bersihnya menjadi berlipat ganda: 6 NADH dan 2 FADH2 murni absolut radikal." },
+            { q: "Ketika penyakit kegagalan pompa paru mencekik pasien hingga menahan jeratan tumpukan gas racun radikal mengakibatkan pH hancur (Asidosis Respiratorik), sistem kompensasi mutlak perlindungan biokimia akan bermanuver...", o: ["Membuang buang geser berputar radikal kurva disosiasi hiperbola memeras oksigen buang paku kuat tarik ke arah Kiri mutlak egois hampa", "Pergeseran kurva disosiasi Hemoglobin-Oksigen meluncur turun ekstrem ke arah Kanan merusak jalinan menumpahkan peluru ikatan O2 deras mutlak ke dalam sel lelah jaringan fasik radikal", "Mempertahankan ikatan paku mati kencang tegang afinitas kurva mati membatu diam stagnan", "Menurunkan memutus rantai daya sedot enzim produksi suhu tubuh jatuh beku lemas hampa diam hipotermia murni", "Menggeser keseimbangan hidrasi kimia menciut bereaksi membalik buang gas HCO3 meruap buih kembali menjadi sisa air mutlak radikal fasik"], a: "Pergeseran kurva disosiasi Hemoglobin-Oksigen meluncur turun ekstrem ke arah Kanan merusak jalinan menumpahkan peluru ikatan O2 deras mutlak ke dalam sel lelah jaringan fasik radikal", exp: "<strong>Penjelasan Detail: Pergeseran kurva disosiasi Hemoglobin-Oksigen meluncur turun ekstrem ke arah Kanan merusak jalinan menumpahkan peluru ikatan O2 deras mutlak ke dalam sel lelah jaringan fasik radikal</strong><br>Efek Bohr Absolut: Hujan asam H+ asidosis yang membakar darah segera mencambuk merusak genggaman hemoglobin, memaksanya melempar bergeser menukik merelakan meluncur murni ke arah Kanan (Shift Right) memuntahkan menyumbangkan membagi bekal peluru Oksigen (O2) rakus gila ke medan sel mematikan radikal." },
+            { q: "Saat Anda berlari memburu dan irama tarikan napas memacu kembang-kempis dinding ventilasi (Hiperventilasi), hembusan gas Karbondioksida (CO2) tercuci terbang keluar deras dari sirkulasi darah. Efek kimia radikal apa yang terjadi?", o: ["Gas pCO2 meroket paku tekanan tinggi ekstrem menjepit sesak laring fasik", "Konsentrasi muatan ion asam hidrogen H+ bebas menguap terkuras menurun drastis meninggalkan darah membasuh basa", "Derajat pH darah seketika hancur menukik luruh ke level asam letal Asidosis mutlak radikal", "Timbunan produksi lumbung panen H+ asam kental menjulang konsentrasinya membakar laktat jaringan murni absolut", "Ion racun karbaminohemoglobin merobek sisa plasma merantai paku molekul besi fasik murni utuh"], a: "Konsentrasi muatan ion asam hidrogen H+ bebas menguap terkuras menurun drastis meninggalkan darah membasuh basa", exp: "<strong>Penjelasan Detail: Konsentrasi muatan ion asam hidrogen H+ bebas menguap terkuras menurun drastis meninggalkan darah membasuh basa</strong><br>Sapu bersih gas buang CO2 memancing ekuilibrium merampas menarik ion asam H+ dari laut darah untuk memutar kompensasi penambal balik. Konsekuensinya mutlak: H+ bebas lenyap hilang (menurun drastis) melambungkan menukikkan neraca meroket ke level basa (Alkalosis) murni fasik radikal." },
+            { q: "Sensor reseptor khusus pemantau bahaya yang bertanggung jawab mendeteksi gesekan gangguan taktil (rangsangan mekanik sensorik umum) pada permukaan jalan selaput dinding pernapasan hidung dan trakea diselenggarakan oleh...", o: ["Sumur kelenjar piala pelumas pelontar cairan sel goblet kental hampa murni mutlak saraf", "Sel sikat pemandu bersinaps raba kawat dendrit reseptor tajam penangkap partikel rangsang fisik Sel Brush mutlak fasik radikal", "Pasukan intel granula sel peptida pelet tembak amina biogenik neuroendokrin kecil absolut Kulchitsky", "Pabrik dasar pelumas pemutus cadangan ganda kloning cetakan sel stem membelah pluripoten murni fasik", "Benteng tiang penyokong jalan nafas murni sapu epitel kolumner bersilia pendorong dahak tebal kaku mutlak"], a: "Sel sikat pemandu bersinaps raba kawat dendrit reseptor tajam penangkap partikel rangsang fisik Sel Brush mutlak fasik radikal", exp: "<strong>Penjelasan Detail: Sel sikat pemandu bersinaps raba kawat dendrit reseptor tajam penangkap partikel rangsang fisik Sel Brush mutlak fasik radikal</strong><br>Sel Sikat (Brush Cells) menumbuhkan mahkota tebal mikrovili kaku reseptor di atap kepalanya. Begitu ada rangsang debu asing kasar rabaan murni membentur menyentuh sikatnya, sinaps saraf di dasarnya meletup menjerit mengirim alarm mematikan fasik mutlak ke otak." },
+            { q: "Pipa saluran napas Trakea diposisikan secara letak anatomis absolut meluncur tepat membelah murni berada di sebelah..... dari corong selang makanan Esofagus di belakang rongga cervico-thoracal.", o: ["Anterior persis di muka memblok melindungi memeluk dada depan pipa menelan absolut murni", "Posterior menjauh bersembunyi menempel rata ke tembok keras punggung balok kaku tulang belakang fasik", "Superior atap gantung corong menekan tekan menggencet radix laring leher mutlak murni", "Inferior membenam ambles jatuh tenggelam ditarik gravitasi akar paru radikal fasik mutlak", "Dorsal berselimut lekat menumpang tindih memeluk balok pilar tulang spina kaku tegak radikal lurus"], a: "Anterior persis di muka memblok melindungi memeluk dada depan pipa menelan absolut murni", exp: "<strong>Penjelasan Detail: Anterior persis di muka memblok melindungi memeluk dada depan pipa menelan absolut murni</strong><br>Benteng cincin kaku Trakea berjalan diukir menantang dunia luar bertengger persis sebagai perisai depan (Anterior) tepat menindih dan melindungi lembeknya otot koridor esofagus (yang bersembunyi ketakutan di punggung posterior) mutlak fasik." },
+            { q: "Berikut rentetan urutan jalur pendaratan turunan angin pernapasan yang paling presisi radikal dari gerbang hidung luar menjebol masuk menyusur tabung paru hingga kantung buntu alveolus adalah...", o: ["Cavum nasi -> nasopharynx -> oropharynx -> laryngopharynx -> larynx -> trachea -> bronchus -> bronchiolus -> alveolus", "Cavum nasi -> Larynx depan -> Trachea potong lurus -> Oropharynx -> Nasopharynx tembus hampa atap -> Alveolus murni -> Bronkus radikal mutlak", "Nasopharynx -> Oropharynx belakang -> Cavum nasi -> Larynx corong atas -> Laryngopharynx -> Trachea -> Bronchus cabang utama -> Bronchiolus -> Alveolus mikroskopis fasik", "Trakea tebal -> Larynx pita suara -> Faring rongga hampa -> Hidung luar atap -> Bronkus cabang -> Alveolus murni -> Bronkiolus buntu mutlak fasik", "Bongkahan Alveolus dasar paru -> Bronkiolus naik -> Bronkus menembus -> Trakea atas -> Larynx potong jepit -> Oropharynx -> Hidung buang fasik radikal"], a: "Cavum nasi -> nasopharynx -> oropharynx -> laryngopharynx -> larynx -> trachea -> bronchus -> bronchiolus -> alveolus", exp: "<strong>Penjelasan Detail: Cavum nasi -> nasopharynx -> oropharynx -> laryngopharynx -> larynx -> trachea -> bronchus -> bronchiolus -> alveolus</strong><br>Urutan rute jatuhan navigasi murni sakral mutlak (Zona Konduksi -> Zona Respiratori): dari lubang gua (Nasi), menuruni 3 tebing lorong Faring, menembus pintu kotak pita suara penjaga gawang (Laring), merosot di aspal pipa panjang (Trakea), membelah akar di dahan utama (Bronkus), merayapi ranting buntu kecil (Bronkiolus), terjun di buah anggur akhir muara (Alveolus) fasik radikal." },
+            { q: "Dalam skenario fatal penusukan pisau punggung bilah maut memanjang dari arah punggung belakang menembus lurus koridor dinding rongga thorax, struktur anatomis tabung raksasa organ sentral leher memanjang mana yang dipastikan murni bakal robek tertusuk terhujam terlebih dahulu?", o: ["Pipa cincin depan tebal pelindung rawan Trakea fasik mutlak", "Lekuk lorong tebing dalam tabung corong makanan lurus Oesophagus kerongkongan radikal absolut belakang", "Otot pelindung depan ruang depan kamar utama pompa jantung Cor murni telanjang", "Rel lengkung tebing koridor depan arcus aorta lurus fasik kaku tembak mutlak", "Kotak pilar suara tinggi depan laring kaku membentang paku tegang pita radikal murni utuh"], a: "Lekuk lorong tebing dalam tabung corong makanan lurus Oesophagus kerongkongan radikal absolut belakang", exp: "<strong>Penjelasan Detail: Lekuk lorong tebing dalam tabung corong makanan lurus Oesophagus kerongkongan radikal absolut belakang</strong><br>Anatomi maut posisi: Esofagus berjalan lurus vertikal bertahta menyusup persis menempel sangat dekat dengan tiang punggung vertebral menindih (Posterior) tepat di balik Trakea dan Jantung. Tikaman dari belakang mutlak murni mengeksekusi merobek Esofagus perdana sebelum berhasil merangsek jantung fasik radikal." },
+            { q: "Saat Anda nekad mendaki menaklukkan tebing bukit puncak ketinggian gunung menembus awan atmosfer tekanan Oksigen miskin rendah hampa tipis, respon adaptasi kompensatoris apa yang mutlak akan menyiksa siklus asam basa sistem pernapasan Anda?", o: ["Mengundang penumpukan pH basa murni naik meroket tajam ditemani pencucian pCO2 membuang terbang anjlok hancur drastis radikal fasik", "pH membusuk asam syok jatuh drastis ditemani menumpuknya beban bendungan sesak CO2 naik radikal", "Laju pernapasan diam stagnan pH normal netral CO2 tak bereaksi berubah memutar stabil murni absolut", "pH melonjak mencuat murni dan gas karbondioksida juga ikut membengkak tajam tertahan sesak paru utuh", "Darah membeku syok laktat jaringan menyusup murni jatuh hipotermia hampa asidosis gas oksida fasik mutlak"], a: "Mengundang penumpukan pH basa murni naik meroket tajam ditemani pencucian pCO2 membuang terbang anjlok hancur drastis radikal fasik", exp: "<strong>Penjelasan Detail: Mengundang penumpukan pH basa murni naik meroket tajam ditemani pencucian pCO2 membuang terbang anjlok hancur drastis radikal fasik</strong><br>Hipoksia ekstrem di puncak menyiksa otak melecut saklar kemoreseptor memicu napas tersengal memburu darurat hiperventilasi. Napas gas pol gas rem meledak membuang terbang cadangan karbondioksida (pCO2 turun drastis). Lenyapnya jangkar asam penyeimbang pH ini seketika memicu darah melonjak naik menjadi basa absolut (Alkalosis Respiratorik murni fasik radikal)." },
+            { q: "Dalam adaptasi fisiologi kebugaran lari jarak jauh, terjadinya istirahat tenang paru ditandai dengan Penurunan Ventilasi mekanik laju pertukaran (efisiensi hembusan tanpa perlu ngos-ngosan bernapas cepat saat rileks) merupakan hasil modifikasi pahatan tubuh karena...", o: ["Efek akut serangan panik seketika sistem kardiovaskular tembak dorong peluru letup nadi murni", "Efek hancur gagal kompensasi payah jantung pingsan sinkop absolut radikal murni", "Efek akut gedoran dada otot napas jebol mekar radikal murni detik saat memeras lari", "Efek ukiran mahakarya latihan tempur jangka panjang murni Efek kronik sistem kardiorespirasi tangki kebugaran paru membesar fasik mutlak", "Kelemahan dinding fibrosis otot melemas jatuh kendor hampa murni absolut"], a: "Efek ukiran mahakarya latihan tempur jangka panjang murni Efek kronik sistem kardiorespirasi tangki kebugaran paru membesar fasik mutlak", exp: "<strong>Penjelasan Detail: Efek ukiran mahakarya latihan tempur jangka panjang murni Efek kronik sistem kardiorespirasi tangki kebugaran paru membesar fasik mutlak</strong><br>Otot diafragma yang digenjot rutin (Adaptasi Kronik murni) berevolusi jadi tuas hipertrofi sangat raksasa efisien. Hanya dengan 1 tarikan santai, kapasitas balon udara tersedot banyak, menekan frekuensi napas agar turun (Penurunan frekuensi ventilasi per menit) saat istirahat tanpa capek fasik mutlak." },
+            { q: "Seorang pasien menderita penyumbatan napas rute kaku asma alergi parah tercekik kronis (PPOK/Asma). Karena jalan pembuangan udaranya menyempit terblokir, jenis status neraca gangguan keseimbangan buangan asam-basa darah apakah yang memutar maut menyiksa membusukkan penderita tersebut?", o: ["Syok jatuh Alkalosis respiratorik darah basah dipaksa membilas murni dengan penawar panen ginjal kompensasi radikal absolut", "Jebakan memutar laktat Alkalosis metabolik murni lambung buang asam tanpa kompensasi sama sekali hampa radikal diam mutlak", "Asidosis respiratorik terendam gas asam mematikan murni dikawal panik dibantu usaha keras ginjal dengan kompensasi basa mutlak hancur radikal", "Asidosis respiratorik sesak mutlak jatuh hancur seketika namun diabaikan dilepas membusuk murni radikal tanpa kompensasi basa", "Pendarahan keton membakar Asidosis metabolik murni muntah racun syok ginjal luruh radikal fasik mutlak hampa"], a: "Asidosis respiratorik terendam gas asam mematikan murni dikawal panik dibantu usaha keras ginjal dengan kompensasi basa mutlak hancur radikal", exp: "<strong>Penjelasan Detail: Asidosis respiratorik terendam gas asam mematikan murni dikawal panik dibantu usaha keras ginjal dengan kompensasi basa mutlak hancur radikal</strong><br>Asma memblokade ekspirasi. Gas buangan CO2 (penentu keasaman) menumpuk tercekik radikal tak bisa keluar, melarut menukikkan pH darah jatuh membusuk asam (Asidosis Respiratorik). Murni tubuh tak diam: Ginjal pontang-panting merespon pelan merangkai Bikarbonat HCO3- sebagai bala bantuan penetral absolut (Kompensasi metabolik ginjal fasik)." },
+            { q: "Manakah dari cacat anatomis komplikasi biokimiawi pembunuh detak berikut ini yang murni BUKAN merupakan akar penyebab memicu meledaknya badai letup Atrial Fibrillation (kejang getar kacau serambi)?", o: ["Hambatan lorong kaku Stenosis katup pintu masuk bilik Mitral menahan cegat genang bendungan memutar Atrium Kiri murni fasik", "Blokade kebocoran tumpah keluar lorong jantung kiri bawah pintu Stenosis katup Aorta menghambat radikal keluaran ruang jauh dari atrium murni", "Peradangan invasif memakan hancur Infeksi jaringan tempel patogen mutlak miokard sel hampa radikal fasik", "Korslet setrum Hantaran listrik SA nodus bergetar konduksi menyebar pacu tak teratur liar mutlak memuntir serambi acak radikal fasik", "Pembesaran bengkak melar kantung balon dinding meregang robek Pembesaran atrium menolak relaks memicu korsleting regang letup serabut fasik murni"], a: "Blokade kebocoran tumpah keluar lorong jantung kiri bawah pintu Stenosis katup Aorta menghambat radikal keluaran ruang jauh dari atrium murni", exp: "<strong>Penjelasan Detail: Blokade kebocoran tumpah keluar lorong jantung kiri bawah pintu Stenosis katup Aorta menghambat radikal keluaran ruang jauh dari atrium murni</strong><br>Sumbatan stenosis gembok kaku berkarat di Katup Aorta MURNI adalah urusan blokade pintu keluar milik pompa otot bilik bawah (Ventrikel Kiri). Ia tak memicu membakar kejang setrum getaran dinding Atrium serambi atas secara langsung absolut (Afib dipicu mutlak oleh bendungan mitral/bengkak Atrium fasik)." },
+            { q: "Penumpukan pekat kepungan asap Karbondioksida (Peningkatan CO2) yang membanjiri peredaran lokal jaringan lelah otot mutlak memicu dampak saklar kompensasi biokimia berupa...", o: ["Tergerusnya angka pH menukik curam asam Penurunan pH (Asidosis jaringan memburu hampa murni fasik radikal)", "Hancurnya pelindung cadangan 2,3-DPG merosot terjun bebas nihil mutlak radikal murni", "Melonjaknya neraca darah mengkristal menjadi Terjadi alkalosis basa luluh letal hampa absolut mutlak", "Membekunya sirkulasi menjadi dingin Peningkatan kuat afinitas pelit takhta Hb-O2 egois mematung kaku murni fasik radikal", "Meredam menghentikan total mematikan gedoran aliran Peningkatan pelepasan H+ ke udara murni absolut kosong fasik"], a: "Tergerusnya angka pH menukik curam asam Penurunan pH (Asidosis jaringan memburu hampa murni fasik radikal)", exp: "<strong>Penjelasan Detail: Tergerusnya angka pH menukik curam asam Penurunan pH (Asidosis jaringan memburu hampa murni fasik radikal)</strong><br>Karbondioksida (CO2) murni adalah senyawa gas pembawa malapetaka keasaman mutlak. Begitu mengendap di plasma, CA mengubahnya langsung bereaksi hidrasi merangkai H2CO3 membuang lautan radikal proton H+ bebas yang seketika mencekik membusukkan menarik angka pH darah merosot tajam menjadi Asidosis asam radikal murni fasik." },
+            { q: "Volume perasan sisa ampas udara angin ekstra (sekitar 1100 ml) yang secara mutlak masih dapat dipaksa diperas didorong menyembur keras keluar dada melalui tekanan otot kuat sadar setelah sebelumnya mencapai batas akhir hembusan ekspirasi pasif biasa santai adalah takrif absolut dari volume...", o: ["Kuota sedot napas murni Volume Cadangan Inspirasi (IRV) pendorong lurus dada depan fasik", "Kuota ampas peras paksa Volume Cadangan Ekspirasi (ERV) remuk sisa bawah murni", "Aliran hampa santai pasif Volume Tidal rileks alir ombak damai mutlak radikal", "Daya hisap gabung luruh Volume Biasa konstan cetak biru murni hampa absolut", "Tabungan hampa Volume Residu mati buntu terlarang peras tak bisa kuras habis radikal murni fasik"], a: "Kuota ampas peras paksa Volume Cadangan Ekspirasi (ERV) remuk sisa bawah murni", exp: "<strong>Penjelasan Detail: Kuota ampas peras paksa Volume Cadangan Ekspirasi (ERV) remuk sisa bawah murni</strong><br>Definisi klinis sakral mutlak: Volume Cadangan Ekspirasi (Expiratory Reserve Volume / ERV) adalah persentase murni sisa kuota paksa yang ditarik oleh bantuan kontraksi sengaja otot perut saat mendesak keluar menyumbangkan hembusan maksimum memeras kering paru fasik radikal. (Beda dengan Volume Residu yang sama sekali haram dikuras)." },
+            { q: "Seorang wanita batuk kronis meludah darah datang diduga TBC paru. Dokter menyenter X-Ray/CT Scan mencari sarang lokasi jamur koloni basil aerobik murni *Mycobacterium tuberculosis* tersebut. Titik lokasi sasaran paling favorit bagi kuman aerob letal ini untuk mendirikan markas memakan paru adalah di wilayah...", o: ["Koridor penyeberang akar kabel radikal Hilum pulmonare murni", "Puncak atap gunung menonjol lobus rongga paru Apex pulmo oksigenasi kaya murni mutlak", "Bilik tengah himpitan dada Lobus media penyekat jantung fasik", "Lidah pinggir selang kaku Lingula pulmo ujung lobus batas jantung radikal", "Landasan karpet pijakan dasar bantal pleura Basis pulmo darah genang hampa O2 absolut mutlak"], a: "Puncak atap gunung menonjol lobus rongga paru Apex pulmo oksigenasi kaya murni mutlak", exp: "<strong>Penjelasan Detail: Puncak atap gunung menonjol lobus rongga paru Apex pulmo oksigenasi kaya murni mutlak</strong><br>Bakteri Basil TBC (M. Tuberculosis) adalah pemuja rakus Oksigen murni obligat aerob. Mereka mencari menembak mendaki bersarang mutlak di puncak atap menara Apex Paru (Apical Lobe) karena kawasan tebing atas inilah yang memiliki rasio ventilasi-perfusi (V/Q ratio) terbesar kaya raya mandi luapan tekanan radikal Oksigen fasik murni." },
+            { q: "Paru-paru kanan dikaruniai kompartemen 3 lobus, sedang paru kiri buntung terjepit jantung kehilangan ruang (hanya 2 lobus). Secara topografi cermin sisa, juluran lidah daging struktur bagian paru kiri (Pulmo Sinistra) yang terbentuk sisa kompensatoris dikorbankan murni dan dianggap sebagai organ Homolog setara dengan anatomi Lobus Media yang hilang adalah...", o: ["Lidah juluran daging tipis Lingulare superior ujung lobus superior (Lingula) fasik murni radikal", "Gunungan punggung Segmenta Superior lobus bawah dasar hampa mutlak", "Lekuk tebing Segmenta Anterior dada depan lobus membelah mutlak murni", "Lembah akar corong Hilum masuk penopang jaringan murni radikal", "Batas selang memotong batas Bronkus fasik absolut"], a: "Lidah juluran daging tipis Lingulare superior ujung lobus superior (Lingula) fasik murni radikal", exp: "<strong>Penjelasan Detail: Lidah juluran daging tipis Lingulare superior ujung lobus superior (Lingula) fasik murni radikal</strong><br>Karena dicuri tergencet ruang raksasa bilik Jantung (Cardiac Notch), paru kiri gagal membelah mencetak lobus tengah (media). Namun genetika mewariskan jejak homolog embriologis absolut berupa tonjolan lidah berdaging kecil memanjang (Lingula) pada lobus superior sebagai ganti analog mutlak dari Lobus Media Kanan fasik radikal." },
+            { q: "Perjalanan membelah dahan saluran pipa akar napas. Pada tingkat Bronkus Tersier (Segmental) yang melayani Lobus Inferior (lobus dasar bawah), percabangan mana di bawah ini yang merupakan salah satu nomenklatur cabang primer pertama milik lobus tebing dasar tersebut?", o: ["Pipa atap puncak Apex pucuk Apikal lobus superior mutlak hampa dasar", "Pipa batas membelah batas punggung Segmentum Superior (dari Lobus Inferior) fasik mutlak", "Tebing depan batas menyekat Anterior ruang hampa murni lobus depan radikal", "Celah Lateral sisi pinggir sayap luar media mutlak lobus media hampa", "Lidah Inferior bawah ruang buntu pelumas hampa radikal"], a: "Pipa batas membelah batas punggung Segmentum Superior (dari Lobus Inferior) fasik mutlak", exp: "<strong>Penjelasan Detail: Pipa batas membelah batas punggung Segmentum Superior (dari Lobus Inferior) fasik mutlak</strong><br>Anatomi murni cabang dahan bronkus: Lobus Inferior (bawah) mengawali titik puncak cabangnya dengan Segmen Apical (atau sering disebut Segmentum Superior lobus inferior, berada di punggung belakang atas). Apikal/Posterior/Lateral biasa merajai teritori murni kepemilikan mutlak di Lobus Superior atau Media fasik radikal." }
+        ];
+
+        // --- GAME LOGIC ---
+        let currentIdx = 0;
+        let score = 0;
+        let mode = '';
+        let userAnswers = [];
+
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const qText = document.getElementById('question-text');
+        const optContainer = document.getElementById('options-container');
+        const feedbackArea = document.getElementById('feedback-area');
+        const btnNext = document.getElementById('btn-next');
+        const btnPrev = document.getElementById('btn-prev');
+        const btnFinish = document.getElementById('btn-finish');
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById('total-q').innerText = questions.length;
+            document.getElementById('display-q-count').innerText = questions.length;
+        });
+
+        function startQuiz(selectedMode) {
+            mode = selectedMode;
+            currentIdx = 0;
+            score = 0;
+            userAnswers = new Array(questions.length).fill(null);
+            
+            startScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            resultScreen.classList.remove('flex');
+            
+            quizScreen.classList.remove('hidden');
+            quizScreen.classList.add('flex');
+            
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = questions[currentIdx];
+            
+            document.getElementById('curr-q').innerText = currentIdx + 1;
+            
+            if(mode === 'exam') {
+                document.getElementById('score-display').innerText = `EXAM IN PROGRESS`;
+            } else {
+                document.getElementById('score-display').innerText = `SCORE: ${score}`;
+            }
+
+            qText.innerHTML = q.q;
+            feedbackArea.classList.add('hidden');
+            optContainer.innerHTML = '';
+
+            // Shuffle array logic inside render
+            let optionsToRender = [...q.o];
+            
+            optionsToRender.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-option';
+                btn.innerHTML = `<span>${opt}</span>`;
+                
+                if (userAnswers[currentIdx]) {
+                    btn.disabled = true;
+                    if (opt === q.a && mode === 'practice') {
+                        btn.classList.add('correct');
+                        btn.innerHTML += '<i class="ph-bold ph-check icon-indicator"></i>';
+                    } else if (opt === userAnswers[currentIdx]) {
+                        if (mode === 'practice' && opt !== q.a) {
+                            btn.classList.add('incorrect');
+                            btn.innerHTML += '<i class="ph-bold ph-x icon-indicator"></i>';
+                        } else {
+                            btn.classList.add('selected');
+                        }
+                    }
+                } else {
+                    btn.onclick = () => selectAnswer(opt, q, btn);
+                }
+                
+                optContainer.appendChild(btn);
+            });
+
+            if (userAnswers[currentIdx] && mode === 'practice') {
+                feedbackArea.innerHTML = q.exp;
+                feedbackArea.classList.remove('hidden');
+            }
+
+            btnPrev.disabled = currentIdx === 0;
+            if (currentIdx === questions.length - 1) {
+                btnNext.classList.add('hidden');
+                btnFinish.classList.remove('hidden');
+            } else {
+                btnNext.classList.remove('hidden');
+                btnFinish.classList.add('hidden');
+            }
+        }
+
+        function selectAnswer(ans, q, btnElem) {
+            userAnswers[currentIdx] = ans;
+            const allBtns = optContainer.querySelectorAll('button');
+            allBtns.forEach(b => b.disabled = true);
+
+            if (ans === q.a) {
+                score++;
+                if (mode === 'practice') {
+                    btnElem.classList.add('correct');
+                    btnElem.innerHTML += '<i class="ph-bold ph-check icon-indicator"></i>';
+                }
+            } else {
+                if (mode === 'practice') {
+                    btnElem.classList.add('incorrect');
+                    btnElem.innerHTML += '<i class="ph-bold ph-x icon-indicator"></i>';
+                    
+                    allBtns.forEach(b => {
+                        if (b.innerText === q.a) {
+                            b.classList.add('correct');
+                            b.innerHTML += '<i class="ph-bold ph-check icon-indicator"></i>';
+                        }
+                    });
+                } else {
+                    btnElem.classList.add('selected');
+                }
+            }
+
+            if(mode !== 'exam') {
+                document.getElementById('score-display').innerText = `SCORE: ${score}`;
+            }
+
+            if (mode === 'practice') {
+                feedbackArea.innerHTML = q.exp;
+                feedbackArea.classList.remove('hidden');
+            }
+        }
+
+        function nextQuestion() {
+            if (currentIdx < questions.length - 1) {
+                currentIdx++;
+                loadQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentIdx > 0) {
+                currentIdx--;
+                loadQuestion();
+            }
+        }
+
+        function finishQuiz() {
+            quizScreen.classList.add('hidden');
+            quizScreen.classList.remove('flex');
+            
+            resultScreen.classList.remove('hidden');
+            resultScreen.classList.add('flex');
+            
+            const finalScoreEl = document.getElementById('final-score');
+            let tempScore = 0;
+            const finalGrade = Math.round((score / questions.length) * 100);
+            
+            const interval = setInterval(() => {
+                if (tempScore >= finalGrade) {
+                    finalScoreEl.innerText = finalGrade;
+                    clearInterval(interval);
+                } else {
+                    tempScore++;
+                    finalScoreEl.innerText = tempScore;
+                }
+            }, 20);
+
+            document.getElementById('res-correct').innerText = score;
+            document.getElementById('res-wrong').innerText = questions.length - score;
+        }
+
+        function backToHome() {
+            quizScreen.classList.add('hidden');
+            quizScreen.classList.remove('flex');
+            resultScreen.classList.add('hidden');
+            resultScreen.classList.remove('flex');
+            
+            startScreen.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulasi CBT: Perbaikan Kerusakan DNA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #19192a; /* Dark Purple */
+            color: #e0e0e0;
+        }
+        .title-font {
+            font-family: 'Cinzel Decorative', serif;
+        }
+        .bg-dark-purple { background-color: #19192a; }
+        .bg-mid-purple { background-color: #2c2c3e; }
+        .bg-light-purple { background-color: #4a4a68; }
+        .text-gold { color: #E6C300; }
+        .border-gold { border-color: #E6C300; }
+        .btn {
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .btn-primary {
+            background-color: #E6C300;
+            color: #19192a;
+            font-weight: bold;
+        }
+        .btn-primary:hover {
+            background-color: #ffd700;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(230, 195, 0, 0.2);
+        }
+        .btn-secondary {
+            background-color: transparent;
+            border: 1px solid #E6C300;
+            color: #E6C300;
+        }
+        .btn-secondary:hover {
+            background-color: rgba(230, 195, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        .nav-item {
+            border: 1px solid #4a4a68;
+            transition: all 0.2s ease;
+        }
+        .nav-item:hover {
+            border-color: #E6C300;
+            background-color: #2c2c3e;
+        }
+        .nav-item.active {
+            background-color: #E6C300;
+            border-color: #E6C300;
+            color: #19192a;
+            font-weight: bold;
+        }
+        .nav-item.answered {
+            background-color: #4a4a68;
+        }
+        .nav-item.flagged {
+            position: relative;
+        }
+        .nav-item.flagged::after {
+            content: '';
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 8px;
+            height: 8px;
+            background-color: #E6C300;
+            border-radius: 50%;
+        }
+        .option.selected {
+            background-color: rgba(230, 195, 0, 0.2);
+            border-color: #E6C300;
+        }
+        .option.correct {
+            background-color: rgba(34, 197, 94, 0.2);
+            border-color: #22c55e;
+        }
+        .option.incorrect {
+            background-color: rgba(239, 68, 68, 0.2);
+            border-color: #ef4444;
+        }
+        /* Custom Checkbox */
+        .custom-checkbox input { display: none; }
+        .custom-checkbox span {
+            height: 20px;
+            width: 20px;
+            border: 1px solid #E6C300;
+            display: inline-block;
+            position: relative;
+            background-color: transparent;
+            border-radius: 3px;
+        }
+        .custom-checkbox input:checked + span::after {
+            content: '✔';
+            font-size: 14px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #E6C300;
+        }
+        /* Flashcard Styles */
+        .card-container {
+            perspective: 1000px;
+        }
+        .card {
+            width: 100%;
+            height: 300px;
+            position: relative;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .card.is-flipped {
+            transform: rotateY(180deg);
+        }
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border-radius: 0.5rem;
+            border: 1px solid #E6C300;
+            background-color: #2c2c3e;
+        }
+        .card-back {
+            transform: rotateY(180deg);
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div id="main-container" class="max-w-7xl mx-auto">
+        <!-- Start Screen -->
+        <div id="start-screen" class="bg-mid-purple rounded-lg p-8 text-center shadow-2xl">
+            <h1 class="text-5xl title-font text-gold mb-4">Ujian Integritas Genom</h1>
+            <p class="text-lg mb-8 max-w-3xl mx-auto text-gray-300">Selamat datang di sesi eksklusif ini. Uji pemahaman Anda mengenai mekanisme pertahanan seluler paling fundamental. Pilih mode Anda untuk memulai.</p>
+            <div class="flex flex-col md:flex-row justify-center gap-4">
+                <button id="start-flashcard-btn" class="btn btn-primary text-lg font-bold py-3 px-8 rounded-lg">Mode Flashcard</button>
+                <button id="start-latihan-btn" class="btn btn-primary text-lg font-bold py-3 px-8 rounded-lg">Mode Latihan</button>
+                <button id="start-ujian-btn" class="btn btn-secondary text-lg font-bold py-3 px-8 rounded-lg">Mode Ujian</button>
+            </div>
+            <p class="mt-8 text-sm text-gray-400">
+                <b>Mode Flashcard:</b> Hafalkan istilah-istilah kunci.<br>
+                <b>Mode Latihan:</b> Dapatkan umpan balik instan setelah menjawab setiap soal.<br>
+                <b>Mode Ujian:</b> Jawab semua soal, hasil akan ditampilkan di akhir sesi.
+            </p>
+        </div>
+
+        <!-- CBT Interface -->
+        <div id="cbt-screen" class="hidden">
+            <header class="bg-mid-purple p-4 rounded-t-lg flex justify-between items-center shadow-lg">
+                <h2 class="text-2xl title-font text-gold">Perbaikan Kerusakan DNA</h2>
+                <div class="bg-dark-purple px-4 py-2 rounded text-xl font-bold border border-light-purple">
+                    <span id="timer">60:00</span>
+                </div>
+            </header>
+            <div class="flex flex-col md:flex-row gap-4 mt-4">
+                <!-- Question Panel -->
+                <div id="question-panel" class="bg-mid-purple p-6 rounded-b-lg md:rounded-bl-lg md:rounded-br-none flex-grow shadow-lg">
+                    <p class="mb-2 text-sm text-gray-400">Pertanyaan <span id="question-number">1</span> dari 15</p>
+                    <div id="question-text" class="text-lg leading-relaxed mb-6"></div>
+                    <div id="options-container" class="space-y-3"></div>
+                    <div id="feedback-container" class="mt-4 p-3 rounded-md text-sm hidden"></div>
+                </div>
+
+                <!-- Navigation Panel -->
+                <div class="bg-mid-purple p-4 rounded-b-lg md:rounded-r-lg md:rounded-bl-none w-full md:w-80 shadow-lg">
+                    <h3 class="font-bold mb-4 text-center">Navigasi Soal</h3>
+                    <div id="nav-grid" class="grid grid-cols-5 gap-2 mb-4"></div>
+                    <div class="flex items-center justify-start space-x-4 mb-4">
+                         <label class="custom-checkbox flex items-center cursor-pointer">
+                            <input type="checkbox" id="flag-checkbox">
+                            <span class="mr-2"></span>
+                            Ragu-ragu
+                        </label>
+                    </div>
+                    <div class="flex justify-between mb-4">
+                        <button id="prev-btn" class="btn btn-secondary px-4 py-2 rounded-md">&lt; Sebelumnya</button>
+                        <button id="next-btn" class="btn btn-secondary px-4 py-2 rounded-md">Selanjutnya &gt;</button>
+                    </div>
+                    <button id="submit-btn" class="btn btn-primary w-full py-3 rounded-md">Kumpulkan Jawaban</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Result Screen -->
+        <div id="result-screen" class="hidden bg-mid-purple rounded-lg p-8 text-center shadow-2xl">
+             <h1 class="text-5xl title-font text-gold mb-4">Analisis Sesi Selesai</h1>
+             <p class="text-2xl mb-2 text-gray-300">Skor Akhir Anda:</p>
+             <p id="final-score" class="text-7xl font-bold mb-6"></p>
+             <div class="text-lg mb-8">
+                 <span id="correct-count" class="text-green-400"></span> Jawaban Benar &nbsp;&nbsp;&nbsp;
+                 <span id="incorrect-count" class="text-red-400"></span> Jawaban Salah
+             </div>
+             <button id="review-btn" class="btn btn-primary text-lg font-bold py-3 px-8 rounded-lg mb-4">Tinjau Jawaban</button>
+             <button id="restart-btn" class="btn btn-secondary text-lg font-bold py-3 px-8 rounded-lg">Ulangi Sesi</button>
+        </div>
+        
+         <!-- Review Screen -->
+        <div id="review-screen" class="hidden">
+             <button id="back-to-result-btn" class="btn btn-primary text-lg font-bold py-3 px-8 rounded-lg mt-8 mx-auto block">Kembali ke Hasil</button>
+        </div>
+        
+        <!-- Flashcard Screen -->
+        <div id="flashcard-screen" class="hidden bg-mid-purple rounded-lg p-8 shadow-2xl">
+            <h1 class="text-4xl title-font text-gold mb-6 text-center">Mode Flashcard</h1>
+            <div id="flashcard-container" class="card-container cursor-pointer mb-6">
+                <div id="flashcard" class="card">
+                    <div class="card-face card-front text-3xl font-bold"></div>
+                    <div class="card-face card-back"></div>
+                </div>
+            </div>
+            <div class="flex justify-between items-center">
+                <button id="prev-card-btn" class="btn btn-secondary px-6 py-2 rounded-md">&lt; Sebelumnya</button>
+                <p id="card-counter" class="font-semibold"></p>
+                <button id="next-card-btn" class="btn btn-secondary px-6 py-2 rounded-md">Selanjutnya &gt;</button>
+            </div>
+             <button id="back-to-menu-btn" class="btn btn-primary w-full py-3 rounded-md font-bold mt-8">Kembali ke Menu Utama</button>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            { question: "Mekanisme perbaikan DNA yang membalikkan kerusakan secara langsung tanpa memotong untai DNA adalah...", options: ["Excision Repair", "Direct Repair", "Mismatch Repair", "Recombination Repair"], answer: "Direct Repair", explanation: "Direct Repair, seperti oleh enzim fotoliase atau MGMT, secara langsung membalikkan modifikasi kimia pada basa DNA." },
+            { question: "Seorang pasien yang bekerja sebagai petani sering terpapar sinar matahari dan didiagnosis menderita Xeroderma Pigmentosum. Jalur perbaikan DNA manakah yang kemungkinan besar mengalami kerusakan pada pasien ini?", options: ["Base Excision Repair (BER)", "Mismatch Repair (MMR)", "Nucleotide Excision Repair (NER)", "Homologous Recombination (HR)"], answer: "Nucleotide Excision Repair (NER)", explanation: "NER secara spesifik memperbaiki kerusakan besar yang mengganggu heliks DNA, seperti dimer timin yang disebabkan oleh radiasi UV. Cacat pada jalur ini menyebabkan Xeroderma Pigmentosum." },
+            { question: "Enzim yang memulai proses Base Excision Repair (BER) dengan mengenali dan membuang basa yang rusak adalah...", options: ["DNA Polimerase", "DNA Ligase", "AP Endonuklease", "DNA Glikosilase"], answer: "DNA Glikosilase", explanation: "DNA Glikosilase adalah 'penjaga' pertama dalam jalur BER yang memindai DNA, mengenali basa spesifik yang rusak, dan memotongnya dari tulang punggung gula-fosfat." },
+            { question: "Manakah jalur perbaikan yang berfungsi sebagai 'korektor' utama untuk kesalahan yang terjadi selama replikasi DNA?", options: ["Nucleotide Excision Repair (NER)", "Direct Repair", "Mismatch Repair (MMR)", "Non-Homologous End Joining (NHEJ)"], answer: "Mismatch Repair (MMR)", explanation: "MMR secara spesifik dirancang untuk mengenali dan memperbaiki kesalahan pemasangan basa atau loop insersi/delesi kecil yang luput dari koreksi oleh DNA polimerase." },
+            { question: "Kerusakan DNA jenis apakah yang paling berbahaya dan dapat diperbaiki oleh Homologous Recombination (HR) atau Non-Homologous End Joining (NHEJ)?", options: ["Dimer Timin", "Basa yang teroksidasi", "Salah pasang basa", "Putusnya Untai Ganda (DSB)"], answer: "Putusnya Untai Ganda (DSB)", explanation: "Putusnya kedua untai DNA (DSB) adalah kerusakan paling parah karena tidak ada lagi cetakan yang utuh pada lokasi kerusakan, berisiko menyebabkan penataan ulang kromosom." },
+            { question: "Manakah jalur perbaikan DSB yang paling akurat karena menggunakan kromatid saudara sebagai cetakan?", options: ["Mismatch Repair (MMR)", "Base Excision Repair (BER)", "Non-Homologous End Joining (NHEJ)", "Homologous Recombination (HR)"], answer: "Homologous Recombination (HR)", explanation: "HR mencapai akurasi tinggi dengan menggunakan salinan DNA yang identik (kromatid saudara) sebagai templat sempurna untuk memulihkan sekuens yang hilang." },
+            { question: "Jalur perbaikan DSB Non-Homologous End Joining (NHEJ) dianggap rawan kesalahan (error-prone) karena...", options: ["Selalu menggunakan cetakan yang salah", "Bekerja terlalu lambat", "Seringkali memotong beberapa nukleotida sebelum menyambung kembali ujungnya", "Membutuhkan energi cahaya untuk bekerja"], answer: "Seringkali memotong beberapa nukleotida sebelum menyambung kembali ujungnya", explanation: "Karena NHEJ tidak menggunakan templat dan hanya menyatukan kembali ujung yang patah, proses 'pembersihan' ujungnya sering menyebabkan hilangnya informasi genetik (delesi)." },
+            { question: "Protein yang bertindak sebagai 'penjaga pertama' yang mengenali dan mengikat ujung DNA yang patah pada jalur NHEJ adalah...", options: ["BRCA1/BRCA2", "RAD51", "Protein Ku (Ku70/Ku80)", "DNA Polimerase"], answer: "Protein Ku (Ku70/Ku80)", explanation: "Protein Ku berbentuk cincin yang pas di ujung DNA yang patah, berfungsi sebagai perancah untuk merekrut protein NHEJ lainnya." },
+            { question: "Pada fase manakah dari siklus sel jalur Homologous Recombination (HR) paling aktif?", options: ["G1", "M", "S dan G2", "G0 (Quiescent)"], answer: "S dan G2", explanation: "HR membutuhkan kromatid saudara sebagai cetakan, yang hanya tersedia setelah DNA bereplikasi (fase S) dan sebelum sel membelah (fase G2)." },
+            { question: "Mutasi pada gen BRCA1 dan BRCA2 sangat meningkatkan risiko kanker payudara dan ovarium karena peran penting protein ini dalam jalur perbaikan...", options: ["Mismatch Repair (MMR)", "Nucleotide Excision Repair (NER)", "Homologous Recombination (HR)", "Direct Repair"], answer: "Homologous Recombination (HR)", explanation: "BRCA1 dan BRCA2 krusial untuk membantu protein RAD51 melapisi DNA dan mencari templat, sehingga mutasinya melumpuhkan jalur perbaikan DSB yang akurat." },
+            { question: "Enzim MGMT memperbaiki kerusakan DNA dengan menghilangkan gugus metil dari guanin. Proses ini merupakan contoh dari...", options: ["Base Excision Repair", "Nucleotide Excision Repair", "Direct Repair", "Mismatch Repair"], answer: "Direct Repair", explanation: "MGMT secara langsung memindahkan gugus metil dari DNA ke dirinya sendiri, membalikkan kerusakan tanpa memotong DNA, yang merupakan ciri khas Direct Repair." },
+            { question: "Sindrom Lynch, yang meningkatkan risiko kanker usus besar, disebabkan oleh cacat genetik pada jalur perbaikan...", options: ["Homologous Recombination (HR)", "Mismatch Repair (MMR)", "Base Excision Repair (BER)", "Nucleotide Excision Repair (NER)"], answer: "Mismatch Repair (MMR)", explanation: "Kegagalan MMR menyebabkan akumulasi cepat mutasi (terutama pada mikrosatelit) karena kesalahan replikasi tidak diperbaiki, yang mendorong perkembangan kanker." },
+            { question: "Protein RAD51 adalah pemain kunci dalam Homologous Recombination (HR). Apa fungsi utamanya?", options: ["Mengenali ujung DNA yang patah pertama kali", "Memotong ujung DNA untuk membuat ekor untai tunggal", "Melapisi untai tunggal dan mencari sekuens homolog", "Menyambung kembali untai DNA di akhir perbaikan"], answer: "Melapisi untai tunggal dan mencari sekuens homolog", explanation: "RAD51 membentuk filamen pada ekor DNA untai tunggal dan secara aktif mencari sekuens yang cocok pada kromatid saudara untuk memulai proses invasi untai." },
+            { question: "Manakah pernyataan yang paling tepat membedakan antara BER dan NER?", options: ["BER memperbaiki kerusakan besar, NER memperbaiki kerusakan kecil", "BER menggunakan DNA Glikosilase, NER tidak", "BER hanya terjadi pada bakteri", "NER selalu bebas kesalahan, BER tidak"], answer: "BER menggunakan DNA Glikosilase, NER tidak", explanation: "Ciri khas BER adalah penggunaan DNA Glikosilase untuk mengenali dan membuang satu basa yang rusak. NER, sebaliknya, mengenali distorsi pada heliks DNA secara keseluruhan." },
+            { question: "Meskipun bersifat mutagenik, mengapa jalur NHEJ tetap penting bagi sel mamalia?", options: ["Karena lebih akurat daripada HR", "Karena dapat memperbaiki semua jenis kerusakan DNA", "Karena ini adalah jalur cepat untuk mencegah kromosom tetap patah, yang lebih berbahaya", "Karena hanya aktif saat ada kromatid saudara"], answer: "Karena ini adalah jalur cepat untuk mencegah kromosom tetap patah, yang lebih berbahaya", explanation: "Bagi sel, kromosom yang patah dan tidak stabil adalah ancaman yang lebih besar daripada mutasi kecil (indel). NHEJ menyediakan solusi darurat yang cepat untuk menjaga keutuhan kromosom, terutama di fase G1." }
+        ];
+
+        const flashcardData = [
+            { term: "Direct Repair", definition: "Metode perbaikan yang langsung membalikkan kerusakan kimia pada DNA tanpa memotong untai." },
+            { term: "Excision Repair", definition: "Metode perbaikan 'potong dan tempel' yang membuang segmen DNA rusak dan menggantinya menggunakan cetakan." },
+            { term: "BER", definition: "Base Excision Repair. Memperbaiki kerusakan pada SATU basa tunggal (lesi kecil) menggunakan DNA Glikosilase." },
+            { term: "NER", definition: "Nucleotide Excision Repair. Memperbaiki kerusakan yang mengganggu bentuk heliks DNA (lesi besar) dengan membuang segmen nukleotida." },
+            { term: "Mismatch Repair (MMR)", definition: "Mengoreksi kesalahan pemasangan basa yang terjadi selama replikasi DNA." },
+            { term: "DSB", definition: "Double-Strand Break. Putusnya kedua untai DNA, merupakan kerusakan paling berbahaya." },
+            { term: "Homologous Recombination (HR)", definition: "Jalur perbaikan DSB yang AKURAT. Menggunakan kromatid saudara sebagai cetakan. Aktif di fase S/G2." },
+            { term: "Non-Homologous End Joining (NHEJ)", definition: "Jalur perbaikan DSB yang CEPAT tapi RAWAN KESALAHAN. Langsung menyambung ujung tanpa cetakan. Aktif di semua fase." },
+            { term: "Xeroderma Pigmentosum (XP)", definition: "Penyakit genetik akibat cacat pada jalur NER, menyebabkan sensitivitas ekstrim terhadap sinar UV." },
+            { term: "Sindrom Lynch", definition: "Penyakit genetik akibat cacat pada jalur MMR, meningkatkan risiko kanker usus besar dan lainnya." },
+            { term: "BRCA1/BRCA2", definition: "Gen krusial dalam jalur Homologous Recombination (HR). Mutasinya sangat meningkatkan risiko kanker." },
+            { term: "Protein Ku (Ku70/80)", definition: "Protein 'penjaga pertama' dalam jalur NHEJ yang mengenali dan mengikat ujung DNA yang patah." },
+            { term: "RAD51", definition: "Protein utama dalam HR yang membentuk filamen pada DNA untai tunggal dan mencari sekuens homolog." }
+        ];
+
+        let currentQuestionIndex = 0;
+        let userAnswers = new Array(quizData.length).fill(null);
+        let flaggedQuestions = new Array(quizData.length).fill(false);
+        let testMode = 'ujian'; 
+        let timerInterval;
+        let currentCardIndex = 0;
+
+        // Element Selectors
+        const startScreen = document.getElementById('start-screen');
+        const cbtScreen = document.getElementById('cbt-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const reviewScreen = document.getElementById('review-screen');
+        const flashcardScreen = document.getElementById('flashcard-screen');
+        
+        // CBT Functions
+        function initTest(mode) {
+            testMode = mode;
+            currentQuestionIndex = 0;
+            userAnswers.fill(null);
+            flaggedQuestions.fill(false);
+            
+            startScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            reviewScreen.classList.add('hidden');
+            flashcardScreen.classList.add('hidden');
+            cbtScreen.classList.remove('hidden');
+
+            renderNavGrid();
+            renderQuestion();
+            startTimer(59, 59);
+        }
+
+        function renderQuestion() {
+            const qData = quizData[currentQuestionIndex];
+            document.getElementById('question-number').textContent = `${currentQuestionIndex + 1} dari ${quizData.length}`;
+            document.getElementById('question-text').textContent = qData.question;
+            
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            qData.options.forEach(optionText => {
+                const optionEl = document.createElement('div');
+                optionEl.textContent = optionText;
+                optionEl.classList.add('option', 'p-3', 'border', 'border-light-purple', 'rounded-md', 'cursor-pointer', 'hover:border-gold');
+                optionEl.addEventListener('click', () => selectAnswer(optionText));
+                if (userAnswers[currentQuestionIndex] === optionText) {
+                    optionEl.classList.add('selected');
+                }
+                optionsContainer.appendChild(optionEl);
+            });
+
+            document.getElementById('flag-checkbox').checked = flaggedQuestions[currentQuestionIndex];
+            updateNavButtons();
+            updateActiveNavItem();
+            
+            document.getElementById('feedback-container').classList.add('hidden');
+            if (testMode === 'latihan' && userAnswers[currentQuestionIndex] !== null) {
+                showImmediateFeedback();
+            }
+        }
+
+        function selectAnswer(selectedOption) {
+            if(testMode === 'latihan' && userAnswers[currentQuestionIndex] !== null) return;
+            userAnswers[currentQuestionIndex] = selectedOption;
+            updateNavGridItem(currentQuestionIndex);
+            if(testMode === 'latihan') {
+                showImmediateFeedback();
+            } else {
+                 renderQuestion();
+            }
+        }
+        
+        function showImmediateFeedback() {
+            const qData = quizData[currentQuestionIndex];
+            const userAnswer = userAnswers[currentQuestionIndex];
+            const isCorrect = userAnswer === qData.answer;
+            const feedbackContainer = document.getElementById('feedback-container');
+            
+            feedbackContainer.innerHTML = `<b>${isCorrect ? 'Benar!' : 'Salah.'}</b> ${qData.explanation}`;
+            feedbackContainer.classList.remove('hidden', 'bg-green-900/50', 'bg-red-900/50');
+            feedbackContainer.classList.add(isCorrect ? 'bg-green-900/50' : 'bg-red-900/50');
+
+            document.querySelectorAll('.option').forEach(optEl => {
+                optEl.style.pointerEvents = 'none'; // Disable further clicks
+                if (optEl.textContent === qData.answer) {
+                    optEl.classList.add('correct');
+                } else if (optEl.textContent === userAnswer) {
+                    optEl.classList.add('incorrect');
+                }
+            });
+        }
+
+        function renderNavGrid() {
+            const navGrid = document.getElementById('nav-grid');
+            navGrid.innerHTML = '';
+            for (let i = 0; i < quizData.length; i++) {
+                const item = document.createElement('div');
+                item.textContent = i + 1;
+                item.classList.add('nav-item', 'w-12', 'h-12', 'flex', 'items-center', 'justify-center', 'cursor-pointer', 'rounded-md');
+                item.addEventListener('click', () => goToQuestion(i));
+                navGrid.appendChild(item);
+            }
+        }
+        
+        function updateNavGridItem(index) {
+            const navItem = document.getElementById('nav-grid').children[index];
+            navItem.classList.remove('answered', 'flagged');
+            if (userAnswers[index] !== null) {
+                navItem.classList.add('answered');
+            }
+            if (flaggedQuestions[index]) {
+                navItem.classList.add('flagged');
+            }
+        }
+
+        function updateActiveNavItem() {
+            document.querySelectorAll('.nav-item').forEach((item, index) => {
+                item.classList.toggle('active', index === currentQuestionIndex);
+            });
+        }
+        
+        function updateNavButtons() {
+            document.getElementById('prev-btn').disabled = currentQuestionIndex === 0;
+            document.getElementById('next-btn').disabled = currentQuestionIndex === quizData.length - 1;
+        }
+
+        function goToQuestion(index) {
+            currentQuestionIndex = index;
+            renderQuestion();
+        }
+
+        function startTimer(minutes, seconds) {
+            const timerEl = document.getElementById('timer');
+            let totalSeconds = minutes * 60 + seconds;
+            timerInterval = setInterval(() => {
+                if (totalSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    submitTest();
+                }
+                const min = Math.floor(totalSeconds / 60);
+                const sec = totalSeconds % 60;
+                timerEl.textContent = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+                totalSeconds--;
+            }, 1000);
+        }
+        
+        function submitTest() {
+            clearInterval(timerInterval);
+            let score = 0;
+            userAnswers.forEach((answer, index) => {
+                if (answer === quizData[index].answer) {
+                    score++;
+                }
+            });
+            
+            const totalScore = Math.round((score / quizData.length) * 100);
+            document.getElementById('final-score').textContent = totalScore;
+            document.getElementById('correct-count').textContent = score;
+            document.getElementById('incorrect-count').textContent = quizData.length - score;
+            
+            cbtScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+        }
+        
+        function renderReview() {
+            resultScreen.classList.add('hidden');
+            reviewScreen.innerHTML = ''; 
+            reviewScreen.classList.remove('hidden');
+            
+            quizData.forEach((qData, index) => {
+                const userAnswer = userAnswers[index] || "Tidak Dijawab";
+                const reviewBlock = document.createElement('div');
+                reviewBlock.classList.add('bg-mid-purple', 'p-6', 'rounded-lg', 'mb-4', 'shadow-lg');
+                reviewBlock.innerHTML = `<p class="mb-2 text-sm text-gray-400">Pertanyaan ${index + 1}</p><p class="text-lg leading-relaxed mb-4">${qData.question}</p><div class="space-y-2">${qData.options.map(opt => `<div class="p-3 border rounded-md ${opt === qData.answer ? 'bg-green-900/50 border-green-700' : (opt === userAnswer ? 'bg-red-900/50 border-red-700' : 'border-light-purple')}">${opt}</div>`).join('')}</div><div class="mt-4 p-3 rounded-md text-sm bg-dark-purple"><b>Jawaban Anda:</b> ${userAnswer} <br><b>Kunci Jawaban:</b> ${qData.answer} <br><b>Penjelasan:</b> ${qData.explanation}</div>`;
+                reviewScreen.appendChild(reviewBlock);
+            });
+             const backBtnClone = document.getElementById('back-to-result-btn').cloneNode(true);
+             reviewScreen.appendChild(backBtnClone);
+             backBtnClone.addEventListener('click', () => {
+                reviewScreen.classList.add('hidden');
+                resultScreen.classList.remove('hidden');
+            });
+        }
+
+        // Flashcard Functions
+        function initFlashcards() {
+            currentCardIndex = 0;
+            startScreen.classList.add('hidden');
+            cbtScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            flashcardScreen.classList.remove('hidden');
+            renderFlashcard();
+        }
+
+        function renderFlashcard() {
+            const card = document.getElementById('flashcard');
+            const cardFront = card.querySelector('.card-front');
+            const cardBack = card.querySelector('.card-back');
+            const cardCounter = document.getElementById('card-counter');
+
+            card.classList.remove('is-flipped');
+            
+            setTimeout(() => {
+                const currentCard = flashcardData[currentCardIndex];
+                cardFront.textContent = currentCard.term;
+                cardBack.textContent = currentCard.definition;
+                cardCounter.textContent = `Kartu ${currentCardIndex + 1} dari ${flashcardData.length}`;
+            }, 150);
+            
+            document.getElementById('prev-card-btn').disabled = currentCardIndex === 0;
+            document.getElementById('next-card-btn').disabled = currentCardIndex === flashcardData.length - 1;
+        }
+
+        // Event Listeners
+        document.getElementById('start-flashcard-btn').addEventListener('click', initFlashcards);
+        document.getElementById('start-latihan-btn').addEventListener('click', () => initTest('latihan'));
+        document.getElementById('start-ujian-btn').addEventListener('click', () => initTest('ujian'));
+        
+        document.getElementById('next-btn').addEventListener('click', () => { if(currentQuestionIndex < quizData.length - 1) goToQuestion(currentQuestionIndex + 1); });
+        document.getElementById('prev-btn').addEventListener('click', () => { if(currentQuestionIndex > 0) goToQuestion(currentQuestionIndex - 1); });
+        
+        document.getElementById('flag-checkbox').addEventListener('change', (e) => {
+            flaggedQuestions[currentQuestionIndex] = e.target.checked;
+            updateNavGridItem(currentQuestionIndex);
+        });
+        document.getElementById('submit-btn').addEventListener('click', () => {
+            if (confirm('Apakah Anda yakin ingin mengumpulkan jawaban Anda?')) {
+                submitTest();
+            }
+        });
+        document.getElementById('restart-btn').addEventListener('click', () => {
+             resultScreen.classList.add('hidden');
+             startScreen.classList.remove('hidden');
+        });
+        document.getElementById('review-btn').addEventListener('click', renderReview);
+        document.getElementById('back-to-result-btn').addEventListener('click', () => {
+            reviewScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+        });
+
+        // Flashcard Event Listeners
+        document.getElementById('flashcard-container').addEventListener('click', () => {
+            document.getElementById('flashcard').classList.toggle('is-flipped');
+        });
+        document.getElementById('next-card-btn').addEventListener('click', () => {
+            if (currentCardIndex < flashcardData.length - 1) {
+                currentCardIndex++;
+                renderFlashcard();
+            }
+        });
+        document.getElementById('prev-card-btn').addEventListener('click', () => {
+            if (currentCardIndex > 0) {
+                currentCardIndex--;
+                renderFlashcard();
+            }
+        });
+        document.getElementById('back-to-menu-btn').addEventListener('click', () => {
+             flashcardScreen.classList.add('hidden');
+             startScreen.classList.remove('hidden');
+        });
+        
+    </script>
+</body>
+</html>

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kapsul 2.3 CARDIOVICTUS - 100 Soal Komprehensif</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+        @media print {
+            body { background-color: #ffffff; }
+            .no-print { display: none !important; }
+            .page-break { page-break-before: always; }
+            .print-border { border: 1px solid #e5e7eb; padding: 20px; border-radius: 8px; }
+            .answer-block { display: block !important; border-top: 1px dashed #cbd5e1; margin-top: 10px; padding-top: 10px; }
+        }
+        .answer-block { display: none; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Floating Action Buttons -->
+    <div class="fixed bottom-6 right-6 no-print z-50 flex flex-col gap-3">
+        <button onclick="toggleAllAnswers()" id="toggleBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" /></svg>
+            <span id="toggleText">Buka Semua Jawaban</span>
+        </button>
+        <button onclick="printToPDF()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+            Simpan sbg PDF
+        </button>
+    </div>
+
+    <div class="max-w-5xl mx-auto bg-white my-8 p-8 md:p-12 shadow-2xl rounded-xl border border-gray-200">
+        <!-- Header Document -->
+        <div class="text-center border-b-4 border-blue-800 pb-8 mb-8">
+            <h4 class="text-blue-600 font-bold tracking-widest uppercase mb-2">Continuity of Life</h4>
+            <h1 class="text-4xl md:text-5xl font-black text-gray-900 mb-4">KAPSUL 2.3 CARDIOVICTUS</h1>
+            <p class="text-gray-500 text-lg">Modul Komprehensif: 100 Bank Soal CBT</p>
+            <div class="mt-4 inline-block bg-yellow-100 text-yellow-800 text-sm font-semibold px-4 py-2 rounded-lg border border-yellow-300">
+                ⚠️ DISCLAIMER: Dokumen ini memuat 100 soal yang diekstrak sesuai materi PDF CBT.
+            </div>
+        </div>
+
+        <div id="soal-container"></div>
+
+        <!-- FOOTER -->
+        <div class="text-center text-gray-400 text-sm mt-12 pt-8 border-t">
+            <p>Disusun berdasarkan Starter Kapsul 2.3 CARDIOVICTUS (2025).</p>
+            <p>Tetap semangat belajar, semoga sukses di ujian CBT! - "Keep moving forward"</p>
+        </div>
+    </div>
+
+    <script>
+        // Database 100 Soal yang diekstrak dan disesuaikan dari PDF
+        // Modul: 1(Pria), 2(Wanita), 3(Embrio/Hamil), 4(Neonatus/Laktasi), 5(Tumbuh/Psikologi), 6(Geriatri/Seksual/Lain)
+        const bankSoal = [
+            {n:1, m:3, q:"Mekanisme utama amputasi ekstrimitas pada kasus lilitan tali pusat atau amniotic band syndrome adalah...", o:["Nekrosis jaringan karena infeksi", "Defisiensi vitamin", "Kompresi dan Iskemia jaringan", "Mutasi genetik", "Gangguan apoptosis normal"], a:2, p:"Amniotic band membelit ekstremitas janin, membatasi aliran darah (iskemia) & menyebabkan kompresi mekanik berujung amputasi."},
+            {n:2, m:2, q:"Berikut BENAR mengenai G-Spot:", o:["Berada pada dinding anterior sebelah distal vagina", "Menghasilkan sekret/mempunyai struktur glandular", "Mempunyai struktur jaringan erectile", "Merupakan homolog glandula paraurethralis masculine", "Berada di kiri dan kanan urethra"], a:0, p:"G-spot (Grafenberg spot) berlokasi di dinding anterior vagina, sekitar 5-8 cm ke arah dalam."},
+            {n:3, m:1, q:"Cara pengeluaran dengan coitus interuptus akan mempengaruhi kondisi sperma karena...", o:["Kontaminasi zat toksik vagina", "pH vagina basa membunuh sperma", "pH vagina asam mempengaruhi motilitas", "Tidak ada sperma yang hilang", "Semua benar"], a:2, p:"Sekresi vagina yang bersifat asam secara alami dapat memengaruhi dan menurunkan motilitas spermatozoa."},
+            {n:4, m:4, q:"Apa saja stadium Air Susu Ibu (ASI) yang benar berdasarkan tahapannya?", o:["Awal-tengah-akhir", "Kolostrum-transisional-mature", "Kolostrum-lemak-protein"], a:1, p:"Stadium ASI dimulai dari kolostrum (1-5 hari), ASI transisional (6-14 hari), hingga ASI matur."},
+            {n:5, m:4, q:"Bayi lahir usia kehamilan 38 minggu dan berat 3800 gram, menurut grafik Lubchenco maka:", o:["Berat masa kehamilan", "Cukup masa kehamilan (BBLC)", "Kecil masa kehamilan", "Bayi normal", "Bayi aterm"], a:1, p:"38 minggu = Aterm. 3800 gram = Normal/BBLC (Berat Badan Lahir Cukup, rentang 2500-3999g)."},
+            {n:6, m:3, q:"Kontraksi his pada kala 1 (Fase Aktif) yang normal adalah:", o:["2x/10 menit, 20-30 dtk", "3x/10 menit, 30-40 dtk", "4x/10 menit, 40-50 dtk (kontraksi kuat)"], a:2, p:"Pada fase aktif dilatasi maksimal, his akan semakin kuat, yaitu 3-4 kali dalam 10 menit dengan durasi 40-50 detik."},
+            {n:7, m:4, q:"Bayi baru lahir berat 1450g diklasifikasikan sebagai:", o:["Berat lahir normal", "Berat lahir kecil", "Berat lahir sangat rendah (BLSR)", "Berat lahir cukup"], a:2, p:"Berat 1000 - 1499 gram diklasifikasikan sebagai BLSR (Berat Lahir Sangat Rendah)."},
+            {n:8, m:5, q:"Kondisi psikologi remaja normal pada tahap emosional sering ditandai dengan:", o:["Selalu tahu jati diri", "Paham perasaannya sendiri", "Egosentrisme & Personal Fable"], a:2, p:"Remaja sering mengalami egosentrisme, imaginary audience, dan personal fable (merasa sangat unik dan tidak ada yg mengerti dirinya)."},
+            {n:9, m:5, q:"Perkembangan psikoseksual anak fase anal sejalan dengan pelatihan toilet training yang akan dilewati anak pada usia?", o:["0-2 tahun", "1-3 tahun", "6-12 tahun", "12 tahun"], a:1, p:"Fase anal (Freud) terjadi pada rentang usia 1-3 tahun, yang merupakan waktu ideal untuk toilet training."},
+            {n:10, m:5, q:"Pada anak yang gagal tumbuh, dokter khawatir terjadi gangguan pada proses pembuangan koneksi saraf yang tidak terpakai, yaitu:", o:["Mielinisasi", "Sinaptogenesis", "Pruning", "Neurulasi"], a:2, p:"Pruning adalah mekanisme otak membuang sinaps atau koneksi neuron yang tidak terpakai (use it or lose it)."},
+            {n:11, m:3, q:"Perlekatan zigot di endometrium disebut:", o:["Ovulasi", "Folikel", "Implantasi / Nidasi", "Gastrulasi"], a:2, p:"Nidasi (implantasi) adalah proses bersarangnya blastokista ke dalam dinding endometrium (sekitar hari ke-6/7)."},
+            {n:12, m:1, q:"Protein spesifik yang dihasilkan oleh vesikula seminalis untuk menyebabkan koagulasi semen adalah..", o:["PSA", "Semenogelin", "Albumin", "Oksitosin"], a:1, p:"Vesikula seminalis menghasilkan semenogelin yang membuat semen kental/mengalami koagulasi segera setelah ejakulasi."},
+            {n:13, m:5, q:"Berikut yang BUKAN termasuk indikator antropometri standar WHO/Kemenkes adalah:", o:["BB/U", "PB/U", "BB/PB", "LLA/PB"], a:3, p:"Indikator yang lazim adalah BB/U, PB/U, BB/PB, dan IMT/U. LLA (Lingkar Lengan Atas) biasanya berdiri sendiri, bukan dibagi PB."},
+            {n:14, m:1, q:"Pada biopsi testis ditemukan sel-sel besar dengan sitoplasma eosinofilik di interstitial testis yang berfungsi menghasilkan testosteron. Sel tersebut adalah...", o:["Sel Sertoli", "Sel Leydig", "Sel granulosa", "Sel theca interna"], a:1, p:"Sel Leydig berada di ruang interstitial dan bertugas memproduksi hormon testosteron di bawah pengaruh LH."},
+            {n:15, m:3, q:"Batas minimal persalinan janin menurut standar obstetri klasik adalah:", o:[">= 28 minggu atau berat >= 1000 gram", ">= 26 minggu atau berat >= 900 gram", ">= 24 minggu atau berat >= 800 gram"], a:0, p:"Standar klasik viabilitas janin (bisa disebut partus prematurus jika di atas batas ini) adalah >= 28 minggu atau BB >= 1000 gram."},
+            {n:16, m:5, q:"Seorang anak memiliki data: BB/U = -2,5 SD; PB/U = -1,8 SD; BB/PB = -3,2 SD. Interpretasi status gizinya:", o:["Underweight dan severely wasted", "Severely wasted tanpa stunting", "Underweight dan stunted"], a:0, p:"BB/U < -2 (Underweight/Berat kurang). PB/U > -2 (Normal/Tidak Stunting). BB/PB < -3 (Severely Wasted/Gizi Buruk)."},
+            {n:17, m:6, q:"Tahapan dalam menghadapi kematian menurut Kübler-Ross adalah:", o:["Denial - anger - bargaining - depression - acceptance", "Anger - denial - bargaining - depression - acceptance"], a:0, p:"Disingkat DABDA: Denial (menolak), Anger (marah), Bargaining (menawar), Depression (depresi), Acceptance (menerima)."},
+            {n:18, m:4, q:"Lama penyimpanan ASI pada suhu udara terbuka (suhu ruangan/kamar) yang cukup hangat adalah:", o:["10 jam", "8 jam", "4 jam", "3 jam"], a:2, p:"ASI dapat bertahan sekitar 4 jam di suhu ruangan/terbuka sebelum sebaiknya dikonsumsi atau dibuang."},
+            {n:19, m:4, q:"Skoring untuk menentukan maturitas (kematangan) bayi prematur adalah:", o:["Ballard scoring", "Dubowitz scoring", "Thompson scoring", "A dan B benar"], a:3, p:"New Ballard Score dan Dubowitz Score digunakan untuk menilai kematangan fisik dan neuromuskular neonatus."},
+            {n:20, m:1, q:"Sel di tubulus seminiferus yang berfungsi mendukung, melindungi, dan menutrisi sel spermatogenesis adalah:", o:["Sel Leydig", "Sel Sertoli", "Sel Peg", "Sel Makrofag"], a:1, p:"Sel Sertoli (sel sustentakular) berada di tubulus seminiferus dan memberikan dukungan nutrisi untuk spermiogenesis."},
+            {n:21, m:4, q:"Hormon yang memuncak saat malam hari dan berfungsi utama memproduksi ASI adalah?", o:["Prolaktin", "Progesteron", "Oksitosin", "FSH"], a:0, p:"Prolaktin diproduksi oleh hipofisis anterior, berperan dalam sekresi/produksi ASI, dan kadarnya lebih tinggi di malam hari."},
+            {n:22, m:3, q:"Mengapa ibu hamil mengalami anemia fisiologis?", o:["Penurunan eritrosit oleh sumsum tulang", "Peningkatan destruksi eritrosit plasenta", "Peningkatan volume plasma lebih besar dari peningkatan eritrosit"], a:2, p:"Peningkatan plasma darah (hemodilusi) mencapai 40-50%, sedangkan eritrosit hanya naik 15-20%, menyebabkan kadar Hb tampak turun secara relatif."},
+            {n:23, m:6, q:"Hormon manakah yang berperan menekan (menginhibisi) aksis HPG (Hipotalamus-Hipofisis-Gonad)?", o:["Tiroksin", "GnRH", "Estrogen", "Prolaktin"], a:3, p:"Hiperprolaktinemia (atau sekresi prolaktin saat laktasi) menekan pelepasan GnRH dari hipotalamus, sehingga menekan aksis HPG."},
+            {n:24, m:4, q:"Bayi lahir 38 minggu dan berat 3000 gram, menurut grafik Lubchenco termasuk:", o:["Berat badan lahir kurang", "Berat badan lahir cukup (BBLC)", "Makrosomia"], a:1, p:"Usia 38 mgg (Aterm) dan BB 3000g masuk rentang BBLC (2500 - 3999 gram) serta sesuai masa kehamilan (AGA)."},
+            {n:25, m:5, q:"Bayi 10 bulan bisa duduk namun belum bisa berdiri tegak. Mekanisme neurobiologis fenomena tersebut adalah...", o:["Synaptic pruning di lumbal", "Mielinisasi mengikuti pola sefalokaudal", "Pembentukan neuron motorik lambat"], a:1, p:"Mielinisasi jaras saraf motorik terjadi dari arah kepala ke bawah (sefalokaudal). Otot leher/punggung matang lebih dulu dari kaki."},
+            {n:26, m:1, q:"Proses transformasi dari spermatid bulat menjadi spermatozoa dengan kepala dan ekor disebut:", o:["Spermatositogenesis", "Kapasitasi", "Spermiasis", "Spermiogenesis"], a:3, p:"Spermiogenesis adalah tahap akhir di mana spermatid (haploid) mengalami pemadatan inti dan pembentukan ekor/akrosom tanpa membelah lagi."},
+            {n:27, m:4, q:"BB 2400g, 33 minggu, HR 170x/mnt, Suhu 38°C. Diagnosisnya:", o:["BBLR, preterm, takikardi, hipertermia", "BBLC, Aterm", "BBLR, Cukup bulan"], a:0, p:"33 minggu = Preterm. 2400g = BBLR. HR 170 = Takikardi (N: 120-160). Suhu 38 = Hipertermia."},
+            {n:28, m:1, q:"Hiperaktivitas sperma terjadi akibat influks zat tertentu melalui kanal CatSper. Zat tersebut adalah:", o:["Natrium", "Kalium", "Calsium", "Magnesium"], a:2, p:"Kanal CatSper di ekor sperma mengalirkan ion Kalsium (Ca2+) yang memicu gerak hiperaktivasi flagela."},
+            {n:29, m:6, q:"Berikut TIDAK BENAR mengenai fase kehidupan manusia:", o:["Fase reproduksi wanita adalah menopause", "Batas akhir hidup pria jelas (Andropause jelas)", "Pembesaran payudara adalah seks sekunder"], a:1, p:"Penurunan testosteron pada pria (andropause) terjadi bertahap dan lambat, tidak berbatas tegas seperti menopause pada wanita."},
+            {n:30, m:2, q:"Hydrocele pada labia majora wanita secara anatomis dapat dijelaskan karena:", o:["Ovarium turun melalui canalis inguinalis", "Pada masa embryonal, vasa ovarica turun", "Ligamentum teres uteri / round ligament melalui Canalis Nuck"], a:2, p:"Ligamentum teres uteri berjalan ke labia mayora (homolog skrotum) melalui canalis Nuck yang bila paten dapat menjadi hydrocele."},
+            {n:31, m:3, q:"Tahap embrio pembentukan tiga lapisan benih (ektoderm, mesoderm, endoderm) disebut...", o:["Gastrulasi", "Morula", "Blastokista", "Neurulasi"], a:0, p:"Gastrulasi dimulai dengan terbentuknya primitive streak dan migrasi epiblas membentuk 3 lapisan germinal primer."},
+            {n:32, m:2, q:"Pada fase luteal, sel besar bersitoplasma eosinofilik pucat dan banyak lipid yang menghasilkan progesteron adalah:", o:["Sel granulosa lutein", "Sel theca interna", "Sel granulosa", "Sel peg"], a:0, p:"Setelah ovulasi, sel granulosa di folikel Graaf bertransformasi menjadi sel granulosa lutein yang kaya lipid (kuning/lutein) untuk sekresi progesteron."},
+            {n:33, m:3, q:"VT: jari melewati tepi bawah symphisis pubis menyentuh kepala janin, tak dapat lurus ke belakang. Kepala telah mencapai...", o:["Pintu atas panggul (Pelvic Inlet) / Promontorium sacralis", "Spina ischiadica", "Os coccygeus"], a:0, p:"Jari yang terhalang oleh promontorium menandakan kepala masih tertahan atau berada di area pintu atas panggul (Pelvic Inlet)."},
+            {n:34, m:3, q:"Pernyataan yang benar mengenai plasentasi:", o:["Terjadi pada embrio fase morula", "Trofoblas luar berdiferensiasi menjadi sinsitiotrofoblas", "Cavum amnion berada di sisi hipoblas"], a:1, p:"Trofoblas (bagian luar blastokista) berdiferensiasi menjadi dua lapis: sitotrofoblas (dalam) dan sinsitiotrofoblas (luar yang invasif)."},
+            {n:35, m:1, q:"Pembungkus testis luar dari jaringan kolagen ireguler yang menebal di posterior membentuk mediastinum testis adalah:", o:["Tunika vaginalis", "Tunika albuginea", "Fascia spermatica", "Tunika dartos"], a:1, p:"Tunika albuginea adalah kapsul fibrosa tebal penutup testis, yang membentuk septa pemisah lobuli testis."},
+            {n:36, m:4, q:"Apakah 3 bagian Perawatan Neonatal Esensial (PNE) berdasar waktu?", o:["0-30 detik, 30 detik-90 menit, 90 menit-6 jam", "0-1 menit, 1-60 menit, >2 jam", "0-5 menit, 5-30 menit, >6 jam"], a:0, p:"Langkah awal/Golden seconds (0-30 dtk), Golden hour/Observasi & IMD (30 dtk-90 mnt), Observasi lanjut (90 mnt-6 jam)."},
+            {n:37, m:1, q:"Di bawah kulit skrotum terdapat otot polos pengatur suhu yang dapat mengerutkan kulit skrotum. Otot tersebut adalah:", o:["Tunika Vaginalis", "Tunika Dartos", "M. Cremaster", "Fasia Spermatika"], a:1, p:"Tunika dartos adalah otot polos subkutan skrotum. M. cremaster (otot lurik) bertugas mengangkat/menarik testis lebih dekat ke perut."},
+            {n:38, m:2, q:"Lonjakan hormon apa yang memicu terjadinya ovulasi (pecahnya folikel)?", o:["Estrogen", "Progesteron", "FSH", "LH (Luteinizing Hormone)"], a:3, p:"LH Surge (Lonjakan ekstrim LH) merangsang pematangan akhir folikel dan memicu ovulasi dalam 24-36 jam."},
+            {n:39, m:4, q:"Berikut merupakan rangkaian dari perawatan neonatal yaitu:", o:["0-30 detik, 30-60 menit, 60 menit-6 jam", "0-30 detik, 30 detik-90 menit, 90 menit-6 jam (PNE)"], a:1, p:"Sama dengan soal PNE, interval krusial adalah 0-30s, 30s-90m, 90m-6h."},
+            {n:40, m:5, q:"Remaja 17 tahun putus cinta merasa tak seorang pun mengerti perasaannya. Fenomena kognitif ini disebut:", o:["Egosentrisme", "Imaginary Audience", "Personal Fable", "Fear of missing"], a:2, p:"Personal fable adalah keyakinan remaja bahwa pikiran, perasaan, dan pengalamannya unik dan tak ada yang bisa memahami."},
+            {n:41, m:1, q:"Jaringan erektil korpus kavernosum yang terisi darah dilapisi secara histologis oleh:", o:["Epitel squamous", "Sel otot polos", "Sel Endotel", "Epitel kolumner"], a:2, p:"Rongga kaverna atau sinusoid vaskular dilapisi oleh sel endotel, layaknya pembuluh darah normal."},
+            {n:42, m:2, q:"Fungsi utama hormon relaxin dari plasenta dan korpus luteum selama kehamilan?", o:["Merangsang kontraksi uterus", "Meningkatkan produksi ASI", "Meningkatkan fleksibilitas simfisis pubis dan dilatasi serviks"], a:2, p:"Relaxin merelaksasi ligamen panggul (simfisis pubis) dan melunakkan serviks guna mempermudah proses persalinan."},
+            {n:43, m:5, q:"Menurut standar antropometri anak, pernyataan yang benar:", o:["Pemeriksaan tanpa melihat jenis kelamin", "Pengukuran IMT sama tiap usia", "Nilai normal Z-score adalah antara -2 SD s.d +2 SD"], a:2, p:"Standar normal Kemenkes/WHO bagi sebagian besar indikator balita adalah berada pada rentang -2 SD hingga +2 SD."},
+            {n:44, m:2, q:"Foto HSG menunjukkan tumpahan kontras bilateral ke cavum peritonei. Temuan ini menandakan:", o:["Ductus paramesonefros gagal", "Kedua tuba uterina (falopi) paten (terbuka)"], a:1, p:"'Tumpahan' (spill) positif pada Hysterosalpingography (HSG) menunjukkan tuba falopi paten / tidak tersumbat."},
+            {n:45, m:5, q:"Akibat jika gagal memenuhi tugas perkembangan menurut psikologi:", o:["Beban fisik", "Maladaptif di proses berikutnya", "Adanya adaptasi lingkungan"], a:1, p:"Gagalnya tugas perkembangan di satu tahap menyebabkan kesulitan atau maladaptasi dalam menghadapi tugas di tahap kehidupan berikutnya."},
+            {n:46, m:6, q:"Apakah kondisi sel yang terjadi saat Cellular Senescence?", o:["Mati mendadak karena nekrosis", "Berhenti membelah permanen, namun tetap hidup & aktif", "Membelah lebih cepat"], a:1, p:"Senescence ditandai dengan sel yang menua, berhenti membelah (irreversibel), tapi tetap aktif sekresi (SASP)."},
+            {n:47, m:4, q:"Bagaimana posisi bayi menyusui (perlekatan) yang benar?", o:["Bibir menekuk keluar (dower)", "Dagu menempel ke payudara", "Sebagian besar areola (terutama bawah) masuk mulut", "Semua benar"], a:3, p:"Tanda perlekatan baik: Mulut terbuka lebar, dagu nempel payudara, areola bawah banyak masuk, bibir terlipat keluar."},
+            {n:48, m:4, q:"Yang dimaksud bounding attachment adalah:", o:["Ikatan batin suami istri", "Ikatan batin emosional ibu dan anak", "Ikatan dengan lingkungan"], a:1, p:"Bounding attachment adalah ikatan emosional intens antara ibu dan bayi yang utamanya dipupuk segera setelah lahir (lewat IMD)."},
+            {n:49, m:6, q:"Apa yang dimaksud dengan proses Autofagi?", o:["Sintesis DNA", "Daur ulang komponen sel yang rusak", "Pelepasan radikal bebas"], a:1, p:"Autofagi adalah mekanisme pembersihan di mana lisosom sel mencerna organelnya sendiri yang telah tua/rusak."},
+            {n:50, m:1, q:"Struktur dengan epitel kolumner (bersilia) berselang-seling dengan epitel kuboid untuk mengalirkan sperma ke epididimis adalah:", o:["Ductuli efferentes", "Ductus deferens", "Tubulus recti"], a:0, p:"Ductuli efferentes memiliki epitel khas bergelombang (scalloped) karena pergantian sel kolumner tinggi (silia) dan kuboid pendek (absorpsi)."},
+            {n:51, m:1, q:"pH ejakulat rendah (<7.2) dapat mengindikasikan kelainan:", o:["Azoospermia obstruktif vesikula seminalis", "Abstinensia lama", "Prostatitis"], a:0, p:"Cairan vesikula seminalis bersifat basa. Jika pH semen sangat asam, kemungkinan ada agenesis atau obstruksi duktus ejakulatorius / vesikula seminalis."},
+            {n:52, m:1, q:"Sensasi 'Ejaculatory Inevitability' dominan terjadi karena tahap:", o:["Kontraksi peristaltik vas deferens dan emisi prostat (Simpatis)", "Kontraksi bulbospongiosus", "Ereksi parasimpatis"], a:0, p:"Emisi (pengisian uretra posterior) memicu sensasi bahwa ejakulasi tidak bisa ditahan lagi."},
+            {n:53, m:3, q:"Apakah lapisan asal (derivasi) dari saluran pencernaan primitif (gut tube)?", o:["Ektoderm", "Mesoderm", "Endoderm"], a:2, p:"Endoderm membentuk epitel pelapis saluran cerna (gut tube) beserta kelenjar aksesorisnya (hati, pankreas)."},
+            {n:54, m:3, q:"Cairan nifas kuning-kecoklatan dari ibu pada hari ke-10 pasca persalinan disebut...", o:["Lochea rubra", "Lochea sanguinolenta", "Lochea serosa", "Lochea alba"], a:2, p:"Lochea rubra (merah, 1-3 hr), sanguinolenta (merah-coklat, 3-7 hr), serosa (kuning-kecoklatan, 7-14 hr), alba (putih, >14 hr)."},
+            {n:55, m:1, q:"Selama ekspulsi, otot lurik yang kontraksi ritmis mengeluarkan semen dari uretra adalah:", o:["M. Bulbospongiosus", "M. Cremaster", "M. Dartos"], a:0, p:"Kontraksi m. bulbospongiosus (persarafan somatik S2-S4 nervus pudendus) secara berirama menyemprotkan semen keluar."},
+            {n:56, m:4, q:"Pernyataan yang benar mengenai tujuan Perawatan Neonatal Esensial (PNE):", o:["Sekadar resusitasi", "Pelayanan kesehatan untuk menurunkan angka kesakitan & kematian bayi baru lahir", "Hanya memberi Oksigen"], a:1, p:"PNE dirancang sebagai paket tindakan esensial oleh bidan/dokter primer untuk memangkas AKB (Angka Kematian Bayi)."},
+            {n:57, m:3, q:"Pada teori kortisol fetal, awitan persalinan terjadi karena:", o:["Kortisol langsung konstriksi uterus", "Kortisol fetal merangsang sintesis prostaglandin & mengubah keseimbangan estrogen-progesteron", "Inhibisi progesteron langsung"], a:1, p:"Kortisol dari kelenjar adrenal janin memicu plasenta memproduksi lebih banyak estrogen dan prostaglandin, serta menurunkan progesteron."},
+            {n:58, m:2, q:"Pada biopsi ovarium, sel di folikel yang berfungsi spesifik mensintesis androgen adalah:", o:["Sel Theca Interna", "Sel Theca Externa", "Sel Granulosa"], a:0, p:"Sel teka interna berespon terhadap LH memproduksi androgen. Androgen ini lalu nyebrang ke granulosa untuk diubah aromatase jadi estrogen."},
+            {n:59, m:2, q:"Sel penyusun tuba uterina yang tidak bersilia namun mensekresi nutrisi untuk menghantarkan ovum adalah:", o:["Sel bersilia", "Sel sekretorik (Peg cells)", "Sel basal"], a:1, p:"Peg cell memproduksi glikoprotein yang menutrisi kapasitasi sperma dan menyokong zigot yang sedang menuju rahim."},
+            {n:60, m:6, q:"Penuaan pada sistem kardiovaskular secara fisiologis ditandai oleh:", o:["Peningkatan elastisitas", "Penurunan compliance (kelenturan) pembuluh darah akibat kolagen silang", "Distensi arteri mudah"], a:1, p:"Arteri menjadi kaku karena degradasi elastin dan ikatan silang kolagen bertambah (penurunan compliance / pengerasan nadi)."},
+            {n:61, m:5, q:"Pada pematangan otak remaja, daerah yang matang paling akhir dan berfungsi untuk eksekutif & kontrol impuls adalah:", o:["Amigdala", "Korteks Prefrontal", "Hippocampus", "Serebellum"], a:1, p:"Korteks prefrontal (Pusat Logika & 'Rem' impuls) baru matang sempurna di usia pertengahan 20-an."},
+            {n:62, m:4, q:"Pengertian periode Neonatus adalah:", o:["Umur 0-28 hari", "Umur 0-30 hari", "Umur 24 jam"], a:0, p:"Neonatus didefinisikan secara universal sebagai bayi sejak lahir hingga berusia 28 hari pertama kehidupannya."},
+            {n:63, m:5, q:"Remaja mengambil keputusan tergesa-gesa / perilaku berisiko (risk taking) karena:", o:["Pematangan prefrontal cortex tertinggal dibanding pematangan sistem limbik (reward)", "Pertumbuhan dari anterior ke posterior", "Disfungsi amigdala"], a:0, p:"Sistem limbik (pusat emosi & reward) matang lebih dulu di masa pubertas, mendahului kontrol logika dari korteks prefrontal (Imbalance Model)."},
+            {n:64, m:6, q:"Klasifikasi Elderly (Lansia/Lanjut Usia Muda) menurut WHO adalah usia:", o:["48-60 tahun", "60-74 tahun", "75-90 tahun (Old)"], a:1, p:"WHO membagi: Elderly 60-74 th, Old 75-90 th, Very Old >90 th."},
+            {n:65, m:5, q:"Cara efektif membentuk pola hidup sehat pada kebiasaan anak:", o:["Aturan keras (punishment)", "Membiarkan memilih", "Memberi teladan (Role Model) agar anak melakukan proses imitasi"], a:2, p:"Anak-anak belajar nilai perilaku secara dominan melalui proses observasi dan imitasi terhadap figur lekatnya."},
+            {n:66, m:2, q:"Endometrium dengan penebalan stroma edema & kelenjar berkelok-kelok dikendalikan oleh dominasi hormon:", o:["LH", "Estrogen saja", "Progesteron", "FSH"], a:2, p:"Ciri khas fase sekretori adalah aktivitas progesteron dari korpus luteum untuk persiapan bersarangnya janin."},
+            {n:67, m:1, q:"Cedera saraf otonom parasimpatis pada pelvis, pria gagal ereksi namun masih ejakulasi. Karena:", o:["Lesi N. Pudendus", "Gangguan N. Splanchnicus Pelvici menggagalkan vasodilatasi erektil", "Lesi simpatis"], a:1, p:"Nervi splanchnici pelvici (parasimpatis S2-S4) bertanggung jawab untuk vasodilatasi korpus kavernosum. Emisi/Ejakulasi oleh simpatis & somatik."},
+            {n:68, m:6, q:"Hormon stres yang bila kronis dapat menekan aksis reproduksi & menurunkan libido/infertilitas adalah:", o:["Kortisol", "Melatonin", "Aldosteron"], a:0, p:"Stres kronis memicu peningkatan kortisol yang dapat menginhibisi produksi GnRH, LH, dan FSH."},
+            {n:69, m:5, q:"Pada fase Laten (5-12 thn) psikoseksual Freud, yang dominan terjadi adalah:", o:["Eksplorasi genital", "Toilet training", "Anak mulai mengalihkan dorongan ke arah sosialisasi dan tugas sekolah"], a:2, p:"Di fase laten, energi libido dialihkan ke aktivitas produktif di luar diri, seperti interaksi teman sebaya dan belajar intelektual."},
+            {n:70, m:1, q:"Ion yang influks ke dalam kanal CatSper untuk gerak hiperaktivasi flagela sperma:", o:["Natrium", "Kalium", "Kalsium (Calcium)", "Klorida"], a:2, p:"Kalsium (Ca2+) yang masuk ekor sperma sangat vital untuk mengaktivasi cAMP yang menyebabkan flagela mencambuk kuat."},
+            {n:71, m:3, q:"Peristiwa perkembangan penting pertama segera setelah fertilisasi sukses adalah:", o:["Gastrulasi", "Pembelahan mitosis pertama (Cleavage)", "Implantasi"], a:1, p:"Sesaat setelah syngamy (pembentukan zigot), ia akan langsung masuk ke tahap Cleavage (pembelahan mitosis ganda)."},
+            {n:72, m:6, q:"Apa efek dominan neurotransmitter Serotonin dalam regulasi siklus respons seksual?", o:["Meningkatkan gairah", "Sebagai inhibitor, menurunkan gairah dan menghambat orgasme", "Sama dengan Dopamin"], a:1, p:"Dopamin = Pro-seksual (gas). Serotonin = Inhibitor (rem). Karenanya antidepresan SSRI sering menyebabkan disfungsi ereksi/orgasme lambat."},
+            {n:73, m:2, q:"Struktur unit fungsional dari jaringan ovarium adalah:", o:["Oosit", "Folikel", "Korpus luteum"], a:1, p:"Folikel ovarium (terdiri atas oosit yang dikelilingi sel granulosa dan teka) bertindak sebagai unit fungsional utama organ ini."},
+            {n:74, m:2, q:"Estimasi jumlah folikel primordial cadangan wanita pada awal masuk usia reproduktif/pubertas sekitar:", o:["1 - 2 Juta", "400.000", "40.000"], a:1, p:"Saat lahir wanita punya ~1 juta. Banyak yang atresia sehingga di masa pubertas tersisa sekitar 400.000 oosit."},
+            {n:75, m:5, q:"Defisiensi mikronutrien zat besi pada fase krusial 1000 HPK akan paling berpengaruh buruk terhadap:", o:["Proliferasi tulang", "Mielinisasi saraf untuk kecepatan transmisi impuls", "Penutupan neural tube"], a:1, p:"Zat besi merupakan kofaktor esensial dalam sintesis myelin. Myelin penting agar listrik saraf mengalir super cepat."},
+            {n:76, m:3, q:"Jumlah kromosom pada sel zigot manusia normal hasil fertilisasi adalah:", o:["23 haploid", "46 diploid", "92 tetraploid"], a:1, p:"Fusi pronukleus sperma (23 kromosom) dan ovum (23 kromosom) akan menghasilkan sel zigot dengan total 46 kromosom (diploid)."},
+            {n:77, m:2, q:"Pada fase excitement/plateau respon seksual wanita, respons fisiologis dominan terjadi adalah:", o:["Vasokongesti (engorgement) jaringan pelvis & lubrikasi", "Elevasi diafragma", "Mukosa vagina kering"], a:0, p:"Vasokongesti menyebabkan labia membengkak, klitoris ereksi, dan memeras transudat plasma menjadi lubrikan (pelumas vagina)."},
+            {n:78, m:1, q:"Kriteria diagnosis pasangan disebut Infertilitas Primer jika belum hamil meski rutin koitus tanpa kontrasepsi selama:", o:["6 bln usia <35 th", "1 Tahun (jika istri <35 th) atau 6 Bulan (jika istri >35 th)", "5 Tahun"], a:1, p:"Batasan medis infertilitas dibedakan berdasarkan usia istri karena penurunan drastis kualitas ovarium di atas 35 tahun."},
+            {n:79, m:3, q:"Celah langit-langit (Palatoschisis) utamanya terjadi akibat kegagalan fusi antara:", o:["Processus palatina (maksilaris) kanan dan kiri", "Processus frontonasal", "Lengkung faring"], a:0, p:"Kegagalan tonjolan palatina lateral (dari prominensia maksilaris) untuk menyatu di garis tengah embrio."},
+            {n:80, m:5, q:"Definisi dari Tugas Perkembangan (Developmental Tasks) menurut psikologi:", o:["Serangkaian kemampuan/keterampilan yang diharapkan dikuasai individu pada rentang usia tertentu", "Kemampuan yang bisa diabaikan"], a:0, p:"Teori Havighurst: Tugas perkembangan yang bila berhasil membuat bahagia & siap ke tahap berikutnya, bila gagal membuat maladaptif."},
+            {n:81, m:2, q:"Pada fase plateau wanita, uterus berelevasi maksimal tertarik ke atas menciptakan ruang kosong di fornix posterior vagina disebut:", o:["Sex skin", "Orgasmic Platform", "Tent effect (Efek Tenda)"], a:2, p:"'Tent effect' memudahkan ruang vagina menampung cairan ejakulat (seminal pool) di depan serviks."},
+            {n:82, m:1, q:"Ciri histologi tubulus sangat berkelok, epitel kolumner pseudokompleks bercilia tak bergerak (stereosilia) fungsi absorpsi, lapis otot tipis adalah ciri organ:", o:["Epididimis", "Ductus deferens", "Vesikula seminalis"], a:0, p:"Epididimis adalah saluran pematangan sperma dengan stereosilia tebal untuk mereabsorpsi cairan."},
+            {n:83, m:1, q:"Kriteria persentase pergerakan sperma yang dilaporkan di analisis semen modern (WHO) dibagi dalam:", o:["Progresif cepat, sedang, dan lambat", "Motilitas Progresif (PR), Motilitas Non-Progresif (NP), dan Imotil (IM)", "Hanya imotil"], a:1, p:"WHO edisi terbaru menyederhanakan grade ke Progresif (maju), Non-progresif (gerak di tempat/berputar), dan Imotil."},
+            {n:84, m:6, q:"Pada sistem pernafasan geriatri lansia, proses penuaan akan menyebabkan:", o:["Elastic recoil paru meningkat", "Volume residual menurun", "Jalur udara kecil (small airways) mudah kolaps saat ekspirasi"], a:2, p:"Karena penurunan elastisitas paru (elastic recoil menurun), saluran napas halus mudah menutup (kolaps) saat membuang napas."},
+            {n:85, m:3, q:"Apabila terjadi gangguan proses pemisahan kromatid pada Meiosis II saat oogenesis, hasilnya adalah:", o:["Spermatogonia berhenti", "Ovum akan memiliki jumlah kromosom abnormal (aneuploidi)", "Terbentuk 4 ovum"], a:1, p:"Non-disjunction pada Meiosis II memicu oosit sekunder mewariskan salinan kromosom ganda atau kosong, berujung abnormalitas zigot (spt Down Syndrome)."},
+            {n:86, m:5, q:"Apabila remaja berhasil menyelesaikan tugas-tugas perkembangannya dengan baik, maka akan berdampak:", o:["Menjadi maladaptif", "Terisolasi secara sosial", "Dapat beradaptasi dan lanjut menuju perkembangan di masa dewasa dengan sehat"], a:2, p:"Keberhasilan melewati krisis identitas Erikson membuahkan bekal positif untuk komitmen intim di masa dewasa awal."},
+            {n:87, m:1, q:"Saluran berdinding tebal dengan 3 lapis otot polos tebal (Long-Sirk-Long) dan epitel pseudokompleks, fungsinya kontraksi kuat saat emisi adalah:", o:["Duktus Deferens (Vas Deferens)", "Epididimis", "Uretra"], a:0, p:"Vas deferens ditandai dengan dinding otot polos 3 lapis yang sangat tebal untuk gerakan peristaltik kuat mengekspulsi semen."},
+            {n:88, m:3, q:"Struktur embrio hasil cleavage yang terbentuk sekitar hari ke-5 yang memiliki Inner Cell Mass dan siap implantasi adalah:", o:["Zigot", "Morula", "Blastokista (Blastula)"], a:2, p:"Hari 3-4 adalah morula padat. Hari 5-6 cairan masuk membentuk rongga, jadilah Blastokista yang siap menetas (hatching) & menempel."},
+            {n:89, m:2, q:"Sel granulosa ovarium di bawah pengaruh FSH mensintesis enzim aromatase. Enzim ini bertugas:", o:["Mengubah progesteron jadi kortisol", "Mengubah molekul Androgen (dari sel theca) menjadi Estrogen", "Mengubah kolesterol murni"], a:1, p:"Teori Two-Cell Two-Gonadotropin. Theca buat androgen (LH), Granulosa aromatase mengubahnya jadi Estrogen (FSH)."},
+            {n:90, m:5, q:"Remaja 15 tahun mampu memikirkan hal abstrak (keadilan, ideologi) & penalaran hipotesis-deduktif. Menurut Piaget ia di tahap:", o:["Sensorimotor", "Operasional konkret", "Operasional Formal"], a:2, p:"Operasional Formal dimulai usia 11/12+ tahun, ditandai dengan kemampuan berpikir logis abstrak tanpa butuh objek fisik."},
+            {n:91, m:6, q:"Klasifikasi umur Lanjut Usia Tua (Old) menurut WHO adalah:", o:["60-74 tahun", "75 - 90 Tahun", "Di atas 90 tahun"], a:1, p:"WHO: Elderly 60-74, Old 75-90, Very old >90."},
+            {n:92, m:1, q:"Pemeriksaan analisis sperma di awal yang mencatat waktu perubahan semen dari bentuk gel kental menjadi cair dalam suhu ruang 15-30 menit disebut:", o:["pH", "Konsentrasi", "Likuefaksi (Pencairan)", "Motilitas"], a:2, p:"Likuefaksi normal terjadi di bawah 30-60 menit oleh karena enzim fibrinolitik (PSA) prostat yang memecah semenogelin."},
+            {n:93, m:5, q:"Anak 6 bulan, Z-score BB/U sebelumnya di median 0, sekarang +1. Tapi grafiknya memotong garis kurva pertumbuhan normal (Crossing percentiles) menurun. Ini berarti:", o:["Masih tergolong sangat aman selamanya", "Terjadinya 'crossing percentiles' mengindikasikan risiko atau adanya masalah gizi (Faltering growth)"], a:1, p:"Walau Z-Score masih > -2 (hijau), grafik yang memotong tren kurva ke bawah adalah peringatan (Lampu Kuning) anak gagal tumbuh optimal."},
+            {n:94, m:4, q:"Kondisi psikologis dan lingkungan yang paling tepat untuk memicu refleks let-down (lonjakan hormon Oksitosin) ibu menyusui adalah:", o:["Rumah berantakan/stress", "Ayah membantu memegangi bayi / Ibu merasa santai dan bahagia", "Menangis depresi"], a:1, p:"Oksitosin (Hormon cinta/Let-down reflex) sangat dihambat oleh stres, dan amat ditingkatkan oleh perasaan disayang, relax, atau memandang bayi."},
+            {n:95, m:1, q:"Pernyataan benar mengenai palpasi Kelenjar Prostat melalui pemeriksaan Colok Dubur (DRE):", o:["Permukaan posterior prostat berhubungan dengan kandung kemih", "Terdapat batas/pemisah dengan rektum berupa Fascia Denonvilliers", "Lobus anterior dipalpasi dari rektum"], a:1, p:"Prostat diraba lewat dinding anterior rektum. Jaringan ikat padat Fascia Denonvilliers memisahkan prostat langsung dari lumen rektum."},
+            {n:96, m:2, q:"Apa yang TIDAK BENAR mengenai fase siklus menstruasi ovarium/endometrium?", o:["Fase sekretori stroma edema dan kelenjar berkelok", "Fase menstruasi karena iskemia", "Fase proliferasi terjadi SETELAH fase ovulasi"], a:2, p:"Fase Proliferasi terjadi SEBELUM ovulasi (bersamaan dengan fase folikular ovarium). Setelah ovulasi adalah fase sekretori."},
+            {n:97, m:5, q:"Remaja tumbuh pesat, hormon utama yang bekerja sinergis mendampingi Growth Hormone (GH) untuk metabolisme dan maturasi tulang adalah:", o:["Melatonin", "Glukagon", "Tiroksin (T4) / Tiroid"], a:2, p:"Hormon tiroid bersifat permisif dan esensial. Jika anak hipotiroid, GH tidak bisa bekerja maksimal melipatgandakan panjang tulang."},
+            {n:98, m:4, q:"Klasifikasi neonatus berat badan lahir 3000 gram masuk ke dalam kategori:", o:["BBLR", "BBLC (Berat Badan Lahir Cukup / Normal)", "Makrosomia"], a:1, p:"BBLC (Normal) adalah rentang 2500 - 3999 gram."},
+            {n:99, m:5, q:"Menurut teori psikososial Erik Erikson, jika individu di masa dewasa awal berhasil menyelesaikan krisis perkembangannya, hasil positifnya adalah:", o:["Isolation", "Stagnancy", "Despair", "Intimacy (Keintiman)"], a:3, p:"Tahap Dewasa Awal (20-30 thn): Intimacy vs Isolation. Kesuksesan melahirkan keintiman, cinta, dan komitmen."},
+            {n:100, m:4, q:"Tujuan utama diadakannya pelayanan standar Perawatan Neonatal Esensial (PNE) di faskes primer adalah:", o:["Memantau perkembangan kognitif balita", "Hanya memberi susu formula", "Mengurangi / Menurunkan angka kesakitan dan kematian bayi baru lahir"], a:2, p:"Tujuan PNE (langkah awal, resusitasi dasar, pencegahan hipotermi, IMD, vit K) adalah memangkas mortalitas neonatus yang tinggi di minggu awal."}
+        ];
+
+        const titles = {
+            1: "Modul 1: Sistem Reproduksi Pria",
+            2: "Modul 2: Sistem Reproduksi Wanita",
+            3: "Modul 3: Embriologi, Kehamilan & Persalinan",
+            4: "Modul 4: Neonatologi & Laktasi",
+            5: "Modul 5: Tumbuh Kembang, Antropometri & Psikologi",
+            6: "Modul 6: Penuaan (Geriatri) & Fungsi Seksual"
+        };
+
+        function renderQuestions() {
+            let html = '';
+            for(let i = 1; i <= 6; i++) {
+                const group = bankSoal.filter(s => s.m === i);
+                if(group.length === 0) continue;
+                
+                let modColor = i===1 ? 'blue' : i===2 ? 'pink' : i===3 ? 'purple' : i===4 ? 'yellow' : i===5 ? 'emerald' : 'slate';
+
+                html += `
+                <section class="mb-12 page-break">
+                    <div class="bg-${modColor}-50 p-6 rounded-lg mb-6 border border-${modColor}-200 print-border">
+                        <h2 class="text-2xl font-bold mb-2 text-${modColor}-800">${titles[i]}</h2>
+                        <p class="text-gray-600 font-medium">Terdapat ${group.length} soal terkait bahasan ini.</p>
+                    </div>
+                `;
+
+                group.forEach(s => {
+                    let optHtml = '';
+                    const letters = ['A','B','C','D','E'];
+                    s.o.forEach((opt, idx) => {
+                        optHtml += `<li class="pl-2 border-l-2 border-transparent hover:border-gray-300 transition"><span class="font-semibold">${letters[idx]}.</span> ${opt}</li>`;
+                    });
+
+                    html += `
+                    <div class="mb-6 p-5 border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition">
+                        <p class="font-bold text-gray-800 mb-3 text-lg">${s.n}. ${s.q}</p>
+                        <ul class="list-none ml-4 mb-5 space-y-2 text-gray-700">
+                            ${optHtml}
+                        </ul>
+                        <button onclick="toggleAnswer('ans${s.n}')" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-semibold text-sm hover:bg-gray-200 no-print transition">Tampilkan Jawaban / Pembahasan</button>
+                        <div id="ans${s.n}" class="answer-block bg-green-50 p-5 mt-4 rounded-lg border border-green-200 text-green-900 shadow-inner">
+                            <strong class="text-green-800 uppercase tracking-wide text-sm">Jawaban Benar: ${letters[s.a]}</strong><br>
+                            <span class="block mt-2 font-medium leading-relaxed">${s.p}</span>
+                        </div>
+                    </div>
+                    `;
+                });
+                html += `</section>`;
+            }
+            document.getElementById('soal-container').innerHTML = html;
+        }
+
+        let isExpanded = false;
+        function toggleAllAnswers() {
+            const blocks = document.querySelectorAll('.answer-block');
+            const btnText = document.getElementById('toggleText');
+            isExpanded = !isExpanded;
+            blocks.forEach(b => b.style.display = isExpanded ? 'block' : 'none');
+            btnText.innerText = isExpanded ? 'Tutup Semua Jawaban' : 'Buka Semua Jawaban';
+        }
+
+        function toggleAnswer(id) {
+            const el = document.getElementById(id);
+            el.style.display = el.style.display === "block" ? "none" : "block";
+        }
+
+        function printToPDF() {
+            // Paksa buka semua jawaban sebelum cetak agar pembahasannya masuk ke PDF
+            const blocks = document.querySelectorAll('.answer-block');
+            blocks.forEach(b => b.style.display = 'block');
+            setTimeout(() => {
+                window.print();
+                // Setelah print dialog tertutup, kembalikan state semula
+                if(!isExpanded) blocks.forEach(b => b.style.display = 'none');
+            }, 300);
+        }
+
+        // Render saat halaman diload
+        window.onload = renderQuestions;
+    </script>
+</body>
+</html>

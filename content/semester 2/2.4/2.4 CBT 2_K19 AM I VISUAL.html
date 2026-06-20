@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Am I Visual? — Quiz Komunikasi Visual Kesehatan K19</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f8f8f5;--bg2:#f1f1ed;--bg3:#e7e7e2;--bg4:#dcdcd6;
+  --border:rgba(40,55,110,.10);--border2:rgba(40,55,110,.20);
+  --text:#161b2e;--text2:#384068;--text3:#7c85a8;
+  --green:#1f7a4a;--greenbg:rgba(31,122,74,.09);--greenb:rgba(31,122,74,.25);
+  --gold:#7a6010;--goldbg:rgba(122,96,16,.09);--goldb:rgba(122,96,16,.28);
+  --red:#b03030;--redbg:rgba(176,48,48,.08);--redb:rgba(176,48,48,.25);
+  --blue:#1a4faa;--bluebg:rgba(26,79,170,.09);--blueb:rgba(26,79,170,.28);
+  --purp:#4433a0;--purpbg:rgba(68,51,160,.08);--purpb:rgba(68,51,160,.25);
+  --teal:#136ba8;--tealbg:rgba(19,107,168,.08);--tealb:rgba(19,107,168,.25);
+  --r:10px;--rl:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.6;min-height:100vh}
+.app{max-width:900px;margin:0 auto;padding:0 16px 60px}
+header{padding:40px 0 28px;text-align:center}
+.eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--text3);text-transform:uppercase;margin-bottom:10px}
+h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(30px,6vw,54px);letter-spacing:-.03em;line-height:1;margin-bottom:10px}
+h1 span{color:var(--blue)}
+.sub{font-size:13px;color:var(--text2);max-width:500px;margin:0 auto}
+.main-tabs{display:flex;gap:3px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:24px}
+.main-tab{flex:1;padding:9px 6px;border-radius:9px;border:none;background:transparent;color:var(--text3);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .18s}
+.main-tab:hover{color:var(--text)}
+.main-tab.active{background:var(--text);color:#fff;font-weight:600}
+.main-panel{display:none}
+.main-panel.active{display:block;animation:fi .2s ease}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.sec-h{font-family:'Syne',sans-serif;font-weight:700;font-size:14.5px;color:var(--text);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.divider{height:1px;background:var(--border);margin:20px 0}
+.note{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:0 var(--r) var(--r) 0;padding:10px 14px;font-size:12.5px;color:var(--text2);line-height:1.65;margin-bottom:10px}
+.note strong{color:var(--text)}
+.note.blue{border-left-color:var(--blue)}
+.note.green{border-left-color:var(--green)}
+.note.red{border-left-color:var(--red)}
+.note.purp{border-left-color:var(--purp)}
+.note.teal{border-left-color:var(--teal)}
+.dtable-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:14px}
+.dtable-wrap table{width:100%;border-collapse:collapse;font-size:12px}
+.dtable-wrap thead tr{background:var(--bg3)}
+.dtable-wrap th{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.05em;color:var(--text3);font-weight:600;padding:8px 12px;text-align:left;border-bottom:1px solid var(--border)}
+.dtable-wrap td{padding:7px 12px;border-bottom:1px solid var(--border);font-family:'DM Mono',monospace;font-size:11px;color:var(--text2)}
+.dtable-wrap td:first-child{color:var(--text);font-weight:600}
+.dtable-wrap tr:last-child td{border-bottom:none}
+.dtable-wrap tr:nth-child(even){background:rgba(40,55,110,.02)}
+.formula{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;font-family:'DM Mono',monospace;font-size:12px;color:var(--text);margin:8px 0;line-height:1.8}
+.formula .fkey{color:var(--text3);margin-right:6px}
+.ind-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:4px}
+.ind-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;position:relative;overflow:hidden}
+.ind-card .stripe{position:absolute;top:0;left:0;width:3px;height:100%}
+.ind-card .ind-name{font-family:'Syne',sans-serif;font-size:12.5px;font-weight:700;margin-bottom:6px}
+.ind-card .ind-desc{font-size:12px;color:var(--text2);margin-bottom:8px;line-height:1.6}
+.ind-table{width:100%;border-collapse:collapse}
+.ind-table td{font-family:'DM Mono',monospace;font-size:10.5px;padding:3px 0;border-bottom:1px solid var(--border)}
+.ind-table tr:last-child td{border-bottom:none}
+.ind-table td:first-child{color:var(--text3);width:120px}
+.ind-table td:last-child{font-weight:600;color:var(--text)}
+/* QUIZ */
+.qconfig{text-align:center;padding:28px 0}
+.qconfig-title{font-family:'Syne',sans-serif;font-weight:700;font-size:18px;margin-bottom:6px}
+.qconfig-sub{font-size:13px;color:var(--text2);margin-bottom:22px}
+.cfg-grid{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:26px}
+.cfg-btn{padding:8px 16px;border-radius:20px;border:2px solid var(--border2);background:var(--bg2);color:var(--text3);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;transition:all .18s}
+.cfg-btn:hover{color:var(--text2)}
+.cfg-btn.sel{background:var(--text);color:#fff;border-color:var(--text);font-weight:600}
+.start-btn{padding:12px 34px;border-radius:var(--r);border:none;background:var(--text);color:var(--bg);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.02em;transition:all .18s}
+.start-btn:hover{background:var(--blue)}
+.qheader{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.qnum-display{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);white-space:nowrap}
+.qnum-display strong{color:var(--text);font-size:15px}
+.qscore-display{margin-left:auto;font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);white-space:nowrap}
+.qscore-display strong{color:var(--green);font-size:15px}
+.qtype-pill{display:inline-block;padding:3px 10px;border-radius:10px;font-family:'DM Mono',monospace;font-size:10px;font-weight:600}
+.qcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:20px 22px;margin-bottom:12px}
+.qscen{font-size:13px;color:var(--text2);margin-bottom:10px;line-height:1.65}
+.qdata{font-family:'DM Mono',monospace;font-size:12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:12px;line-height:2}
+.qdata .dv{font-weight:700;color:var(--text)}
+.qdata .da{font-size:10.5px;color:var(--text3);margin-left:4px}
+.qtext{font-size:14px;font-weight:600;color:var(--text);line-height:1.55}
+.opts{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.opt{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-radius:var(--r);border:1.5px solid var(--border2);background:var(--bg);color:var(--text);text-align:left;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.5;transition:all .15s;width:100%}
+.opt:hover:not(:disabled){background:var(--bg3);border-color:rgba(40,55,110,.3)}
+.opt:disabled{cursor:default}
+.opt-key{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;min-width:22px;height:22px;border-radius:6px;background:var(--bg3);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;color:var(--text3);transition:all .15s}
+.opt.correct{background:var(--bluebg);border-color:var(--blueb)}
+.opt.correct .opt-key{background:var(--blue);color:#fff;border-color:var(--blue)}
+.opt.wrong{background:var(--redbg);border-color:var(--redb)}
+.opt.wrong .opt-key{background:var(--red);color:#fff;border-color:var(--red)}
+.opt.reveal{background:var(--bluebg);border-color:var(--blueb);opacity:.75}
+.opt.reveal .opt-key{background:var(--blue);color:#fff;border-color:var(--blue)}
+.expbox{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:12px;font-size:12.5px;color:var(--text2);line-height:1.72;display:none}
+.expbox.show{display:block;animation:fi .2s ease}
+.expbox strong{color:var(--text)}
+.actrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.next-btn{padding:10px 24px;border-radius:var(--r);border:none;background:var(--text);color:var(--bg);font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .18s;display:none}
+.next-btn:hover{background:var(--blue)}
+.end-btn{padding:10px 18px;border-radius:var(--r);border:1px solid var(--redb);background:transparent;color:var(--red);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;transition:all .18s;margin-left:auto}
+.end-btn:hover{background:var(--redbg)}
+.results-wrap{text-align:center;padding:28px 12px}
+.res-big{font-family:'Syne',sans-serif;font-size:64px;font-weight:800;color:var(--text);line-height:1;margin-bottom:4px}
+.res-sub{font-family:'DM Mono',monospace;font-size:13px;color:var(--text3);margin-bottom:18px}
+.res-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:20px;text-align:left}
+.res-stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:11px 14px}
+.res-stat .rv{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--text);margin-bottom:2px}
+.res-stat .rl{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)}
+.retry-btn{padding:12px 32px;border-radius:var(--r);border:none;background:var(--text);color:var(--bg);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .18s;margin-bottom:20px}
+.retry-btn:hover{background:var(--blue)}
+footer{text-align:center;padding-top:36px;font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="eyebrow">Komunikasi Visual · PK Blok 2.4 · FK Unsoed</div>
+  <h1>Am I <span>Visual?</span></h1>
+  <p class="sub">Quiz DKV Kesehatan — teori, elemen warna, prinsip desain &amp; layout visual.</p>
+</header>
+
+<div class="main-tabs">
+  <button class="main-tab active" onclick="switchMain('materi',this)">📋 Materi</button>
+  <button class="main-tab" onclick="switchMain('quiz',this)">🎯 Quiz</button>
+</div>
+
+<!-- MATERI -->
+<div class="main-panel active" id="mp-materi">
+
+  <div class="sec-h">1. Pendahuluan</div>
+  <div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Tujuan Pembelajaran</div>
+  <p style="font-size:13px;color:var(--text2);margin-bottom:10px;line-height:1.65">Kuliah ini bertujuan agar mahasiswa kedokteran memahami pentingnya komunikasi dalam bidang kesehatan dan menguasai teori dasar Desain Komunikasi Visual (DKV). Harapannya, mahasiswa tidak hanya mampu mengobati, tetapi juga mampu merancang dan memproduksi pesan visual kesehatan yang efektif untuk mengubah perilaku masyarakat.</p>
+
+  <div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Mengapa Komunikasi Visual Penting di Bidang Kesehatan?</div>
+  <div class="note blue">Seringkali terjadi situasi di mana dokter menjelaskan kondisi secara detail, namun pasien tetap tidak patuh pada anjuran medis. Hal ini terjadi karena <strong>informasi sudah diterima, tetapi pesan belum benar-benar dipahami dan belum mengubah perilaku</strong>. Otak manusia memproses informasi visual <strong>60.000 kali lebih cepat</strong> dibandingkan teks.</div>
+
+  <div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Dokter Modern sebagai "Perancang Pesan" (Designer)</div>
+  <div class="ind-grid">
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--blue)"></div>
+      <div class="ind-name" style="color:var(--blue)">Peran Dokter Masa Kini</div>
+      <div class="ind-desc">Tidak sekadar mendiagnosis atau memberi terapi, tetapi juga:
+        <ul style="padding-left:16px;margin-top:4px">
+          <li>Menjelaskan penyakit dengan bahasa awam</li>
+          <li>Menyederhanakan informasi medis yang kompleks</li>
+          <li>Membantu pasien mengambil keputusan kesehatan</li>
+          <li>Memengaruhi perilaku sehat di masyarakat</li>
+        </ul>
+      </div>
+    </div>
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--gold)"></div>
+      <div class="ind-name" style="color:var(--gold)">Proses Desain Oleh Dokter</div>
+      <div class="ind-desc">
+        <ul style="padding-left:16px;margin-top:4px">
+          <li>Memilih informasi apa yang paling esensial</li>
+          <li>Menyederhanakan bahasa medis (jargon)</li>
+          <li>Menentukan media/bentuk penyampaian yang pas</li>
+          <li>Menyesuaikan dengan target audiens</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="formula">
+    <div><span class="fkey">Rumus Sederhana Desain Kesehatan:</span> Good health design = Clarity + Empathy + Action</div>
+  </div>
+  <div class="dtable-wrap"><table>
+    <thead><tr><th>Komponen</th><th>Makna</th></tr></thead>
+    <tbody>
+      <tr><td>Clarity</td><td>Mudah dipahami, pasien langsung menangkap pesannya.</td></tr>
+      <tr><td>Empathy</td><td>Memahami kondisi dan tingkat literasi audiens.</td></tr>
+      <tr><td>Action</td><td>Mampu menggerakkan perilaku pasien menuju perubahan.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="divider"></div>
+
+  <div class="sec-h">2. Teori Dasar Komunikasi Kesehatan</div>
+  <div class="note"><strong>Teori Komunikasi Harold Lasswell:</strong> Who Says What In Which Channel To Whom With What Effect. Keberhasilan komunikasi diukur dari <strong>efeknya</strong>, yaitu seberapa jauh terjadi <strong>perubahan perilaku</strong>.</div>
+  
+  <div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Tantangan Komunikasi</div>
+  <div class="dtable-wrap"><table>
+    <thead><tr><th>Tantangan</th><th>Penjelasan</th></tr></thead>
+    <tbody>
+      <tr><td>Literasi Rendah</td><td>Masyarakat kesulitan mencerna informasi kompleks. Visual lebih efektif.</td></tr>
+      <tr><td>Hoaks</td><td>Edukasi berbasis visual dapat meningkatkan pemahaman dan merebut kepercayaan masyarakat.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="divider"></div>
+
+  <div class="sec-h">3. Teori Dasar Desain Komunikasi Visual (DKV)</div>
+  <p style="font-size:13px;color:var(--text2);margin-bottom:10px;line-height:1.65">Sebuah media visual dibangun oleh elemen utama: Warna, Tipografi, dan Gambar.</p>
+
+  <div class="sec-h" style="font-size:13px;border:none;margin-top:14px">A. Elemen Warna</div>
+  <div class="note blue">Psikologi: Merah (bahaya), Hijau (kesehatan/alami), Biru (ketenangan). Strategi: Gunakan <strong>maksimal tiga warna dominan</strong>.</div>
+  <div class="ind-grid">
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--green)"></div>
+      <div class="ind-name" style="color:var(--green)">Laras (Analogous)</div>
+      <div class="ind-desc">Warna berdekatan pada roda warna. Nuansa harmonis dan menyatu.</div>
+    </div>
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--red)"></div>
+      <div class="ind-name" style="color:var(--red)">Kontras (Complementary)</div>
+      <div class="ind-desc">Letaknya berseberangan. Sangat berguna untuk Call to Action.</div>
+    </div>
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--purp)"></div>
+      <div class="ind-name" style="color:var(--purp)">Triadic</div>
+      <div class="ind-desc">Kombinasi 3 warna membentuk segitiga sama sisi pada roda warna.</div>
+    </div>
+  </div>
+
+  <div class="sec-h" style="font-size:13px;border:none;margin-top:14px">B. Tipografi yang Efektif</div>
+  <div class="dtable-wrap"><table>
+    <thead><tr><th>Jenis Huruf</th><th>Penggunaan</th></tr></thead>
+    <tbody>
+      <tr><td>Text Type (Body Text)</td><td>Penjelasan panjang. Biasanya font <strong>Sans-Serif</strong> (tanpa kait).</td></tr>
+      <tr><td>Display Type (Headline)</td><td>Judul atau slogan. Bisa Serif atau sedikit unik tapi terbaca.</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note red">⚠️ <strong>Prinsip:</strong> Hindari font terlalu kecil, hindari <em>decorative font</em> (menurunkan keterbacaan), pastikan ada <strong>kontras tinggi</strong> antara teks dan latar.</div>
+
+  <div class="sec-h" style="font-size:13px;border:none;margin-top:14px">C. Gambar (Foto, Ilustrasi, Ikon)</div>
+  <div class="dtable-wrap"><table>
+    <thead><tr><th>Elemen</th><th>Fungsi</th></tr></thead>
+    <tbody>
+      <tr><td>Foto</td><td>Memberikan kesan nyata, realistis, dan berempati.</td></tr>
+      <tr><td>Ilustrasi</td><td>Menggambarkan konsep yang abstrak atau metaforis.</td></tr>
+      <tr><td>Ikon</td><td>Menyederhanakan informasi agar otak memproses lebih cepat.</td></tr>
+      <tr><td>Visualisasi Data</td><td>Mengubah data statistik jadi infografis agar menarik.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="divider"></div>
+
+  <div class="sec-h">4. Prinsip Desain (Layout &amp; Tata Letak)</div>
+  <div class="ind-grid">
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--blue)"></div>
+      <div class="ind-name" style="color:var(--blue)">1. Simplicity</div>
+      <div class="ind-desc"><em>Less text, more impact.</em> Jangan menjejalkan terlalu banyak teks.</div>
+    </div>
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--gold)"></div>
+      <div class="ind-name" style="color:var(--gold)">2. Visual Hierarchy</div>
+      <div class="ind-desc">Arahkan mata pembaca. Buat pesan utama (Headline) paling besar.</div>
+    </div>
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--green)"></div>
+      <div class="ind-name" style="color:var(--green)">3. Alignment</div>
+      <div class="ind-desc">Gunakan grid imajiner agar sejajar. Tampilan rapi &amp; profesional.</div>
+    </div>
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--purp)"></div>
+      <div class="ind-name" style="color:var(--purp)">4. Balance &amp; Contrast</div>
+      <div class="ind-desc">Keseimbangan menstabilkan mata. Kontras memukul mata ke poin krusial.</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="sec-h">5. Pembuatan Media Edukasi Kesehatan di Era Digital</div>
+  <div class="note"><strong>Estetika Visual:</strong> Hanya <strong>satu pesan utama per desain</strong>, maks 3 warna dominan, dan ada <strong>Call to Action (CTA)</strong> tegas ("STOP MEROKOK!").</div>
+
+  <div class="dtable-wrap"><table>
+    <thead><tr><th>Platform</th><th>Karakteristik</th></tr></thead>
+    <tbody>
+      <tr><td>Poster Klinik</td><td>Ringkas untuk pasien menunggu. Hindari teks berlebihan.</td></tr>
+      <tr><td>Instagram</td><td>Sangat kuat dalam memviralkan informasi grafis dan foto.</td></tr>
+      <tr><td>TikTok</td><td>Mendominasi, video singkat, menghibur. Tantangan: menjaga akurasi medis.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="dtable-wrap"><table>
+    <thead><tr><th>Tips Praktis</th><th>Ketentuan</th></tr></thead>
+    <tbody>
+      <tr><td><strong>DO</strong></td><td>Bahasa awam, elemen visual dominan, Call to Action lugas.</td></tr>
+      <tr><td><strong>DON'T</strong></td><td>Memuat buku teks ke poster, visual berantakan tanpa alignment, warna bertabrakan, tidak ada tindakan jelas.</td></tr>
+      <tr><td><strong>Tools Gratis</strong></td><td>Canva (grafis), Pexels &amp; Freepik (gambar), CapCut &amp; InShot (video).</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="divider"></div>
+
+  <div class="sec-h">6. Kesimpulan</div>
+  <p style="font-size:13px;color:var(--text2);margin-bottom:10px;line-height:1.65">Dokter tidak hanya bertugas menyembuhkan, tetapi juga harus mampu merancang informasi agar sampai ke pasien secara efektif. Dengan menguasai prinsip <strong>Desain Komunikasi Visual (DKV)</strong>, dokter dapat menciptakan media edukasi kesehatan yang benar-benar mampu mengubah perilaku masyarakat ke arah yang lebih sehat.</p>
+
+</div>
+
+<!-- QUIZ -->
+<div class="main-panel" id="mp-quiz">
+  <div id="qconfig" class="qconfig">
+    <div class="qconfig-title">Mulai Sesi Quiz</div>
+    <div class="qconfig-sub">Pilih topik (multi-pilih)</div>
+    <div class="cfg-grid" id="cfg-grid">
+      <button class="cfg-btn sel" data-type="k19">K19 - DKV Kesehatan</button>
+    </div>
+    <button class="start-btn" onclick="startSession()">Mulai →</button>
+  </div>
+  <div id="qactive" style="display:none">
+    <div class="qheader">
+      <div class="qnum-display">Soal ke-<strong id="qnum">1</strong></div>
+      <div id="qpill" class="qtype-pill"></div>
+      <div class="qscore-display"><strong id="qscore">0</strong> benar</div>
+    </div>
+    <div class="qcard">
+      <div id="qscen" class="qscen" style="display:none"></div>
+      <div id="qdata" class="qdata" style="display:none"></div>
+      <div id="qtext" class="qtext"></div>
+    </div>
+    <div class="opts" id="opts"></div>
+    <div class="expbox" id="expbox"></div>
+    <div class="actrow">
+      <button class="next-btn" id="nextbtn" onclick="nextQ()">Soal Berikutnya →</button>
+      <button class="end-btn" onclick="endSession()">Akhiri Sesi</button>
+    </div>
+  </div>
+  <div id="qresults" style="display:none">
+    <div class="results-wrap">
+      <div class="res-big" id="res-pct">—</div>
+      <div class="res-sub" id="res-sub">—</div>
+      <div class="res-grid" id="res-grid"></div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:20px">
+        <button class="retry-btn" style="margin-bottom:0" onclick="restartQuiz()">Coba Lagi</button>
+        <button class="retry-btn" style="margin-bottom:0;background:var(--blue)" onclick="downloadCert()">⬇ Unduh Sertifikat</button>
+      </div>
+      <div class="dtable-wrap" style="margin-bottom:14px"><table><thead><tr><th>Topik</th><th>Soal</th><th>Benar</th></tr></thead><tbody id="res-bytype"></tbody></table></div>
+      <div class="dtable-wrap"><table><thead><tr><th>#</th><th>Soal (ringkas)</th><th>Jawaban Benar</th><th>Hasil</th></tr></thead><tbody id="res-tbody"></tbody></table></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div>am i visual? · Komunikasi Visual · PK Blok 2.4 · FK Unsoed</div>
+  <div style="margin-top:5px">crafted by alchemist4real · <a href="https://174-three.vercel.app" target="_blank" style="color:var(--text3);text-decoration:none;border-bottom:1px dashed var(--text3);transition:color .18s" onmouseover="this.style.color='var(--blue)'" onmouseout="this.style.color='var(--text3)'">check other quizzes → 174 archive ↗</a></div>
+</footer>
+</div>
+
+<script>
+// ═══ TAB ═══
+window.switchMain=function(id,b){document.querySelectorAll('.main-panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.main-tab').forEach(x=>x.classList.remove('active'));document.getElementById('mp-'+id).classList.add('active');b.classList.add('active');};
+window.startSession=startSession;window.nextQ=nextQ;window.endSession=endSession;window.restartQuiz=restartQuiz;
+
+// ═══ CONFIG ═══
+const activeTypes=new Set(['k19']);
+document.querySelectorAll('.cfg-btn').forEach(b=>{b.addEventListener('click',()=>{const t=b.dataset.type;if(activeTypes.has(t)){if(activeTypes.size===1)return;activeTypes.delete(t);b.classList.remove('sel');}else{activeTypes.add(t);b.classList.add('sel');}});});
+
+// ═══ UTILS ═══
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const shuf=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]];}return b;};
+const KEYS='ABCDE'.split('');
+function stripHtml(s){return s.replace(/<[^>]*>/g,'');}
+// Pool-based sequential picker (no repeat until exhausted)
+function makePicker(pool){let idx=[];return function(){if(idx.length>=pool.length)idx=[];const av=pool.map((_,i)=>i).filter(i=>!idx.includes(i));const si=rnd(av);idx.push(si);return pool[si];};}
+
+// ═══════════════════════════════════════
+// BANKS
+// ═══════════════════════════════════════
+
+const makeQ_K19 = (function() {
+    const K19_TEORI_KOMUNIKASI_POOL = [
+        {
+            q: "Mengapa pasien seringkali tidak patuh meskipun dokter sudah menjelaskan secara detail?",
+            opts: ["Pesan sudah diterima namun belum dipahami sehingga perilaku belum berubah", "Pasien tidak memiliki biaya untuk pengobatan", "Fasilitas kesehatan tidak memadai", "Dokter kurang ramah dalam menjelaskan"],
+            ans: "Pesan sudah diterima namun belum dipahami sehingga perilaku belum berubah",
+            exp: "Seringkali <strong>informasi sudah diterima, tetapi pesan belum benar-benar dipahami dan belum mengubah perilaku</strong>."
+        },
+        {
+            q: "Menurut materi, seberapa cepat otak manusia memproses informasi visual dibandingkan teks?",
+            opts: ["60.000 kali lebih cepat", "6.000 kali lebih cepat", "600 kali lebih cepat", "60 kali lebih cepat"],
+            ans: "60.000 kali lebih cepat",
+            exp: "Otak manusia memproses informasi visual <strong>60.000 kali lebih cepat</strong> dibandingkan teks."
+        },
+        {
+            q: "Rumus 'Good health design' menurut materi terdiri dari tiga komponen utama, yaitu...",
+            opts: ["Clarity + Empathy + Action", "Color + Typography + Image", "Simplicity + Alignment + Contrast", "Message + Channel + Effect"],
+            ans: "Clarity + Empathy + Action",
+            exp: "Rumus Sederhana Desain Kesehatan: <strong>Good health design = Clarity + Empathy + Action</strong>."
+        },
+        {
+            q: "Dalam teori komunikasi Harold Lasswell, keberhasilan komunikasi kesehatan terutama diukur dari...",
+            opts: ["Efeknya, yaitu seberapa jauh terjadi perubahan perilaku", "Media saluran yang digunakan", "Panjang dan detailnya pesan yang disampaikan", "Banyaknya jumlah audiens yang melihat"],
+            ans: "Efeknya, yaitu seberapa jauh terjadi perubahan perilaku",
+            exp: "Keberhasilan komunikasi diukur dari <strong>efeknya</strong>, yaitu seberapa jauh terjadi <strong>perubahan perilaku</strong> pada audiens."
+        },
+        {
+            q: "Peran 'Empathy' dalam pembuatan desain kesehatan adalah...",
+            opts: ["Memahami kondisi dan tingkat literasi audiens", "Memastikan pasien menangkap pesan dengan cepat", "Mampu menggerakkan perilaku pasien", "Mengurangi biaya pembuatan media edukasi"],
+            ans: "Memahami kondisi dan tingkat literasi audiens",
+            exp: "<strong>Empathy</strong> berarti memahami kondisi dan tingkat literasi audiens."
+        },
+        {
+            q: "Peran dokter masa kini sebagai 'perancang pesan' (designer) mencakup hal-hal berikut, KECUALI...",
+            opts: ["Menjelaskan penyakit dengan bahasa awam", "Menuliskan diagnosa dalam bahasa Latin agar pasien tidak panik", "Menyederhanakan informasi medis yang kompleks", "Membantu pasien mengambil keputusan kesehatan"],
+            ans: "Menuliskan diagnosa dalam bahasa Latin agar pasien tidak panik",
+            exp: "Dokter masa kini bertugas <strong>menyederhanakan bahasa medis (jargon)</strong>, bukan mempertahankannya agar pasien tidak panik."
+        },
+        {
+            q: "Dalam rumus 'Good health design', komponen 'Clarity' berarti...",
+            opts: ["Pesan mudah dipahami dan langsung ditangkap pasien", "Memahami kondisi literasi audiens", "Mampu menggerakkan tindakan pasien", "Menggunakan gambar ilustrasi yang indah"],
+            ans: "Pesan mudah dipahami dan langsung ditangkap pasien",
+            exp: "<strong>Clarity</strong> berarti mudah dipahami, pasien langsung menangkap pesannya."
+        },
+        {
+            q: "Bagaimana komunikasi visual dapat membantu mengatasi tantangan penyebaran hoaks di bidang kesehatan?",
+            opts: ["Dengan edukasi berbasis visual yang meningkatkan pemahaman dan merebut kembali kepercayaan masyarakat", "Dengan menyebarkan balik narasi teks yang sangat panjang di grup WhatsApp", "Dengan melaporkan akun penyebar hoaks tanpa perlu membuat media tandingan", "Dengan membuat poster yang berisi ancaman pidana bagi penyebar hoaks"],
+            ans: "Dengan edukasi berbasis visual yang meningkatkan pemahaman dan merebut kembali kepercayaan masyarakat",
+            exp: "Penyebaran hoaks menimbulkan kebingungan. Edukasi berbasis visual terbukti dapat <strong>meningkatkan pemahaman dan merebut kembali kepercayaan masyarakat</strong>."
+        },
+        {
+            q: "Menurut materi, tujuan pembelajaran komunikasi visual bagi mahasiswa kedokteran tidak hanya agar mampu mengobati, tetapi juga...",
+            opts: ["Mampu merancang dan memproduksi pesan visual kesehatan yang efektif untuk mengubah perilaku masyarakat", "Mampu mendirikan fasilitas pelayanan kesehatan mandiri", "Mampu menulis jurnal internasional di bidang komunikasi medis", "Mampu memberikan obat yang lebih murah namun efektif"],
+            ans: "Mampu merancang dan memproduksi pesan visual kesehatan yang efektif untuk mengubah perilaku masyarakat",
+            exp: "Harapannya, mahasiswa tidak hanya mampu mengobati, tetapi juga <strong>mampu merancang dan memproduksi pesan visual kesehatan yang efektif untuk mengubah perilaku masyarakat</strong>."
+        },
+        {
+            q: "Proses desain yang dilakukan oleh dokter sebagai perancang pesan meliputi langkah-langkah berikut, KECUALI...",
+            opts: ["Menggunakan sebanyak mungkin istilah medis agar terlihat profesional", "Memilih informasi apa yang paling esensial", "Menyederhanakan bahasa medis (jargon)", "Menentukan media/bentuk penyampaian yang pas dan menyesuaikan target audiens"],
+            ans: "Menggunakan sebanyak mungkin istilah medis agar terlihat profesional",
+            exp: "Proses desain yang dilakukan meliputi: memilih informasi esensial, <strong>menyederhanakan bahasa medis</strong>, menentukan media, dan menyesuaikan target audiens."
+        },
+        {
+            q: "Dalam teori komunikasi Harold Lasswell, rumus dasar komunikasi diurai menjadi...",
+            opts: ["Who Says What In Which Channel To Whom With What Effect", "Who Design What In Which Tool To Whom With What Color", "Why Make What In Which Media To Whom With What Empathy", "Who Write What In Which Language To Whom With What Response"],
+            ans: "Who Says What In Which Channel To Whom With What Effect",
+            exp: "Teori komunikasi Harold Lasswell diurai menjadi: <strong>Who Says What In Which Channel To Whom With What Effect</strong>."
+        },
+        {
+            q: "Mengapa literasi kesehatan yang rendah di masyarakat membuat komunikasi visual menjadi sangat penting?",
+            opts: ["Karena masyarakat dengan literasi rendah lebih mudah memahami visual dibandingkan narasi teks panjang", "Karena gambar dan poster lebih murah diproduksi", "Karena masyarakat tidak perlu membaca lagi jika sudah ada gambar", "Karena orang dengan literasi rendah tidak bisa menggunakan smartphone"],
+            ans: "Karena masyarakat dengan literasi rendah lebih mudah memahami visual dibandingkan narasi teks panjang",
+            exp: "Literasi Rendah membuat masyarakat kesulitan mencerna informasi kompleks. <strong>Komunikasi visual terbukti lebih efektif mengatasi masalah literasi dibanding narasi teks panjang</strong>."
+        }
+    ];
+
+    const K19_ELEMEN_DESAIN_POOL = [
+        {
+            q: "Berapa jumlah maksimal warna dominan yang direkomendasikan dalam satu desain kesehatan agar pesan tetap fokus?",
+            opts: ["Tiga warna", "Dua warna", "Empat warna", "Lima warna"],
+            ans: "Tiga warna",
+            exp: "Strategi penggunaan warna adalah menggunakan <strong>maksimal tiga warna dominan</strong> agar pesan tetap fokus dan tidak berlebihan."
+        },
+        {
+            q: "Paduan warna yang letaknya berseberangan di roda warna (misal: kuning dan ungu) dan berguna untuk menonjolkan Call to Action disebut...",
+            opts: ["Warna Kontras (Complementary)", "Warna Laras (Analogous)", "Warna Triadic", "Warna Monokromatik"],
+            ans: "Warna Kontras (Complementary)",
+            exp: "<strong>Warna Kontras (Complementary)</strong> sangat berguna untuk menonjolkan elemen tertentu seperti tombol/Call to Action."
+        },
+        {
+            q: "Paduan warna-warna yang berdekatan pada roda warna yang menciptakan nuansa harmonis dan menyatu disebut...",
+            opts: ["Warna Laras (Analogous/Monokromatik)", "Warna Kontras (Complementary)", "Warna Triadic", "Warna Komplementer Ganda"],
+            ans: "Warna Laras (Analogous/Monokromatik)",
+            exp: "<strong>Warna Laras (Analogous/Monokromatik)</strong> adalah paduan warna-warna yang berdekatan pada roda warna."
+        },
+        {
+            q: "Jenis font apa yang paling cocok digunakan untuk penjelasan panjang (Body Text)?",
+            opts: ["Sans-Serif", "Serif", "Decorative font", "Script font"],
+            ans: "Sans-Serif",
+            exp: "Untuk Text Type / Body Text, biasanya menggunakan font <strong>Sans-Serif</strong> (huruf tanpa kait) yang sederhana dan akrab di mata pembaca."
+        },
+        {
+            q: "Mengapa penggunaan font bergaya rumit (decorative font) sangat tidak disarankan dalam media edukasi kesehatan?",
+            opts: ["Karena sangat menurunkan keterbacaan (readability)", "Karena ukurannya selalu terlalu kecil", "Karena tidak mendukung warna kontras", "Karena harganya mahal"],
+            ans: "Karena sangat menurunkan keterbacaan (readability)",
+            exp: "Hindari penggunaan <strong>decorative font</strong> karena sangat menurunkan keterbacaan."
+        },
+        {
+            q: "Untuk menggambarkan konsep yang abstrak atau metaforis dalam media edukasi kesehatan, jenis gambar yang paling tepat digunakan adalah...",
+            opts: ["Ilustrasi", "Foto realistis", "Ikon", "Teks naratif"],
+            ans: "Ilustrasi",
+            exp: "<strong>Ilustrasi</strong> digunakan untuk menggambarkan konsep yang abstrak atau metaforis."
+        },
+        {
+            q: "Dalam psikologi warna untuk desain kesehatan, warna apa yang identik dengan kesan ketenangan dan kepercayaan?",
+            opts: ["Biru", "Merah", "Kuning", "Hijau"],
+            ans: "Biru",
+            exp: "Efek psikologis warna: Merah (bahaya), Hijau (kesehatan/alami), <strong>Biru (ketenangan/kepercayaan)</strong>."
+        },
+        {
+            q: "Kombinasi tiga warna yang membentuk segitiga sama sisi pada roda warna disebut harmoni warna...",
+            opts: ["Triadic", "Laras (Analogous)", "Kontras (Complementary)", "Monokromatik"],
+            ans: "Triadic",
+            exp: "<strong>Warna Triadic</strong> adalah kombinasi tiga warna yang membentuk segitiga sama sisi pada roda warna."
+        },
+        {
+            q: "Untuk judul (Headline) atau slogan dalam media visual, font jenis apa yang dapat digunakan untuk menarik perhatian?",
+            opts: ["Display Type (seperti Serif) atau font unik yang tetap terbaca", "Text Type (Sans-Serif) berukuran sangat kecil", "Decorative Font yang rumit seperti logo band metal", "Font yang sama persis dengan Body Text"],
+            ans: "Display Type (seperti Serif) atau font unik yang tetap terbaca",
+            exp: "<strong>Display Type</strong> digunakan untuk judul. Bisa menggunakan font <em>Serif</em> atau font unik, asalkan tetap terbaca."
+        },
+        {
+            q: "Elemen gambar yang berfungsi memberikan kesan nyata, realistis, dan memunculkan empati dari audiens adalah...",
+            opts: ["Foto", "Ilustrasi", "Ikon", "Visualisasi Data"],
+            ans: "Foto",
+            exp: "<strong>Foto</strong> memberikan kesan nyata, realistis, dan berempati."
+        },
+        {
+            q: "Apa fungsi utama penggunaan 'Ikon' dalam desain komunikasi visual?",
+            opts: ["Menyederhanakan informasi agar otak memproses lebih cepat", "Memberikan kesan realistis dan nyata", "Menggambarkan konsep abstrak", "Menampilkan data statistik kematian"],
+            ans: "Menyederhanakan informasi agar otak memproses lebih cepat",
+            exp: "<strong>Ikon</strong> berfungsi menyederhanakan informasi agar otak memproses lebih cepat."
+        },
+        {
+            q: "Sebuah media visual dalam DKV dibangun oleh tiga elemen utama, yaitu...",
+            opts: ["Warna, Tipografi, dan Gambar", "Teks, Tabel, dan Grafik", "Suara, Video, dan Animasi", "Layout, Grid, dan Alignment"],
+            ans: "Warna, Tipografi, dan Gambar",
+            exp: "Sebuah media visual dibangun oleh beberapa elemen utama: <strong>Warna, Tipografi, dan Gambar</strong>."
+        },
+        {
+            q: "Dalam efek psikologis warna, warna apa yang sering digunakan untuk menyampaikan pesan peringatan atau bahaya?",
+            opts: ["Merah", "Hijau", "Biru", "Kuning"],
+            ans: "Merah",
+            exp: "Warna memiliki efek psikologis: <strong>Merah (bahaya/peringatan)</strong>, Hijau (kesehatan/alami), Biru (ketenangan)."
+        },
+        {
+            q: "Dalam efek psikologis warna, warna apa yang sering digunakan untuk memberikan kesan alami atau berkaitan dengan kesehatan?",
+            opts: ["Hijau", "Merah", "Hitam", "Ungu"],
+            ans: "Hijau",
+            exp: "Warna memiliki efek psikologis: Merah (bahaya), <strong>Hijau (kesehatan/alami)</strong>."
+        },
+        {
+            q: "Salah satu prinsip penting dalam penggunaan tipografi untuk menjaga Readability (Keterbacaan) adalah...",
+            opts: ["Memastikan ada kontras tinggi antara warna teks dan warna latar belakang", "Menggunakan huruf dengan ukuran sekecil mungkin agar hemat tempat", "Menggunakan font dekoratif agar terlihat artistik", "Menebalkan seluruh teks dari awal hingga akhir"],
+            ans: "Memastikan ada kontras tinggi antara warna teks dan warna latar belakang",
+            exp: "Prinsip tipografi: Pastikan ada <strong>kontras tinggi</strong> antara warna teks dan warna latar belakang (misal: teks hitam di atas latar putih)."
+        }
+    ];
+
+    const K19_PRINSIP_PRAKTIK_POOL = [
+        {
+            q: "Prinsip yang mengarahkan mata pembaca dengan membuat pesan utama lebih besar dan menonjol dibandingkan informasi tambahan disebut...",
+            opts: ["Visual Hierarchy", "Simplicity", "Alignment", "Balance"],
+            ans: "Visual Hierarchy",
+            exp: "<strong>Visual Hierarchy (Hirarki Visual)</strong> mengarahkan mata pembaca dengan membuat pesan utama (Judul/Headline) paling besar dan menonjol."
+        },
+        {
+            q: "Apa manfaat utama penggunaan garis imajiner (grid) atau prinsip Alignment dalam mendesain poster medis?",
+            opts: ["Menciptakan tampilan yang rapi, terstruktur, dan profesional", "Membuat pesan menjadi lebih menakutkan", "Menghemat tinta saat dicetak", "Menambah jumlah warna dalam desain"],
+            ans: "Menciptakan tampilan yang rapi, terstruktur, dan profesional",
+            exp: "<strong>Alignment</strong> memastikan obyek dan teks diletakkan dengan garis imajiner agar sejajar, menciptakan tampilan yang rapi, terstruktur, dan profesional."
+        },
+        {
+            q: "Di bawah ini yang BUKAN merupakan best practice dalam pembuatan poster edukasi medis adalah...",
+            opts: ["Memuat teks panjang seperti memindahkan isi buku teks ke dalam poster", "Menggunakan maksimal tiga warna dominan", "Menyertakan Call to Action (CTA) yang tegas", "Membuat kontras yang tinggi antara teks dan warna latar"],
+            ans: "Memuat teks panjang seperti memindahkan isi buku teks ke dalam poster",
+            exp: "Salah satu kesalahan (DON'T) adalah <strong>memuat teks seperti buku teks ke dalam poster</strong>."
+        },
+        {
+            q: "Menurut materi, tantangan utama dalam menggunakan TikTok untuk edukasi kesehatan adalah...",
+            opts: ["Menjaga akurasi medis di tengah tren hiburan", "Sulitnya mencari font yang tepat", "Hanya bisa menggunakan teks tanpa gambar", "Algoritma yang tidak mendukung akun dokter"],
+            ans: "Menjaga akurasi medis di tengah tren hiburan",
+            exp: "Tantangan di TikTok adalah <strong>menjaga akurasi medis di tengah tren hiburan</strong>."
+        },
+        {
+            q: "Apa fungsi utama 'Call to Action (CTA)' dalam sebuah poster kesehatan?",
+            opts: ["Memberikan arahan tegas tentang tindakan yang harus dilakukan pasien", "Meningkatkan nilai estetika desain", "Memperbanyak jumlah teks agar terlihat ilmiah", "Menutupi ruang kosong pada layout"],
+            ans: "Memberikan arahan tegas tentang tindakan yang harus dilakukan pasien",
+            exp: "<strong>Call to Action (CTA)</strong> yang tegas (misal: 'STOP MEROKOK!') berfungsi menggerakkan perilaku pasien menuju perubahan."
+        },
+        {
+            q: "Menurut prinsip 'Simplicity' dalam desain, apa pendekatan yang paling disarankan?",
+            opts: ["Less text, more impact", "More colors, more attention", "Complex layout, high intelligence", "More text, clear explanation"],
+            ans: "Less text, more impact",
+            exp: "Kesederhanaan (Simplicity) menerapkan prinsip <strong>Less text, more impact</strong>. Jangan menjejalkan terlalu banyak teks."
+        },
+        {
+            q: "Bagaimana cara paling efektif menyajikan data kematian akibat penyakit (statistik) untuk audiens awam?",
+            opts: ["Mengubahnya menjadi infografis atau diagram visual", "Menuliskan tabel angka yang mendetail", "Memasukkan jurnal medis asli", "Menggunakan ukuran font sekecil mungkin agar muat"],
+            ans: "Mengubahnya menjadi infografis atau diagram visual",
+            exp: "Visualisasi Data: Ubah data kompleks/statistik menjadi <strong>infografis atau diagram visual</strong> agar jauh lebih menarik dan mudah diproses."
+        },
+        {
+            q: "Alat (tools) gratis yang sangat populer untuk membuat desain grafis, poster, dan infografis secara drag-and-drop adalah...",
+            opts: ["Canva", "Pexels", "CapCut", "Microsoft Excel"],
+            ans: "Canva",
+            exp: "<strong>Canva</strong> digunakan untuk desain grafis, poster, dan infografis secara *drag-and-drop*. (Pexels untuk gambar, CapCut untuk video)."
+        },
+        {
+            q: "Prinsip desain yang berfungsi memberikan stabilitas pada mata saat melihat desain, sementara elemen yang lainnya digunakan untuk 'memukul' mata ke poin krusial adalah...",
+            opts: ["Balance & Contrast", "Simplicity & Alignment", "Visual Hierarchy & Simplicity", "Grid & Alignment"],
+            ans: "Balance & Contrast",
+            exp: "<strong>Balance (Keseimbangan)</strong> memberikan stabilitas mata, sementara <strong>Contrast (Kontras)</strong> digunakan untuk 'memukul' mata audiens ke poin paling krusial."
+        },
+        {
+            q: "Berapa banyak pesan utama yang idealnya dimuat dalam satu desain media edukasi kesehatan?",
+            opts: ["Hanya satu pesan utama per desain", "Sebanyak mungkin agar informasi lengkap", "Tiga pesan utama yang berbeda", "Minimal lima pesan agar setara dengan buku teks"],
+            ans: "Hanya satu pesan utama per desain",
+            exp: "Media kesehatan harus mengandung <strong>hanya satu pesan utama per desain</strong>."
+        },
+        {
+            q: "Platform media mana yang dinilai sangat kuat dalam memviralkan informasi grafis dan foto?",
+            opts: ["Instagram", "Poster Klinik / Cetak", "TikTok", "Brosur Hitam Putih"],
+            ans: "Instagram",
+            exp: "<strong>Instagram (Infografis)</strong> dinilai sangat kuat dalam memviralkan informasi grafis dan foto."
+        },
+        {
+            q: "Karakteristik yang tepat untuk media 'Poster Klinik / Cetak' adalah...",
+            opts: ["Baik untuk informasi ringkas saat pasien menunggu", "Cocok untuk video hiburan singkat berdurasi 15 detik", "Ideal untuk memuat keseluruhan bab dari buku teks medis", "Harus mengandung lebih dari 5 pesan utama"],
+            ans: "Baik untuk informasi ringkas saat pasien menunggu",
+            exp: "<strong>Poster Klinik / Cetak</strong> baik untuk informasi ringkas saat pasien menunggu (hindari teks berlebihan yang membuat bosan)."
+        },
+        {
+            q: "Jika Anda ingin mencari stock image dan ilustrasi bebas lisensi untuk desain, situs manakah yang direkomendasikan?",
+            opts: ["Pexels & Freepik", "Canva & CapCut", "InShot & TikTok", "Microsoft Word & Excel"],
+            ans: "Pexels & Freepik",
+            exp: "<strong>Pexels & Freepik</strong> adalah penyedia *stock image* dan ilustrasi bebas lisensi."
+        },
+        {
+            q: "Tindakan mana yang direkomendasikan (DO) dalam pembuatan media edukasi kesehatan praktis?",
+            opts: ["Gunakan bahasa awam, elemen visual dominan, dan Call to Action lugas", "Gunakan dekorasi berlebihan dan font metal", "Buat warna latar yang bertabrakan dengan teks agar menarik perhatian", "Tidak perlu menyertakan Call to Action agar terkesan netral"],
+            ans: "Gunakan bahasa awam, elemen visual dominan, dan Call to Action lugas",
+            exp: "Tips Praktis (DO): Gunakan bahasa awam, pakai elemen visual yang dominan, buat Call to Action yang lugas."
+        },
+        {
+            q: "Mengapa platform TikTok dinilai sangat efektif untuk menyebarkan pesan kesehatan saat ini?",
+            opts: ["Karena otak memproses visual bergerak lebih intens dan durasinya singkat serta menghibur", "Karena tidak ada batasan jumlah teks yang bisa ditulis di TikTok", "Karena hanya dokter yang diizinkan mengunggah video kesehatan di TikTok", "Karena format video TikTok sangat panjang dan detail menyerupai perkuliahan"],
+            ans: "Karena otak memproses visual bergerak lebih intens dan durasinya singkat serta menghibur",
+            exp: "TikTok mendominasi karena berdurasi singkat, menghibur, dan <strong>otak memproses visual bergerak lebih intens</strong>."
+        },
+        {
+            q: "Aplikasi apa yang direkomendasikan untuk memotong dan mengedit video edukasi kesehatan yang singkat untuk Reels atau TikTok?",
+            opts: ["CapCut & InShot", "Canva & Pexels", "Microsoft Word & Excel", "Freepik & Shutterstock"],
+            ans: "CapCut & InShot",
+            exp: "<strong>CapCut & InShot</strong> digunakan untuk memotong dan mengedit video edukasi singkat (Reels/TikTok)."
+        },
+        {
+            q: "Salah satu kesalahan teknis (DON'T) yang sering membuat poster medis tidak nyaman dibaca adalah...",
+            opts: ["Membiarkan visual berantakan tanpa alignment dan warna latar bertabrakan dengan teks", "Menggunakan bahasa awam yang terlalu sederhana", "Menambahkan Call to Action yang terlalu jelas", "Hanya menggunakan satu gambar utama saja"],
+            ans: "Membiarkan visual berantakan tanpa alignment dan warna latar bertabrakan dengan teks",
+            exp: "DON'T: memuat teks seperti buku teks, <strong>membiarkan visual berantakan tanpa alignment, warna latar yang bertabrakan dengan warna teks</strong>."
+        },
+        {
+            q: "Kesimpulan utama dari materi DKV Kesehatan bagi seorang dokter adalah...",
+            opts: ["Dokter harus menguasai DKV agar media edukasi yang dibuat mampu mengubah perilaku masyarakat ke arah lebih sehat", "Dokter harus berhenti mendiagnosis dan beralih profesi menjadi desainer grafis penuh waktu", "Dokter hanya perlu memahami warna, tanpa perlu memikirkan isi pesan medis", "Dokter harus mempekerjakan tim desain khusus untuk setiap pasien"],
+            ans: "Dokter harus menguasai DKV agar media edukasi yang dibuat mampu mengubah perilaku masyarakat ke arah lebih sehat",
+            exp: "Kesimpulan: Dengan menguasai prinsip DKV, dokter dapat menciptakan media edukasi kesehatan yang <strong>benar-benar mampu mengubah perilaku masyarakat ke arah yang lebih sehat</strong>."
+        }
+    ];
+
+    const pickK19Teori = makePicker(K19_TEORI_KOMUNIKASI_POOL);
+    const pickK19Elemen = makePicker(K19_ELEMEN_DESAIN_POOL);
+    const pickK19Prinsip = makePicker(K19_PRINSIP_PRAKTIK_POOL);
+
+    function genK19EvaluasiDesainQ() {
+        const bgColors = [
+            {name: 'Hitam', isDark: true},
+            {name: 'Putih', isDark: false},
+            {name: 'Biru Tua', isDark: true},
+            {name: 'Kuning Terang', isDark: false}
+        ];
+        const textColors = [
+            {name: 'Putih', isDark: false},
+            {name: 'Hitam', isDark: true},
+            {name: 'Kuning', isDark: false},
+            {name: 'Biru Dongker', isDark: true}
+        ];
+        const fontTypes = ['Sans-Serif', 'Decorative Font', 'Serif'];
+        
+        const bg = rnd(bgColors);
+        const tc = rnd(textColors);
+        const font = rnd(fontTypes);
+        const colorCount = Math.floor(Math.random() * 5) + 2; 
+        
+        let faults = [];
+        if(bg.isDark === tc.isDark) faults.push('Kontras warna latar dan teks buruk');
+        if(font === 'Decorative Font') faults.push('Penggunaan Decorative Font menurunkan keterbacaan');
+        if(colorCount > 3) faults.push('Terlalu banyak warna dominan (lebih dari 3)');
+        
+        let ans, exp;
+        if(faults.length === 0) {
+            ans = 'Desain sudah memenuhi prinsip DKV kesehatan yang baik';
+            exp = 'Desain tersebut <strong>baik</strong> karena memiliki kontras teks yang terbaca, tidak menggunakan font dekoratif, dan warna tidak melebihi batas 3 warna dominan.';
+        } else {
+            ans = 'Desain melanggar prinsip DKV dan kurang efektif';
+            let strFaults = faults.map(f => `<li>${f}</li>`).join('');
+            exp = `Desain <strong>melanggar prinsip</strong> karena: <ul style="margin-top:4px;padding-left:20px">${strFaults}</ul>`;
+        }
+        
+        return {
+            type: 'k19_evaluasi',
+            typeName: 'Evaluasi Kasus Desain',
+            tpColor: 'var(--red)',
+            tpBg: 'rgba(176, 48, 48, 0.09)',
+            rawData: `<div>Latar Belakang: <span class="dv">${bg.name}</span><br>Warna Teks: <span class="dv">${tc.name}</span><br>Font Judul: <span class="dv">${font}</span><br>Jumlah Warna Dominan: <span class="dv">${colorCount} warna</span></div>`,
+            q: `Seorang dokter membuat infografis dengan spesifikasi layout di atas. Bagaimana evaluasi kesesuaiannya dengan prinsip DKV kesehatan?`,
+            opts: shuf(['Desain sudah memenuhi prinsip DKV kesehatan yang baik', 'Desain melanggar prinsip DKV dan kurang efektif', 'Desain sempurna tanpa perlu revisi', 'Desain terlalu sederhana dan membosankan']),
+            ans: ans,
+            exp: exp,
+            scenario: null
+        };
+    }
+
+    function genK19HarmoniWarnaQ() {
+        const cases = [
+            {
+                bg: "Biru", accent: "Oranye",
+                ans: "Kontras (Complementary)",
+                exp: "Biru dan Oranye terletak berseberangan di roda warna, sehingga membentuk harmoni <strong>Kontras (Complementary)</strong>."
+            },
+            {
+                bg: "Kuning", accent: "Ungu",
+                ans: "Kontras (Complementary)",
+                exp: "Kuning dan Ungu terletak berseberangan di roda warna, sehingga membentuk harmoni <strong>Kontras (Complementary)</strong>."
+            },
+            {
+                bg: "Merah", accent: "Hijau",
+                ans: "Kontras (Complementary)",
+                exp: "Merah dan Hijau terletak berseberangan di roda warna, sehingga membentuk harmoni <strong>Kontras (Complementary)</strong>."
+            },
+            {
+                bg: "Hijau Muda", accent: "Hijau Tua",
+                ans: "Laras (Analogous / Monokromatik)",
+                exp: "Paduan nuansa hijau berdekatan di roda warna, membentuk harmoni <strong>Laras (Monokromatik/Analogous)</strong>."
+            },
+            {
+                bg: "Biru", accent: "Biru Langit",
+                ans: "Laras (Analogous / Monokromatik)",
+                exp: "Paduan nuansa biru berdekatan di roda warna, membentuk harmoni <strong>Laras (Monokromatik/Analogous)</strong>."
+            }
+        ];
+        
+        const c = rnd(cases);
+        
+        return {
+            type: 'k19_harmoni',
+            typeName: 'Analisis Harmoni Warna',
+            tpColor: 'var(--orange)',
+            tpBg: 'rgba(255, 165, 0, 0.09)',
+            rawData: `<div>Warna Dominan: <span class="dv">${c.bg}</span><br>Warna Aksen: <span class="dv">${c.accent}</span></div>`,
+            q: `Pada desain edukasi kesehatan dengan kombinasi warna di atas, jenis harmoni warna apa yang diterapkan?`,
+            opts: shuf(['Kontras (Complementary)', 'Laras (Analogous / Monokromatik)', 'Triadic', 'Komplementer Ganda (Tetradic)']),
+            ans: c.ans,
+            exp: c.exp,
+            scenario: null
+        };
+    }
+
+    return function(type) {
+        if(type === 'k19') {
+            const r = Math.random();
+            if(r < 0.25) return {...pickK19Teori(), type: 'k19_teori', typeName: 'Teori Komunikasi', tpColor: 'var(--blue)', scenario: null, rawData: null};
+            if(r < 0.50) return {...pickK19Elemen(), type: 'k19_elemen', typeName: 'Elemen DKV', tpColor: 'var(--green)', scenario: null, rawData: null};
+            if(r < 0.75) return {...pickK19Prinsip(), type: 'k19_prinsip', typeName: 'Prinsip & Layout', tpColor: 'var(--purp)', scenario: null, rawData: null};
+            if(r < 0.875) return genK19EvaluasiDesainQ();
+            return genK19HarmoniWarnaQ();
+        }
+        return null;
+    }
+})();
+
+// ═══ DISPATCHER ═══
+function makeQ(type){
+  return makeQ_K19(type);
+}
+
+// ═══ SESSION ═══
+let typeQueue=[],sessIdx=0,sessScore=0,sessLog=[],currentQ=null;
+function nextType(){if(!typeQueue.length){const t=[...activeTypes];for(let i=t.length-1;i>0;i--){const j=0|Math.random()*(i+1);[t[i],t[j]]=[t[j],t[i]];}typeQueue=[...t];}return typeQueue.shift();}
+function startSession(){
+  sessIdx=0;sessScore=0;sessLog=[];typeQueue=[];
+  document.getElementById('qconfig').style.display='none';
+  document.getElementById('qresults').style.display='none';
+  document.getElementById('qactive').style.display='block';
+  renderQ();
+}
+function renderQ(){
+  const q=makeQ(nextType());currentQ=q;
+  document.getElementById('qnum').textContent=sessIdx+1;
+  document.getElementById('qscore').textContent=sessScore;
+  const pill=document.getElementById('qpill');
+  pill.textContent=q.typeName;pill.style.background=q.tpBg;pill.style.color=q.tpColor;pill.style.border=`1px solid ${q.tpColor}44`;
+  const scen=document.getElementById('qscen');
+  if(q.scenario){scen.innerHTML=`<strong>Kasus:</strong> ${q.scenario}`;scen.style.display='block';}else scen.style.display='none';
+  const db=document.getElementById('qdata');
+  if(q.rawData){db.innerHTML=q.rawData;db.style.display='block';}else db.style.display='none';
+  document.getElementById('qtext').innerHTML=q.q;
+  const og=document.getElementById('opts');og.innerHTML='';
+  q.opts.forEach((opt,i)=>{
+    const btn=document.createElement('button');btn.className='opt';
+    btn.innerHTML=`<span class="opt-key">${KEYS[i]}</span><span>${opt}</span>`;
+    btn.onclick=()=>selectAns(opt,q,btn);og.appendChild(btn);
+  });
+  const ebox=document.getElementById('expbox');ebox.classList.remove('show');ebox.style.display='none';
+  document.getElementById('nextbtn').style.display='none';
+}
+function selectAns(chosen,q,clickedBtn){
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  const correct=stripHtml(chosen)===stripHtml(q.ans);
+  if(correct)sessScore++;
+  document.querySelectorAll('.opt').forEach(b=>{
+    const label=b.querySelector('span:last-child').innerHTML;
+    if(stripHtml(label)===stripHtml(q.ans)){
+      if(b===clickedBtn&&correct)b.classList.add('correct');
+      else if(b!==clickedBtn)b.classList.add('reveal');
+      else b.classList.add('correct');
+    }
+    if(b===clickedBtn&&!correct)b.classList.add('wrong');
+  });
+  const ebox=document.getElementById('expbox');
+  ebox.innerHTML=`<div style="margin-bottom:7px;font-weight:700;color:${correct?'var(--blue)':'var(--red)'}">${correct?'✅ Benar!':'❌ Kurang tepat.'} Jawaban: <strong>${q.ans}</strong></div>${q.exp}`;
+  ebox.style.display='block';setTimeout(()=>ebox.classList.add('show'),10);
+  sessLog.push({idx:sessIdx+1,type:q.typeName,q:q.q.replace(/<[^>]+>/g,'').slice(0,55)+'…',ans:q.ans,correct});
+  document.getElementById('qscore').textContent=sessScore;
+  document.getElementById('nextbtn').style.display='inline-block';
+}
+function nextQ(){sessIdx++;document.getElementById('expbox').style.display='none';document.getElementById('expbox').classList.remove('show');renderQ();}
+function endSession(){
+  document.getElementById('qactive').style.display='none';document.getElementById('qresults').style.display='block';
+  const total=sessLog.length;if(!total){restartQuiz();return;}
+  const pct=Math.round((sessScore/total)*100);
+  document.getElementById('res-pct').textContent=pct+'%';
+  document.getElementById('res-sub').textContent=`${sessScore} / ${total} soal benar`;
+  const byType={};
+  sessLog.forEach(l=>{if(!byType[l.type])byType[l.type]={total:0,correct:0};byType[l.type].total++;if(l.correct)byType[l.type].correct++;});
+  const rg=document.getElementById('res-grid');rg.innerHTML='';
+  const medal=pct>=80?'🏆':pct>=60?'👍':'📚';
+  [{v:medal,l:'Nilai'},{v:pct+'%',l:'Persentase'},{v:sessScore+'',l:'Benar'},{v:(total-sessScore)+'',l:'Salah'},{v:total+'',l:'Total'}].forEach(s=>{
+    const d=document.createElement('div');d.className='res-stat';
+    d.innerHTML=`<div class="rv">${s.v}</div><div class="rl">${s.l}</div>`;rg.appendChild(d);
+  });
+  document.getElementById('res-bytype').innerHTML=Object.entries(byType).map(([t,v])=>{
+    const p=Math.round((v.correct/v.total)*100);const c=p>=80?'var(--blue)':p>=60?'var(--gold)':'var(--red)';
+    return`<tr><td>${t}</td><td>${v.total}</td><td style="color:${c};font-weight:700">${v.correct} (${p}%)</td></tr>`;
+  }).join('');
+  document.getElementById('res-tbody').innerHTML=sessLog.map(l=>`<tr><td>${l.idx}</td><td>${l.q}</td><td>${l.ans}</td><td style="color:${l.correct?'var(--green)':'var(--red)'}">${l.correct?'✅':'❌'}</td></tr>`).join('');
+}
+function restartQuiz(){typeQueue=[];document.getElementById('qresults').style.display='none';document.getElementById('qconfig').style.display='block';}
+
+function downloadCert(){
+  const total=sessLog.length;
+  const pct=Math.round((sessScore/total)*100);
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+  const medal=pct>=80?'LULUS':pct>=60?'CUKUP':'PERLU BELAJAR LAGI';
+  const medalColor=pct>=80?'#1f7a4a':pct>=60?'#7a6010':'#b03030';
+  const byType={};
+  sessLog.forEach(l=>{if(!byType[l.type])byType[l.type]={total:0,correct:0};byType[l.type].total++;if(l.correct)byType[l.type].correct++;});
+  const rows=Object.entries(byType).map(([t,v])=>{
+    const p=Math.round(v.correct/v.total*100);
+    const bar=Math.round(p*1.4);
+    const bc=p>=80?'#1f7a4a':p>=60?'#7a6010':'#b03030';
+    return`<tr><td style="padding:5px 8px;font-size:11px;color:#384068;width:200px">${t}</td><td style="padding:5px 8px"><div style="background:#e7e7e2;border-radius:4px;height:10px;width:140px"><div style="background:${bc};width:${bar}px;height:10px;border-radius:4px"></div></div></td><td style="padding:5px 8px;font-size:11px;font-weight:700;color:${bc}">${v.correct}/${v.total} (${p}%)</td></tr>`;
+  }).join('');
+
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="680" height="520" font-family="Georgia,serif">
+  <defs>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <path d="M 28 0 L 0 0 0 28" fill="none" stroke="#e0ddd5" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+  <rect width="680" height="520" fill="#fdfdf9"/>
+  <rect width="680" height="520" fill="url(#grid)"/>
+  <rect x="20" y="20" width="640" height="480" rx="12" fill="none" stroke="#1a4faa" stroke-width="2"/>
+  <rect x="26" y="26" width="628" height="468" rx="9" fill="none" stroke="#1a4faa" stroke-width="0.5" opacity="0.4"/>
+
+  <text x="340" y="66" text-anchor="middle" font-size="11" letter-spacing="4" fill="#7c85a8" font-family="Georgia,serif">SERTIFIKAT PENYELESAIAN KUIS</text>
+  <line x1="120" y1="74" x2="260" y2="74" stroke="#1a4faa" stroke-width="0.8"/>
+  <circle cx="340" cy="74" r="3" fill="#1a4faa"/>
+  <line x1="420" y1="74" x2="560" y2="74" stroke="#1a4faa" stroke-width="0.8"/>
+
+  <text x="340" y="116" text-anchor="middle" font-size="34" font-weight="bold" fill="#161b2e" font-family="Georgia,serif">Am I Visual?</text>
+  <text x="340" y="138" text-anchor="middle" font-size="11" fill="#7c85a8" letter-spacing="2" font-family="Georgia,serif">KOMUNIKASI VISUAL · PK BLOK 2.4 · FK UNSOED</text>
+
+  <line x1="100" y1="152" x2="580" y2="152" stroke="#e0ddd5" stroke-width="1"/>
+
+  <text x="340" y="185" text-anchor="middle" font-size="13" fill="#384068" font-family="Georgia,serif">Telah menyelesaikan sesi quiz dengan hasil</text>
+
+  <rect x="230" y="196" width="220" height="80" rx="8" fill="none" stroke="${medalColor}" stroke-width="1.5"/>
+  <text x="340" y="245" text-anchor="middle" font-size="52" font-weight="bold" fill="${medalColor}" font-family="Georgia,serif">${pct}%</text>
+  <text x="340" y="265" text-anchor="middle" font-size="10" fill="${medalColor}" letter-spacing="3" font-family="Georgia,serif">${medal}</text>
+
+  <text x="340" y="300" text-anchor="middle" font-size="12" fill="#384068" font-family="Georgia,serif">${sessScore} soal benar dari ${total} soal · ${dateStr}</text>
+
+  <line x1="100" y1="314" x2="580" y2="314" stroke="#e0ddd5" stroke-width="1"/>
+  <text x="340" y="332" text-anchor="middle" font-size="10" fill="#7c85a8" letter-spacing="2" font-family="Georgia,serif">DISTRIBUSI SKOR PER TOPIK</text>
+
+  <foreignObject x="80" y="340" width="520" height="120">
+    <div xmlns="http://www.w3.org/1999/xhtml">
+      <table style="width:100%;border-collapse:collapse">${rows}</table>
+    </div>
+  </foreignObject>
+
+  <line x1="100" y1="472" x2="580" y2="472" stroke="#e0ddd5" stroke-width="1"/>
+  <text x="340" y="490" text-anchor="middle" font-size="10" fill="#7c85a8" font-family="Georgia,serif">174 Archive · 174-three.vercel.app</text>
+</svg>`;
+
+  const blob=new Blob([svg],{type:'image/svg+xml'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`am-i-visual-${pct}pct.svg`;
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+window.downloadCert=downloadCert;
+</script>
+</body>
+</html>

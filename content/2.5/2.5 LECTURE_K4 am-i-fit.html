@@ -1,0 +1,2112 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Am I Fit? — Quiz Blok 2.5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f8f8f5;--bg2:#f1f1ed;--bg3:#e7e7e2;--bg4:#dcdcd6;
+  --border:rgba(40,55,110,.10);--border2:rgba(40,55,110,.20);
+  --text:#161b2e;--text2:#384068;--text3:#7c85a8;
+  --green:#1f7a4a;--greenbg:rgba(31,122,74,.09);--greenb:rgba(31,122,74,.25);
+  --gold:#7a6010;--goldbg:rgba(122,96,16,.09);--goldb:rgba(122,96,16,.28);
+  --red:#b03030;--redbg:rgba(176,48,48,.08);--redb:rgba(176,48,48,.25);
+  --blue:#1a4faa;--bluebg:rgba(26,79,170,.09);--blueb:rgba(26,79,170,.28);
+  --purp:#4433a0;--purpbg:rgba(68,51,160,.08);--purpb:rgba(68,51,160,.25);
+  --teal:#136ba8;--tealbg:rgba(19,107,168,.08);--tealb:rgba(19,107,168,.25);
+  --r:10px;--rl:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.6;min-height:100vh}
+.app{max-width:900px;margin:0 auto;padding:0 16px 60px}
+header{padding:40px 0 28px;text-align:center}
+.eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--text3);text-transform:uppercase;margin-bottom:10px}
+h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(30px,6vw,54px);letter-spacing:-.03em;line-height:1;margin-bottom:10px}
+h1 span{color:var(--red)}
+.sub{font-size:13px;color:var(--text2);max-width:500px;margin:0 auto}
+.main-tabs{display:flex;gap:3px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:24px}
+.main-tab{flex:1;padding:9px 6px;border-radius:9px;border:none;background:transparent;color:var(--text3);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .18s}
+.main-tab:hover{color:var(--text)}
+.main-tab.active{background:var(--gold);color:#fff;font-weight:600}
+.main-panel{display:none}
+.main-panel.active{display:block;animation:fi .2s ease}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.sub-tabs{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:4px;margin-bottom:20px}
+.sub-tab{padding:8px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text3);font-family:'DM Mono',monospace;font-size:10.5px;cursor:pointer;transition:all .18s;text-align:center;line-height:1.4}
+.sub-tab:hover{background:var(--bg3);color:var(--text2);border-color:var(--border2)}
+.sub-tab.active{background:var(--gold);color:#fff;border-color:var(--text);font-weight:600}
+.sub-panel{display:none}
+.sub-panel.active{display:block;animation:fi .18s ease}
+.sec-h{font-family:'Syne',sans-serif;font-weight:700;font-size:14.5px;color:var(--text);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.divider{height:1px;background:var(--border);margin:20px 0}
+.note{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:0 var(--r) var(--r) 0;padding:10px 14px;font-size:12.5px;color:var(--text2);line-height:1.65;margin-bottom:10px}
+.note strong{color:var(--text)}
+.note.blue{border-left-color:var(--blue)}
+.note.green{border-left-color:var(--green)}
+.note.red{border-left-color:var(--red)}
+.note.purp{border-left-color:var(--purp)}
+.note.teal{border-left-color:var(--teal)}
+.dtable-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:14px}
+.dtable-wrap table{width:100%;border-collapse:collapse;font-size:12px}
+.dtable-wrap thead tr{background:var(--bg3)}
+.dtable-wrap th{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.05em;color:var(--text3);font-weight:600;padding:8px 12px;text-align:left;border-bottom:1px solid var(--border)}
+.dtable-wrap td{padding:7px 12px;border-bottom:1px solid var(--border);font-family:'DM Mono',monospace;font-size:11px;color:var(--text2)}
+.dtable-wrap td:first-child{color:var(--text);font-weight:600}
+.dtable-wrap tr:last-child td{border-bottom:none}
+.dtable-wrap tr:nth-child(even){background:rgba(40,55,110,.02)}
+.formula{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;font-family:'DM Mono',monospace;font-size:12px;color:var(--text);margin:8px 0;line-height:1.8}
+.formula .fkey{color:var(--text3);margin-right:6px}
+.ind-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:4px}
+.ind-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;position:relative;overflow:hidden}
+.ind-card .stripe{position:absolute;top:0;left:0;width:3px;height:100%}
+.ind-card .ind-name{font-family:'Syne',sans-serif;font-size:12.5px;font-weight:700;margin-bottom:6px}
+.ind-card .ind-desc{font-size:12px;color:var(--text2);margin-bottom:8px;line-height:1.6}
+.ind-table{width:100%;border-collapse:collapse}
+.ind-table td{font-family:'DM Mono',monospace;font-size:10.5px;padding:3px 0;border-bottom:1px solid var(--border)}
+.ind-table tr:last-child td{border-bottom:none}
+.ind-table td:first-child{color:var(--text3);width:120px}
+.ind-table td:last-child{font-weight:600;color:var(--text)}
+/* QUIZ */
+.qconfig{text-align:center;padding:28px 0}
+.qconfig-title{font-family:'Syne',sans-serif;font-weight:700;font-size:18px;margin-bottom:6px}
+.qconfig-sub{font-size:13px;color:var(--text2);margin-bottom:22px}
+.cfg-grid{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:26px}
+.cfg-btn{padding:8px 16px;border-radius:20px;border:2px solid var(--border2);background:var(--bg2);color:var(--text3);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;transition:all .18s}
+.cfg-btn:hover{color:var(--text2)}
+.cfg-btn.sel{background:var(--gold);color:#fff;border-color:var(--text);font-weight:600}
+.start-btn{padding:12px 34px;border-radius:var(--r);border:none;background:var(--gold);color:var(--bg);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.02em;transition:all .18s}
+.start-btn:hover{background:var(--text)}
+.qheader{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.qnum-display{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);white-space:nowrap}
+.qnum-display strong{color:var(--text);font-size:15px}
+.qscore-display{margin-left:auto;font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);white-space:nowrap}
+.qscore-display strong{color:var(--green);font-size:15px}
+.qtype-pill{display:inline-block;padding:3px 10px;border-radius:10px;font-family:'DM Mono',monospace;font-size:10px;font-weight:600}
+.qcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:20px 22px;margin-bottom:12px}
+.qscen{font-size:13px;color:var(--text2);margin-bottom:10px;line-height:1.65}
+.qdata{font-family:'DM Mono',monospace;font-size:12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:12px;line-height:2}
+.qdata .dv{font-weight:700;color:var(--text)}
+.qdata .da{font-size:10.5px;color:var(--text3);margin-left:4px}
+.qtext{font-size:14px;font-weight:600;color:var(--text);line-height:1.55}
+.opts{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.opt{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-radius:var(--r);border:1.5px solid var(--border2);background:var(--bg);color:var(--text);text-align:left;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.5;transition:all .15s;width:100%}
+.opt:hover:not(:disabled){background:var(--bg3);border-color:rgba(40,55,110,.3)}
+.opt:disabled{cursor:default}
+.opt-key{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;min-width:22px;height:22px;border-radius:6px;background:var(--bg3);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;color:var(--text3);transition:all .15s}
+.opt.correct{background:var(--bluebg);border-color:var(--blueb)}
+.opt.correct .opt-key{background:var(--blue);color:#fff;border-color:var(--blue)}
+.opt.wrong{background:var(--redbg);border-color:var(--redb)}
+.opt.wrong .opt-key{background:var(--red);color:#fff;border-color:var(--red)}
+.opt.reveal{background:var(--bluebg);border-color:var(--blueb);opacity:.75}
+.opt.reveal .opt-key{background:var(--blue);color:#fff;border-color:var(--blue)}
+.expbox{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:12px;font-size:12.5px;color:var(--text2);line-height:1.72;display:none}
+.expbox.show{display:block;animation:fi .2s ease}
+.expbox strong{color:var(--text)}
+.actrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.next-btn{padding:10px 24px;border-radius:var(--r);border:none;background:var(--text);color:var(--bg);font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .18s;display:none}
+.next-btn:hover{background:var(--red)}
+.end-btn{padding:10px 18px;border-radius:var(--r);border:1px solid var(--redb);background:transparent;color:var(--red);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;transition:all .18s;margin-left:auto}
+.end-btn:hover{background:var(--redbg)}
+.results-wrap{text-align:center;padding:28px 12px}
+.res-big{font-family:'Syne',sans-serif;font-size:64px;font-weight:800;color:var(--text);line-height:1;margin-bottom:4px}
+.res-sub{font-family:'DM Mono',monospace;font-size:13px;color:var(--text3);margin-bottom:18px}
+.res-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:20px;text-align:left}
+.res-stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:11px 14px}
+.res-stat .rv{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--text);margin-bottom:2px}
+.res-stat .rl{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)}
+.retry-btn{padding:12px 32px;border-radius:var(--r);border:none;background:var(--text);color:var(--bg);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .18s;margin-bottom:20px}
+.retry-btn:hover{background:var(--red)}
+footer{text-align:center;padding-top:36px;font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="eyebrow">Kebugaran Fisik · Blok 2.5 · FK Unsoed</div>
+  <h1>Am I <span style="color:var(--gold)">Fit?</span></h1>
+  <p class="sub">Quiz kebugaran fisik — komponen health-related, VO2Max, IMT, fleksibilitas, kekuatan otot & tes Harvard.</p>
+</header>
+
+<div class="main-tabs">
+  <button class="main-tab active" onclick="switchMain('materi',this)">📋 Materi</button>
+  <button class="main-tab" onclick="switchMain('quiz',this)">🎯 Quiz</button>
+</div>
+
+<!-- MATERI -->
+<div class="main-panel active" id="mp-materi">
+<div class="sub-tabs">
+<button class="sub-tab active" onclick="switchSub('tab-konsepkomponenfisik',this)">Konsep & Komponen Fisik</button>
+<button class="sub-tab " onclick="switchSub('tab-faktorpengukuran',this)">Faktor & Pengukuran</button>
+</div>
+
+<div class="sub-panel active" id="tab-konsepkomponenfisik">
+<div class="sec-h">Kebugaran Fisik</div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Tujuan Pembelajaran</div>
+<ul>
+<li>Mahasiswa mampu menjelaskan definisi kebugaran fisik.</li>
+<li>Mahasiswa mampu menjelaskan komponen-komponen yang mempengaruhi kebugaran (health related &amp; skill related fitness).</li>
+<li>Mahasiswa mampu mengetahui faktor-faktor yang berpengaruh terhadap kebugaran fisik.</li>
+<li>Mahasiswa mampu mengukur tingkat kebugaran kesehatan (health related fitness) :
+<ul>
+<li>Komposisi tubuh</li>
+<li>Fleksibilitas</li>
+<li>Kekuatan Otot</li>
+<li>Ketahanan Otot</li>
+<li>Ketahanan Jantung Paru (Kesanggupan Kardiovaskuler)</li>
+</ul></li>
+</ul>
+
+<div class="divider"></div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Definisi Kebugaran Fisik</div>
+<p>Kebugaran fisik adalah kemampuan untuk melaksanakan aktivitas fisik sehari-hari dengan kesungguhan dan kesigapan <strong>tanpa kelelahan</strong>, dengan masih menyisakan tenaga untuk melakukan latihan fisik di waktu luang dan latihan fisik di luar kebiasaan (<strong>darurat</strong>) (Corbin et al., 2000).</p>
+<div class="divider"></div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Komponen Kebugaran Fisik</div>
+<div class="note blue">
+<strong>Health related</strong><br>
+Berhubungan dengan kesehatan, berkaitan dengan penurunan resiko penyakit degeneratif seperti stroke, penyakit kardiovaskuler, diabetes mellitus tipe 2, dan beberapa jenis kanker (Garber et al., 2011).
+</div>
+
+<div class="note green">
+<strong>Skill related</strong><br>
+Berhubungan dengan keterampilan, menentukan performa saat bertanding.
+</div>
+
+<div style="text-align: center; margin: 20px 0;">
+<div style="background:#fff;padding:10px;border-radius:8px;margin:10px 0;text-align:center;border:1px solid var(--border);overflow-x:auto;"><svg style="max-width:100%; height:auto;" id="container" width="100%" xmlns="http://www.w3.org/2000/svg" class="mindmapDiagram" style="max-width: 628.6942138671875px;" viewBox="5 5 628.6942138671875 475.35174560546875" role="graphics-document document" aria-roledescription="mindmap"><style>#container{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#container .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#container .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#container .error-icon{fill:#552222;}#container .error-text{fill:#552222;stroke:#552222;}#container .edge-thickness-normal{stroke-width:1px;}#container .edge-thickness-thick{stroke-width:3.5px;}#container .edge-pattern-solid{stroke-dasharray:0;}#container .edge-thickness-invisible{stroke-width:0;fill:none;}#container .edge-pattern-dashed{stroke-dasharray:3;}#container .edge-pattern-dotted{stroke-dasharray:2;}#container .marker{fill:#333333;stroke:#333333;}#container .marker.cross{stroke:#333333;}#container svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#container p{margin:0;}#container .edge{stroke-width:3;}#container .section--1 rect,#container .section--1 path,#container .section--1 circle,#container .section--1 polygon,#container .section--1 path{fill:hsl(240, 100%, 76.2745098039%);}#container .section--1 text{fill:#ffffff;}#container .section--1 span{color:#ffffff;}#container .node-icon--1{font-size:40px;color:#ffffff;}#container .section-edge--1{stroke:hsl(240, 100%, 76.2745098039%);}#container .edge-depth--1{stroke-width:17;}#container .section--1 line{stroke:hsl(60, 100%, 86.2745098039%);stroke-width:3;}#container .disabled,#container .disabled circle,#container .disabled text{fill:lightgray;}#container .disabled text{fill:#efefef;}#container [data-look="neo"].mindmap-node.section--1 rect,#container [data-look="neo"].mindmap-node.section--1 path,#container [data-look="neo"].mindmap-node.section--1 circle,#container [data-look="neo"].mindmap-node.section--1 polygon{fill:hsl(240, 100%, 76.2745098039%);stroke:hsl(240, 100%, 76.2745098039%);stroke-width:1px;}#container [data-look="neo"].section-edge--1{stroke:hsl(240, 100%, 76.2745098039%);}#container [data-look="neo"].mindmap-node.section--1 text{fill:#ffffff;}#container .section-0 rect,#container .section-0 path,#container .section-0 circle,#container .section-0 polygon,#container .section-0 path{fill:hsl(60, 100%, 73.5294117647%);}#container .section-0 text{fill:black;}#container .section-0 span{color:black;}#container .node-icon-0{font-size:40px;color:black;}#container .section-edge-0{stroke:hsl(60, 100%, 73.5294117647%);}#container .edge-depth-0{stroke-width:14;}#container .section-0 line{stroke:hsl(240, 100%, 83.5294117647%);stroke-width:3;}#container .disabled,#container .disabled circle,#container .disabled text{fill:lightgray;}#container .disabled text{fill:#efefef;}#container [data-look="neo"].mindmap-node.section-0 rect,#container [data-look="neo"].mindmap-node.section-0 path,#container [data-look="neo"].mindmap-node.section-0 circle,#container [data-look="neo"].mindmap-node.section-0 polygon{fill:hsl(60, 100%, 73.5294117647%);stroke:hsl(60, 100%, 73.5294117647%);stroke-width:1px;}#container [data-look="neo"].section-edge-0{stroke:hsl(60, 100%, 73.5294117647%);}#container [data-look="neo"].mindmap-node.section-0 text{fill:black;}#container .section-1 rect,#container .section-1 path,#container .section-1 circle,#container .section-1 polygon,#container .section-1 path{fill:hsl(80, 100%, 76.2745098039%);}#container .section-1 text{fill:black;}#container .section-1 span{color:black;}#container .node-icon-1{font-size:40px;color:black;}#container .section-edge-1{stroke:hsl(80, 100%, 76.2745098039%);}#container .edge-depth-1{stroke-width:11;}#container .section-1 line{stroke:hsl(260, 100%, 86.2745098039%);stroke-width:3;}#container .disabled,#container .disabled circle,#container .disabled text{fill:lightgray;}#container .disabled text{fill:#efefef;}#container [data-look="neo"].mindmap-node.section-1 rect,#container [data-look="neo"].mindmap-node.section-1 path,#container [data-look="neo"].mindmap-node.section-1 circle,#container [data-look="neo"].mindmap-node.section-1 polygon{fill:hsl(80, 100%, 76.2745098039%);stroke:hsl(80, 100%, 76.2745098039%);stroke-width:1px;}#container [data-look="neo"].section-edge-1{stroke:hsl(80, 100%, 76.2745098039%);}#container [data-look="neo"].mindmap-node.section-1 text{fill:black;}#container .section-2 rect,#container .section-2 path,#container .section-2 circle,#container .section-2 polygon,#container .section-2 path{fill:hsl(270, 100%, 76.2745098039%);}#container .section-2 text{fill:#ffffff;}#container .section-2 span{color:#ffffff;}#container .node-icon-2{font-size:40px;color:#ffffff;}#container .section-edge-2{stroke:hsl(270, 100%, 76.2745098039%);}#container .edge-depth-2{stroke-width:8;}#container .section-2 line{stroke:hsl(90, 100%, 86.2745098039%);stroke-width:3;}#container .disabled,#container .disabled circle,#container .disabled text{fill:lightgray;}#container .disabled text{fill:#efefef;}#container [data-look="neo"].mindmap-node.section-2 rect,#container [data-look="neo"].mindmap-node.section-2 path,#container [data-look="neo"].mindmap-node.section-2 circle,#container [data-look="neo"].mindmap-node.section-2 polygon{fill:hsl(270, 100%, 76.2745098039%);stroke:hsl(270, 100%, 76.2745098039%);stroke-width:1px;}#container [data-look="neo"].section-edge-2{stroke:hsl(270, 100%, 76.2745098039%);}#container [data-look="neo"].mindmap-node.section-2 text{fill:#ffffff;}#container .section-3 rect,#container .section-3 path,#container .section-3 circle,#container .section-3 polygon,#container .section-3 path{fill:hsl(300, 100%, 76.2745098039%);}#container .section-3 text{fill:black;}#container .section-3 span{color:black;}#container .node-icon-3{font-size:40px;color:black;}#container .section-edge-3{stroke:hsl(300, 100%, 76.2745098039%);}#container .edge-depth-3{stroke-width:5;}#container .section-3 line{stroke:hsl(120, 100%, 86.2745098039%);stroke-width:3;}#container .disabled,#container .disabled circle,#container .disabled text{fill:lightgray;}#container .disabled text{fill:#efefef;}#container [data-look="neo"].mindmap-node.section-3 rect,#container [data-look="neo"].mindmap-node.section-3 path,#container [data-look="neo"].mindmap-node.section-3 circle,#container [data-look="neo"].mindmap-node.section-3 polygon{fill:hsl(300, 100%, 76.2745098039%);stroke:hsl(300, 100%, 76.2745098039%);stroke-width:1px;}#container [data-look="neo"].section-edge-3{stroke:hsl(300, 100%, 76.2745098039%);}#container [data-look="neo"].mindmap-node.section-3 text{fill:black;}#container .section-4 rect,#container .section-4 path,#container .section-4 circle,#container .section-4 polygon,#container .section-4 path{fill:hsl(330, 100%, 76.2745098039%);}#container .section-4 text{fill:black;}#container .section-4 span{color:black;}#container .node-icon-4{font-size:40px;color:black;}#container .section-edge-4{stroke:hsl(330, 100%, 76.2745098039%);}#container .edge-depth-4{stroke-width:2;}#container .section-4 line{stroke:hsl(150, 100%, 86.2745098039%);stroke-width:3;}#container .disabled,#container .disabled circle,#container .disabled text{fill:lightgray;}#container .disabled text{fill:#efefef;}#container [data-look="neo"].mindmap-node.section-4 rect,#container [data-look="neo"].mindmap-node.section-4 path,#container [data-look="neo"].mindmap-node.section-4 circle,#container [data-look="neo"].mindmap-node.section-4 polygon{fill:hsl(330, 100%, 76.2745098039%);stroke:hsl(330, 100%, 76.2745098039%);stroke-width:1px;}#container [data-look="neo"].section-edge-4{stroke:hsl(330, 100%, 76.2745098039%);}#container [data-look="neo"].mindmap-node.section-4 text{fill:black;}#container .section-5 rect,#container .section-5 path,#container .section-5 circle,#container .section-5 polygon,#container .section-5 path{fill:hsl(0, 100%, 76.2745098039%);}#container .section-5 text{fill:black;}#container .section-5 span{color:black;}#container .node-icon-5{font-size:40px;color:black;}#container .section-edge-5{stroke:hsl(0, 100%, 76.2745098039%);}#container .edge-depth-5{stroke-width:-1;}#container .section-5 line{stroke:hsl(180, 100%, 86.2745098039%);stroke-width:3;}#container .disabled,#container .disabled circle,#container .disabled text{fill:lightgray;}#container .disabled text{fill:#efefef;}#container [data-look="neo"].mindmap-node.section-5 rect,#container [data-look="neo"].mindmap-node.section-5 path,#container [data-look="neo"].mindmap-node.section-5 circle,#container [data-look="neo"].mindmap-node.section-5 polygon{fill:hsl(0, 100%, 76.2745098039%);stroke:hsl(0, 100%, 76.2745098039%);stroke-width:1px;}#container [data-look="neo"].section-edge-5{stroke:hsl(0, 100%, 76.2745098039%);}#container [data-look="neo"].mindmap-node.section-5 text{fill:black;}#container .section-6 rect,#container .section-6 path,#container .section-6 circle,#container .section-6 polygon,#container .section-6 path{fill:hsl(30, 100%, 76.2745098039%);}#container .section-6 text{fill:black;}#container .section-6 span{color:black;}#container .node-icon-6{font-size:40px;color:black;}#container .section-edge-6{stroke:hsl(30, 100%, 76.2745098039%);}#container .edge-depth-6{stroke-width:-4;}#container .section-6 line{stroke:hsl(210, 100%, 86.2745098039%);stroke-width:3;}#container .disabled,#container .disabled circle,#container .disabled text{fill:lightgray;}#container .disabled text{fill:#efefef;}#container [data-look="neo"].mindmap-node.section-6 rect,#container [data-look="neo"].mindmap-node.section-6 path,#container [data-look="neo"].mindmap-node.section-6 circle,#container [data-look="neo"].mindmap-node.section-6 polygon{fill:hsl(30, 100%, 76.2745098039%);stroke:hsl(30, 100%, 76.2745098039%);stroke-width:1px;}#container [data-look="neo"].section-edge-6{stroke:hsl(30, 100%, 76.2745098039%);}#container [data-look="neo"].mindmap-node.section-6 text{fill:black;}#container .section-7 rect,#container .section-7 path,#container .section-7 circle,#container .section-7 polygon,#container .section-7 path{fill:hsl(90, 100%, 76.2745098039%);}#container .section-7 text{fill:black;}#container .section-7 span{color:black;}#container .node-icon-7{font-size:40px;color:black;}#container .section-edge-7{stroke:hsl(90, 100%, 76.2745098039%);}#container .edge-depth-7{stroke-width:-7;}#container .section-7 line{stroke:hsl(270, 100%, 86.2745098039%);stroke-width:3;}#container .disabled,#container .disabled circle,#container .disabled text{fill:lightgray;}#container .disabled text{fill:#efefef;}#container [data-look="neo"].mindmap-node.section-7 rect,#container [data-look="neo"].mindmap-node.section-7 path,#container [data-look="neo"].mindmap-node.section-7 circle,#container [data-look="neo"].mindmap-node.section-7 polygon{fill:hsl(90, 100%, 76.2745098039%);stroke:hsl(90, 100%, 76.2745098039%);stroke-width:1px;}#container [data-look="neo"].section-edge-7{stroke:hsl(90, 100%, 76.2745098039%);}#container [data-look="neo"].mindmap-node.section-7 text{fill:black;}#container .section-8 rect,#container .section-8 path,#container .section-8 circle,#container .section-8 polygon,#container .section-8 path{fill:hsl(150, 100%, 76.2745098039%);}#container .section-8 text{fill:black;}#container .section-8 span{color:black;}#container .node-icon-8{font-size:40px;color:black;}#container .section-edge-8{stroke:hsl(150, 100%, 76.2745098039%);}#container .edge-depth-8{stroke-width:-10;}#container .section-8 line{stroke:hsl(330, 100%, 86.2745098039%);stroke-width:3;}#container .disabled,#container .disabled circle,#container .disabled text{fill:lightgray;}#container .disabled text{fill:#efefef;}#container [data-look="neo"].mindmap-node.section-8 rect,#container [data-look="neo"].mindmap-node.section-8 path,#container [data-look="neo"].mindmap-node.section-8 circle,#container [data-look="neo"].mindmap-node.section-8 polygon{fill:hsl(150, 100%, 76.2745098039%);stroke:hsl(150, 100%, 76.2745098039%);stroke-width:1px;}#container [data-look="neo"].section-edge-8{stroke:hsl(150, 100%, 76.2745098039%);}#container [data-look="neo"].mindmap-node.section-8 text{fill:black;}#container .section-9 rect,#container .section-9 path,#container .section-9 circle,#container .section-9 polygon,#container .section-9 path{fill:hsl(180, 100%, 76.2745098039%);}#container .section-9 text{fill:black;}#container .section-9 span{color:black;}#container .node-icon-9{font-size:40px;color:black;}#container .section-edge-9{stroke:hsl(180, 100%, 76.2745098039%);}#container .edge-depth-9{stroke-width:-13;}#container .section-9 line{stroke:hsl(0, 100%, 86.2745098039%);stroke-width:3;}#container .disabled,#container .disabled circle,#container .disabled text{fill:lightgray;}#container .disabled text{fill:#efefef;}#container [data-look="neo"].mindmap-node.section-9 rect,#container [data-look="neo"].mindmap-node.section-9 path,#container [data-look="neo"].mindmap-node.section-9 circle,#container [data-look="neo"].mindmap-node.section-9 polygon{fill:hsl(180, 100%, 76.2745098039%);stroke:hsl(180, 100%, 76.2745098039%);stroke-width:1px;}#container [data-look="neo"].section-edge-9{stroke:hsl(180, 100%, 76.2745098039%);}#container [data-look="neo"].mindmap-node.section-9 text{fill:black;}#container .section-10 rect,#container .section-10 path,#container .section-10 circle,#container .section-10 polygon,#container .section-10 path{fill:hsl(210, 100%, 76.2745098039%);}#container .section-10 text{fill:black;}#container .section-10 span{color:black;}#container .node-icon-10{font-size:40px;color:black;}#container .section-edge-10{stroke:hsl(210, 100%, 76.2745098039%);}#container .edge-depth-10{stroke-width:-16;}#container .section-10 line{stroke:hsl(30, 100%, 86.2745098039%);stroke-width:3;}#container .disabled,#container .disabled circle,#container .disabled text{fill:lightgray;}#container .disabled text{fill:#efefef;}#container [data-look="neo"].mindmap-node.section-10 rect,#container [data-look="neo"].mindmap-node.section-10 path,#container [data-look="neo"].mindmap-node.section-10 circle,#container [data-look="neo"].mindmap-node.section-10 polygon{fill:hsl(210, 100%, 76.2745098039%);stroke:hsl(210, 100%, 76.2745098039%);stroke-width:1px;}#container [data-look="neo"].section-edge-10{stroke:hsl(210, 100%, 76.2745098039%);}#container [data-look="neo"].mindmap-node.section-10 text{fill:black;}#container .section-root rect,#container .section-root path,#container .section-root circle,#container .section-root polygon{fill:hsl(240, 100%, 46.2745098039%);}#container .section-root text{fill:#ffffff;}#container .section-root span{color:#ffffff;}#container .icon-container{height:100%;display:flex;justify-content:center;align-items:center;}#container .edge{fill:none;}#container .mindmap-node-label{dy:1em;alignment-baseline:middle;text-anchor:middle;dominant-baseline:middle;text-align:center;}#container [data-look="neo"].mindmap-node{filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].mindmap-node.section-root rect,#container [data-look="neo"].mindmap-node.section-root path,#container [data-look="neo"].mindmap-node.section-root circle,#container [data-look="neo"].mindmap-node.section-root polygon{fill:hsl(240, 100%, 46.2745098039%);}#container [data-look="neo"].mindmap-node.section-root .text-inner-tspan{fill:#ffffff;}#container .node .neo-node{stroke:#9370DB;}#container [data-look="neo"].node rect,#container [data-look="neo"].cluster rect,#container [data-look="neo"].node polygon{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node path{stroke:#9370DB;stroke-width:1px;}#container [data-look="neo"].node .outer-path{filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node .neo-line path{stroke:#9370DB;filter:none;}#container [data-look="neo"].node circle{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node circle .state-start{fill:#000000;}#container [data-look="neo"].icon-shape .icon{fill:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].icon-shape .icon-neo path{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g><marker id="container_mindmap-pointEnd" class="marker mindmap" viewBox="0 0 10 10" refX="5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="container_mindmap-pointStart" class="marker mindmap" viewBox="0 0 10 10" refX="4.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 5 L 10 10 L 10 0 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="container_mindmap-pointEnd-margin" class="marker mindmap" viewBox="0 0 11.5 14" refX="11.5" refY="7" markerUnits="userSpaceOnUse" markerWidth="10.5" markerHeight="14" orient="auto"><path d="M 0 0 L 11.5 7 L 0 14 z" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></path></marker><marker id="container_mindmap-pointStart-margin" class="marker mindmap" viewBox="0 0 11.5 14" refX="1" refY="7" markerUnits="userSpaceOnUse" markerWidth="11.5" markerHeight="14" orient="auto"><polygon points="0,7 11.5,14 11.5,0" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></polygon></marker><g class="subgraphs"></g><g class="edgePaths"><path d="M385.247,217.726L378.115,208.986C370.984,200.246,356.72,182.766,342.457,165.286C328.194,147.805,313.93,130.325,306.799,121.585L299.667,112.845" id="container-edge_0_1" class="edge-thickness-normal edge-pattern-solid edge section-edge-0 edge-depth-1" style="undefined;;;undefined" data-edge="true" data-et="edge" data-id="edge_0_1" data-points="W3sieCI6Mzg1LjI0Njg2MTEyODIwMTIsInkiOjIxNy43MjU2NTcxODUwODMyfSx7IngiOjM0Mi40NTY4NDk3MTUzNTk0NSwieSI6MTY1LjI4NTUwNDI5Mzk4OTl9LHsieCI6Mjk5LjY2NjgzODMwMjUxNzcsInkiOjExMi44NDUzNTE0MDI4OTY2fV0=" data-look="classic"></path><path d="M280.167,112.389L276.306,116.693C272.446,120.997,264.724,129.605,257.002,138.212C249.281,146.82,241.559,155.428,237.698,159.732L233.838,164.035" id="container-edge_1_2" class="edge-thickness-normal edge-pattern-solid edge section-edge-0 edge-depth-3" style="undefined;;;undefined" data-edge="true" data-et="edge" data-id="edge_1_2" data-points="W3sieCI6MjgwLjE2NzMwNDk3MDIwNywieSI6MTEyLjM4OTE3MzU0MzY1ODU2fSx7IngiOjI1Ny4wMDI0NTc3NjgwMzksInkiOjEzOC4yMTIyNjc2MTg0NjIzNn0seyJ4IjoyMzMuODM3NjEwNTY1ODcxLCJ5IjoxNjQuMDM1MzYxNjkzMjY2MTd9XQ==" data-look="classic"></path><path d="M301.897,91.853L307.155,87.646C312.413,83.439,322.93,75.025,333.447,66.612C343.964,58.198,354.481,49.784,359.739,45.577L364.998,41.371" id="container-edge_1_3" class="edge-thickness-normal edge-pattern-solid edge section-edge-0 edge-depth-3" style="undefined;;;undefined" data-edge="true" data-et="edge" data-id="edge_1_3" data-points="W3sieCI6MzAxLjg5NjUzMjUzNzU1ODEzLCJ5Ijo5MS44NTI4NzE4Mzk0ODg0M30seyJ4IjozMzMuNDQ3MTI3OTYxNjgzOSwieSI6NjYuNjExNzI0Njk5NjE4NzJ9LHsieCI6MzY0Ljk5NzcyMzM4NTgwOTcsInkiOjQxLjM3MDU3NzU1OTc0OTAxfV0=" data-look="classic"></path><path d="M275.257,102.708L260.802,104.146C246.347,105.584,217.436,108.46,188.525,111.336C159.615,114.212,130.704,117.088,116.249,118.526L101.794,119.964" id="container-edge_1_4" class="edge-thickness-normal edge-pattern-solid edge section-edge-0 edge-depth-3" style="undefined;;;undefined" data-edge="true" data-et="edge" data-id="edge_1_4" data-points="W3sieCI6Mjc1LjI1NzI5NDgwNjQyMzI2LCJ5IjoxMDIuNzA4MjkyOTEwMDYxNDN9LHsieCI6MTg4LjUyNTQwNDY4NzMzNjUsInkiOjExMS4zMzYyMjE1MTEzODI1OH0seyJ4IjoxMDEuNzkzNTE0NTY4MjQ5NzIsInkiOjExOS45NjQxNTAxMTI3MDM3Mn1d" data-look="classic"></path><path d="M305.159,100.358L319.971,99.503C334.784,98.647,364.41,96.936,394.035,95.225C423.661,93.513,453.286,91.802,468.099,90.946L482.912,90.091" id="container-edge_1_5" class="edge-thickness-normal edge-pattern-solid edge section-edge-0 edge-depth-3" style="undefined;;;undefined" data-edge="true" data-et="edge" data-id="edge_1_5" data-points="W3sieCI6MzA1LjE1ODY1ODk5NDU5MzE3LCJ5IjoxMDAuMzU4NDI3Mjg1NjM5NX0seyJ4IjozOTQuMDM1MjgyOTUyOTY5NiwieSI6OTUuMjI0NTMzODI3NDYxODd9LHsieCI6NDgyLjkxMTkwNjkxMTM0NjEsInkiOjkwLjA5MDY0MDM2OTI4NDI0fV0=" data-look="classic"></path><path d="M276.573,94.919L268.375,91.121C260.178,87.324,243.782,79.729,227.387,72.134C210.991,64.539,194.596,56.944,186.398,53.146L178.2,49.349" id="container-edge_1_6" class="edge-thickness-normal edge-pattern-solid edge section-edge-0 edge-depth-3" style="undefined;;;undefined" data-edge="true" data-et="edge" data-id="edge_1_6" data-points="W3sieCI6Mjc2LjU3MzA0NDE5MzE2ODMsInkiOjk0LjkxODUxNjc5MjQ4MjIxfSx7IngiOjIyNy4zODY3MDQ5MjQyMzYwMywieSI6NzIuMTMzNTUwNDU4MTcwNzZ9LHsieCI6MTc4LjIwMDM2NTY1NTMwMzc2LCJ5Ijo0OS4zNDg1ODQxMjM4NTkzMX1d" data-look="classic"></path><path d="M391.845,244.067L390.026,253.346C388.207,262.625,384.569,281.184,380.932,299.742C377.294,318.3,373.656,336.858,371.838,346.137L370.019,355.416" id="container-edge_0_7" class="edge-thickness-normal edge-pattern-solid edge section-edge-1 edge-depth-1" style="undefined;;;undefined" data-edge="true" data-et="edge" data-id="edge_0_7" data-points="W3sieCI6MzkxLjg0NDc0NTk3Nzg2NDgsInkiOjI0NC4wNjc0MzkwMDA4ODU5fSx7IngiOjM4MC45MzE3MTc1NTMwMzU4LCJ5IjoyOTkuNzQxNjE4MDE1NDM2Mn0seyJ4IjozNzAuMDE4Njg5MTI4MjA2OCwieSI6MzU1LjQxNTc5NzAyOTk4NjV9XQ==" data-look="classic"></path><path d="M352.179,371.299L340.7,372.192C329.221,373.084,306.264,374.87,283.306,376.656C260.349,378.441,237.391,380.227,225.913,381.119L214.434,382.012" id="container-edge_7_8" class="edge-thickness-normal edge-pattern-solid edge section-edge-1 edge-depth-3" style="undefined;;;undefined" data-edge="true" data-et="edge" data-id="edge_7_8" data-points="W3sieCI6MzUyLjE3ODUyMzA2NjEyMjEsInkiOjM3MS4yOTg4MzAxMjQ4MjY5fSx7IngiOjI4My4zMDYyOTQ5MTk1NDQwMywieSI6Mzc2LjY1NTU1NjYyOTY2MTUzfSx7IngiOjIxNC40MzQwNjY3NzI5NjU5LCJ5IjozODIuMDEyMjgzMTM0NDk2MTZ9XQ==" data-look="classic"></path><path d="M356,380.188L351.242,384.483C346.484,388.779,336.968,397.371,327.452,405.962C317.936,414.554,308.42,423.145,303.662,427.441L298.904,431.737" id="container-edge_7_9" class="edge-thickness-normal edge-pattern-solid edge section-edge-1 edge-depth-3" style="undefined;;;undefined" data-edge="true" data-et="edge" data-id="edge_7_9" data-points="W3sieCI6MzU1Ljk5OTczNDg2MjEzNjM0LCJ5IjozODAuMTg3NjY0MDAxMDgxfSx7IngiOjMyNy40NTE4NzExNjQ4OTc1LCJ5Ijo0MDUuOTYyMDkyMjY2MjE5OX0seyJ4IjoyOTguOTA0MDA3NDY3NjU4NywieSI6NDMxLjczNjUyMDUzMTM1ODh9XQ==" data-look="classic"></path><path d="M374.184,383.375L376.701,388.104C379.219,392.832,384.255,402.288,389.29,411.744C394.325,421.2,399.361,430.656,401.879,435.384L404.396,440.112" id="container-edge_7_10" class="edge-thickness-normal edge-pattern-solid edge section-edge-1 edge-depth-3" style="undefined;;;undefined" data-edge="true" data-et="edge" data-id="edge_7_10" data-points="W3sieCI6Mzc0LjE4MzY4NjU4ODczNTU1LCJ5IjozODMuMzc1NDk3ODU0NzM5MX0seyJ4IjozODkuMjkwMDI2MzAxNTQzNDMsInkiOjQxMS43NDM3MTA1ODAwMDU1NH0seyJ4Ijo0MDQuMzk2MzY2MDE0MzUxMywieSI6NDQwLjExMTkyMzMwNTI3Mn1d" data-look="classic"></path><path d="M353.989,362.908L347.094,359.117C340.199,355.326,326.409,347.743,312.62,340.16C298.83,332.578,285.04,324.995,278.145,321.204L271.25,317.412" id="container-edge_7_11" class="edge-thickness-normal edge-pattern-solid edge section-edge-1 edge-depth-3" style="undefined;;;undefined" data-edge="true" data-et="edge" data-id="edge_7_11" data-points="W3sieCI6MzUzLjk4OTM5NDE4MDQwMzk2LCJ5IjozNjIuOTA4MjEzNDYwMTM3Nn0seyJ4IjozMTIuNjE5NTQ3MzY5NzI0NiwieSI6MzQwLjE2MDIwMDIwNjA5Mzh9LHsieCI6MjcxLjI0OTcwMDU1OTA0NTI3LCJ5IjozMTcuNDEyMTg2OTUyMDUwMDR9XQ==" data-look="classic"></path><path d="M381.768,373.425L395.117,376.425C408.467,379.425,435.165,385.425,461.863,391.425C488.561,397.425,515.259,403.425,528.609,406.425L541.958,409.425" id="container-edge_7_12" class="edge-thickness-normal edge-pattern-solid edge section-edge-1 edge-depth-3" style="undefined;;;undefined" data-edge="true" data-et="edge" data-id="edge_7_12" data-points="W3sieCI6MzgxLjc2ODMyMjE3Mzk0NDk3LCJ5IjozNzMuNDI0NzIwODQ1NTgwMzR9LHsieCI6NDYxLjg2MzAxNzEwMDc5NDEsInkiOjM5MS40MjUxMDQzNjcyOTkyNH0seyJ4Ijo1NDEuOTU3NzEyMDI3NjQzMiwieSI6NDA5LjQyNTQ4Nzg4OTAxODE0fV0=" data-look="classic"></path><path d="M381.478,365.752L392.778,362.299C404.077,358.846,426.675,351.94,449.273,345.034C471.871,338.128,494.469,331.222,505.769,327.769L517.068,324.316" id="container-edge_7_13" class="edge-thickness-normal edge-pattern-solid edge section-edge-1 edge-depth-3" style="undefined;;;undefined" data-edge="true" data-et="edge" data-id="edge_7_13" data-points="W3sieCI6MzgxLjQ3ODQ2MTE1MjYxNDA1LCJ5IjozNjUuNzUxODQyNjAzNTg4Njd9LHsieCI6NDQ5LjI3MzAzMzAxNzQxNjMsInkiOjM0NS4wMzM5NjA0OTEyMTc4NH0seyJ4Ijo1MTcuMDY3NjA0ODgyMjE4NiwieSI6MzI0LjMxNjA3ODM3ODg0N31d" data-look="classic"></path></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" data-id="edge_0_1" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="edge_1_2" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="edge_1_3" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="edge_1_4" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="edge_1_5" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="edge_1_6" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="edge_0_7" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="edge_7_8" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="edge_7_9" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="edge_7_10" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="edge_7_11" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="edge_7_12" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="edge_7_13" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g></g><g class="nodes"><g class="node mindmap-node section-root section--1" id="container-node_0" data-look="classic" transform="translate(394.7300775560459, 229.34755918874237)"><circle class="basic label-container" style="" r="66.6953125" cx="0" cy="0"></circle><g class="label" style="" transform="translate(-56.6953125, -12)"><rect></rect><foreignObject width="113.390625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel markdown-node-label"><p>Kebugaran Fisik</p></span></div></foreignObject></g></g><g class="node mindmap-node section-0" id="container-node_1" data-look="classic" transform="translate(290.183621874673, 101.22344939923744)"><path id="container-node_1" class="node-bkg node-0" style="" d="M-73.6875 12
+    v-24
+    q0,-5 5,-5
+    h137.375
+    q5,0 5,5
+    v24
+    q0,5 -5,5
+    h-137.375
+    q-5,0 -5,-5
+    Z"></path><line class="node-line-" x1="-73.6875" y1="17" x2="73.6875" y2="17"></line><g class="label" style="" transform="translate(-53.6875, -12)"><rect></rect><foreignObject width="107.375" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel markdown-node-label"><p>Health Related</p></span></div></foreignObject></g></g><g class="node mindmap-node section-0" id="container-node_2" data-look="classic" transform="translate(223.82129366140498, 175.2010858376873)"><path id="container-node_2" class="node-bkg node-0" style="" d="M-82.2265625 12
+    v-24
+    q0,-5 5,-5
+    h154.453125
+    q5,0 5,5
+    v24
+    q0,5 -5,5
+    h-154.453125
+    q-5,0 -5,-5
+    Z"></path><line class="node-line-" x1="-82.2265625" y1="17" x2="82.2265625" y2="17"></line><g class="label" style="" transform="translate(-62.2265625, -12)"><rect></rect><foreignObject width="124.453125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel markdown-node-label"><p>Komposisi Tubuh</p></span></div></foreignObject></g></g><g class="node mindmap-node section-0" id="container-node_3" data-look="classic" transform="translate(376.7106340486948, 32)"><path id="container-node_3" class="node-bkg node-0" style="" d="M-63.015625 12
+    v-24
+    q0,-5 5,-5
+    h116.03125
+    q5,0 5,5
+    v24
+    q0,5 -5,5
+    h-116.03125
+    q-5,0 -5,-5
+    Z"></path><line class="node-line-" x1="-63.015625" y1="17" x2="63.015625" y2="17"></line><g class="label" style="" transform="translate(-43.015625, -12)"><rect></rect><foreignObject width="86.03125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel markdown-node-label"><p>Fleksibilitas</p></span></div></foreignObject></g></g><g class="node mindmap-node section-0" id="container-node_4" data-look="classic" transform="translate(86.8671875, 121.44899362352771)"><path id="container-node_4" class="node-bkg node-0" style="" d="M-71.8671875 12
+    v-24
+    q0,-5 5,-5
+    h133.734375
+    q5,0 5,5
+    v24
+    q0,5 -5,5
+    h-133.734375
+    q-5,0 -5,-5
+    Z"></path><line class="node-line-" x1="-71.8671875" y1="17" x2="71.8671875" y2="17"></line><g class="label" style="" transform="translate(-51.8671875, -12)"><rect></rect><foreignObject width="103.734375" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel markdown-node-label"><p>Kekuatan Otot</p></span></div></foreignObject></g></g><g class="node mindmap-node section-0" id="container-node_5" data-look="classic" transform="translate(497.88694403126624, 89.2256182556863)"><path id="container-node_5" class="node-bkg node-0" style="" d="M-76.8984375 12
+    v-24
+    q0,-5 5,-5
+    h143.796875
+    q5,0 5,5
+    v24
+    q0,5 -5,5
+    h-143.796875
+    q-5,0 -5,-5
+    Z"></path><line class="node-line-" x1="-76.8984375" y1="17" x2="76.8984375" y2="17"></line><g class="label" style="" transform="translate(-56.8984375, -12)"><rect></rect><foreignObject width="113.796875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel markdown-node-label"><p>Ketahanan Otot</p></span></div></foreignObject></g></g><g class="node mindmap-node section-0" id="container-node_6" data-look="classic" transform="translate(164.58978797379905, 43.04365151710408)"><path id="container-node_6" class="node-bkg node-0" style="" d="M-107.3359375 12
+    v-24
+    q0,-5 5,-5
+    h204.671875
+    q5,0 5,5
+    v24
+    q0,5 -5,5
+    h-204.671875
+    q-5,0 -5,-5
+    Z"></path><line class="node-line-" x1="-107.3359375" y1="17" x2="107.3359375" y2="17"></line><g class="label" style="" transform="translate(-87.3359375, -12)"><rect></rect><foreignObject width="174.671875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel markdown-node-label"><p>Ketahanan Jantung Paru</p></span></div></foreignObject></g></g><g class="node mindmap-node section-1" id="container-node_7" data-look="classic" transform="translate(367.1333575500257, 370.13567684213)"><path id="container-node_7" class="node-bkg node-0" style="" d="M-65.171875 12
+    v-24
+    q0,-5 5,-5
+    h120.34375
+    q5,0 5,5
+    v24
+    q0,5 -5,5
+    h-120.34375
+    q-5,0 -5,-5
+    Z"></path><line class="node-line-" x1="-65.171875" y1="17" x2="65.171875" y2="17"></line><g class="label" style="" transform="translate(-45.171875, -12)"><rect></rect><foreignObject width="90.34375" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel markdown-node-label"><p>Skill Related</p></span></div></foreignObject></g></g><g class="node mindmap-node section-1" id="container-node_8" data-look="classic" transform="translate(199.47923228906234, 383.17543641719305)"><path id="container-node_8" class="node-bkg node-0" style="" d="M-42.6171875 12
+    v-24
+    q0,-5 5,-5
+    h75.234375
+    q5,0 5,5
+    v24
+    q0,5 -5,5
+    h-75.234375
+    q-5,0 -5,-5
+    Z"></path><line class="node-line-" x1="-42.6171875" y1="17" x2="42.6171875" y2="17"></line><g class="label" style="" transform="translate(-22.6171875, -12)"><rect></rect><foreignObject width="45.234375" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel markdown-node-label"><p>Speed</p></span></div></foreignObject></g></g><g class="node mindmap-node section-1" id="container-node_9" data-look="classic" transform="translate(287.7703847797693, 441.78850769030976)"><path id="container-node_9" class="node-bkg node-0" style="" d="M-42.265625 12
+    v-24
+    q0,-5 5,-5
+    h74.53125
+    q5,0 5,5
+    v24
+    q0,5 -5,5
+    h-74.53125
+    q-5,0 -5,-5
+    Z"></path><line class="node-line-" x1="-42.265625" y1="17" x2="42.265625" y2="17"></line><g class="label" style="" transform="translate(-22.265625, -12)"><rect></rect><foreignObject width="44.53125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel markdown-node-label"><p>Power</p></span></div></foreignObject></g></g><g class="node mindmap-node section-1" id="container-node_10" data-look="classic" transform="translate(411.44669505306115, 453.35174431788107)"><path id="container-node_10" class="node-bkg node-0" style="" d="M-42.390625 12
+    v-24
+    q0,-5 5,-5
+    h74.78125
+    q5,0 5,5
+    v24
+    q0,5 -5,5
+    h-74.78125
+    q-5,0 -5,-5
+    Z"></path><line class="node-line-" x1="-42.390625" y1="17" x2="42.390625" y2="17"></line><g class="label" style="" transform="translate(-22.390625, -12)"><rect></rect><foreignObject width="44.78125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel markdown-node-label"><p>Agility</p></span></div></foreignObject></g></g><g class="node mindmap-node section-1" id="container-node_11" data-look="classic" transform="translate(258.1057371894235, 310.1847235700576)"><path id="container-node_11" class="node-bkg node-0" style="" d="M-48.5078125 12
+    v-24
+    q0,-5 5,-5
+    h87.015625
+    q5,0 5,5
+    v24
+    q0,5 -5,5
+    h-87.015625
+    q-5,0 -5,-5
+    Z"></path><line class="node-line-" x1="-48.5078125" y1="17" x2="48.5078125" y2="17"></line><g class="label" style="" transform="translate(-28.5078125, -12)"><rect></rect><foreignObject width="57.015625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel markdown-node-label"><p>Balance</p></span></div></foreignObject></g></g><g class="node mindmap-node section-1" id="container-node_12" data-look="classic" transform="translate(556.5926766515624, 412.7145318924685)"><path id="container-node_12" class="node-bkg node-0" style="" d="M-67.1015625 12
+    v-24
+    q0,-5 5,-5
+    h124.203125
+    q5,0 5,5
+    v24
+    q0,5 -5,5
+    h-124.203125
+    q-5,0 -5,-5
+    Z"></path><line class="node-line-" x1="-67.1015625" y1="17" x2="67.1015625" y2="17"></line><g class="label" style="" transform="translate(-47.1015625, -12)"><rect></rect><foreignObject width="94.203125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel markdown-node-label"><p>Coordination</p></span></div></foreignObject></g></g><g class="node mindmap-node section-1" id="container-node_13" data-look="classic" transform="translate(531.4127084848069, 319.93224414030567)"><path id="container-node_13" class="node-bkg node-0" style="" d="M-70.1640625 12
+    v-24
+    q0,-5 5,-5
+    h130.328125
+    q5,0 5,5
+    v24
+    q0,5 -5,5
+    h-130.328125
+    q-5,0 -5,-5
+    Z"></path><line class="node-line-" x1="-70.1640625" y1="17" x2="70.1640625" y2="17"></line><g class="label" style="" transform="translate(-50.1640625, -12)"><rect></rect><foreignObject width="100.328125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel markdown-node-label"><p>Reaction time</p></span></div></foreignObject></g></g></g></g><defs><filter id="container-drop-shadow" height="130%" width="130%"><feDropShadow dx="4" dy="4" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs><defs><filter id="container-drop-shadow-small" height="150%" width="150%"><feDropShadow dx="2" dy="2" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs></svg></div>
+</div>
+
+<ul>
+<li><strong>Health-Related Components of Fitness:</strong>
+<ul>
+<li>Body composition</li>
+<li>Flexibility</li>
+<li>Muscle strength</li>
+<li>Muscle endurance</li>
+<li>Cardiorespiratory endurance</li>
+</ul>
+</li>
+<li><strong>Skill-Related Components of Fitness:</strong>
+<ul>
+<li>Speed</li>
+<li>Power</li>
+<li>Agility</li>
+<li>Balance</li>
+<li>Coordination</li>
+<li>Reaction time</li>
+</ul>
+</li>
+</ul>
+
+<div class="divider"></div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Komposisi Tubuh</div>
+<p>Komposisi tubuh adalah rasio antara banyaknya massa jaringan bebas lemak (seperti otot, tulang, dan air) dengan massa lemak tubuh. Massa tubuh tanpa lemak rata-rata terdiri dari massa otot 40-50%, jaringan tulang 16-18%, dan berbagai organ-organ tubuh lainnya sebesar 29-39% (Heyward and Gibson, 2014).</p>
+<p>Komposisi tubuh dapat diukur dengan menggunakan parameter seperti:</p>
+<ul>
+<li>Persentase lemak tubuh</li>
+<li>Indeks Massa Tubuh (IMT)</li>
+<li>Lingkar pinggang</li>
+</ul>
+
+<p><strong>Persentase lemak tubuh</strong>
+Persentase lemak tubuh mencerminkan jumlah jaringan adiposa dibandingkan dengan total berat badan. Klasifikasi ini penting untuk menilai risiko gangguan metabolisme dan kardiovaskular yang terkait dengan kelebihan maupun kekurangan simpanan lemak esensial (ACSM, 2018).</p>
+<div class="dtable-wrap">
+<div class="dtable-wrap"><table>
+<thead>
+<tr>
+<th>Klasifikasi</th>
+<th>Laki – laki (%)</th>
+<th>Perempuan (%)</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>Berisiko</td><td>≤ 5</td><td>≤ 8</td></tr>
+<tr><td>Kurang baik</td><td>6 – 14</td><td>9 – 22</td></tr>
+<tr><td>Cukup</td><td>15</td><td>23</td></tr>
+<tr><td>Kurang baik</td><td>16 – 24</td><td>24 – 31</td></tr>
+<tr><td>Berisiko</td><td>≥ 25</td><td>≥ 32</td></tr>
+</tbody>
+</table></div>
+</div>
+<p><br></p>
+<p><strong>Indeks Massa Tubuh (IMT)</strong>
+Tabel IMT di bawah ini merujuk pada standar populasi kawasan Asia-Pasifik (WHO WPRO, 2000), mengingat risiko kardiometabolik pada ras Asia sudah mulai meningkat pada IMT yang lebih rendah dibandingkan Kaukasia.</p>
+<div class="dtable-wrap">
+<div class="dtable-wrap"><table>
+<thead>
+<tr>
+<th>Klasifikasi</th>
+<th>IMT (kg/m<sup>2</sup>)</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>Underweight</td><td>&lt; 18,5</td></tr>
+<tr><td>Normal</td><td>18,5 – 22,9</td></tr>
+<tr><td>Overweight</td><td>23 – 24,9</td></tr>
+<tr><td>Obesitas I</td><td>25 – 29,9</td></tr>
+<tr><td>Obesitas II</td><td>≥ 30</td></tr>
+</tbody>
+</table></div>
+</div>
+<p><br></p>
+<p><strong>Lingkar Pinggang</strong>
+Lingkar pinggang (<em>waist circumference</em>) merupakan indikator penumpukan lemak visceral. Pengukuran dilakukan secara melingkar sejajar umbilikus pada lokasi titik tengah antara batas bawah kosta (rusuk paling bawah) dengan batas atas krista iliaka.
+Berdasarkan panduan WHO untuk populasi Asia (WHO, 2008), lingkar pinggang diklasifikasikan menjadi:</p>
+<ul>
+<li>Berisiko tinggi menderita penyakit kardiovaskuler (laki – laki ≥ 90 cm, perempuan ≥ 80 cm).</li>
+<li>Tidak berisiko menderita penyakit kardiovaskuler (berada di bawah batas ambang tersebut).</li>
+</ul>
+
+<div class="divider"></div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Fleksibilitas</div>
+<p>Fleksibilitas adalah kemampuan persendian untuk melakukan gerakan dalam ruang gerak sendi secara maksimal.
+Keleluasaan gerak tubuh pada persendian sangat dipengaruhi oleh elastisitas otot, tendon, dan ligamen sekitar sendi serta sendi itu sendiri.
+Fleksibilitas mempengaruhi postur tubuh seseorang, mempermudah gerak tubuh, mengurangi kekakuan, meningkatkan ketrampilan, dan mengurangi risiko terjadinya cedera.</p>
+<p><strong>Pengukuran fleksibilitas</strong><br>
+Dapat diukur menggunakan metode <em>sit and reach test</em>, baik yang menggunakan mistar maupun menggunakan bangku fleksibilitas (<em>sit and reach box</em>). 
+Prosedur pengukurannya adalah peserta duduk dengan tungkai lurus ke depan, telapak kaki menempel rata pada kotak (titik ukur nol biasanya berada pada penempatan telapak kaki ini, sering diset pada 26 cm atau 23 cm tergantung protokol). Peserta kemudian mencondongkan tubuh perlahan ke depan, menggapai mistar sejauh mungkin dengan kedua ujung jari tangan tumpang tindih, dan menahannya selama minimal 2 detik. Hasil klasifikasi dicatat dalam satuan cm, di mana skor di atas titik kaki menunjukkan kelenturan yang lebih baik, sedangkan skor sebelum mencapai kaki sering diinterpretasikan kurang (ACSM, 2018).</p>
+<div class="divider"></div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Kekuatan Otot</div>
+<p>Kekuatan otot adalah energi yang dapat dihasilkan otot pada kontraksi maksimal. Penurunan kekuatan otot ini akan mengganggu keseimbangan tubuh dan peningkatan risiko jatuh.</p>
+<p><strong>Pengukuran kekuatan otot</strong><br>
+Dapat menggunakan alat <em>dynamometer</em> (satuan kg atau lb) guna mendapatkan angka kekuatan isometrik maksimum.
+Sebagai contoh, pada <em>hand grip strength test</em>, peserta diminta memegang dinamometer di samping tubuh dengan sudut siku yang sesuai protokol (biasanya ditekuk 90 derajat atau lurus di samping badan), kemudian meremas sekuat-kuatnya tanpa mengayunkan lengan, dan mengembuskan napas saat mengerahkan tenaga. Pengukuran diulang 2-3 kali untuk masing-masing tangan, lalu diambil nilai terbaik atau rata-rata. Hasil akhirnya diinterpretasikan menggunakan tabel norma untuk rentang usia dan jenis kelamin tertentu. Jenis tes kekuatan lain yang dilakukan dapat berupa kekuatan isometrik pada punggung (<em>back strength test</em>), tungkai (<em>leg strength test</em>), serta uji dinamis dorongan/tarikan repetisi 1RM (<em>One-Repetition Maximum</em>) untuk mengevaluasi kelompok otot utama (Heyward and Gibson, 2014).</p>
+<div class="divider"></div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Ketahanan Otot</div>
+<p>Adalah kemampuan otot untuk melakukan kontraksi yang berulang – ulang terhadap suatu beban submaksimal dalam jangka waktu tertentu. Ketahanan otot menggambarkan kemampuan untuk mengatasi kelelahan.</p>
+<p><strong>Pengukuran ketahanan otot</strong><br>
+Metode untuk mengukur ketahanan otot (<em>muscular endurance</em>) sering difokuskan pada uji repetisi maksimum dalam durasi batasan waktu tertentu (misalnya repetisi 1 menit) atau penyelesaian tes tanpa henti. Sebagai contoh, tes <em>push-up</em> atau tes <em>curl-up (sit-up)</em> dimonitor berdasarkan jumlah gerakan dengan postur yang sempurna dalam durasi 1 menit. Norma kebugaran ditentukan dari jumlah repetisi sah yang mampu dilakukan peserta dibandingkan dengan tabel klasifikasi usia yang standar (ACSM, 2018). Tes ini mengevaluasi daya tahan serat otot rangka dalam menggunakan ATP dari jalur glikolisis anaerobik sebelum terjadinya asidosis laktat yang menghambat kontraksi.</p>
+<div class="divider"></div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Ketahanan Jantung – Paru / Kesanggupan Kardiovaskuler</div>
+<p>Merupakan kesanggupan sistem jantung – paru dan pembuluh darah dalam mengambil oksigen dan menyalurkannya ke seluruh tubuh terutama jaringan yang aktif sehingga dapat digunakan pada proses metabolisme tubuh.
+Besarnya ketahanan jantung paru diukur dengan menilai volume oksigen maksimal yang dapat digunakan oleh tubuh (VO<sub>2</sub>max).</p>
+<p>Beberapa metode dapat digunakan untuk mengukur VO<sub>2</sub>max, baik tes uji klinis maksimun/submaksimum di laboratorium (seperti menggunakan <em>treadmill</em> atau <em>cycle ergometer</em>) maupun tes yang dilakukan di lapangan berupa <em>Harvard Step Test</em>, <em>Balke Test</em>, atau <em>12-minute Cooper Test</em>. 
+Sebagai contoh komprehensif, pada <em>Harvard Step Test</em>, peserta diminta naik-turun bangku setinggi 45 cm (18 inci) dengan kecepatan tetap 30 langkah per menit (metronom pada 120 ketukan/menit) selama 5 menit. Setelah selesai, denyut nadi pemulihan (DN) dihitung selama periode istirahat (menit 1-1.5, 2-2.5, dan 3-3.5). Indeks Kebugaran Fisik (IKF) kemudian dihitung dengan formula: <br>
+<strong>IKF = [Durasi tes dalam detik × 100] / [2 × (Jumlah Denyut Nadi 1 + 2 + 3)]</strong>. <br>
+Hasil indeks &gt;90 diklasifikasikan sangat baik, sementara &lt;55 dikategorikan buruk (Heyward and Gibson, 2014).</p>
+<div class="divider"></div>
+</div>
+<div class="sub-panel " id="tab-faktorpengukuran">
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Faktor Yang Berpengaruh Terhadap Kebugaran Fisik</div>
+<div class="ind-grid">
+<div class="ind-card"><strong>1. Keturunan (Genetika)</strong><br>Faktor bawaan memengaruhi komposisi jenis serat otot (rasio <em>slow-twitch</em> vs <em>fast-twitch fibers</em>) serta kapasitas basal fungsional jantung dan paru-paru seseorang (Bouchard et al., 1999).</div>
+<div class="ind-card"><strong>2. Usia</strong><br>Seiring bertambahnya umur, terjadi penurunan <em>Maximal Heart Rate</em>, hilangnya massa otot (sarkopenia), dan penurunan elastisitas jaringan ikat sendi yang dapat menurunkan skor kebugaran absolut.</div>
+<div class="ind-card"><strong>3. Jenis Kelamin</strong><br>Hormon testosteron pada pria mendukung hipertrofi otot dan kepadatan massa tulang lebih tinggi, sedangkan kapasitas angkut oksigen wanita lebih rendah akibat kadar hemoglobin yang secara alamiah lebih sedikit (ACSM, 2018).</div>
+<div class="ind-card"><strong>4. Gizi</strong><br>Pemenuhan makronutrien mendukung cadangan glikogen otot untuk energi, sintesis protein otot, dan ketersediaan mikronutrien (besi dan vitamin B-kompleks) untuk metabolisme aerobik serta pencegahan kelelahan dini.</div>
+<div class="ind-card"><strong>5. Gaya Hidup</strong><br>Merokok mengurangi saturasi oksigen (akibat peningkatan karboksihemoglobin), alkohol mendepresi sistem saraf pusat dan menyebabkan dehidrasi, sementara tingkat aktivitas fisik harian/rutinitas olahraga secara kronis memperbesar adaptasi hipertrofik dan hemodinamik jantung (ACSM, 2018).</div>
+</div>
+
+<div class="divider"></div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Manfaat Pengukuran Kebugaran Fisik</div>
+<ul>
+<li>Mengetahui tingkat kebugaran fisik seseorang.</li>
+<li>Mengetahui adanya kelainan atau penyakit seseorang.</li>
+<li>Membuat program latihan fisik yang sesuai.</li>
+<li>Mengevaluasi hasil program latihan fisik yang telah dilakukan.</li>
+</ul>
+
+<div class="divider"></div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Indikasi Kontra Pengukuran Kebugaran Fisik</div>
+<p>Berdasarkan pedoman skrining kesehatan sebelum latihan <em>American College of Sports Medicine</em> (ACSM, 2018), indikasi kontra dalam evaluasi uji fisik dapat diklasifikasikan sebagai absolut maupun relatif:</p>
+<p><strong>Indikasi kontra absolut</strong></p>
+<ul>
+<li>Infark miokard akut</li>
+<li>Angina yang tidak stabil</li>
+<li>Aritmia ventrikel dan atrium</li>
+<li>Gagal jantung kongestif</li>
+<li>Stenosis aorta</li>
+<li>Miokarditis atau Perikarditis aktif atau yang masih diduga</li>
+<li>Tromboflebitis atau trombi intra kardial</li>
+<li>Emboli paru atau sistemik</li>
+<li>Infeksi akut</li>
+<li>Blok jantung</li>
+</ul>
+
+<p><strong>Indikasi kontra relatif</strong></p>
+<ul>
+<li>Tekanan darah sistolik &gt;= 160 mmHg</li>
+<li>Tekanan darah diastolik &gt;= 100 mmHg</li>
+<li>Digitalisasi</li>
+<li>Kelainan elektrolit yang telah diketahui (hipokalemia, hipomagnesemia)</li>
+<li>Aneurisma ventrikular</li>
+<li>Kardiomiopati</li>
+<li>Penyakit katup jantung sedang.</li>
+<li>Alat pacu jantung yang berfrekuensi tetap.</li>
+<li>Penyakit metabolik yang tidak terkontrol (diabetes melitus, tirotoksikosis, dan miksedema)</li>
+<li>Penyakit infeksi kronis (hepatitis, AIDS, mononukleosis)</li>
+<li>Kelainan neuromuskuler, muskuloskeletal, atau rematoid yang dapat diperparah dengan melakukan aktivitas fisik.</li>
+<li>Kehamilan</li>
+</ul>
+
+<div class="divider"></div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Urutan Pengukuran Kebugaran Fisik</div>
+
+<div style="text-align: center; margin: 20px 0;">
+<div style="background:#fff;padding:10px;border-radius:8px;margin:10px 0;text-align:center;border:1px solid var(--border);overflow-x:auto;"><svg style="max-width:100%; height:auto;" id="container" width="372.0625" xmlns="http://www.w3.org/2000/svg" class="flowchart" height="1171.625" viewBox="0 0 372.0625 1171.625" role="graphics-document document" aria-roledescription="flowchart-v2"><style>#container{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#container .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#container .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#container .error-icon{fill:#552222;}#container .error-text{fill:#552222;stroke:#552222;}#container .edge-thickness-normal{stroke-width:1px;}#container .edge-thickness-thick{stroke-width:3.5px;}#container .edge-pattern-solid{stroke-dasharray:0;}#container .edge-thickness-invisible{stroke-width:0;fill:none;}#container .edge-pattern-dashed{stroke-dasharray:3;}#container .edge-pattern-dotted{stroke-dasharray:2;}#container .marker{fill:#333333;stroke:#333333;}#container .marker.cross{stroke:#333333;}#container svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#container p{margin:0;}#container .label{font-family:"trebuchet ms",verdana,arial,sans-serif;color:#333;}#container .cluster-label text{fill:#333;}#container .cluster-label span{color:#333;}#container .cluster-label span p{background-color:transparent;}#container .label text,#container span{fill:#333;color:#333;}#container .node rect,#container .node circle,#container .node ellipse,#container .node polygon,#container .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#container .rough-node .label text,#container .node .label text,#container .image-shape .label,#container .icon-shape .label{text-anchor:middle;}#container .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#container .rough-node .label,#container .node .label,#container .image-shape .label,#container .icon-shape .label{text-align:center;}#container .node.clickable{cursor:pointer;}#container .root .anchor path{fill:#333333!important;stroke-width:0;stroke:#333333;}#container .arrowheadPath{fill:#333333;}#container .edgePath .path{stroke:#333333;stroke-width:1px;}#container .flowchart-link{stroke:#333333;fill:none;}#container .edgeLabel{background-color:rgba(232,232,232, 0.8);text-align:center;}#container .edgeLabel p{background-color:rgba(232,232,232, 0.8);}#container .edgeLabel rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#container .labelBkg{background-color:rgba(232, 232, 232, 0.5);}#container .cluster rect{fill:#ffffde;stroke:#aaaa33;stroke-width:1px;}#container .cluster text{fill:#333;}#container .cluster span{color:#333;}#container div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:12px;background:hsl(80, 100%, 96.2745098039%);border:1px solid #aaaa33;border-radius:2px;pointer-events:none;z-index:100;}#container .flowchartTitleText{text-anchor:middle;font-size:18px;fill:#333;}#container rect.text{fill:none;stroke-width:0;}#container .icon-shape,#container .image-shape{background-color:rgba(232,232,232, 0.8);text-align:center;}#container .icon-shape p,#container .image-shape p{background-color:rgba(232,232,232, 0.8);padding:2px;}#container .icon-shape .label rect,#container .image-shape .label rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#container .label-icon{display:inline-block;height:1em;overflow:visible;vertical-align:-0.125em;}#container .node .label-icon path{fill:currentColor;stroke:revert;stroke-width:revert;}#container .node .neo-node{stroke:#9370DB;}#container [data-look="neo"].node rect,#container [data-look="neo"].cluster rect,#container [data-look="neo"].node polygon{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node path{stroke:#9370DB;stroke-width:1px;}#container [data-look="neo"].node .outer-path{filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node .neo-line path{stroke:#9370DB;filter:none;}#container [data-look="neo"].node circle{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node circle .state-start{fill:#000000;}#container [data-look="neo"].icon-shape .icon{fill:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].icon-shape .icon-neo path{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g><marker id="container_flowchart-v2-pointEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="4.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 5 L 10 10 L 10 0 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointEnd-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="11.5" refY="7" markerUnits="userSpaceOnUse" markerWidth="10.5" markerHeight="14" orient="auto"><path d="M 0 0 L 11.5 7 L 0 14 z" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointStart-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="1" refY="7" markerUnits="userSpaceOnUse" markerWidth="11.5" markerHeight="14" orient="auto"><polygon points="0,7 11.5,14 11.5,0" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></polygon></marker><marker id="container_flowchart-v2-circleEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="11" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-1" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleEnd-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refY="5" refX="12.25" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleStart-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-2" refY="5" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-crossEnd" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="12" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-crossStart" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="-1" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-crossEnd-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="17.7" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5;"></path></marker><marker id="container_flowchart-v2-crossStart-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="-3.5" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5; stroke-dasharray: 1, 0;"></path></marker><g class="root"><g class="clusters"></g><g class="edgePaths"><path d="M224.563,62L224.563,66.167C224.563,70.333,224.563,78.667,224.563,86.333C224.563,94,224.563,101,224.563,104.5L224.563,108" id="container-L_A_B_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_A_B_0" data-points="W3sieCI6MjI0LjU2MjUsInkiOjYyfSx7IngiOjIyNC41NjI1LCJ5Ijo4N30seyJ4IjoyMjQuNTYyNSwieSI6MTEyfV0=" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M224.563,190L224.563,194.167C224.563,198.333,224.563,206.667,224.563,214.333C224.563,222,224.563,229,224.563,232.5L224.563,236" id="container-L_B_C_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_B_C_0" data-points="W3sieCI6MjI0LjU2MjUsInkiOjE5MH0seyJ4IjoyMjQuNTYyNSwieSI6MjE1fSx7IngiOjIyNC41NjI1LCJ5IjoyNDB9XQ==" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M191.983,371.046L182.986,384.642C173.989,398.239,155.994,425.432,146.997,446.528C138,467.625,138,482.625,138,490.125L138,497.625" id="container-L_C_D_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_C_D_0" data-points="W3sieCI6MTkxLjk4MzM0MTcxOTM3ODk2LCJ5IjozNzEuMDQ1ODQxNzE5Mzc4OX0seyJ4IjoxMzgsInkiOjQ1Mi42MjV9LHsieCI6MTM4LCJ5Ijo1MDEuNjI1fV0=" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M138,579.625L138,583.792C138,587.958,138,596.292,144.112,612.039C150.225,627.786,162.45,650.947,168.562,662.528L174.675,674.108" id="container-L_D_E_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_D_E_0" data-points="W3sieCI6MTM4LCJ5Ijo1NzkuNjI1fSx7IngiOjEzOCwieSI6NjA0LjYyNX0seyJ4IjoxNzYuNTQxNzk2NTgyNjg4OTYsInkiOjY3Ny42NDU3MDM0MTczMTExfV0=" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M272.583,677.646L279.007,665.476C285.43,653.305,298.278,628.965,304.701,606.128C311.125,583.292,311.125,561.958,311.125,536.625C311.125,511.292,311.125,481.958,302.496,454.251C293.866,426.544,276.608,400.463,267.978,387.422L259.349,374.382" id="container-L_E_C_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_E_C_0" data-points="W3sieCI6MjcyLjU4MzIwMzQxNzMxMTA0LCJ5Ijo2NzcuNjQ1NzAzNDE3MzExMX0seyJ4IjozMTEuMTI1LCJ5Ijo2MDQuNjI1fSx7IngiOjMxMS4xMjUsInkiOjU0MC42MjV9LHsieCI6MzExLjEyNSwieSI6NDUyLjYyNX0seyJ4IjoyNTcuMTQxNjU4MjgwNjIxMSwieSI6MzcxLjA0NTg0MTcxOTM3ODl9XQ==" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M224.563,907.625L224.563,913.792C224.563,919.958,224.563,932.292,224.563,943.958C224.563,955.625,224.563,966.625,224.563,972.125L224.563,977.625" id="container-L_E_F_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_E_F_0" data-points="W3sieCI6MjI0LjU2MjUsInkiOjkwNy42MjV9LHsieCI6MjI0LjU2MjUsInkiOjk0NC42MjV9LHsieCI6MjI0LjU2MjUsInkiOjk4MS42MjV9XQ==" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M224.563,1059.625L224.563,1063.792C224.563,1067.958,224.563,1076.292,224.563,1083.958C224.563,1091.625,224.563,1098.625,224.563,1102.125L224.563,1105.625" id="container-L_F_G_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_F_G_0" data-points="W3sieCI6MjI0LjU2MjUsInkiOjEwNTkuNjI1fSx7IngiOjIyNC41NjI1LCJ5IjoxMDg0LjYyNX0seyJ4IjoyMjQuNTYyNSwieSI6MTEwOS42MjV9XQ==" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" data-id="L_A_B_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_B_C_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(138, 452.625)"><g class="label" data-id="L_C_D_0" transform="translate(-100, -24)"><foreignObject width="200" height="48"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table; white-space: break-spaces; line-height: 1.5; max-width: 200px; text-align: center; width: 200px;"><span class="edgeLabel"><p>Denyut Nadi Mendekati Istirahat</p></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_D_E_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(311.125, 540.625)"><g class="label" data-id="L_E_C_0" transform="translate(-8.125, -12)"><foreignObject width="16.25" height="24"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"><p>Ya</p></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(224.5625, 944.625)"><g class="label" data-id="L_E_F_0" transform="translate(-19.625, -12)"><foreignObject width="39.25" height="24"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"><p>Tidak</p></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_F_G_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g></g><g class="nodes"><g class="node default" id="container-flowchart-A-0" data-look="classic" transform="translate(224.5625, 35)"><rect class="basic label-container" style="" x="-94.6484375" y="-27" width="189.296875" height="54"></rect><g class="label" style="" transform="translate(-64.6484375, -12)"><rect></rect><foreignObject width="129.296875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Mulai Pengukuran</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-B-1" data-look="classic" transform="translate(224.5625, 151)"><rect class="basic label-container" style="" x="-130" y="-39" width="260" height="78"></rect><g class="label" style="" transform="translate(-100, -24)"><rect></rect><foreignObject width="200" height="48"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table; white-space: break-spaces; line-height: 1.5; max-width: 200px; text-align: center; width: 200px;"><span class="nodeLabel"><p>Komponen dengan Kelelahan Paling Ringan</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-C-3" data-look="classic" transform="translate(224.5625, 321.8125)"><polygon points="81.8125,0 163.625,-81.8125 81.8125,-163.625 0,-81.8125" class="label-container" transform="translate(-81.3125, 81.8125)"></polygon><g class="label" style="" transform="translate(-54.8125, -12)"><rect></rect><foreignObject width="109.625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Waktu Istirahat</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-D-5" data-look="classic" transform="translate(138, 540.625)"><rect class="basic label-container" style="" x="-130" y="-39" width="260" height="78"></rect><g class="label" style="" transform="translate(-100, -24)"><rect></rect><foreignObject width="200" height="48"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table; white-space: break-spaces; line-height: 1.5; max-width: 200px; text-align: center; width: 200px;"><span class="nodeLabel"><p>Pengukuran Komponen Selanjutnya</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-E-7" data-look="classic" transform="translate(224.5625, 768.625)"><polygon points="139,0 278,-139 139,-278 0,-139" class="label-container" transform="translate(-138.5, 139)"></polygon><g class="label" style="" transform="translate(-100, -24)"><rect></rect><foreignObject width="200" height="48"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table; white-space: break-spaces; line-height: 1.5; max-width: 200px; text-align: center; width: 200px;"><span class="nodeLabel"><p>Apakah Ada Komponen Lain?</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-F-11" data-look="classic" transform="translate(224.5625, 1020.625)"><rect class="basic label-container" style="" x="-130" y="-39" width="260" height="78"></rect><g class="label" style="" transform="translate(-100, -24)"><rect></rect><foreignObject width="200" height="48"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table; white-space: break-spaces; line-height: 1.5; max-width: 200px; text-align: center; width: 200px;"><span class="nodeLabel"><p>Komponen dengan Kelelahan Paling Berat</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-G-13" data-look="classic" transform="translate(224.5625, 1136.625)"><rect class="basic label-container" style="" x="-100.5078125" y="-27" width="201.015625" height="54"></rect><g class="label" style="" transform="translate(-70.5078125, -12)"><rect></rect><foreignObject width="141.015625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Selesai Pengukuran</p></span></div></foreignObject></g></g></g></g></g><defs><filter id="container-drop-shadow" height="130%" width="130%"><feDropShadow dx="4" dy="4" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs><defs><filter id="container-drop-shadow-small" height="150%" width="150%"><feDropShadow dx="2" dy="2" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs></svg></div>
+</div>
+
+<ul>
+<li>Pengukuran dimulai dengan komponen kebugaran fisik yang memberikan tingkat kelelahan yang paling ringan.</li>
+<li>Selang waktu pengukuran antar komponen kebugaran fisik disesuaikan dengan tingkat pemulihan peserta tes (denyut nadi sudah mendekati denyut nadi istirahat).</li>
+<li>Komponen kebugaran fisik yang memberikan tingkat kelelahan yang paling berat dilakukan terakhir.</li>
+<li>Jumlah peserta tes (perorangan atau massal)</li>
+</ul>
+
+<div class="divider"></div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Kriteria Penghentian Pengukuran Kebugaran Fisik</div>
+<p>Penghentian tes sangat esensial untuk mencegah kejadian fatal/henti jantung tiba-tiba. Menurut pedoman standar keselamatan uji latihan fisik (ACSM, 2018), tes wajib dihentikan bila:</p>
+<div class="note red">
+<ul>
+<li>Timbul keluhan nyeri atau tertekan di daerah dada (iskemia), nyeri yang menjalar dari tangan kiri ke dagu, jantung berdebar-debar (denyut jantung yang tidak teratur), sesak napas di luar batas proporsional, kepala terasa ringan, pusing/ataksia, mual, dan rasa lelah yang berlebihan.</li>
+<li>Peserta tampak pucat, bingung, sianosis (berkurangnya perfusi darah tepi), perubahan irama jantung (seperti munculnya PVC multi-fokal), kulit dingin, dan lembab.</li>
+<li>Peningkatan tekanan darah sistolik dan diastolik yang berlebihan secara abnormal (TD sistolik &gt; 250 mmHg, TD diastolik &gt; 115 mmHg), atau penurunan TDS &gt; 10 mmHg di tengah intensitas beban kerja yang meningkat.</li>
+<li>Permintaan peserta tes.</li>
+<li>Kegagalan perangkat uji pengukuran (elektrokardiografi atau ergometer).</li>
+</ul>
+</div>
+
+<div class="divider"></div>
+
+<div class="sec-h">Daftar Pustaka</div>
+<ul style="list-style-type:none; padding-left:0; margin-left:0;">
+<li style="margin-bottom:10px; padding-left:30px; text-indent:-30px;">ACSM (American College of Sports Medicine) (2018) <em>ACSM's Guidelines for Exercise Testing and Prescription</em>. 10th edn. Philadelphia: Wolters Kluwer.</li>
+<li style="margin-bottom:10px; padding-left:30px; text-indent:-30px;">Bouchard, C. et al. (1999) 'Familial aggregation of VO2max response to exercise training: results from the HERITAGE Family Study', <em>Journal of Applied Physiology</em>, 87(3), pp. 1003-1008.</li>
+<li style="margin-bottom:10px; padding-left:30px; text-indent:-30px;">Corbin, C.B., Pangrazi, R.P. and Franks, B.D. (2000) 'Definitions: Health, fitness, and physical activity', <em>President's Council on Physical Fitness and Sports Research Digest</em>, 3(9), pp. 1-8.</li>
+<li style="margin-bottom:10px; padding-left:30px; text-indent:-30px;">Garber, C.E. et al. (2011) 'American College of Sports Medicine position stand. Quantity and quality of exercise for developing and maintaining cardiorespiratory, musculoskeletal, and neuromotor fitness in apparently healthy adults: guidance for prescribing exercise', <em>Medicine and Science in Sports and Exercise</em>, 43(7), pp. 1334-1359.</li>
+<li style="margin-bottom:10px; padding-left:30px; text-indent:-30px;">Heyward, V.H. and Gibson, A.L. (2014) <em>Advanced Fitness Assessment and Exercise Prescription</em>. 7th edn. Champaign: Human Kinetics.</li>
+<li style="margin-bottom:10px; padding-left:30px; text-indent:-30px;">WHO (World Health Organization) (2008) <em>Waist Circumference and Waist-Hip Ratio: Report of a WHO Expert Consultation</em>. Geneva: World Health Organization.</li>
+<li style="margin-bottom:10px; padding-left:30px; text-indent:-30px;">WHO WPRO (World Health Organization Regional Office for the Western Pacific) (2000) <em>The Asia-Pacific Perspective: Redefining Obesity and its Treatment</em>. Sydney: Health Communications Australia.</li>
+</ul>
+</div>
+
+</div>
+
+<!-- QUIZ -->
+<div class="main-panel" id="mp-quiz">
+  <div id="qconfig" class="qconfig">
+    <div class="qconfig-title">Mulai Sesi Quiz</div>
+    <div class="qconfig-sub">Pilih topik (multi-pilih)</div>
+    <div class="cfg-grid" id="cfg-grid">
+<button class="cfg-btn sel" data-type="pool_definisi_manfaat">Definisi Manfaat</button>
+<button class="cfg-btn sel" data-type="pool_komponen_health_skill">Komponen Health Skill</button>
+<button class="cfg-btn sel" data-type="pool_komposisi_tubuh_teori">Komposisi Tubuh Teori</button>
+<button class="cfg-btn sel" data-type="pool_fleksibilitas_kekuatan_ketahanan_teori">Fleksibilitas Kekuatan Keta...</button>
+<button class="cfg-btn sel" data-type="pool_kardio_teori">Kardio Teori</button>
+<button class="cfg-btn sel" data-type="pool_faktor_pengaruh">Faktor Pengaruh</button>
+<button class="cfg-btn sel" data-type="pool_indikasi_kontra_teori">Indikasi Kontra Teori</button>
+<button class="cfg-btn sel" data-type="pool_urutan_penghentian_teori">Urutan Penghentian Teori</button>
+<button class="cfg-btn sel" data-type="pool_cases_komposisi">Cases Komposisi</button>
+<button class="cfg-btn sel" data-type="pool_cases_cardio_ikf">Cases Cardio Ikf</button>
+<button class="cfg-btn sel" data-type="pool_cases_kontra_henti">Cases Kontra Henti</button>
+
+</div>
+    <button class="start-btn" onclick="startSession()">Mulai →</button>
+  </div>
+  <div id="qactive" style="display:none">
+    <div class="qheader">
+      <div class="qnum-display">Soal ke-<strong id="qnum">1</strong></div>
+      <div id="qpill" class="qtype-pill"></div>
+      <div class="qscore-display"><strong id="qscore">0</strong> benar</div>
+    </div>
+    <div class="qcard">
+      <div id="qscen" class="qscen" style="display:none"></div>
+      <div id="qdata" class="qdata" style="display:none"></div>
+      <div id="qtext" class="qtext"></div>
+    </div>
+    <div class="opts" id="opts"></div>
+    <div class="expbox" id="expbox"></div>
+    <div class="actrow">
+      <button class="next-btn" id="nextbtn" onclick="nextQ()">Soal Berikutnya →</button>
+      <button class="end-btn" onclick="endSession()">Akhiri Sesi</button>
+    </div>
+  </div>
+  <div id="qresults" style="display:none">
+    <div class="results-wrap">
+      <div class="res-big" id="res-pct">—</div>
+      <div class="res-sub" id="res-sub">—</div>
+      <div class="res-grid" id="res-grid"></div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:20px">
+        <button class="retry-btn" style="margin-bottom:0" onclick="restartQuiz()">Coba Lagi</button>
+        <button class="retry-btn" style="margin-bottom:0;background:var(--green)" onclick="downloadCert()">⬇ Unduh Sertifikat</button>
+      </div>
+      <div class="dtable-wrap" style="margin-bottom:14px"><table><thead><tr><th>Topik</th><th>Soal</th><th>Benar</th></tr></thead><tbody id="res-bytype"></tbody></table></div>
+      <div class="dtable-wrap"><table><thead><tr><th>#</th><th>Soal (ringkas)</th><th>Jawaban Benar</th><th>Hasil</th></tr></thead><tbody id="res-tbody"></tbody></table></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div>am i fit? · Blok 2.5 · FK Unsoed</div>
+  <div style="margin-top:5px">crafted by alchemist4real · <a href="https://174-three.vercel.app" target="_blank" style="color:var(--text3);text-decoration:none;border-bottom:1px dashed var(--text3);transition:color .18s" onmouseover="this.style.color='var(--blue)'" onmouseout="this.style.color='var(--text3)'">check other quizzes → 174 archive ↗</a></div>
+</footer>
+</div>
+
+<script>
+// ═══ TAB ═══
+window.switchMain=function(id,b){document.querySelectorAll('.main-panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.main-tab').forEach(x=>x.classList.remove('active'));document.getElementById('mp-'+id).classList.add('active');b.classList.add('active');};
+window.switchSub=function(id,b){document.querySelectorAll('.sub-panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.sub-tab').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');b.classList.add('active');};
+window.startSession=startSession;window.nextQ=nextQ;window.endSession=endSession;window.restartQuiz=restartQuiz;
+
+// ═══ CONFIG ═══
+const activeTypes=new Set(['pool_definisi_manfaat','pool_komponen_health_skill','pool_komposisi_tubuh_teori','pool_fleksibilitas_kekuatan_ketahanan_teori','pool_kardio_teori','pool_faktor_pengaruh','pool_indikasi_kontra_teori','pool_urutan_penghentian_teori','pool_cases_komposisi','pool_cases_cardio_ikf','pool_cases_kontra_henti']);
+document.querySelectorAll('.cfg-btn').forEach(b=>{b.addEventListener('click',()=>{const t=b.dataset.type;if(activeTypes.has(t)){if(activeTypes.size===1)return;activeTypes.delete(t);b.classList.remove('sel');}else{activeTypes.add(t);b.classList.add('sel');}});});
+
+// ═══ UTILS ═══
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const shuf=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]];}return b;};
+const KEYS='ABCDE'.split('');
+function stripHtml(s){return s.replace(/<[^>]*>/g,'');}
+// Pool-based sequential picker (no repeat until exhausted)
+function makePicker(pool){let idx=[];return function(){if(idx.length>=pool.length)idx=[];const av=pool.map((_,i)=>i).filter(i=>!idx.includes(i));const si=rnd(av);idx.push(si);return pool[si];};}
+
+// ═══════════════════════════════════════
+// BANKS
+// ═══════════════════════════════════════
+const pool_definisi_manfaat = [
+    {
+      pertanyaan: `Menurut Corbin et al. (2000), definisi kebugaran fisik adalah kemampuan melaksanakan aktivitas fisik sehari-hari dengan kesigapan tanpa...`,
+      pilihan: [`Rasa lapar`, `Kelelahan`, `Berkeringat`, `Nyeri sendi`, `Peningkatan denyut jantung`],
+      jawaban: `Kelelahan`,
+      pembahasan: `Kebugaran fisik adalah kemampuan melaksanakan aktivitas sehari-hari tanpa kelelahan berarti, menyisakan tenaga untuk aktivitas luang dan darurat.`
+    },
+    {
+      pertanyaan: `Salah satu tujuan dan manfaat utama dari pengukuran kebugaran fisik yang paling tepat dalam ranah medis klinis adalah...`,
+      pilihan: [`Meningkatkan kapasitas maksimal kerja otot`, `Mengetahui adanya kelainan atau penyakit pada seseorang`, `Menurunkan berat badan secara drastis`, `Menjadikan pasien sebagai atlet profesional`, `Meningkatkan massa tulang secara instan`],
+      jawaban: `Mengetahui adanya kelainan atau penyakit pada seseorang`,
+      pembahasan: `Manfaat pengukuran kebugaran fisik meliputi mengetahui tingkat kebugaran, mengetahui adanya kelainan/penyakit, membuat program latihan, dan mengevaluasinya.`
+    },
+    {
+      pertanyaan: `Apa ciri utama dari seseorang yang memiliki kebugaran fisik yang optimal?`,
+      pilihan: [`Tidur lebih dari 10 jam sehari`, `Tidak pernah merasa lapar`, `Mampu merespon kondisi darurat tanpa kehabisan tenaga`, `Tidak memiliki massa lemak sama sekali`, `Memiliki ukuran otot ekstrem`],
+      jawaban: `Mampu merespon kondisi darurat tanpa kehabisan tenaga`,
+      pembahasan: `Seseorang dengan kebugaran yang baik dapat melakukan tugas sehari-hari tanpa lelah berlebih dan masih menyisakan tenaga untuk latihan fisik maupun kondisi darurat.`
+    },
+    {
+      pertanyaan: `Di bawah ini yang TIDAK termasuk manfaat pengukuran kebugaran fisik adalah...`,
+      pilihan: [`Mengetahui tingkat kebugaran fisik`, `Mengevaluasi hasil program latihan fisik`, `Mendiagnosis jenis kanker pada stadium awal secara pasti`, `Membuat program latihan fisik yang sesuai`, `Mengetahui adanya kelainan pada respon kardiovaskuler`],
+      jawaban: `Mendiagnosis jenis kanker pada stadium awal secara pasti`,
+      pembahasan: `Pengukuran kebugaran fisik bukan alat diagnosis definitif untuk jenis atau stadium kanker, melainkan menilai kebugaran dan kelainan yang timbul karena respon olahraga.`
+    },
+    {
+      pertanyaan: `Dalam konteks kebugaran fisik, menyisakan tenaga di waktu luang dan saat keadaan 'darurat' dimaksudkan agar...`,
+      pilihan: [`Pasien bisa menghindari olahraga harian`, `Otot tidak pernah masuk fase katabolik`, `Tubuh siap merespons beban fisik di luar kebiasaan secara tiba-tiba tanpa cedera atau kolaps`, `Pasien selalu berada pada zona denyut jantung istirahat`, `Laju metabolisme basal menurun`],
+      jawaban: `Tubuh siap merespons beban fisik di luar kebiasaan secara tiba-tiba tanpa cedera atau kolaps`,
+      pembahasan: `Definisi 'darurat' dalam kebugaran fisik mengacu pada kemampuan menghadapi beban fisik mendadak atau luar biasa tanpa mengalami kelelahan atau kolaps.`
+    },
+  ];
+const pick_pool_definisi_manfaat = makePicker(pool_definisi_manfaat);
+const pool_komponen_health_skill = [
+    {
+      pertanyaan: `Komponen 'Komposisi tubuh' termasuk ke dalam kategori...`,
+      pilihan: [`Skill-related fitness`, `Health-related fitness`, `Neuromotor fitness`, `Psychomotor fitness`, `Metabolic fitness`],
+      jawaban: `Health-related fitness`,
+      pembahasan: `Health-related fitness meliputi komposisi tubuh, fleksibilitas, kekuatan otot, ketahanan otot, dan ketahanan jantung paru.`
+    },
+    {
+      pertanyaan: `Komponen 'Fleksibilitas' termasuk ke dalam kategori...`,
+      pilihan: [`Skill-related fitness`, `Health-related fitness`, `Neuromotor fitness`, `Psychomotor fitness`, `Metabolic fitness`],
+      jawaban: `Health-related fitness`,
+      pembahasan: `Health-related fitness meliputi komposisi tubuh, fleksibilitas, kekuatan otot, ketahanan otot, dan ketahanan jantung paru.`
+    },
+    {
+      pertanyaan: `Komponen 'Kekuatan otot' termasuk ke dalam kategori...`,
+      pilihan: [`Skill-related fitness`, `Health-related fitness`, `Neuromotor fitness`, `Psychomotor fitness`, `Metabolic fitness`],
+      jawaban: `Health-related fitness`,
+      pembahasan: `Health-related fitness meliputi komposisi tubuh, fleksibilitas, kekuatan otot, ketahanan otot, dan ketahanan jantung paru.`
+    },
+    {
+      pertanyaan: `Komponen 'Ketahanan otot' termasuk ke dalam kategori...`,
+      pilihan: [`Skill-related fitness`, `Health-related fitness`, `Neuromotor fitness`, `Psychomotor fitness`, `Metabolic fitness`],
+      jawaban: `Health-related fitness`,
+      pembahasan: `Health-related fitness meliputi komposisi tubuh, fleksibilitas, kekuatan otot, ketahanan otot, dan ketahanan jantung paru.`
+    },
+    {
+      pertanyaan: `Komponen 'Ketahanan jantung paru' termasuk ke dalam kategori...`,
+      pilihan: [`Skill-related fitness`, `Health-related fitness`, `Neuromotor fitness`, `Psychomotor fitness`, `Metabolic fitness`],
+      jawaban: `Health-related fitness`,
+      pembahasan: `Health-related fitness meliputi komposisi tubuh, fleksibilitas, kekuatan otot, ketahanan otot, dan ketahanan jantung paru.`
+    },
+    {
+      pertanyaan: `Komponen 'Speed' termasuk ke dalam kategori...`,
+      pilihan: [`Health-related fitness`, `Skill-related fitness`, `Cardiovascular fitness`, `Endurance fitness`, `Composition fitness`],
+      jawaban: `Skill-related fitness`,
+      pembahasan: `Skill-related fitness berkaitan dengan keterampilan bertanding, meliputi Speed, Power, Agility, Balance, Coordination, dan Reaction time.`
+    },
+    {
+      pertanyaan: `Komponen 'Power' termasuk ke dalam kategori...`,
+      pilihan: [`Health-related fitness`, `Skill-related fitness`, `Cardiovascular fitness`, `Endurance fitness`, `Composition fitness`],
+      jawaban: `Skill-related fitness`,
+      pembahasan: `Skill-related fitness berkaitan dengan keterampilan bertanding, meliputi Speed, Power, Agility, Balance, Coordination, dan Reaction time.`
+    },
+    {
+      pertanyaan: `Komponen 'Agility' termasuk ke dalam kategori...`,
+      pilihan: [`Health-related fitness`, `Skill-related fitness`, `Cardiovascular fitness`, `Endurance fitness`, `Composition fitness`],
+      jawaban: `Skill-related fitness`,
+      pembahasan: `Skill-related fitness berkaitan dengan keterampilan bertanding, meliputi Speed, Power, Agility, Balance, Coordination, dan Reaction time.`
+    },
+    {
+      pertanyaan: `Komponen 'Balance' termasuk ke dalam kategori...`,
+      pilihan: [`Health-related fitness`, `Skill-related fitness`, `Cardiovascular fitness`, `Endurance fitness`, `Composition fitness`],
+      jawaban: `Skill-related fitness`,
+      pembahasan: `Skill-related fitness berkaitan dengan keterampilan bertanding, meliputi Speed, Power, Agility, Balance, Coordination, dan Reaction time.`
+    },
+    {
+      pertanyaan: `Komponen 'Coordination' termasuk ke dalam kategori...`,
+      pilihan: [`Health-related fitness`, `Skill-related fitness`, `Cardiovascular fitness`, `Endurance fitness`, `Composition fitness`],
+      jawaban: `Skill-related fitness`,
+      pembahasan: `Skill-related fitness berkaitan dengan keterampilan bertanding, meliputi Speed, Power, Agility, Balance, Coordination, dan Reaction time.`
+    },
+    {
+      pertanyaan: `Komponen 'Reaction time' termasuk ke dalam kategori...`,
+      pilihan: [`Health-related fitness`, `Skill-related fitness`, `Cardiovascular fitness`, `Endurance fitness`, `Composition fitness`],
+      jawaban: `Skill-related fitness`,
+      pembahasan: `Skill-related fitness berkaitan dengan keterampilan bertanding, meliputi Speed, Power, Agility, Balance, Coordination, dan Reaction time.`
+    },
+    {
+      pertanyaan: `Manakah dari berikut ini yang tujuan utamanya menurunkan risiko penyakit degeneratif seperti DM tipe 2 dan penyakit kardiovaskuler?`,
+      pilihan: [`Skill-related fitness`, `Health-related fitness`, `Reaction time training`, `Agility training`, `Powerlifting competition`],
+      jawaban: `Health-related fitness`,
+      pembahasan: `Health-related fitness bertujuan menurunkan resiko penyakit degeneratif seperti stroke, kardiovaskuler, DM tipe 2, dan beberapa jenis kanker.`
+    },
+    {
+      pertanyaan: `Seorang atlet senam memerlukan kelincahan, keseimbangan, dan daya ledak (power). Semua kemampuan ini secara dominan diklasifikasikan sebagai...`,
+      pilihan: [`Health-related fitness`, `Aerobic capacity`, `Skill-related fitness`, `Anthropometric fitness`, `Body composition parameters`],
+      jawaban: `Skill-related fitness`,
+      pembahasan: `Kelincahan (agility), keseimbangan (balance), dan power termasuk dalam skill-related fitness.`
+    },
+    {
+      pertanyaan: `Di bawah ini yang BUKAN merupakan komponen Health-related fitness adalah...`,
+      pilihan: [`Fleksibilitas`, `Kekuatan otot`, `Komposisi tubuh`, `Agility`, `Ketahanan kardiovaskuler`],
+      jawaban: `Agility`,
+      pembahasan: `Agility (kelincahan) termasuk dalam komponen Skill-related fitness.`
+    },
+    {
+      pertanyaan: `Komponen yang paling berpengaruh secara langsung pada performa saat bertanding dalam suatu cabang olahraga ketangkasan adalah...`,
+      pilihan: [`Health-related fitness`, `Skill-related fitness`, `Faktor keturunan murni`, `Persentase massa lemak`, `Fleksibilitas otot isometrik`],
+      jawaban: `Skill-related fitness`,
+      pembahasan: `Skill related berhubungan dengan keterampilan yang menentukan performa saat bertanding.`
+    },
+  ];
+const pick_pool_komponen_health_skill = makePicker(pool_komponen_health_skill);
+const pool_komposisi_tubuh_teori = [
+    {
+      pertanyaan: `Massa jaringan bebas lemak (lean body mass) terdiri dari komponen berikut, KECUALI...`,
+      pilihan: [`Otot`, `Tulang`, `Organ-organ tubuh`, `Air`, `Jaringan Adiposa`],
+      jawaban: `Jaringan Adiposa`,
+      pembahasan: `Komposisi tubuh rasio massa jaringan bebas lemak (otot, tulang, air, organ) dengan massa lemak (adiposa).`
+    },
+    {
+      pertanyaan: `Berapakah rata-rata persentase jaringan tulang dari keseluruhan massa tubuh tanpa lemak?`,
+      pilihan: [`40 - 50%`, `16 - 18%`, `29 - 39%`, `5 - 10%`, `50 - 60%`],
+      jawaban: `16 - 18%`,
+      pembahasan: `Massa tubuh tanpa lemak rata-rata terdiri dari massa otot 40-50%, jaringan tulang 16-18%, dan organ tubuh lainnya 29-39%.`
+    },
+    {
+      pertanyaan: `Pengukuran lingkar pinggang (waist circumference) digunakan sebagai indikator utama untuk menilai penumpukan lemak pada area...`,
+      pilihan: [`Subkutan tungkai`, `Visceral`, `Intramuskular`, `Gluteofemoral`, `Retroorbital`],
+      jawaban: `Visceral`,
+      pembahasan: `Lingkar pinggang merupakan indikator penumpukan lemak visceral.`
+    },
+    {
+      pertanyaan: `Bagaimana teknik pengukuran lingkar pinggang yang benar menurut standar medis (sejajar umbilikus)?`,
+      pilihan: [`Tepat pada panggul terlebar`, `Di bawah simfisis pubis`, `Titik tengah antara batas bawah kosta dengan batas atas krista iliaka`, `Titik sejajar iga ke-5`, `Pada ujung prosesus xiphoideus`],
+      jawaban: `Titik tengah antara batas bawah kosta dengan batas atas krista iliaka`,
+      pembahasan: `Pengukuran melingkar sejajar umbilikus pada lokasi titik tengah antara batas bawah kosta dengan batas atas krista iliaka.`
+    },
+    {
+      pertanyaan: `Mengapa klasifikasi IMT untuk kawasan Asia-Pasifik menggunakan batas yang lebih rendah (misal: Obesitas I dimulai dari IMT 25) dibandingkan standar Kaukasia?`,
+      pilihan: [`Tulang orang Asia lebih padat`, `Risiko kardiometabolik pada ras Asia sudah mulai meningkat pada IMT yang lebih rendah`, `Tinggi badan rata-rata Asia lebih pendek secara genetik tanpa variasi`, `Orang Asia memiliki massa otot yang lebih dominan secara proporsional`, `Metabolisme basal orang Asia dua kali lebih cepat`],
+      jawaban: `Risiko kardiometabolik pada ras Asia sudah mulai meningkat pada IMT yang lebih rendah`,
+      pembahasan: `Risiko kardiometabolik pada ras Asia sudah mulai meningkat pada IMT yang lebih rendah dibandingkan populasi Kaukasia.`
+    },
+    {
+      pertanyaan: `Berdasarkan standar IMT Asia-Pasifik (WHO WPRO, 2000), nilai IMT 23 - 24,9 kg/m2 dikategorikan sebagai...`,
+      pilihan: [`Normal`, `Overweight`, `Obesitas I`, `Obesitas II`, `Underweight`],
+      jawaban: `Overweight`,
+      pembahasan: `Klasifikasi IMT Asia Pasifik: <18.5 (underweight), 18.5-22.9 (normal), 23-24.9 (overweight), 25-29.9 (obesitas I), >=30 (obesitas II).`
+    },
+    {
+      pertanyaan: `Seseorang digolongkan memiliki risiko persentase lemak tubuh (berisiko kurang/berlebih tingkat fatal) jika hasil laki-laki menunjukkan...`,
+      pilihan: [`15%`, `16 - 24%`, `<= 5% atau >= 25%`, `6 - 14%`, `23%`],
+      jawaban: `<= 5% atau >= 25%`,
+      pembahasan: `Untuk laki-laki, persentase lemak <=5% atau >=25% diklasifikasikan sebagai 'Berisiko'.`
+    },
+    {
+      pertanyaan: `Ambang batas lingkar pinggang berisiko penyakit kardiovaskuler menurut WHO untuk populasi wanita Asia adalah...`,
+      pilihan: [`>= 90 cm`, `>= 80 cm`, `>= 102 cm`, `>= 88 cm`, `>= 75 cm`],
+      jawaban: `>= 80 cm`,
+      pembahasan: `Batas berisiko lingkar pinggang populasi Asia: Laki-laki >= 90 cm, Perempuan >= 80 cm.`
+    },
+  ];
+const pick_pool_komposisi_tubuh_teori = makePicker(pool_komposisi_tubuh_teori);
+const pool_fleksibilitas_kekuatan_ketahanan_teori = [
+    {
+      pertanyaan: `Keleluasaan gerak tubuh pada persendian (fleksibilitas) tidak dipengaruhi oleh faktor berikut, KECUALI...`,
+      pilihan: [`Kecepatan konduksi saraf eferen`, `Kepadatan mineral tulang (BMD)`, `Elastisitas otot, tendon, dan ligamen`, `Jumlah sel darah merah`, `Tebal lapisan lemak subkutan`],
+      jawaban: `Elastisitas otot, tendon, dan ligamen`,
+      pembahasan: `Fleksibilitas sangat dipengaruhi oleh elastisitas otot, tendon, ligamen sekitar sendi, dan struktur sendi itu sendiri.`
+    },
+    {
+      pertanyaan: `Pengukuran fleksibilitas otot punggung bawah dan paha belakang (hamstring) umumnya menggunakan tes...`,
+      pilihan: [`Curl-up test`, `Hand grip dynamometer`, `Sit and reach test`, `Balke test`, `1RM leg press`],
+      jawaban: `Sit and reach test`,
+      pembahasan: `Sit and reach test digunakan untuk mengukur fleksibilitas/kelenturan otot punggung dan belakang paha.`
+    },
+    {
+      pertanyaan: `Dalam sit and reach test menggunakan box, jika jari peserta belum mencapai ujung kaki, maka hasilnya sering diinterpretasikan sebagai...`,
+      pilihan: [`Sangat baik`, `Berisiko tinggi ruptur`, `Kurang`, `Cukup`, `Fleksibel maksimal`],
+      jawaban: `Kurang`,
+      pembahasan: `Skor di atas titik kaki menunjukkan kelenturan yang lebih baik, sedangkan skor sebelum mencapai kaki sering diinterpretasikan kurang.`
+    },
+    {
+      pertanyaan: `Kemampuan otot untuk melakukan kontraksi yang berulang-ulang terhadap suatu beban submaksimal dalam jangka waktu tertentu disebut...`,
+      pilihan: [`Kekuatan otot (Muscular strength)`, `Ketahanan otot (Muscular endurance)`, `Kardiorespirasi`, `Fleksibilitas isometrik`, `Power`],
+      jawaban: `Ketahanan otot (Muscular endurance)`,
+      pembahasan: `Ketahanan otot adalah kontraksi berulang terhadap beban submaksimal untuk mengatasi kelelahan.`
+    },
+    {
+      pertanyaan: `Energi yang dapat dihasilkan otot pada satu kontraksi maksimal (1RM) merupakan definisi dari...`,
+      pilihan: [`Ketahanan otot`, `Daya ledak (power)`, `Kekuatan otot`, `Kelenturan otot`, `Ketahanan aerobik`],
+      jawaban: `Kekuatan otot`,
+      pembahasan: `Kekuatan otot adalah energi yang dihasilkan pada kontraksi maksimal (contoh uji repetisi 1RM atau dyamometer).`
+    },
+    {
+      pertanyaan: `Salah satu risiko klinis utama yang berkaitan dengan penurunan kekuatan otot pada lansia adalah...`,
+      pilihan: [`Kebutaan`, `Peningkatan risiko jatuh`, `Asma bronkial`, `Ulkus peptikum`, `Tuli sensorineural`],
+      jawaban: `Peningkatan risiko jatuh`,
+      pembahasan: `Penurunan kekuatan otot akan mengganggu keseimbangan tubuh dan meningkatkan risiko jatuh.`
+    },
+    {
+      pertanyaan: `Uji curl-up (sit-up) atau push-up dalam durasi 1 menit digunakan untuk menilai...`,
+      pilihan: [`Ketahanan jantung paru`, `Fleksibilitas lumbal`, `Kekuatan isometrik`, `Ketahanan otot`, `Daya ledak anaerobik alaktik`],
+      jawaban: `Ketahanan otot`,
+      pembahasan: `Tes repetisi 1 menit (push-up/curl-up) digunakan untuk mengukur muscular endurance (ketahanan otot).`
+    },
+    {
+      pertanyaan: `Pengukuran menggunakan alat Hand Grip Dynamometer digunakan untuk mengevaluasi...`,
+      pilihan: [`Kekuatan dinamis`, `Kekuatan isometrik maksimum lengan`, `Ketahanan statis 1 menit`, `Fleksibilitas pergelangan tangan`, `Kecepatan reaksi neuromuskuler`],
+      jawaban: `Kekuatan isometrik maksimum lengan`,
+      pembahasan: `Dynamometer mengukur kekuatan isometrik maksimum. Hand grip mengukur kekuatan genggaman secara isometrik.`
+    },
+    {
+      pertanyaan: `Tes ketahanan otot secara fisiologis mengevaluasi ketahanan serat otot rangka dalam menggunakan ATP dari jalur glikolisis...`,
+      pilihan: [`Aerobik sebelum cadangan lemak habis`, `Anaerobik sebelum terjadinya asidosis laktat`, `Fosfokreatin untuk ledakan energi singkat`, `Beta-oksidasi asam lemak bebas`, `Siklus Cori sistemik`],
+      jawaban: `Anaerobik sebelum terjadinya asidosis laktat`,
+      pembahasan: `Tes ketahanan mengevaluasi serat otot menggunakan glikolisis anaerobik sebelum terjadinya asidosis laktat yang menghambat kontraksi.`
+    },
+    {
+      pertanyaan: `Prosedur bernapas yang tepat saat melakukan hand grip strength test atau uji angkat beban (1RM) untuk mencegah Valsalva maneuver berbahaya adalah...`,
+      pilihan: [`Menahan napas selama kontraksi`, `Mengembuskan napas saat mengerahkan tenaga maksimal (exertion)`, `Menarik napas sedalam-dalamnya saat kontraksi maksimal`, `Napas pendek-pendek (panting) sepanjang tes`, `Ekspirasi dipaksa setelah beban dilepas sepenuhnya`],
+      jawaban: `Mengembuskan napas saat mengerahkan tenaga maksimal (exertion)`,
+      pembahasan: `Saat tes kekuatan, peserta diinstruksikan mengembuskan napas saat mengerahkan tenaga (exhale on exertion) untuk menghindari lonjakan tekanan darah (Valsalva).`
+    },
+  ];
+const pick_pool_fleksibilitas_kekuatan_ketahanan_teori = makePicker(pool_fleksibilitas_kekuatan_ketahanan_teori);
+const pool_kardio_teori = [
+    {
+      pertanyaan: `Ketahanan Jantung Paru diukur berdasarkan parameter fisiologis utama, yaitu...`,
+      pilihan: [`Denyut jantung istirahat (RHR)`, `Volume oksigen maksimal (VO2max)`, `Tekanan darah sistolik maksimal`, `Kapasitas vital paru (FVC)`, `Konsentrasi asam laktat maksimal`],
+      jawaban: `Volume oksigen maksimal (VO2max)`,
+      pembahasan: `Besarnya ketahanan jantung paru diukur dengan menilai volume oksigen maksimal yang dapat digunakan oleh tubuh (VO2max).`
+    },
+    {
+      pertanyaan: `Metode laboratorium (gold standard klinis) untuk mengukur kapasitas jantung-paru (VO2max) menggunakan...`,
+      pilihan: [`Harvard Step Test`, `12-minute Cooper Test`, `Treadmill atau cycle ergometer dengan analisis gas pernapasan`, `Sit and reach box`, `Balke test lapangan`],
+      jawaban: `Treadmill atau cycle ergometer dengan analisis gas pernapasan`,
+      pembahasan: `Tes uji lab menggunakan treadmill atau cycle ergometer, sedangkan di lapangan menggunakan Balke, Cooper, Harvard.`
+    },
+    {
+      pertanyaan: `Berikut ini yang merupakan tes lapangan (field test) untuk mengevaluasi ketahanan kardiovaskuler adalah...`,
+      pilihan: [`12-minute Cooper Test`, `Hand grip dynamometer`, `1RM Bench Press`, `Skinfold caliper test`, `Sit-up 1 menit`],
+      jawaban: `12-minute Cooper Test`,
+      pembahasan: `Tes lapangan jantung paru: Harvard Step Test, Balke Test, 12-minute Cooper Test.`
+    },
+    {
+      pertanyaan: `Dalam protokol baku Harvard Step Test, tinggi bangku yang digunakan adalah...`,
+      pilihan: [`30 cm`, `40 cm`, `45 cm (18 inci)`, `50 cm`, `60 cm`],
+      jawaban: `45 cm (18 inci)`,
+      pembahasan: `Peserta naik turun bangku setinggi 45 cm (18 inci).`
+    },
+    {
+      pertanyaan: `Irama kecepatan naik-turun pada Harvard Step Test adalah...`,
+      pilihan: [`10 langkah/menit`, `20 langkah/menit`, `30 langkah/menit (120 ketukan metronom)`, `45 langkah/menit`, `Sebisanya peserta tes tanpa metronom`],
+      jawaban: `30 langkah/menit (120 ketukan metronom)`,
+      pembahasan: `Kecepatan tetap 30 langkah per menit, setara dengan metronom 120 ketukan/menit, selama 5 menit.`
+    },
+    {
+      pertanyaan: `Indeks Kebugaran Fisik (IKF) hasil dari Harvard Step Test dikategorikan buruk apabila hasilnya menunjukkan angka...`,
+      pilihan: [`< 55`, `< 65`, `< 75`, `< 90`, `> 90`],
+      jawaban: `< 55`,
+      pembahasan: `Hasil indeks >90 sangat baik, sementara <55 dikategorikan buruk.`
+    },
+    {
+      pertanyaan: `Pada Harvard Step Test, denyut nadi pemulihan (DN) dihitung pada periode istirahat di menit...`,
+      pilihan: [`Menit 0-1, 1-2, dan 2-3`, `Menit 1-1.5, 2-2.5, dan 3-3.5`, `Hanya satu kali pada menit ke 5`, `Menit 0-0.5, 1-1.5, 2-2.5`, `Menit 5, 10, dan 15 pemulihan`],
+      jawaban: `Menit 1-1.5, 2-2.5, dan 3-3.5`,
+      pembahasan: `Setelah selesai tes (5 menit), denyut nadi pemulihan dihitung pada menit 1-1.5, 2-2.5, dan 3-3.5.`
+    },
+  ];
+const pick_pool_kardio_teori = makePicker(pool_kardio_teori);
+const pool_faktor_pengaruh = [
+    {
+      pertanyaan: `Rasio bawaan antara slow-twitch dan fast-twitch muscle fibers pada seseorang sangat dipengaruhi oleh faktor...`,
+      pilihan: [`Gizi`, `Gaya hidup`, `Keturunan (Genetika)`, `Usia`, `Suhu lingkungan`],
+      jawaban: `Keturunan (Genetika)`,
+      pembahasan: `Faktor keturunan (genetika) memengaruhi komposisi serat otot (slow vs fast) serta kapasitas fungsional jantung paru.`
+    },
+    {
+      pertanyaan: `Bertambahnya usia memengaruhi penurunan tingkat kebugaran secara fisiologis karena hal-hal berikut, KECUALI...`,
+      pilihan: [`Sarkopenia (hilangnya massa otot)`, `Penurunan Maximal Heart Rate`, `Peningkatan hipertrofi sel otot rangka secara spontan`, `Penurunan elastisitas jaringan ikat sendi`, `Penurunan skor kebugaran absolut`],
+      jawaban: `Peningkatan hipertrofi sel otot rangka secara spontan`,
+      pembahasan: `Bertambahnya usia menyebabkan sarkopenia, penurunan elastisitas ikat, penurunan MHR, BUKAN peningkatan hipertrofi spontan.`
+    },
+    {
+      pertanyaan: `Mengapa rata-rata pria memiliki kapasitas angkut oksigen yang sedikit lebih tinggi daripada wanita sebelum pubertas dan masa dewasa?`,
+      pilihan: [`Wanita tidak memiliki hormon tiroid yang cukup`, `Pria tidak memiliki hormon estrogen sama sekali`, `Kadar hemoglobin pada pria lebih tinggi, sementara kapasitas angkut oksigen wanita lebih rendah akibat kadar hemoglobin alamiah yang lebih sedikit`, `Jantung wanita berdetak jauh lebih lambat`, `Alveolus pria berukuran dua kali lipat`],
+      jawaban: `Kadar hemoglobin pada pria lebih tinggi, sementara kapasitas angkut oksigen wanita lebih rendah akibat kadar hemoglobin alamiah yang lebih sedikit`,
+      pembahasan: `Kapasitas angkut oksigen wanita lebih rendah karena kadar hemoglobin yang secara alamiah lebih sedikit.`
+    },
+    {
+      pertanyaan: `Hormon yang mendukung terbentuknya hipertrofi otot dan kepadatan massa tulang yang lebih tinggi pada laki-laki adalah...`,
+      pilihan: [`Estrogen`, `Testosteron`, `Progesteron`, `Kortisol`, `Tiroksin`],
+      jawaban: `Testosteron`,
+      pembahasan: `Hormon testosteron mendukung hipertrofi otot dan kepadatan massa tulang.`
+    },
+    {
+      pertanyaan: `Faktor mikronutrien yang sangat berperan penting dalam pencegahan kelelahan dini dan kelancaran metabolisme aerobik (pembentukan sel darah merah) adalah...`,
+      pilihan: [`Kalsium dan Fosfor`, `Natrium dan Kalium`, `Besi dan Vitamin B-kompleks`, `Vitamin C dan Zinc`, `Yodium dan Selenium`],
+      jawaban: `Besi dan Vitamin B-kompleks`,
+      pembahasan: `Ketersediaan mikronutrien (besi dan vitamin B-kompleks) penting untuk metabolisme aerobik dan pencegahan kelelahan dini.`
+    },
+    {
+      pertanyaan: `Gaya hidup yang sangat merugikan dengan mekanisme mengikat hemoglobin (membentuk karboksihemoglobin) sehingga menurunkan saturasi oksigen adalah...`,
+      pilihan: [`Konsumsi alkohol berlebih`, `Kurang tidur malam`, `Merokok`, `Konsumsi kafein`, `Over-training syndrome`],
+      jawaban: `Merokok`,
+      pembahasan: `Merokok mengurangi saturasi oksigen akibat peningkatan karboksihemoglobin (COHb).`
+    },
+    {
+      pertanyaan: `Dampak negatif utama konsumsi alkohol sesaat sebelum melakukan aktivitas olahraga fisik adalah...`,
+      pilihan: [`Meningkatkan laju sintesis glikogen`, `Mendepresi sistem saraf pusat dan memicu dehidrasi`, `Meningkatkan daya ledak anaerobik`, `Menurunkan denyut jantung maksimal menjadi bradikardia akut`, `Melebarkan pembuluh darah ke tingkat optimal (vasodilatasi fungsional)`],
+      jawaban: `Mendepresi sistem saraf pusat dan memicu dehidrasi`,
+      pembahasan: `Alkohol mendepresi SSP (menurunkan reaksi dan koordinasi) serta memiliki efek diuretik yang menyebabkan dehidrasi.`
+    },
+  ];
+const pick_pool_faktor_pengaruh = makePicker(pool_faktor_pengaruh);
+const pool_indikasi_kontra_teori = [
+    {
+      pertanyaan: `Berdasarkan ACSM, manakah dari kondisi berikut yang merupakan INDIKASI KONTRA ABSOLUT untuk dilakukan uji kebugaran fisik?`,
+      pilihan: [`Hipertensi dengan TD Sistol 165 mmHg`, `Angina yang tidak stabil (Unstable Angina)`, `Kehamilan`, `Penyakit metabolik terkontrol`, `Kardiomiopati kompensata`],
+      jawaban: `Angina yang tidak stabil (Unstable Angina)`,
+      pembahasan: `Angina tidak stabil merupakan kontra indikasi absolut. Kehamilan, hipertensi >160, dan kardiomiopati adalah indikasi relatif.`
+    },
+    {
+      pertanyaan: `Jika seorang pasien datang dengan tekanan darah sistolik 165 mmHg dan diastolik 105 mmHg, tes kebugaran fisik...`,
+      pilihan: [`Tetap dilanjutkan karena itu batas normal`, `Dikontraindikasikan secara relatif`, `Dikontraindikasikan secara absolut`, `Langsung diuji dengan protokol maksimal/VO2max`, `Diperbolehkan jika pasien diberikan alkohol`],
+      jawaban: `Dikontraindikasikan secara relatif`,
+      pembahasan: `TD sistolik >= 160 atau diastolik >= 100 termasuk indikasi kontra relatif.`
+    },
+    {
+      pertanyaan: `Pasien dengan riwayat Miokarditis atau Perikarditis aktif, apakah boleh mengikuti uji fisik (seperti Harvard step test)?`,
+      pilihan: [`Boleh, tes akan membantu penyembuhan miokard`, `Boleh, asal menggunakan beban ringan`, `Tidak boleh, ini adalah indikasi kontra absolut`, `Boleh, setelah minum antibiotik dosis tinggi`, `Tergantung persetujuan peserta`],
+      jawaban: `Tidak boleh, ini adalah indikasi kontra absolut`,
+      pembahasan: `Miokarditis/perikarditis aktif merupakan indikasi kontra absolut uji latihan fisik.`
+    },
+    {
+      pertanyaan: `Tromboflebitis akut atau emboli paru sistemik merupakan...`,
+      pilihan: [`Indikasi kontra relatif`, `Indikasi kontra absolut`, `Kondisi yang dianjurkan untuk rehabilitasi sepeda statis segera`, `Tanda pasien memiliki kebugaran anaerobik tinggi`, `Tidak masalah jika pasien merasa kuat`],
+      jawaban: `Indikasi kontra absolut`,
+      pembahasan: `Tromboflebitis, trombi intracardial, emboli paru merupakan indikasi kontra absolut menghindari risiko emboli fatal saat olahraga.`
+    },
+    {
+      pertanyaan: `Manakah dari berikut ini yang merupakan indikasi kontra RELATIF?`,
+      pilihan: [`Infark miokard akut (AMI)`, `Kelainan elektrolit (hipokalemia, hipomagnesemia)`, `Stenosis aorta bergejala`, `Gagal jantung kongestif akut`, `Blok jantung komplit tanpa pacemaker`],
+      jawaban: `Kelainan elektrolit (hipokalemia, hipomagnesemia)`,
+      pembahasan: `Kelainan elektrolit adalah indikasi relatif. Sisanya adalah absolut.`
+    },
+    {
+      pertanyaan: `Pasien dengan infeksi kronis seperti Hepatitis, AIDS, atau Mononukleosis...`,
+      pilihan: [`Sama sekali dilarang melakukan aktivitas fisik`, `Termasuk dalam indikasi kontra relatif uji latihan, tergantung evaluasi medis dokter`, `Harus diuji di ruangan dengan suhu di atas 35 derajat celcius`, `Merupakan kontra indikasi absolut`, `Akan sembuh jika dilakukan uji maksimal 1RM`],
+      jawaban: `Termasuk dalam indikasi kontra relatif uji latihan, tergantung evaluasi medis dokter`,
+      pembahasan: `Infeksi kronis (hepatitis, AIDS, mononukleosis) adalah indikasi kontra relatif.`
+    },
+    {
+      pertanyaan: `Penggunaan alat pacu jantung (pacemaker) dengan frekuensi detak yang tetap (fixed rate) diklasifikasikan sebagai...`,
+      pilihan: [`Kontraindikasi absolut tes submaksimal`, `Kontraindikasi relatif evaluasi uji fisik`, `Indikasi aman untuk treadmill maksimal`, `Peningkat performa VO2max`, `Tidak ada di pedoman ACSM`],
+      jawaban: `Kontraindikasi relatif evaluasi uji fisik`,
+      pembahasan: `Alat pacu jantung berfrekuensi tetap termasuk indikasi kontra relatif.`
+    },
+  ];
+const pick_pool_indikasi_kontra_teori = makePicker(pool_indikasi_kontra_teori);
+const pool_urutan_penghentian_teori = [
+    {
+      pertanyaan: `Aturan utama dalam urutan pelaksanaan pengukuran komponen kebugaran fisik majemuk (beberapa tes sekaligus) adalah...`,
+      pilihan: [`Dimulai dengan komponen yang memberikan tingkat kelelahan paling ringan`, `Dimulai dari VO2max agar tubuh masih segar`, `Dilakukan acak tanpa istirahat antar tes`, `Kekuatan maksimum (1RM) harus dilakukan di akhir saat kelelahan`, `Ketahanan kardio dilakukan pertama`],
+      jawaban: `Dimulai dengan komponen yang memberikan tingkat kelelahan paling ringan`,
+      pembahasan: `Urutan dimulai dari kelelahan paling ringan, diselingi istirahat (nadi mendekati normal), dan diakhiri kelelahan terberat.`
+    },
+    {
+      pertanyaan: `Berapa lama jeda istirahat antar komponen uji fisik yang direkomendasikan?`,
+      pilihan: [`Pasti 2 menit`, `Pasti 10 menit`, `Disamakan untuk semua peserta`, `Disesuaikan dengan tingkat pemulihan peserta (denyut nadi sudah mendekati denyut nadi istirahat)`, `Tidak ada istirahat`],
+      jawaban: `Disesuaikan dengan tingkat pemulihan peserta (denyut nadi sudah mendekati denyut nadi istirahat)`,
+      pembahasan: `Selang waktu pengukuran disesuaikan dengan tingkat pemulihan, ditandai nadi mendekati nadi istirahat.`
+    },
+    {
+      pertanyaan: `Kriteria WAJIB untuk segera menghentikan pengujian (test termination) meliputi tanda-tanda berikut, KECUALI...`,
+      pilihan: [`Pucat, sianosis (kulit kebiruan)`, `Timbul keluhan nyeri menjalar ke dagu/lengan kiri`, `Peningkatan denyut jantung dan keluarnya keringat saat beban latihan bertambah`, `TD diastolik > 115 mmHg`, `Pusing, ataksia, dan kebingungan`],
+      jawaban: `Peningkatan denyut jantung dan keluarnya keringat saat beban latihan bertambah`,
+      pembahasan: `Keringat dan peningkatan HR proporsional adalah respon fisiologis normal olahraga, BUKAN alasan untuk menghentikan tes.`
+    },
+    {
+      pertanyaan: `Bila saat tes treadmill dengan beban yang semakin ditingkatkan (inklinasi/kecepatan naik), tekanan darah sistolik peserta justru TURUN melebihi 10 mmHg secara menetap, apa yang harus dilakukan pemeriksa?`,
+      pilihan: [`Memberikan semangat agar berlari lebih kencang`, `Menghentikan tes segera karena ini respon abnormal miokard (iskemik/gagal pompa)`, `Menurunkan inklinasi sedikit dan melanjutkan sampai pasien lelah`, `Menunggu hingga pasien mengeluh sakit dada`, `Mencatat sebagai temuan normal atlet terlatih`],
+      jawaban: `Menghentikan tes segera karena ini respon abnormal miokard (iskemik/gagal pompa)`,
+      pembahasan: `Penurunan TD Sistolik >10 mmHg saat intensitas beban kerja naik adalah tanda gagal pompa / iskemia miokard berat dan tes wajib dihentikan.`
+    },
+    {
+      pertanyaan: `Jika pasien mengalami perubahan irama elektrokardiogram berupa PVC multi-fokal saat menjalani tes kebugaran klinis...`,
+      pilihan: [`Lanjutkan tes hingga tercapai Max HR`, `Beri air minum hangat lalu lanjutkan`, `Hentikan tes seketika`, `Kurangi beban 50% lalu lanjutkan`, `Suruh pasien menahan napas`],
+      jawaban: `Hentikan tes seketika`,
+      pembahasan: `Aritmia ventrikel parah seperti PVC multi-fokal adalah kriteria penghentian absolut tes berjalan.`
+    },
+    {
+      pertanyaan: `Kriteria tekanan darah hipertensif berlebih yang mengharuskan tes DIHENTIKAN di tengah-tengah pelaksanaan adalah...`,
+      pilihan: [`TD Sistolik > 180 atau Diastolik > 100`, `TD Sistolik > 200 atau Diastolik > 90`, `TD Sistolik > 250 atau Diastolik > 115`, `TD Sistolik > 160 atau Diastolik > 95`, `TD diastolik > 85 mmHg`],
+      jawaban: `TD Sistolik > 250 atau Diastolik > 115`,
+      pembahasan: `Peningkatan sistolik > 250 mmHg atau diastolik > 115 mmHg memerlukan terminasi tes.`
+    },
+    {
+      pertanyaan: `Jika pasien yang tampak pucat dan kulitnya menjadi dingin (clammy) mengatakan 'Dok, saya masih kuat, lanjut saja', tindakan medis yang tepat adalah...`,
+      pilihan: [`Melanjutkan tes menghargai permintaan pasien`, `Menghentikan tes seketika karena tanda kegagalan perfusi tepi`, `Mengecek alat mungkin rusak`, `Meningkatkan intensitas agar pasien memanas`, `Menunggu nadi pasien anjlok baru dihentikan`],
+      jawaban: `Menghentikan tes seketika karena tanda kegagalan perfusi tepi`,
+      pembahasan: `Sianosis, pucat, kulit lembab dingin adalah tanda gagal perfusi (syok). Keputusan klinis menghentikan tes objektif di atas keinginan subjektif pasien.`
+    },
+  ];
+const pick_pool_urutan_penghentian_teori = makePicker(pool_urutan_penghentian_teori);
+const pool_cases_komposisi = [
+    {
+      pertanyaan: `Seorang pasien datang ke klinik dengan berat badan 45 kg dan tinggi badan 160 cm. Berdasarkan klasifikasi IMT untuk populasi Asia-Pasifik, pasien ini masuk dalam kategori...`,
+      pilihan: [`Underweight`, `Normal`, `Overweight`, `Obesitas I`, `Obesitas II`],
+      jawaban: `Underweight`,
+      pembahasan: `IMT = 45 / (1.6 x 1.6) = 17.58 kg/m2. Klasifikasi Asia: <18.5 (underweight), 18.5-22.9 (normal), 23-24.9 (overweight), 25-29.9 (obesitas I), >=30 (obesitas II). Hasil ini masuk Underweight.`
+    },
+    {
+      pertanyaan: `Seorang pasien datang ke klinik dengan berat badan 60 kg dan tinggi badan 165 cm. Berdasarkan klasifikasi IMT untuk populasi Asia-Pasifik, pasien ini masuk dalam kategori...`,
+      pilihan: [`Underweight`, `Normal`, `Overweight`, `Obesitas I`, `Obesitas II`],
+      jawaban: `Normal`,
+      pembahasan: `IMT = 60 / (1.65 x 1.65) = 22.04 kg/m2. Klasifikasi Asia: <18.5 (underweight), 18.5-22.9 (normal), 23-24.9 (overweight), 25-29.9 (obesitas I), >=30 (obesitas II). Hasil ini masuk Normal.`
+    },
+    {
+      pertanyaan: `Seorang pasien datang ke klinik dengan berat badan 70 kg dan tinggi badan 160 cm. Berdasarkan klasifikasi IMT untuk populasi Asia-Pasifik, pasien ini masuk dalam kategori...`,
+      pilihan: [`Underweight`, `Normal`, `Overweight`, `Obesitas I`, `Obesitas II`],
+      jawaban: `Obesitas I`,
+      pembahasan: `IMT = 70 / (1.6 x 1.6) = 27.34 kg/m2. Klasifikasi Asia: <18.5 (underweight), 18.5-22.9 (normal), 23-24.9 (overweight), 25-29.9 (obesitas I), >=30 (obesitas II). Hasil ini masuk Obesitas I.`
+    },
+    {
+      pertanyaan: `Seorang pasien datang ke klinik dengan berat badan 80 kg dan tinggi badan 165 cm. Berdasarkan klasifikasi IMT untuk populasi Asia-Pasifik, pasien ini masuk dalam kategori...`,
+      pilihan: [`Underweight`, `Normal`, `Overweight`, `Obesitas I`, `Obesitas II`],
+      jawaban: `Obesitas I`,
+      pembahasan: `IMT = 80 / (1.65 x 1.65) = 29.38 kg/m2. Klasifikasi Asia: <18.5 (underweight), 18.5-22.9 (normal), 23-24.9 (overweight), 25-29.9 (obesitas I), >=30 (obesitas II). Hasil ini masuk Obesitas I.`
+    },
+    {
+      pertanyaan: `Seorang pasien datang ke klinik dengan berat badan 95 kg dan tinggi badan 155 cm. Berdasarkan klasifikasi IMT untuk populasi Asia-Pasifik, pasien ini masuk dalam kategori...`,
+      pilihan: [`Underweight`, `Normal`, `Overweight`, `Obesitas I`, `Obesitas II`],
+      jawaban: `Obesitas II`,
+      pembahasan: `IMT = 95 / (1.55 x 1.55) = 39.54 kg/m2. Klasifikasi Asia: <18.5 (underweight), 18.5-22.9 (normal), 23-24.9 (overweight), 25-29.9 (obesitas I), >=30 (obesitas II). Hasil ini masuk Obesitas II.`
+    },
+    {
+      pertanyaan: `Seorang pasien datang ke klinik dengan berat badan 55 kg dan tinggi badan 150 cm. Berdasarkan klasifikasi IMT untuk populasi Asia-Pasifik, pasien ini masuk dalam kategori...`,
+      pilihan: [`Underweight`, `Normal`, `Overweight`, `Obesitas I`, `Obesitas II`],
+      jawaban: `Overweight`,
+      pembahasan: `IMT = 55 / (1.5 x 1.5) = 24.44 kg/m2. Klasifikasi Asia: <18.5 (underweight), 18.5-22.9 (normal), 23-24.9 (overweight), 25-29.9 (obesitas I), >=30 (obesitas II). Hasil ini masuk Overweight.`
+    },
+    {
+      pertanyaan: `Seorang pasien datang ke klinik dengan berat badan 100 kg dan tinggi badan 170 cm. Berdasarkan klasifikasi IMT untuk populasi Asia-Pasifik, pasien ini masuk dalam kategori...`,
+      pilihan: [`Underweight`, `Normal`, `Overweight`, `Obesitas I`, `Obesitas II`],
+      jawaban: `Obesitas II`,
+      pembahasan: `IMT = 100 / (1.7 x 1.7) = 34.6 kg/m2. Klasifikasi Asia: <18.5 (underweight), 18.5-22.9 (normal), 23-24.9 (overweight), 25-29.9 (obesitas I), >=30 (obesitas II). Hasil ini masuk Obesitas II.`
+    },
+    {
+      pertanyaan: `Seorang pasien datang ke klinik dengan berat badan 75 kg dan tinggi badan 150 cm. Berdasarkan klasifikasi IMT untuk populasi Asia-Pasifik, pasien ini masuk dalam kategori...`,
+      pilihan: [`Underweight`, `Normal`, `Overweight`, `Obesitas I`, `Obesitas II`],
+      jawaban: `Obesitas II`,
+      pembahasan: `IMT = 75 / (1.5 x 1.5) = 33.33 kg/m2. Klasifikasi Asia: <18.5 (underweight), 18.5-22.9 (normal), 23-24.9 (overweight), 25-29.9 (obesitas I), >=30 (obesitas II). Hasil ini masuk Obesitas II.`
+    },
+    {
+      pertanyaan: `Seorang Laki-laki berusia 45 tahun melakukan pemeriksaan lingkar pinggang dan didapatkan hasil 95 cm. Menurut panduan WHO populasi Asia, pasien ini tergolong...`,
+      pilihan: [`Tidak berisiko kardiovaskuler`, `Berisiko tinggi Kardiovaskuler`, `Kurang baik`, `Cukup`, `Underweight sentral`],
+      jawaban: `Berisiko tinggi Kardiovaskuler`,
+      pembahasan: `Batas LP Asia: L >= 90 cm, P >= 80 cm. Pasien Laki-laki dengan LP 95 cm berarti Berisiko tinggi Kardiovaskuler.`
+    },
+    {
+      pertanyaan: `Pasien Laki-laki mengukur komposisi tubuh menggunakan alat Bioelectrical Impedance Analysis (BIA). Hasil persentase lemak tubuhnya adalah 26%. Mengacu pada norma lemak esensial, klasifikasinya adalah...`,
+      pilihan: [`Berisiko`, `Kurang baik`, `Cukup`, `Sangat baik`, `Atlet elite`],
+      jawaban: `Berisiko`,
+      pembahasan: `Norma Lemak Laki: <=5 atau >=25 (Berisiko), 6-14 atau 16-24 (Kurang baik), 15 (Cukup). Perempuan: <=8 atau >=32 (Berisiko), 9-22 atau 24-31 (Kurang baik), 23 (Cukup). Hasil 26% untuk Laki-laki masuk kategori Berisiko.`
+    },
+    {
+      pertanyaan: `Seorang Laki-laki berusia 45 tahun melakukan pemeriksaan lingkar pinggang dan didapatkan hasil 85 cm. Menurut panduan WHO populasi Asia, pasien ini tergolong...`,
+      pilihan: [`Tidak berisiko kardiovaskuler`, `Berisiko tinggi Kardiovaskuler`, `Kurang baik`, `Cukup`, `Underweight sentral`],
+      jawaban: `Tidak berisiko kardiovaskuler`,
+      pembahasan: `Batas LP Asia: L >= 90 cm, P >= 80 cm. Pasien Laki-laki dengan LP 85 cm berarti Tidak berisiko kardiovaskuler.`
+    },
+    {
+      pertanyaan: `Pasien Laki-laki mengukur komposisi tubuh menggunakan alat Bioelectrical Impedance Analysis (BIA). Hasil persentase lemak tubuhnya adalah 15%. Mengacu pada norma lemak esensial, klasifikasinya adalah...`,
+      pilihan: [`Berisiko`, `Kurang baik`, `Cukup`, `Sangat baik`, `Atlet elite`],
+      jawaban: `Cukup`,
+      pembahasan: `Norma Lemak Laki: <=5 atau >=25 (Berisiko), 6-14 atau 16-24 (Kurang baik), 15 (Cukup). Perempuan: <=8 atau >=32 (Berisiko), 9-22 atau 24-31 (Kurang baik), 23 (Cukup). Hasil 15% untuk Laki-laki masuk kategori Cukup.`
+    },
+    {
+      pertanyaan: `Seorang Laki-laki berusia 45 tahun melakukan pemeriksaan lingkar pinggang dan didapatkan hasil 80 cm. Menurut panduan WHO populasi Asia, pasien ini tergolong...`,
+      pilihan: [`Tidak berisiko kardiovaskuler`, `Berisiko tinggi Kardiovaskuler`, `Kurang baik`, `Cukup`, `Underweight sentral`],
+      jawaban: `Tidak berisiko kardiovaskuler`,
+      pembahasan: `Batas LP Asia: L >= 90 cm, P >= 80 cm. Pasien Laki-laki dengan LP 80 cm berarti Tidak berisiko kardiovaskuler.`
+    },
+    {
+      pertanyaan: `Pasien Laki-laki mengukur komposisi tubuh menggunakan alat Bioelectrical Impedance Analysis (BIA). Hasil persentase lemak tubuhnya adalah 4%. Mengacu pada norma lemak esensial, klasifikasinya adalah...`,
+      pilihan: [`Berisiko`, `Kurang baik`, `Cukup`, `Sangat baik`, `Atlet elite`],
+      jawaban: `Berisiko`,
+      pembahasan: `Norma Lemak Laki: <=5 atau >=25 (Berisiko), 6-14 atau 16-24 (Kurang baik), 15 (Cukup). Perempuan: <=8 atau >=32 (Berisiko), 9-22 atau 24-31 (Kurang baik), 23 (Cukup). Hasil 4% untuk Laki-laki masuk kategori Berisiko.`
+    },
+    {
+      pertanyaan: `Seorang Laki-laki berusia 45 tahun melakukan pemeriksaan lingkar pinggang dan didapatkan hasil 100 cm. Menurut panduan WHO populasi Asia, pasien ini tergolong...`,
+      pilihan: [`Tidak berisiko kardiovaskuler`, `Berisiko tinggi Kardiovaskuler`, `Kurang baik`, `Cukup`, `Underweight sentral`],
+      jawaban: `Berisiko tinggi Kardiovaskuler`,
+      pembahasan: `Batas LP Asia: L >= 90 cm, P >= 80 cm. Pasien Laki-laki dengan LP 100 cm berarti Berisiko tinggi Kardiovaskuler.`
+    },
+    {
+      pertanyaan: `Pasien Laki-laki mengukur komposisi tubuh menggunakan alat Bioelectrical Impedance Analysis (BIA). Hasil persentase lemak tubuhnya adalah 20%. Mengacu pada norma lemak esensial, klasifikasinya adalah...`,
+      pilihan: [`Berisiko`, `Kurang baik`, `Cukup`, `Sangat baik`, `Atlet elite`],
+      jawaban: `Kurang baik`,
+      pembahasan: `Norma Lemak Laki: <=5 atau >=25 (Berisiko), 6-14 atau 16-24 (Kurang baik), 15 (Cukup). Perempuan: <=8 atau >=32 (Berisiko), 9-22 atau 24-31 (Kurang baik), 23 (Cukup). Hasil 20% untuk Laki-laki masuk kategori Kurang baik.`
+    },
+    {
+      pertanyaan: `Seorang Perempuan berusia 45 tahun melakukan pemeriksaan lingkar pinggang dan didapatkan hasil 85 cm. Menurut panduan WHO populasi Asia, pasien ini tergolong...`,
+      pilihan: [`Tidak berisiko kardiovaskuler`, `Berisiko tinggi Kardiovaskuler`, `Kurang baik`, `Cukup`, `Underweight sentral`],
+      jawaban: `Berisiko tinggi Kardiovaskuler`,
+      pembahasan: `Batas LP Asia: L >= 90 cm, P >= 80 cm. Pasien Perempuan dengan LP 85 cm berarti Berisiko tinggi Kardiovaskuler.`
+    },
+    {
+      pertanyaan: `Pasien Perempuan mengukur komposisi tubuh menggunakan alat Bioelectrical Impedance Analysis (BIA). Hasil persentase lemak tubuhnya adalah 35%. Mengacu pada norma lemak esensial, klasifikasinya adalah...`,
+      pilihan: [`Berisiko`, `Kurang baik`, `Cukup`, `Sangat baik`, `Atlet elite`],
+      jawaban: `Berisiko`,
+      pembahasan: `Norma Lemak Laki: <=5 atau >=25 (Berisiko), 6-14 atau 16-24 (Kurang baik), 15 (Cukup). Perempuan: <=8 atau >=32 (Berisiko), 9-22 atau 24-31 (Kurang baik), 23 (Cukup). Hasil 35% untuk Perempuan masuk kategori Berisiko.`
+    },
+    {
+      pertanyaan: `Seorang Perempuan berusia 45 tahun melakukan pemeriksaan lingkar pinggang dan didapatkan hasil 70 cm. Menurut panduan WHO populasi Asia, pasien ini tergolong...`,
+      pilihan: [`Tidak berisiko kardiovaskuler`, `Berisiko tinggi Kardiovaskuler`, `Kurang baik`, `Cukup`, `Underweight sentral`],
+      jawaban: `Tidak berisiko kardiovaskuler`,
+      pembahasan: `Batas LP Asia: L >= 90 cm, P >= 80 cm. Pasien Perempuan dengan LP 70 cm berarti Tidak berisiko kardiovaskuler.`
+    },
+    {
+      pertanyaan: `Pasien Perempuan mengukur komposisi tubuh menggunakan alat Bioelectrical Impedance Analysis (BIA). Hasil persentase lemak tubuhnya adalah 23%. Mengacu pada norma lemak esensial, klasifikasinya adalah...`,
+      pilihan: [`Berisiko`, `Kurang baik`, `Cukup`, `Sangat baik`, `Atlet elite`],
+      jawaban: `Cukup`,
+      pembahasan: `Norma Lemak Laki: <=5 atau >=25 (Berisiko), 6-14 atau 16-24 (Kurang baik), 15 (Cukup). Perempuan: <=8 atau >=32 (Berisiko), 9-22 atau 24-31 (Kurang baik), 23 (Cukup). Hasil 23% untuk Perempuan masuk kategori Cukup.`
+    },
+    {
+      pertanyaan: `Seorang Perempuan berusia 45 tahun melakukan pemeriksaan lingkar pinggang dan didapatkan hasil 90 cm. Menurut panduan WHO populasi Asia, pasien ini tergolong...`,
+      pilihan: [`Tidak berisiko kardiovaskuler`, `Berisiko tinggi Kardiovaskuler`, `Kurang baik`, `Cukup`, `Underweight sentral`],
+      jawaban: `Berisiko tinggi Kardiovaskuler`,
+      pembahasan: `Batas LP Asia: L >= 90 cm, P >= 80 cm. Pasien Perempuan dengan LP 90 cm berarti Berisiko tinggi Kardiovaskuler.`
+    },
+    {
+      pertanyaan: `Pasien Perempuan mengukur komposisi tubuh menggunakan alat Bioelectrical Impedance Analysis (BIA). Hasil persentase lemak tubuhnya adalah 15%. Mengacu pada norma lemak esensial, klasifikasinya adalah...`,
+      pilihan: [`Berisiko`, `Kurang baik`, `Cukup`, `Sangat baik`, `Atlet elite`],
+      jawaban: `Kurang baik`,
+      pembahasan: `Norma Lemak Laki: <=5 atau >=25 (Berisiko), 6-14 atau 16-24 (Kurang baik), 15 (Cukup). Perempuan: <=8 atau >=32 (Berisiko), 9-22 atau 24-31 (Kurang baik), 23 (Cukup). Hasil 15% untuk Perempuan masuk kategori Kurang baik.`
+    },
+    {
+      pertanyaan: `Seorang Perempuan berusia 45 tahun melakukan pemeriksaan lingkar pinggang dan didapatkan hasil 75 cm. Menurut panduan WHO populasi Asia, pasien ini tergolong...`,
+      pilihan: [`Tidak berisiko kardiovaskuler`, `Berisiko tinggi Kardiovaskuler`, `Kurang baik`, `Cukup`, `Underweight sentral`],
+      jawaban: `Tidak berisiko kardiovaskuler`,
+      pembahasan: `Batas LP Asia: L >= 90 cm, P >= 80 cm. Pasien Perempuan dengan LP 75 cm berarti Tidak berisiko kardiovaskuler.`
+    },
+    {
+      pertanyaan: `Pasien Perempuan mengukur komposisi tubuh menggunakan alat Bioelectrical Impedance Analysis (BIA). Hasil persentase lemak tubuhnya adalah 7%. Mengacu pada norma lemak esensial, klasifikasinya adalah...`,
+      pilihan: [`Berisiko`, `Kurang baik`, `Cukup`, `Sangat baik`, `Atlet elite`],
+      jawaban: `Berisiko`,
+      pembahasan: `Norma Lemak Laki: <=5 atau >=25 (Berisiko), 6-14 atau 16-24 (Kurang baik), 15 (Cukup). Perempuan: <=8 atau >=32 (Berisiko), 9-22 atau 24-31 (Kurang baik), 23 (Cukup). Hasil 7% untuk Perempuan masuk kategori Berisiko.`
+    },
+  ];
+const pick_pool_cases_komposisi = makePicker(pool_cases_komposisi);
+const pool_cases_cardio_ikf = [
+    {
+      pertanyaan: `Seorang mahasiswa kedokteran menjalani Harvard Step Test. Ia mampu bertahan selama 300 detik tanpa henti. Denyut nadi pemulihannya adalah: menit 1 (50x), menit 2 (45x), dan menit 3 (40x). Nilai Indeks Kebugaran Fisik (IKF) dan interpretasinya adalah...`,
+      pilihan: [`IKF 111.1 - Kategori Sangat baik`, `IKF 103.1 - Kategori Buruk`, `IKF 133.3 - Kategori Sangat Baik`, `IKF 126.1 - Kategori Cukup`, `IKF 111.1 - Kategori Berbahaya`],
+      jawaban: `IKF 111.1 - Kategori Sangat baik`,
+      pembahasan: `Rumus IKF = (Durasi detik x 100) / (2 x (Nadi1 + Nadi2 + Nadi3)). IKF = (300 x 100) / (2 x (50+45+40)) = 30000 / 270 = 111.1. Jika >90 Sangat baik, <55 Buruk.`
+    },
+    {
+      pertanyaan: `Seorang mahasiswa kedokteran menjalani Harvard Step Test. Ia mampu bertahan selama 300 detik tanpa henti. Denyut nadi pemulihannya adalah: menit 1 (90x), menit 2 (85x), dan menit 3 (80x). Nilai Indeks Kebugaran Fisik (IKF) dan interpretasinya adalah...`,
+      pilihan: [`IKF 58.8 - Kategori Cukup/Rata-rata`, `IKF 58.8 - Kategori Berbahaya`, `IKF 49.8 - Kategori Buruk`, `IKF 72.8 - Kategori Cukup`, `IKF 70.6 - Kategori Sangat Baik`],
+      jawaban: `IKF 58.8 - Kategori Cukup/Rata-rata`,
+      pembahasan: `Rumus IKF = (Durasi detik x 100) / (2 x (Nadi1 + Nadi2 + Nadi3)). IKF = (300 x 100) / (2 x (90+85+80)) = 30000 / 510 = 58.8. Jika >90 Sangat baik, <55 Buruk.`
+    },
+    {
+      pertanyaan: `Seorang mahasiswa kedokteran menjalani Harvard Step Test. Ia mampu bertahan selama 150 detik tanpa henti. Denyut nadi pemulihannya adalah: menit 1 (80x), menit 2 (80x), dan menit 3 (75x). Nilai Indeks Kebugaran Fisik (IKF) dan interpretasinya adalah...`,
+      pilihan: [`IKF 31.9 - Kategori Buruk`, `IKF 31.9 - Kategori Berbahaya`, `IKF 41.9 - Kategori Cukup`, `IKF 26.9 - Kategori Buruk`, `IKF 38.3 - Kategori Sangat Baik`],
+      jawaban: `IKF 31.9 - Kategori Buruk`,
+      pembahasan: `Rumus IKF = (Durasi detik x 100) / (2 x (Nadi1 + Nadi2 + Nadi3)). IKF = (150 x 100) / (2 x (80+80+75)) = 15000 / 470 = 31.9. Jika >90 Sangat baik, <55 Buruk.`
+    },
+    {
+      pertanyaan: `Seorang mahasiswa kedokteran menjalani Harvard Step Test. Ia mampu bertahan selama 300 detik tanpa henti. Denyut nadi pemulihannya adalah: menit 1 (40x), menit 2 (35x), dan menit 3 (30x). Nilai Indeks Kebugaran Fisik (IKF) dan interpretasinya adalah...`,
+      pilihan: [`IKF 142.9 - Kategori Sangat baik`, `IKF 147.9 - Kategori Cukup`, `IKF 134.9 - Kategori Buruk`, `IKF 142.9 - Kategori Berbahaya`, `IKF 171.5 - Kategori Sangat Baik`],
+      jawaban: `IKF 142.9 - Kategori Sangat baik`,
+      pembahasan: `Rumus IKF = (Durasi detik x 100) / (2 x (Nadi1 + Nadi2 + Nadi3)). IKF = (300 x 100) / (2 x (40+35+30)) = 30000 / 210 = 142.9. Jika >90 Sangat baik, <55 Buruk.`
+    },
+    {
+      pertanyaan: `Seorang mahasiswa kedokteran menjalani Harvard Step Test. Ia mampu bertahan selama 300 detik tanpa henti. Denyut nadi pemulihannya adalah: menit 1 (100x), menit 2 (95x), dan menit 3 (90x). Nilai Indeks Kebugaran Fisik (IKF) dan interpretasinya adalah...`,
+      pilihan: [`IKF 66.6 - Kategori Cukup`, `IKF 63.1 - Kategori Sangat Baik`, `IKF 52.6 - Kategori Berbahaya`, `IKF 52.6 - Kategori Buruk`, `IKF 37.6 - Kategori Buruk`],
+      jawaban: `IKF 52.6 - Kategori Buruk`,
+      pembahasan: `Rumus IKF = (Durasi detik x 100) / (2 x (Nadi1 + Nadi2 + Nadi3)). IKF = (300 x 100) / (2 x (100+95+90)) = 30000 / 570 = 52.6. Jika >90 Sangat baik, <55 Buruk.`
+    },
+    {
+      pertanyaan: `Seorang mahasiswa kedokteran menjalani Harvard Step Test. Ia mampu bertahan selama 250 detik tanpa henti. Denyut nadi pemulihannya adalah: menit 1 (80x), menit 2 (75x), dan menit 3 (70x). Nilai Indeks Kebugaran Fisik (IKF) dan interpretasinya adalah...`,
+      pilihan: [`IKF 66.7 - Kategori Sangat Baik`, `IKF 55.6 - Kategori Cukup/Rata-rata`, `IKF 43.6 - Kategori Buruk`, `IKF 55.6 - Kategori Berbahaya`, `IKF 65.6 - Kategori Cukup`],
+      jawaban: `IKF 55.6 - Kategori Cukup/Rata-rata`,
+      pembahasan: `Rumus IKF = (Durasi detik x 100) / (2 x (Nadi1 + Nadi2 + Nadi3)). IKF = (250 x 100) / (2 x (80+75+70)) = 25000 / 450 = 55.6. Jika >90 Sangat baik, <55 Buruk.`
+    },
+    {
+      pertanyaan: `Seorang mahasiswa kedokteran menjalani Harvard Step Test. Ia mampu bertahan selama 300 detik tanpa henti. Denyut nadi pemulihannya adalah: menit 1 (60x), menit 2 (55x), dan menit 3 (50x). Nilai Indeks Kebugaran Fisik (IKF) dan interpretasinya adalah...`,
+      pilihan: [`IKF 109.1 - Kategori Sangat Baik`, `IKF 104.9 - Kategori Cukup`, `IKF 90.9 - Kategori Sangat baik`, `IKF 90.9 - Kategori Berbahaya`, `IKF 83.9 - Kategori Buruk`],
+      jawaban: `IKF 90.9 - Kategori Sangat baik`,
+      pembahasan: `Rumus IKF = (Durasi detik x 100) / (2 x (Nadi1 + Nadi2 + Nadi3)). IKF = (300 x 100) / (2 x (60+55+50)) = 30000 / 330 = 90.9. Jika >90 Sangat baik, <55 Buruk.`
+    },
+    {
+      pertanyaan: `Seorang mahasiswa kedokteran menjalani Harvard Step Test. Ia mampu bertahan selama 200 detik tanpa henti. Denyut nadi pemulihannya adalah: menit 1 (70x), menit 2 (65x), dan menit 3 (60x). Nilai Indeks Kebugaran Fisik (IKF) dan interpretasinya adalah...`,
+      pilihan: [`IKF 51.3 - Kategori Berbahaya`, `IKF 63.3 - Kategori Cukup`, `IKF 61.6 - Kategori Sangat Baik`, `IKF 51.3 - Kategori Buruk`, `IKF 38.3 - Kategori Buruk`],
+      jawaban: `IKF 51.3 - Kategori Buruk`,
+      pembahasan: `Rumus IKF = (Durasi detik x 100) / (2 x (Nadi1 + Nadi2 + Nadi3)). IKF = (200 x 100) / (2 x (70+65+60)) = 20000 / 390 = 51.3. Jika >90 Sangat baik, <55 Buruk.`
+    },
+  ];
+const pick_pool_cases_cardio_ikf = makePicker(pool_cases_cardio_ikf);
+const pool_cases_kontra_henti = [
+    {
+      pertanyaan: `Seorang pasien laki-laki 60 tahun dikirim untuk tes kebugaran. Dari anamnesis, pasien dirawat 2 hari yang lalu karena Infark Miokard Akut (AMI). Apa keputusan terbaik untuk pelaksanaan tes?`,
+      pilihan: [`Tes tidak boleh dilakukan karena ini indikasi kontra absolut`, `Lakukan tes submaksimal ringan`, `Lakukan tes dengan pengawasan oksigen`, `Tes ditunda hingga 3 hari`, `Boleh tes lapangan saja`],
+      jawaban: `Tes tidak boleh dilakukan karena ini indikasi kontra absolut`,
+      pembahasan: `Infark Miokard Akut (AMI) adalah kontraindikasi absolut untuk uji latihan beban fisik apapun saat ini.`
+    },
+    {
+      pertanyaan: `Wanita 25 tahun, hamil trimester 2, diminta menilai kapasitas kebugarannya. TD 110/70, nadi 80. Mengacu pada ACSM, kondisi kehamilan termasuk dalam kategori...`,
+      pilihan: [`Indikasi kontra relatif, memerlukan penilaian dokter lebih lanjut`, `Indikasi kontra absolut, sama sekali dilarang`, `Bukan kontraindikasi, pasien bebas berlatih hingga pingsan`, `Hanya dikontraindikasikan jika TD > 120`, `Aman untuk dilakukan 1RM angkat besi`],
+      jawaban: `Indikasi kontra relatif, memerlukan penilaian dokter lebih lanjut`,
+      pembahasan: `Kehamilan termasuk dalam indikasi kontra relatif uji latihan fisik maksimum.`
+    },
+    {
+      pertanyaan: `Laki-laki 50 tahun dengan DM tipe 2 gula darah tidak terkontrol (GDS 400 mg/dL) dijadwalkan tes treadmill. Tindakan yang tepat...`,
+      pilihan: [`Tes ditunda (kontraindikasi relatif) hingga metabolik terkontrol`, `Treadmill dilanjutkan untuk menurunkan gula darah segera`, `Berikan minum gula lalu treadmill`, `Ini indikasi kontra absolut selamanya`, `Gunakan sepeda ergometer saja`],
+      jawaban: `Tes ditunda (kontraindikasi relatif) hingga metabolik terkontrol`,
+      pembahasan: `Penyakit metabolik yang tidak terkontrol (seperti DM, tiroid) merupakan indikasi kontra relatif.`
+    },
+    {
+      pertanyaan: `Di tengah pelaksanaan Balke test, seorang pria 45 tahun memegang dadanya dan mengeluh dadanya seperti dihimpit beban berat, walaupun detak jantung masih 120 x/menit (belum Max HR). Tindakan teknisi/dokter...`,
+      pilihan: [`Segera menghentikan tes dan tangani dugaan iskemia`, `Menyemangati pasien karena HR belum maksimal`, `Memperlambat lari menjadi jalan santai`, `Memberi jeda 1 menit lalu lanjut`, `Melakukan CPR langsung walau pasien masih sadar berdiri`],
+      jawaban: `Segera menghentikan tes dan tangani dugaan iskemia`,
+      pembahasan: `Keluhan nyeri/tertekan di dada (angina/iskemia) adalah indikasi penghentian tes seketika.`
+    },
+    {
+      pertanyaan: `Pasien wanita sedang menjalani uji ergometer sepeda. Saat beban watt dinaikkan, tekanan darah pasien diukur: Sistolik meningkat dari 130 menjadi 260 mmHg, diastolik 120 mmHg. Apa yang harus dilakukan?`,
+      pilihan: [`Hentikan tes seketika akibat respons hipertensif parah`, `Lanjutkan karena TD akan turun setelah berkeringat`, `Beri obat antihipertensi lalu genjot lagi`, `Kurangi beban 5 watt`, `Suruh pasien tarik napas dalam`],
+      jawaban: `Hentikan tes seketika akibat respons hipertensif parah`,
+      pembahasan: `Peningkatan abnormal mencolok (Sistolik > 250, Diastolik > 115 mmHg) adalah indikasi henti tes absolut.`
+    },
+    {
+      pertanyaan: `Seorang pasien datang dengan membawa rekam medis: Aneurisma Ventrikular dan riwayat penggunaan obat Digitalis. Berdasarkan skrining ACSM...`,
+      pilihan: [`Keduanya merupakan indikasi kontra relatif`, `Keduanya indikasi kontra absolut`, `Keduanya aman untuk olahraga lari maraton`, `Aneurisma absolut, digitalis aman`, `Aneurisma relatif, digitalis absolut`],
+      jawaban: `Keduanya merupakan indikasi kontra relatif`,
+      pembahasan: `Aneurisma ventrikular dan efek terapi digitalisasi (digitalis) adalah indikasi kontra relatif evaluasi fisik.`
+    },
+    {
+      pertanyaan: `Pria usia 20 tahun melakukan Harvard step test. Di menit ke-3, metronom mati dan kotak step patah. Secara prosedur standar keselamatan...`,
+      pilihan: [`Tes dihentikan akibat kegagalan perangkat`, `Pasien lanjut melompat di lantai tanpa step`, `Pasien menunggu sambil jongkok sampai kotak diperbaiki`, `Lompat dengan kaki satu ke sisa kotak`, `Langsung dikategorikan gagal jantung`],
+      jawaban: `Tes dihentikan akibat kegagalan perangkat`,
+      pembahasan: `Kegagalan perangkat uji (alat rusak, EKG lepas) adalah salah satu kriteria henti dari ACSM.`
+    },
+    {
+      pertanyaan: `Pasien akan diukur seluruh komponen fitness-nya (IMT, fleksibilitas otot, push up test, kekuatan punggung, 1RM squat, dan treadmill lari VO2max). Urutan yang paling sesuai kaidah fisiologi agar valid adalah...`,
+      pilihan: [`Komposisi (IMT), fleksibilitas, handgrip statis, push up, lalu treadmill maksimal (VO2max) terakhir`, `Treadmill (VO2max) pertama sebagai pemanasan, lalu IMT, lalu push up`, `1RM Squat, lari Cooper, Fleksibilitas, lalu IMT`, `Bebas diacak sesuai keinginan pasien`, `Lari dulu, sit and reach, lalu timbang BB`],
+      jawaban: `Komposisi (IMT), fleksibilitas, handgrip statis, push up, lalu treadmill maksimal (VO2max) terakhir`,
+      pembahasan: `Tes harus dimulai dari yang paling tidak melelahkan (pengukuran diam seperti BB/IMT), lalu fleksibilitas, disusul kekuatan ringan, dan diakhiri dengan uji kelelahan maksimal seperti kardiorespirasi (VO2max).`
+    },
+    {
+      pertanyaan: `Pasien pria usia 40 tahun ingin mendaftar ke pusat kebugaran dan tes treadmill. Namun riwayat kesehatannya menunjukkan ia menderita Gagal jantung kongestif. Secara medis menurut ACSM ini merupakan...`,
+      pilihan: [`Dilarang selamanya tanpa kecuali`, `Indikasi kontra relatif`, `Aman untuk tes maksimal`, `Hanya boleh sit and reach`, `Indikasi kontra absolut`],
+      jawaban: `Indikasi kontra absolut`,
+      pembahasan: `Gagal jantung kongestif merupakan indikasi kontra absolut untuk pengujian kebugaran fisik.`
+    },
+    {
+      pertanyaan: `Pasien wanita usia 40 tahun ingin mendaftar ke pusat kebugaran dan tes treadmill. Namun riwayat kesehatannya menunjukkan ia menderita Gagal jantung kongestif. Secara medis menurut ACSM ini merupakan...`,
+      pilihan: [`Dilarang selamanya tanpa kecuali`, `Indikasi kontra relatif`, `Aman untuk tes maksimal`, `Hanya boleh sit and reach`, `Indikasi kontra absolut`],
+      jawaban: `Indikasi kontra absolut`,
+      pembahasan: `Gagal jantung kongestif merupakan indikasi kontra absolut untuk pengujian kebugaran fisik.`
+    },
+    {
+      pertanyaan: `Pasien pria usia 60 tahun ingin mendaftar ke pusat kebugaran dan tes treadmill. Namun riwayat kesehatannya menunjukkan ia menderita Gagal jantung kongestif. Secara medis menurut ACSM ini merupakan...`,
+      pilihan: [`Dilarang selamanya tanpa kecuali`, `Indikasi kontra relatif`, `Aman untuk tes maksimal`, `Hanya boleh sit and reach`, `Indikasi kontra absolut`],
+      jawaban: `Indikasi kontra absolut`,
+      pembahasan: `Gagal jantung kongestif merupakan indikasi kontra absolut untuk pengujian kebugaran fisik.`
+    },
+    {
+      pertanyaan: `Pasien wanita usia 60 tahun ingin mendaftar ke pusat kebugaran dan tes treadmill. Namun riwayat kesehatannya menunjukkan ia menderita Gagal jantung kongestif. Secara medis menurut ACSM ini merupakan...`,
+      pilihan: [`Dilarang selamanya tanpa kecuali`, `Indikasi kontra relatif`, `Aman untuk tes maksimal`, `Hanya boleh sit and reach`, `Indikasi kontra absolut`],
+      jawaban: `Indikasi kontra absolut`,
+      pembahasan: `Gagal jantung kongestif merupakan indikasi kontra absolut untuk pengujian kebugaran fisik.`
+    },
+    {
+      pertanyaan: `Pasien pria usia 40 tahun ingin mendaftar ke pusat kebugaran dan tes treadmill. Namun riwayat kesehatannya menunjukkan ia menderita Stenosis aorta bergejala. Secara medis menurut ACSM ini merupakan...`,
+      pilihan: [`Dilarang selamanya tanpa kecuali`, `Indikasi kontra relatif`, `Aman untuk tes maksimal`, `Hanya boleh sit and reach`, `Indikasi kontra absolut`],
+      jawaban: `Indikasi kontra absolut`,
+      pembahasan: `Stenosis aorta bergejala merupakan indikasi kontra absolut untuk pengujian kebugaran fisik.`
+    },
+    {
+      pertanyaan: `Pasien wanita usia 40 tahun ingin mendaftar ke pusat kebugaran dan tes treadmill. Namun riwayat kesehatannya menunjukkan ia menderita Stenosis aorta bergejala. Secara medis menurut ACSM ini merupakan...`,
+      pilihan: [`Dilarang selamanya tanpa kecuali`, `Indikasi kontra relatif`, `Aman untuk tes maksimal`, `Hanya boleh sit and reach`, `Indikasi kontra absolut`],
+      jawaban: `Indikasi kontra absolut`,
+      pembahasan: `Stenosis aorta bergejala merupakan indikasi kontra absolut untuk pengujian kebugaran fisik.`
+    },
+    {
+      pertanyaan: `Pasien pria usia 60 tahun ingin mendaftar ke pusat kebugaran dan tes treadmill. Namun riwayat kesehatannya menunjukkan ia menderita Stenosis aorta bergejala. Secara medis menurut ACSM ini merupakan...`,
+      pilihan: [`Dilarang selamanya tanpa kecuali`, `Indikasi kontra relatif`, `Aman untuk tes maksimal`, `Hanya boleh sit and reach`, `Indikasi kontra absolut`],
+      jawaban: `Indikasi kontra absolut`,
+      pembahasan: `Stenosis aorta bergejala merupakan indikasi kontra absolut untuk pengujian kebugaran fisik.`
+    },
+    {
+      pertanyaan: `Pasien wanita usia 60 tahun ingin mendaftar ke pusat kebugaran dan tes treadmill. Namun riwayat kesehatannya menunjukkan ia menderita Stenosis aorta bergejala. Secara medis menurut ACSM ini merupakan...`,
+      pilihan: [`Dilarang selamanya tanpa kecuali`, `Indikasi kontra relatif`, `Aman untuk tes maksimal`, `Hanya boleh sit and reach`, `Indikasi kontra absolut`],
+      jawaban: `Indikasi kontra absolut`,
+      pembahasan: `Stenosis aorta bergejala merupakan indikasi kontra absolut untuk pengujian kebugaran fisik.`
+    },
+    {
+      pertanyaan: `Pasien pria usia 40 tahun ingin mendaftar ke pusat kebugaran dan tes treadmill. Namun riwayat kesehatannya menunjukkan ia menderita Tromboflebitis. Secara medis menurut ACSM ini merupakan...`,
+      pilihan: [`Dilarang selamanya tanpa kecuali`, `Indikasi kontra relatif`, `Aman untuk tes maksimal`, `Hanya boleh sit and reach`, `Indikasi kontra absolut`],
+      jawaban: `Indikasi kontra absolut`,
+      pembahasan: `Tromboflebitis merupakan indikasi kontra absolut untuk pengujian kebugaran fisik.`
+    },
+    {
+      pertanyaan: `Pasien wanita usia 40 tahun ingin mendaftar ke pusat kebugaran dan tes treadmill. Namun riwayat kesehatannya menunjukkan ia menderita Tromboflebitis. Secara medis menurut ACSM ini merupakan...`,
+      pilihan: [`Dilarang selamanya tanpa kecuali`, `Indikasi kontra relatif`, `Aman untuk tes maksimal`, `Hanya boleh sit and reach`, `Indikasi kontra absolut`],
+      jawaban: `Indikasi kontra absolut`,
+      pembahasan: `Tromboflebitis merupakan indikasi kontra absolut untuk pengujian kebugaran fisik.`
+    },
+  ];
+const pick_pool_cases_kontra_henti = makePicker(pool_cases_kontra_henti);
+
+
+// ═══ DISPATCHER ═══
+function makeQ(type){
+    
+        if(type === 'pool_definisi_manfaat') {
+            const item = pick_pool_definisi_manfaat();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'pool_definisi_manfaat',
+                typeName: 'Definisi Manfaat',
+                tpColor: 'var(--gold)',
+                tpBg: 'var(--goldbg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+        if(type === 'pool_komponen_health_skill') {
+            const item = pick_pool_komponen_health_skill();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'pool_komponen_health_skill',
+                typeName: 'Komponen Health Skill',
+                tpColor: 'var(--gold)',
+                tpBg: 'var(--goldbg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+        if(type === 'pool_komposisi_tubuh_teori') {
+            const item = pick_pool_komposisi_tubuh_teori();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'pool_komposisi_tubuh_teori',
+                typeName: 'Komposisi Tubuh Teori',
+                tpColor: 'var(--gold)',
+                tpBg: 'var(--goldbg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+        if(type === 'pool_fleksibilitas_kekuatan_ketahanan_teori') {
+            const item = pick_pool_fleksibilitas_kekuatan_ketahanan_teori();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'pool_fleksibilitas_kekuatan_ketahanan_teori',
+                typeName: 'Fleksibilitas Kekuatan Keta...',
+                tpColor: 'var(--gold)',
+                tpBg: 'var(--goldbg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+        if(type === 'pool_kardio_teori') {
+            const item = pick_pool_kardio_teori();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'pool_kardio_teori',
+                typeName: 'Kardio Teori',
+                tpColor: 'var(--gold)',
+                tpBg: 'var(--goldbg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+        if(type === 'pool_faktor_pengaruh') {
+            const item = pick_pool_faktor_pengaruh();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'pool_faktor_pengaruh',
+                typeName: 'Faktor Pengaruh',
+                tpColor: 'var(--gold)',
+                tpBg: 'var(--goldbg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+        if(type === 'pool_indikasi_kontra_teori') {
+            const item = pick_pool_indikasi_kontra_teori();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'pool_indikasi_kontra_teori',
+                typeName: 'Indikasi Kontra Teori',
+                tpColor: 'var(--gold)',
+                tpBg: 'var(--goldbg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+        if(type === 'pool_urutan_penghentian_teori') {
+            const item = pick_pool_urutan_penghentian_teori();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'pool_urutan_penghentian_teori',
+                typeName: 'Urutan Penghentian Teori',
+                tpColor: 'var(--gold)',
+                tpBg: 'var(--goldbg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+        if(type === 'pool_cases_komposisi') {
+            const item = pick_pool_cases_komposisi();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'pool_cases_komposisi',
+                typeName: 'Cases Komposisi',
+                tpColor: 'var(--gold)',
+                tpBg: 'var(--goldbg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+        if(type === 'pool_cases_cardio_ikf') {
+            const item = pick_pool_cases_cardio_ikf();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'pool_cases_cardio_ikf',
+                typeName: 'Cases Cardio Ikf',
+                tpColor: 'var(--gold)',
+                tpBg: 'var(--goldbg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+        if(type === 'pool_cases_kontra_henti') {
+            const item = pick_pool_cases_kontra_henti();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'pool_cases_kontra_henti',
+                typeName: 'Cases Kontra Henti',
+                tpColor: 'var(--gold)',
+                tpBg: 'var(--goldbg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+    return {type:'dummy', typeName:'End of Pool', tpColor:'gray', tpBg:'lightgray', q:'No more questions', opts:['A'], ans:'A', exp:''};
+}
+
+// ═══ SESSION ═══
+let typeQueue=[],sessIdx=0,sessScore=0,sessLog=[],currentQ=null;
+function nextType(){if(!typeQueue.length){const t=[...activeTypes];for(let i=t.length-1;i>0;i--){const j=0|Math.random()*(i+1);[t[i],t[j]]=[t[j],t[i]];}typeQueue=[...t];}return typeQueue.shift();}
+function startSession(){
+  sessIdx=0;sessScore=0;sessLog=[];typeQueue=[];
+  document.getElementById('qconfig').style.display='none';
+  document.getElementById('qresults').style.display='none';
+  document.getElementById('qactive').style.display='block';
+  renderQ();
+}
+function renderQ(){
+  const q=makeQ(nextType());currentQ=q;
+  document.getElementById('qnum').textContent=sessIdx+1;
+  document.getElementById('qscore').textContent=sessScore;
+  const pill=document.getElementById('qpill');
+  pill.textContent=q.typeName;pill.style.background=q.tpBg;pill.style.color=q.tpColor;pill.style.border=`1px solid ${q.tpColor}44`;
+  const scen=document.getElementById('qscen');
+  if(q.scenario){scen.innerHTML=`<strong>Kasus:</strong> ${q.scenario}`;scen.style.display='block';}else scen.style.display='none';
+  const db=document.getElementById('qdata');
+  if(q.rawData){db.innerHTML=q.rawData;db.style.display='block';}else db.style.display='none';
+  document.getElementById('qtext').innerHTML=q.q;
+  const og=document.getElementById('opts');og.innerHTML='';
+  q.opts.forEach((opt,i)=>{
+    const btn=document.createElement('button');btn.className='opt';
+    btn.innerHTML=`<span class="opt-key">${KEYS[i]}</span><span>${opt}</span>`;
+    btn.onclick=()=>selectAns(opt,q,btn);og.appendChild(btn);
+  });
+  const ebox=document.getElementById('expbox');ebox.classList.remove('show');ebox.style.display='none';
+  document.getElementById('nextbtn').style.display='none';
+}
+function selectAns(chosen,q,clickedBtn){
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  const correct=stripHtml(chosen)===stripHtml(q.ans);
+  if(correct)sessScore++;
+  document.querySelectorAll('.opt').forEach(b=>{
+    const label=b.querySelector('span:last-child').innerHTML;
+    if(stripHtml(label)===stripHtml(q.ans)){
+      if(b===clickedBtn&&correct)b.classList.add('correct');
+      else if(b!==clickedBtn)b.classList.add('reveal');
+      else b.classList.add('correct');
+    }
+    if(b===clickedBtn&&!correct)b.classList.add('wrong');
+  });
+  const ebox=document.getElementById('expbox');
+  ebox.innerHTML=`<div style="margin-bottom:7px;font-weight:700;color:${correct?'var(--blue)':'var(--red)'}">${correct?'✅ Benar!':'❌ Kurang tepat.'} Jawaban: <strong>${q.ans}</strong></div>${q.exp}`;
+  ebox.style.display='block';setTimeout(()=>ebox.classList.add('show'),10);
+  sessLog.push({idx:sessIdx+1,type:q.typeName,q:q.q.replace(/<[^>]+>/g,'').slice(0,55)+'…',ans:q.ans,correct});
+  document.getElementById('qscore').textContent=sessScore;
+  document.getElementById('nextbtn').style.display='inline-block';
+}
+function nextQ(){sessIdx++;document.getElementById('expbox').style.display='none';document.getElementById('expbox').classList.remove('show');renderQ();}
+function endSession(){
+  document.getElementById('qactive').style.display='none';document.getElementById('qresults').style.display='block';
+  const total=sessLog.length;if(!total){restartQuiz();return;}
+  const pct=Math.round((sessScore/total)*100);
+  document.getElementById('res-pct').textContent=pct+'%';
+  document.getElementById('res-sub').textContent=`${sessScore} / ${total} soal benar`;
+  const byType={};
+  sessLog.forEach(l=>{if(!byType[l.type])byType[l.type]={total:0,correct:0};byType[l.type].total++;if(l.correct)byType[l.type].correct++;});
+  const rg=document.getElementById('res-grid');rg.innerHTML='';
+  const medal=pct>=80?'🏆':pct>=60?'👍':'📚';
+  [{v:medal,l:'Nilai'},{v:pct+'%',l:'Persentase'},{v:sessScore+'',l:'Benar'},{v:(total-sessScore)+'',l:'Salah'},{v:total+'',l:'Total'}].forEach(s=>{
+    const d=document.createElement('div');d.className='res-stat';
+    d.innerHTML=`<div class="rv">${s.v}</div><div class="rl">${s.l}</div>`;rg.appendChild(d);
+  });
+  document.getElementById('res-bytype').innerHTML=Object.entries(byType).map(([t,v])=>{
+    const p=Math.round((v.correct/v.total)*100);const c=p>=80?'var(--blue)':p>=60?'var(--gold)':'var(--red)';
+    return`<tr><td>${t}</td><td>${v.total}</td><td style="color:${c};font-weight:700">${v.correct} (${p}%)</td></tr>`;
+  }).join('');
+  document.getElementById('res-tbody').innerHTML=sessLog.map(l=>`<tr><td>${l.idx}</td><td>${l.q}</td><td>${l.ans}</td><td style="color:${l.correct?'var(--green)':'var(--red)'}">${l.correct?'✅':'❌'}</td></tr>`).join('');
+}
+function restartQuiz(){typeQueue=[];document.getElementById('qresults').style.display='none';document.getElementById('qconfig').style.display='block';}
+
+function downloadCert(){
+  const total=sessLog.length;
+  const pct=Math.round((sessScore/total)*100);
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+  const medal=pct>=80?'LULUS':pct>=60?'CUKUP':'PERLU BELAJAR LAGI';
+  const medalColor=pct>=80?'#1f7a4a':pct>=60?'#7a6010':'#b03030';
+  const byType={};
+  sessLog.forEach(l=>{if(!byType[l.type])byType[l.type]={total:0,correct:0};byType[l.type].total++;if(l.correct)byType[l.type].correct++;});
+  const rows=Object.entries(byType).map(([t,v])=>{
+    const p=Math.round(v.correct/v.total*100);
+    const bar=Math.round(p*1.4);
+    const bc=p>=80?'#1f7a4a':p>=60?'#7a6010':'#b03030';
+    return`<tr><td style="padding:5px 8px;font-size:11px;color:#384068;width:200px">${t}</td><td style="padding:5px 8px"><div style="background:#e7e7e2;border-radius:4px;height:10px;width:140px"><div style="background:${bc};width:${bar}px;height:10px;border-radius:4px"></div></div></td><td style="padding:5px 8px;font-size:11px;font-weight:700;color:${bc}">${v.correct}/${v.total} (${p}%)</td></tr>`;
+  }).join('');
+
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="680" height="520" font-family="Georgia,serif">
+  <defs>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <path d="M 28 0 L 0 0 0 28" fill="none" stroke="#e0ddd5" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+  <rect width="680" height="520" fill="#fdfdf9"/>
+  <rect width="680" height="520" fill="url(#grid)"/>
+  <rect x="20" y="20" width="640" height="480" rx="12" fill="none" stroke="#b03030" stroke-width="2"/>
+  <rect x="26" y="26" width="628" height="468" rx="9" fill="none" stroke="#b03030" stroke-width="0.5" opacity="0.4"/>
+
+  <text x="340" y="66" text-anchor="middle" font-size="11" letter-spacing="4" fill="#7c85a8" font-family="Georgia,serif">SERTIFIKAT PENYELESAIAN KUIS</text>
+  <line x1="120" y1="74" x2="260" y2="74" stroke="#b03030" stroke-width="0.8"/>
+  <circle cx="340" cy="74" r="3" fill="#b03030"/>
+  <line x1="420" y1="74" x2="560" y2="74" stroke="#b03030" stroke-width="0.8"/>
+
+  <text x="340" y="116" text-anchor="middle" font-size="34" font-weight="bold" fill="#161b2e" font-family="Georgia,serif">Am I Fit?</text>
+  <text x="340" y="138" text-anchor="middle" font-size="11" fill="#7c85a8" letter-spacing="2" font-family="Georgia,serif">KEBUGARAN FISIK · BLOK 2.5 · FK UNSOED</text>
+
+  <line x1="100" y1="152" x2="580" y2="152" stroke="#e0ddd5" stroke-width="1"/>
+
+  <text x="340" y="185" text-anchor="middle" font-size="13" fill="#384068" font-family="Georgia,serif">Telah menyelesaikan sesi quiz dengan hasil</text>
+
+  <rect x="230" y="196" width="220" height="80" rx="8" fill="none" stroke="${medalColor}" stroke-width="1.5"/>
+  <text x="340" y="245" text-anchor="middle" font-size="52" font-weight="bold" fill="${medalColor}" font-family="Georgia,serif">${pct}%</text>
+  <text x="340" y="265" text-anchor="middle" font-size="10" fill="${medalColor}" letter-spacing="3" font-family="Georgia,serif">${medal}</text>
+
+  <text x="340" y="300" text-anchor="middle" font-size="12" fill="#384068" font-family="Georgia,serif">${sessScore} soal benar dari ${total} soal · ${dateStr}</text>
+
+  <line x1="100" y1="314" x2="580" y2="314" stroke="#e0ddd5" stroke-width="1"/>
+  <text x="340" y="332" text-anchor="middle" font-size="10" fill="#7c85a8" letter-spacing="2" font-family="Georgia,serif">DISTRIBUSI SKOR PER TOPIK</text>
+
+  <foreignObject x="80" y="340" width="520" height="120">
+    <div xmlns="http://www.w3.org/1999/xhtml">
+      <table style="width:100%;border-collapse:collapse">${rows}</table>
+    </div>
+  </foreignObject>
+
+  <line x1="100" y1="472" x2="580" y2="472" stroke="#e0ddd5" stroke-width="1"/>
+  <text x="340" y="490" text-anchor="middle" font-size="10" fill="#7c85a8" font-family="Georgia,serif">Am I Fit? · Blok 2.5 · FK Unsoed</text>
+</svg>`;
+
+  const blob=new Blob([svg],{type:'image/svg+xml'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`am-i-fit-${pct}pct.svg`;
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+window.downloadCert=downloadCert;
+</script>
+</body>
+</html>

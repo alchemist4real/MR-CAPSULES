@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>23 MARCUS AURELIUS — CBT Blok 2.4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080810;
+  --surface: #0F0F1C;
+  --surface-2: #161626;
+  --surface-3: #1E1E30;
+  --border: #2A2A42;
+  --border-light: #222236;
+  --ink: #F0EDF8;
+  --ink-muted: #7878A0;
+  --ink-faint: #3A3A58;
+  --pink: #E91E8C;
+  --pink-mid: #F040A8;
+  --pink-dim: rgba(233,30,140,0.18);
+  --pink-glow: rgba(233,30,140,0.07);
+  --sky: #0EC8F0;
+  --sky-dim: rgba(14,200,240,0.18);
+  --sky-glow: rgba(14,200,240,0.07);
+  --gold: #D4A020;
+  --gold-dim: rgba(212,160,32,0.2);
+  --gold-glow: rgba(212,160,32,0.07);
+  --rose: #E83050;
+  --rose-dim: rgba(232,48,80,0.2);
+  --rose-glow: rgba(232,48,80,0.07);
+  --mint: #1EBD7A;
+  --mint-dim: rgba(30,189,122,0.18);
+  --mint-glow: rgba(30,189,122,0.07);
+  --r: 14px;
+  --r-sm: 9px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  padding: 16px;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 70% 50% at 15% 10%, rgba(233,30,140,0.1) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 90% 80%, rgba(14,200,240,0.07) 0%, transparent 55%);
+  pointer-events: none; z-index: 0;
+}
+.shell { max-width: 760px; margin: 0 auto; position: relative; z-index: 1; }
+
+/* ── START SCREEN ── */
+#start-screen { animation: fadeIn 0.5s ease; }
+.logo-row { display: flex; align-items: baseline; gap: 14px; padding: 36px 0 8px; flex-wrap: wrap; }
+.logo-wordmark {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.9rem, 6vw, 3.4rem);
+  letter-spacing: -0.5px;
+  color: var(--ink);
+  line-height: 1;
+}
+.logo-wordmark span { color: var(--pink-mid); }
+.logo-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--pink);
+  border: 1px solid var(--pink-dim);
+  padding: 4px 10px;
+  border-radius: 99px;
+  background: var(--pink-glow);
+}
+.divider { height: 1px; background: var(--border); margin: 20px 0; }
+.meta-row { display: flex; gap: 20px; flex-wrap: wrap; padding: 10px 0; }
+.meta-chip {
+  display: flex; align-items: center; gap: 7px;
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: var(--ink-muted); letter-spacing: 0.3px;
+}
+.meta-chip .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--pink-mid); flex-shrink: 0; }
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 24px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+.card-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--pink);
+  margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+.card-title::after { content:''; flex:1; height:1px; background: var(--pink-dim); }
+.mode-grid { display: flex; flex-direction: column; gap: 9px; }
+.mode-btn {
+  display: flex; align-items: center; gap: 15px;
+  padding: 15px 18px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+  cursor: pointer; text-align: left; width: 100%;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s ease;
+  position: relative; overflow: hidden;
+}
+.mode-btn::after { content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity 0.2s; }
+.mode-btn.study::after  { background: var(--mint-glow); }
+.mode-btn.exam::after   { background: var(--gold-glow); }
+.mode-btn.drill::after  { background: var(--sky-glow); }
+.mode-btn:hover::after  { opacity: 1; }
+.mode-btn:hover { border-color: var(--pink-dim); transform: translateY(-1px); box-shadow: 0 5px 18px rgba(233,30,140,0.12); }
+.mode-btn:active { transform: translateY(0); }
+.mode-icon {
+  width: 42px; height: 42px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0; position: relative; z-index: 1;
+}
+.mode-btn.study .mode-icon { background: var(--mint-dim); }
+.mode-btn.exam  .mode-icon { background: var(--gold-dim); }
+.mode-btn.drill .mode-icon { background: var(--sky-dim); }
+.mode-text { position: relative; z-index: 1; }
+.mode-text h3 { font-weight: 600; font-size: 15px; color: var(--ink); margin-bottom: 2px; }
+.mode-text p  { font-size: 12px; color: var(--ink-muted); font-weight: 300; line-height: 1.4; }
+.mode-arr { margin-left: auto; color: var(--ink-faint); font-size: 18px; position: relative; z-index: 1; transition: transform 0.2s, color 0.2s; }
+.mode-btn:hover .mode-arr { transform: translateX(4px); color: var(--pink-mid); }
+
+/* Stats */
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 4px; }
+.stat-box {
+  background: var(--surface-2);
+  border: 1px solid var(--border-light);
+  border-radius: var(--r-sm);
+  padding: 16px 12px;
+  text-align: center;
+}
+.stat-val { font-family: 'Playfair Display', serif; font-size: 1.9rem; line-height: 1; color: var(--pink); }
+.stat-val.mint { color: var(--mint); }
+.stat-val.gold { color: var(--gold); }
+.stat-val.rose { color: var(--rose); }
+.stat-lbl { font-family: 'DM Mono', monospace; font-size: 9.5px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink-muted); margin-top: 5px; }
+.session-hist { margin-top: 14px; }
+.session-hist-title { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 10px; }
+.hist-list { display: flex; flex-direction: column; gap: 5px; max-height: 140px; overflow-y: auto; }
+.hist-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px;
+  background: var(--bg);
+  border: 1px solid var(--border-light);
+  border-radius: 7px;
+  font-size: 12px;
+}
+.hist-item .hi-mode { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; padding: 2px 7px; border-radius: 99px; }
+.hi-mode.study { background: var(--mint-dim); color: var(--mint); }
+.hi-mode.exam  { background: var(--gold-dim); color: var(--gold); }
+.hi-mode.drill { background: var(--sky-dim);  color: var(--sky); }
+.hist-item .hi-score { font-weight: 600; color: var(--ink); margin-left: auto; }
+.hist-item .hi-pct { font-family: 'DM Mono', monospace; font-size: 11px; padding: 2px 7px; border-radius: 99px; }
+.hist-item .hi-date { font-size: 11px; color: var(--ink-faint); }
+.no-hist { font-size: 13px; color: var(--ink-faint); text-align: center; padding: 16px 0; font-style: italic; }
+.reset-btn { margin-top: 10px; background: none; border: 1px solid var(--border); border-radius: 7px; padding: 6px 14px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--ink-faint); cursor: pointer; transition: all 0.15s; }
+.reset-btn:hover { border-color: var(--rose-dim); color: var(--rose); }
+.topic-bar { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+.topic-row { display: flex; align-items: center; gap: 10px; font-size: 12px; }
+.topic-name { min-width: 180px; color: var(--ink-muted); font-size: 11px; }
+.topic-track { flex: 1; height: 5px; background: var(--surface-2); border-radius: 99px; overflow: hidden; }
+.topic-fill { height: 100%; border-radius: 99px; background: var(--pink-dim); transition: width 0.6s ease; }
+.topic-fill.good { background: linear-gradient(90deg, var(--mint-dim), var(--mint)); }
+.topic-fill.mid  { background: linear-gradient(90deg, var(--gold-dim), var(--gold)); }
+.topic-fill.low  { background: linear-gradient(90deg, var(--rose-dim), var(--rose)); }
+.topic-pct { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink-muted); min-width: 30px; text-align: right; }
+
+/* ── QUIZ SCREEN ── */
+#quiz-screen { display: none; }
+.quiz-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 20px 0 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 18px;
+}
+.btn-ghost {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 8px 14px;
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: var(--ink-muted); cursor: pointer;
+  transition: all 0.15s; letter-spacing: 0.5px; white-space: nowrap;
+}
+.btn-ghost:hover { border-color: var(--ink-muted); color: var(--ink); background: var(--surface-2); }
+.progress-block { flex: 1; }
+.progress-track { height: 4px; background: var(--surface-3); border-radius: 99px; overflow: hidden; margin-bottom: 5px; }
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--pink), var(--sky));
+  border-radius: 99px;
+  transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+.progress-label {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  color: var(--ink-muted); letter-spacing: 0.5px;
+  display: flex; justify-content: space-between;
+}
+.score-pill {
+  font-family: 'DM Mono', monospace; font-size: 12px;
+  padding: 6px 14px; border-radius: 99px;
+  background: var(--pink-dim); color: var(--pink);
+  border: 1px solid rgba(233,30,140,0.3); white-space: nowrap;
+}
+.nav-row-top { display: flex; gap: 10px; align-items: center; padding: 0 0 12px; }
+.q-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 28px;
+  margin-bottom: 12px;
+  animation: fadeIn 0.25s ease;
+  box-shadow: 0 2px 14px rgba(0,0,0,0.4);
+}
+.q-index {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--pink); margin-bottom: 14px;
+  display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+}
+.pill-tag {
+  background: var(--pink-dim);
+  border: 1px solid rgba(233,30,140,0.25);
+  padding: 2px 8px; border-radius: 99px;
+  color: var(--pink); font-size: 9px;
+}
+.q-text { font-size: clamp(14.5px,2.2vw,16.5px); line-height: 1.75; font-weight: 400; color: var(--ink); margin-bottom: 22px; }
+.opts { display: flex; flex-direction: column; gap: 7px; }
+.opt {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 15px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+  cursor: pointer; width: 100%; text-align: left;
+  font-family: 'DM Sans', sans-serif; font-size: 14px;
+  font-weight: 400; color: var(--ink-muted);
+  transition: all 0.15s ease; position: relative; overflow: hidden;
+}
+.opt:hover:not(:disabled) { border-color: var(--pink-dim); background: var(--surface-3); color: var(--ink); }
+.opt:disabled { cursor: default; }
+.opt-key {
+  width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%;
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  color: var(--ink-faint); background: var(--surface);
+  transition: all 0.15s;
+}
+.opt-body { flex: 1; line-height: 1.45; }
+.opt.correct { border-color: var(--mint) !important; background: var(--mint-glow) !important; color: var(--ink) !important; }
+.opt.correct .opt-key { background: var(--mint) !important; border-color: var(--mint) !important; color: #fff !important; }
+.opt.incorrect { border-color: var(--rose-dim) !important; background: var(--rose-glow) !important; color: var(--ink-muted) !important; }
+.opt.incorrect .opt-body { text-decoration: line-through; opacity: 0.5; }
+.opt.incorrect .opt-key { background: var(--rose-dim) !important; border-color: var(--rose) !important; color: var(--rose) !important; }
+.opt.selected { border-color: var(--pink-dim) !important; background: var(--pink-glow) !important; color: var(--ink) !important; }
+.opt.selected .opt-key { background: var(--pink) !important; border-color: var(--pink) !important; color: #fff !important; }
+.opt-badge { margin-left: auto; font-size: 14px; flex-shrink: 0; }
+.opt.drill-wrong-shake { animation: shake 0.4s ease; }
+@keyframes shake { 0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)} }
+
+.exp-box {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--pink-mid);
+  border-radius: var(--r-sm);
+  padding: 20px 22px; margin-top: 12px; display: none;
+  animation: slideUp 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+.exp-box.show { display: block; }
+@keyframes slideUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+.exp-header {
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--pink); margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.exp-header::after { content:''; flex:1; height:1px; background: var(--pink-dim); }
+.exp-answer { font-weight: 600; font-size: 15px; color: var(--mint); margin-bottom: 8px; }
+.exp-body { font-size: 13.5px; line-height: 1.75; color: var(--ink-muted); }
+.exp-body strong { color: var(--ink); font-weight: 600; }
+.exp-body em { color: var(--ink-muted); font-style: italic; }
+.exp-src { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--border); font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink-faint); letter-spacing: 0.3px; }
+
+.nav-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 11px 20px; border-radius: var(--r-sm);
+  font-family: 'DM Sans', sans-serif; font-size: 14px;
+  font-weight: 500; cursor: pointer; transition: all 0.15s; border: 1px solid;
+}
+.nav-btn.primary { background: var(--pink); border-color: var(--pink); color: #fff; box-shadow: 0 2px 12px rgba(233,30,140,0.28); }
+.nav-btn.primary:hover { background: #C0186F; border-color: #C0186F; box-shadow: 0 4px 20px rgba(233,30,140,0.38); transform: translateY(-1px); }
+.nav-btn.secondary { background: transparent; border-color: var(--border); color: var(--ink-muted); }
+.nav-btn.secondary:hover { border-color: var(--pink-dim); color: var(--ink); background: var(--surface-2); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+.nav-btn.danger { background: var(--rose); border-color: var(--rose); color: #fff; }
+.nav-btn.danger:hover { background: #B82040; border-color: #B82040; }
+.nav-spacer { flex: 1; }
+.flag-btn {
+  background: none; border: 1px solid var(--border);
+  border-radius: var(--r-sm); padding: 10px 14px;
+  cursor: pointer; font-size: 14px; color: var(--ink-muted); transition: all 0.15s;
+}
+.flag-btn:hover { border-color: var(--gold); color: var(--gold); }
+.flag-btn.flagged { border-color: var(--gold); color: var(--gold); background: var(--gold-glow); }
+
+.q-map-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 20px; margin-top: 12px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.25);
+}
+.q-map-title { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+.map-legend { display: flex; gap: 12px; margin-left: auto; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--ink-faint); }
+.legend-dot { width: 8px; height: 8px; border-radius: 3px; }
+.q-map-grid { display: flex; flex-wrap: wrap; gap: 5px; }
+.q-dot {
+  width: 30px; height: 30px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  cursor: pointer; transition: all 0.1s;
+  border: 1px solid var(--border-light);
+  background: var(--surface-2); color: var(--ink-faint);
+}
+.q-dot:hover { border-color: var(--pink-dim); color: var(--pink); }
+.q-dot.current { border-color: var(--pink); color: var(--pink); background: var(--pink-dim); }
+.q-dot.answered { border-color: rgba(30,189,122,0.4); background: var(--mint-dim); color: var(--mint); }
+.q-dot.wrong { border-color: rgba(232,48,80,0.4); background: var(--rose-dim); color: var(--rose); }
+.q-dot.flagged-dot { outline: 2px solid var(--gold); outline-offset: 1px; }
+
+/* Overlays */
+.drill-reset-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,5,0.88);
+  z-index: 200; display: none; align-items: center; justify-content: center;
+  backdrop-filter: blur(10px); animation: fadeIn 0.2s ease;
+}
+.drill-reset-overlay.show { display: flex; }
+.drill-reset-modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--sky);
+  border-radius: var(--r); padding: 36px 32px;
+  max-width: 380px; width: 90%; text-align: center;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+}
+.drill-reset-modal .big-icon { font-size: 2.8rem; margin-bottom: 14px; }
+.drill-reset-modal h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 8px; color: var(--ink); }
+.drill-reset-modal p { font-size: 14px; color: var(--ink-muted); margin-bottom: 24px; line-height: 1.6; }
+.drill-reset-modal .nav-btn { width: 100%; justify-content: center; margin-bottom: 8px; }
+
+/* Results */
+#result-screen { display: none; animation: fadeIn 0.5s ease; }
+.result-hero { padding: 40px 0 24px; text-align: center; }
+.result-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--pink); margin-bottom: 12px; }
+.result-score { font-family: 'Playfair Display', serif; font-size: clamp(3.2rem, 11vw, 5.5rem); line-height: 1; color: var(--ink); letter-spacing: -2px; }
+.result-score span { color: var(--pink-mid); }
+.result-sub { font-size: 14px; color: var(--ink-muted); margin-top: 10px; }
+.result-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 16px; }
+.result-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 18px 16px; text-align: center; }
+.result-card .val { font-family: 'Playfair Display', serif; font-size: 2rem; line-height: 1; margin-bottom: 4px; }
+.result-card.correct .val { color: var(--mint); }
+.result-card.wrong   .val { color: var(--rose); }
+.result-card.skipped .val { color: var(--ink-muted); }
+.result-card .lbl { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink-muted); }
+.result-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.result-actions .nav-btn { flex: 1; justify-content: center; }
+.result-topic-review { margin-top: 16px; }
+
+.exam-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,5,0.85);
+  z-index: 100; display: none; align-items: center; justify-content: center;
+  backdrop-filter: blur(6px);
+}
+.exam-overlay.show { display: flex; }
+.exam-modal {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 34px; max-width: 400px; width: 90%;
+  text-align: center; box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+}
+.exam-modal h2 { font-family: 'Playfair Display', serif; font-size: 1.8rem; margin-bottom: 8px; color: var(--ink); }
+.exam-modal p { font-size: 14px; color: var(--ink-muted); margin-bottom: 24px; line-height: 1.6; }
+.exam-modal .nav-btn { width: 100%; justify-content: center; margin-bottom: 8px; }
+
+.streak-toast {
+  position: fixed; bottom: 24px; left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--pink-dim); border: 1px solid rgba(233,30,140,0.5);
+  border-radius: 99px; padding: 10px 22px;
+  font-family: 'DM Mono', monospace; font-size: 12px;
+  color: var(--pink); letter-spacing: 1px;
+  transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  z-index: 999; white-space: nowrap;
+}
+.streak-toast.show { transform: translateX(-50%) translateY(0); }
+.timer-badge {
+  font-family: 'DM Mono', monospace; font-size: 12px;
+  color: var(--ink-muted); letter-spacing: 1px;
+  padding: 5px 12px; border-radius: 99px; border: 1px solid var(--border);
+}
+.timer-badge.warning { color: var(--gold); border-color: rgba(212,160,32,0.35); }
+.timer-badge.danger  { color: var(--rose); border-color: rgba(232,48,80,0.35); animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.55} }
+.kbd-hint { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink-faint); text-align: center; padding: 12px 0 4px; letter-spacing: 0.5px; }
+kbd { background: var(--surface-2); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; font-size: 10px; color: var(--ink-muted); }
+
+/* Sound toggle */
+.sound-toggle-bar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-light);
+  border-radius: var(--r-sm);
+  margin-bottom: 10px;
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: var(--ink-muted); letter-spacing: 0.5px;
+}
+.sound-toggle-bar .stb-icon { font-size: 16px; flex-shrink: 0; }
+.sound-toggle-bar .stb-label { flex: 1; }
+.sound-toggle-bar .stb-status {
+  font-size: 10px; padding: 2px 8px; border-radius: 99px;
+  background: var(--surface-3); color: var(--ink-faint);
+  border: 1px solid var(--border-light);
+  transition: all 0.2s;
+}
+.sound-toggle-bar.active .stb-status { background: var(--pink-dim); color: var(--pink); border-color: rgba(233,30,140,0.3); }
+.toggle-switch { position: relative; width: 38px; height: 20px; flex-shrink: 0; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider { position: absolute; inset: 0; cursor: pointer; background: var(--border); border-radius: 99px; transition: background 0.25s; }
+.toggle-slider::before { content: ''; position: absolute; width: 14px; height: 14px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: transform 0.25s; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+.toggle-switch input:checked + .toggle-slider { background: var(--pink); }
+.toggle-switch input:checked + .toggle-slider::before { transform: translateX(18px); }
+
+/* Now playing */
+.now-playing-bar {
+  display: none; align-items: center; gap: 8px;
+  padding: 6px 12px;
+  background: rgba(233,30,140,0.08);
+  border: 1px solid rgba(233,30,140,0.2);
+  border-radius: var(--r-sm);
+  margin-bottom: 8px;
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  color: var(--pink); letter-spacing: 0.5px;
+  animation: fadeIn 0.3s ease;
+}
+.now-playing-bar.show { display: flex; }
+.np-waves { display: flex; align-items: flex-end; gap: 2px; height: 14px; }
+.np-wave { width: 3px; background: var(--pink); border-radius: 2px; animation: npWave 0.8s ease-in-out infinite; }
+.np-wave:nth-child(1){ height:6px; animation-delay:0s; }
+.np-wave:nth-child(2){ height:12px; animation-delay:0.15s; }
+.np-wave:nth-child(3){ height:8px; animation-delay:0.3s; }
+.np-wave:nth-child(4){ height:10px; animation-delay:0.1s; }
+@keyframes npWave { 0%,100%{ transform: scaleY(0.4); } 50%{ transform: scaleY(1); } }
+.np-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+@media (max-width: 480px) {
+  body { padding: 10px; }
+  .q-card { padding: 18px 14px; }
+  .result-score { font-size: 3rem; }
+  .q-dot { width: 26px; height: 26px; font-size: 9px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .topic-name { min-width: 120px; }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- START -->
+<div id="start-screen">
+  <div class="logo-row">
+    <div class="logo-wordmark">23 <span>MARCUS AURELIUS</span></div>
+    <div class="logo-tag">BLOK 2.4</div>
+  </div>
+  <div class="meta-row">
+    <div class="meta-chip"><span class="dot"></span>Etika &amp; Komunikasi</div>
+    <div class="meta-chip"><span class="dot"></span>65 Soal</div>
+    <div class="meta-chip"><span class="dot"></span>FK Unsoed · Costae 2025</div>
+  </div>
+  <div class="divider"></div>
+  <div class="card">
+    <div class="card-title">Pilih Mode Belajar</div>
+    <div class="mode-grid">
+      <button class="mode-btn study" onclick="startQuiz('study')">
+        <div class="mode-icon">📖</div>
+        <div class="mode-text"><h3>Study Mode</h3><p>Lihat jawaban &amp; pembahasan langsung setelah pilih</p></div>
+        <div class="mode-arr">›</div>
+      </button>
+      <button class="mode-btn exam" onclick="startQuiz('exam')">
+        <div class="mode-icon">📝</div>
+        <div class="mode-text"><h3>Exam Mode</h3><p>Simulasi ujian — jawaban tersembunyi sampai kumpul</p></div>
+        <div class="mode-arr">›</div>
+      </button>
+      <button class="mode-btn drill" onclick="startQuiz('drill')">
+        <div class="mode-icon">🔁</div>
+        <div class="mode-text"><h3>Drill Mode</h3><p>Ulangi soal sampai benar, tanpa skor akhir</p></div>
+        <div class="mode-arr">›</div>
+      </button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Statistik &amp; Riwayat</div>
+    <div class="stats-grid">
+      <div class="stat-box"><div class="stat-val" id="stat-best">—</div><div class="stat-lbl">Best Score</div></div>
+      <div class="stat-box"><div class="stat-val mint" id="stat-avg">—</div><div class="stat-lbl">Avg Score</div></div>
+      <div class="stat-box"><div class="stat-val gold" id="stat-sessions">0</div><div class="stat-lbl">Sessions</div></div>
+      <div class="stat-box"><div class="stat-val rose">65</div><div class="stat-lbl">Total Soal</div></div>
+    </div>
+    <div class="session-hist" id="session-hist-wrap">
+      <div class="session-hist-title">Riwayat Sesi</div>
+      <div class="hist-list" id="hist-list"><div class="no-hist">Belum ada sesi — yuk mulai!</div></div>
+      <button class="reset-btn" onclick="clearHistory()">🗑 Hapus Riwayat</button>
+    </div>
+  </div>
+  <div class="card" id="topic-card">
+    <div class="card-title">Akurasi per Topik</div>
+    <div class="topic-bar" id="topic-bar"><div class="no-hist">Belum ada data — selesaikan satu sesi dulu.</div></div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz-screen">
+  <div id="sound-toggle-bar" class="sound-toggle-bar" style="display:none">
+    <span class="stb-icon" id="stb-icon">🔇</span>
+    <span class="stb-label">Sound Effects</span>
+    <span class="stb-status" id="stb-status">OFF</span>
+    <label class="toggle-switch">
+      <input type="checkbox" id="sound-toggle-input" onchange="toggleSound(this.checked)">
+      <span class="toggle-slider"></span>
+    </label>
+  </div>
+  <div class="now-playing-bar" id="now-playing-bar">
+    <div class="np-waves">
+      <div class="np-wave"></div><div class="np-wave"></div>
+      <div class="np-wave"></div><div class="np-wave"></div>
+    </div>
+    <span class="np-text" id="np-text">—</span>
+  </div>
+  <div class="quiz-header">
+    <button class="btn-ghost" onclick="confirmExit()">← Keluar</button>
+    <div class="progress-block">
+      <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+      <div class="progress-label"><span id="prog-txt">0 / 65</span><span id="mode-badge">—</span></div>
+    </div>
+    <div class="score-pill" id="score-display">0 / 0</div>
+    <div class="timer-badge" id="timer-el" style="display:none">00:00</div>
+  </div>
+  <div class="nav-row-top">
+    <button class="nav-btn secondary" id="btn-prev" onclick="navigate(-1)">‹ Prev</button>
+    <button class="flag-btn" id="btn-flag" onclick="toggleFlag()">🚩</button>
+    <div class="nav-spacer"></div>
+    <button class="nav-btn primary" id="btn-next" onclick="navigate(1)">Next ›</button>
+  </div>
+  <div class="q-card" id="q-card"></div>
+  <div class="exp-box" id="exp-box">
+    <div class="exp-header">Pembahasan</div>
+    <div class="exp-answer" id="exp-answer"></div>
+    <div class="exp-body" id="exp-body"></div>
+    <div class="exp-src" id="exp-src"></div>
+  </div>
+  <div class="q-map-section">
+    <div class="q-map-title">
+      Question Map
+      <span class="map-legend">
+        <span class="legend-item"><span class="legend-dot" style="background:var(--mint-dim);border:1px solid var(--mint)"></span>Benar</span>
+        <span class="legend-item"><span class="legend-dot" style="background:var(--rose-dim);border:1px solid var(--rose)"></span>Salah</span>
+        <span class="legend-item"><span class="legend-dot" style="background:var(--pink-dim);border:1px solid var(--pink)"></span>Aktif</span>
+      </span>
+    </div>
+    <div class="q-map-grid" id="q-map"></div>
+  </div>
+  <div class="kbd-hint">Keyboard: <kbd>A</kbd>–<kbd>E</kbd> pilih · <kbd>→</kbd> next · <kbd>←</kbd> prev · <kbd>F</kbd> flag</div>
+</div>
+
+<!-- RESULTS -->
+<div id="result-screen">
+  <div class="result-hero">
+    <div class="result-label">Session Complete</div>
+    <div class="result-score" id="final-score-display"><span>0</span>/65</div>
+    <div class="result-sub" id="final-sub">—</div>
+  </div>
+  <div class="result-grid">
+    <div class="result-card correct"><div class="val" id="r-correct">0</div><div class="lbl">Benar</div></div>
+    <div class="result-card wrong"><div class="val" id="r-wrong">0</div><div class="lbl">Salah</div></div>
+    <div class="result-card skipped"><div class="val" id="r-skip">0</div><div class="lbl">Skip</div></div>
+  </div>
+  <div class="result-topic-review card" id="result-topics" style="margin-bottom:12px">
+    <div class="card-title">Akurasi per Topik (Sesi Ini)</div>
+    <div class="topic-bar" id="result-topic-bar"></div>
+  </div>
+  <div class="result-actions">
+    <button class="nav-btn secondary" onclick="reviewAnswers()">📋 Review</button>
+    <button class="nav-btn primary" onclick="showStart()">↩ Menu</button>
+  </div>
+</div>
+
+<!-- overlays -->
+<div class="exam-overlay" id="exam-overlay">
+  <div class="exam-modal">
+    <h2>Akhiri Ujian?</h2>
+    <p>Semua jawaban akan dinilai dan Sir akan melihat hasilnya.</p>
+    <button class="nav-btn primary" onclick="submitExam()">Ya, Kumpulkan</button>
+    <button class="nav-btn secondary" onclick="closeOverlay('exam-overlay')">Lanjut Dulu</button>
+  </div>
+</div>
+<div class="exam-overlay" id="exit-overlay">
+  <div class="exam-modal">
+    <h2>Keluar Sesi?</h2>
+    <p>Progress sesi ini tidak akan tersimpan.</p>
+    <button class="nav-btn danger" onclick="showStart()">Ya, Keluar</button>
+    <button class="nav-btn secondary" onclick="closeOverlay('exit-overlay')">Batal</button>
+  </div>
+</div>
+<div class="drill-reset-overlay" id="drill-overlay">
+  <div class="drill-reset-modal">
+    <div class="big-icon">🎯</div>
+    <h2>Drill Selesai!</h2>
+    <p>Semua soal sudah dijawab dengan benar. Luar biasa, Sir!</p>
+    <button class="nav-btn primary" onclick="startQuiz('drill')">Drill Lagi</button>
+    <button class="nav-btn secondary" onclick="showStart()">Menu Utama</button>
+  </div>
+</div>
+<div class="streak-toast" id="streak-toast"></div>
+
+</div><!-- .shell -->
+
+<script>
+const QUESTIONS = [
+{n:1,t:"Bioetik & Kemanusiaan",q:"Yang termasuk orang rentan…",o:["Lansia","Orang penyakit kronis","Orang kena HIV","Anak yatim piatu","Semua benar"],a:"Semua benar",exp:"Vulnerability (kerentanan) memiliki 3 aspek: <strong>biologis</strong> (contoh: lansia, orang dengan penyakit kronis, HIV), <strong>sosial</strong> (contoh: anak yatim piatu, tahanan, pengangguran), dan <strong>kultural</strong>. Semua kelompok yang disebutkan masuk dalam kategori orang rentan.",src:"PPT dr. Bagas — Respect for Human Vulnerability"},
+{n:2,t:"Empati & Compassion",q:"Unsur yang mampu mempengaruhi rasa emosional pada empati adalah…",o:["Emotional intelligence","Mirror neuron","Serotonin","Lobus frontal","Emotional recognition"],a:"Mirror neuron",exp:"<strong>Mirror neuron</strong> (saraf cermin) adalah sel saraf yang aktif ketika seseorang melakukan suatu tindakan ATAU ketika mengamati orang lain melakukan tindakan yang sama. Mirror neuron inilah yang mendasari kemampuan kita merasakan apa yang dirasakan orang lain — fondasi neurobiologis empati. Empati diduga terkait dengan saraf cermin dan faktor genetik.",src:"PPT bu Woro — Empathy and Compassion"},
+{n:3,t:"Hak Asasi & Hukum Kesehatan",q:"Terdapat 2 aspek yang menjadi landasan hukum kesehatan, yaitu...",o:["The right to health care and the right to expression","The right to health care and the right to love","The right to expression and the right to love","The right to expression and the right to health care","The right to health care and the right to self determination"],a:"The right to health care and the right to self determination",exp:"Dua asas yang melandasi hukum kesehatan: (1) <strong>The right to health care</strong> — hak atas pelayanan kesehatan, merupakan hak dasar sosial; (2) <strong>The right to self determination</strong> — hak untuk menentukan nasib sendiri/otonomi individu, merupakan hak dasar individual.",src:"PPT bu Riris — Human Dignity and Human Rights"},
+{n:4,t:"Empati & Compassion",q:"Keadaan dimana seseorang menarik diri dari kondisi yang membuatnya menderita karena kondisi emosi negatif dari orang lain di sekitarnya disebut…",o:["Compassion fatigue","Empathic distress","Burnout","Post traumatic syndrome","Eustress"],a:"Empathic distress",exp:"<strong>Empathic distress</strong> adalah kelemahan dari emotional empathy — individu yang berada di tempat penuh emosi negatif (misal tenaga kesehatan di onkologi) dapat merasakan distress yang begitu berat sampai akhirnya <strong>menarik diri</strong> dari situasi tersebut. Berbeda dengan compassion fatigue yang lebih ke kelelahan jangka panjang, empathic distress bersifat lebih situasional/reaktif.",src:"PPT bu Woro — Empathy and Compassion"},
+{n:5,t:"Non-Diskriminasi & Stigma",q:"Ciri negatif yang menempel pada pribadi seseorang karena pengaruh lingkungannya, pengertian dari…",o:["Prasangka","Stigma","Stigmatisasi","Diskriminasi","Semua benar"],a:"Stigma",exp:"<strong>Stigma</strong> (KBBI) = ciri negatif yang menempel pada pribadi seseorang karena pengaruh lingkungannya. Berbeda dengan: <strong>Prasangka</strong> = pendapat/anggapan yang kurang baik sebelum mengetahui (menyaksikan/menyelidiki) sendiri; <strong>Stigmatisasi</strong> = proses mendiskreditkan individu yang dianggap 'tidak normal' atau 'menyimpang'.",src:"PPT bu Arfi — Non-discrimination & Non-stigmatization"},
+{n:6,t:"Keadilan",q:"Seorang pengendara motor membaca ponselnya sehingga tidak sadar menabrak pejalan kaki yang mengalami patah tulang. Jika menggunakan prinsip keadilan Restorative, situasi apakah yang paling mungkin terjadi?",o:["Pengendara motor bebas jika mampu membayar","Pengendara motor ditahan dan diproses secara hukum","Pengendara motor membiayai perawatan rumah sakit pejalan kaki","Pengendara motor perlu merasakan akibat yang sama dengan perbuatannya","Pengendara motor meminta maaf kepada korban agar dapat terbebas dari kesalahan"],a:"Pengendara motor membiayai perawatan rumah sakit pejalan kaki",exp:"<strong>Restorative justice</strong> = keadilan yang memprioritaskan pemulihan kerugian korban oleh pihak yang menyebabkan kerugian. Fokusnya bukan hukuman, tapi <strong>memulihkan kondisi korban</strong> ke keadaan semula. Membiayai perawatan RS adalah bentuk restoratif paling tepat — langsung mengatasi akibat dari perbuatan.",src:"PPT dr. Miko — Justice"},
+{n:7,t:"Pengantar Etika",q:"Berasal dari kata apakah kata 'etika'?",o:["Bahasa Prancis 'estique' yang berarti kebiasaan","Bahasa Yunani 'etiquette' yang berarti aturan","Bahasa Prancis 'ethikos' yang berarti norma","Bahasa Yunani 'Ethos' yang berarti karakter","Bahasa Prancis 'ethiek' yang berarti moral"],a:"Bahasa Yunani 'Ethos' yang berarti karakter",exp:"<strong>Ethics</strong> berasal dari Bahasa Yunani <strong><em>ethos</em></strong> yang berarti 'karakter' atau 'kebiasaan'. Etika adalah ilmu tentang baik-buruk, benar-salah; cara berpikir dan membuat keputusan; pemahaman tentang hakikat nilai-nilai manusia. Etika berasal dari agama, budaya, dan filsafat.",src:"PPT dr. Meli — Pengantar Etika dan Kemanusiaan"},
+{n:8,t:"Etika & Budaya",q:"Interaksi antara budaya yang berbeda memunculkan…",o:["Perdamaian","Kohesi sosial","Homogenitas","A dan B benar","A dan C benar"],a:"A dan B benar",exp:"Menurut PPT dr. Bagas tentang Cultural Diversity, interaksi antar budaya yang berbeda menghasilkan: <strong>exchange</strong> (pertukaran), innovation, creativity, dan <strong>harmonious interaction</strong> yang menuju pada <strong>social cohesion (kohesi sosial)</strong> dan <strong>vitality</strong> serta <strong>peace (perdamaian)</strong>. Bukan homogenitas — justru keberagaman tetap dipertahankan.",src:"PPT dr. Bagas — Ethics and Culture"},
+{n:9,t:"Non-Diskriminasi & Stigma",q:"Pelaksanaan paralympics adalah bentuk non diskriminasi berdasar?",o:["Specific behavior","Particular disease","Mental & physical disability","Nationality","Race and skin color"],a:"Mental & physical disability",exp:"Paralympic adalah ajang olahraga khusus untuk atlet dengan <strong>disabilitas fisik dan/atau mental</strong>. Ini merupakan bentuk non-diskriminasi berdasarkan <em>mental & physical disability</em> — memberikan kesempatan yang sama bagi penyandang disabilitas untuk berprestasi, sesuai dengan daftar 'subject of discrimination' yang mencakup mental & physical disability.",src:"PPT bu Arfi — Non-discrimination & Non-stigmatization"},
+{n:10,t:"Human Vulnerability",q:"Mengapa kita harus menghargai human vulnerability?",o:["Karena tercantum dalam UNESCO's Universal Declaration on Bioethics and Human Rights","Karena diatur dalam peraturan perundang-undangan","Karena diatur dalam kode etik kedokteran","Karena manusia yang rentan tidak dapat memperjuangkan kepentingannya sendiri","Karena berkaitan dengan etika dan etiket"],a:"Karena manusia yang rentan tidak dapat memperjuangkan kepentingannya sendiri",exp:"Vulnerability didefinisikan sebagai kondisi <strong>ketidakmampuan substansial untuk melindungi kepentingannya sendiri</strong> (<em>substantial incapacity to protect his/her own interests</em>), sehingga menekan otonominya. Karena itulah orang rentan memerlukan perlindungan dan penghargaan ekstra dari orang lain dan sistem.",src:"PPT dr. Bagas — Respect for Human Vulnerability"},
+{n:11,t:"Keadilan",q:"Kelangkaan vaksin covid-19 di awal pandemi menyebabkan pemerintah memprioritaskan tenaga medis dan pekerja sektor publik. Konsep keadilan distributif yang terdapat pada kasus tersebut adalah…",o:["Restorative","Authoritarian","Procedural","Libertarian","Egalitarian"],a:"Authoritarian",exp:"<strong>Authoritarian/Authoritative justice</strong> = distribusi didasarkan pada <em>what is highest/most important</em> — siapa yang paling dibutuhkan atau paling berhak mendapat prioritas menurut otoritas. Dalam konteks pandemi, pemerintah (otoritas) menetapkan tenaga medis sebagai prioritas tertinggi karena mereka paling dibutuhkan untuk menangani krisis. Ini berbeda dengan egalitarian (semua sama rata) atau libertarian (sesuai kemauan individu).",src:"PPT dr. Miko — Justice"},
+{n:12,t:"Pengantar Etika",q:"Seorang dosen menegur mahasiswanya karena merokok di area kampus dan mengingatkan agar merokok di luar area kampus agar tidak terkena sanksi. Berdasarkan prinsip apa teguran tersebut?",o:["Etika","Etiket","Agama","Hukum","Kode etik"],a:"Etiket",exp:"<strong>Etiket</strong> (etiquette) = sopan santun, tata krama — tata cara suatu perbuatan dilakukan, bersifat relatif dan berlaku di lingkungan tertentu, hanya berlaku dalam pergaulan. Teguran dosen ini bersifat etiket karena mengatur <em>cara/tempat</em> merokok, bukan melarang merokok secara moral. *Catatan: ada perdebatan jawaban karena bisa juga dianggap Hukum (ada sanksi), namun konteks PPT mengarah ke Etiket.",src:"PPT dr. Meli — Pengantar Etika dan Kemanusiaan"},
+{n:13,t:"Otonomi & Tanggung Jawab",q:"Seorang mahasiswa tidak bisa bayar UKT 6 bulan, ia meminjam kepada temannya dan berjanji akan mengembalikannya. Ia bekerja serabutan sambil kuliah dan berhasil melunasinya. Tindakan tersebut termasuk dalam prinsip tanggung jawab apa?",o:["Komitmen Perjanjian","Komitmen status","Komitmen terhadap peraturan","Komitmen Pribadi","Komitmen Kerja"],a:"Komitmen Perjanjian",exp:"<strong>Tanggung jawab</strong> = pemahaman terhadap kewajiban untuk membuat keputusan dan bertindak sesuai komitmen tertentu. Komitmen yang dimaksud meliputi: Status, <strong>Perjanjian</strong>, Penghormatan kepada orang lain, Prinsip dan aturan yang diterima. Mahasiswa ini membuat <strong>perjanjian (janji)</strong> untuk mengembalikan pinjaman dan menepatinya — ini adalah komitmen perjanjian.",src:"PPT dr. Miko — Autonomy & Responsibility"},
+{n:14,t:"Privasi & Kerahasiaan",q:"Alasan dasar dari wajibnya menghargai privasi adalah…",o:["Karena setiap orang berhak menentukan nasib","Mencampuri urusan orang lain sangat mengganggu","Mencampuri urusan orang lain menurunkan martabat","Karena dapat membuat seseorang dikatakan tidak berintegritas"],a:"Mencampuri urusan orang lain menurunkan martabat",exp:"Dari slide 'Mengapa Mereka Penting': <strong>Privasi adalah aspek penting dari martabat</strong>; melanggar privasi adalah pelanggaran terhadap martabat seseorang. Individu 'memiliki' informasinya sendiri (penting untuk integritas pribadi), dan menghormati orang lain memerlukan perlindungan privasi dan kerahasiaan informasi mereka.",src:"PPT dr. Miko — Privasi dan Kerahasiaan"},
+{n:15,t:"Otonomi & Tanggung Jawab",q:"Seorang anggota BEM yang selalu terlambat rapat setelah dilantik menjadi Ketua BEM menjadi rajin rapat. Wujud tanggung jawab apakah yang dilakukan?",o:["Tanggung jawab wujud tugas moral","Tanggung jawab wujud akuntabilitas","Tanggung jawab wujud Universal"],a:"Tanggung jawab wujud tugas moral",exp:"Perubahan perilaku karena <strong>kesadaran moral</strong> atas jabatan baru yang diemban = <strong>tanggung jawab wujud tugas moral</strong>. Ketua BEM menyadari kewajibannya sebagai pemimpin dan bertindak sesuai nilai moral yang seharusnya. *Catatan: ada perdebatan karena bisa juga <strong>akuntabilitas</strong> (bertanggung jawab pada kelompok karena peran/jabatan baru). PPT dr. Miko 2023 menyebutkan tipe: causal, liability, role, dan moral responsibility.",src:"PPT dr. Miko — Autonomy & Responsibility (2023)"},
+{n:16,t:"Non-Diskriminasi & Stigma",q:"Mengapa stigma dan diskriminasi tidak diperbolehkan untuk individu atau kelompok?",o:["Melanggar peraturan","Melanggar Martabat dan Hak Asasi Manusia"],a:"Melanggar Martabat dan Hak Asasi Manusia",exp:"Stigma dan diskriminasi secara fundamental <strong>melanggar martabat manusia dan Hak Asasi Manusia (HAM)</strong>. Setiap manusia memiliki martabat inheren yang harus dihormati — stigma merendahkan martabat individu, sedangkan diskriminasi menolak hak yang sama bagi semua orang.",src:"PPT bu Arfi — Non-discrimination & Non-stigmatization"},
+{n:17,t:"Human Vulnerability",q:"Implikasi kelompok vulnerable dalam konteks penelitian adalah…",o:["Memastikan kelompok rentan benar-benar berguna dan dibutuhkan dalam penelitian","Mendukung kelompok rentan untuk selalu diikutsertakan dalam penelitian","Memberikan proteksi pada kelompok rentan yang ikut serta dalam penelitian","A dan B benar","A dan C benar"],a:"A dan C benar",exp:"Implications of vulnerability mencakup 3 hal: (1) <strong>Extra justification</strong> — memastikan kelompok rentan benar-benar diperlukan/berguna dalam penelitian (tidak sembarangan melibatkan mereka); (2) <strong>Special protection</strong> — memberikan perlindungan khusus pada kelompok rentan yang terlibat; (3) <strong>Responding the needs</strong>. Opsi B salah karena kelompok rentan tidak harus selalu diikutsertakan.",src:"PPT dr. Bagas — Respect for Human Vulnerability"},
+{n:18,t:"Keadilan",q:"Perbedaan antara equity dan diskriminasi adalah…",o:["Relevansi alasan pembedaan","Penerimaan subjek tentang perbedaan","Penerimaan masyarakat tentang perbedaan","Perbedaan konteks situasi","Karakteristik pihak yang membedakan"],a:"Relevansi alasan pembedaan",exp:"<strong>Discriminare</strong> (Latin) = membedakan. Perbedaannya: <strong>Discrimination</strong> = membedakan karena alasan yang <em>tidak relevan</em> (irrational/irrelevant reason); <strong>Equity</strong> = membedakan karena alasan yang <em>relevan</em> (merit/relevant reason). Jika alasannya tidak relevan → disebut diskriminatif.",src:"PPT dr. Miko — Justice"},
+{n:19,t:"Privasi & Kerahasiaan",q:"Berikut ini adalah aspek yang TIDAK menyebabkan seseorang membatasi informasi tentang dirinya adalah…",o:["Sosial","Budaya","Jenis kelamin","Peran/jabatan","Kepribadian"],a:"Jenis kelamin",exp:"Privasi bersifat dinamis dan bervariasi berdasarkan: <strong>Kepribadian, Status, Peran, Konteks, dan Budaya</strong>. Dari daftar tersebut, <strong>jenis kelamin</strong> tidak termasuk faktor yang secara langsung mempengaruhi seberapa banyak seseorang membatasi informasi pribadinya — berbeda dengan peran/jabatan (misal dokter wajib menjaga kerahasiaan pasien) atau budaya (budaya tertentu lebih tertutup).",src:"PPT dr. Miko — Privasi dan Kerahasiaan"},
+{n:20,t:"Privasi & Kerahasiaan",q:"Apa alasan utama pentingnya menjaga kerahasiaan orang lain?",o:["Setiap orang berhak menentukan nasibnya sendiri","Menyebarkan informasi mengenai seseorang terasa sangat mengganggu","Menyebarkan informasi mengenai seseorang dapat membahayakan kehidupannya","Menyebarkan informasi mengenai seseorang merupakan kejahatan yang tidak termaafkan","Menyebarkan informasi mengenai seseorang menunjukkan ciri individu yg tidak punya integritas"],a:"Menyebarkan informasi mengenai seseorang dapat membahayakan kehidupannya",exp:"Dari slide 'Mengapa Mereka Penting': <strong>Kerahasiaan sangat penting; informasi yang diungkapkan dapat mengakibatkan kerugian bagi kepentingan individu</strong>. Ini adalah alasan utama — bahaya konkret terhadap kehidupan seseorang. Contoh: membocorkan status HIV pasien dapat menyebabkan diskriminasi, kehilangan pekerjaan, bahkan ancaman fisik.",src:"PPT dr. Miko — Privasi dan Kerahasiaan"},
+{n:21,t:"Empati & Compassion",q:"Empati dapat dibangun dengan cara…",o:["Terbuka dengan perspektif orang lain","Memperhitungkan keuntungan dari perbuatan baik","Merasakan emosi orang lain seutuhnya","Banyak membaca cerita sedih","Menonton berita kemalangan"],a:"Terbuka dengan perspektif orang lain",exp:"Cara membangun empati menurut PPT bu Woro: (1) <strong>Openness</strong> — terbuka untuk memahami sudut pandang orang lain; (2) Careful <strong>listening</strong> yang mengarah pada pemahaman; (3) <strong>Understanding</strong> yang mengarah pada empati. Empati adalah pengalaman memahami kondisi orang lain dari <em>perspektif mereka</em>. Merasakan emosi seutuhnya justru berisiko menjadi empathic distress.",src:"PPT bu Woro — Empathy and Compassion"},
+{n:22,t:"Pengantar Etika",q:"Alasan pentingnya dilakukan critical discussion, KECUALI…",o:["Untuk dapat mengemukakan argumennya","Untuk dapat mengetahui perspektif orang lain","Untuk dapat terbuka terhadap pendapat orang lain","Untuk mendapatkan keputusan terbaik","Untuk memaksakan pendapat dan mengubah pendirian orang lain"],a:"Untuk memaksakan pendapat dan mengubah pendirian orang lain",exp:"Critical discussion bertujuan untuk: mengemukakan argumen sendiri, mengetahui dan terbuka terhadap perspektif orang lain, serta mencapai keputusan terbaik melalui dialog. <strong>Memaksakan pendapat dan mengubah pendirian orang lain</strong> adalah kebalikan dari prinsip critical discussion yang seharusnya menghormati otonomi dan pemikiran masing-masing pihak.",src:"PPT — Pengantar Etika"},
+{n:23,t:"Otonomi & Tanggung Jawab",q:"Seorang mahasiswa kedokteran lolos presentasi seminar internasional namun tidak jadi berangkat karena akan tidak memenuhi syarat ujian dan tidak lulus. Apakah mahasiswa tersebut otonom?",o:["Mahasiswa tidak otonom, karena tertekan peraturan akademik","Mahasiswa tidak otonom, karena ingin ikut seminar","Mahasiswa tidak otonom karena bingung","Mahasiswa otonom karena tidak ada paksaan","Mahasiswa otonom karena telah mempertimbangkan risk and benefit"],a:"Mahasiswa otonom karena telah mempertimbangkan risk and benefit",exp:"Menurut penjelasan dr. Miko di kelas: seseorang <strong>tetap dianggap otonom</strong> jika pada akhirnya ia <strong>memutuskan berdasarkan pertimbangan tertentu</strong>, meskipun keputusannya adalah sesuatu yang tidak ia inginkan. Otonomi bukan berarti bebas dari konsekuensi atau constraint — tetapi kemampuan untuk menimbang benefit & harm lalu membuat keputusan sendiri.",src:"PPT dr. Miko — Autonomy & Responsibility"},
+{n:24,t:"Human Vulnerability",q:"Contoh eliminasi terhadap human vulnerability yang tidak etis adalah…",o:["Penelitian di bidang geologi","Penelitian vaksin","Penelitian obat baru","Pelaksanaan program asuransi kesehatan","Pelaksanaan gerakan eugenics"],a:"Pelaksanaan gerakan eugenics",exp:"<strong>Eugenics</strong> adalah gerakan yang bertujuan 'memperbaiki' ras manusia dengan cara memilih siapa yang boleh bereproduksi — mengeliminasi mereka yang dianggap 'inferior' atau 'rentan secara genetik'. Ini adalah eliminasi kerentanan manusia secara <strong>tidak etis</strong> karena melanggar martabat manusia, hak asasi, dan otonomi. Gerakan ini menginspirasi Holocaust Nazi.",src:"PPT dr. Bagas — Respect for Human Vulnerability"},
+{n:25,t:"Etika & Budaya",q:"Masyarakat Banyumas biasa melakukan terapi alternatif di luar tindakan medis. Apa yang seharusnya dilakukan tenaga kesehatan?",o:["Memberikan edukasi pada pasien mengenai manfaat, risiko secara spesifik","Memberikan jurnal pada pasien sehingga tidak mengambil tindakan alternatif tersebut"],a:"Memberikan edukasi pada pasien mengenai manfaat, risiko secara spesifik",exp:"Prinsip <strong>respect for autonomy</strong> — pasien berhak memilih terapi alternatif sebagai bagian dari budayanya. Tenaga kesehatan tidak boleh melarang begitu saja, namun wajib memberikan <strong>informed education</strong>: menjelaskan manfaat dan risiko secara spesifik agar pasien dapat membuat keputusan yang <em>informed</em>. Memberikan jurnal dan melarang adalah bentuk paternalistik yang mengabaikan otonomi pasien.",src:"PPT — Etika & Budaya"},
+{n:26,t:"Keadilan",q:"Seorang pimpinan membuat kebijakan upah tambahan sesuai lama jam lembur, dan pekerja harus melaporkan untuk menjaga keterbukaan. Prinsip keadilan serta jenis apa tindakan tersebut?",o:["Procedural justice dan libertarian justice","Procedural justice dan egalitarian justice","Distributive justice dan libertarian justice","Retributive justice dan utilitarian justice","Procedural justice dan authoritarian justice"],a:"Distributive justice dan libertarian justice",exp:"<strong>Distributive justice</strong> = pembagian sumber daya/reward berdasarkan kontribusi (jam lembur). <strong>Libertarian justice</strong> = resources dialokasikan sebagai reward atas usaha individual — individual freedom, minimum state intervention. Upah tambahan berdasarkan jam lembur = reward atas usaha = libertarian. *Catatan: ada perdebatan, sebagian menganggap 'procedural justice dan libertarian justice' karena ada aspek transparansi (prosedural).",src:"PPT dr. Miko — Justice"},
+{n:27,t:"Hak Asasi & Hukum Kesehatan",q:"Salah satu ciri-ciri HAM adalah tidak memandang ras, suku, agama, budaya, dll. Maka termasuk…",o:["Universal","Hakiki","Tidak dapat dicabut","Tidak dapat dibagi","Tidak dapat habis"],a:"Universal",exp:"Ciri-ciri HAM: (1) <strong>Hakiki</strong> — sudah dibawa sejak lahir; (2) <strong>Universal</strong> — berlaku umum tanpa memandang status, suku bangsa, gender, dan HAM tidak dapat dicabut siapapun; (3) HAM tidak dapat diserahkan pada pihak lain; (4) <strong>Tidak dapat dibagi</strong> — semua orang mendapatkan semua hak. 'Tidak memandang ras, suku, agama' = <strong>Universal</strong>.",src:"PPT bu Riris — Human Dignity and Human Rights"},
+{n:28,t:"Empati & Compassion",q:"Empati merupakan kemampuan seseorang untuk mampu .... apa yang dirasakan oleh orang lain.",o:["Mengerti","Merasakan sepenuhnya","Melindungi","Memiliki","Menyatakan"],a:"Mengerti",exp:"<strong>Empati</strong> adalah kemampuan untuk <strong>mengerti/memahami</strong> apa yang dirasakan orang lain dari perspektif mereka. Berbeda dengan 'merasakan sepenuhnya' yang justru adalah <em>emotional empathy</em> berlebihan yang dapat menyebabkan empathic distress. Empathy is 'understanding what the other person is going through and being there'.",src:"PPT bu Woro — Empathy and Compassion"},
+{n:29,t:"Otonomi & Tanggung Jawab",q:"Karakteristik otonomi pada masyarakat Indonesia adalah…",o:["Rendahnya literasi","Percaya roh","Masyarakat luas sebagai satu keluarga besar","Sangat agamis"],a:"Masyarakat luas sebagai satu keluarga besar",exp:"Otonomi di Indonesia dipengaruhi <strong>budaya</strong> yang khas: (1) Masyarakat sebagai <strong>satu keluarga besar</strong> — keputusan individu sering melibatkan keluarga besar/komunitas; (2) Penghargaan dan penghormatan pada pemimpin — keputusan bisa dipengaruhi tokoh otoritas. Ini membedakan otonomi Indonesia dari model Barat yang lebih individualistik.",src:"PPT dr. Miko — Otonomi di Indonesia"},
+{n:30,t:"Solidaritas",q:"Yang mendasari solidaritas, KECUALI…",o:["Rasa saling menghargai","Kepentingan Pribadi","Dukung kelompok rentan","Komitmen bersama","Kepentingan orang lain"],a:"Kepentingan Pribadi",exp:"<strong>Notions of solidarity</strong> meliputi: mutual respect (saling menghargai), belonging together, shared responsibility (komitmen bersama), mutual understanding, support of the weak and vulnerable (dukung kelompok rentan), commitment to a common cause/common good (kepentingan orang lain/bersama). <strong>Kepentingan pribadi</strong> (personal interest) justru bertentangan dengan esensi solidaritas.",src:"PPT — Solidaritas"},
+{n:31,t:"Privasi & Kerahasiaan",q:"Orang tua memberikan gadget pada anak 14 dan 17 tahun namun menyetting agar bisa mengawasi apa yang dibuka. Hal ini mengandung nilai etik apa?",o:["Privasi dan keamanan","Tugas dan tanggung jawab ortu","Ilmu dan teknologi","Kerahasiaan dan keamanan","Lupa"],a:"Privasi dan keamanan",exp:"Tindakan orang tua ini menyentuh dua nilai: <strong>privasi</strong> (kontrol atas informasi pribadi anak) dan <strong>keamanan</strong> (melindungi anak dari konten berbahaya). Ada tension antara hak privasi anak dan tanggung jawab orang tua untuk melindungi — ini adalah dilema etik terkait privasi dan keamanan dalam konteks teknologi.",src:"PPT dr. Miko — Privasi dan Kerahasiaan"},
+{n:32,t:"Keadilan",q:"Kondisi berikut ini mengenai pentingnya keadilan distributif adalah…",o:["Tingginya kesulitan birokrasi","Kelangkaan sumber daya","Pemerintahan monarki","Konsep liberalisme","Prinsip kesetaraan"],a:"Kelangkaan sumber daya",exp:"<strong>Precondition of distributive justice</strong>: Scarcity (kelangkaan sumber daya), technology developments, normativity (what should be right/wrong or good/bad), dan berbagai teori keadilan. <strong>Kelangkaan sumber daya (scarcity)</strong> adalah kondisi utama yang membuat distributive justice menjadi penting — jika semua sumber daya tak terbatas, tidak ada dilema distribusi.",src:"PPT dr. Miko — Justice"},
+{n:33,t:"Etika & Budaya",q:"Aspek dari budaya yang cenderung tidak terlihat adalah…",o:["Lukisan","Lagu daerah","Puisi","Karya sastra","Sistem nilai"],a:"Sistem nilai",exp:"Budaya ibarat gunung es: bagian yang <strong>terlihat</strong> (visible) = seni, musik, bahasa, makanan, pakaian, dll. Bagian yang <strong>tidak terlihat</strong> (invisible) = <strong>sistem nilai</strong>, kepercayaan, norma, cara berpikir, asumsi budaya. Lukisan, lagu daerah, puisi, dan karya sastra adalah manifestasi budaya yang dapat dilihat/didengar secara langsung.",src:"PPT dr. Bagas — Ethics and Culture"},
+{n:34,t:"Human Vulnerability",q:"Contoh vulnerability yang terkait dengan biologis adalah…",o:["Penyakit imunodefisiensi","Mantan narapidana","Pengangguran","Warga kurang mampu","Tunawisma"],a:"Penyakit imunodefisiensi",exp:"Aspek vulnerability: <strong>Biologis</strong> = human biology (kondisi fisik/kesehatan tubuh) → contoh: penyakit imunodefisiensi, lansia, anak-anak, ibu hamil. <strong>Sosial</strong> = social threats, hospitalization, institutionalization, circumstances → contoh: mantan narapidana, pengangguran, warga kurang mampu, tunawisma. <strong>Kultural</strong> = tradition, value.",src:"PPT dr. Bagas — Respect for Human Vulnerability"},
+{n:35,t:"Pengantar Etika",q:"Mahasiswa diajari untuk memikirkan kembali/merenungi tentang apa yang telah ia lakukan terkait sudut pandangnya dari etika/moral. Termasuk etika jenis apa?",o:["Etika deklarasi","Ethical awareness","Ethical reflection"],a:"Ethical reflection",exp:"<strong>Ethical reflection</strong> adalah proses merenungkan dan mengevaluasi tindakan, keputusan, dan situasi dari perspektif etika atau moral. Tujuannya memahami apakah tindakan sesuai prinsip-prinsip etika yang berlaku. Melibatkan pertimbangan nilai-nilai, norma, dan konsekuensi. Berbeda dengan <em>ethical awareness</em> yang hanya kesadaran akan adanya isu etik.",src:"PPT — Pengantar Etika dan Kemanusiaan"},
+{n:36,t:"Solidaritas",q:"Seorang dosen secara mengejutkan tidak meluluskan mahasiswanya karena konflik personal. Beberapa teman mahasiswa menemui dosen tersebut dan mempertanyakan keputusannya. Apakah tindakan tersebut termasuk solidaritas?",o:["Ya, karena didasarkan pada prinsip keadilan","Ya, karena didasarkan pada kepentingan yang sama agar lulus","Tidak, karena mahasiswa tersebut tidak tergolong kelompok rentan","Tidak, karena dosen tersebut tidak termasuk kelompok rentan","Tidak, karena berdasar pada kepentingan kelompok"],a:"Ya, karena didasarkan pada prinsip keadilan",exp:"<strong>Solidarity goes beyond justice</strong> — solidaritas tidak semata-mata soal kelompok rentan, tapi tentang <strong>prinsip keadilan</strong>. Teman-teman mahasiswa bertindak membela karena ada ketidakadilan (dosen tidak meluluskan karena konflik personal, bukan alasan akademik). Ini adalah solidaritas berbasis keadilan. Catatan: solidarity is not necessarily a legal obligation dan does not necessarily restrict autonomy.",src:"PPT — Relationship of Solidarity, Autonomy, and Justice"},
+{n:37,t:"Pengantar Etika",q:"BEM FK Unsoed merencanakan Dies Natalis FK. Saat menilai benefit dan harm menggunakan ethical matrix ditemukan benefit tidak berimbang dengan risiko yang sangat tinggi. Itu artinya…",o:["Kegiatan tersebut sangat penting dilakukan","Benefit dan harm seimbang menimbulkan abuse","Benefit rendah harus diselenggarakan","Tingginya risiko sehingga kegiatan tidak perlu dilakukan","Kegiatan dilakukan secepatnya"],a:"Tingginya risiko sehingga kegiatan tidak perlu dilakukan",exp:"Dalam <strong>Ethical Matrix</strong>: ketika Benefit rendah/tidak ada namun Harm tinggi → posisi <em>Abuse</em> (harm tinggi, benefit ada tapi tidak sebanding) atau <em>Useless</em> (harm ada, benefit tidak ada). Jika benefit tidak berimbang dengan risiko yang sangat tinggi, maka kegiatan tersebut masuk kuadran abuse/useless → <strong>tidak perlu dilakukan</strong>.",src:"PPT dr. Meli — Etika dan Kemanusiaan"},
+{n:38,t:"Solidaritas",q:"Berikut termasuk dalam pengertian solidaritas, KECUALI…",o:["Membela anggota kelompok","Menghargai sesama anggota","Rasa tanggungjawab bersama","Melindungi yang lebih lemah","Mencapai tujuan baik bersama"],a:"Membela anggota kelompok",exp:"Notions of solidarity: mutual respect (menghargai sesama), belonging together, shared responsibility (tanggung jawab bersama), mutual understanding, support of the weak and vulnerable (melindungi yang lemah), commitment to a common cause/common good (mencapai tujuan baik bersama). <strong>Membela anggota kelompok</strong> secara membabi buta bukan termasuk solidaritas — solidaritas bukan loyalitas buta, tapi didasarkan pada nilai moral bersama.",src:"PPT — Solidaritas"},
+{n:39,t:"Privasi & Kerahasiaan",q:"Manusia wajib menghargai dan menghormati privasi orang lain. Alasan penting yang membuat kita harus menghormati privasi adalah…",o:["Agar tidak dikenai hukum yang berlaku","Sebagai bentuk perilaku humanis","Agar privasi kita juga dihormati","Sebagai langkah menghormati martabat manusia","Agar kita dapat menjalin interaksi dengan banyak orang"],a:"Sebagai langkah menghormati martabat manusia",exp:"Dari slide 'Why Do They Matter': <strong>Privacy is an essential aspect of dignity; invading privacy is a violation of one's dignity</strong>. Menghormati privasi orang lain adalah bentuk penghormatan terhadap <strong>martabat manusia</strong> — bukan sekadar aturan hukum atau kepentingan timbal balik.",src:"PPT dr. Miko — Privasi dan Kerahasiaan"},
+{n:40,t:"Solidaritas",q:"Berikut pernyataan yang benar tentang keterkaitan antara solidaritas dengan prinsip keadilan…",o:["Solidaritas berpotensi memicu ketidakadilan","Solidaritas memiliki pengertian yang sama dengan keadilan","Solidaritas bukan merupakan kewajiban dari seorang individu","Solidaritas merupakan tanggungjawab hukum setiap individu","Solidaritas tidak bersumber dari ketidakadilan"],a:"Solidaritas bukan merupakan kewajiban dari seorang individu",exp:"<strong>Solidarity goes beyond justice. Justice is a matter of obligation from one free individual to another. Solidarity is NOT necessarily a legal obligation. Solidarity does not necessarily restrict autonomy.</strong> Solidaritas adalah pilihan moral yang melampaui kewajiban hukum — berbeda dengan keadilan yang dapat dipaksakan secara hukum.",src:"PPT — Relationship of Solidarity, Autonomy, and Justice"},
+{n:41,t:"Privasi & Kerahasiaan",q:"Prinsip moral apa yang mendasari individu untuk menjaga privasi dan kerahasiaan orang lain?",o:["Justice","Beneficence","Non maleficence","Respect for autonomy"],a:"Respect for autonomy",exp:"<strong>Privasi</strong> = keinginan seseorang untuk mengontrol pengungkapan informasi pribadinya (kontrol tentang informasi mana yang diberikan, seberapa banyak, kepada siapa, kapan, di mana). Ini adalah ekspresi langsung dari <strong>respect for autonomy</strong> — menghormati hak individu untuk menentukan nasib dan informasi tentang dirinya sendiri.",src:"PPT dr. Miko — Privasi dan Kerahasiaan"},
+{n:42,t:"Non-Diskriminasi & Stigma",q:"Melarang seorang disabilitas untuk memasuki ruang seminar termasuk diskriminasi tipe?",o:["Direct","Indirect","Harassment","Victimization"],a:"Direct",exp:"<strong>Diskriminasi langsung (direct discrimination)</strong> = secara eksplisit melarang atau memperlakukan seseorang berbeda berdasarkan karakteristik tertentu yang dilindungi — dalam kasus ini berdasarkan <strong>disabilitas</strong>. UU Kesetaraan (2010) menetapkan disabilitas sebagai salah satu karakteristik yang tidak boleh didiskriminasi secara langsung.",src:"PPT bu Arfi — Non-discrimination & Non-stigmatization"},
+{n:43,t:"Non-Diskriminasi & Stigma",q:"Manakah yang BUKAN termasuk efek stigma terhadap seorang individu?",o:["Malu, tidak berdaya","Enggan meminta pertolongan","Terdorong mengadopsi perilaku baik","Kurang mendapat kesempatan kerja","Self-stigma"],a:"Terdorong mengadopsi perilaku baik",exp:"Effects of stigma: perasaan malu, putus asa, terisolasi; enggan meminta bantuan; <strong>mencegah</strong> mereka melakukan perilaku yang baik/sehat (bukan mendorong); kurangnya pemahaman orang lain; terbatasnya kesempatan kerja; penindasan/kekerasan fisik/pelecehan; keraguan diri dan stigma diri. Jadi stigma justru <strong>menghambat</strong>, bukan mendorong perilaku baik.",src:"PPT bu Arfi — Non-discrimination & Non-stigmatization"},
+{n:44,t:"Non-Diskriminasi & Stigma",q:"Orang dengan HIV/AIDS sering dikaitkan dengan perilaku buruk yaitu sering gonta ganti pasangan. Yang dimaksud situasi tersebut adalah…",o:["Stigma","Prasangka","Diskriminasi","Ambivalensi","Non respect for autonomy"],a:"Stigma",exp:"Mengaitkan ODHA dengan perilaku 'gonta-ganti pasangan' adalah bentuk <strong>stigma</strong> — ciri negatif yang menempel pada identitas/pribadi seseorang. Dalam konteks diskriminasi, HIV/AIDS masuk kategori <em>particular disease</em> sebagai subject of discrimination. Stigma ini berdampak nyata: ODHA enggan berobat, terisolasi sosial, dan mengalami self-stigma.",src:"PPT bu Arfi — Non-discrimination & Non-stigmatization"},
+{n:45,t:"Bioetik & Kemanusiaan",q:"Definisi sehat WHO: 'suatu keadaan sejahtera fisik, mental, dan sosial yang utuh'. Apakah yang dimaksud dengan keadaan sejahtera secara sosial?",o:["Memiliki jiwa sosial untuk membantu orang lain","Terpenuhi kebutuhan pangan, sandang, dan papan","Mampu bersosialisasi dengan baik melalui berbagai media","Tidak mengalami kesulitan dalam memenuhi kebutuhan sekunder","Dapat berkomunikasi dengan bebas tanpa tekanan dari pihak lain"],a:"Dapat berkomunikasi dengan bebas tanpa tekanan dari pihak lain",exp:"Sejahtera <strong>sosial</strong> dalam definisi WHO merujuk pada kemampuan individu untuk berfungsi dalam masyarakat tanpa hambatan — termasuk <strong>dapat berkomunikasi dan berinteraksi dengan bebas tanpa tekanan</strong>. Ini mencakup aspek kebebasan sosial dan tidak adanya diskriminasi atau penindasan dalam kehidupan bermasyarakat.",src:"Madu 2021"},
+{n:46,t:"Otonomi & Tanggung Jawab",q:"Aplikasi medik yang merupakan penghormatan terhadap otonomi adalah…",o:["Tersedia healthcare di RS","Kebebasan pasien untuk memilih merk obat","Tersedia kelas 3, 2, 1, VIP di RS","Hubungan dokter-pasien yang terpusat pada pasien","Keharusan rumah sakit untuk menerima BPJS"],a:"Hubungan dokter-pasien yang terpusat pada pasien",exp:"<strong>Pengambilan keputusan yang menghormati otonomi pasien</strong>: dokter ahli dalam bidang medis, <em>pasien ahli dalam pilihan, nilai, dan kepercayaannya</em>; pendekatan <strong>patient-centered</strong>; setiap pasien mempunyai otonomi untuk mengambil keputusan; pilihan yang diambil adalah hak dengan kewajiban menerima konsekuensi. <em>Patient-centered care</em> adalah manifestasi otonomi paling tepat.",src:"PPT dr. Miko — Otonomi dan Tanggung Jawab Individu"},
+{n:47,t:"Empati & Compassion",q:"Apa saja 2 macam aspek dari empati yang saling berkaitan?",o:["Affective empathy - cognitive empathy","Affective empathy - compassion","Compassion - cognitive empathy","Compassion - affective empathy"],a:"Affective empathy - cognitive empathy",exp:"<strong>Empathy</strong> meliputi: (1) Emotion recognition; (2) Vicarious feeling; (3) Perspective taking. Dua aspek utama: <strong>Affective empathy</strong> = merasakan secara emosional apa yang dirasakan orang lain (vicarious feeling); <strong>Cognitive empathy</strong> = memahami secara rasional perspektif orang lain (perspective taking). Keduanya harus hadir bersamaan dalam momen empati.",src:"PPT bu Woro — Empathy and Compassion"},
+{n:48,t:"Empati & Compassion",q:"Arti harfiah dari empati adalah…",o:["Kasih sayang","Cinta","In feeling","In heart","Compassion"],a:"In feeling",exp:"Empathy berasal dari Bahasa Yunani — <strong>Einfühlung</strong> dalam Bahasa Jerman yang berarti '<strong>in feeling</strong>' (merasakan dari dalam). Ini berbeda dengan simpati (turut merasakan dari luar) atau compassion (belas kasih yang mendorong tindakan).",src:"PPT bu Woro — Empathy and Compassion"},
+{n:49,t:"Keadilan",q:"Pemerintah perlu melakukan kalkulasi manfaat dan risiko sebelum menjalankan program vaksinasi dan mempertimbangkan distribusi vaksin. Terkait dengan prinsip apakah pertimbangan distribusi vaksin tersebut?",o:["Justice","Beneficence","Maleficence","Autonomy","Privacy"],a:"Justice",exp:"Distribusi vaksin yang adil dan merata adalah persoalan <strong>Justice (Keadilan)</strong> — siapa yang mendapat, berapa banyak, dan dalam urutan apa. Ini menyentuh distributive justice. Meskipun beneficence juga terlibat (kalkulasi manfaat-risiko), aspek <em>distribusi</em>-nya secara spesifik adalah domain Justice. (Penjelasan dr. Miko di kelas.)",src:"PPT dr. Miko — Justice"},
+{n:50,t:"Hak Asasi & Hukum Kesehatan",q:"Nilai normatif apa yang mendasari Hak Asasi Manusia (HAM)?",o:["Penampilan manusia","Pendidikan manusia","Martabat manusia","Kekayaan manusia","Pendidikan manusia"],a:"Martabat manusia",exp:"Nilai normatif yang paling mendasari HAM adalah <strong>kemuliaan/martabat manusia</strong> (human dignity). Manusia memiliki martabat/dignity/karamah — itulah mengapa ia memiliki hak-hak asasi yang harus dihormati, dilindungi, dan dipenuhi. 'Semua manusia dilahirkan merdeka dan setara dalam martabat dan hak-haknya' — DUHAM Pasal 1.",src:"PPT bu Riris — Human Dignity and Human Rights"},
+{n:51,t:"Pengantar Etika",q:"Tempat studi memutuskan pembelajaran tatap muka. Anda khawatir akan risiko penularan covid-19 meskipun sudah menerapkan protokol kesehatan. Termasuk jenis harm apakah risiko tersebut?",o:["Psychological","Physical","Social","Economy","Systemic"],a:"Physical",exp:"Risiko <strong>penularan covid-19</strong> adalah ancaman langsung terhadap tubuh/kesehatan fisik — ini adalah <strong>Physical harm</strong>. Berbeda dengan psychological harm (trauma, cemas berlebihan), social harm (isolasi, diskriminasi), atau economic harm (kehilangan penghasilan). Meski ada komponen psikologis (khawatir), ancaman utamanya adalah fisik.",src:"PPT dr. Meli — Etika dan Kemanusiaan"},
+{n:52,t:"Hak Asasi & Hukum Kesehatan",q:"Perkembangan HAM generasi kedua meliputi bidang…",o:["Sipil - ekonomi","Politik - sipil","Ekonomi, sosial, budaya","Solidaritas - ekonomi","Sosial budaya - politik"],a:"Ekonomi, sosial, budaya",exp:"Generasi HAM: <strong>Generasi I</strong> = hak sipil dan politik (hak untuk hidup, bebas dari penyiksaan, hak berpolitik); <strong>Generasi II</strong> = <strong>hak ekonomi, sosial, dan budaya</strong> (hak atas pendidikan, kesehatan, pekerjaan — tuntutan perlindungan bagi hak-hak dasar manusia); <strong>Generasi III</strong> = hak solidaritas (hak perdamaian, pembangunan, lingkungan).",src:"PPT bu Riris — Human Dignity and Human Rights"},
+{n:53,t:"Otonomi & Tanggung Jawab",q:"Pernyataan di bawah ini yang BUKAN termasuk tindakan otonom?",o:["Tindakan dilakukan karena keinginan sendiri","Tindakan dilakukan karena pemikiran nasional","Tindakan dilakukan karena terintimidasi","Tindakan dilakukan karena tujuan","Tindakan berjalan atas keputusan sendiri"],a:"Tindakan dilakukan karena terintimidasi",exp:"Dua kondisi tindakan otonom: (1) <strong>Kemerdekaan</strong> = tidak berada dalam intervensi/perintah, bebas dari pengaruh (tapi bukan bebas dari perasaan atau intimidasi atas seseorang/sesuatu); (2) <strong>Kapasitas</strong> = bertindak dengan tujuan, menunjukkan pemahaman atas pilihannya. Tindakan karena <strong>terintimidasi</strong> = tidak bebas dari pengaruh → <strong>bukan</strong> tindakan otonom.",src:"PPT dr. Miko — Otonomi & Tanggung Jawab"},
+{n:54,t:"Hak Asasi & Hukum Kesehatan",q:"Berikut merupakan bentuk ketidakadilan gender, KECUALI…",o:["Marginalisasi","Diskriminasi","Subordinasi","Saling menyayangi","Double burden"],a:"Saling menyayangi",exp:"Bentuk-bentuk ketidakadilan gender: <strong>Marginalisasi</strong> (peminggiran), <strong>Subordinasi</strong> (penomorsekian), <strong>Pelabelan/Citra Baku/Stereotype</strong>, <strong>Beban Ganda (Double Burden)</strong>, dan <strong>Tindak Kekerasan (Violence)</strong>. <strong>Saling menyayangi</strong> jelas bukan bentuk ketidakadilan — ini adalah relasi positif antar manusia.",src:"PPT — Ketidakadilan Gender"},
+{n:55,t:"Keadilan",q:"Syarat procedural justice bisa terpenuhi adalah…",o:["Transparency","Simplicity","Truth","Honesty"],a:"Transparency",exp:"<strong>Procedural Justice</strong> = ensuring a fair process for making decisions and settling disputes. Syarat-syaratnya: <strong>Fairness</strong>, <strong>Voice</strong>, <strong>Transparency</strong>, dan <strong>Impartiality</strong>. Dari pilihan yang tersedia, <strong>Transparency</strong> (keterbukaan) adalah syarat yang sesuai dengan konsep procedural justice.",src:"PPT dr. Miko — Justice"},
+{n:56,t:"Hak Asasi & Hukum Kesehatan",q:"Berikut yang termasuk pelanggaran HAM berat, KECUALI…",o:["Menghilangkan seluruh nyawa anggota kelompok","Menghilangkan sebagian anggota bangsa","Memaksakan pemindahan anak dari suatu kelompok","Mencegah kelahiran dari suatu ras/bangsa","Kelalaian dalam pelayanan kesehatan"],a:"Kelalaian dalam pelayanan kesehatan",exp:"Pelanggaran HAM berat (genosida dan kejahatan terhadap kemanusiaan) mencakup: membunuh anggota kelompok, merusak fisik/mental, memaksakan kondisi yang menyebabkan kepunahan, mencegah kelahiran, memindahkan anak secara paksa. <strong>Kelalaian dalam pelayanan kesehatan</strong> adalah malpraktik/pelanggaran etik/hukum, bukan dikategorikan sebagai pelanggaran HAM berat.",src:"Hasil diskusi PJ CBT"},
+{n:57,t:"Privasi & Kerahasiaan",q:"Terminologi yang tepat terkait hak untuk mengatur arus informasi tentang dirinya kepada orang lain?",o:["Otonomi","Privasi","Kerahasiaan","Hukum legal"],a:"Privasi",exp:"<strong>Privasi</strong> = keinginan (desire) seseorang untuk mengontrol pengungkapan informasi pribadinya. Kontrol meliputi: informasi mana yang diberikan, seberapa banyak, kapan, di mana, dan kepada siapa. Ini berbeda dari <em>kerahasiaan</em> (confidentiality) yang lebih ke kewajiban pihak lain untuk tidak menyebarkan informasi yang sudah diterima.",src:"PPT dr. Miko — Privasi dan Kerahasiaan"},
+{n:58,t:"Privasi & Kerahasiaan",q:"Yang merupakan upaya untuk menjaga privasi pasien pada konseling kesehatan adalah…",o:["Konseling dengan berbisik-bisik","Menyediakan waktu yang cukup lama","Menyediakan ruangan yang tidak terlihat orang lain","Tidak menggunakan kalimat yang menyinggung pasien"],a:"Menyediakan ruangan yang tidak terlihat orang lain",exp:"Menjaga privasi pasien dalam konseling berarti memastikan informasi pasien tidak dapat diakses/didengar pihak yang tidak berwenang. <strong>Menyediakan ruangan yang tidak terlihat orang lain (private room)</strong> adalah cara paling efektif — berbisik-bisik tidak menjamin kerahasiaan, waktu lama tidak ada kaitannya dengan privasi, dan tidak menyinggung pasien adalah tentang komunikasi, bukan privasi.",src:"PPT dr. Miko — Privasi dan Kerahasiaan"},
+{n:59,t:"Pengantar Etika",q:"Meskipun prinsip-prinsip etika bersifat universal, namun pertimbangan dalam menyelesaikan masalah etik sesuai kontekstual. Maksud kontekstual dalam kasus ini adalah…",o:["Tergantung keterampilan dalam menganalisa masalah","Tergantung pertimbangan manfaat dan risiko","Tergantung situasi dan kondisi sosial budaya tempat tsb dan kepentingan pihak yang terlibat","Tergantung aturan, etiket, tata krama yang berlaku di masyarakat","Tergantung tingkat pendidikan, pengetahuan dan pemahaman tentang etika"],a:"Tergantung situasi dan kondisi sosial budaya tempat tsb dan kepentingan pihak yang terlibat",exp:"<strong>Kontekstual</strong> dalam etika berarti penerapan prinsip-prinsip universal harus mempertimbangkan <strong>situasi, kondisi sosial-budaya setempat, dan kepentingan semua pihak yang terlibat</strong>. Nilai etika bersifat universal, tetapi cara penerapannya disesuaikan dengan konteks lokal. *Catatan: ada perdebatan dengan Opsi D dan E.",src:"PPT dr. Bagas — Ethics and Culture"},
+{n:60,t:"Etika & Budaya",q:"Di budaya Jawa jika ada orang sakit maka anggota keluarga harus melakukan hal tersebut, KECUALI…",o:["Terlibat langsung dalam merawat pasien","Memberikan dukungan finansial untuk berobat","Menunggu pasien minta tolong terlebih dahulu","Memberikan perhatian secara tulus","Memberikan dukungan finansial untuk keperluan setiap hari"],a:"Menunggu pasien minta tolong terlebih dahulu",exp:"Dalam budaya Jawa yang menganut nilai <em>gotong royong</em> dan kebersamaan keluarga, ketika ada anggota yang sakit, keluarga secara proaktif terlibat tanpa menunggu diminta. <strong>Menunggu pasien minta tolong terlebih dahulu</strong> bertentangan dengan nilai budaya Jawa yang mengedepankan kepedulian aktif dan rasa saling menjaga.",src:"PPT dr. Bagas — Ethics and Culture"},
+{n:61,t:"Etika & Budaya",q:"Apakah kita harus menerima semua budaya yang ada dengan dalih toleransi?",o:["Tidak karena bisa saja budaya tersebut melukai martabat dan HAM manusia","Tidak, karena kita harus menyesuaikan budaya lain dengan budaya kita","Iya, karena semua budaya memang harus dihormati"],a:"Tidak karena bisa saja budaya tersebut melukai martabat dan HAM manusia",exp:"Toleransi budaya memiliki batas. Tidak semua budaya dapat diterima jika <strong>melukai martabat manusia dan melanggar HAM</strong>. Prinsip bioetika dan HAM bersifat universal dan melampaui relativisme budaya. Contoh: tradisi mutilasi genital perempuan, pernikahan paksa anak, atau praktik diskriminatif berbasis tradisi — tidak bisa diterima meski berlabel 'budaya'.",src:"PPT dr. Bagas — Ethics and Culture"},
+{n:62,t:"Hak Asasi & Hukum Kesehatan",q:"Ciri-ciri HAM, KECUALI…",o:["Hakiki","Universal","Tidak dapat diserahkan","Tidak dapat dibagi","Diserahkan pada orang dewasa"],a:"Diserahkan pada orang dewasa",exp:"Ciri-ciri HAM: (1) <strong>Hakiki</strong> — dibawa sejak lahir oleh seluruh makhluk hidup; (2) <strong>Universal</strong> — berlaku umum tanpa memandang status/suku/gender; (3) <strong>Tidak dapat diserahkan pada pihak lain</strong>; (4) <strong>Tidak dapat dibagi</strong> — semua orang berhak atas semua hak. 'Diserahkan pada orang dewasa' bukan ciri HAM — justru HAM melekat sejak lahir, bukan menunggu dewasa.",src:"PPT bu Riris — Human Dignity and Human Rights"},
+{n:63,t:"Solidaritas",q:"Sekelompok mahasiswa yang mendapat nilai rendah menemui pimpinan fakultas untuk meminta agar standar nilai diturunkan. Apakah tindakan tersebut termasuk solidaritas?",o:["Ya, karena bertujuan melindungi kelompok yang lebih rentan","Ya, karena berdasar pada kepedulian antar anggota kelompok","Ya, karena memiliki tujuan baik untuk kepentingan banyak orang","Tidak, karena sekelompok mahasiswa tersebut bukan kelompok rentan","Tidak, karena berdasarkan kepentingan pribadi"],a:"Tidak, karena berdasarkan kepentingan pribadi",exp:"Meskipun terlihat kolektif, tindakan ini tidak memenuhi syarat solidaritas karena <strong>didasarkan pada kepentingan pribadi</strong> (ingin nilai diturunkan demi kelulusan diri sendiri), bukan demi kebaikan bersama yang bermakna atau perlindungan terhadap yang lemah. Solidaritas sejati berlandaskan mutual respect, common good, dan nilai moral — bukan kepentingan kelompok semata.",src:"PPT — Notions of Solidarity"},
+{n:64,t:"Otonomi & Tanggung Jawab",q:"Seorang mahasiswa lolos seleksi seminar internasional namun memilih membatalkan karena tidak dapat memenuhi syarat akademik untuk ujian dan tidak lulus. Apa kondisi autonomy mahasiswa tersebut?",o:["Tidak otonom karena terintimidasi syarat akademik","Tidak otonom karena sebenarnya ingin mengikuti seminar","Tidak otonom karena bingung","Otonom karena tidak ada yang memaksa","Otonom karena dia memutuskan setelah mempertimbangkan aspek benefit dan harm"],a:"Otonom karena dia memutuskan setelah mempertimbangkan aspek benefit dan harm",exp:"Sama dengan soal no. 23 — seseorang <strong>tetap otonom</strong> meskipun keputusannya diambil dalam kondisi yang membatasi (syarat akademik). Yang penting: tidak ada paksaan langsung, dan keputusan diambil berdasarkan <strong>pertimbangan benefit (ikut seminar) vs harm (tidak lulus ujian)</strong> secara rasional. Otonomi bukan berarti bebas dari konsekuensi.",src:"PPT dr. Miko — Autonomy & Responsibility"},
+{n:65,t:"Privasi & Kerahasiaan",q:"Kapan kita boleh membuka rahasia pasien?",o:["Ketika pasien orang yang memiliki kedudukan","Ketika pasien kehilangan kemerdekaan","Ketika keluarga pasien ingin mengetahui","Ketika harus melaporkan penyakit ke dinas kesehatan","Ketika kantor pasien ingin memastikan kondisi karyawannya"],a:"Ketika harus melaporkan penyakit ke dinas kesehatan",exp:"Kerahasiaan pasien dapat dibuka dalam kondisi <strong>mandatory reporting</strong> (wajib lapor): (1) Penyakit menular (infectious diseases) yang berpotensi mengancam kesehatan publik; (2) Dugaan kekerasan pada anak/keluarga (suspected child/family abuse). Tenaga kesehatan harus familiar dengan hukum yang berlaku dan pasien harus diinformasikan.",src:"PPT dr. Miko — Privasi dan Kerahasiaan"},
+{n:66,t:"Otonomi & Tanggung Jawab",q:"Berikut BUKAN pernyataan yang menunjukkan suatu tindakan dikatakan otonom…",o:["Tindakan berdasarkan rasionalisasi","Tindakan berdasarkan pengetahuan dan pengalaman","Tindakan atas keinginan sendiri","Tindakan berdasarkan intimidasi"],a:"Tindakan berdasarkan intimidasi",exp:"Syarat tindakan otonom: <strong>Merdeka</strong> (bebas dari pengaruh, intervensi, intimidasi, tekanan pihak lain) dan <strong>Kapasitas</strong> (memiliki pemahaman, bertindak berdasarkan tujuan, rasionalisasi, pengetahuan dan pengalaman). Tindakan berdasarkan <strong>intimidasi</strong> secara definitif melanggar syarat kemerdekaan — tindakan tersebut tidak otonom.",src:"PPT dr. Miko — Otonomi & Tanggung Jawab"},
+{n:67,t:"Human Vulnerability",q:"Bagaimana sikap kita dalam menghadapi human vulnerability?",o:["Meningkatkan solidaritas dan kepedulian sosial","Membiarkan berjalan seperti biasa","Mengeliminasi seluruh kerentanan yang dimiliki manusia","Melenyapkan masyarakat yang memiliki kerentanan"],a:"Meningkatkan solidaritas dan kepedulian sosial",exp:"Pendekatan etis terhadap human vulnerability adalah melalui <strong>Care Ethics</strong>: solidarity, duty to care, dan ethics of care. Kita harus <strong>meningkatkan solidaritas dan kepedulian sosial</strong> — bukan mengeliminasi kerentanan (karena bisa tidak etis seperti eugenics), bukan membiarkan, apalagi melenyapkan orang yang rentan.",src:"PPT dr. Bagas — Respect for Human Vulnerability"},
+{n:68,t:"Pengantar Etika",q:"Pembelajaran etik diperlukan untuk melatih kemampuan membuat keputusan dengan melihat berbagai perspektif. Aspek apakah yang ditekankan dalam pembelajaran tersebut?",o:["Outcoming (Hasil Keputusan)","Reasoning","Adherence","Assertivenes"],a:"Outcoming (Hasil Keputusan)",exp:"Pembelajaran etik menekankan pada <strong>outcoming/hasil keputusan</strong> — melatih kemampuan membuat keputusan yang baik dari berbagai perspektif. *Catatan: ada perdebatan dengan <strong>Reasoning</strong> (proses berpikir), karena 'melihat berbagai perspektif' dan 'membuat keputusan' bisa mencerminkan reasoning. Namun kata kunci 'membuat keputusan' lebih ke outcoming.",src:"PPT — Pengantar Etika dan Kemanusiaan"},
+{n:69,t:"Human Vulnerability",q:"Pernyataan yang benar mengenai vulnerability adalah…",o:["Mudahnya manusia berduka dan bersedih","Mudahnya manusia terancam kesehatan dan kehidupannya","Mudahnya manusia terluka tubuhnya","Mudahnya manusia marah dan frustasi","Mudahnya manusia putus asa dan depresi"],a:"Mudahnya manusia terancam kesehatan dan kehidupannya",exp:"<strong>Vulnerability</strong> = kerentanan manusia terhadap ancaman terhadap kesehatan dan kehidupannya secara menyeluruh — mencakup dimensi biologis, sosial, dan kultural. Definisinya lebih luas dari sekadar terluka fisik, berduka, atau marah. Ini tentang kapasitas substansial seseorang untuk melindungi kepentingannya sendiri yang dapat terancam.",src:"PPT dr. Bagas — Respect for Human Vulnerability"},
+{n:70,t:"Etika & Budaya",q:"'Wild or good nature have to be loved and cared, because it's God's Creature.' Merupakan substansi dari…",o:["Anthropocentrism","Biocentrism","Ecocentrisme","Theocentrisme","Konsentris"],a:"Theocentrisme",exp:"<strong>Theocentrisme</strong> = cara pandang manusia terhadap lingkungan yang dipengaruhi oleh kepercayaan manusia kepada Sang Pencipta. Alam semesta adalah ciptaan Tuhan yang harus dijaga dan disayangi. Berbeda dengan: Anthropocentrism (manusia pusat segalanya), Biocentrism (semua makhluk hidup punya nilai), Ecocentrism (ekosistem secara keseluruhan).",src:"PPT dr. Bagas — Ethics and Culture"},
+{n:71,t:"Otonomi & Tanggung Jawab",q:"Pasien mempunyai ekspektasi terhadap perawatannya tapi tidak berani bilang ke keluarganya karena takut terjadi keributan. Sebagai tenaga kesehatan apa yang seharusnya dilakukan?",o:["Bertanya terlebih dahulu kepada pasien apakah perlu dibantu atau tidak","Menjembatani secara langsung karena pasien perlu dibantu","Mendorong pasien untuk mengatakannya karena memiliki otonomi"],a:"Bertanya terlebih dahulu kepada pasien apakah perlu dibantu atau tidak",exp:"Prinsip <strong>respect for autonomy</strong> — tenaga kesehatan tidak boleh langsung mengambil alih keputusan pasien atau memaksa. Langkah pertama adalah <strong>bertanya kepada pasien apakah ia perlu dibantu atau tidak</strong> — menghormati kehendak dan otonomi pasien. Jika pasien menginginkan bantuan, barulah tenaga kesehatan dapat memfasilitasi komunikasi dengan keluarga.",src:"PPT dr. Miko — Otonomi dan Tanggung Jawab Individu"},
+{n:72,t:"Pengantar Etika",q:"Perbedaan etika dan kode etik adalah…",o:["Etika berisi aturan dan tata krama, kode etik berisi hukum","Etika bersifat abstrak tidak tertulis, kode etik tertulis","Etika dibuat oleh organisasi profesi, kode etik tidak","Etika memiliki sanksi administratif, kode etik sanksi sosial"],a:"Etika bersifat abstrak tidak tertulis, kode etik tertulis",exp:"<strong>Kode Etik</strong> = pernyataan komprehensif suatu profesi yang memberikan tuntunan bagi anggota dalam melaksanakan profesi: (1) Bagian dari hukum DAN etika; (2) Lingkup lebih sempit dari hukum; (3) Terdapat <strong>sanksi administratif/tuntunan</strong>; (4) Dibuat oleh & diberlakukan bagi anggota profesi. <strong>Etika</strong> = abstrak, tidak selalu tertulis, bersumber dari nilai-nilai. 'Ethics is NOT ONLY about codes of ethics!'",src:"PPT dr. Meli — Pengantar Etika dan Kemanusiaan"},
+{n:73,t:"Human Vulnerability",q:"Manakah contoh yang sesuai dalam rangka menghormati human vulnerability di konteks kedokteran?",o:["Membagikan sembako bagi warga kurang mampu","Menyediakan pelatihan bagi residivis dan narapidana","Memastikan keamanan prosedur penelitian yang melibatkan ibu hamil","Melakukan pelatihan mitigasi bencana tsunami","Memberikan sosialisasi kebijakan pemerintah pada warga suku pedalaman"],a:"Memastikan keamanan prosedur penelitian yang melibatkan ibu hamil",exp:"Ibu hamil adalah kelompok <strong>vulnerable</strong> dalam konteks penelitian medis (biological vulnerability). Menghormati kerentanan mereka dalam konteks kedokteran berarti memberikan <strong>special protection</strong> — memastikan keamanan prosedur penelitian yang melibatkan mereka. Ini langsung berhubungan dengan clinical/medical context dan implications of vulnerability (extra justification + special protection).",src:"PPT dr. Bagas — Respect for Human Vulnerability"},
+{n:74,t:"Pengantar Etika",q:"Seorang dokter dicabut izin prakteknya 6 bulan karena terbukti menyebarkan berita tidak benar di sosial media terkait vaksinasi Covid-19. Berdasar pada apakah sanksi tersebut dijatuhkan?",o:["Etika","Etiket","Agama","Hukum","Kode etik"],a:"Kode etik",exp:"<strong>Kode Etik</strong> memiliki sanksi administratif, salah satunya adalah <strong>pencabutan izin praktek</strong>. Ini adalah tindakan melalui organisasi profesi (IDI/MKDKI) yang menerapkan kode etik kedokteran. Berbeda dengan sanksi hukum (pidana/perdata melalui pengadilan) atau sanksi etika (sosial). Dokter yang menyebarkan misinformasi vaksin melanggar kode etik profesi.",src:"PPT dr. Meli — Pengantar Etika dan Kemanusiaan"},
+{n:75,t:"Non-Diskriminasi & Stigma",q:"Apa yang dimaksud dengan Intersectionality?",o:["Karena masyarakat memiliki keberagaman","Keberagaman membuat privilege dan diskriminasi","Semua Benar"],a:"Semua Benar",exp:"<strong>Intersectionality</strong> (Kimberlé Crenshaw) adalah lensa/kerangka yang melaluinya kita dapat melihat bagaimana kekuasaan datang dan berbenturan, di mana ia berakar dan saling bersilang. Konsepnya mencakup: (1) masyarakat memiliki keberagaman (ras, etnis, gender identity, kelas, agama, dll.); (2) keberagaman tersebut menciptakan sistem privilege dan diskriminasi yang unik pada setiap individu. Kedua pernyataan benar.",src:"PPT dr. Bagas — Ethics and Culture"}
+];
+
+const TOPICS = [...new Set(QUESTIONS.map(q=>q.t))];
+
+let mode='study', cur=0, answered={}, flagged=new Set(), score=0, streak=0, timerInterval=null;
+let sessions=0, bestScore=0, allScores=[], topicStats={};
+
+function loadStats(){
+  try {
+    sessions = parseInt(localStorage.getItem('plato31_sessions')||'0');
+    bestScore = parseInt(localStorage.getItem('plato31_best')||'0');
+    allScores = JSON.parse(localStorage.getItem('plato31_scores')||'[]');
+    topicStats = JSON.parse(localStorage.getItem('plato31_topics')||'{}');
+  } catch(e){}
+  renderStats();
+}
+
+function renderStats(){
+  document.getElementById('stat-sessions').textContent = sessions || '0';
+  document.getElementById('stat-best').textContent = bestScore ? bestScore+'/'+QUESTIONS.length : '—';
+  if(allScores.length > 0){
+    const avg = Math.round(allScores.reduce((a,b)=>a+b.score,0)/allScores.length);
+    const avgPct = Math.round((avg/QUESTIONS.length)*100);
+    document.getElementById('stat-avg').textContent = avg + ' ('+avgPct+'%)';
+  } else {
+    document.getElementById('stat-avg').textContent = '—';
+  }
+  renderHistList();
+  renderTopicBar('topic-bar', topicStats);
+}
+
+function renderHistList(){
+  const list = document.getElementById('hist-list');
+  if(!allScores.length){ list.innerHTML='<div class="no-hist">Belum ada sesi — yuk mulai!</div>'; return; }
+  const recent = [...allScores].reverse().slice(0,8);
+  list.innerHTML = recent.map(s=>{
+    const pct = Math.round((s.score/QUESTIONS.length)*100);
+    const pctColor = pct>=75?'var(--mint)':pct>=60?'var(--gold)':'var(--rose)';
+    const bgColor = pct>=75?'var(--mint-dim)':pct>=60?'var(--gold-dim)':'var(--rose-dim)';
+    return `<div class="hist-item">
+      <span class="hi-mode ${s.mode}">${s.mode}</span>
+      <span class="hi-date">${s.date}</span>
+      <span class="hi-score">${s.score}/${QUESTIONS.length}</span>
+      <span class="hi-pct" style="background:${bgColor};color:${pctColor}">${pct}%</span>
+    </div>`;
+  }).join('');
+}
+
+function renderTopicBar(elId, stats){
+  const el = document.getElementById(elId);
+  if(!el) return;
+  const topicsWithData = TOPICS.filter(t=>stats[t]&&(stats[t].correct+stats[t].wrong)>0);
+  if(!topicsWithData.length){ el.innerHTML='<div class="no-hist">Belum ada data — selesaikan satu sesi dulu.</div>'; return; }
+  el.innerHTML = topicsWithData.map(t=>{
+    const d=stats[t], total=d.correct+d.wrong, pct=Math.round((d.correct/total)*100);
+    const cls=pct>=75?'good':pct>=50?'mid':'low';
+    return `<div class="topic-row">
+      <span class="topic-name">${t}</span>
+      <div class="topic-track"><div class="topic-fill ${cls}" style="width:${pct}%"></div></div>
+      <span class="topic-pct">${pct}%</span>
+    </div>`;
+  }).join('');
+}
+
+function clearHistory(){
+  if(!confirm('Hapus semua riwayat sesi?')) return;
+  localStorage.removeItem('plato31_sessions');
+  localStorage.removeItem('plato31_best');
+  localStorage.removeItem('plato31_scores');
+  localStorage.removeItem('plato31_topics');
+  sessions=0; bestScore=0; allScores=[]; topicStats={};
+  renderStats();
+}
+
+function startQuiz(m){
+  mode=m; cur=0; answered={}; flagged=new Set(); score=0; streak=0;
+  document.getElementById('start-screen').style.display='none';
+  document.getElementById('result-screen').style.display='none';
+  document.getElementById('quiz-screen').style.display='block';
+  document.getElementById('score-display').style.display = (m==='drill')?'none':'';
+  const stBar = document.getElementById('sound-toggle-bar');
+  if(m==='study'||m==='exam'){
+    stBar.style.display='flex';
+    const inp = document.getElementById('sound-toggle-input');
+    inp.checked = soundEnabled;
+    if(soundEnabled){ stBar.classList.add('active'); document.getElementById('stb-icon').textContent='🔊'; document.getElementById('stb-status').textContent='ON'; }
+    if(!audioReady) initAudio();
+  } else {
+    stBar.style.display='none';
+  }
+  stopWinMusic(false);
+  updateNowPlaying(null);
+  const timerEl = document.getElementById('timer-el');
+  if(m==='exam'){
+    timerEl.style.display=''; let t=5850;
+    timerInterval = setInterval(()=>{
+      t--; const m2=Math.floor(t/60),s=t%60;
+      timerEl.textContent=(m2<10?'0':'')+m2+':'+(s<10?'0':'')+s;
+      timerEl.className='timer-badge'+(t<300?' warning':'')+(t<60?' danger':'');
+      if(t<=0){ clearInterval(timerInterval); submitExam(); }
+    },1000);
+  } else { timerEl.style.display='none'; clearInterval(timerInterval); }
+  renderQ();
+}
+
+function init(){ loadStats(); }
+
+function renderQ(){
+  const total=QUESTIONS.length, q=QUESTIONS[cur];
+  document.getElementById('prog-fill').style.width=(((cur+1)/total)*100)+'%';
+  document.getElementById('prog-txt').textContent=(cur+1)+' / '+total;
+  document.getElementById('mode-badge').textContent=mode.charAt(0).toUpperCase()+mode.slice(1)+' Mode';
+  const correct=Object.values(answered).filter(v=>v===true).length;
+  const attempted=Object.keys(answered).filter(k=>!k.includes('-')).length;
+  document.getElementById('score-display').textContent=correct+' / '+attempted;
+  document.getElementById('btn-prev').disabled=(cur===0);
+  document.getElementById('btn-next').textContent=cur===total-1?(mode==='exam'?'Kumpulkan ›':'Selesai ›'):'Next ›';
+  document.getElementById('btn-flag').className='flag-btn'+(flagged.has(cur)?' flagged':'');
+
+  let optsHTML=q.o.map((opt,i)=>{
+    const key=String.fromCharCode(65+i); let cls='opt', badge='';
+    if(answered.hasOwnProperty(cur)){
+      const isC=opt===q.a, wasC=answered[cur+'-choice']===opt;
+      if(mode==='exam'){ if(wasC) cls+=' selected'; }
+      else {
+        if(isC){ cls+=' correct'; badge='✓'; }
+        else if(wasC&&!isC){ cls+=' incorrect'; badge='✗'; }
+      }
+    }
+    const dis=answered.hasOwnProperty(cur)&&mode!=='drill'?'disabled':'';
+    return `<button class="${cls}" ${dis} onclick="selectOpt(this,'${opt.replace(/'/g,"\\'").replace(/"/g,'&quot;')}')"><span class="opt-key">${key}</span><span class="opt-body">${opt}</span><span class="opt-badge">${badge}</span></button>`;
+  }).join('');
+
+  document.getElementById('q-card').innerHTML=`
+    <div class="q-index">Soal ${q.n} dari ${total}
+      <span class="pill-tag">${mode.toUpperCase()}</span>
+      <span class="pill-tag" style="background:var(--sky-dim);color:var(--sky);border-color:rgba(14,200,240,0.25)">${q.t}</span>
+      ${flagged.has(cur)?'<span class="pill-tag" style="background:var(--gold-dim);color:var(--gold);border-color:rgba(212,160,32,0.3)">🚩 Flagged</span>':''}
+    </div>
+    <div class="q-text">${q.q}</div>
+    <div class="opts">${optsHTML}</div>`;
+
+  const expBox=document.getElementById('exp-box');
+  if(answered.hasOwnProperty(cur)&&mode==='study'){
+    document.getElementById('exp-answer').textContent='Jawaban: '+q.a;
+    document.getElementById('exp-body').innerHTML=q.exp;
+    document.getElementById('exp-src').textContent='Sumber: '+q.src;
+    expBox.className='exp-box show';
+  } else { expBox.className='exp-box'; }
+  renderMap();
+}
+
+function selectOpt(btn, chosen){
+  const q=QUESTIONS[cur], correct=chosen===q.a;
+  answered[cur+'-choice']=chosen;
+  if(mode==='drill'){
+    if(correct){
+      answered[cur]=true; streak++;
+      if(streak%5===0) showToast('🔥 '+streak+' streak!'); else showToast('✓ Benar!');
+      setTimeout(()=>{ if(cur<QUESTIONS.length-1) navigate(1); else { clearInterval(timerInterval); document.getElementById('drill-overlay').classList.add('show'); } },600);
+    } else {
+      btn.classList.add('drill-wrong-shake');
+      delete answered[cur]; delete answered[cur+'-choice'];
+      setTimeout(()=>btn.classList.remove('drill-wrong-shake'),400);
+      streak=0;
+    }
+    renderQ(); return;
+  }
+  answered[cur]=correct;
+  if(correct){
+    score++; streak++;
+    if(streak%5===0) showToast('🔥 '+streak+' streak!'); else showToast('✓ Benar!');
+    playWinMusic();
+  } else {
+    streak=0; showToast('✗ Salah');
+    playLoseSfx();
+  }
+  renderQ();
+}
+
+function navigate(dir){
+  if(dir===1&&cur===QUESTIONS.length-1){
+    if(mode==='exam'){ document.getElementById('exam-overlay').classList.add('show'); return; }
+    showResults(); return;
+  }
+  cur=Math.max(0,Math.min(QUESTIONS.length-1,cur+dir)); renderQ();
+}
+
+function toggleFlag(){
+  if(flagged.has(cur)) flagged.delete(cur); else flagged.add(cur);
+  renderQ();
+}
+
+function renderMap(){
+  document.getElementById('q-map').innerHTML=QUESTIONS.map((q,i)=>{
+    let cls='q-dot';
+    if(i===cur) cls+=' current';
+    else if(answered.hasOwnProperty(i)) cls+=answered[i]?' answered':' wrong';
+    if(flagged.has(i)) cls+=' flagged-dot';
+    return `<div class="${cls}" onclick="jumpTo(${i})">${i+1}</div>`;
+  }).join('');
+}
+
+function jumpTo(i){ cur=i; renderQ(); }
+
+function submitExam(){
+  closeOverlay('exam-overlay'); clearInterval(timerInterval);
+  QUESTIONS.forEach((_,i)=>{ if(!answered.hasOwnProperty(i)) answered[i]=false; });
+  showResults();
+}
+
+function showResults(){
+  clearInterval(timerInterval);
+  const total=QUESTIONS.length;
+  const correct=Object.values(answered).filter(v=>v===true).length;
+  const wrong=Object.values(answered).filter(v=>v===false).length;
+  const skip=total-Object.keys(answered).filter(k=>!k.includes('-')).length;
+  const pct=Math.round((correct/total)*100);
+
+  const sessionTopics={};
+  QUESTIONS.forEach((q,i)=>{
+    if(!sessionTopics[q.t]) sessionTopics[q.t]={correct:0,wrong:0};
+    if(answered.hasOwnProperty(i)){
+      if(answered[i]) sessionTopics[q.t].correct++;
+      else sessionTopics[q.t].wrong++;
+    }
+  });
+  Object.keys(sessionTopics).forEach(t=>{
+    if(!topicStats[t]) topicStats[t]={correct:0,wrong:0};
+    topicStats[t].correct+=sessionTopics[t].correct;
+    topicStats[t].wrong+=sessionTopics[t].wrong;
+  });
+
+  sessions++;
+  const dateStr=new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'2-digit'});
+  allScores.push({score:correct,mode,date:dateStr});
+  if(allScores.length>20) allScores.shift();
+  if(correct>bestScore) bestScore=correct;
+  try {
+    localStorage.setItem('plato31_sessions',sessions);
+    localStorage.setItem('plato31_best',bestScore);
+    localStorage.setItem('plato31_scores',JSON.stringify(allScores));
+    localStorage.setItem('plato31_topics',JSON.stringify(topicStats));
+  } catch(e){}
+
+  document.getElementById('quiz-screen').style.display='none';
+  document.getElementById('result-screen').style.display='block';
+  stopWinMusic(true);
+  updateNowPlaying(null);
+  document.getElementById('final-score-display').innerHTML=`<span>${correct}</span>/${total}`;
+  document.getElementById('final-sub').textContent=pct+'% benar — '+(pct>=75?'Lolos CBT! 🎉':pct>=60?'Hampir, terus drilling 💪':'Yuk belajar lagi, Sir — you got this!');
+  document.getElementById('r-correct').textContent=correct;
+  document.getElementById('r-wrong').textContent=wrong;
+  document.getElementById('r-skip').textContent=skip;
+  renderTopicBar('result-topic-bar', sessionTopics);
+}
+
+function reviewAnswers(){
+  document.getElementById('result-screen').style.display='none';
+  document.getElementById('quiz-screen').style.display='block';
+  mode='study'; cur=0; renderQ();
+}
+
+function showStart(){
+  clearInterval(timerInterval);
+  stopWinMusic(false);
+  updateNowPlaying(null);
+  document.getElementById('quiz-screen').style.display='none';
+  document.getElementById('result-screen').style.display='none';
+  document.getElementById('start-screen').style.display='block';
+  document.querySelectorAll('.drill-reset-overlay,.exam-overlay').forEach(el=>el.classList.remove('show'));
+  init();
+}
+
+function confirmExit(){ document.getElementById('exit-overlay').classList.add('show'); }
+function closeOverlay(id){ document.getElementById(id).classList.remove('show'); }
+
+function showToast(msg){
+  const t=document.getElementById('streak-toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),1800);
+}
+
+// ══════════════════════════════════════════
+// AUDIO ENGINE
+// ══════════════════════════════════════════
+let soundEnabled = false;
+let winAudio     = null;
+let winPlaylist  = [];
+let winPlayIdx   = 0;
+let winFiles     = [];
+let loseFiles    = [];
+let loseAudio    = null;
+let audioReady   = false;
+let winFadeTimer = null;
+
+function probeFileList(prefix, names){
+  return Promise.all(names.map(name => new Promise(resolve => {
+    const path = prefix + encodeURIComponent(name);
+    const a = new Audio();
+    a.addEventListener('canplaythrough', ()=>resolve(prefix + name), {once:true});
+    a.addEventListener('loadedmetadata', ()=>resolve(prefix + name), {once:true});
+    a.addEventListener('error', ()=>resolve(null), {once:true});
+    a.preload = 'metadata';
+    a.src = path;
+    setTimeout(()=>resolve(null), 4000);
+  }))).then(r => r.filter(Boolean));
+}
+
+async function fetchDirectory(folder) {
+  try {
+    const res = await fetch(`/api/content?folder=${folder}`);
+    if(res.ok) {
+      const data = await res.json();
+      return data.filter(f => /\.mp3$/i.test(f.name)).map(f => f.name);
+    }
+  } catch(e) {}
+  try {
+    const res = await fetch(`https://api.github.com/repos/alchemist4real/174/contents/${folder}`);
+    if(res.ok) {
+      const data = await res.json();
+      return data.filter(f => /\.mp3$/i.test(f.name)).map(f => f.name);
+    }
+  } catch(e) {}
+  return Array.from({length: 20}, (_, i) => `${i+1}.mp3`);
+}
+
+async function initAudio(){
+  if(audioReady) return;
+  audioReady = true;
+  try {
+    const [wNames, lNames] = await Promise.all([ fetchDirectory('win'), fetchDirectory('lose') ]);
+    const [wA, wB, wC] = await Promise.all([
+      probeFileList('../win/', wNames),
+      probeFileList('./win/', wNames),
+      probeFileList('https://raw.githubusercontent.com/alchemist4real/174/main/win/', wNames)
+    ]);
+    winFiles = wA.length ? wA : (wB.length ? wB : wC);
+    const [lA, lB, lC] = await Promise.all([
+      probeFileList('../lose/', lNames),
+      probeFileList('./lose/', lNames),
+      probeFileList('https://raw.githubusercontent.com/alchemist4real/174/main/lose/', lNames)
+    ]);
+    loseFiles = lA.length ? lA : (lB.length ? lB : lC);
+  } catch(e){ winFiles=[]; loseFiles=[]; }
+}
+
+let _audioCtx = null;
+function getAudioCtx(){
+  if(!_audioCtx) _audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  if(_audioCtx.state === 'suspended') _audioCtx.resume();
+  return _audioCtx;
+}
+function playSyntheticWin(){
+  try {
+    const ctx = getAudioCtx();
+    [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+      const osc = ctx.createOscillator(), gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = 'sine'; osc.frequency.value = freq;
+      const t = ctx.currentTime + i * 0.12;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.18, t + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+      osc.start(t); osc.stop(t + 0.3);
+    });
+  } catch(e){}
+}
+function playSyntheticLose(){
+  try {
+    const ctx = getAudioCtx();
+    [329.63, 261.63, 220.00].forEach((freq, i) => {
+      const osc = ctx.createOscillator(), gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = 'sawtooth'; osc.frequency.value = freq;
+      const t = ctx.currentTime + i * 0.15;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.14, t + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.30);
+      osc.start(t); osc.stop(t + 0.35);
+    });
+  } catch(e){}
+}
+
+function shuffleArray(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function updateNowPlaying(filename){
+  const bar = document.getElementById('now-playing-bar');
+  const txt = document.getElementById('np-text');
+  if(filename){
+    const name = filename.replace(/^.*[\/\\]/,'').replace(/\.mp3$/i,'');
+    txt.textContent = '♪ ' + name;
+    bar.classList.add('show');
+  } else {
+    bar.classList.remove('show');
+  }
+  if(window.parent && window.parent !== window){
+    window.parent.postMessage({ __source: 'cbt-child', cmd: 'now-playing-update', track: filename, enabled: soundEnabled }, '*');
+  }
+}
+
+function fadeOutWin(duration=400){
+  if(!winAudio) return;
+  const audio = winAudio;
+  const startVol = audio.volume;
+  const steps = 20;
+  const interval = duration / steps;
+  const decrement = startVol / steps;
+  clearInterval(winFadeTimer);
+  winFadeTimer = setInterval(()=>{
+    if(audio.volume > decrement){ audio.volume = Math.max(0, audio.volume - decrement); }
+    else { audio.volume = 0; audio.pause(); clearInterval(winFadeTimer); }
+  }, interval);
+}
+
+function playWinMusic(){
+  if(!soundEnabled) return;
+  if(loseAudio){ loseAudio.pause(); loseAudio.src=''; loseAudio=null; }
+  if(winAudio && !winAudio.paused) return;
+  if(winFiles.length === 0){ playSyntheticWin(); updateNowPlaying('★ Win Sound'); return; }
+  if(!winAudio || winAudio.paused){
+    if(winPlaylist.length === 0){ winPlaylist = shuffleArray(winFiles.map((_,i)=>i)); winPlayIdx = 0; }
+    playNextWin();
+  }
+}
+
+function playNextWin(){
+  if(!soundEnabled) return;
+  if(winFiles.length === 0){ playSyntheticWin(); return; }
+  if(winPlayIdx >= winPlaylist.length){ winPlaylist = shuffleArray(winFiles.map((_,i)=>i)); winPlayIdx = 0; }
+  const fileIdx = winPlaylist[winPlayIdx++];
+  const src = winFiles[fileIdx];
+  if(winAudio){ winAudio.pause(); winAudio.src=''; }
+  winAudio = new Audio(src);
+  winAudio.volume = 0.75;
+  clearInterval(winFadeTimer);
+  winAudio.addEventListener('ended', ()=>{ if(soundEnabled) playNextWin(); else updateNowPlaying(null); });
+  winAudio.play().catch(()=>{ playSyntheticWin(); });
+  updateNowPlaying(src);
+}
+
+function stopWinMusic(fade=true){
+  updateNowPlaying(null);
+  if(!winAudio) return;
+  if(fade){ fadeOutWin(350); }
+  else { winAudio.pause(); winAudio.volume=0.75; clearInterval(winFadeTimer); }
+  winAudio = null;
+}
+
+function playLoseSfx(){
+  if(!soundEnabled) return;
+  stopWinMusic(true);
+  if(loseFiles.length === 0){ playSyntheticLose(); return; }
+  const src = loseFiles[Math.floor(Math.random()*loseFiles.length)];
+  if(loseAudio){ loseAudio.pause(); loseAudio.src=''; }
+  loseAudio = new Audio(src);
+  loseAudio.volume = 0.85;
+  loseAudio.play().catch(()=>{ playSyntheticLose(); });
+}
+
+function toggleSound(enabled){
+  soundEnabled = enabled;
+  const bar = document.getElementById('sound-toggle-bar');
+  const icon = document.getElementById('stb-icon');
+  const stat = document.getElementById('stb-status');
+  if(enabled){
+    bar.classList.add('active'); icon.textContent='🔊'; stat.textContent='ON';
+    if(!audioReady) initAudio();
+  } else {
+    bar.classList.remove('active'); icon.textContent='🔇'; stat.textContent='OFF';
+    stopWinMusic(false); updateNowPlaying(null);
+  }
+  if(window.parent && window.parent !== window){
+    window.parent.postMessage({ __source: 'cbt-child', cmd: 'sound-status', enabled: soundEnabled,
+      nowPlaying: document.getElementById('np-text') ? document.getElementById('np-text').textContent : null,
+      npVisible: document.getElementById('now-playing-bar') ? document.getElementById('now-playing-bar').classList.contains('show') : false
+    }, '*');
+  }
+}
+
+// ══════════════════════════════════════════
+// POSTMESSAGE BRIDGE
+// ══════════════════════════════════════════
+window.addEventListener('message', function(e) {
+  const d = e.data;
+  if(!d || typeof d !== 'object' || d.__source !== '174-archive') return;
+  switch(d.cmd) {
+    case 'sound-on':
+      toggleSound(true);
+      const inp = document.getElementById('sound-toggle-input');
+      if(inp) inp.checked = true;
+      break;
+    case 'sound-off':
+      toggleSound(false);
+      const inp2 = document.getElementById('sound-toggle-input');
+      if(inp2) inp2.checked = false;
+      break;
+    case 'sound-query':
+      e.source.postMessage({ __source: 'cbt-child', cmd: 'sound-status', enabled: soundEnabled,
+        nowPlaying: document.getElementById('np-text') ? document.getElementById('np-text').textContent : null,
+        npVisible: document.getElementById('now-playing-bar') ? document.getElementById('now-playing-bar').classList.contains('show') : false
+      }, '*');
+      break;
+  }
+});
+
+window.addEventListener('load', function() {
+  if(window.parent && window.parent !== window){
+    window.parent.postMessage({ __source: 'cbt-child', cmd: 'ready', hasSoundEngine: true }, '*');
+  }
+});
+
+document.addEventListener('keydown',e=>{
+  if(document.getElementById('quiz-screen').style.display==='none') return;
+  const k=e.key.toLowerCase();
+  if(k==='arrowright'||k==='n') navigate(1);
+  else if(k==='arrowleft'||k==='p') navigate(-1);
+  else if(k==='f') toggleFlag();
+  else if(['a','b','c','d','e'].includes(k)){
+    const idx='abcde'.indexOf(k);
+    const q=QUESTIONS[cur];
+    if(idx<q.o.length&&!answered.hasOwnProperty(cur)){
+      const btns=document.querySelectorAll('.opts .opt');
+      if(btns[idx]) selectOpt(btns[idx],q.o[idx]);
+    }
+  }
+});
+
+init();
+</script>
+</body>
+</html>

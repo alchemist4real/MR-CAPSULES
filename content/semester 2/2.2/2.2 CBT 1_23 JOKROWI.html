@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YOGHURT 2.2 — Digestive & Nephrourinary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #F4F1EC;
+            --surface: #FFFFFF;
+            --surface-2: #F8F6F2;
+            --ink: #1A1714;
+            --ink-muted: #6B6560;
+            --ink-faint: #C4BEBD;
+            --accent: #2D6A4F;
+            --accent-light: #D8EFE3;
+            --accent-dark: #1B4332;
+            --warm: #E76F51;
+            --warm-light: #FDEAE4;
+            --border: #E0DBD5;
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--bg);
+            font-family: 'DM Sans', sans-serif;
+            color: var(--ink);
+            min-height: 100vh;
+            padding: 16px;
+        }
+
+        /* ── LAYOUT ── */
+        .shell {
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        /* ── HEADER ── */
+        .site-header {
+            padding: 24px 0 20px;
+            border-bottom: 2px solid var(--ink);
+            margin-bottom: 28px;
+        }
+        .site-header .eyebrow {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--ink-muted);
+            margin-bottom: 6px;
+        }
+        .site-header h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2rem, 6vw, 3.2rem);
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -1px;
+        }
+        .site-header h1 span {
+            color: var(--accent);
+        }
+        .site-header .tagline {
+            margin-top: 8px;
+            font-size: 14px;
+            color: var(--ink-muted);
+            font-weight: 400;
+        }
+
+        /* ── CARD ── */
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: 1.5px solid var(--border);
+            padding: 28px;
+        }
+
+        /* ── START SCREEN ── */
+        #start-screen .disclaimer {
+            background: var(--warm-light);
+            border-left: 3px solid var(--warm);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--ink);
+            margin-bottom: 28px;
+        }
+        #start-screen .disclaimer strong {
+            display: block;
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--warm);
+            margin-bottom: 6px;
+        }
+        .mode-grid {
+            display: grid;
+            gap: 12px;
+        }
+        .mode-btn {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 18px 20px;
+            border-radius: var(--radius);
+            border: 1.5px solid var(--border);
+            background: var(--surface-2);
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+        .mode-btn:hover { border-color: var(--ink); background: var(--surface); transform: translateY(-1px); }
+        .mode-btn .icon {
+            width: 44px; height: 44px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; flex-shrink: 0;
+        }
+        .mode-btn.study .icon { background: var(--accent-light); }
+        .mode-btn.exam .icon { background: #EEF2FF; }
+        .mode-btn.drill .icon { background: #FEE2E2; }
+        .mode-btn .text h3 {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700; font-size: 15px; margin-bottom: 2px;
+        }
+        .mode-btn .text p { font-size: 12px; color: var(--ink-muted); }
+        .mode-btn.drill { border-color: #FECACA; }
+        .mode-btn.drill:hover { border-color: #EF4444; background: #FFF5F5; }
+        .stats-bar {
+            display: flex; gap: 24px; justify-content: center;
+            padding: 16px 0 0;
+            border-top: 1px solid var(--border);
+            margin-top: 20px;
+        }
+        .stat-item { text-align: center; }
+        .stat-item .val {
+            font-family: 'Syne', sans-serif; font-weight: 800; font-size: 22px;
+        }
+        .stat-item .lbl {
+            font-size: 11px; color: var(--ink-muted); text-transform: uppercase;
+            letter-spacing: 1px; font-family: 'DM Mono', monospace;
+        }
+
+        /* ── QUIZ SCREEN ── */
+        #quiz-screen { display: none; }
+        
+        .quiz-topbar {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .progress-wrap {
+            flex: 1; margin: 0 16px;
+        }
+        .progress-track {
+            height: 4px; background: var(--border); border-radius: 99px; overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%; background: var(--accent);
+            border-radius: 99px; transition: width 0.4s ease;
+        }
+        .progress-label {
+            font-family: 'DM Mono', monospace; font-size: 11px;
+            color: var(--ink-muted); margin-top: 5px; text-align: center;
+        }
+        .score-badge {
+            font-family: 'DM Mono', monospace; font-size: 12px;
+            background: var(--accent-light); color: var(--accent-dark);
+            padding: 5px 12px; border-radius: 99px; white-space: nowrap;
+        }
+        .back-btn {
+            background: none; border: none; cursor: pointer;
+            font-size: 12px; color: var(--ink-muted); padding: 4px;
+            text-decoration: underline; text-underline-offset: 3px;
+            font-family: 'DM Mono', monospace; letter-spacing: 0.5px;
+        }
+        .back-btn:hover { color: var(--ink); }
+
+        .question-num {
+            font-family: 'DM Mono', monospace; font-size: 11px;
+            color: var(--ink-muted); letter-spacing: 1px;
+            text-transform: uppercase; margin-bottom: 10px;
+        }
+        .question-text {
+            font-size: clamp(15px, 2.5vw, 18px);
+            line-height: 1.65; font-weight: 500; margin-bottom: 24px;
+        }
+
+        /* ── OPTIONS ── */
+        .options-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        .opt-btn {
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--surface-2);
+            cursor: pointer; text-align: left; width: 100%;
+            font-size: 14px; font-family: 'DM Sans', sans-serif;
+            transition: all 0.15s ease;
+            position: relative;
+        }
+        .opt-btn .opt-letter {
+            width: 28px; height: 28px; flex-shrink: 0;
+            border-radius: 50%; border: 1.5px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'DM Mono', monospace; font-size: 11px;
+            font-weight: 500; background: var(--surface);
+            transition: all 0.15s ease;
+        }
+        .opt-btn .opt-text { flex: 1; line-height: 1.4; }
+        .opt-btn:hover:not(:disabled) {
+            border-color: var(--ink); background: var(--surface);
+        }
+        .opt-btn:hover:not(:disabled) .opt-letter {
+            border-color: var(--ink); background: var(--ink); color: white;
+        }
+        .opt-btn:disabled { cursor: default; }
+        .opt-btn.correct {
+            border-color: var(--accent) !important;
+            background: var(--accent-light) !important;
+        }
+        .opt-btn.correct .opt-letter {
+            background: var(--accent) !important; border-color: var(--accent) !important;
+            color: white !important;
+        }
+        .opt-btn.incorrect {
+            border-color: #FECACA !important;
+            background: #FFF5F5 !important; color: #999;
+        }
+        .opt-btn.incorrect .opt-text { text-decoration: line-through; }
+        .opt-btn.incorrect .opt-letter {
+            background: #FEE2E2 !important; border-color: #FECACA !important;
+            color: #EF4444 !important;
+        }
+        .opt-btn.selected {
+            border-color: #93C5FD !important; background: #EFF6FF !important;
+        }
+        .opt-btn.selected .opt-letter {
+            background: #3B82F6 !important; border-color: #3B82F6 !important; color: white !important;
+        }
+        .status-icon {
+            font-size: 16px; margin-left: auto;
+        }
+
+        /* ── EXPLANATION ── */
+        .explanation {
+            background: var(--surface-2);
+            border: 1.5px solid var(--border);
+            border-left: 4px solid var(--accent);
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            font-size: 14px;
+            line-height: 1.7;
+            display: none;
+            animation: slideUp 0.3s ease-out;
+        }
+        .explanation.show { display: block; }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .exp-label {
+            font-family: 'DM Mono', monospace; font-size: 10px;
+            letter-spacing: 1.5px; text-transform: uppercase;
+            color: var(--accent); margin-bottom: 10px; display: flex;
+            align-items: center; gap: 6px;
+        }
+        .exp-label::after {
+            content: ''; flex: 1; height: 1px; background: var(--accent-light);
+        }
+        .exp-answer {
+            font-weight: 600; font-size: 15px; color: var(--accent-dark);
+            margin-bottom: 8px;
+        }
+        .exp-body { color: var(--ink); }
+        .exp-body ul { padding-left: 16px; margin-top: 8px; }
+        .exp-body ul li { margin-bottom: 4px; }
+        .source-tag {
+            margin-top: 12px; font-family: 'DM Mono', monospace;
+            font-size: 10px; color: var(--ink-muted); padding-top: 10px;
+            border-top: 1px dashed var(--border);
+        }
+
+        /* ── NAV BUTTONS ── */
+        .nav-row {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 10px; padding-top: 20px; margin-top: 8px;
+            border-top: 1px solid var(--border);
+        }
+        .nav-btn {
+            display: flex; align-items: center; gap: 6px;
+            padding: 10px 18px; border-radius: var(--radius-sm);
+            border: 1.5px solid var(--border); background: var(--surface);
+            font-family: 'DM Mono', monospace; font-size: 11px;
+            letter-spacing: 0.5px; text-transform: uppercase;
+            cursor: pointer; transition: all 0.15s ease;
+        }
+        .nav-btn:hover:not(:disabled) { border-color: var(--ink); background: var(--ink); color: white; }
+        .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .nav-btn.primary {
+            background: var(--ink); color: white; border-color: var(--ink);
+        }
+        .nav-btn.primary:hover { background: #333; }
+
+        /* ── DRILL WARNING ── */
+        #drill-warning {
+            display: none;
+            margin-top: 24px;
+            padding: 28px;
+            border-radius: var(--radius);
+            border: 2px solid #EF4444;
+            background: #0F0505;
+            text-align: center;
+            animation: pulse-border 1s ease-in-out infinite alternate;
+        }
+        @keyframes pulse-border {
+            from { box-shadow: 0 0 20px rgba(239,68,68,0.2); }
+            to { box-shadow: 0 0 40px rgba(239,68,68,0.5); }
+        }
+        #drill-warning h2 {
+            font-family: 'Syne', sans-serif; font-size: 36px;
+            font-weight: 800; color: #EF4444; letter-spacing: 2px; margin-bottom: 8px;
+            animation: flicker 1.5s ease-in-out infinite;
+        }
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        #drill-warning p { color: #FCA5A5; font-size: 14px; margin-bottom: 20px; }
+        #drill-time {
+            font-family: 'Syne', sans-serif; font-size: 72px; font-weight: 800;
+            color: #EF4444; display: block; line-height: 1;
+        }
+        #drill-restart-btn {
+            margin-top: 20px; padding: 10px 28px;
+            border: 1.5px solid #EF4444; background: transparent;
+            color: #EF4444; font-family: 'DM Mono', monospace;
+            font-size: 11px; letter-spacing: 1px; text-transform: uppercase;
+            cursor: pointer; border-radius: var(--radius-sm);
+            transition: all 0.2s;
+        }
+        #drill-restart-btn:hover { background: #EF4444; color: white; }
+
+        /* Dark overlay for drill mode */
+        body.drill-mode { background: #0A0A0A; }
+        body.drill-mode .card { background: #111; border-color: #2a0a0a; }
+        body.drill-mode .question-text { color: #FFD7D7; }
+        body.drill-mode .opt-btn { background: #1a0505; border-color: #2a0a0a; color: #FCA5A5; }
+        body.drill-mode .score-badge { background: #2a0a0a; color: #EF4444; }
+
+        /* ── RESULT SCREEN ── */
+        #result-screen { display: none; }
+        .result-hero {
+            text-align: center; padding: 32px 0;
+        }
+        .score-ring {
+            width: 140px; height: 140px; border-radius: 50%;
+            border: 4px solid var(--accent);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            margin: 0 auto 24px;
+        }
+        .score-ring .score-num {
+            font-family: 'Syne', sans-serif; font-size: 48px;
+            font-weight: 800; color: var(--accent); line-height: 1;
+        }
+        .score-ring .score-pct { font-size: 14px; color: var(--ink-muted); }
+        .result-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 12px; margin-bottom: 24px;
+        }
+        .result-box {
+            padding: 20px; border-radius: var(--radius-sm);
+            border: 1.5px solid var(--border); text-align: center;
+            background: var(--surface-2);
+        }
+        .result-box .val {
+            font-family: 'Syne', sans-serif; font-size: 32px;
+            font-weight: 800; margin-bottom: 4px;
+        }
+        .result-box.correct .val { color: var(--accent); }
+        .result-box.wrong .val { color: var(--warm); }
+        .result-box .lbl {
+            font-family: 'DM Mono', monospace; font-size: 11px;
+            color: var(--ink-muted); text-transform: uppercase; letter-spacing: 1px;
+        }
+        .result-verdict {
+            font-size: 15px; color: var(--ink-muted);
+            margin-bottom: 24px; padding: 14px;
+            background: var(--surface-2); border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+        }
+        .result-verdict strong { color: var(--ink); }
+        .retry-btn {
+            width: 100%; padding: 14px;
+            background: var(--ink); color: white;
+            border: none; border-radius: var(--radius-sm);
+            font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700;
+            cursor: pointer; transition: background 0.2s;
+        }
+        .retry-btn:hover { background: #333; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 500px) {
+            .card { padding: 18px; }
+            .opt-btn { padding: 12px 14px; font-size: 13px; }
+            .stats-bar { gap: 12px; }
+        }
+    </style>
+</head>
+<body>
+<div class="shell">
+
+    <!-- HEADER -->
+    <header class="site-header">
+        <div class="eyebrow">ARTEDIUM 2023 · Block 2.2</div>
+        <h1>YOGHURT <span>2.2</span></h1>
+        <div class="tagline">Basic Science of Digestive &amp; Nephrourinary System — 90 Soal</div>
+    </header>
+
+    <!-- ══════════════════ START SCREEN ══════════════════ -->
+    <div id="start-screen">
+        <div class="card">
+            <div class="disclaimer">
+                <strong>⚠ Disclaimer Penting</strong>
+                Starter YOGHURT ini <strong>jangan dijadikan patokan 100%</strong> belajar untuk ujian. Disarankan untuk belajar mandiri dari PPT dosen. Jangan membawa HARDCOPY atau membicarakan YOGHURT di lingkungan kampus.
+            </div>
+
+            <div class="mode-grid">
+                <button class="mode-btn study" onclick="startQuiz('practice')">
+                    <div class="icon">📖</div>
+                    <div class="text">
+                        <h3>Study Mode</h3>
+                        <p>Feedback &amp; penjelasan detail setelah setiap jawaban</p>
+                    </div>
+                </button>
+                <button class="mode-btn exam" onclick="startQuiz('exam')">
+                    <div class="icon">📝</div>
+                    <div class="text">
+                        <h3>Exam Mode</h3>
+                        <p>Simulasi ujian — jawab semua soal tanpa feedback dulu</p>
+                    </div>
+                </button>
+                <button class="mode-btn drill" onclick="startQuiz('drill')">
+                    <div class="icon">💀</div>
+                    <div class="text">
+                        <h3>Sudden Death Drill</h3>
+                        <p>Salah satu saja = reset dari awal. Siapkan mental.</p>
+                    </div>
+                </button>
+            </div>
+
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="val" id="q-count-display">90</div>
+                    <div class="lbl">Soal</div>
+                </div>
+                <div class="stat-item">
+                    <div class="val">3</div>
+                    <div class="lbl">Mode</div>
+                </div>
+                <div class="stat-item">
+                    <div class="val">GI</div>
+                    <div class="lbl">Sistem</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════ QUIZ SCREEN ══════════════════ -->
+    <div id="quiz-screen">
+        <div class="quiz-topbar">
+            <button class="back-btn" onclick="backToHome()">← Index</button>
+            <div class="progress-wrap">
+                <div class="progress-track">
+                    <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+                </div>
+                <div class="progress-label">
+                    <span id="curr-q">1</span> / <span id="total-q">90</span>
+                </div>
+            </div>
+            <div class="score-badge" id="score-display">Skor: 0</div>
+        </div>
+
+        <div class="card">
+            <div class="question-num">Soal #<span id="q-num-label">1</span></div>
+            <p class="question-text" id="question-text"></p>
+            <div class="options-list" id="options-container"></div>
+            <div class="explanation" id="feedback-area">
+                <div class="exp-label">Penjelasan</div>
+                <div class="exp-answer" id="exp-answer"></div>
+                <div class="exp-body" id="exp-body"></div>
+                <div class="source-tag" id="exp-source"></div>
+            </div>
+            <div id="drill-warning">
+                <h2>FATAL ERROR</h2>
+                <p>Satu kesalahan mengakhiri segalanya. Baca penjelasan di atas sebelum timer habis.</p>
+                <span id="drill-time">10</span>
+                <button id="drill-restart-btn" onclick="restartDrillNow()">↺ Restart Sekarang</button>
+            </div>
+        </div>
+
+        <div class="nav-row">
+            <button class="nav-btn" onclick="prevQuestion()" id="btn-prev">← Prev</button>
+            <button class="nav-btn" onclick="nextQuestion()" id="btn-next">Next →</button>
+            <button class="nav-btn primary" onclick="finishQuiz()" id="btn-finish" style="display:none">Selesai ✓</button>
+        </div>
+    </div>
+
+    <!-- ══════════════════ RESULT SCREEN ══════════════════ -->
+    <div id="result-screen">
+        <div class="card">
+            <div class="result-hero">
+                <div class="score-ring">
+                    <div class="score-num" id="final-score">0</div>
+                    <div class="score-pct">%</div>
+                </div>
+                <div class="result-grid">
+                    <div class="result-box correct">
+                        <div class="val" id="res-correct">0</div>
+                        <div class="lbl">Benar</div>
+                    </div>
+                    <div class="result-box wrong">
+                        <div class="val" id="res-wrong">0</div>
+                        <div class="lbl">Salah</div>
+                    </div>
+                </div>
+                <div class="result-verdict" id="result-verdict"></div>
+                <button class="retry-btn" onclick="location.reload()">↺ Coba Lagi</button>
+            </div>
+        </div>
+    </div>
+
+</div><!-- /shell -->
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  YOGHURT 2.2 — QUESTION BANK (90 Soal)
+// ═══════════════════════════════════════════════════════
+const questions = [
+    {
+        q: "Lipoprotein yang mereverse kolesterol dari berbagai jaringan kembali ke hepar adalah...",
+        o: ["Kilomikron", "LDL", "IDL", "VLDL", "HDL"],
+        a: "HDL",
+        exp: "HDL (High-Density Lipoprotein) adalah satu-satunya lipoprotein yang bertugas mengangkut kolesterol dari jaringan perifer kembali ke hati — proses ini disebut <strong>Reverse Cholesterol Transport</strong>. HDL disintesis dan disekresi dari hepar dan usus.",
+        src: "PPT dr Alfi, Metabolisme Lipid. Slide 56"
+    },
+    {
+        q: "Pasien merasa nyeri perut bagian kanan bawah. Appendix tidak terlihat jelas pada pemeriksaan, hal tersebut dikarenakan...",
+        o: ["Appendix subcaecal", "Appendix vesical", "Appendix retrocaecal", "Appendix pericaecal", "Appendix preileal"],
+        a: "Appendix retrocaecal",
+        exp: "Posisi appendix paling umum adalah <strong>retrocaecal</strong> (~74%), yaitu berada di belakang sekum. Pada posisi ini, appendix tersembunyi sehingga tidak mudah terlihat/teraba. Inilah mengapa nyeri appendisitis bisa atipikal — tidak selalu di titik McBurney klasik.",
+        src: "PPT Anatomi, Caecum and Appendix"
+    },
+    {
+        q: "Epitel traktus digestivus berasal dari...",
+        o: ["Endoderm", "Mesoderm", "Ektoderm", "Notokord"],
+        a: "Endoderm",
+        exp: "<strong>Endoderm</strong> adalah lapisan germinal yang membentuk epitel lapisan dalam saluran pencernaan (dari esofagus hingga rektum), termasuk kelenjar-kelenjar pencernaan seperti hati dan pankreas. Mesoderm membentuk jaringan otot dan ikat dinding GI.",
+        src: "PPT Embriologi, Major derivatives of embryonic germ layers"
+    },
+    {
+        q: "Kondisi pada tubuh yang meningkatkan trigliserida adalah...",
+        o: ["Kelaparan", "Banyak makan karbohidrat", "Kadar insulin rendah", "Kadar glukagon tinggi", "Semua salah"],
+        a: "Banyak makan karbohidrat",
+        exp: "Konsumsi karbohidrat berlebih memicu peningkatan insulin, yang mendorong <strong>lipogenesis</strong> (sintesis trigliserida) di hepar dari kelebihan asetil-KoA. Kelaparan, insulin rendah, dan glukagon tinggi justru <em>memecah</em> trigliserida (lipolisis), bukan meningkatkannya.",
+        src: "PPT Biokimia Lipid"
+    },
+    {
+        q: "Vitamin mana yang menyebabkan gangguan pembentukan darah yang akan menyebabkan anemia pernisiosa?",
+        o: ["Vit B12", "Vit B2", "Vit B6", "Vit C", "Vit H"],
+        a: "Vit B12",
+        exp: "<strong>Vitamin B12 (Kobalamin)</strong> defisiensi menyebabkan anemia pernisiosa. Biasanya bukan karena kurang asupan, tapi karena kekurangan <em>Intrinsic Factor</em> dari sel parietal lambung. Tanpa IF, B12 tidak bisa diabsorbsi di ileum terminal, menyebabkan gangguan pembentukan sel darah merah.",
+        src: "PPT Bu Synta, Metabolisme Vitamin dan Mineral"
+    },
+    {
+        q: "Kontraksi ritmik otot polos saluran cerna (Slow wave) ditimbulkan oleh aktivitas...",
+        o: ["Sel G", "Sel Cajal", "Sel parietal", "Enterosit", "Nervus vagus"],
+        a: "Sel Cajal",
+        exp: "<strong>Interstitial Cells of Cajal (ICC)</strong> adalah sel pacemaker GI yang menghasilkan slow waves (gelombang listrik ritmis). Slow waves bukan action potentials, melainkan potensial osilasi yang menentukan frekuensi kontraksi dasar usus (3x/menit di lambung, 12x/menit di duodenum).",
+        src: "PPT dr Wiwiek, Fisiologi Gastrointestinal I. Slide 19"
+    },
+    {
+        q: "Vitamer dari Vitamin A yang menjadi pembentuk rhodopsin yang berfungsi sebagai penglihatan adalah...",
+        o: ["Retinoid", "Beta-karoten", "Retinol", "Retinal", "Asam retinoat"],
+        a: "Retinal",
+        exp: "<strong>Retinal (Retinaldehid)</strong> adalah bentuk aktif Vitamin A yang berfungsi sebagai kromofor pada rhodopsin (protein pigmen fotoreseptor di sel batang retina). Retinal akan mengalami isomerisasi dari cis ke trans saat terkena cahaya, memicu sinyal visual.",
+        src: "PPT Bu Synta, Metabolisme Vitamin dan Mineral"
+    },
+    {
+        q: "Enzim pencernaan yang mengaktifkan enzim pencernaan lainnya adalah...",
+        o: ["Tripsin", "Chymotripsin", "Karboksipeptidase", "Aminopeptidase", "Elastase"],
+        a: "Tripsin",
+        exp: "<strong>Tripsin</strong> adalah enzim proteolitik maestro pengaktif. Proses: Enterokinase (dari epitel usus) memotong Tripsinogen → Tripsin aktif. Tripsin kemudian mengaktifkan Kimotripsinogen → Kimotripsin, Proelastase → Elastase, dan Prokarboksipeptidase → Karboksipeptidase.",
+        src: "PPT dr Wiwiek, Fisiologi Gastrointestinal III. Slide 10"
+    },
+    {
+        q: "Pembentukan bilirubin dari biliverdin dengan bantuan enzim...",
+        o: ["Biliverdin reduktase", "Biliverdin oksidase", "Bilirubin reduktase", "Bilirubin oksidase", "Heme oksigenase"],
+        a: "Biliverdin reduktase",
+        exp: "Metabolisme Heme: Heme oksigenase memecah heme menjadi <em>biliverdin</em> (hijau). Kemudian <strong>biliverdin reduktase</strong> mengkatalisis reduksi biliverdin menjadi <em>bilirubin</em> (kuning) menggunakan NADPH. Bilirubin inilah yang kemudian dikonjugasi di hepar.",
+        src: "PPT Bu Synta, Enzim pencernaan dan bilirubin. Slide 35"
+    },
+    {
+        q: "Peranan hati dalam pencernaan makanan adalah...",
+        o: ["Mensekresikan enzim pencernaan", "Menghasilkan alkali untuk menetralkan pH saluran cerna", "Menghasilkan empedu", "Menghasilkan IGF-1", "Melepaskan kolesistokinin"],
+        a: "Menghasilkan empedu",
+        exp: "Hepar mensintesis empedu (600-1000 mL/hari) yang mengandung garam empedu, bilirubin, kolesterol, air, dan ion. Garam empedu berfungsi untuk <strong>emulsifikasi lipid</strong> agar dapat dicerna lipase dan diabsorbsi. Enzim pencernaan diproduksi oleh pankreas, bukan hepar.",
+        src: "PPT dr Wiwiek, Liver & Gallbladder. Slide 10"
+    },
+    {
+        q: "Meminum obat dengan cara diletakkan di bawah lidah bertujuan agar...",
+        o: ["Tidak melewati hepar", "Tidak terasa pahit", "Tidak melewati v. porta hepatica", "Tidak diekskresikan", "Tidak boleh tertelan"],
+        a: "Tidak melewati v. porta hepatica",
+        exp: "Rute sublingual mengabsorbsi obat langsung ke vena di bawah lidah → vena jugularis → sirkulasi sistemik, <strong>melewati sistem vena porta hepatica</strong>. Jika ditelan biasa: usus halus → v. mesenterica superior → v. porta hepatica → hepar (first pass effect). Efek ini mengurangi bioavailabilitas banyak obat.",
+        src: "PPT Anatomi, Lingua"
+    },
+    {
+        q: "Transport trigliserida dari hepar ke sirkulasi diperankan oleh...",
+        o: ["Kilomikron", "VLDL", "IDL", "HDL", "LDL"],
+        a: "VLDL",
+        exp: "<strong>VLDL (Very Low-Density Lipoprotein)</strong> adalah lipoprotein yang disintesis di hepar untuk mengangkut trigliserida endogen ke jaringan perifer. VLDL mengandung Apo B-100. Kilomikron mengangkut lipid eksogen dari usus.",
+        src: "PPT dr Alfi, Biokimia Lipid. Slide 52"
+    },
+    {
+        q: "Yang merupakan pengangkut lipoprotein kaya trigliserida adalah...",
+        o: ["Kilomikron", "Kilomikron remnant", "HDL", "LDL", "IDL"],
+        a: "Kilomikron",
+        exp: "<strong>Kilomikron</strong> adalah lipoprotein terbesar dengan kandungan trigliserida paling dominan (~85-88%). Kilomikron dibentuk di enterosit usus halus dari absorbsi lipid makanan (jalur eksogen), lalu masuk ke sirkulasi melalui lakteal limfatik.",
+        src: "PPT dr Alfi, Metabolisme Lipid. Slide 26"
+    },
+    {
+        q: "Hepar mendapat nutrisi dari...",
+        o: ["A. hepatica dan v. hepatica", "A. hepatica dan v. porta hepatica", "V. hepatica dan v. porta hepatica", "A. hepatica", "V. hepatica"],
+        a: "A. hepatica dan v. porta hepatica",
+        exp: "Hepar menerima pasokan darah ganda: <strong>A. hepatica communis</strong> (25-30%, kaya oksigen dari aorta) dan <strong>V. porta hepatica</strong> (70-75%, kaya nutrien dari GI). V. hepatica adalah pembuluh yang <em>meninggalkan</em> hepar menuju v. cava inferior.",
+        src: "PPT Anatomi, Hepar"
+    },
+    {
+        q: "Hepar mendapat aliran darah dari...",
+        o: ["A. hepatica dan v. hepatica", "A. hepatica dan v. porta hepatica", "V. porta hepatica", "A. hepatica", "V. hepatica"],
+        a: "A. hepatica dan v. porta hepatica",
+        exp: "Sama dengan pertanyaan sebelumnya: aliran darah masuk ke hepar berasal dari dua sumber — <strong>A. hepatica</strong> (oksigenasi) dan <strong>V. porta hepatica</strong> (nutrien dari GI). Ini adalah dual blood supply yang unik pada hepar.",
+        src: "PPT Anatomi, Hepar"
+    },
+    {
+        q: "Absorbsi air sebagian besar berlangsung di...",
+        o: ["Esofagus", "Lambung", "Usus halus", "Kolon", "Apendiks"],
+        a: "Usus halus",
+        exp: "Meski kolon juga mengabsorbsi air, <strong>usus halus</strong> mengabsorbsi air dalam jumlah TERBESAR (~7-8 liter/hari). Mekanisme: air mengikuti gradien osmotik yang diciptakan oleh absorbsi aktif elektrolit (Na+) dan nutrien (glukosa, asam amino).",
+        src: "PPT dr Wiwiek, Gastrointestinal III. Slide 34"
+    },
+    {
+        q: "Saat kimus mencapai duodenum, hormon apa yang menghambat sekresi gastrin?",
+        o: ["Sekretin", "Ghrelin", "Pepsin", "Histamin", "Neurotensin"],
+        a: "Sekretin",
+        exp: "<strong>Sekretin</strong> dilepaskan sel S duodenum ketika pH kimus rendah (asam). Efeknya: (a) merangsang bikarbonat pankreas menetralkan asam, dan (b) <em>menghambat sekresi gastrin dan asam lambung</em> — untuk mencegah duodenum kelebihan asam.",
+        src: "PPT dr Wiwiek, Fisiologi Gastrointestinal I Slide 17 & II Slide 32"
+    },
+    {
+        q: "Manusia memiliki struktur otot yang menahan buang air besar secara volunter. Berikut adalah ciri otot tersebut...",
+        o: ["Merupakan otot polos", "Salah satu ototnya adalah m. levator ani", "Disebut m. sphincter ani interna", "Terletak pada rektum", "Berkontraksi saat mengejan"],
+        a: "Salah satu ototnya adalah m. levator ani",
+        exp: "Kontrol volunter BAB bergantung pada <strong>M. sphincter ani externus</strong> (otot rangka/lurik, diinervasi saraf somatik n. pudendus) dan <strong>M. levator ani</strong> (bagian dari otot dasar panggul). M. sphincter ani <em>interna</em> adalah otot polos yang bekerja involunter.",
+        src: "PPT Anatomi GI"
+    },
+    {
+        q: "Pernyataan berikut benar tentang HCl lambung, kecuali...",
+        o: ["Mampu denaturasi protein", "Membunuh sebagian besar bakteri", "Mengaktifkan pepsinogen", "Mengaktifkan salivary amylase", "Menonaktifkan amylase ludah"],
+        a: "Mengaktifkan salivary amylase",
+        exp: "Fungsi HCl lambung: (1) denaturasi protein, (2) bunuh bakteri, (3) aktifkan pepsinogen → pepsin, (4) bantu absorbsi Fe. HCl justru <strong>MENONAKTIFKAN salivary amylase</strong> (amylase ludah optimal di pH netral), bukan mengaktifkannya.",
+        src: "PPT dr Wiwiek, Fisiologi Gastrointestinal II. Slide 19"
+    },
+    {
+        q: "Gangguan penyaluran asam empedu ke usus halus akan menyebabkan beberapa konsekuensi. Mana yang TIDAK SESUAI?",
+        o: ["Gangguan absorpsi lemak", "Gangguan penyerapan Vit B", "Gangguan digesti lemak", "Gangguan penyerapan Vit K", "Perubahan warna feses"],
+        a: "Gangguan penyerapan Vit B",
+        exp: "Garam empedu dibutuhkan untuk absorbsi <strong>vitamin larut lemak: A, D, E, K</strong>. Vitamin B adalah vitamin larut air yang diabsorbsi secara independen (tidak membutuhkan emulsifikasi lemak). Oleh karena itu, gangguan empedu tidak akan mengganggu penyerapan Vitamin B.",
+        src: "PPT dr Wiwiek, Liver & Gallbladder. Slide 10"
+    },
+    {
+        q: "Gangguan sintesis substansi tertentu di liver dapat mengakibatkan edema. Manakah substansi yang dimaksud?",
+        o: ["Albumin", "Kolesterol", "Keton", "Protrombin", "Imunoglobin"],
+        a: "Albumin",
+        exp: "<strong>Albumin</strong> adalah protein plasma utama yang mengatur tekanan osmotik koloid darah. Jika hepar gagal mensintesis albumin (hipoalbuminemia), tekanan osmotik koloid turun → cairan bocor dari kapiler ke jaringan interstisial → <strong>edema</strong>.",
+        src: "PPT dr Wiwiek, Liver & Gallbladder. Slide 8 & Modul Biokimia Blok 2.2 Hal 20"
+    },
+    {
+        q: "Berikut BENAR mengenai innervasi otonom viscera abdomen...",
+        o: ["Pusat muntah berada di dorsal area postrema", "Area postrema berada di basis pontis", "Serabut simpatis postganglionik berbadan sel di ganglion Meissner", "Serabut simpatis berjalan bersama percabangan arteri", "Truncus vagalis anterior berasal dari N. Vagus dexter"],
+        a: "Serabut simpatis berjalan bersama percabangan arteri",
+        exp: "Serabut simpatis postganglionik viscera abdomen memang <strong>berjalan bersama (perivaskular) percabangan arteri</strong> ke organ-organ perut. Koreksi: Area postrema ada di medula oblongata (bukan pons). Ganglion Meissner adalah pleksus parasimpatis submukosa. Truncus vagalis anterior dari N. Vagus sinister.",
+        src: "PPT Neuroanatomi Viscera"
+    },
+    {
+        q: "Absorbsi glukosa terjadi melalui mekanisme...",
+        o: ["Difusi terfasilitasi", "Simple diffusion", "Antiport", "Osmosis", "Symport bersama Na"],
+        a: "Symport bersama Na",
+        exp: "Absorbsi glukosa dari lumen usus ke sel epitel: melalui <strong>SGLT-1 (Sodium-Glucose Transporter-1)</strong> = symport bersama Na+ (transport aktif sekunder). Fruktosa melalui GLUT-5 (difusi terfasilitasi). Dari sel epitel ke darah: semua monosakarida melalui GLUT-2 (difusi terfasilitasi).",
+        src: "PPT dr Wiwiek, Fisiologi Gastrointestinal III. Slide 25"
+    },
+    {
+        q: "Lipoprotein yang memiliki densitas terendah adalah...",
+        o: ["VLDL", "Kilomikron", "LDL", "HDL", "IDL"],
+        a: "Kilomikron",
+        exp: "<strong>Kilomikron</strong> memiliki densitas TERENDAH karena kandungan lipidnya sangat tinggi (>85% trigliserida) dan proteinnya sangat sedikit. Urutan densitas dari rendah ke tinggi: Kilomikron < VLDL < IDL < LDL < HDL.",
+        src: "PPT dr Alfi, Biokimia Lipid. Slide 27"
+    },
+    {
+        q: "Manakah dari nutrien berikut yang ditransport melalui lakteal vili usus halus?",
+        o: ["Asam amino", "Elektrolit", "Asam lemak", "Selulosa", "Glukosa"],
+        a: "Asam lemak",
+        exp: "Asam lemak rantai panjang (Long Chain Fatty Acids) setelah diabsorbsi dikemas ulang menjadi trigliserida → dimasukkan ke dalam <strong>kilomikron</strong> → dieksositosis → masuk ke <strong>pembuluh lakteal (limfatik)</strong> vili → duktus torasikus → sirkulasi. Glukosa dan asam amino langsung ke kapiler darah.",
+        src: "PPT dr Wiwiek, Fisiologi Gastrointestinal III. Slide 28"
+    },
+    {
+        q: "Mineral berikut ini yang termasuk ke dalam unsur makroelemen...",
+        o: ["Na dan Fe", "Ca dan Zn", "K dan Cu", "Mg dan Fe", "Na dan Ca"],
+        a: "Na dan Ca",
+        exp: "<strong>Makroelemen</strong> (kebutuhan >100 mg/hari): Na, K, Ca, Mg, Cl, P, S. <strong>Mikroelemen</strong> (kebutuhan <100 mg/hari): Fe, Zn, Cu, Mn, I, Se. Na dan Ca keduanya adalah makroelemen.",
+        src: "PPT Bu Synta, Metabolisme Vitamin & Mineral. Slide 36"
+    },
+    {
+        q: "Enzim sukrase berfungsi untuk memecah sukrosa menjadi...",
+        o: ["Glukosa dan glukosa", "Glukosa dan fruktosa", "Glukosa dan galaktosa", "Glukosa dan maltosa", "Glukosa dan laktosa"],
+        a: "Glukosa dan fruktosa",
+        exp: "Tiga enzim brush border utama: (1) <strong>Sukrase</strong>: sukrosa → glukosa + fruktosa. (2) Laktase: laktosa → glukosa + galaktosa. (3) Maltase: maltosa → glukosa + glukosa. Defisiensi laktase menyebabkan intoleransi laktosa.",
+        src: "PPT dr Wiwiek, Fisiologi Gastrointestinal III. Slide 12"
+    },
+    {
+        q: "Pada saat stimulasi parasimpatis, Ach akan berikatan dengan reseptor di kelenjar saliva. Reseptor tersebut adalah...",
+        o: ["Muskarinik", "Nikotinik", "Adrenergik", "Beta reseptor", "Alfa reseptor"],
+        a: "Muskarinik",
+        exp: "Asetilkolin (Ach) dari saraf parasimpatis berikatan dengan reseptor <strong>Muskarinik (M3)</strong> di sel asinar dan duktus kelenjar saliva → meningkatkan sekresi saliva (watery/encer). Reseptor Nikotinik ada di ganglion otonom dan neuromuscular junction, bukan di kelenjar.",
+        src: "PPT dr Wiwiek, Fisiologi Gastrointestinal I. Slide 26"
+    },
+    {
+        q: "Pernyataan berikut ini yang tidak sesuai terkait emulsifikasi lipid adalah...",
+        o: ["Emulsifikasi diperlukan karena lipid bersifat hidrofobik", "Emulsifikasi diperlukan karena lipid tidak larut dalam air", "Emulsifikasi diperlukan karena lipid bersifat polar", "Emulsifikasi diperlukan agar lipase dapat berinteraksi langsung dengan TG", "Emulsifikasi lipid memerlukan aksi dari garam empedu"],
+        a: "Emulsifikasi diperlukan agar lipase dapat berinteraksi langsung dengan TG",
+        exp: "Emulsifikasi memecah tetesan lemak besar menjadi droplet kecil untuk memperluas area permukaan. Namun, lipase TIDAK berinteraksi <em>langsung</em> dengan TG — garam empedu menyelimuti permukaan droplet dan lipase bekerja pada antarmuka air-lemak. Jadi pernyataan 'agar lipase berinteraksi langsung dengan TG' adalah TIDAK TEPAT.",
+        src: "PPT dr Alfi, Biokimia Lipid. Slide 18"
+    },
+    {
+        q: "Berikut BENAR mengenai vaskularisasi tractus digestorium pada kepala dan leher...",
+        o: ["Fraktur anterior cavum nasi dapat menyebabkan rupturnya a. palatina ascenden", "Fraktur mandibula dapat menyebabkan rupturnya a. lingualis", "Obstruksi total a. maxillaris interna pars III dapat mengganggu vaskularisasi geligi rahang bawah", "Trauma a. infra orbitalis dapat mengganggu vaskularisasi molar rahang atas", "Trauma hulu a. Facialis dapat mengganggu vaskularisasi palatum molle"],
+        a: "Trauma hulu a. Facialis dapat mengganggu vaskularisasi palatum molle",
+        exp: "A. Facialis (cabang a. carotis externa) memiliki cabang <strong>a. palatina ascendens</strong> yang mensuplai palatum molle. Trauma pada pangkal a. Facialis akan mengganggu suplai ke palatum molle.",
+        src: "PPT Anatomi Vaskularisasi Kepala"
+    },
+    {
+        q: "Absorbsi zat berikut ini melalui osmosis adalah...",
+        o: ["Calcium", "Natrium", "Sianokobalamin", "Air", "Glukosa"],
+        a: "Air",
+        exp: "<strong>Air</strong> diabsorbsi secara <em>osmosis</em> — mengikuti gradien osmotik yang diciptakan oleh absorbsi aktif elektrolit dan nutrien. Sodium diabsorbsi aktif/ko-transport. Glukosa melalui symport-Na. Sianokobalamin (Vit B12) melalui endositosis setelah berikatan Intrinsic Factor.",
+        src: "PPT dr Wiwiek, Fisiologi Gastrointestinal III. Slide 34"
+    },
+    {
+        q: "Gigi decidua yang pertama kali digantikan oleh gigi permanen adalah...",
+        o: ["Incisivus", "Caninus", "Premolar", "Molar", "Molar III"],
+        a: "Incisivus",
+        exp: "Gigi desidui pertama tanggal dan digantikan gigi permanen adalah <strong>Incisivus sentral mandibula</strong> (sekitar usia 6-7 tahun). Urutan: Incisivus sentral → Incisivus lateral → Molar pertama → Caninus → Molar kedua.",
+        src: "Tabel Waktu Erupsi Gigi Desidui"
+    },
+    {
+        q: "Pengeluaran sekretin dirangsang oleh...",
+        o: ["pH duodenum yang rendah", "Osmolaritas kimus yang tinggi", "Distensi duodenum", "Adanya asam lemak bebas di duodenum", "Adanya asam amino di duodenum"],
+        a: "pH duodenum yang rendah",
+        exp: "<strong>Sekretin</strong> dikeluarkan sel S duodenum ketika <strong>pH duodenum rendah</strong> (asam, pH <4.5) akibat masuknya kimus asam dari lambung. Sekretin kemudian merangsang pankreas mengeluarkan bikarbonat untuk menetralkan asam tersebut.",
+        src: "PPT dr Wiwiek, Fisiologi Gastrointestinal II. Slide 32"
+    },
+    {
+        q: "Remaja X, laki-laki, mengeluhkan sakit gigi karena gigi berlubang disertai nyut-nyutan. Struktur apa yang rusak?",
+        o: ["Enamel", "Dentin", "Pulpa", "Sementum", "Jaringan periodontal"],
+        a: "Pulpa",
+        exp: "Karies dimulai dari enamel → dentin. Ketika sudah mencapai <strong>Pulpa</strong> (rongga berisi pembuluh darah dan saraf), terjadi <em>pulpitis</em> yang menyebabkan nyeri berdenyut (nyut-nyutan) karena peradangan menekan ujung saraf di dalam rongga sempit yang tidak bisa mengembang.",
+        src: "PPT Anatomi Gigi, Tooth Structure"
+    },
+    {
+        q: "Selama fase intestinal, aliran darah ke saluran cerna meningkat yang distimulasi oleh...",
+        o: ["VIP", "NE", "CCK", "GIP", "ATP"],
+        a: "VIP",
+        exp: "<strong>VIP (Vasoactive Intestinal Peptide)</strong> adalah neuropeptida yang menyebabkan vasodilatasi pembuluh darah di saluran cerna, meningkatkan aliran darah GI selama fase pencernaan aktif (fase intestinal).",
+        src: "MADU 2021, Fase Intestinal"
+    },
+    {
+        q: "Vitamin D sirkulasi dimetabolisme di hepar menghasilkan...",
+        o: ["7-Dehydrocholecalsiferol", "Cholecalsiferol", "25-Hydroxyvitamin D", "1,25-dehydroxyvitamin D", "Ergocalsiferol"],
+        a: "25-Hydroxyvitamin D",
+        exp: "Metabolisme Vit D: Kulit/Makanan → Cholecalciferol (D3) → di <strong>Hepar</strong> → <strong>25-Hydroxyvitamin D (25-OH-D / Kalsidiol)</strong> oleh 25-hydroxylase → di Ginjal → 1,25-dihydroxyvitamin D (Kalsitriol, bentuk aktif).",
+        src: "PPT Bu Synta, Metabolisme Vitamin & Mineral. Slide 12"
+    },
+    {
+        q: "Pengaruh hormon glukagon dalam metabolisme lemak yaitu...",
+        o: ["Meningkatkan esterifikasi asam lemak menjadi trigliserida", "Meningkatkan lipogenesis", "Meningkatkan perombakan trigliserida", "A dan B benar", "Semua salah"],
+        a: "Meningkatkan perombakan trigliserida",
+        exp: "<strong>Glukagon</strong> adalah hormon kelaparan/puasa. Glukagon mengaktifkan hormon-sensitive lipase (HSL) di jaringan adiposa → <strong>lipolisis/perombakan trigliserida</strong> menjadi asam lemak bebas dan gliserol. Kebalikan insulin yang mempromosi lipogenesis.",
+        src: "PPT Metabolisme Lipid"
+    },
+    {
+        q: "Ny. XB 40 tahun datang dengan keluhan anemia pernisiosa karena kekurangan vitamin B12. Sel apakah di gaster yang menghasilkan faktor intrinsik?",
+        o: ["Surface lining cells", "Stem Cell", "Parietal Cell", "Chief Cell", "Enteroendocrine Cell"],
+        a: "Parietal Cell",
+        exp: "<strong>Sel Parietal (Oxyntic cell)</strong> di fundus/korpus lambung memiliki dua produk sekresi utama: (1) HCl dan (2) <strong>Intrinsic Factor (IF)</strong>. IF adalah glikoprotein yang mengikat Vit B12 agar dapat diabsorbsi di ileum terminal. Gastritis kronis merusak sel parietal → defisiensi IF → anemia pernisiosa.",
+        src: "PPT Bu Synta, Metabolisme Vitamin & Mineral. Slide 30"
+    },
+    {
+        q: "Suatu tumor paru menyebabkan obstruksi total pada 1 cm proksimal a. Subklavia sinistra sebelum memberikan percabangan pertamanya. Mengenai dampaknya terhadap vaskularisasi traktus digestivus kepala dan leher sisi kiri...",
+        o: ["A. Pharyngea ascenden tidak dapat mensuplai sisi kiri faring", "A. Palatina ascenden tidak dapat mensuplai sisi kiri palatum", "A. Thyroidea inferior tidak dapat mensuplai esofagus cervical", "A. Maxillaris interna tidak dapat mensuplai arcus dentes", "A. Lingualis tidak dapat mensuplai glossus"],
+        a: "A. Thyroidea inferior tidak dapat mensuplai esofagus cervical",
+        exp: "A. Thyroidea inferior adalah cabang dari <strong>Truncus Thyrocervicalis</strong>, yang merupakan cabang pertama A. Subklavia sinistra. Jika A. Subklavia tersumbat proksimal sebelum memberikan percabangan pertamanya, maka Truncus Thyrocervicalis (dan a. Thyroidea inferior) tidak dapat mensuplai esofagus servikal sisi kiri.",
+        src: "PPT Anatomi Vaskularisasi"
+    },
+    {
+        q: "Pernyataan tentang kantong empedu yang benar adalah...",
+        o: ["Selama penyimpanan terjadi peningkatan kepekatan", "Sekresi kolesistokinin menyebabkan peningkatan sekresi HCO3", "Kandungan ion H+ dalam kimus menstimulasi unsur enzimatik", "Selama penyimpanan terjadi absorpsi zat terlarut", "Relaksasi sfingter distimulasi oleh hormon gastrin"],
+        a: "Selama penyimpanan terjadi peningkatan kepekatan",
+        exp: "Saat empedu disimpan di kandung empedu, air dan elektrolit diabsorbsi secara aktif → empedu menjadi lebih pekat (5-20x lipat). Ini yang menyebabkan batu empedu lebih mudah terbentuk di kantong empedu daripada di saluran empedu.",
+        src: "PPT dr Wiwiek, Liver & Gallbladder. Slide 12"
+    },
+    {
+        q: "Refleks defekasi timbul oleh adanya...",
+        o: ["Regangan di colon descenden", "Refleks enterogastric", "Regangan di rektum", "Vagovagal refleks", "pH kimus"],
+        a: "Regangan di rektum",
+        exp: "Refleks defekasi dipicu oleh <strong>distensi/regangan dinding rektum</strong> ketika feses masuk. Stretch receptor mengirim sinyal ke medula spinalis sakral → refleks parasimpatis (pleksus pelvikus) → peristaltik sigmoid meningkat + relaksasi m. sphincter ani interna.",
+        src: "PPT dr Wiwiek, Large Intestine & Defecation. Slide 19"
+    },
+    {
+        q: "Absorpsi asam amino di apikal membran epitel melalui mekanisme simport bersama...",
+        o: ["H+", "K+", "Na+", "Galaktosa", "Cl-"],
+        a: "Na+",
+        exp: "Asam amino diabsorbsi dari lumen usus ke sel epitel melalui <strong>ko-transport (simport) bersama Na+</strong> (transport aktif sekunder, mirip glukosa). Namun, di-tripeptida juga bisa masuk melalui simport bersama H+ (PepT1 transporter).",
+        src: "PPT dr Wiwiek, Fisiologi Gastrointestinal III. Slide 26"
+    },
+    {
+        q: "Pepsin bekerja paling efektif pada pH...",
+        o: ["2.0 - 3.0", "3.0 - 4.0", "4.0 - 5.0", "5.0 - 6.0", "6.0 - 7.0"],
+        a: "2.0 - 3.0",
+        exp: "<strong>Pepsin</strong> adalah enzim proteolitik utama lambung yang optimal bekerja pada pH <strong>1.5 - 3.0</strong> (sangat asam). HCl lambung tidak hanya mengaktifkan pepsinogen menjadi pepsin, tapi juga menyediakan lingkungan asam optimal untuk pepsin bekerja.",
+        src: "https://www.ncbi.nlm.nih.gov/books/NBK537005/"
+    },
+    {
+        q: "Seorang ibu khawatir anaknya yang berumur 5 tahun belum memiliki gigi yang lengkap. Berapa jumlah gigi yang seharusnya dimiliki anak tersebut?",
+        o: ["16", "20", "24", "28", "32"],
+        a: "20",
+        exp: "Gigi susu (desidui) berjumlah <strong>20 gigi</strong> total: 10 di maksila + 10 di mandibula (masing-masing 2 incisivus sentral + 2 incisivus lateral + 2 kaninus + 4 molar pertama + molar kedua). Semua 20 gigi susu harusnya sudah lengkap di usia 2.5-3 tahun.",
+        src: "PPT Anatomi Gigi, Dental Formula"
+    },
+    {
+        q: "Absorpsi zat berikut ini manakah yang melalui simport bersama ion H?",
+        o: ["Asam amino", "Dipeptida", "Zn", "Glukosa", "Fruktosa"],
+        a: "Dipeptida",
+        exp: "<strong>Dipeptida dan tripeptida</strong> diabsorbsi dari lumen usus melalui transporter <strong>PepT1</strong> yang bekerja sebagai simport bersama ion <strong>H+</strong>. Di dalam sel, dipeptida kemudian dihidrolisis menjadi asam amino bebas oleh peptidase intraseluler.",
+        src: "PPT dr Wiwiek, Fisiologi Gastrointestinal. Slide 26"
+    },
+    {
+        q: "Di antara hormon berikut manakah yang menyebabkan peningkatan nafsu makan?",
+        o: ["Norepinephrine", "Insulin", "Leptin", "Neuropeptida Y", "Cholecystokinin"],
+        a: "Neuropeptida Y",
+        exp: "<strong>Neuropeptida Y (NPY)</strong> adalah salah satu stimulator nafsu makan terkuat. NPY diproduksi oleh neuron arcuate nukleus hipotalamus saat kadar ghrelin (hormon lapar) tinggi. CCK, Leptin, dan insulin justru <em>menekan</em> nafsu makan.",
+        src: "PPT dr Wiwiek, Metabolisme dan Bioenergi. Slide 32"
+    },
+    {
+        q: "Berikut ini merupakan pernyataan yang benar mengenai asam lemak rantai pendek (SCFA)...",
+        o: ["Sumber utamanya dari dietary triglycerides misal susu", "Sumber utamanya dari ikan", "Seringkali disebut sebagai free fatty acids", "Sumber utamanya dari dairy product", "Sumber utamanya dari fermentasi starch yang resisten amilase"],
+        a: "Sumber utamanya dari fermentasi starch yang resisten amilase",
+        exp: "<strong>Short Chain Fatty Acids (SCFA)</strong> — seperti asetat, propionat, butirat — terutama dihasilkan oleh <strong>fermentasi bakteri kolon</strong> terhadap serat (dietary fiber) dan pati yang resisten amilase. SCFA penting sebagai sumber energi sel kolonosit.",
+        src: "PPT dr Alfi, Biokimia Lipid. Slide 6"
+    },
+    {
+        q: "Manakah dari hal berikut ini merupakan hal yang meningkatkan sekresi asam lambung?",
+        o: ["Parasimpatis", "Histamine", "Gastrin", "Prostaglandin", "Asetil kolin"],
+        a: "Histamine",
+        exp: "Tiga stimulator utama sekresi HCl oleh sel parietal: (1) <strong>Histamin</strong> (dari sel ECL, via reseptor H2), (2) Gastrin (dari sel G, via reseptor CCK-B), (3) Asetilkolin/Ach dari saraf vagus (via reseptor M3). Prostaglandin justru <em>menghambat</em> sekresi asam (efek sitoprotektif).",
+        src: "PPT dr Wiwiek, Fisiologi Gastrointestinal II. Slide 20"
+    },
+    {
+        q: "Berikut ini benar merupakan sifat fisik asam lemak...",
+        o: ["Stearic acid meleleh pada suhu -10°C", "Ikatan rangkap suatu asam lemak menyebabkannya lebih murah meleleh", "Asam lemak dengan 3 ikatan rangkap lebih sulit meleleh karena ikatannya kuat", "Asam lemak saturated lebih mudah diabsorbsi", "Semakin tinggi massa molar, akan menurunkan titik lelehnya"],
+        a: "Ikatan rangkap suatu asam lemak menyebabkannya lebih murah meleleh",
+        exp: "Ikatan rangkap (tak jenuh) menciptakan tekukan/kink pada rantai asam lemak, mencegah packing yang rapat → titik leleh <strong>lebih rendah</strong>. Minyak nabati (kaya PUFA) cair pada suhu ruang, lemak hewani (jenuh/saturated) padat. Semakin panjang rantai → titik leleh lebih tinggi.",
+        src: "PPT Biokimia Lipid"
+    },
+    {
+        q: "Struktur yang berasal dari foregut adalah...",
+        o: ["Pharynx", "Pankreas", "Jejunum", "Ileum", "Colon"],
+        a: "Pankreas",
+        exp: "Foregut (celiaca trunk): Esofagus, Lambung, Duodenum pars 1-2, Hepar, Kandung empedu, <strong>Pankreas</strong>, Limpa. Midgut (a. mesenterica sup): Duodenum pars 3-4, Jejunum, Ileum, Cecum, Appendix, Colon asc, 2/3 Colon transversum. Hindgut (a. mesenterica inf): Sisa colon, Rektum.",
+        src: "PPT dr Cath, Vaskularisasi traktus GI. Slide 16"
+    },
+    {
+        q: "In the liver, fatty acid biosynthesis occurs in...",
+        o: ["Cytoplasm", "Matrix mitochondria", "Endoplasmic reticulum", "Nucleus", "Golgi apparatus"],
+        a: "Cytoplasm",
+        exp: "<strong>Sintesis asam lemak (lipogenesis)</strong> terjadi di <strong>sitoplasma (sitosol)</strong> sel hepatosit, dikatalisis oleh kompleks enzim Fatty Acid Synthase (FAS). Substrat awal adalah Asetil-KoA dan Malonil-KoA. Beta-oksidasi asam lemak (pemecahan) sebaliknya terjadi di mitokondria.",
+        src: "Biokimia Lipid"
+    },
+    {
+        q: "Cholecystokinin stimulates the production of enzymes by cells found in the pancreas. What cell is that?",
+        o: ["Hepatocytes", "Acinar cells", "Duct cells", "Kuppfer cells", "Ito cells"],
+        a: "Acinar cells",
+        exp: "<strong>Acinar cells</strong> (sel asinar) adalah sel sekretori eksokrin pankreas yang memproduksi enzim pencernaan (tripsinogen, kimotripsinogen, lipase, dll) dalam granula zimogen. CCK dan Ach merangsang sel asinar. Sel duktus (centroacinar) merespon sekretin untuk menghasilkan bikarbonat.",
+        src: "PPT dr Nafisah, Histologi kelenjar pencernaan. Slide 26"
+    },
+    {
+        q: "Manakah yang dapat menghambat sekresi dan motilitas gaster?",
+        o: ["Gastrin", "Parasimpatis", "Distensi dinding gaster", "Enterogastric reflex", "Faktor intrinsik"],
+        a: "Enterogastric reflex",
+        exp: "<strong>Refleks enterogastrik</strong> terjadi ketika kimus masuk ke duodenum (distensi duodenum, asiditas tinggi, lemak/protein). Refleks ini mengirimkan sinyal kembali ke lambung untuk <em>mengurangi motilitas dan sekresi</em> lambung, mencegah duodenum kelebihan muatan.",
+        src: "PPT dr Wiwiek, Large Intestine & Defecation. Slide 6"
+    },
+    {
+        q: "Dalam proses menggigit, m. masseter merupakan otot utama dalam proses elevasi mandibula. Otot apa yang memiliki peran serupa?",
+        o: ["M. temporalis", "M. buccinator", "M. pterygoideus lateral", "Mm. suprahyoid", "Mm. infrahyoid"],
+        a: "M. temporalis",
+        exp: "Otot mastikasi yang melakukan <strong>elevasi mandibula</strong> (menutup mulut/menggigit): M. Masseter, <strong>M. Temporalis</strong>, dan M. Pterygoideus medialis. M. Pterygoideus lateralis melakukan depresi dan protraksi mandibula. Mm. suprahyoid dan infrahyoid melakukan depresi mandibula.",
+        src: "PPT dr Sesa. Slide 57"
+    },
+    {
+        q: "Seorang pasien ditemukan perbesaran pada heparnya. Pada regio apa hal tersebut dapat dideteksi?",
+        o: ["Epigastric", "Umbilical", "Hypogastric", "Hypocondriaca sinistra", "Hypocondriaca dextra"],
+        a: "Hypocondriaca dextra",
+        exp: "Hepar terletak terutama di regio <strong>Hypocondriaca dextra</strong> (hipokondrium kanan) dan sebagian di regio epigastrik. Pembesaran hepar (hepatomegali) pertama kali terdeteksi di regio hipokondrium kanan.",
+        src: "PPT Anatomi Abdomen"
+    },
+    {
+        q: "Transport trigliserida dari hepar menuju sirkulasi diperankan oleh...",
+        o: ["Kilomikron", "VLDL", "LDL", "HDL", "IDL"],
+        a: "VLDL",
+        exp: "<strong>VLDL (Very Low-Density Lipoprotein)</strong> adalah kendaraan transpor utama trigliserida dari hepar ke sirkulasi (jalur endogen). VLDL mengandung Apo B-100 sebagai structural apoprotein esensial.",
+        src: "PPT dr Alfi, Biokimia Lipid. Slide 52"
+    },
+    {
+        q: "Mekanisme perlindungan pankreas dan salurannya dari autodigesti enzim-enzim proteolitik adalah...",
+        o: ["Sekresi enzim dalam bentuk aktif", "Sekresi ion bikarbonat", "Aktivitas parasimpatis", "Sekresi tripsin inhibitor", "Sekresi VIP"],
+        a: "Sekresi tripsin inhibitor",
+        exp: "Pankreas terlindungi dari autodigesti melalui: (1) enzim disekresikan dalam bentuk <em>zimogen</em> (tidak aktif), (2) adanya <strong>Trypsin Inhibitor</strong> di dalam pankreas yang memblok tripsin aktif sebelum waktunya, dan (3) aktivasi hanya terjadi di lumen usus oleh enterokinase.",
+        src: "PPT dr Wiwiek, Fisiologi Gastrointestinal III. Slide 10"
+    },
+    {
+        q: "Gangguan penyaluran empedu ke usus halus akan menyebabkan beberapa konsekuensi. Manakah hal berikut yang TIDAK sesuai?",
+        o: ["Gangguan absorbsi lemak", "Gangguan penyerapan vitamin B", "Gangguan digesti lemak", "Gangguan penyerapan vitamin K", "Perubahan warna feses"],
+        a: "Gangguan penyerapan vitamin B",
+        exp: "Empedu (garam empedu) diperlukan untuk absorbsi vitamin larut lemak (A, D, E, K) dan untuk emulsifikasi lemak. <strong>Vitamin B</strong> adalah vitamin larut air, absorpsinya tidak membutuhkan empedu sama sekali. Gangguan empedu tidak akan mengganggu absorbsi Vitamin B.",
+        src: "PPT Fisiologi GI"
+    },
+    {
+        q: "Seorang wanita, 57 tahun didiagnosis GERD dan diberi obat proton pump inhibitor. Manakah dari sel berikut yang memiliki pompa proton?",
+        o: ["Sel chief", "Enterosit", "Sel goblet", "Sel paneth", "Sel parietal"],
+        a: "Sel parietal",
+        exp: "<strong>Sel parietal</strong> (oxyntic cell) mengandung pompa <strong>H+/K+ ATPase (Proton Pump)</strong> di membran apikalnya, yang memompa H+ ke lumen lambung. PPI (Proton Pump Inhibitor) seperti omeprazol memblok pompa ini, mengurangi sekresi asam.",
+        src: "PPT dr Wiwiek, Fisiologi Gastrointestinal II. Slide 15 & 17"
+    },
+    {
+        q: "Kondisi berikut ini menyebabkan terjadinya peningkatan pemecahan simpanan trigliserida...",
+        o: ["Kenyang", "Kadar insulin tinggi", "Makan tinggi karbohidrat", "Kondisi starvasi", "Salah semua"],
+        a: "Kondisi starvasi",
+        exp: "<strong>Starvasi (kelaparan panjang)</strong> menyebabkan kadar glukosa dan insulin turun, glukagon naik. Glukagon mengaktifkan hormon-sensitive lipase → lipolisis trigliserida di jaringan adiposa → asam lemak bebas dilepas ke darah untuk digunakan sebagai energi.",
+        src: "PPT Metabolisme Lipid"
+    },
+    {
+        q: "Berikut BENAR mengenai kerja saraf aferen viscera abdomen...",
+        o: ["Nyeri akibat regangan dinding bulbus duodeni dibawa melalui n. splanchnicus minor", "Nyeri akibat iskemia akibat intususpensi ileum dibawa melalui n. splanchnicus major", "Nyeri akibat regangan dinding flexura hepatica dibawa melalui n. splanchnicus major", "Rangsang iritasi kimiawi pada dinding jejunum dibawa melalui n. splanchnicus pelvicus", "Rangsang iritasi kimiawi dinding canalis analis dibawa melalui n. splanchnicus pelvicus"],
+        a: "Rangsang iritasi kimiawi dinding canalis analis dibawa melalui n. splanchnicus pelvicus",
+        exp: "N. Splanchnicus pelvicus (saraf parasimpatis sakral S2-S4) membawa serabut aferen sensoris dari viscera pelvis dan rektum/canalis analis. Iritasi dinding canalis analis memang dibawa melalui jalur ini.",
+        src: "PPT Neuroanatomi Viscera"
+    },
+    {
+        q: "Pada proses produksi HCL di gaster, melalui mekanisme apakah ion Cl- keluar dari membran apikal?",
+        o: ["Pompa H-K-ATPase", "Pompa aktif sekunder", "Difusi", "Osmosis", "Transport aktif H+ bertukar dengan Na"],
+        a: "Difusi",
+        exp: "Dalam sekresi HCl: H+ dipompa aktif oleh H+/K+ ATPase ke lumen. Ion Cl- keluar dari sel parietal melalui <strong>difusi</strong> (melalui saluran klorida/Cl- channel) di membran apikal, mengikuti gradien elektrokimia. H+ dan Cl- kemudian bergabung di lumen membentuk HCl.",
+        src: "PPT dr Wiwiek, Fisiologi Gastrointestinal II"
+    },
+    {
+        q: "Berikut adalah karakteristik yang benar pada jejunum...",
+        o: ["Memiliki diameter lebih kecil dari ileum", "Memiliki plica sirkularis lebih sedikit dari ileum", "Memiliki arcade a. jejunales >2 dan kompleks", "Memiliki vasa recta lebih panjang", "Memiliki plak peyer yang jelas dan mudah diidentifikasi"],
+        a: "Memiliki vasa recta lebih panjang",
+        exp: "Perbedaan Jejunum vs Ileum: Jejunum memiliki <strong>vasa recta lebih panjang</strong>, plica circularis lebih banyak dan menonjol, dinding lebih tebal, arcade lebih jarang (1-2 arkade), tidak ada Plaque Peyer. Ileum: vasa recta pendek, arkade kompleks (>2), memiliki Plaque Peyer yang jelas.",
+        src: "PPT Asdos Anatomi 2020, Intestinum Tenue. Slide 10"
+    },
+    {
+        q: "Enzim proteolitik pankreas pertama kali diaktivasi oleh...",
+        o: ["Enterokinase", "Pepsin", "Bikarbonat", "Disakaridase", "Lipase"],
+        a: "Enterokinase",
+        exp: "<strong>Enterokinase (Enteropeptidase)</strong>, diproduksi oleh epitel duodenum, memotong tripsinogen → tripsin. Tripsin aktif ini kemudian mengaktifkan semua enzim pankreas lainnya (kimotripsinogen, proelastase, prokarboksipeptidase). Enterokinase adalah 'master activator' pertama.",
+        src: "PPT dr Wiwiek, Fisiologi Gastrointestinal III"
+    },
+    {
+        q: "Berikut BENAR mengenai PROSES DEFEKASI...",
+        o: ["Penutupan glottis oleh cabang truncus sympaticus", "Relaksasi ambin puborectal oleh saraf somatik", "Peningkatan peristaltik colon sigmoid oleh nn. splanchnicus lumbalis", "Relaksasi m. sphincter ani externus oleh nn. splanchnicus pelvicus", "Relaksasi m. sphincter ani internus oleh n. rectalis inferior"],
+        a: "Relaksasi ambin puborectal oleh saraf somatik",
+        exp: "Saat defekasi terjadi: M. puborectalis (otot lurik/rangka, saraf somatik n. pudendus) mengalami <strong>relaksasi volunter</strong>, sehingga sudut anorektal membuka lurus. Bersamaan, peningkatan tekanan intraabdomen (manuver Valsalva), dan relaksasi m. sphincter ani eksternus.",
+        src: "PPT Anatomi, proses defekasi"
+    },
+    {
+        q: "Seorang mahasiswa kedokteran diberikan preparat mikroskop. Mukosa dan sub mukosa tidak terlihat jelas, hanya tampak muskularis tebal dengan serat otot lurik. Preparat tersebut kemungkinan biopsi dari daerah mana?",
+        o: ["Sphincter pylorus", "Esofagus", "Kolon", "Korpus gaster", "Ileum"],
+        a: "Esofagus",
+        exp: "Lapisan muskularis <strong>Esofagus</strong> unik: 1/3 proksimal = otot lurik murni, 1/3 tengah = campuran otot lurik dan polos, 1/3 distal = otot polos murni. Preparat dengan otot lurik tebal tanpa gambaran mukosa yang jelas mengarah ke biopsi bagian proksimal <strong>esofagus</strong>.",
+        src: "PPT Histologi GI, Esofagus"
+    },
+    {
+        q: "Selama seminar, Anda diminta membahas kekebalan humoral di saluran GI. Sel plasma di lamina propria terutama mensekresi imunoglobulin kelas apa?",
+        o: ["IgA", "IgD", "IgE", "IgG", "IgM"],
+        a: "IgA",
+        exp: "<strong>IgA Sekretori (sIgA)</strong> adalah imunoglobulin dominan di saluran GI. Diproduksi oleh sel plasma di lamina propria, sIgA ditransportasikan melalui sel epitel ke lumen usus untuk mengikat patogen dan toxin, mencegah adhesi kuman ke mukosa (immune exclusion).",
+        src: "PPT Histologi GI, Intestinal mucosa"
+    },
+    {
+        q: "Berikut adalah benar mengenai MESENTERIUM...",
+        o: ["Merupakan bagian dari peritoneum parietal", "Merupakan struktur yang berbeda dengan mesocolon", "Merupakan pelipatan dari peritoneum", "Melingkupi seluruh organ traktus digestivus", "Tidak mengandung pembuluh darah"],
+        a: "Merupakan pelipatan dari peritoneum",
+        exp: "Mesenterium adalah <strong>pelipatan ganda peritoneum visceral</strong> yang menggantung usus halus ke dinding posterior abdomen. Mesenterium mengandung pembuluh darah, limfatik, dan saraf. Mesocolon adalah versi mesenterium untuk kolon (struktur yang SAMA, bukan berbeda).",
+        src: "PPT dr Sesa. Slide 110"
+    },
+    {
+        q: "Pengeluaran sekretin dirangsang oleh...",
+        o: ["pH di duodenum yang rendah", "Osmolaritas chimus yang tinggi", "Distensi duodenum", "Adanya asam lemak bebas di duodenum", "Adanya asam amino di duodenum"],
+        a: "pH di duodenum yang rendah",
+        exp: "Stimulus utama sekresin adalah <strong>pH rendah (asam) di duodenum</strong> akibat masuknya kimus asam dari lambung. Sekretin lalu merangsang sel duktus pankreas → sekresi bikarbonat (menetralkan asam), dan menghambat sekresi gastrin.",
+        src: "PPT dr Wiwiek, Fisiologi Gastrointestinal II. Slide 32"
+    },
+    {
+        q: "Substansi berikur manakah yang dapat menstimulasi sekresi komponen enzimatik getah pankreas?",
+        o: ["Ion H dalam kimus", "Disakarida dalam kimus", "Peptida dalam kimus", "Polisakarida dalam kimus", "pH kimus yang rendah"],
+        a: "Peptida dalam kimus",
+        exp: "Sekresi enzimatik pankreas distimulasi oleh <strong>CCK</strong>, yang dilepaskan sel I duodenum ketika mendeteksi <strong>asam amino/peptida kecil dan asam lemak</strong> dalam kimus. Ion H (pH rendah) merangsang sekresi komponen aqueous (bikarbonat) oleh sekretin, bukan komponen enzimatik.",
+        src: "PPT dr Wiwiek, Fisiologi Gastrointestinal III. Slide 8"
+    },
+    {
+        q: "Pada saat menelan, akses menuju nasopharynx perlu ditutup. Struktur apa yang menutup nasopharynx pada saat menelan?",
+        o: ["Palatum molle", "Palatum durum", "Diaphragma oris", "Epiglottis", "Arcus palatopharynx"],
+        a: "Palatum molle",
+        exp: "Saat fase faring menelan, <strong>palatum molle (velum) terangkat ke atas dan posterior</strong> untuk menutup nasofaring, mencegah makanan masuk ke rongga hidung (nasal regurgitation). Epiglotis menutup laring (bukan nasofaring) untuk mencegah aspirasi ke paru.",
+        src: "PPT dr Wiwiek, Fisiologi Gastrointestinal I. Slide 31"
+    },
+    {
+        q: "Bilirubin yang dioksidasi oleh bakteri di usus menjadi pigmen warna pada feses adalah...",
+        o: ["Urobilinogen", "Urobilin", "Stercobilinogen", "Stercobilin", "Biliverdin"],
+        a: "Stercobilin",
+        exp: "Jalur metabolisme: Bilirubin terkonjugasi → usus → bakteri → Stercobilinogen (tidak berwarna) → dioksidasi → <strong>Stercobilin</strong> (pigmen cokelat, warna normal feses). Sebagian urobilinogen diabsorbsi kembali → hepar → urin → urobilin (warna urin kuning).",
+        src: "PPT Bu Synta, Enzim pencernaan dan bilirubin. Slide 38"
+    },
+    {
+        q: "Proses manakah yang sesuai pada saat seseorang berpuasa?",
+        o: ["Sintesis lipid", "Glikogenolisis", "Glikogenesis", "Lipogenesis", "Sintesis kilomikron"],
+        a: "Glikogenolisis",
+        exp: "Saat puasa: kadar glukosa turun → glukagon dominan. Glukagon mengaktifkan <strong>glikogenolisis</strong> (pemecahan glikogen hepar → glukosa) dan <strong>glukoneogenesis</strong> untuk mempertahankan kadar glukosa darah. Lipogenesis dan glikogenesis terjadi saat kenyang/termasuk insulin tinggi.",
+        src: "PPT dr Wiwiek, Metabolisme & Bioenergi. Slide 12"
+    },
+    {
+        q: "Pasca scaling, Ny. A mengeluhkan gigi goyang. Kondisi gigi goyang ini disebabkan karena kelainan pada struktur...",
+        o: ["Jaringan penyokong gigi", "Gingiva", "Tulang alveolar", "Jaringan ikat periodontal", "Dentin"],
+        a: "Jaringan ikat periodontal",
+        exp: "<strong>Ligamen periodontal</strong> adalah jaringan ikat serabut yang mengikat sementum akar gigi ke tulang alveolar soketnya. Scaling yang agresif atau peradangan periodontal kronis dapat merusak ligamen ini, menyebabkan gigi menjadi goyang (tidak tercengkeram kuat).",
+        src: "PPT Anatomi Gigi, Tooth Structure"
+    },
+    {
+        q: "Berikut adalah karakteristik esofagus yang benar...",
+        o: ["Memiliki panjang sama dengan trakea", "Seluruhnya berupa otot polos", "Berada pada posterior terhadap trakea", "Bersilangan dengan a. carotis", "Menghubungkan antara laryngopharynx dengan pylorus"],
+        a: "Berada pada posterior terhadap trakea",
+        exp: "Esofagus memang berada di <strong>posterior trakea</strong> (di belakang trakea). Sintopi esofagus: anterior = trakea (cervical), posterior = vertebra torakal. Esofagus menghubungkan laringofaring dengan <em>kardia lambung</em> (bukan pylorus). Panjangnya ~25 cm.",
+        src: "Modul Anatomi Hal 18"
+    },
+    {
+        q: "Manakah pernyataan berikut yang benar tentang fase intestinal?",
+        o: ["Berfungsi mengatur kecepatan kimus masuk ke duodenum", "Melibatkan reflex enterogastric yang ditimbulkan oleh distensi gaster", "Terjadi sekresi CCK, sekretin dan histamin", "Terjadi peningkatan sekresi HCL", "Terjadi kontraksi sphincter oddi"],
+        a: "Berfungsi mengatur kecepatan kimus masuk ke duodenum",
+        exp: "Tujuan utama fase intestinal adalah <strong>mencegah duodenum kelebihan muatan</strong> dari lambung. CCK dan Sekretin diproduksi di duodenum dan bekerja menghambat motilitas dan sekresi lambung, sehingga kimus masuk ke duodenum secara bertahap dan teratur.",
+        src: "PPT dr Wiwiek, Fisiologi Gastrointestinal II"
+    },
+    {
+        q: "Pada diare sekretorik akibat kolera, terjadi peningkatan sekresi cairan dan elektrolit ke dalam lumen usus. Struktur di bawah ini yang mengatur fungsi sekretorik mukosa usus adalah...",
+        o: ["Pleksus meissner", "Pleksus aurbach", "Saraf parasimpatis", "Saraf simpatis", "Saraf sensorik"],
+        a: "Pleksus meissner",
+        exp: "<strong>Pleksus Meissner (Submukosa)</strong> terutama mengontrol <strong>sekresi dan absorbsi</strong> mukosa GI. Toksin kolera mengaktifkan adenilat siklase secara berlebihan → cAMP sangat tinggi → saluran Cl- terbuka terus → sekresi massif cairan. Pleksus Auerbach (Myentericus) mengontrol motilitas.",
+        src: "PPT Fisiologi GI"
+    },
+    {
+        q: "Berikut termasuk organ intraperitoneum...",
+        o: ["Appendix", "Duodenum pars descenden", "Ren", "Colon ascenden", "Colon descenden"],
+        a: "Appendix",
+        exp: "Organ <strong>intraperitoneal</strong> (punya mesenteri): Gaster, Jejunum, Ileum, Cecum, <strong>Appendix</strong>, Transverse colon, Sigmoid colon, Liver, Kantung empedu, Limpa. Retroperitoneal (tidak punya mesenteri): Ginjal, Duodenum pars 2-4, Colon ascenden & descenden, Pankreas, Rektum.",
+        src: "PPT dr Sesa. Slide 112"
+    },
+    {
+        q: "Vitamin yang berperan sebagai prekursor koenzim A yang dibutuhkan untuk aktivasi residu asil dalam metabolisme lipid adalah...",
+        o: ["Asam pentoneat", "Niasin", "Folat", "Riboflavin", "Tiamin"],
+        a: "Asam pentoneat",
+        exp: "<strong>Asam Pantotenat (Vitamin B5)</strong> adalah prekursor Koenzim A (CoA). CoA sangat penting dalam metabolisme lipid (beta-oksidasi, sintesis asam lemak), metabolisme karbohidrat (piruvat → asetil-KoA), dan siklus Krebs.",
+        src: "PPT Bu Synta, Metabolisme Vitamin & Mineral. Slide 25"
+    },
+    {
+        q: "Seorang dokter memeriksa bagian abdomen pasien dan menemukan nyeri pada bagian epigastrik. Organ apa yang terletak pada regio tersebut?",
+        o: ["Gaster", "Pankreas", "Ileum", "Jejunum", "Caecum"],
+        a: "Gaster",
+        exp: "Regio <strong>Epigastrik</strong> berisi: Gaster, sebagian hati, duodenum, pankreas, aorta abdominalis. <strong>Gaster</strong> adalah organ utama di regio epigastrik. Nyeri epigastrik sering berasal dari gaster (ulkus peptikum, gastritis, GERD).",
+        src: "PPT Anatomi Abdomen"
+    },
+    {
+        q: "Traktus GI secara klinis dibedakan menjadi traktus GI superior dan inferior. Struktur apa yang membagi traktus tersebut?",
+        o: ["Diaphragma", "Pylorus", "Ampulla Vater", "Ligamentum suspensorium duodeni", "Valvula Ileocaecal"],
+        a: "Ligamentum suspensorium duodeni",
+        exp: "<strong>Ligamentum Suspensorium Duodeni (Ligamentum Treitz)</strong> adalah penanda klinis penting yang memisahkan GI superior (esofagus hingga duodenojejunal junction) dari GI inferior (jejunum ke bawah). Penting dalam menentukan asal perdarahan GI (hematemesis vs hematokezia).",
+        src: "PPT Asdos Anatomi 2020, Intestinum Tenue. Slide 7"
+    },
+    {
+        q: "Berikut adalah organ yang TIDAK mengakibatkan impressio pada hepar...",
+        o: ["Gaster", "Ren dextra", "Pankreas", "Duodenum", "Vesica felea"],
+        a: "Pankreas",
+        exp: "Permukaan viseral hepar memiliki cekungan (impressio) dari organ-organ yang berkontak dengannya: Gaster (gastric impression), Ginjal kanan/Ren dextra (renal impression), Duodenum (duodenal impression), Kolon (colic impression), Suprarenal kanan. <strong>Pankreas</strong> tidak berkontak langsung dengan hepar (terpisah jauh).",
+        src: "PPT dr Sesa. Slide 98"
+    },
+    {
+        q: "Berikut BENAR mengenai vaskularisasi tractus digestorium pada kepala dan leher (soal 82)...",
+        o: ["Obstruksi pangkal a. lingualis profunda bilateral menyebabkan infark pada radix lingua", "Infark corpus lingua pada obstruksi a. lingualis profunda unilateral dapat dihindari karena adanya sistem kolateral pada apex lingua", "A. pharyngeal ascenden merupakan cabang dari a. thyroidea inferior", "A. mentalis merupakan anastomoses a. alveolaris inferior dengan a. lingualis", "A. alveolaris superior dicabangkan dari a. maxillaris externa"],
+        a: "Obstruksi pangkal a. lingualis profunda bilateral menyebabkan infark pada radix lingua",
+        exp: "A. lingualis profunda adalah cabang terminal a. lingualis yang mensuplai bagian apex dan corpus lidah. Obstruksi bilateral (kedua sisi) pada pangkal a. lingualis profunda akan menyebabkan iskemia/infark pada <strong>radix lingua</strong> (akar lidah) karena tidak ada jalur kolateral.",
+        src: "PPT Anatomi Vaskularisasi Kepala"
+    },
+    {
+        q: "Fungsi dari sel yang diberi label 'D' (Sel Kuppfer) pada gambar adalah...",
+        o: ["Memproduksi empedu", "Penyimpanan empedu", "Penyimpanan vitamin A", "Fagositosis eritrosit yang sudah tua", "Metabolisme karbohidrat dan protein"],
+        a: "Fagositosis eritrosit yang sudah tua",
+        exp: "<strong>Sel Kuppfer</strong> adalah makrofag residen hati yang berasal dari monosit. Fungsi utamanya: (1) Fagositosis eritrosit tua/rusak dan debris selular, (2) membersihkan bakteri dari darah portal, (3) memetabolisme heme dari eritrosit menjadi bilirubin.",
+        src: "PPT Histologi Hepar"
+    },
+    {
+        q: "Struktur yang diberi tanda merah pada gambar (kelenjar lambung) menghasilkan...",
+        o: ["Asam", "Mukus dan HCO3", "Pepsinogen", "Lisozim", "Enterokinase"],
+        a: "Mukus dan HCO3",
+        exp: "<strong>Sel mucous neck cells</strong> dan surface mucous cells menghasilkan <strong>mukus dan bikarbonat (HCO3-)</strong> yang membentuk lapisan pelindung mukosa lambung dari asam dan pepsin. Sel chief menghasilkan pepsinogen. Sel parietal menghasilkan HCl dan IF.",
+        src: "PPT Histologi GI, Gastric secretion"
+    },
+    {
+        q: "Fungsi sel M pada sediaan usus adalah...",
+        o: ["Ambilan antigen", "Transport cairan", "Sekresi gastrin", "Pelepasan Histamin", "Kemoresepsi"],
+        a: "Ambilan antigen",
+        exp: "<strong>Sel M (Microfold cells)</strong> adalah sel epitel khusus yang melapisi Plaque Peyer di ileum. Fungsinya adalah <em>sampling/ambilan antigen</em> dari lumen usus (endositosis), lalu mempresentasikannya ke limfosit di bawahnya untuk respons imun mukosa.",
+        src: "PPT Histologi traktus GI. Slide 88"
+    },
+    {
+        q: "Lipoprotein particles contain the nonpolar lipid core...",
+        o: ["Triacylglycerol", "Cholesteryl ester", "Apoprotein integral", "A dan B benar", "Semua benar"],
+        a: "A dan B benar",
+        exp: "<strong>Inti nonpolar lipoprotein</strong> (nonpolar lipid core) terdiri dari: (1) <strong>Triasilgliserol (TG)</strong> dan (2) <strong>Cholesteryl ester</strong>. Keduanya sangat hidrofobik sehingga dikemas di bagian inti partikel. Apoprotein dan fosfolipid membentuk lapisan luar (amphipathic shell).",
+        src: "PPT dr Alfi, Biokimia Lipid. Slide 20"
+    },
+    {
+        q: "Seorang wanita 22 tahun dengan kista transparan kebiruan di bibir bawah bagian dalam. Biopsi: rongga kistik berisi mukus dikelilingi jaringan granulasi. Kelainan pada struktur apa yang menyebabkan lesi kistik ini?",
+        o: ["Pembuluh darah di lamina propria", "Pembuluh darah besar di submukosa", "Pembuluh limfatik", "Kelenjar saliva minor", "Kelenjar sublingual"],
+        a: "Kelenjar saliva minor",
+        exp: "Deskripsi ini khas untuk <strong>Mucocele</strong> — kista mukus akibat tersumbat atau rupturnya <strong>kelenjar saliva minor</strong> di bibir bawah. Mukus yang bocor ke jaringan sekitar menyebabkan reaksi granulomatosa. Kelenjar saliva minor tersebar di mukosa bibir, pipi, dan palatum.",
+        src: "PPT Histologi GI"
+    },
+    {
+        q: "Sisi garam empedu yang berikatan dengan lemak bersifat...",
+        o: ["Hidrofobik", "Hidrofilik", "Basa", "Amfipartik", "Asam"],
+        a: "Hidrofobik",
+        exp: "Garam empedu bersifat <strong>amfipatik</strong> — memiliki dua sisi: sisi <strong>hidrofobik</strong> (steroidal, berikatan dengan lemak/lipid) dan sisi <strong>hidrofilik</strong> (gugus hidroksil, berikatan dengan air). Sifat amfipatik ini memungkinkan garam empedu mengatur antarmuka air-lemak untuk emulsifikasi.",
+        src: "PPT dr Wiwiek, Fisiologi Gastrointestinal III. Slide 17"
+    },
+    {
+        q: "The 48-year-old woman with Sjogren syndrome and parotid gland biopsy shows damage to acinar cells and striated ducts. Resorption of which will be most altered by destruction of those ducts?",
+        o: ["Na+", "H2O", "HCO3-", "Cl-", "Ca2+"],
+        a: "Na+",
+        exp: "<strong>Striated ducts (duktus bergaris)</strong> pada kelenjar saliva bertugas memodifikasi komposisi saliva primer: terutama mereabsorbsi <strong>Na+</strong> (dan Cl-) dari lumen kembali ke darah, dan mengekskresikan K+ dan HCO3-. Kerusakan duktus bergaris akan mengganggu reabsorbsi Na+ paling signifikan.",
+        src: "PPT Histologi Kelenjar Saliva"
+    },
+    {
+        q: "Transport of fatty acids from adipose tissue to other tissue for metabolism is primarily a function of which of the following compounds?",
+        o: ["Chylomicrons", "α-lipoprotein", "β-lipoprotein", "Plasmalogenesis", "Albumin"],
+        a: "Albumin",
+        exp: "<strong>Albumin</strong> adalah protein plasma utama yang mengangkut <em>asam lemak bebas (Free Fatty Acids/FFA)</em> dari jaringan adiposa ke jaringan lain (jantung, otot, hepar) untuk β-oksidasi. Kilomikron mengangkut lipid dari usus. VLDL mengangkut TG dari hepar.",
+        src: "PPT Biokimia Lipid"
+    }
+];
+
+// ═══════════════════════════════════════════════════════
+//  GAME LOGIC
+// ═══════════════════════════════════════════════════════
+let currentIdx = 0;
+let score = 0;
+let mode = '';
+let userAnswers = [];
+let drillInterval = null;
+
+const LETTERS = ['A','B','C','D','E'];
+
+const startScreen = document.getElementById('start-screen');
+const quizScreen = document.getElementById('quiz-screen');
+const resultScreen = document.getElementById('result-screen');
+const qText = document.getElementById('question-text');
+const optContainer = document.getElementById('options-container');
+const feedbackArea = document.getElementById('feedback-area');
+const btnNext = document.getElementById('btn-next');
+const btnPrev = document.getElementById('btn-prev');
+const btnFinish = document.getElementById('btn-finish');
+
+document.getElementById('q-count-display').textContent = questions.length;
+document.getElementById('total-q').textContent = questions.length;
+
+function startQuiz(selectedMode) {
+    mode = selectedMode;
+    currentIdx = 0;
+    score = 0;
+    userAnswers = new Array(questions.length).fill(null);
+    document.body.classList.remove('drill-mode');
+    if (drillInterval) clearInterval(drillInterval);
+
+    startScreen.style.display = 'none';
+    resultScreen.style.display = 'none';
+    quizScreen.style.display = 'block';
+    loadQuestion();
+}
+
+function loadQuestion() {
+    const q = questions[currentIdx];
+    const progress = ((currentIdx) / questions.length) * 100;
+
+    document.getElementById('progress-fill').style.width = progress + '%';
+    document.getElementById('curr-q').textContent = currentIdx + 1;
+    document.getElementById('q-num-label').textContent = currentIdx + 1;
+
+    if (mode === 'exam') {
+        document.getElementById('score-display').textContent = 'EXAM MODE';
+    } else if (mode === 'drill') {
+        document.getElementById('score-display').textContent = 'DRILL: ' + score;
+    } else {
+        document.getElementById('score-display').textContent = 'Skor: ' + score;
+    }
+
+    qText.textContent = q.q;
+    feedbackArea.classList.remove('show');
+    document.getElementById('drill-warning').style.display = 'none';
+    optContainer.innerHTML = '';
+
+    q.o.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'opt-btn';
+        btn.innerHTML = `<span class="opt-letter">${LETTERS[idx]}</span><span class="opt-text">${opt}</span>`;
+
+        if (userAnswers[currentIdx]) {
+            btn.disabled = true;
+            if (opt === q.a && mode === 'practice') {
+                btn.classList.add('correct');
+                btn.innerHTML += '<span class="status-icon">✓</span>';
+            } else if (opt === userAnswers[currentIdx]) {
+                if (mode === 'practice' && opt !== q.a) {
+                    btn.classList.add('incorrect');
+                    btn.innerHTML += '<span class="status-icon">✗</span>';
+                } else {
+                    btn.classList.add('selected');
+                }
+            }
+        } else {
+            btn.onclick = () => selectAnswer(opt, q);
+        }
+        optContainer.appendChild(btn);
+    });
+
+    if (userAnswers[currentIdx] && mode === 'practice') {
+        showExplanation(q, userAnswers[currentIdx] === q.a);
+    }
+
+    btnPrev.disabled = currentIdx === 0;
+    if (currentIdx === questions.length - 1) {
+        btnNext.style.display = 'none';
+        btnFinish.style.display = 'flex';
+    } else {
+        btnNext.style.display = 'flex';
+        btnFinish.style.display = 'none';
+    }
+}
+
+function selectAnswer(ans, q) {
+    userAnswers[currentIdx] = ans;
+    const allBtns = optContainer.querySelectorAll('button');
+    allBtns.forEach(b => b.disabled = true);
+    const isCorrect = ans === q.a;
+
+    if (isCorrect) {
+        score++;
+        if (mode !== 'exam') {
+            allBtns.forEach(b => {
+                if (b.querySelector('.opt-text').textContent === ans) {
+                    b.classList.add('correct');
+                    b.innerHTML += '<span class="status-icon">✓</span>';
+                }
+            });
+        } else {
+            allBtns.forEach(b => {
+                if (b.querySelector('.opt-text').textContent === ans) b.classList.add('selected');
+            });
+        }
+    } else {
+        if (mode !== 'exam') {
+            allBtns.forEach(b => {
+                const t = b.querySelector('.opt-text').textContent;
+                if (t === ans) {
+                    b.classList.add('incorrect');
+                    b.innerHTML += '<span class="status-icon">✗</span>';
+                }
+                if (t === q.a) {
+                    b.classList.add('correct');
+                    b.innerHTML += '<span class="status-icon">✓</span>';
+                }
+            });
+        } else {
+            allBtns.forEach(b => {
+                if (b.querySelector('.opt-text').textContent === ans) b.classList.add('selected');
+            });
+        }
+    }
+
+    if (mode !== 'exam') {
+        document.getElementById('score-display').textContent = (mode === 'drill' ? 'DRILL: ' : 'Skor: ') + score;
+        showExplanation(q, isCorrect);
+    }
+
+    // DRILL SUDDEN DEATH
+    if (mode === 'drill' && !isCorrect) {
+        document.body.classList.add('drill-mode');
+        btnNext.style.display = 'none';
+        btnFinish.style.display = 'none';
+        btnPrev.disabled = true;
+
+        const warning = document.getElementById('drill-warning');
+        const timeSpan = document.getElementById('drill-time');
+        warning.style.display = 'block';
+        setTimeout(() => warning.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
+
+        let t = 10;
+        timeSpan.textContent = t;
+        if (drillInterval) clearInterval(drillInterval);
+        drillInterval = setInterval(() => {
+            t--;
+            timeSpan.textContent = t;
+            if (t <= 0) {
+                clearInterval(drillInterval);
+                restartDrillNow();
+            }
+        }, 1000);
+    }
+}
+
+function showExplanation(q, isCorrect) {
+    document.getElementById('exp-answer').innerHTML = (isCorrect ? '✓' : '✗') + ' Jawaban: <strong>' + q.a + '</strong>';
+    document.getElementById('exp-body').innerHTML = q.exp;
+    document.getElementById('exp-source').innerHTML = q.src ? '📚 ' + q.src : '';
+    feedbackArea.classList.add('show');
+    setTimeout(() => feedbackArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+}
+
+function nextQuestion() {
+    if (currentIdx < questions.length - 1) { currentIdx++; loadQuestion(); scrollToTop(); }
+}
+function prevQuestion() {
+    if (currentIdx > 0) { currentIdx--; loadQuestion(); scrollToTop(); }
+}
+function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function backToHome() {
+    if (drillInterval) clearInterval(drillInterval);
+    document.body.classList.remove('drill-mode');
+    quizScreen.style.display = 'none';
+    resultScreen.style.display = 'none';
+    startScreen.style.display = 'block';
+    scrollToTop();
+}
+function restartDrillNow() {
+    if (drillInterval) clearInterval(drillInterval);
+    document.body.classList.remove('drill-mode');
+    startQuiz('drill');
+    scrollToTop();
+}
+
+function finishQuiz() {
+    quizScreen.style.display = 'none';
+    resultScreen.style.display = 'block';
+    scrollToTop();
+
+    const pct = Math.round((score / questions.length) * 100);
+    document.getElementById('res-correct').textContent = score;
+    document.getElementById('res-wrong').textContent = questions.length - score;
+
+    let n = 0;
+    const el = document.getElementById('final-score');
+    const timer = setInterval(() => {
+        if (n >= pct) { el.textContent = pct; clearInterval(timer); }
+        else { el.textContent = ++n; }
+    }, 15);
+
+    let verdict = '';
+    if (pct >= 80) verdict = '🎉 Luar biasa! Pemahaman materi sangat baik. Pertahankan!';
+    else if (pct >= 65) verdict = '👍 Cukup baik! Ulas kembali soal yang salah dan persiapan akan semakin matang.';
+    else if (pct >= 50) verdict = '📚 Terus belajar! Masih banyak materi yang perlu diperkuat. Gunakan Study Mode.';
+    else verdict = '💪 Jangan menyerah. Pelajari penjelasan setiap soal di Study Mode. Kamu pasti bisa!';
+    document.getElementById('result-verdict').innerHTML = verdict;
+}
+</script>
+</body>
+</html>

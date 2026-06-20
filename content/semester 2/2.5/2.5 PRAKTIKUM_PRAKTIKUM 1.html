@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Am I Active? — Aktivitas Fisik Blok 2.5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4f8f4;--bg2:#eaf1ea;--bg3:#ddeadd;--bg4:#cddece;
+  --border:rgba(30,80,40,.10);--border2:rgba(30,80,40,.20);
+  --text:#111e13;--text2:#2d5232;--text3:#6b8f6e;
+  --green:#1a6e30;--greenbg:rgba(26,110,48,.09);--greenb:rgba(26,110,48,.25);
+  --gold:#7a6010;--goldbg:rgba(122,96,16,.09);--goldb:rgba(122,96,16,.28);
+  --red:#b03030;--redbg:rgba(176,48,48,.08);--redb:rgba(176,48,48,.25);
+  --blue:#1a4faa;--bluebg:rgba(26,79,170,.09);--blueb:rgba(26,79,170,.28);
+  --purp:#4433a0;--purpbg:rgba(68,51,160,.08);--purpb:rgba(68,51,160,.25);
+  --teal:#136ba8;--tealbg:rgba(19,107,168,.08);--tealb:rgba(19,107,168,.25);
+  --r:10px;--rl:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.6;min-height:100vh}
+.app{max-width:900px;margin:0 auto;padding:0 16px 60px}
+header{padding:40px 0 28px;text-align:center}
+.eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--text3);text-transform:uppercase;margin-bottom:10px}
+h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(30px,6vw,54px);letter-spacing:-.03em;line-height:1;margin-bottom:10px}
+h1 span{color:var(--green)}
+.sub{font-size:13px;color:var(--text2);max-width:500px;margin:0 auto}
+.main-tabs{display:flex;gap:3px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:24px}
+.main-tab{flex:1;padding:9px 6px;border-radius:9px;border:none;background:transparent;color:var(--text3);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .18s}
+.main-tab:hover{color:var(--text)}
+.main-tab.active{background:var(--text);color:#fff;font-weight:600}
+.main-panel{display:none}
+.main-panel.active{display:block;animation:fi .2s ease}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.sub-tabs{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:4px;margin-bottom:20px}
+.sub-tab{padding:8px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text3);font-family:'DM Mono',monospace;font-size:10.5px;cursor:pointer;transition:all .18s;text-align:center;line-height:1.4}
+.sub-tab:hover{background:var(--bg3);color:var(--text2);border-color:var(--border2)}
+.sub-tab.active{background:var(--text);color:#fff;border-color:var(--text);font-weight:600}
+.sub-panel{display:none}
+.sub-panel.active{display:block;animation:fi .18s ease}
+.sec-h{font-family:'Syne',sans-serif;font-weight:700;font-size:14.5px;color:var(--text);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.divider{height:1px;background:var(--border);margin:20px 0}
+.note{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:0 var(--r) var(--r) 0;padding:10px 14px;font-size:12.5px;color:var(--text2);line-height:1.65;margin-bottom:10px}
+.note strong{color:var(--text)}
+.note.blue{border-left-color:var(--blue)}
+.note.green{border-left-color:var(--green)}
+.note.red{border-left-color:var(--red)}
+.note.purp{border-left-color:var(--purp)}
+.note.teal{border-left-color:var(--teal)}
+.dtable-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:14px}
+.dtable-wrap table{width:100%;border-collapse:collapse;font-size:12px}
+.dtable-wrap thead tr{background:var(--bg3)}
+.dtable-wrap th{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.05em;color:var(--text3);font-weight:600;padding:8px 12px;text-align:left;border-bottom:1px solid var(--border)}
+.dtable-wrap td{padding:7px 12px;border-bottom:1px solid var(--border);font-family:'DM Mono',monospace;font-size:11px;color:var(--text2)}
+.dtable-wrap td:first-child{color:var(--text);font-weight:600}
+.dtable-wrap tr:last-child td{border-bottom:none}
+.dtable-wrap tr:nth-child(even){background:rgba(30,80,40,.02)}
+.formula{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;font-family:'DM Mono',monospace;font-size:12px;color:var(--text);margin:8px 0;line-height:1.8}
+.formula .fkey{color:var(--text3);margin-right:6px}
+.ind-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:4px}
+.ind-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;position:relative;overflow:hidden}
+.ind-card .stripe{position:absolute;top:0;left:0;width:3px;height:100%}
+.ind-card .ind-name{font-family:'Syne',sans-serif;font-size:12.5px;font-weight:700;margin-bottom:6px}
+.ind-card .ind-desc{font-size:12px;color:var(--text2);margin-bottom:8px;line-height:1.6}
+.ind-table{width:100%;border-collapse:collapse}
+.ind-table td{font-family:'DM Mono',monospace;font-size:10.5px;padding:3px 0;border-bottom:1px solid var(--border)}
+.ind-table tr:last-child td{border-bottom:none}
+.ind-table td:first-child{color:var(--text3);width:140px}
+.ind-table td:last-child{font-weight:600;color:var(--text)}
+/* QUIZ */
+.qconfig{text-align:center;padding:28px 0}
+.qconfig-title{font-family:'Syne',sans-serif;font-weight:700;font-size:18px;margin-bottom:6px}
+.qconfig-sub{font-size:13px;color:var(--text2);margin-bottom:22px}
+.cfg-grid{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:26px}
+.cfg-btn{padding:8px 16px;border-radius:20px;border:2px solid var(--border2);background:var(--bg2);color:var(--text3);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;transition:all .18s}
+.cfg-btn:hover{color:var(--text2)}
+.cfg-btn.sel{background:var(--text);color:#fff;border-color:var(--text);font-weight:600}
+.start-btn{padding:12px 34px;border-radius:var(--r);border:none;background:var(--text);color:var(--bg);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.02em;transition:all .18s}
+.start-btn:hover{background:var(--green)}
+.qheader{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.qnum-display{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);white-space:nowrap}
+.qnum-display strong{color:var(--text);font-size:15px}
+.qscore-display{margin-left:auto;font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);white-space:nowrap}
+.qscore-display strong{color:var(--green);font-size:15px}
+.qtype-pill{display:inline-block;padding:3px 10px;border-radius:10px;font-family:'DM Mono',monospace;font-size:10px;font-weight:600}
+.qcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:20px 22px;margin-bottom:12px}
+.qscen{font-size:13px;color:var(--text2);margin-bottom:10px;line-height:1.65}
+.qdata{font-family:'DM Mono',monospace;font-size:12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:12px;line-height:2}
+.qdata .dv{font-weight:700;color:var(--text)}
+.qdata .da{font-size:10.5px;color:var(--text3);margin-left:4px}
+.qtext{font-size:14px;font-weight:600;color:var(--text);line-height:1.55}
+.opts{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.opt{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-radius:var(--r);border:1.5px solid var(--border2);background:var(--bg);color:var(--text);text-align:left;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.5;transition:all .15s;width:100%}
+.opt:hover:not(:disabled){background:var(--bg3);border-color:rgba(30,80,40,.3)}
+.opt:disabled{cursor:default}
+.opt-key{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;min-width:22px;height:22px;border-radius:6px;background:var(--bg3);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;color:var(--text3);transition:all .15s}
+.opt.correct{background:var(--bluebg);border-color:var(--blueb)}
+.opt.correct .opt-key{background:var(--blue);color:#fff;border-color:var(--blue)}
+.opt.wrong{background:var(--redbg);border-color:var(--redb)}
+.opt.wrong .opt-key{background:var(--red);color:#fff;border-color:var(--red)}
+.opt.reveal{background:var(--bluebg);border-color:var(--blueb);opacity:.75}
+.opt.reveal .opt-key{background:var(--blue);color:#fff;border-color:var(--blue)}
+.expbox{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:12px;font-size:12.5px;color:var(--text2);line-height:1.72;display:none}
+.expbox.show{display:block;animation:fi .2s ease}
+.expbox strong{color:var(--text)}
+.actrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.next-btn{padding:10px 24px;border-radius:var(--r);border:none;background:var(--text);color:var(--bg);font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .18s;display:none}
+.next-btn:hover{background:var(--green)}
+.end-btn{padding:10px 18px;border-radius:var(--r);border:1px solid var(--redb);background:transparent;color:var(--red);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;transition:all .18s;margin-left:auto}
+.end-btn:hover{background:var(--redbg)}
+.results-wrap{text-align:center;padding:28px 12px}
+.res-big{font-family:'Syne',sans-serif;font-size:64px;font-weight:800;color:var(--text);line-height:1;margin-bottom:4px}
+.res-sub{font-family:'DM Mono',monospace;font-size:13px;color:var(--text3);margin-bottom:18px}
+.res-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:20px;text-align:left}
+.res-stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:11px 14px}
+.res-stat .rv{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--text);margin-bottom:2px}
+.res-stat .rl{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)}
+.retry-btn{padding:12px 32px;border-radius:var(--r);border:none;background:var(--text);color:var(--bg);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .18s;margin-bottom:20px}
+.retry-btn:hover{background:var(--green)}
+footer{text-align:center;padding-top:36px;font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="eyebrow">Aktivitas Fisik · Blok 2.5 · FK Unsoed · Departemen Fisiologi</div>
+  <h1>Am I <span>Active?</span></h1>
+  <p class="sub">Quiz Healthy Lifestyle & Health Promotion — definisi, klasifikasi, fisiologi, kalkulator RISKESDAS & Bouchard.</p>
+</header>
+
+<div class="main-tabs">
+  <button class="main-tab active" onclick="switchMain('materi',this)">📋 Materi</button>
+  <button class="main-tab" onclick="switchMain('quiz',this)">🎯 Quiz</button>
+</div>
+
+<!-- MATERI -->
+<div class="main-panel active" id="mp-materi">
+  <div class="sub-tabs">
+    <button class="sub-tab active" onclick="switchSub('s-def',this)">📖 Definisi &<br>Faktor</button>
+    <button class="sub-tab" onclick="switchSub('s-fisio',this)">💪 Perubahan<br>Fisiologi</button>
+    <button class="sub-tab" onclick="switchSub('s-mets',this)">📊 Klasifikasi<br>METs</button>
+    <button class="sub-tab" onclick="switchSub('s-riskesdas',this)">🧮 Kalkulator<br>RISKESDAS</button>
+    <button class="sub-tab" onclick="switchSub('s-bouchard',this)">📓 Diari<br>Bouchard</button>
+    <button class="sub-tab" onclick="switchSub('s-metode',this)">🔬 Metode<br>Pengukuran</button>
+  </div>
+
+  <!-- DEFINISI & FAKTOR -->
+  <div class="sub-panel active" id="s-def">
+    <div class="sec-h">Definisi & Faktor yang Mempengaruhi</div>
+    <div class="ind-grid">
+      <div class="ind-card">
+        <div class="stripe" style="background:var(--green)"></div>
+        <div class="ind-name" style="color:var(--green)">Aktivitas Fisik</div>
+        <div class="ind-desc">Pergerakan tubuh karena <strong>kontraksi otot</strong> yang berakibat pada peningkatan pengeluaran energi.</div>
+        <table class="ind-table">
+          <tr><td>Cakupan</td><td>Kerja, perjalanan, rumah, waktu luang</td></tr>
+          <tr><td>Komponen utama</td><td>Kontraksi otot → pengeluaran energi</td></tr>
+        </table>
+      </div>
+      <div class="ind-card">
+        <div class="stripe" style="background:var(--blue)"></div>
+        <div class="ind-name" style="color:var(--blue)">Latihan Fisik</div>
+        <div class="ind-desc">Pergerakan tubuh yang <strong>terencana, terstruktur, teratur</strong> — melibatkan fisik, psikis, dan keterampilan (ACSM, 2006).</div>
+        <table class="ind-table">
+          <tr><td>Sifat</td><td>Terencana + Terstruktur + Teratur</td></tr>
+          <tr><td>Komponen</td><td>Fisik + Psikis + Keterampilan</td></tr>
+          <tr><td>Sumber</td><td>ACSM Guidelines, 2006</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="sec-h" style="margin-top:16px">Faktor yang Mempengaruhi Aktivitas Fisik</div>
+    <div class="dtable-wrap"><table>
+      <thead><tr><th>Faktor</th><th>Keterangan</th></tr></thead>
+      <tbody>
+        <tr><td>Usia</td><td>Aktivitas cenderung menurun seiring bertambahnya usia</td></tr>
+        <tr><td>Jenis Kelamin</td><td>Laki-laki cenderung lebih aktif dibanding perempuan</td></tr>
+        <tr><td>Status Kesehatan</td><td>Gangguan kesehatan dapat mengurangi kemampuan beraktivitas</td></tr>
+        <tr><td>Tingkat Kebugaran</td><td>Makin tinggi kebugaran, makin aktif</td></tr>
+        <tr><td>Pengetahuan & Motivasi</td><td>Berperan penting dalam membentuk kebiasaan olahraga</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note red">⚠️ Ada <strong>5 faktor</strong> resmi: usia, jenis kelamin, status kesehatan, tingkat kebugaran, pengetahuan & motivasi. Status ekonomi TIDAK termasuk.</div>
+  </div>
+
+  <!-- FISIOLOGI -->
+  <div class="sub-panel" id="s-fisio">
+    <div class="sec-h">Perubahan Fisiologi Akibat Aktivitas Fisik</div>
+    <div class="note blue" style="margin-bottom:14px">Bedakan <strong>efek AKUT</strong> (saat/sesaat setelah latihan) vs <strong>efek KRONIS</strong> (adaptasi jangka panjang dari latihan rutin).</div>
+
+    <div class="ind-grid">
+      <div class="ind-card">
+        <div class="stripe" style="background:var(--green)"></div>
+        <div class="ind-name" style="color:var(--green)">Muskuloskeletal</div>
+        <table class="ind-table">
+          <tr><td>Akut</td><td>Kontraksi otot → suhu ↑ → vasodilatasi perifer + keringat</td></tr>
+          <tr><td>Kronis</td><td>Hipertrofi otot, stabilitas & fleksibilitas sendi ↑, kepadatan tulang ↑</td></tr>
+        </table>
+      </div>
+      <div class="ind-card">
+        <div class="stripe" style="background:var(--red)"></div>
+        <div class="ind-name" style="color:var(--red)">Kardiovaskular</div>
+        <table class="ind-table">
+          <tr><td>Akut</td><td>Stimulasi simpatis → HR ↑, kontraksi ↑, vasodilatasi otot aktif, vasokonstriksi organ lain</td></tr>
+          <tr><td>Kronis</td><td>Hipertrofi jantung → SV ↑, HR istirahat ↓, agregasi trombosit ↓ (risiko aterosklerosis ↓)</td></tr>
+        </table>
+      </div>
+      <div class="ind-card">
+        <div class="stripe" style="background:var(--blue)"></div>
+        <div class="ind-name" style="color:var(--blue)">Respirasi</div>
+        <table class="ind-table">
+          <tr><td>Akut</td><td>Volume tidal ↑ + RR ↑</td></tr>
+          <tr><td>Kronis</td><td>Otot diafragma & interkosta menguat, ventilasi paru saat istirahat ↑</td></tr>
+        </table>
+      </div>
+      <div class="ind-card">
+        <div class="stripe" style="background:var(--purp)"></div>
+        <div class="ind-name" style="color:var(--purp)">Saraf</div>
+        <table class="ind-table">
+          <tr><td>Kronis</td><td>Neurogenesis (cegah kerusakan saraf)</td></tr>
+          <tr><td>Kronis</td><td>Risiko depresi ↓ via endorfin & katekolamin</td></tr>
+        </table>
+      </div>
+      <div class="ind-card">
+        <div class="stripe" style="background:var(--gold)"></div>
+        <div class="ind-name" style="color:var(--gold)">Metabolisme Glukosa & Lemak</div>
+        <table class="ind-table">
+          <tr><td>Glukosa</td><td>Glikogenolisis ↑, glukoneogenesis ↑, sensitivitas insulin ↑</td></tr>
+          <tr><td>Lemak</td><td>Metabolisme lemak ↑, HDL ↑, LDL ↓</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="note red">⚠️ <strong>HR atlet ↓</strong> bukan karena simpatis kurang aktif, tapi karena hipertrofi jantung → SV ↑ → untuk cardiac output yang sama, HR bisa lebih rendah.</div>
+  </div>
+
+  <!-- KLASIFIKASI METs -->
+  <div class="sub-panel" id="s-mets">
+    <div class="sec-h">Klasifikasi Intensitas Aktivitas Fisik (METs)</div>
+    <div class="dtable-wrap"><table>
+      <thead><tr><th>Intensitas</th><th>METs</th><th>Contoh Aktivitas</th></tr></thead>
+      <tbody>
+        <tr><td>Rendah</td><td>&lt; 3,0 METs</td><td>Berjalan santai, mencuci piring, duduk membaca</td></tr>
+        <tr><td>Sedang</td><td>3,0 – 6,0 METs</td><td>Berjalan cepat, menyapu, yoga, bulu tangkis rekreasi</td></tr>
+        <tr><td>Tinggi</td><td>&gt; 6,0 METs</td><td>Jogging, lari, mendaki, futsal, push up, circuit training</td></tr>
+      </tbody>
+    </table></div>
+    <div class="sec-h" style="margin-top:16px">Klasifikasi Tingkat Aktivitas Fisik per Minggu</div>
+    <div class="dtable-wrap"><table>
+      <thead><tr><th>Tingkat</th><th>Total AF / Minggu</th></tr></thead>
+      <tbody>
+        <tr><td>Rendah</td><td>&lt; 150 menit</td></tr>
+        <tr><td>Sedang</td><td>150 – 300 menit</td></tr>
+        <tr><td>Tinggi</td><td>&gt; 300 menit</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note blue">📌 Bobot (B) RISKESDAS: Ringan = 1, Sedang = 2, Berat = 4. Gunakan ini untuk hitung total AF per minggu.</div>
+  </div>
+
+  <!-- RISKESDAS -->
+  <div class="sub-panel" id="s-riskesdas">
+    <div class="sec-h">Kuesioner RISKESDAS</div>
+    <div class="note green">Digunakan di Indonesia untuk survei tingkat aktivitas fisik secara nasional (Depkes RI, 2008).</div>
+    <div class="formula">
+      <div><span class="fkey">Rumus:</span> Jumlah AF = Σ (B × H × M)</div>
+      <div><span class="fkey">B</span> = Bobot intensitas (Ringan=1, Sedang=2, Berat=4)</div>
+      <div><span class="fkey">H</span> = Jumlah hari dalam seminggu</div>
+      <div><span class="fkey">M</span> = Menit beraktivitas per hari</div>
+    </div>
+    <div class="sec-h" style="font-size:13px;border:none;margin-bottom:6px;margin-top:8px">Contoh Soal</div>
+    <div class="note">Bu Katty: memasak 45 mnt/hari × 7 hari (ringan), bekerja di komputer 4 jam/hari × 5 hari (ringan), yoga 1 jam × Sabtu-Minggu (sedang).</div>
+    <div class="formula">
+      <div>Memasak (B=1): 1 × 7 × 45 = <strong>315</strong></div>
+      <div>Komputer (B=1): 1 × 5 × 240 = <strong>1200</strong></div>
+      <div>Yoga (B=2): 2 × 2 × 60 = <strong>240</strong></div>
+      <div>TOTAL = <strong>1755 menit → TINGGI</strong></div>
+    </div>
+  </div>
+
+  <!-- BOUCHARD -->
+  <div class="sub-panel" id="s-bouchard">
+    <div class="sec-h">Diari Aktivitas Fisik Bouchard</div>
+    <div class="note blue">Pencatatan selama <strong>3 hari</strong> (2 hari kerja + 1 hari libur), interval <strong>15 menit</strong>. 1 kolom menurun = 24 jam.</div>
+    <div class="formula">
+      <div><span class="fkey">Rumus:</span> Total energi = Σ (J × K)</div>
+      <div><span class="fkey">J</span> = Jumlah kotak per kategori</div>
+      <div><span class="fkey">K</span> = Koefisien energi (kcal/kg/15 menit)</div>
+    </div>
+    <div class="dtable-wrap"><table>
+      <thead><tr><th>Kat.</th><th>Contoh Aktivitas</th><th>Koefisien (kcal/kg/15 mnt)</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Berbaring, tidur, istirahat</td><td>0,26</td></tr>
+        <tr><td>2</td><td>Duduk (kelas, makan, menulis, membaca, TV, mandi)</td><td>0,38</td></tr>
+        <tr><td>3</td><td>Berdiri ringan (mencuci tubuh, bercukur, memasak, bersih-bersih)</td><td>0,57</td></tr>
+        <tr><td>4</td><td>Berpakaian, mandi shower, mengendarai mobil, jalan-jalan</td><td>0,70</td></tr>
+        <tr><td>5</td><td>Pekerjaan manual ringan (RT, berjalan agak cepat)</td><td>0,83</td></tr>
+        <tr><td>6</td><td>Olahraga ringan (kano, panahan, voli, golf, bersepeda santai)</td><td>1,00</td></tr>
+        <tr><td>7</td><td>Pekerjaan manual sedang (mesin, berkebun, kehutanan)</td><td>1,20</td></tr>
+        <tr><td>8</td><td>Olahraga sedang (badminton, bersepeda kompetisi, renang, jogging)</td><td>1,40</td></tr>
+        <tr><td>9</td><td>Manual berat / olahraga kompetisi (lari, tinju, basket, sepak bola, squash)</td><td>1,95</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note red">⚠️ Contoh: Kat-1: 30 kotak, Kat-2: 34, Kat-3: 4, Kat-4: 28 → (30×0,26)+(34×0,38)+(4×0,57)+(28×0,70) = 7,8+12,92+2,28+19,6 = <strong>42,6 kcal/kgBB</strong></div>
+  </div>
+
+  <!-- METODE -->
+  <div class="sub-panel" id="s-metode">
+    <div class="sec-h">Metode Pengukuran Aktivitas Fisik</div>
+    <div class="ind-grid">
+      <div class="ind-card">
+        <div class="stripe" style="background:var(--green)"></div>
+        <div class="ind-name" style="color:var(--green)">Metode Subjektif</div>
+        <table class="ind-table">
+          <tr><td>RISKESDAS</td><td>Kuesioner nasional Indonesia (B×H×M)</td></tr>
+          <tr><td>Diari Bouchard</td><td>3 hari, interval 15 mnt, Σ(J×K)</td></tr>
+          <tr><td>Observasi Langsung</td><td>Identifikasi faktor; berat di observer</td></tr>
+        </table>
+      </div>
+      <div class="ind-card">
+        <div class="stripe" style="background:var(--blue)"></div>
+        <div class="ind-name" style="color:var(--blue)">Metode Objektif</div>
+        <table class="ind-table">
+          <tr><td>Energi / O₂</td><td>Activity energy expenditure, MET</td></tr>
+          <tr><td>Denyut jantung</td><td>Net heart rate, PA level heart rate</td></tr>
+          <tr><td>Percepatan tubuh</td><td>Accelerometer</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="note purp">Observasi langsung lebih unggul dari kuesioner/diari karena bisa mengidentifikasi faktor yang mempengaruhi kebiasaan, tapi beban observer besar dan kurang cocok untuk <em>free living condition</em>.</div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div class="main-panel" id="mp-quiz">
+  <div id="qconfig" class="qconfig">
+    <div class="qconfig-title">Mulai Sesi Quiz</div>
+    <div class="qconfig-sub">Pilih topik (multi-pilih) — soal infinite sampai Akhiri Sesi</div>
+    <div class="cfg-grid" id="cfg-grid">
+      <button class="cfg-btn sel" data-type="definisi">Definisi & Faktor</button>
+      <button class="cfg-btn sel" data-type="fisio_akut">Fisiologi Akut</button>
+      <button class="cfg-btn sel" data-type="fisio_kronis">Fisiologi Kronis</button>
+      <button class="cfg-btn sel" data-type="mets">Klasifikasi METs</button>
+      <button class="cfg-btn sel" data-type="tingkat">Tingkat AF/Minggu</button>
+      <button class="cfg-btn sel" data-type="riskesdas">Kalkulator RISKESDAS</button>
+      <button class="cfg-btn sel" data-type="bouchard_kat">Kategori Bouchard</button>
+      <button class="cfg-btn sel" data-type="bouchard_hitung">Hitung Bouchard</button>
+      <button class="cfg-btn sel" data-type="metode">Metode Pengukuran</button>
+    </div>
+    <button class="start-btn" onclick="startSession()">Mulai →</button>
+  </div>
+  <div id="qactive" style="display:none">
+    <div class="qheader">
+      <div class="qnum-display">Soal ke-<strong id="qnum">1</strong></div>
+      <div id="qpill" class="qtype-pill"></div>
+      <div class="qscore-display"><strong id="qscore">0</strong> benar</div>
+    </div>
+    <div class="qcard">
+      <div id="qscen" class="qscen" style="display:none"></div>
+      <div id="qdata" class="qdata" style="display:none"></div>
+      <div id="qtext" class="qtext"></div>
+    </div>
+    <div class="opts" id="opts"></div>
+    <div class="expbox" id="expbox"></div>
+    <div class="actrow">
+      <button class="next-btn" id="nextbtn" onclick="nextQ()">Soal Berikutnya →</button>
+      <button class="end-btn" onclick="endSession()">Akhiri Sesi</button>
+    </div>
+  </div>
+  <div id="qresults" style="display:none">
+    <div class="results-wrap">
+      <div class="res-big" id="res-pct">—</div>
+      <div class="res-sub" id="res-sub">—</div>
+      <div class="res-grid" id="res-grid"></div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:20px">
+        <button class="retry-btn" style="margin-bottom:0" onclick="restartQuiz()">Coba Lagi</button>
+        <button class="retry-btn" style="margin-bottom:0;background:var(--green)" onclick="downloadCert()">⬇ Unduh Sertifikat</button>
+      </div>
+      <div class="dtable-wrap" style="margin-bottom:14px"><table><thead><tr><th>Topik</th><th>Soal</th><th>Benar</th></tr></thead><tbody id="res-bytype"></tbody></table></div>
+      <div class="dtable-wrap"><table><thead><tr><th>#</th><th>Soal (ringkas)</th><th>Jawaban Benar</th><th>Hasil</th></tr></thead><tbody id="res-tbody"></tbody></table></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div>am i active? · Aktivitas Fisik · Blok 2.5 · FK Unsoed · ACSM 2006 · Bouchard 1983</div>
+  <div style="margin-top:5px">crafted by alchemist4real · <a href="https://174-three.vercel.app" target="_blank" style="color:var(--text3);text-decoration:none;border-bottom:1px dashed var(--text3);transition:color .18s" onmouseover="this.style.color='var(--blue)'" onmouseout="this.style.color='var(--text3)'">check other quizzes → 174 archive ↗</a></div>
+</footer>
+</div>
+
+<script>
+// ═══ TABS ═══
+window.switchMain=function(id,b){document.querySelectorAll('.main-panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.main-tab').forEach(x=>x.classList.remove('active'));document.getElementById('mp-'+id).classList.add('active');b.classList.add('active');};
+window.switchSub=function(id,b){document.querySelectorAll('.sub-panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.sub-tab').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');b.classList.add('active');};
+
+// ═══ CONFIG ═══
+const activeTypes=new Set(['definisi','fisio_akut','fisio_kronis','mets','tingkat','riskesdas','bouchard_kat','bouchard_hitung','metode']);
+document.querySelectorAll('.cfg-btn').forEach(b=>{b.addEventListener('click',()=>{const t=b.dataset.type;if(activeTypes.has(t)){if(activeTypes.size===1)return;activeTypes.delete(t);b.classList.remove('sel');}else{activeTypes.add(t);b.classList.add('sel');}});});
+
+// ═══ UTILS ═══
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const shuf=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]];}return b;};
+const KEYS='ABCDE'.split('');
+const strip=s=>s.replace(/<[^>]*>/g,'');
+function makePicker(pool){let idx=[];return function(){if(idx.length>=pool.length)idx=[];const av=pool.map((_,i)=>i).filter(i=>!idx.includes(i));const si=rnd(av);idx.push(si);return pool[si];};}
+
+// ═══════════════════════════════════════
+// QUESTION BANKS
+// ═══════════════════════════════════════
+
+// 1. DEFINISI & FAKTOR
+const DEFINISI_POOL=[
+  {q:'Apa definisi aktivitas fisik yang tepat?',opts:['Olahraga terencana dan terstruktur','Pergerakan tubuh karena kontraksi otot yang meningkatkan pengeluaran energi','Latihan fisik yang dilakukan di waktu luang saja','Gerakan refleks yang tidak disengaja'],ans:'Pergerakan tubuh karena kontraksi otot yang meningkatkan pengeluaran energi',exp:'Aktivitas fisik = <strong>pergerakan tubuh akibat kontraksi otot → pengeluaran energi ↑</strong>. Meliputi kerja, perjalanan, rumah, dan waktu luang.'},
+  {q:'Yang membedakan <strong>latihan fisik</strong> dari aktivitas fisik umum adalah...',opts:['Latihan fisik hanya melibatkan otot besar','Latihan fisik bersifat terencana, terstruktur, teratur — melibatkan fisik, psikis, dan keterampilan','Latihan fisik tidak memerlukan keterampilan','Latihan fisik hanya dilakukan di gym'],ans:'Latihan fisik bersifat terencana, terstruktur, teratur — melibatkan fisik, psikis, dan keterampilan',exp:'Menurut <strong>ACSM, 2006</strong>: latihan fisik = terencana + terstruktur + teratur + melibatkan fisik, psikis, dan keterampilan.'},
+  {q:'Menurut ACSM 2006, latihan fisik harus memenuhi syarat...',opts:['Dilakukan minimal 1 jam sehari','Terencana, terstruktur, dan teratur','Harus dilakukan secara berkelompok','Hanya aktivitas kardiovaskular'],ans:'Terencana, terstruktur, dan teratur',exp:'<strong>ACSM 2006</strong>: latihan fisik = terencana + terstruktur + teratur + melibatkan komponen fisik, psikis, dan keterampilan.'},
+  {q:'Faktor mana yang TIDAK termasuk dalam faktor yang mempengaruhi aktivitas fisik?',opts:['Usia','Status ekonomi','Tingkat kebugaran','Pengetahuan dan motivasi'],ans:'Status ekonomi',exp:'Lima faktor resmi: usia, jenis kelamin, status kesehatan, tingkat kebugaran, pengetahuan & motivasi. <strong>Status ekonomi tidak termasuk</strong>.'},
+  {q:'Bagaimana hubungan usia dengan tingkat aktivitas fisik?',opts:['Aktivitas meningkat seiring usia','Aktivitas cenderung menurun seiring bertambahnya usia','Usia tidak mempengaruhi aktivitas','Aktivitas tertinggi pada lansia'],ans:'Aktivitas cenderung menurun seiring bertambahnya usia',exp:'Semakin bertambah usia, aktivitas fisik <strong>cenderung menurun</strong> akibat penurunan kapasitas aerobik, kekuatan otot, dan faktor psikososial.'},
+  {q:'Pernyataan yang benar tentang jenis kelamin dan aktivitas fisik adalah...',opts:['Perempuan lebih aktif dari laki-laki','Tidak ada perbedaan','Laki-laki cenderung lebih aktif dibanding perempuan','Perbedaan hanya pada usia >50 tahun'],ans:'Laki-laki cenderung lebih aktif dibanding perempuan',exp:'Secara umum, <strong>laki-laki cenderung lebih aktif</strong> dibanding perempuan — dipengaruhi faktor biologis, sosial, dan budaya.'},
+  {q:'Berapa total faktor yang mempengaruhi aktivitas fisik menurut modul?',opts:['3','4','5','6'],ans:'5',exp:'Lima faktor: <strong>usia, jenis kelamin, status kesehatan, tingkat kebugaran, pengetahuan & motivasi</strong>.'},
+  {q:'Aktivitas fisik mencakup aktivitas di...',opts:['Waktu luang saja','Tempat kerja saja','Tempat kerja, perjalanan, rumah, dan waktu luang','Gym dan lapangan olahraga saja'],ans:'Tempat kerja, perjalanan, rumah, dan waktu luang',exp:'Aktivitas fisik meliputi <strong>tempat kerja, perjalanan, rumah, dan waktu luang</strong> — bukan hanya olahraga formal.'},
+];
+const pickDefinisi=makePicker(DEFINISI_POOL);
+
+// 2. FISIOLOGI AKUT
+const FISIO_AKUT_POOL=[
+  {q:'Efek AKUT aktivitas fisik pada sistem muskuloskeletal adalah...',opts:['Hipertrofi otot','Kepadatan tulang meningkat','Kontraksi otot → suhu tubuh ↑ → vasodilatasi perifer + produksi keringat','Stabilitas persendian meningkat'],ans:'Kontraksi otot → suhu tubuh ↑ → vasodilatasi perifer + produksi keringat',exp:'Efek AKUT muskuloskeletal: kontraksi otot → <strong>suhu ↑ → vasodilatasi perifer + keringat</strong>. Hipertrofi adalah efek KRONIS.'},
+  {q:'Respon kardiovaskular AKUT saat aktivitas fisik adalah...',opts:['HR menurun, stroke volume meningkat','Hipertrofi otot jantung','Stimulasi simpatis → HR ↑, kontraksi ↑, vasodilatasi otot aktif, vasokonstriksi organ lain','Agregasi trombosit menurun'],ans:'Stimulasi simpatis → HR ↑, kontraksi ↑, vasodilatasi otot aktif, vasokonstriksi organ lain',exp:'Akut kardiovaskular: <strong>simpatis aktif → HR ↑ + kontraksi ↑ + vasodilatasi ke otot aktif + vasokonstriksi ke organ lain</strong> (redistribusi darah).'},
+  {q:'Perubahan respirasi AKUT saat aktivitas fisik meliputi...',opts:['Otot diafragma menguat secara permanen','Volume tidal ↑ dan laju napas (RR) ↑','Ventilasi paru saat istirahat meningkat','Kapasitas vital paru menurun'],ans:'Volume tidal ↑ dan laju napas (RR) ↑',exp:'Efek AKUT respirasi: <strong>volume tidal ↑ + RR ↑</strong> → ventilasi total meningkat untuk memenuhi kebutuhan O₂.'},
+  {q:'Vasodilatasi perifer saat aktivitas fisik akut berfungsi untuk...',opts:['Meningkatkan tekanan darah','Membuang panas tubuh yang dihasilkan kontraksi otot','Memperlambat denyut jantung','Meningkatkan resistensi vaskular perifer'],ans:'Membuang panas tubuh yang dihasilkan kontraksi otot',exp:'Kontraksi otot → suhu tubuh ↑ → <strong>vasodilatasi perifer + keringat</strong> = mekanisme termoregulasi untuk membuang panas.'},
+  {q:'Saat aktivitas fisik akut, organ selain otot aktif mengalami...',opts:['Vasodilatasi','Peningkatan aliran darah','Vasokonstriksi (redistribusi aliran darah)','Tidak ada perubahan'],ans:'Vasokonstriksi (redistribusi aliran darah)',exp:'Saat latihan: otot aktif → vasodilatasi; organ lain (ginjal, usus, dll) → <strong>vasokonstriksi</strong> agar darah diredistribusi ke otot yang bekerja.'},
+];
+const pickFisioAkut=makePicker(FISIO_AKUT_POOL);
+
+// 3. FISIOLOGI KRONIS
+const FISIO_KRONIS_POOL=[
+  {q:'Efek KRONIS aktivitas fisik pada muskuloskeletal yang benar adalah...',opts:['Vasodilatasi perifer saat istirahat','Produksi keringat meningkat permanen','Hipertrofi otot, stabilitas & fleksibilitas sendi ↑, kepadatan tulang ↑','Peningkatan suhu tubuh saat istirahat'],ans:'Hipertrofi otot, stabilitas & fleksibilitas sendi ↑, kepadatan tulang ↑',exp:'Efek KRONIS muskuloskeletal: <strong>hipertrofi otot + stabilitas & fleksibilitas sendi ↑ + kepadatan tulang ↑</strong>.'},
+  {q:'Mengapa atlet terlatih memiliki HR istirahat lebih rendah?',opts:['Massa jantung mereka lebih kecil','Hipertrofi jantung → stroke volume ↑ → untuk cardiac output sama, HR bisa lebih rendah','Mereka mengonsumsi obat penurun HR','Simpatis mereka tidak aktif'],ans:'Hipertrofi jantung → stroke volume ↑ → untuk cardiac output sama, HR bisa lebih rendah',exp:'Latihan kronis → <strong>hipertrofi jantung → SV ↑</strong>. Karena CO = HR × SV, untuk CO yang sama, HR bisa lebih rendah.'},
+  {q:'Efek KRONIS aktivitas fisik pada risiko aterosklerosis adalah...',opts:['Agregasi trombosit meningkat','Menurunkan agregasi trombosit → risiko aterosklerosis ↓','LDL meningkat, HDL menurun','Vasokonstriksi perifer permanen'],ans:'Menurunkan agregasi trombosit → risiko aterosklerosis ↓',exp:'Latihan kronis: <strong>agregasi trombosit ↓ → risiko aterosklerosis ↓</strong>. Juga: HDL ↑, LDL ↓.'},
+  {q:'Manfaat KRONIS aktivitas fisik pada sistem saraf adalah...',opts:['Sekresi kortisol meningkat permanen','Neurogenesis ↑ + risiko depresi ↓ via endorfin & katekolamin','Produksi asetilkolin berkurang','Risiko kerusakan saraf meningkat'],ans:'Neurogenesis ↑ + risiko depresi ↓ via endorfin & katekolamin',exp:'Efek KRONIS saraf: <strong>neurogenesis</strong> (pembentukan neuron baru) + <strong>endorfin & katekolamin ↑ → risiko depresi ↓</strong>.'},
+  {q:'Neurotransmiter yang berperan dalam efek antidepresan aktivitas fisik adalah...',opts:['GABA dan asetilkolin','Endorfin dan katekolamin','Histamin dan serotonin','Norepinefrin eksklusif'],ans:'Endorfin dan katekolamin',exp:'Aktivitas fisik → <strong>endorfin</strong> (euforik, analgetik) + <strong>katekolamin</strong> (norepinefrin, dopamin) → efek antidepresan alami.'},
+  {q:'Efek KRONIS aktivitas fisik pada metabolisme glukosa adalah...',opts:['Resistensi insulin meningkat','Glikogenolisis dihambat','Sensitivitas insulin ↑ + glikogenolisis ↑ + glukoneogenesis ↑','Pengeluaran energi saat istirahat menurun'],ans:'Sensitivitas insulin ↑ + glikogenolisis ↑ + glukoneogenesis ↑',exp:'Metabolisme glukosa: <strong>glikogenolisis ↑ + glukoneogenesis ↑ + sensitivitas insulin ↑</strong> → efisiensi penggunaan glukosa meningkat.'},
+  {q:'Efek KRONIS aktivitas fisik pada profil lipid adalah...',opts:['HDL turun, LDL naik','HDL ↑ dan LDL ↓ + metabolisme lemak ↑','Tidak ada efek pada lipid','HDL dan LDL sama-sama turun'],ans:'HDL ↑ dan LDL ↓ + metabolisme lemak ↑',exp:'Aktivitas fisik kronis: <strong>HDL ↑ (kolesterol baik) + LDL ↓ (kolesterol jahat) + metabolisme lemak ↑</strong>.'},
+  {q:'Efek KRONIS respirasi akibat latihan rutin adalah...',opts:['RR saat istirahat meningkat permanen','Volume tidal saat istirahat menurun','Otot diafragma & interkosta menguat + ventilasi paru saat istirahat ↑','Tidak ada perubahan permanen pada respirasi'],ans:'Otot diafragma & interkosta menguat + ventilasi paru saat istirahat ↑',exp:'Efek KRONIS respirasi: <strong>otot diafragma & interkosta menguat + ventilasi paru saat istirahat ↑</strong>.'},
+];
+const pickFisioKronis=makePicker(FISIO_KRONIS_POOL);
+
+// 4. KLASIFIKASI METs — statis + algoritmis identifikasi aktivitas
+const AKTIVITAS_METs=[
+  {nama:'Berjalan santai',int:'Rendah (< 3 METs)'},
+  {nama:'Mencuci piring',int:'Rendah (< 3 METs)'},
+  {nama:'Duduk membaca',int:'Rendah (< 3 METs)'},
+  {nama:'Berjalan cepat',int:'Sedang (3–6 METs)'},
+  {nama:'Menyapu',int:'Sedang (3–6 METs)'},
+  {nama:'Yoga',int:'Sedang (3–6 METs)'},
+  {nama:'Bulu tangkis rekreasi',int:'Sedang (3–6 METs)'},
+  {nama:'Jogging',int:'Tinggi (> 6 METs)'},
+  {nama:'Lari cepat',int:'Tinggi (> 6 METs)'},
+  {nama:'Futsal',int:'Tinggi (> 6 METs)'},
+  {nama:'Circuit training',int:'Tinggi (> 6 METs)'},
+  {nama:'Mendaki gunung',int:'Tinggi (> 6 METs)'},
+  {nama:'Push up',int:'Tinggi (> 6 METs)'},
+];
+const METS_KONSEP=[
+  {q:'METs untuk intensitas <strong>Rendah</strong> adalah...',opts:['< 3,0 METs','3,0–6,0 METs','> 6,0 METs','1,0–2,0 METs'],ans:'< 3,0 METs',exp:'Intensitas Rendah = <strong>&lt; 3,0 METs</strong>. Contoh: berjalan santai, mencuci piring, duduk membaca.'},
+  {q:'METs untuk intensitas <strong>Sedang</strong> adalah...',opts:['< 3,0 METs','3,0–6,0 METs','> 6,0 METs','6,0–9,0 METs'],ans:'3,0–6,0 METs',exp:'Intensitas Sedang = <strong>3,0–6,0 METs</strong>. Contoh: berjalan cepat, menyapu, yoga, bulu tangkis rekreasi.'},
+  {q:'METs untuk intensitas <strong>Tinggi</strong> adalah...',opts:['< 3,0 METs','3,0–6,0 METs','> 6,0 METs','> 9,0 METs'],ans:'> 6,0 METs',exp:'Intensitas Tinggi = <strong>&gt; 6,0 METs</strong>. Contoh: jogging, lari, mendaki, futsal, push up, circuit training.'},
+];
+const pickMETSKonsep=makePicker(METS_KONSEP);
+const pickMETSAktivitas=makePicker(AKTIVITAS_METs);
+function makeMETSQ(){
+  if(Math.random()<0.45){
+    const a=pickMETSAktivitas();
+    const salah=['Rendah (< 3 METs)','Sedang (3–6 METs)','Tinggi (> 6 METs)'].filter(x=>x!==a.int);
+    return{type:'mets',typeName:'Klasifikasi METs',tpColor:'var(--gold)',tpBg:'rgba(122,96,16,.09)',
+      scenario:null,rawData:null,
+      q:`Aktivitas <strong>${a.nama}</strong> termasuk intensitas...`,
+      opts:shuf([a.int,...salah,'Sangat Tinggi (> 9 METs)']),ans:a.int,
+      exp:`<strong>${a.nama}</strong> = intensitas <strong>${a.int}</strong> berdasarkan klasifikasi METs.`};
+  }
+  const c=pickMETSKonsep();
+  return{...c,type:'mets',typeName:'Klasifikasi METs',tpColor:'var(--gold)',tpBg:'rgba(122,96,16,.09)',scenario:null,rawData:null};
+}
+
+// 5. TINGKAT AF/MINGGU
+const TINGKAT_POOL=[
+  {q:'Klasifikasi tingkat AF <strong>Rendah</strong> per minggu adalah...',opts:['< 100 menit','< 150 menit','150–300 menit','> 300 menit'],ans:'< 150 menit',exp:'Tingkat Rendah = <strong>&lt; 150 menit/minggu</strong>.'},
+  {q:'Klasifikasi tingkat AF <strong>Sedang</strong> per minggu adalah...',opts:['< 150 menit','150–300 menit','300–500 menit','> 300 menit'],ans:'150–300 menit',exp:'Tingkat Sedang = <strong>150–300 menit/minggu</strong>.'},
+  {q:'Klasifikasi tingkat AF <strong>Tinggi</strong> per minggu adalah...',opts:['> 150 menit','> 200 menit','> 250 menit','> 300 menit'],ans:'> 300 menit',exp:'Tingkat Tinggi = <strong>&gt; 300 menit/minggu</strong>.'},
+];
+const pickTingkatKonsep=makePicker(TINGKAT_POOL);
+function genTingkatQ(){
+  const total=rnd([80,100,120,140,155,180,200,220,250,260,280,310,350,400,500]);
+  const cls=total<150?'Rendah':total<=300?'Sedang':'Tinggi';
+  const sal=['Rendah','Sedang','Tinggi'].filter(x=>x!==cls);
+  return{type:'tingkat',typeName:'Tingkat AF/Minggu',tpColor:'var(--teal)',tpBg:'rgba(19,107,168,.09)',
+    scenario:'Evaluasi aktivitas fisik mingguan',
+    rawData:`<div>Total AF: <span class="dv">${total} menit/minggu</span></div>`,
+    q:`Total aktivitas fisik <strong>${total} menit/minggu</strong>. Klasifikasinya adalah...`,
+    opts:shuf([cls,...sal,'Tidak dapat dinilai']),ans:cls,
+    exp:`${total} menit/minggu → <strong>${cls}</strong> (Rendah &lt;150, Sedang 150–300, Tinggi &gt;300 menit).`};
+}
+function makeTingkatQ(){
+  return Math.random()<0.6?genTingkatQ():{...pickTingkatKonsep(),type:'tingkat',typeName:'Tingkat AF/Minggu',tpColor:'var(--teal)',tpBg:'rgba(19,107,168,.09)',scenario:null,rawData:null};
+}
+
+// 6. KALKULATOR RISKESDAS — algoritmis B×H×M
+const AKTIV_LIST=[
+  {nama:'memasak',int:'ringan',B:1},
+  {nama:'berjalan santai',int:'ringan',B:1},
+  {nama:'mencuci pakaian',int:'ringan',B:1},
+  {nama:'duduk bekerja di komputer',int:'ringan',B:1},
+  {nama:'berjalan cepat',int:'sedang',B:2},
+  {nama:'menyapu lantai',int:'sedang',B:2},
+  {nama:'yoga',int:'sedang',B:2},
+  {nama:'bulu tangkis rekreasi',int:'sedang',B:2},
+  {nama:'berkebun',int:'sedang',B:2},
+  {nama:'jogging',int:'berat',B:4},
+  {nama:'lari',int:'berat',B:4},
+  {nama:'futsal',int:'berat',B:4},
+  {nama:'push up',int:'berat',B:4},
+  {nama:'circuit training',int:'berat',B:4},
+];
+function genRISKESDASQ(){
+  const n=rnd([2,3]);
+  const sel=shuf(AKTIV_LIST).slice(0,n);
+  const days=sel.map(()=>rnd([2,3,4,5,6,7]));
+  const mins=sel.map(()=>rnd([20,30,45,60,90,120]));
+  const total=sel.reduce((s,a,i)=>s+a.B*days[i]*mins[i],0);
+  const cls=total<150?'Rendah':total<=300?'Sedang':'Tinggi';
+  const sal=['Rendah','Sedang','Tinggi'].filter(x=>x!==cls);
+  const desc=sel.map((a,i)=>`${a.nama} (${a.int}) ${mins[i]} mnt/hari × ${days[i]} hari`).join(', dan ');
+  const calc=sel.map((a,i)=>`${a.nama}: ${a.B}×${days[i]}×${mins[i]}=${a.B*days[i]*mins[i]}`).join('; ');
+  return{type:'riskesdas',typeName:'Kalkulator RISKESDAS',tpColor:'var(--green)',tpBg:'rgba(26,110,48,.09)',
+    scenario:'Pengukuran aktivitas fisik kuesioner RISKESDAS',
+    rawData:`<div>Aktivitas: <span class="dv">${desc}</span></div>`,
+    q:`Hitung total aktivitas fisik per minggu (B×H×M) dan tentukan klasifikasinya!`,
+    opts:shuf([cls,...sal,'Tidak dapat dinilai']),ans:cls,
+    exp:`${calc}. Total = <strong>${total} menit/minggu → ${cls}</strong> (&lt;150=Rendah, 150–300=Sedang, &gt;300=Tinggi).`};
+}
+const RISKESDAS_KONSEP=[
+  {q:'Dalam formula RISKESDAS B×H×M, apa yang dimaksud dengan "B"?',opts:['Berat badan (kg)','Bobot intensitas aktivitas','Banyaknya hari libur','Batas waktu aktivitas'],ans:'Bobot intensitas aktivitas',exp:'<strong>B = Bobot intensitas</strong>: Ringan=1, Sedang=2, Berat=4.'},
+  {q:'Bobot (B) untuk aktivitas fisik intensitas BERAT dalam RISKESDAS adalah...',opts:['1','2','3','4'],ans:'4',exp:'Bobot intensitas: Ringan=1, Sedang=2, <strong>Berat=4</strong>.'},
+  {q:'Bobot (B) untuk aktivitas fisik intensitas SEDANG dalam RISKESDAS adalah...',opts:['1','2','3','4'],ans:'2',exp:'Bobot intensitas: Ringan=1, <strong>Sedang=2</strong>, Berat=4.'},
+  {q:'Kuesioner RISKESDAS digunakan untuk...',opts:['Mengukur kapasitas aerobik individu','Survei tingkat aktivitas fisik secara nasional di Indonesia','Menghitung pengeluaran energi dengan diari','Mengukur denyut jantung saat berolahraga'],ans:'Survei tingkat aktivitas fisik secara nasional di Indonesia',exp:'RISKESDAS digunakan <strong>Depkes RI untuk survei tingkat aktivitas fisik nasional</strong>.'},
+];
+const pickRISKESDASKonsep=makePicker(RISKESDAS_KONSEP);
+function makeRISKESDASQ(){
+  return Math.random()<0.65?genRISKESDASQ():{...pickRISKESDASKonsep(),type:'riskesdas',typeName:'Kalkulator RISKESDAS',tpColor:'var(--green)',tpBg:'rgba(26,110,48,.09)',scenario:null,rawData:null};
+}
+
+// 7. KATEGORI BOUCHARD
+const BOUCHARD_KAT=[
+  {cat:1,coef:0.26,contoh:'Berbaring, tidur, istirahat'},
+  {cat:2,coef:0.38,contoh:'Duduk (kelas, makan, menulis, membaca, TV)'},
+  {cat:3,coef:0.57,contoh:'Berdiri ringan (mencuci tubuh, bercukur, memasak, bersih-bersih)'},
+  {cat:4,coef:0.70,contoh:'Berpakaian, mandi shower, mengendarai mobil, jalan-jalan'},
+  {cat:5,coef:0.83,contoh:'Pekerjaan manual ringan (RT, berjalan agak cepat)'},
+  {cat:6,coef:1.00,contoh:'Olahraga ringan (kano, panahan, voli, golf, bersepeda santai)'},
+  {cat:7,coef:1.20,contoh:'Pekerjaan manual sedang (mesin, berkebun, kehutanan)'},
+  {cat:8,coef:1.40,contoh:'Olahraga sedang (badminton, bersepeda kompetisi, renang, jogging)'},
+  {cat:9,coef:1.95,contoh:'Olahraga kompetisi berat (berlari, tinju, basket, sepak bola, squash)'},
+];
+const BOUCHARD_KAT_KONSEP=[
+  {q:'Berapa koefisien energi untuk kategori 1 Bouchard (berbaring/tidur)?',opts:['0,26','0,38','0,57','0,70'],ans:'0,26',exp:'Kat-1 (berbaring, tidur, istirahat) = <strong>0,26 kcal/kg/15 menit</strong>.'},
+  {q:'Berapa koefisien energi untuk kategori 2 Bouchard (duduk)?',opts:['0,26','0,38','0,57','0,70'],ans:'0,38',exp:'Kat-2 (duduk: kelas, makan, menulis, TV) = <strong>0,38 kcal/kg/15 menit</strong>.'},
+  {q:'Olahraga ringan seperti kano, panahan, voli, golf, bersepeda santai termasuk kategori Bouchard...',opts:['Kategori 4','Kategori 5','Kategori 6','Kategori 7'],ans:'Kategori 6',exp:'Kat-6 = olahraga ringan (kano, panahan, voli, golf, bersepeda santai) = <strong>1,00 kcal/kg/15 menit</strong>.'},
+  {q:'Kategori Bouchard dengan koefisien tertinggi (1,95) meliputi...',opts:['Jogging santai','Voli rekreasi','Berlari, tinju, basket, sepak bola, squash','Bersepeda kompetisi'],ans:'Berlari, tinju, basket, sepak bola, squash',exp:'Kat-9 = pekerjaan manual berat / olahraga kompetisi: <strong>berlari, tinju, basket, sepak bola, squash</strong> = 1,95 kcal/kg/15 menit.'},
+  {q:'Berpakaian, mandi shower, mengendarai mobil termasuk kategori Bouchard...',opts:['Kategori 2','Kategori 3','Kategori 4','Kategori 5'],ans:'Kategori 4',exp:'Kat-4 = berpakaian, mandi shower, mengendarai mobil, jalan-jalan = <strong>0,70 kcal/kg/15 menit</strong>.'},
+  {q:'Diari Bouchard mencatat aktivitas selama...',opts:['7 hari kerja','3 hari (2 hari kerja + 1 hari libur)','5 hari kerja saja','1 hari representatif'],ans:'3 hari (2 hari kerja + 1 hari libur)',exp:'<strong>3 hari: 2 hari kerja + 1 hari libur</strong>. Interval pencatatan tiap 15 menit.'},
+  {q:'Interval pencatatan aktivitas dalam diari Bouchard adalah...',opts:['5 menit','10 menit','15 menit','30 menit'],ans:'15 menit',exp:'Satu kotak = <strong>15 menit</strong>. 1 kolom menurun = 24 jam = 96 kotak.'},
+  {q:'Olahraga sedang seperti badminton, bersepeda kompetisi, renang, jogging masuk kategori Bouchard...',opts:['Kat-6 (1,00)','Kat-7 (1,20)','Kat-8 (1,40)','Kat-9 (1,95)'],ans:'Kat-8 (1,40)',exp:'Kat-8 = olahraga sedang = <strong>1,40 kcal/kg/15 menit</strong>. Kat-9 untuk olahraga kompetisi berat.'},
+];
+function genCariKategoryQ(){
+  const item=rnd(BOUCHARD_KAT);
+  const salah=shuf(BOUCHARD_KAT.filter(x=>x.cat!==item.cat)).slice(0,3);
+  const ans=`Kategori ${item.cat} (${item.coef} kcal/kg/15 mnt)`;
+  const opts=shuf([ans,...salah.map(x=>`Kategori ${x.cat} (${x.coef} kcal/kg/15 mnt)`)]);
+  return{type:'bouchard_kat',typeName:'Kategori Bouchard',tpColor:'var(--purp)',tpBg:'rgba(68,51,160,.09)',
+    scenario:null,rawData:null,
+    q:`"${item.contoh}" termasuk kategori Bouchard...`,
+    opts,ans,exp:`<strong>${item.contoh}</strong> = Kat-${item.cat} dengan koefisien <strong>${item.coef} kcal/kg/15 menit</strong>.`};
+}
+const pickBouchardKatKonsep=makePicker(BOUCHARD_KAT_KONSEP);
+function makeBouchardKatQ(){
+  return Math.random()<0.5?genCariKategoryQ():{...pickBouchardKatKonsep(),type:'bouchard_kat',typeName:'Kategori Bouchard',tpColor:'var(--purp)',tpBg:'rgba(68,51,160,.09)',scenario:null,rawData:null};
+}
+
+// 8. HITUNG BOUCHARD — algoritmis
+function genBouchardHitungQ(){
+  const n=rnd([3,4,5]);
+  const sel=shuf(BOUCHARD_KAT).slice(0,n).sort((a,b)=>a.cat-b.cat);
+  const boxes=sel.map(()=>rnd([4,6,8,10,12,15,18,20,24,28,32,36,40]));
+  const total=sel.reduce((s,c,i)=>s+boxes[i]*c.coef,0);
+  const totalR=Math.round(total*100)/100;
+  const desc=sel.map((c,i)=>`Kat-${c.cat}: ${boxes[i]} kotak`).join(', ');
+  const calc=sel.map((c,i)=>`${boxes[i]}×${c.coef}`).join('+');
+  const w1=Math.round((total*1.18)*100)/100;
+  const w2=Math.round((total*0.82)*100)/100;
+  const w3=Math.round((total*1.35)*100)/100;
+  const ans=`${totalR} kcal/kgBB`;
+  return{type:'bouchard_hitung',typeName:'Hitung Bouchard',tpColor:'var(--purp)',tpBg:'rgba(68,51,160,.09)',
+    scenario:'Diari Aktivitas Fisik Bouchard',
+    rawData:`<div>${sel.map((c,i)=>`Kat-${c.cat} (${c.contoh.split('(')[0].trim()}): <span class="dv">${boxes[i]} kotak</span>`).join('</div><div>')}</div>`,
+    q:`Hitung total pengeluaran energi dari diari: ${desc}. Rumus: Σ(J×K).`,
+    opts:shuf([ans,`${w1} kcal/kgBB`,`${w2} kcal/kgBB`,`${w3} kcal/kgBB`].filter((v,i,a)=>a.indexOf(v)===i).slice(0,4)),ans,
+    exp:`${calc} = <strong>${totalR} kcal/kgBB</strong>. Setiap kotak = 15 mnt, koefisien sesuai kategori aktivitas.`};
+}
+const BOUCHARD_HITUNG_KONSEP=[
+  {q:'Dalam rumus Bouchard Σ(J×K), apa itu "J"?',opts:['Koefisien energi kategori','Jumlah kotak per kategori aktivitas','Jumlah hari pencatatan','Jam tidur per malam'],ans:'Jumlah kotak per kategori aktivitas',exp:'<strong>J = Jumlah kotak</strong> per kategori aktivitas. <strong>K = Koefisien energi</strong> kategori tersebut (kcal/kg/15 menit).'},
+  {q:'Satuan hasil perhitungan diari Bouchard adalah...',opts:['METs/hari','kcal/kgBB','kJ/hari','kcal/jam'],ans:'kcal/kgBB',exp:'Hasil diari Bouchard = <strong>kcal/kgBB</strong> (total pengeluaran energi per kg berat badan).'},
+];
+const pickBouchardHitungKonsep=makePicker(BOUCHARD_HITUNG_KONSEP);
+function makeBouchardHitungQ(){
+  return Math.random()<0.75?genBouchardHitungQ():{...pickBouchardHitungKonsep(),type:'bouchard_hitung',typeName:'Hitung Bouchard',tpColor:'var(--purp)',tpBg:'rgba(68,51,160,.09)',scenario:null,rawData:null};
+}
+
+// 9. METODE PENGUKURAN
+const METODE_POOL=[
+  {q:'Metode objektif pengukuran aktivitas fisik berbasis percepatan tubuh adalah...',opts:['RISKESDAS','Diari Bouchard','Accelerometer','Net Heart Rate'],ans:'Accelerometer',exp:'<strong>Accelerometer</strong> = metode objektif berbasis percepatan/gerakan tubuh.'},
+  {q:'Keunggulan observasi langsung dibanding kuesioner/diari adalah...',opts:['Lebih murah','Memungkinkan identifikasi faktor yang mempengaruhi kebiasaan aktivitas fisik','Tidak memerlukan observer terlatih','Cocok untuk free living condition'],ans:'Memungkinkan identifikasi faktor yang mempengaruhi kebiasaan aktivitas fisik',exp:'Observasi langsung lebih unggul karena <strong>bisa mengidentifikasi faktor</strong> yang mempengaruhi perilaku. Kelemahan: beban observer besar, kurang cocok free living condition.'},
+  {q:'Kelemahan metode observasi langsung adalah...',opts:['Tidak bisa mengidentifikasi faktor perilaku','Beban penilaian banyak di observer dan kurang cocok untuk free living condition','Tidak akurat untuk olahraga berat','Tidak bisa digunakan untuk anak-anak'],ans:'Beban penilaian banyak di observer dan kurang cocok untuk free living condition',exp:'Observasi langsung: unggul dalam identifikasi faktor, tapi <strong>beban banyak di observer & kurang cocok free living condition</strong>.'},
+  {q:'Metode objektif berbasis denyut jantung untuk mengukur aktivitas fisik adalah...',opts:['Accelerometer','Activity energy expenditure','Net heart rate / physical activity level heart rate','Diari Bouchard'],ans:'Net heart rate / physical activity level heart rate',exp:'Metode objektif berbasis HR: <strong>Net heart rate</strong> dan <strong>Physical activity level heart rate</strong>.'},
+  {q:'Metode pengukuran aktivitas fisik yang menggunakan bobot intensitas B×H×M adalah...',opts:['Diari Bouchard','Kuesioner RISKESDAS','Accelerometer','MET langsung'],ans:'Kuesioner RISKESDAS',exp:'<strong>RISKESDAS</strong> menggunakan formula B×H×M (Bobot × Hari × Menit).'},
+  {q:'Diari Bouchard menghitung total pengeluaran energi menggunakan rumus...',opts:['B × H × M','Σ (J × K)','HR × SV','VO₂ × waktu'],ans:'Σ (J × K)',exp:'Diari Bouchard: <strong>Σ(J×K)</strong> di mana J = jumlah kotak, K = koefisien energi kategori (kcal/kg/15 mnt).'},
+  {q:'Metode objektif berbasis konsumsi oksigen untuk aktivitas fisik adalah...',opts:['Accelerometer','Activity energy expenditure / MET','Net Heart Rate','Diari Bouchard'],ans:'Activity energy expenditure / MET',exp:'Metode berbasis O₂/energi: <strong>Activity energy expenditure</strong> dan <strong>Metabolic equivalent (MET)</strong>.'},
+];
+const pickMetode=makePicker(METODE_POOL);
+
+// ═══ DISPATCHER ═══
+function makeQ(type){
+  const wrap=(c,type,typeName,tpColor,tpBg)=>({...c,type,typeName,tpColor,tpBg,scenario:c.scenario||null,rawData:c.rawData||null});
+  if(type==='definisi') return wrap(pickDefinisi(),'definisi','Definisi & Faktor','var(--green)','rgba(26,110,48,.09)');
+  if(type==='fisio_akut') return wrap(pickFisioAkut(),'fisio_akut','Fisiologi Akut','var(--red)','rgba(176,48,48,.09)');
+  if(type==='fisio_kronis') return wrap(pickFisioKronis(),'fisio_kronis','Fisiologi Kronis','var(--blue)','rgba(26,79,170,.09)');
+  if(type==='mets') return makeMETSQ();
+  if(type==='tingkat') return makeTingkatQ();
+  if(type==='riskesdas') return makeRISKESDASQ();
+  if(type==='bouchard_kat') return makeBouchardKatQ();
+  if(type==='bouchard_hitung') return makeBouchardHitungQ();
+  if(type==='metode') return wrap(pickMetode(),'metode','Metode Pengukuran','var(--teal)','rgba(19,107,168,.09)');
+}
+
+// ═══ SESSION ENGINE ═══
+let typeQueue=[],sessIdx=0,sessScore=0,sessLog=[],currentQ=null;
+function nextType(){
+  if(!typeQueue.length){
+    const t=[...activeTypes];
+    for(let i=t.length-1;i>0;i--){const j=0|Math.random()*(i+1);[t[i],t[j]]=[t[j],t[i]];}
+    typeQueue=[...t];
+  }
+  return typeQueue.shift();
+}
+function startSession(){
+  sessIdx=0;sessScore=0;sessLog=[];typeQueue=[];
+  document.getElementById('qconfig').style.display='none';
+  document.getElementById('qresults').style.display='none';
+  document.getElementById('qactive').style.display='block';
+  renderQ();
+}
+function renderQ(){
+  const q=makeQ(nextType());currentQ=q;
+  document.getElementById('qnum').textContent=sessIdx+1;
+  document.getElementById('qscore').textContent=sessScore;
+  const pill=document.getElementById('qpill');
+  pill.textContent=q.typeName;pill.style.background=q.tpBg;pill.style.color=q.tpColor;pill.style.border=`1px solid ${q.tpColor}44`;
+  const scen=document.getElementById('qscen');
+  if(q.scenario){scen.innerHTML=`<strong>Konteks:</strong> ${q.scenario}`;scen.style.display='block';}else scen.style.display='none';
+  const db=document.getElementById('qdata');
+  if(q.rawData){db.innerHTML=q.rawData;db.style.display='block';}else db.style.display='none';
+  document.getElementById('qtext').innerHTML=q.q;
+  const og=document.getElementById('opts');og.innerHTML='';
+  q.opts.forEach((opt,i)=>{
+    const btn=document.createElement('button');btn.className='opt';
+    btn.innerHTML=`<span class="opt-key">${KEYS[i]}</span><span>${opt}</span>`;
+    btn.onclick=()=>selectAns(opt,q,btn);og.appendChild(btn);
+  });
+  const ebox=document.getElementById('expbox');ebox.classList.remove('show');ebox.style.display='none';
+  document.getElementById('nextbtn').style.display='none';
+}
+function selectAns(chosen,q,clickedBtn){
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  const correct=strip(chosen)===strip(q.ans);
+  if(correct)sessScore++;
+  document.querySelectorAll('.opt').forEach(b=>{
+    const lbl=b.querySelector('span:last-child').innerHTML;
+    if(strip(lbl)===strip(q.ans)){
+      if(b===clickedBtn&&correct)b.classList.add('correct');
+      else if(b!==clickedBtn)b.classList.add('reveal');
+      else b.classList.add('correct');
+    }
+    if(b===clickedBtn&&!correct)b.classList.add('wrong');
+  });
+  const ebox=document.getElementById('expbox');
+  ebox.innerHTML=`<div style="margin-bottom:7px;font-weight:700;color:${correct?'var(--blue)':'var(--red)'}">${correct?'✅ Benar!':'❌ Kurang tepat.'} Jawaban: <strong>${q.ans}</strong></div>${q.exp}`;
+  ebox.style.display='block';setTimeout(()=>ebox.classList.add('show'),10);
+  sessLog.push({idx:sessIdx+1,type:q.typeName,q:q.q.replace(/<[^>]+>/g,'').slice(0,55)+'…',ans:q.ans,correct});
+  document.getElementById('qscore').textContent=sessScore;
+  document.getElementById('nextbtn').style.display='inline-block';
+}
+function nextQ(){
+  sessIdx++;
+  document.getElementById('expbox').style.display='none';
+  document.getElementById('expbox').classList.remove('show');
+  renderQ();
+}
+function endSession(){
+  document.getElementById('qactive').style.display='none';
+  document.getElementById('qresults').style.display='block';
+  const total=sessLog.length;if(!total){restartQuiz();return;}
+  const pct=Math.round((sessScore/total)*100);
+  document.getElementById('res-pct').textContent=pct+'%';
+  document.getElementById('res-sub').textContent=`${sessScore} / ${total} soal benar`;
+  const byType={};
+  sessLog.forEach(l=>{if(!byType[l.type])byType[l.type]={total:0,correct:0};byType[l.type].total++;if(l.correct)byType[l.type].correct++;});
+  const rg=document.getElementById('res-grid');rg.innerHTML='';
+  const medal=pct>=80?'🏆':pct>=60?'👍':'📚';
+  [{v:medal,l:'Nilai'},{v:pct+'%',l:'Persentase'},{v:sessScore+'',l:'Benar'},{v:(total-sessScore)+'',l:'Salah'},{v:total+'',l:'Total'}].forEach(s=>{
+    const d=document.createElement('div');d.className='res-stat';
+    d.innerHTML=`<div class="rv">${s.v}</div><div class="rl">${s.l}</div>`;rg.appendChild(d);
+  });
+  document.getElementById('res-bytype').innerHTML=Object.entries(byType).map(([t,v])=>{
+    const p=Math.round((v.correct/v.total)*100);const c=p>=80?'var(--blue)':p>=60?'var(--gold)':'var(--red)';
+    return`<tr><td>${t}</td><td>${v.total}</td><td style="color:${c};font-weight:700">${v.correct} (${p}%)</td></tr>`;
+  }).join('');
+  document.getElementById('res-tbody').innerHTML=sessLog.map(l=>`<tr><td>${l.idx}</td><td>${l.q}</td><td>${l.ans}</td><td style="color:${l.correct?'var(--green)':'var(--red)'}">${l.correct?'✅':'❌'}</td></tr>`).join('');
+}
+function restartQuiz(){typeQueue=[];document.getElementById('qresults').style.display='none';document.getElementById('qconfig').style.display='block';}
+
+function downloadCert(){
+  const total=sessLog.length;
+  const pct=Math.round((sessScore/total)*100);
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+  const medal=pct>=80?'LULUS':pct>=60?'CUKUP':'PERLU BELAJAR LAGI';
+  const medalColor=pct>=80?'#1a6e30':pct>=60?'#7a6010':'#b03030';
+  const byType={};
+  sessLog.forEach(l=>{if(!byType[l.type])byType[l.type]={total:0,correct:0};byType[l.type].total++;if(l.correct)byType[l.type].correct++;});
+  const rows=Object.entries(byType).map(([t,v])=>{
+    const p=Math.round(v.correct/v.total*100);
+    const bar=Math.round(p*1.4);
+    const bc=p>=80?'#1a6e30':p>=60?'#7a6010':'#b03030';
+    return`<tr><td style="padding:5px 8px;font-size:11px;color:#2d5232;width:220px">${t}</td><td style="padding:5px 8px"><div style="background:#ddeadd;border-radius:4px;height:10px;width:140px"><div style="background:${bc};width:${bar}px;height:10px;border-radius:4px"></div></div></td><td style="padding:5px 8px;font-size:11px;font-weight:700;color:${bc}">${v.correct}/${v.total} (${p}%)</td></tr>`;
+  }).join('');
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="680" height="520" font-family="Georgia,serif">
+  <defs>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <path d="M 28 0 L 0 0 0 28" fill="none" stroke="#cddece" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+  <rect width="680" height="520" fill="#f4f8f4"/>
+  <rect width="680" height="520" fill="url(#grid)"/>
+  <rect x="20" y="20" width="640" height="480" rx="12" fill="none" stroke="#1a6e30" stroke-width="2"/>
+  <rect x="26" y="26" width="628" height="468" rx="9" fill="none" stroke="#1a6e30" stroke-width="0.5" opacity="0.4"/>
+  <text x="340" y="66" text-anchor="middle" font-size="11" letter-spacing="4" fill="#6b8f6e" font-family="Georgia,serif">SERTIFIKAT PENYELESAIAN KUIS</text>
+  <line x1="120" y1="74" x2="260" y2="74" stroke="#1a6e30" stroke-width="0.8"/>
+  <circle cx="340" cy="74" r="3" fill="#1a6e30"/>
+  <line x1="420" y1="74" x2="560" y2="74" stroke="#1a6e30" stroke-width="0.8"/>
+  <text x="340" y="116" text-anchor="middle" font-size="34" font-weight="bold" fill="#111e13" font-family="Georgia,serif">Am I Active?</text>
+  <text x="340" y="138" text-anchor="middle" font-size="11" fill="#6b8f6e" letter-spacing="2" font-family="Georgia,serif">AKTIVITAS FISIK · BLOK 2.5 · FK UNSOED</text>
+  <line x1="100" y1="152" x2="580" y2="152" stroke="#cddece" stroke-width="1"/>
+  <text x="340" y="185" text-anchor="middle" font-size="13" fill="#2d5232" font-family="Georgia,serif">Telah menyelesaikan sesi quiz dengan hasil</text>
+  <rect x="230" y="196" width="220" height="80" rx="8" fill="none" stroke="${medalColor}" stroke-width="1.5"/>
+  <text x="340" y="245" text-anchor="middle" font-size="52" font-weight="bold" fill="${medalColor}" font-family="Georgia,serif">${pct}%</text>
+  <text x="340" y="265" text-anchor="middle" font-size="10" fill="${medalColor}" letter-spacing="3" font-family="Georgia,serif">${medal}</text>
+  <text x="340" y="300" text-anchor="middle" font-size="12" fill="#2d5232" font-family="Georgia,serif">${sessScore} soal benar dari ${total} soal · ${dateStr}</text>
+  <line x1="100" y1="314" x2="580" y2="314" stroke="#cddece" stroke-width="1"/>
+  <text x="340" y="332" text-anchor="middle" font-size="10" fill="#6b8f6e" letter-spacing="2" font-family="Georgia,serif">DISTRIBUSI SKOR PER TOPIK</text>
+  <foreignObject x="80" y="340" width="520" height="120">
+    <div xmlns="http://www.w3.org/1999/xhtml"><table style="width:100%;border-collapse:collapse">${rows}</table></div>
+  </foreignObject>
+  <line x1="100" y1="472" x2="580" y2="472" stroke="#cddece" stroke-width="1"/>
+  <text x="340" y="490" text-anchor="middle" font-size="10" fill="#6b8f6e" font-family="Georgia,serif">174 Archive · 174-three.vercel.app · ACSM 2006 · Bouchard 1983</text>
+</svg>`;
+  const blob=new Blob([svg],{type:'image/svg+xml'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`am-i-active-${pct}pct.svg`;
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+window.downloadCert=downloadCert;
+window.startSession=startSession;window.nextQ=nextQ;window.endSession=endSession;window.restartQuiz=restartQuiz;
+</script>
+</body>
+</html>

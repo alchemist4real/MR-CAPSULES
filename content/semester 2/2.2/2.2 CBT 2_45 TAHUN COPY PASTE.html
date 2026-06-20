@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>45 TAHUN COPY PASTE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#140800;--surface:#1A0A00;--surface-2:#241100;--surface-3:#301700;
+  --border:#4A2000;--border-light:#321500;
+  --ink:#FFF0D6;--ink-muted:#C4935A;--ink-faint:#7A5030;
+  --red:#CC2200;--red-dim:#3D0A00;--red-glow:rgba(204,34,0,.10);--red-bright:#FF4422;
+  --gold:#FFB800;--gold-dim:#332000;--gold-glow:rgba(255,184,0,.09);--gold-bright:#FFD655;
+  --r:10px;--r-sm:7px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--ink);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;padding:16px;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:0;}
+body::after{content:'';position:fixed;top:-200px;left:50%;transform:translateX(-50%);width:900px;height:600px;background:radial-gradient(ellipse,rgba(204,34,0,.13) 0%,rgba(255,184,0,.04) 55%,transparent 80%);pointer-events:none;z-index:0;}
+.shell{max-width:720px;margin:0 auto;position:relative;z-index:1;}
+.site-header{padding:38px 0 28px;border-bottom:1px solid var(--border);margin-bottom:22px;position:relative;}
+.flag-stripe{position:absolute;top:0;left:-16px;right:-16px;height:4px;background:linear-gradient(90deg,var(--red) 50%,var(--gold) 50%);}
+.header-tag{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--red-bright);margin-bottom:10px;display:flex;align-items:center;gap:10px;}
+.header-tag::before{content:'';display:inline-block;width:18px;height:2px;background:var(--red-bright);}
+.wordmark{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.8rem,10vw,6rem);letter-spacing:2px;line-height:.92;color:var(--ink);}
+.wordmark .hl{color:var(--gold);text-shadow:0 0 40px rgba(255,184,0,.35);}
+.sub-headline{font-family:'Instrument Serif',serif;font-style:italic;font-size:13.5px;color:var(--ink-muted);margin-top:12px;line-height:1.65;}
+.meta-row{display:flex;gap:18px;flex-wrap:wrap;margin-top:18px;padding-top:14px;border-top:1px solid var(--border-light);}
+.meta-chip{display:flex;align-items:center;gap:7px;font-family:'DM Mono',monospace;font-size:9.5px;color:var(--ink-faint);letter-spacing:.5px;}
+.meta-chip .dot{width:5px;height:5px;border-radius:50%;background:var(--gold);}
+.meta-chip.red .dot{background:var(--red-bright);}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.3);}
+.card-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;}
+.mode-grid{display:flex;flex-direction:column;gap:7px;}
+.mode-btn{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1px solid var(--border-light);border-radius:var(--r-sm);background:var(--surface-2);cursor:pointer;text-align:left;width:100%;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;position:relative;overflow:hidden;}
+.mode-btn::after{content:'';position:absolute;inset:0;opacity:0;transition:opacity .2s;}
+.mode-btn.study::after{background:var(--gold-glow);}
+.mode-btn.exam::after,.mode-btn.drill::after{background:var(--red-glow);}
+.mode-btn:hover::after{opacity:1;}
+.mode-btn:hover{border-color:var(--border);transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.35);}
+.mode-icon{width:38px;height:38px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;position:relative;z-index:1;}
+.mode-btn.study .mode-icon{background:var(--gold-dim);}
+.mode-btn.exam .mode-icon,.mode-btn.drill .mode-icon{background:var(--red-dim);}
+.mode-text{position:relative;z-index:1;}
+.mode-text h3{font-weight:600;font-size:14px;color:var(--ink);margin-bottom:2px;}
+.mode-text p{font-size:11px;color:var(--ink-muted);font-weight:300;}
+.mode-arr{margin-left:auto;color:var(--ink-faint);font-size:16px;position:relative;z-index:1;transition:transform .2s,color .2s;}
+.mode-btn:hover .mode-arr{transform:translateX(4px);color:var(--gold);}
+.stats-trio{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border-radius:var(--r-sm);overflow:hidden;margin-top:10px;}
+.stat-box{background:var(--surface-2);padding:14px;text-align:center;}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;line-height:1;color:var(--gold);}
+.stat-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-faint);margin-top:3px;}
+#quiz-screen{display:none;}
+.quiz-header{display:flex;align-items:center;gap:10px;padding:18px 0 14px;border-bottom:1px solid var(--border);margin-bottom:18px;}
+.btn-ghost{background:none;border:1px solid var(--border);border-radius:var(--r-sm);padding:7px 13px;font-family:'DM Mono',monospace;font-size:10px;color:var(--ink-muted);cursor:pointer;transition:all .15s;letter-spacing:.5px;white-space:nowrap;}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold);}
+.progress-block{flex:1;}
+.progress-track{height:3px;background:var(--border);border-radius:99px;overflow:hidden;margin-bottom:5px;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--red),var(--gold));border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1);}
+.progress-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--ink-faint);letter-spacing:.5px;display:flex;justify-content:space-between;}
+.score-pill{font-family:'DM Mono',monospace;font-size:11px;padding:5px 12px;border-radius:99px;background:var(--gold-dim);color:var(--gold);border:1px solid rgba(255,184,0,.2);white-space:nowrap;}
+.timer-pill{font-family:'DM Mono',monospace;font-size:11px;padding:5px 12px;border-radius:99px;background:var(--red-dim);color:var(--red-bright);border:1px solid rgba(204,34,0,.3);white-space:nowrap;}
+.timer-pill.warn{background:var(--gold-dim);color:var(--gold);border-color:rgba(255,184,0,.3);animation:pulse 1s ease infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+.q-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:26px;margin-bottom:10px;animation:fadeIn .3s ease;box-shadow:0 2px 10px rgba(0,0,0,.25);}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.group-banner{background:var(--red-dim);border:1px solid rgba(204,34,0,.35);border-radius:var(--r-sm);padding:10px 14px;margin-bottom:14px;display:flex;align-items:flex-start;gap:8px;}
+.gb-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
+.gb-title{font-family:'DM Mono',monospace;font-size:9.5px;color:var(--red-bright);letter-spacing:1px;text-transform:uppercase;font-weight:500;margin-bottom:3px;}
+.gb-list{font-family:'DM Mono',monospace;font-size:9px;color:var(--ink-faint);line-height:1.6;}
+.q-index{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.q-index .pill-tag{background:var(--red-dim);border:1px solid rgba(204,34,0,.3);padding:2px 8px;border-radius:99px;color:var(--red-bright);font-size:8px;}
+.q-text{font-size:clamp(15px,2.2vw,17px);line-height:1.7;font-weight:400;color:var(--ink);margin-bottom:22px;}
+.opts{display:flex;flex-direction:column;gap:7px;}
+.opt{display:flex;align-items:center;gap:11px;padding:12px 15px;border:1px solid var(--border-light);border-radius:var(--r-sm);background:var(--surface-2);cursor:pointer;width:100%;text-align:left;font-family:'Plus Jakarta Sans',sans-serif;font-size:13.5px;font-weight:400;color:var(--ink-muted);transition:all .15s;position:relative;overflow:hidden;}
+.opt:hover:not(:disabled){border-color:var(--gold);background:var(--surface-3);color:var(--ink);}
+.opt:hover:not(:disabled) .opt-key{border-color:var(--gold);color:var(--gold);}
+.opt:disabled{cursor:default;}
+.opt-key{width:26px;height:26px;flex-shrink:0;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:10px;color:var(--ink-faint);background:var(--surface);transition:all .15s;}
+.opt-body{flex:1;line-height:1.45;}
+.opt.correct{border-color:var(--gold)!important;background:var(--gold-glow)!important;color:var(--ink)!important;}
+.opt.correct .opt-key{background:var(--gold)!important;border-color:var(--gold)!important;color:#140800!important;font-weight:700;}
+.opt.incorrect{border-color:var(--red-dim)!important;background:var(--red-glow)!important;color:var(--ink-muted)!important;}
+.opt.incorrect .opt-body{text-decoration:line-through;opacity:.4;}
+.opt.incorrect .opt-key{background:var(--red-dim)!important;border-color:var(--red)!important;color:var(--red-bright)!important;}
+.opt-badge{margin-left:auto;font-size:14px;flex-shrink:0;}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.opt.drill-wrong-shake{animation:shake .4s ease;}
+.exp-box{background:var(--surface-2);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:var(--r-sm);padding:18px 20px;margin-top:10px;display:none;}
+.exp-box.show{display:block;animation:slideUp .3s cubic-bezier(.4,0,.2,1);}
+@keyframes slideUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.exp-header{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.exp-header::after{content:'';flex:1;height:1px;background:var(--gold);opacity:.2;}
+.exp-answer{font-weight:600;font-size:14.5px;color:var(--gold-bright);margin-bottom:8px;}
+.exp-body{font-size:13px;line-height:1.75;color:var(--ink-muted);}
+.exp-body strong{color:var(--ink);font-weight:600;}
+.exp-body em{color:var(--gold-bright);font-style:italic;}
+.exp-src{margin-top:10px;padding-top:8px;border-top:1px dashed var(--border);font-family:'DM Mono',monospace;font-size:9px;color:var(--ink-faint);}
+.nav-row{display:flex;gap:8px;align-items:center;padding:4px 0;}
+.nav-btn{display:flex;align-items:center;gap:6px;padding:10px 18px;border-radius:var(--r-sm);font-family:'Plus Jakarta Sans',sans-serif;font-size:13.5px;font-weight:500;cursor:pointer;transition:all .15s;border:1px solid;}
+.nav-btn.primary{background:var(--red);border-color:var(--red);color:#fff;box-shadow:0 2px 12px rgba(204,34,0,.3);}
+.nav-btn.primary:hover{background:#FF3A1A;border-color:#FF3A1A;box-shadow:0 4px 20px rgba(204,34,0,.5);transform:translateY(-1px);}
+.nav-btn.gold{background:var(--gold);border-color:var(--gold);color:#140800;font-weight:600;box-shadow:0 2px 12px rgba(255,184,0,.25);}
+.nav-btn.gold:hover{background:var(--gold-bright);box-shadow:0 4px 20px rgba(255,184,0,.4);transform:translateY(-1px);}
+.nav-btn.secondary{background:transparent;border-color:var(--border);color:var(--ink-muted);}
+.nav-btn.secondary:hover{border-color:var(--ink-muted);color:var(--ink);background:var(--surface-2);}
+.nav-btn:disabled{opacity:.3;cursor:not-allowed;transform:none!important;box-shadow:none!important;}
+.nav-spacer{flex:1;}
+.flag-btn{background:none;border:1px solid var(--border);border-radius:var(--r-sm);padding:9px 13px;cursor:pointer;font-size:14px;color:var(--ink-muted);transition:all .15s;}
+.flag-btn:hover{border-color:var(--gold);color:var(--gold);}
+.flag-btn.flagged{border-color:var(--gold);color:var(--gold);background:var(--gold-glow);}
+.q-map-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-top:10px;}
+.q-map-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--ink-faint);margin-bottom:10px;}
+.q-map-grid{display:flex;flex-wrap:wrap;gap:5px;}
+.q-dot{width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;transition:all .1s;border:1px solid var(--border-light);background:var(--surface-2);color:var(--ink-faint);}
+.q-dot:hover{border-color:var(--gold);color:var(--gold);}
+.q-dot.current{border-color:var(--gold);color:var(--gold);background:var(--gold-dim);}
+.q-dot.answered{border-color:rgba(255,184,0,.4);background:var(--gold-dim);color:var(--gold);}
+.q-dot.wrong{border-color:rgba(204,34,0,.4);background:var(--red-dim);color:var(--red-bright);}
+.q-dot.flagged-dot{border-color:var(--red-bright)!important;}
+.drill-reset-overlay,.exam-overlay{position:fixed;inset:0;background:rgba(20,8,0,.96);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(6px);}
+.drill-reset-overlay.show,.exam-overlay.show{display:flex;}
+.overlay-modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:32px 28px;max-width:360px;width:90%;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.4);}
+.overlay-modal.red-top{border-top:3px solid var(--red);}
+.overlay-modal.gold-top{border-top:3px solid var(--gold);}
+.overlay-modal .big-icon{font-size:2.6rem;margin-bottom:12px;}
+.overlay-modal h2{font-family:'Bebas Neue',sans-serif;font-size:2rem;margin-bottom:8px;color:var(--ink);letter-spacing:1px;}
+.overlay-modal p{font-size:13px;color:var(--ink-muted);margin-bottom:20px;line-height:1.6;}
+.overlay-modal .nav-btn{width:100%;justify-content:center;margin-bottom:7px;}
+.streak-toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--gold);color:#140800;font-family:'DM Mono',monospace;font-size:12px;font-weight:500;padding:10px 22px;border-radius:99px;z-index:300;transition:transform .3s cubic-bezier(.34,1.56,.64,1),opacity .3s;opacity:0;white-space:nowrap;box-shadow:0 4px 20px rgba(255,184,0,.4);letter-spacing:.5px;}
+.streak-toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+#result-screen{display:none;animation:fadeIn .5s ease;}
+.result-hero{padding:36px 0 18px;text-align:center;}
+.result-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.result-score{font-family:'Bebas Neue',sans-serif;font-size:clamp(4rem,14vw,7rem);line-height:1;color:var(--ink);letter-spacing:2px;}
+.result-score span{color:var(--gold);}
+.result-sub{font-family:'Instrument Serif',serif;font-style:italic;font-size:14px;color:var(--ink-muted);margin-top:6px;}
+.result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:14px;}
+.result-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;text-align:center;}
+.result-card .val{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;line-height:1;margin-bottom:4px;}
+.result-card.correct .val{color:var(--gold);}
+.result-card.wrong .val{color:var(--red-bright);}
+.result-card.skipped .val{color:var(--ink-muted);}
+.result-card .lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-faint);}
+.result-actions{display:flex;gap:7px;flex-wrap:wrap;}
+.result-actions .nav-btn{flex:1;justify-content:center;}
+</style>
+</head>
+<body>
+<div class="shell">
+<div id="start-screen">
+  <header class="site-header">
+    <div class="flag-stripe"></div>
+    <div class="header-tag">Tablet CBT 2.2 · Blok 2.2</div>
+    <h1 class="wordmark">45 TAHUN<br><span class="hl">COPY PASTE</span></h1>
+    <p class="sub-headline">Bukan cuma 10 soal identik — termasuk yang dibolak-balik, ganti protagonis,<br>dipecah jadi sub-soal, atau beda jawaban tapi sama konteks: <strong style="color:var(--gold-bright)">36 soal</strong>. 🦕</p>
+    <div class="meta-row">
+      <div class="meta-chip red"><span class="dot"></span>AMBAR · LAUNDRY</div>
+      <div class="meta-chip"><span class="dot"></span>ANTON · AYAM</div>
+      <div class="meta-chip"><span class="dot"></span>TONO · GALON</div>
+      <div class="meta-chip red"><span class="dot"></span>36 SOAL DUPLIKAT</div>
+    </div>
+  </header>
+  <div class="card">
+    <div class="card-title">Pilih Mode</div>
+    <div class="mode-grid">
+      <button class="mode-btn study" onclick="startQuiz('study')"><div class="mode-icon">📖</div><div class="mode-text"><h3>Belajar</h3><p>Lihat jawaban & pembahasan langsung setelah menjawab</p></div><span class="mode-arr">›</span></button>
+      <button class="mode-btn exam" onclick="startQuiz('exam')"><div class="mode-icon">⏱️</div><div class="mode-text"><h3>Ujian</h3><p>30 menit, semua soal — simulasi CBT nyata</p></div><span class="mode-arr">›</span></button>
+      <button class="mode-btn drill" onclick="startQuiz('drill')"><div class="mode-icon">🔥</div><div class="mode-text"><h3>Drill</h3><p>Jawab sampai benar — tidak bisa lanjut kalau salah</p></div><span class="mode-arr">›</span></button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Statistik Sesi</div>
+    <div class="stats-trio">
+      <div class="stat-box"><div class="stat-val" id="s-done">0</div><div class="stat-lbl">Dijawab</div></div>
+      <div class="stat-box"><div class="stat-val" id="s-pct">—</div><div class="stat-lbl">Akurasi</div></div>
+      <div class="stat-box"><div class="stat-val">36</div><div class="stat-lbl">Total Soal</div></div>
+    </div>
+  </div>
+</div>
+
+<div id="quiz-screen">
+  <div class="quiz-header">
+    <button class="btn-ghost" onclick="goHome()">← Keluar</button>
+    <div class="progress-block">
+      <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+      <div class="progress-label"><span id="prog-txt">0 / 36</span><span id="mode-lbl">Belajar</span></div>
+    </div>
+    <div id="score-display" class="score-pill">✓ 0</div>
+    <div id="timer-display" class="timer-pill" style="display:none">30:00</div>
+  </div>
+  <div id="nav-row-top" class="nav-row" style="padding-bottom:10px">
+    <button class="nav-btn secondary" id="btn-prev" onclick="navigate(-1)">‹ Prev</button>
+    <span class="nav-spacer"></span>
+    <button class="flag-btn" id="flag-btn" onclick="toggleFlag()">🚩</button>
+    <span class="nav-spacer"></span>
+    <button class="nav-btn secondary" id="btn-next" onclick="navigate(1)">Next ›</button>
+  </div>
+  <div class="q-card" id="q-card">
+    <div class="group-banner"><span class="gb-icon">♻️</span><div><div class="gb-title" id="gb-title"></div><div class="gb-list" id="gb-list"></div></div></div>
+    <div class="q-index" id="q-index"></div>
+    <div class="q-text" id="q-text"></div>
+    <div class="opts" id="opts-container"></div>
+    <div class="exp-box" id="exp-box">
+      <div class="exp-header">Pembahasan</div>
+      <div class="exp-answer" id="exp-answer"></div>
+      <div class="exp-body" id="exp-body"></div>
+      <div class="exp-src" id="exp-src"></div>
+    </div>
+  </div>
+  <div id="q-map-wrap" class="q-map-section" style="display:none">
+    <div class="q-map-title">Peta Soal</div>
+    <div class="q-map-grid" id="q-map-grid"></div>
+  </div>
+</div>
+
+<div id="result-screen">
+  <div class="result-hero">
+    <div class="result-label">Hasil Akhir</div>
+    <div class="result-score" id="r-score">0<span>/36</span></div>
+    <div class="result-sub" id="r-sub"></div>
+  </div>
+  <div class="result-grid">
+    <div class="result-card correct"><div class="val" id="r-correct">0</div><div class="lbl">Benar</div></div>
+    <div class="result-card wrong"><div class="val" id="r-wrong">0</div><div class="lbl">Salah</div></div>
+    <div class="result-card skipped"><div class="val" id="r-skip">0</div><div class="lbl">Skip</div></div>
+  </div>
+  <div class="result-actions">
+    <button class="nav-btn gold" onclick="reviewMode()">🔍 Review Jawaban</button>
+    <button class="nav-btn primary" onclick="goHome()">↩ Main Lagi</button>
+  </div>
+</div>
+
+<div class="drill-reset-overlay" id="drill-reset-overlay">
+  <div class="overlay-modal red-top"><div class="big-icon">💀</div><h2>Drill Selesai</h2><p>Semua soal selesai. Ulang dari awal?</p><button class="nav-btn primary" onclick="drillReset()">🔄 Ulang</button><button class="nav-btn secondary" onclick="goHome()">Menu</button></div>
+</div>
+<div class="exam-overlay" id="exam-overlay">
+  <div class="overlay-modal gold-top"><h2>Submit Ujian?</h2><p>Yakin ingin mengumpulkan jawaban sekarang?</p><button class="nav-btn gold" onclick="submitExam()">✓ Submit</button><button class="nav-btn secondary" onclick="closeOverlay()">← Kembali</button></div>
+</div>
+<div class="streak-toast" id="streak-toast"></div>
+
+<script>
+const Q=[
+{n:1,group:"ADH → efek di ginjal",siblings:"AMBAR Q4 ≡ TONO Q38 (identik)",q:"Bagaimana ADH berpengaruh terhadap ginjal?",o:["Reabsorpsi air di ginjal","Retensi natrium di ginjal","Peningkatan ekskresi air","Peningkatan ekskresi natrium"],a:"Reabsorpsi air di ginjal",exp:"<strong>ADH (Vasopresin)</strong> bekerja di tubulus kolektivus → meningkatkan ekspresi aquaporin-2 → <strong>reabsorpsi air meningkat</strong> → urin lebih pekat, volume plasma naik.",src:"AMBAR Q4 = TONO Q38"},
+{n:2,group:"ADH → efek di ginjal",siblings:"AMBAR Q8 (varian — tanya volume urin)",q:"Bagaimana volume urin jika sekresi ADH meningkat?",o:["Volume urin meningkat","Volume urin menurun","Volume urin tidak ada perubahan","Konsentrasi natrium di urine meningkat","Konsentrasi kalium di urine menurun"],a:"Volume urin menurun",exp:"ADH ↑ → aquaporin-2 ↑ → reabsorpsi air ↑ → <strong>volume urin menurun</strong> (urin pekat). Kebalikannya: defisiensi ADH → diabetes insipidus → urin encer banyak.",src:"AMBAR Q8 (varian dari Q4/TONO Q38)"},
+{n:3,group:"ADH → efek di ginjal",siblings:"TONO Q23 (varian — tanya lokasi kerja ADH)",q:"ADH bekerja di tubulus mana?",o:["Tubulus proksimal","Tubulus distal","Tubulus kolektivus","Lengkung Henle"],a:"Tubulus kolektivus",exp:"ADH (via reseptor V2 → cAMP → PKA) menyisipkan <strong>aquaporin-2</strong> ke membran lumen <strong>tubulus kolektivus</strong> → air direabsorpsi ke kapiler peritubuler.",src:"TONO Q23 (varian dari AMBAR Q4)"},
+{n:4,group:"ADH & urine encer",siblings:"AMBAR Q44 ≈ TONO Q37 ⚠️ BEDA JAWABAN",q:"Bagaimana pengaruh hormon antidiuretik terhadap pembentukan urine yang encer?",o:["Mengurangi reabsorpsi air","Meningkatkan absorpsi air","Meningkatkan absorpsi natrium","Tidak berpengaruh pada pembentukan urine"],a:"Mengurangi reabsorpsi air",exp:"Urin encer = kondisi ADH <strong>rendah/tidak ada</strong>. ADH rendah → aquaporin-2 tidak diekspresikan → reabsorpsi air berkurang → urin encer & banyak. <em>Catatan: TONO Q37 menjawab 'Meningkatkan absorpsi air' — itu efek ADH tinggi, bukan kondisi urin encer!</em>",src:"AMBAR Q44 · TONO Q37 ⚠️ Beda jawaban"},
+{n:5,group:"ANP & cairan meningkat",siblings:"AMBAR Q6 = TONO Q8 = TONO Q22 (identik konsep)",q:"Bila terjadi peningkatan cairan di dalam tubuh, hormon apa yang akan disekresikan?",o:["ADH","Aldosteron","ANP","A dan B","A dan C"],a:"ANP",exp:"Volume cairan ↑ → atrium teregang → sekresi <strong>ANP (Atrial Natriuretic Peptide)</strong> → natriuresis & diuresis → volume plasma turun kembali.",src:"AMBAR Q6 = TONO Q8 = TONO Q22"},
+{n:6,group:"ANP & cairan meningkat",siblings:"AMBAR Q57 = ANTON Q27 (identik)",q:"ANP bekerja dengan cara...",o:["Meningkatkan reabsorpsi Na","Meningkatkan ekskresi Na","Meningkatkan ekskresi air","Meningkatkan reabsorbsi air"],a:"Meningkatkan ekskresi Na",exp:"<strong>ANP</strong> → natriuresis (ekskresi Na+ ↑) → air mengikuti secara osmotik → volume plasma ↓. Juga menghambat RAAS dan menekan aldosteron.",src:"AMBAR Q57 = ANTON Q27"},
+{n:7,group:"Hormon saat cairan menurun",siblings:"AMBAR Q7 ≈ TONO Q21 (konsep sama)",q:"Bila terjadi penurunan cairan tubuh, hormon apa yang disekresikan?",o:["ADH saja","ANP saja","ADH + Aldosteron","ADH + ANP","Aldosteron + ANP"],a:"ADH + Aldosteron",exp:"Cairan ↓ → <strong>ADH</strong> (reabsorpsi air ↑) dan <strong>Aldosteron</strong> (reabsorpsi Na+ ↑) → volume plasma dipulihkan. ANP justru ditekan saat cairan kurang.",src:"AMBAR Q7 · TONO Q21"},
+{n:8,group:"Hormon keseimbangan cairan & elektrolit",siblings:"AMBAR Q5 = ANTON Q3 ≈ TONO Q11 ⚠️ BEDA JAWABAN",q:"Hormon yang mengendalikan keseimbangan cairan dan elektrolit adalah...",o:["ADH","Adrenal / Aldosteron","ANP","A dan B","A dan C"],a:"A dan C",exp:"Menurut PPT TABLET CBT: <strong>ADH</strong> (reabsorpsi air) dan <strong>ANP</strong> (ekskresi Na) adalah duo pengendali keseimbangan cairan. <em>TONO Q11 menjawab 'A dan B' (ADH + Aldosteron) — bisa jadi beda slide dosen!</em>",src:"AMBAR Q5 = ANTON Q3 · TONO Q11 ⚠️ Beda jawaban"},
+{n:9,group:"Proses miksi",siblings:"AMBAR Q51 = ANTON Q30 (identik)",q:"Proses miksi yang BENAR adalah...",o:["Sinyal penghambatan dikontrol secara sadar oleh lobus temporalis","Dikontrol secara tidak sadar/refleks oleh hipotalamus","Diatur secara parasimpatis oleh nervi spinales Th 10-L2","Diatur secara simpatis oleh nervi spinales S2-4","Serabut sensoris/somatik dibawa oleh n. pudendus"],a:"Serabut sensoris/somatik dibawa oleh n. pudendus",exp:"<strong>N. pudendus (S2-4)</strong> → serabut sensoris/somatik VU & sfingter eksterna. Koreksi: (A) korteks frontalis; (B) pusat miksi di pons/Barrington center; (C) parasimpatis S2-4; (D) simpatis Th10-L2.",src:"AMBAR Q51 = ANTON Q30"},
+{n:10,group:"Vesica Urinaria — histologi",siblings:"AMBAR Q37 = ANTON Q36 = TONO Q29 (ganti konteks: sistitis)",q:"Manakah pernyataan yang benar mengenai kandung kencing (vesica urinaria)?",o:["Lapisan epitel permeabel terhadap air","Terdapat barier osmotik antara urine dan lamina propria","Tunika muskularis tersusun oleh 2 lapisan otot polos","Lapisan paling luar berupa adventisia","Pada lapisan otot longitudinal terdapat otot sfingter interna"],a:"Terdapat barier osmotik antara urine dan lamina propria",exp:"Urothelium (sel payung/umbrella cells) dengan <strong>tight junction & plaques uroplakin</strong> = barier osmotik impermeabel. Tunika muskularis: <em>3 lapisan</em>. Sfingter interna dari lapisan sirkular (tengah).",src:"AMBAR Q37 = ANTON Q36 = TONO Q29"},
+{n:11,group:"Sel podosit — lokasi",siblings:"ANTON Q37 = TONO Q2 (identik)",q:"Sel podosit terletak pada...",o:["Kapsula Bowman pars visceralis","Kapsula Bowman pars parietalis","Ruang Bowman","Polus vaskular","Polus urinaria"],a:"Kapsula Bowman pars visceralis",exp:"<strong>Podosit</strong> = sel epitel khusus pada <strong>pars visceralis kapsula Bowman</strong> — melapisi kapiler glomerular dengan foot processes (pedicel) yang membentuk filtration slit.",src:"ANTON Q37 = TONO Q2"},
+{n:12,group:"Sel JG & renin-angiotensin",siblings:"ANTON Q17 = TONO Q18 (identik)",q:"Sel apakah yang mengubah angiotensinogen menjadi angiotensin I?",o:["Sel podosit","Sel mesangial","Sel lacis","Sel juxtaglomerular","Makula densa"],a:"Sel juxtaglomerular",exp:"<strong>Sel Juxtaglomerular (sel granular)</strong> di dinding arteriol aferen mensekresikan <strong>renin</strong> yang memotong angiotensinogen → angiotensin I → (ACE di paru) → angiotensin II.",src:"ANTON Q17 = TONO Q18"},
+{n:13,group:"Sel JG & renin-angiotensin",siblings:"AMBAR Q35 (varian — tanya enzimnya bukan selnya)",q:"Sebuah sel di ginjal dapat mengubah angiotensinogen menjadi angiotensin I. Enzim apakah yang dimaksud?",o:["Atrial natriuretic peptide","Renin","Aldosteron","Vasopressin","Angiotensin II"],a:"Renin",exp:"Sel juxtaglomerular mensekresikan <strong>renin</strong> (protease aspartil). Renin memotong angiotensinogen (dari hati) → angiotensin I. Soal ini adalah varian dari Q12 — ditanya enzimnya, bukan selnya.",src:"AMBAR Q35 (varian Q12)"},
+{n:14,group:"Membran filtrasi glomerulus",siblings:"AMBAR Q70 = TONO Q42 (identik)",q:"Struktur yang menyusun membran filtrasi glomerulus adalah...",o:["Sel mesangial","Endotel kapiler","Kapsul Bowman","Sel lacis","Makula densa"],a:"Endotel kapiler",exp:"Membran filtrasi = 3 lapisan: (1) <strong>Endotel kapiler fenestrata</strong> (~70nm pori); (2) Membran basal glomerulus; (3) Sel podosit (filtration slit ~25nm). Sel mesangial/lacis/makula densa bukan bagian membran filtrasi.",src:"AMBAR Q70 = TONO Q42"},
+{n:15,group:"Anatomi ureter",siblings:"ANTON Q33 (versi psoas)",q:"Pernyataan yang BENAR tentang Ureter adalah... [versi ANTON]",o:["Penyempitan pelvico-ureterica karena persilangan dengan a. iliaca interna","Pars abdominalis turun ke depan m. psoas mayor","Pada wanita: pars pelvis menyilang ke atas a. ovarica","Inervasi simpatis oleh medula spinalis segmen S2-4","Pada pria, pars pelvis menyilangi duktus ejakulatorius"],a:"Pars abdominalis turun ke depan m. psoas mayor",exp:"Ureter pars abdominalis berjalan <strong>anterior (depan) m. psoas mayor</strong>. Koreksi: menyilang a. iliaca communis (bukan interna); wanita menyilang di bawah a. uterina; simpatis T10-L2; pria menyilang vas deferens.",src:"ANTON Q33"},
+{n:16,group:"Anatomi ureter",siblings:"TONO Q10 (versi uterina) ⚠️ beda jawaban dari Q15",q:"Pernyataan yang BENAR tentang Ureter adalah... [versi TONO]",o:["Penyempitan pelvico-ureterica karena persilangan dengan a. iliaca interna","Pars abdominalis turun ke belakang m. psoas mayor","Pada wanita: pars pelvis menyilang ke atas a. uterina","Inervasi simpatis oleh medula spinalis segmen S2-4","Pada pria, pars pelvis menyilangi prostat"],a:"Pada wanita: pars pelvis menyilang ke atas a. uterina",exp:"<strong>'Water under the bridge'</strong> — ureter (air) lewat di BAWAH a. uterina (jembatan) pada wanita. Pars abdominalis: ANTERIOR (depan) psoas, bukan belakang.",src:"TONO Q10 ⚠️ Beda jawaban dengan ANTON Q33"},
+{n:17,group:"Muntah → asam basa",siblings:"ANTON Q12 ≈ TONO Q33 ⚠️ beda jawaban",q:"Seorang mahasiswi muntah-muntah karena akan ujian SOCA. Apa yang terjadi pada keseimbangan asam basa?",o:["Alkalosis metabolik","Alkalosis respiratorik","Peningkatan HCO3","Penurunan H+","Salah semua"],a:"Alkalosis metabolik",exp:"Muntah → kehilangan HCl (H+ + Cl-) dari lambung → H+ plasma ↓ → pH ↑ = <strong>alkalosis metabolik</strong>. Konsekuensinya HCO3 relatif naik & H+ turun — pilihan A adalah jawaban terkomprehensif. <em>ANTON Q12 menjawab 'Peningkatan HCO3' — juga benar secara fisiologi!</em>",src:"TONO Q33 · ANTON Q12 ⚠️ Beda jawaban"},
+{n:18,group:"Tubulus distal & makula densa",siblings:"AMBAR Q3 = ANTON Q8 = TONO Q15 (identik, 3 file!)",q:"Struktur apakah yang termasuk dalam tubulus distal ginjal?",o:["Makula densa","Loop of Henle","Sel podosit","Sel mesangial","Sel lacis"],a:"Makula densa",exp:"<strong>Makula densa</strong> adalah bagian dari tubulus kontortus distal — sel epitel kolumner yang mendeteksi kadar NaCl filtrat dan mempengaruhi sekresi renin via sel JG di dekatnya (tubuloglomerular feedback).",src:"AMBAR Q3 = ANTON Q8 = TONO Q15"},
+{n:19,group:"Reabsorpsi HCO3-",siblings:"AMBAR Q22 = ANTON Q18 = TONO Q4 (identik, 3 file!)",q:"Pada tubulus mana penyerapan HCO3⁻ paling banyak terjadi?",o:["Proximal","Distal","Kolektivus","Ascendens","Descendens"],a:"Proximal",exp:"~80-85% HCO3⁻ direabsorpsi di <strong>tubulus proksimal</strong> via karbonat anhidrase (CA II di intraseluler, CA IV di lumen). CO2 + H2O ↔ H2CO3 ↔ H+ + HCO3⁻.",src:"AMBAR Q22 = ANTON Q18 = TONO Q4"},
+{n:20,group:"Asidosis respiratorik kronis",siblings:"AMBAR Q54 = ANTON Q10 = TONO Q32 = TONO Q41 (4 soal!)",q:"Pada kondisi: penurunan pH, peningkatan CO2, dan peningkatan HCO3⁻ — terjadi kondisi...",o:["Asidosis metabolik kronik","Alkalosis metabolik akut","Asidosis respiratorik kronik","Asidosis respiratorik akut"],a:"Asidosis respiratorik kronik",exp:"pH↓ + pCO2↑ = <strong>asidosis respiratorik</strong>. HCO3⁻ ikut ↑ = ada <strong>kompensasi renal</strong> (ginjal menahan HCO3⁻ untuk buffering) → ini asidosis respiratorik <strong>kronik</strong>.",src:"AMBAR Q54 = ANTON Q10 = TONO Q32 = TONO Q41"},
+{n:21,group:"Distribusi cairan tubuh",siblings:"AMBAR Q33 = TONO Q26 (identik)",q:"Distribusi cairan tubuh yang TIDAK BENAR adalah...",o:["Cairan interstitial sebanyak 15% dari BB","Cairan intrasel sebesar 40% dari BB","Plasma darah 5% dari BB","Sel darah 8% dari BB","Total cairan dalam tubuh sebesar 60% dari BB"],a:"Sel darah 8% dari BB",exp:"Sel darah bukan komponen <em>cairan</em> tubuh — mereka sel padat. Distribusi normal: intrasel 40%, interstitial 15%, plasma 5%, total 60% BB. Pernyataan 'sel darah 8%' = <strong>SALAH</strong>.",src:"AMBAR Q33 = TONO Q26"},
+{n:22,group:"Linea Broedel",siblings:"AMBAR Q25 = ANTON Q32 (identik)",q:"Pernyataan yang benar mengenai Linea Broedel adalah...",o:["Terletak di 2/3 posterior dan 1/3 medial","Area di batas daerah yang dialiri a. renalis pars anterior dan superior","Area penuh anastomose","Daerah di perbatasan area ren segmen medioposterior, superior, dan media","Tempat incisi pada kasus ureterolithiasis"],a:"Daerah di perbatasan area ren segmen medioposterior, superior, dan media",exp:"<strong>Linea Broedel</strong> = zona avaskular di batas segmen posterior & anterior ren — ideal untuk incisi nefrolitotomi. Bukan 2/3 posterior; bukan area anastomose; insisi ureterolithiasis di tempat lain.",src:"AMBAR Q25 = ANTON Q32"},
+{n:23,group:"Keseimbangan nitrogen positif",siblings:"AMBAR Q17 = ANTON Q24 (identik konsep)",q:"Nitrogen positif berarti nitrogen masuk > nitrogen keluar. Contoh kondisi tersebut adalah...",o:["Trauma","Sepsis","Burn","Acute illness","Wanita hamil"],a:"Wanita hamil",exp:"<strong>Nitrogen positif</strong> = anabolisme protein aktif: kehamilan, pertumbuhan, pemulihan. Kondisi katabolik (trauma, sepsis, luka bakar, penyakit akut) → nitrogen <em>negatif</em>.",src:"AMBAR Q17 = ANTON Q24"},
+{n:24,group:"Epitel kaliks minor",siblings:"ANTON Q16 = TONO Q24 (identik)",q:"Jenis epitel yang melapisi kaliks minor adalah...",o:["Kuboid simpleks","Kolumner simpleks","Transisional","Skuamous simpleks","Skuamous kompleks"],a:"Transisional",exp:"Seluruh sistem pelvikaliks (kaliks minor, kaliks mayor, pelvis renalis), ureter, dan vesika urinaria dilapisi <strong>epitel transisional (urothelium)</strong> yang dapat meregang saat terisi.",src:"ANTON Q16 = TONO Q24"},
+{n:25,group:"Aldosteron & keseimbangan Na/K",siblings:"AMBAR Q32 ≈ TONO Q31 ≈ TONO Q5 (konsep sama)",q:"Aldosteron meningkatkan tekanan darah dengan cara...",o:["Reabsorbsi cairan bebas","Reabsorbsi Natrium dan sekresi Kalium","Reabsorbsi Urea","Reabsorbsi Glukosa","Ekskresi Natrium"],a:"Reabsorbsi Natrium dan sekresi Kalium",exp:"<strong>Aldosteron</strong> (korteks adrenal) → ENaC & Na/K-ATPase ↑ di tubulus kolektivus → <strong>Na+ direabsorpsi, K+ disekresikan</strong> → volume plasma ↑ → tekanan darah ↑.",src:"AMBAR Q32 = TONO Q31 = TONO Q5"},
+{n:26,group:"Asidosis metabolik",siblings:"AMBAR Q69 ≈ TONO Q27 (beda kasus, sama dx)",q:"Seseorang mengalami diare berat beberapa hari. Kondisi keseimbangan asam basa yang terjadi adalah...",o:["Alkalosis metabolik","Asidosis metabolik","Alkalosis respiratorik","Asidosis respiratorik","Tidak terjadi perubahan pH"],a:"Asidosis metabolik",exp:"Diare → kehilangan HCO3⁻ (basa) melalui feses → HCO3⁻ plasma ↓ → pH ↓ = <strong>asidosis metabolik</strong>. Kompensasi: hiperventilasi untuk menurunkan CO2.",src:"AMBAR Q69 = TONO Q27"},
+{n:27,group:"Osmosis & cairan hipertonik",siblings:"AMBAR Q34 = TONO Q40 (identik konsep)",q:"Hal berikut yang TIDAK BENAR adalah...",o:["Air mengalir dari tekanan osmosis rendah ke tekanan osmosis tinggi","Air mengalir dari tekanan hidrostatik tinggi ke tekanan hidrostatik rendah","Air mengalir dari dalam sel ke luar sel bila sel berada dalam larutan hipertonik","Air mengalir dari luar ke dalam sel bila sel berada dalam larutan hipertonik","Tidak ada perpindahan cairan ketika sel berada dalam larutan isotonik"],a:"Air mengalir dari luar ke dalam sel bila sel berada dalam larutan hipertonik",exp:"Dalam larutan <strong>hipertonik</strong>: tekanan osmotik luar > dalam → air keluar dari sel → sel mengkerut (krenasi). Opsi D (air masuk ke sel dalam hipertonik) = <strong>SALAH</strong>.",src:"AMBAR Q34 = TONO Q40"},
+{n:28,group:"Asidosis respiratorik akut (sulit napas)",siblings:"ANTON Q39 ≈ TONO Q7 (beda protagonis, sama konsep)",q:"Seseorang tersedak dan kesulitan bernapas. Apa yang terjadi pada keseimbangan asam basa?",o:["Alkalosis metabolik","Alkalosis respiratorik","Penurunan H+","Penurunan CO2","Peningkatan CO2"],a:"Peningkatan CO2",exp:"Obstruksi napas → CO2 tidak bisa diekshalasi → <strong>CO2 akumulasi</strong> → CO2 + H2O → H2CO3 → H+ + HCO3⁻ → pH ↓ = asidosis respiratorik akut. ANTON Q39 menjawab 'Peningkatan H+' (konsekuensi yang sama).",src:"TONO Q7 · ANTON Q39 (beda protagonis)"},
+{n:29,group:"Tubulus proksimal — histologi",siblings:"AMBAR Q2 ≈ ANTON Q23 (varian tanya)",q:"Pernyataan benar mengenai tubulus proksimal adalah...",o:["Tersusun oleh epitel skuamous simpleks","Mempunyai striated border / brush border","Berfungsi untuk filtrasi darah","Tidak permeabel terhadap air","Berada pada polus urinarius"],a:"Mempunyai striated border / brush border",exp:"Ciri khas <strong>tubulus kontortus proksimal</strong>: epitel kuboid simpleks, <strong>brush border/striated border</strong> (mikrovili padat), banyak mitokondria (aktif transport), lumen sempit. Reabsorpsi ~65% filtrat.",src:"AMBAR Q2 · ANTON Q23"},
+{n:30,group:"Glukosuria & tubulus proksimal",siblings:"AMBAR Q50 ≈ AMBAR Q47 (dua sisi soal sama)",q:"Jika ditemukan glukosa pada urin (glukosuria), terjadi kerusakan pada...",o:["Tubulus kontortus proximal","Tubulus kontortus distal","Tubulus kolektivus","Ansa Henle"],a:"Tubulus kontortus proximal",exp:"Glukosa normalnya <strong>100% direabsorpsi di tubulus proksimal</strong> (via SGLT2 & GLUT2). Glukosuria → threshold terlampaui (hiperglikemia) ATAU kerusakan tubulus proksimal. Fungsi utama tubulus proksimal adalah reabsorpsi (AMBAR Q47).",src:"AMBAR Q50 · AMBAR Q47"},
+{n:31,group:"Vaskularisasi ren",siblings:"AMBAR Q61 (versi vena)",q:"Pernyataan benar terkait vaskularisasi renal adalah... [versi AMBAR]",o:["V. arcuata lanjut V. interlobaris (ren)","A. renalis membagi jadi lima dengan empat ke posterior dan satu ke anterior","A. arcuata memvaskularisasi apex pyramidal renalis","A. arcuata cabang utama a. segmentalis"],a:"V. arcuata lanjut V. interlobaris (ren)",exp:"Aliran vena ren: v. interlobularis → <strong>v. arcuata → v. interlobaris</strong> → v. renalis → v. cava inferior. A. renalis → 5 segmental: 4 anterior, 1 posterior.",src:"AMBAR Q61"},
+{n:32,group:"Vaskularisasi ren",siblings:"TONO Q25 (versi arteri) ⚠️ beda jawaban dari Q31",q:"Pernyataan benar terkait vaskularisasi renal adalah... [versi TONO]",o:["V. arcuata lanjut V. interlobaris (ren)","A. renalis membagi jadi lima dengan empat ke posterior dan satu ke anterior","A. arcuata memvaskularisasi apex pyramidalis renalis","A. arcuata cabang utama A. segmentalis"],a:"A. renalis membagi jadi lima dengan empat ke posterior dan satu ke anterior",exp:"<strong>A. renalis → 5 a. segmentalis</strong>: superior, anterosuperior, anteroinferior, inferior (4 ke anterior), dan posterior (1 ke posterior). Soal sama tapi jawaban yang benar berbeda dari versi AMBAR!",src:"TONO Q25 ⚠️ Beda jawaban dengan AMBAR Q61"},
+{n:33,group:"Asidosis metabolik tidak terkompensasi",siblings:"TONO Q3 (unik di antara ketiganya)",q:"Asidosis metabolik apabila tidak terkompensasi, maka yang TIDAK terpengaruh adalah...",o:["Ion hidrogen","Ion karbon","Tekanan CO2","Ion HCO3-"],a:"Tekanan CO2",exp:"Asidosis metabolik murni (belum terkompensasi): HCO3⁻ ↓, H+ ↑, pH ↓. <strong>pCO2 belum berubah</strong> karena kompensasi respiratorik belum dimulai. Setelah terkompensasi: hiperventilasi → pCO2 ↓.",src:"TONO Q3"},
+{n:34,group:"Alkalosis metabolik kronis",siblings:"AMBAR Q52 (pH↑ + HCO3↑ + CO2↑ = terkompensasi)",q:"Pada kondisi: peningkatan pH, peningkatan HCO3⁻, dan peningkatan CO2 — terjadi...",o:["Asidosis respiratorik kronis","Alkalosis metabolik kronis","Alkalosis respiratorik","Alkalosis metabolik akut","Asidosis metabolik akut"],a:"Alkalosis metabolik kronis",exp:"pH↑ + HCO3⁻↑ = <strong>alkalosis metabolik</strong>. CO2 ikut ↑ = ada <strong>kompensasi respiratorik</strong> (hipoventilasi menahan CO2) → alkalosis metabolik <strong>kronis</strong>.",src:"AMBAR Q52"},
+{n:35,group:"Asidosis respiratorik akut",siblings:"AMBAR Q55 (pH↓ + CO2↑ + HCO3 normal = akut)",q:"Kondisi penurunan pH, peningkatan CO2, HCO3⁻ normal — menyebabkan kondisi...",o:["Alkalosis metabolik akut","Alkalosis respiratorik kronik","Asidosis respiratorik akut","Asidosis respiratorik kronik","Alkalosis metabolik kronik"],a:"Asidosis respiratorik akut",exp:"pH↓ + CO2↑ = asidosis respiratorik. HCO3⁻ <strong>normal</strong> = kompensasi renal belum terjadi = <strong>akut</strong>. Jika kronik: HCO3⁻ akan ↑ sebagai kompensasi.",src:"AMBAR Q55"},
+{n:36,group:"Alkalosis respiratorik",siblings:"AMBAR Q56 (yang TIDAK BENAR tentang alk. respiratorik)",q:"Berikut yang TIDAK BENAR terkait alkalosis respiratorik...",o:["pH > 7,35","Terjadi karena penurunan CO2","Terjadi karena peningkatan CO2","Kompensasi dengan penurunan HCO3"],a:"Terjadi karena peningkatan CO2",exp:"Alkalosis respiratorik terjadi karena <strong>CO2 menurun</strong> (hiperventilasi, kecemasan, hipoksia). Bukan karena CO2 meningkat (itu asidosis respiratorik). pH > 7,45 (batas normal 7,35-7,45). Kompensasi renal: HCO3⁻ ↓.",src:"AMBAR Q56"},
+];
+
+let current=0,mode='study',answered={},flags=new Set(),streak=0,timerInterval=null,timeLeft=1800;
+const $=id=>document.getElementById(id);
+
+function startQuiz(m){
+  mode=m;current=0;answered={};flags=new Set();streak=0;
+  $('start-screen').style.display='none';
+  $('quiz-screen').style.display='block';
+  $('result-screen').style.display='none';
+  $('mode-lbl').textContent=m==='study'?'Belajar':m==='exam'?'Ujian':'Drill';
+  if(m==='exam'){
+    timeLeft=1800;$('timer-display').style.display='flex';
+    $('score-display').style.display='none';$('q-map-wrap').style.display='none';
+    $('nav-row-top').style.display='none';
+    timerInterval=setInterval(tickTimer,1000);
+  } else {
+    $('timer-display').style.display='none';$('score-display').style.display='flex';
+    $('q-map-wrap').style.display='block';$('nav-row-top').style.display='flex';
+    buildMap();
+  }
+  renderQ();
+}
+
+function tickTimer(){
+  timeLeft--;
+  const m=Math.floor(timeLeft/60),s=timeLeft%60;
+  $('timer-display').textContent=`${m}:${s.toString().padStart(2,'0')}`;
+  if(timeLeft<=60)$('timer-display').classList.add('warn');
+  if(timeLeft<=0){clearInterval(timerInterval);showExamOverlay();}
+}
+
+function renderQ(){
+  const q=Q[current];
+  $('gb-title').textContent=q.group;
+  $('gb-list').textContent=q.siblings;
+  $('q-index').innerHTML=`Soal ${q.n} / ${Q.length} <span class="pill-tag">${q.group}</span>`;
+  $('q-text').textContent=q.q;
+  const opts=$('opts-container');opts.innerHTML='';
+  const keys=['A','B','C','D','E'];
+  q.o.forEach((opt,i)=>{
+    const btn=document.createElement('button');
+    btn.className='opt';
+    btn.innerHTML=`<span class="opt-key">${keys[i]}</span><span class="opt-body">${opt}</span><span class="opt-badge"></span>`;
+    const prev=answered[current];
+    if(prev!==undefined){
+      btn.disabled=true;
+      if(opt===q.a){btn.classList.add('correct');btn.querySelector('.opt-badge').textContent='✓';}
+      else if(opt===prev.choice&&!prev.correct){btn.classList.add('incorrect');btn.querySelector('.opt-badge').textContent='✗';}
+    } else {btn.onclick=()=>selectAnswer(i);}
+    opts.appendChild(btn);
+  });
+  const expBox=$('exp-box');
+  if(answered[current]!==undefined&&mode!=='exam'){
+    $('exp-answer').textContent='✓ '+q.a;
+    $('exp-body').innerHTML=q.exp;
+    $('exp-src').textContent='📎 '+q.src;
+    expBox.classList.add('show');
+  } else expBox.classList.remove('show');
+  $('flag-btn').classList.toggle('flagged',flags.has(current));
+  $('prog-fill').style.width=`${((current+1)/Q.length)*100}%`;
+  $('prog-txt').textContent=`${current+1} / ${Q.length}`;
+  const corr=Object.values(answered).filter(a=>a.correct).length;
+  $('score-display').textContent=`✓ ${corr}`;
+  $('btn-prev').disabled=current===0||mode==='drill';
+  $('btn-next').disabled=mode==='drill'&&answered[current]===undefined;
+  if(mode==='exam'){
+    let en=$('exam-nav-row');
+    if(!en){en=document.createElement('div');en.className='nav-row';en.id='exam-nav-row';en.style.paddingTop='10px';$('quiz-screen').appendChild(en);}
+    if(current===Q.length-1||Object.keys(answered).length===Q.length){
+      en.innerHTML=`<button class="nav-btn gold" style="width:100%;justify-content:center" onclick="showExamOverlay()">✓ Submit Ujian</button>`;
+    } else {
+      en.innerHTML=`<button class="nav-btn secondary" onclick="navigate(-1)" ${current===0?'disabled':''}>‹ Prev</button><span class="nav-spacer"></span><button class="nav-btn primary" onclick="navigate(1)" ${current===Q.length-1?'disabled':''}>Next ›</button>`;
+    }
+  }
+  if(mode!=='exam')buildMap();
+  updateStats();
+}
+
+function selectAnswer(idx){
+  const q=Q[current],choice=q.o[idx],correct=choice===q.a;
+  answered[current]={choice,correct};
+  if(mode==='drill'){
+    if(!correct){
+      const btns=$('opts-container').querySelectorAll('.opt');
+      btns[idx].classList.add('drill-wrong-shake');
+      setTimeout(()=>btns[idx].classList.remove('drill-wrong-shake'),500);
+      delete answered[current];streak=0;return;
+    } else {streak++;if(streak>=3)showStreak(streak);}
+  } else {if(correct){streak++;if(streak>=3)showStreak(streak);}else streak=0;}
+  renderQ();
+  if(mode==='drill'&&correct){
+    setTimeout(()=>{
+      if(current<Q.length-1){current++;renderQ();}
+      else $('drill-reset-overlay').classList.add('show');
+    },900);
+  }
+}
+function navigate(dir){const next=current+dir;if(next<0||next>=Q.length)return;current=next;renderQ();}
+function toggleFlag(){if(flags.has(current))flags.delete(current);else flags.add(current);$('flag-btn').classList.toggle('flagged',flags.has(current));buildMap();}
+function buildMap(){
+  const grid=$('q-map-grid');grid.innerHTML='';
+  Q.forEach((_,i)=>{
+    const d=document.createElement('div');d.className='q-dot';d.textContent=i+1;
+    if(i===current)d.classList.add('current');
+    if(answered[i])d.classList.add(answered[i].correct?'answered':'wrong');
+    if(flags.has(i))d.classList.add('flagged-dot');
+    d.onclick=()=>{current=i;renderQ();};
+    grid.appendChild(d);
+  });
+}
+function showExamOverlay(){$('exam-overlay').classList.add('show');}
+function closeOverlay(){$('exam-overlay').classList.remove('show');}
+function submitExam(){$('exam-overlay').classList.remove('show');showResult();}
+function drillReset(){$('drill-reset-overlay').classList.remove('show');answered={};current=0;renderQ();}
+function showResult(){
+  if(timerInterval)clearInterval(timerInterval);
+  const corr=Object.values(answered).filter(a=>a.correct).length;
+  const wrong=Object.values(answered).filter(a=>!a.correct).length;
+  const skip=Q.length-Object.keys(answered).length;
+  $('quiz-screen').style.display='none';$('result-screen').style.display='block';
+  $('r-score').innerHTML=`${corr}<span>/${Q.length}</span>`;
+  $('r-sub').textContent=`Kamu menjawab ${corr} benar dari ${Q.length} soal`;
+  $('r-correct').textContent=corr;$('r-wrong').textContent=wrong;$('r-skip').textContent=skip;
+  updateStats();
+}
+function reviewMode(){
+  $('result-screen').style.display='none';$('quiz-screen').style.display='block';
+  current=0;mode='study';$('mode-lbl').textContent='Review';
+  $('q-map-wrap').style.display='block';$('nav-row-top').style.display='flex';
+  $('score-display').style.display='flex';$('timer-display').style.display='none';
+  const en=$('exam-nav-row');if(en)en.remove();
+  buildMap();renderQ();
+}
+function updateStats(){
+  const done=Object.keys(answered).length;
+  const corr=Object.values(answered).filter(a=>a.correct).length;
+  $('s-done').textContent=done;
+  $('s-pct').textContent=done>0?Math.round(corr/done*100)+'%':'—';
+}
+function showStreak(n){const t=$('streak-toast');t.textContent=`🔥 ${n}× Streak Benar!`;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+function goHome(){
+  if(timerInterval)clearInterval(timerInterval);
+  $('drill-reset-overlay').classList.remove('show');$('exam-overlay').classList.remove('show');
+  $('quiz-screen').style.display='none';$('result-screen').style.display='none';
+  $('start-screen').style.display='block';answered={};updateStats();
+  const en=$('exam-nav-row');if(en)en.remove();
+}
+document.addEventListener('keydown',(e)=>{
+  if($('quiz-screen').style.display==='none')return;
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
+  const ro=$('drill-reset-overlay');
+  if(ro.classList.contains('show')){if(e.key==='Enter')drillReset();return;}
+  const eo=$('exam-overlay');
+  if(eo.classList.contains('show')){if(e.key==='Escape')closeOverlay();if(e.key==='Enter')submitExam();return;}
+  const keys=['a','b','c','d','e'];
+  if(keys.includes(e.key.toLowerCase())&&answered[current]===undefined){
+    const idx=keys.indexOf(e.key.toLowerCase());
+    if(idx<Q[current].o.length)selectAnswer(idx);
+  }
+  if((e.key==='ArrowRight'||e.key==='Enter')&&mode!=='drill')navigate(1);
+  if(e.key==='ArrowLeft'&&mode!=='drill')navigate(-1);
+  if(e.key.toLowerCase()==='f')toggleFlag();
+});
+</script>
+</div>
+</body>
+</html>

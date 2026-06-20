@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Histologi - Berdasarkan Kisi-Kisi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Lora', serif;
+            background: linear-gradient(135deg, #e0eafc, #cfdef3);
+            background-image: url('https://www.transparenttextures.com/patterns/subtle-zebra-3d.png');
+        }
+        .title-font {
+            font-family: 'Cinzel Decorative', cursive;
+        }
+        .container-bg {
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), inset 0 0 10px rgba(0,0,0,0.05);
+            border: 1px solid #ccc;
+        }
+        .btn-primary {
+            background-color: #6d8a9f;
+            color: #ffffff;
+            font-weight: bold;
+            border: 2px solid #5a7284;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.2s ease-in-out;
+        }
+        .btn-primary:hover {
+            background-color: #5a7284;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+        .btn-secondary {
+             background-color: #a1b0bc;
+        }
+        .btn-secondary:hover {
+             background-color: #8d9aab;
+        }
+        .btn-answer {
+            background-color: #f1f5f9;
+            color: #334155;
+            border: 2px solid #cbd5e1;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.2s ease-in-out;
+            font-weight: 600;
+        }
+        .btn-answer:hover:not(:disabled) {
+            background-color: #e2e8f0;
+            border-color: #94a3b8;
+            transform: scale(1.02);
+        }
+        .btn-answer.correct {
+            background-color: #dcfce7 !important;
+            color: #166534;
+            border-color: #4ade80 !important;
+        }
+        .btn-answer.wrong {
+            background-color: #fee2e2 !important;
+            color: #b91c1c;
+            border-color: #f87171 !important;
+        }
+        .btn-answer:disabled {
+            opacity: 0.8;
+            cursor: not-allowed;
+        }
+        .progress-bar-container {
+            background-color: #e2e8f0;
+            border: 1px solid #cbd5e1;
+        }
+        .progress-bar {
+            background-color: #6d8a9f;
+        }
+        .review-item {
+            background-color: #fafafa;
+            border: 1px solid #e0e0e0;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div id="quiz-container" class="w-full max-w-3xl mx-auto rounded-lg p-6 md:p-8 container-bg text-gray-800">
+
+        <!-- Start Screen -->
+        <div id="start-screen">
+            <h1 class="text-3xl md:text-4xl font-bold text-center mb-2 title-font text-[#3e5062]">Kuis Jaringan Ikat</h1>
+            <h2 class="text-xl md:text-2xl font-bold text-center mb-6 text-[#5a7284]">(Berdasarkan Kisi-Kisi)</h2>
+            <p class="text-center mb-8">Uji pemahaman Anda tentang Jaringan Ikat berdasarkan kisi-kisi yang telah disediakan. Jawablah semua pertanyaan untuk melihat skor dan pembahasan lengkap.</p>
+            <div class="text-center">
+                <button id="start-btn" class="btn-primary py-3 px-8 rounded-lg text-xl">Mulai Kuis</button>
+            </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="hidden">
+            <div class="flex justify-between items-center mb-4">
+                <div id="question-counter" class="font-bold text-lg"></div>
+                <div id="score" class="font-bold text-lg">Skor: 0</div>
+            </div>
+            <div class="progress-bar-container w-full rounded-full h-4 mb-6">
+                <div id="progress-bar" class="progress-bar h-4 rounded-full" style="width: 0%"></div>
+            </div>
+            <h2 id="question-text" class="text-xl md:text-2xl font-semibold mb-6 text-center"></h2>
+            <div id="answer-buttons" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            <div class="text-right mt-8">
+                <button id="next-btn" class="btn-primary py-2 px-6 rounded-lg hidden">Selanjutnya</button>
+            </div>
+        </div>
+
+        <!-- End Screen -->
+        <div id="end-screen" class="hidden text-center">
+             <h1 class="text-3xl md:text-4xl font-bold text-center mb-4 title-font text-[#3e5062]">Kuis Selesai!</h1>
+             <p class="text-lg mb-4">Berikut adalah ringkasan hasil Anda:</p>
+             <p id="final-score" class="text-2xl mb-2 font-bold"></p>
+             <p id="final-stats" class="text-lg mb-6"></p>
+             <div class="flex justify-center gap-4">
+                <button id="review-btn" class="btn-primary btn-secondary py-3 px-8 rounded-lg text-lg">Lihat Pembahasan</button>
+                <button id="restart-btn" class="btn-primary py-3 px-8 rounded-lg text-lg">Ulangi Kuis</button>
+             </div>
+        </div>
+        
+        <!-- Review Screen -->
+        <div id="review-screen" class="hidden">
+            <h1 class="text-3xl font-bold text-center mb-6 title-font text-[#3e5062]">Pembahasan Jawaban</h1>
+            <div id="review-content" class="space-y-6 max-h-[60vh] overflow-y-auto pr-2"></div>
+            <div class="text-center mt-8">
+                 <button id="back-to-end-btn" class="btn-primary py-2 px-6 rounded-lg">Kembali ke Skor</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const quizDataSource = [
+             { question: "Manakah dari berikut ini yang termasuk dalam klasifikasi Jaringan Ikat Sebenarnya (Connective Tissue Proper) jenis Longgar?", answers: [{ text: "Areolar, Adiposa, Retikuler", correct: true }, { text: "Hialin, Elastis, Fibrokartilago", correct: false }, { text: "Teratur, Tidak Teratur, Elastis", correct: false }, { text: "Tulang dan Darah", correct: false }], explanation: "Kisi-kisi poin 1 menyatakan Jaringan Ikat Sebenarnya Longgar terdiri dari Areolar, Adiposa (Lemak), dan Retikuler." },
+             { question: "Jaringan yang berfungsi menahan tarikan kuat dari berbagai arah dan ditemukan di dermis kulit adalah...", answers: [{ text: "Jaringan Ikat Padat Tidak Teratur", correct: true }, { text: "Jaringan Ikat Padat Teratur", correct: false }, { text: "Jaringan Areolar", correct: false }, { text: "Kartilago Hialin", correct: false }], explanation: "Kisi-kisi poin 2 menyebutkan fungsi Jaringan Padat Tidak Teratur adalah 'Tahan terhadap tarikan dari berbagai arah'." },
+             { question: "Sel yang berfungsi mensintesis serat seperti kolagen dan elastin, serta sangat aktif dalam penyembuhan luka adalah...", answers: [{ text: "Fibroblas", correct: true }, { text: "Makrofag", correct: false }, { text: "Sel Mast", correct: false }, { text: "Adiposit", correct: false }], explanation: "Kisi-kisi poin 3 menjelaskan fungsi Fibroblas adalah 'Mensintesis serat (kolagen, elastin, retikuler) dan substansi dasar'." },
+             { question: "Membran yang melapisi rongga tubuh tertutup seperti rongga perut (peritoneum) dan rongga jantung (perikardium) disebut...", answers: [{ text: "Membran Serosa", correct: true }, { text: "Membran Mukosa", correct: false }, { text: "Membran Kutaneus", correct: false }, { text: "Lamina Propria", correct: false }], explanation: "Kisi-kisi poin 1 mengklasifikasikan Membran Serosa sebagai pelapis rongga tubuh yang tertutup." },
+             { question: "Fungsi utama dari jaringan ikat retikuler adalah...", answers: [{ text: "Membentuk stroma (kerangka lunak) untuk organ limfoid", correct: true }, { text: "Menyimpan energi dalam bentuk lemak", correct: false }, { text: "Menahan tarikan kuat dari satu arah", correct: false }, { text: "Memberi dukungan yang fleksibel pada persendian", correct: false }], explanation: "Kisi-kisi poin 2 menyatakan fungsi Jaringan Retikuler adalah 'Membentuk stroma (kerangka lunak) untuk organ limfoid'." },
+             { question: "Sel makrofag yang ditemukan secara spesifik di sistem saraf pusat disebut...", answers: [{ text: "Mikroglia", correct: true }, { text: "Sel Kupffer", correct: false }, { text: "Osteoklas", correct: false }, { text: "Sel Langerhans", correct: false }], explanation: "Kisi-kisi poin 3 mencantumkan nama spesifik makrofag, termasuk Mikroglia di sistem saraf pusat." },
+             { question: "Perbedaan fungsional utama antara lemak putih dan lemak coklat adalah...", answers: [{ text: "Lemak coklat kaya mitokondria dan berfungsi untuk termogenesis", correct: true }, { text: "Lemak putih memiliki banyak tetesan lipid kecil", correct: false }, { text: "Lemak coklat berfungsi utama sebagai cadangan energi", correct: false }, { text: "Lemak putih tidak ditemukan pada orang dewasa", correct: false }], explanation: "Kisi-kisi poin 3 menjelaskan bahwa lemak coklat kaya akan mitokondria dan berfungsi untuk termogenesis (produksi panas)." },
+             { question: "Jaringan embrionik yang menjadi asal dari semua jenis jaringan ikat adalah...", answers: [{ text: "Mesenkim", correct: true }, { text: "Ektoderm", correct: false }, { text: "Endoderm", correct: false }, { text: "Jaringan Areolar", correct: false }], explanation: "Kisi-kisi poin 1 menyebutkan Mesenkim sebagai 'Jaringan asal dari semua jenis jaringan ikat'." },
+             { question: "Proses pembentukan darah atau hematopoiesis terjadi di dalam...", answers: [{ text: "Tulang", correct: true }, { text: "Kartilago", correct: false }, { text: "Jaringan Adiposa", correct: false }, { text: "Jaringan Ikat Padat Teratur", correct: false }], explanation: "Kisi-kisi poin 2 menyebutkan salah satu fungsi tulang adalah tempat 'hematopoiesis (pembentukan darah)'." },
+             { question: "Sel plasma dapat dikenali dari sitoplasmanya yang basofilik dan adanya area pucat dekat inti. Area pucat ini merupakan...", answers: [{ text: "Aparatus Golgi yang besar", correct: true }, { text: "Kumpulan mitokondria", correct: false }, { text: "Nukleolus", correct: false }, { text: "Vakuola berisi lemak", correct: false }], explanation: "Kisi-kisi poin 3 menjelaskan organel penting sel plasma adalah 'Aparatus Golgi yang besar (tampak sebagai area pucat dekat inti)'." },
+             { question: "Manakah dari berikut ini yang merupakan contoh dari Jaringan Ikat Penunjang (Supporting Connective Tissue)?", answers: [{ text: "Kartilago dan Tulang", correct: true }, { text: "Darah dan Limfa", correct: false }, { text: "Tendon dan Ligamen", correct: false }, { text: "Jaringan Areolar dan Adiposa", correct: false }], explanation: "Kisi-kisi poin 1 mengklasifikasikan Kartilago dan Tulang sebagai Jaringan Ikat Penunjang." },
+             { question: "Jaringan di dinding arteri besar yang memungkinkannya meregang saat jantung memompa dan kembali ke bentuk semula (recoil) adalah...", answers: [{ text: "Jaringan Ikat Padat Elastis", correct: true }, { text: "Jaringan Ikat Padat Teratur", correct: false }, { text: "Otot Polos", correct: false }, { text: "Kartilago Elastis", correct: false }], explanation: "Kisi-kisi poin 2 menyebutkan fungsi Jaringan Elastis adalah 'Memberikan kemampuan meregang dan kembali ke bentuk semula (recoil)'." },
+             { question: "Kondrosit, sel penyusun kartilago, dapat mencegah pertumbuhan pembuluh darah ke dalam matriks dengan menghasilkan...", answers: [{ text: "Faktor antiangiogenesis", correct: true }, { text: "Histamin", correct: false }, { text: "Antibodi", correct: false }, { text: "Heparin", correct: false }], explanation: "Kisi-kisi poin 3 menyatakan 'Kondrosit juga menghasilkan faktor antiangiogenesis yang mencegah pembentukan pembuluh darah'." },
+             { question: "Pembengkakan (edema) terjadi ketika ada akumulasi cairan berlebih di dalam...", answers: [{ text: "Jaringan Areolar", correct: true }, { text: "Jaringan Adiposa", correct: false }, { text: "Jaringan Tulang", correct: false }, { text: "Jaringan Ikat Padat", correct: false }], explanation: "Kisi-kisi poin 2 menyebutkan Jaringan Areolar sebagai tempat 'menampung cairan jaringan (edema)'." },
+             { question: "Sel yang melepaskan mediator kimia seperti histamin dan heparin dari granulnya untuk memulai respons peradangan adalah...", answers: [{ text: "Sel Mast", correct: true }, { text: "Sel Plasma", correct: false }, { text: "Fibroblas", correct: false }, { text: "Eosinofil", correct: false }], explanation: "Kisi-kisi poin 3 menjelaskan fungsi Sel Mast adalah 'Melepaskan mediator kimia (seperti histamin dan heparin) dari granul sitoplasmanya'." },
+             { question: "Tendon yang menghubungkan otot ke tulang adalah contoh dari...", answers: [{ text: "Jaringan Ikat Padat Teratur", correct: true }, { text: "Jaringan Ikat Padat Tidak Teratur", correct: false }, { text: "Fibrokartilago", correct: false }, { text: "Jaringan Elastis", correct: false }], explanation: "Kisi-kisi poin 2 memberikan tendon sebagai contoh Jaringan Padat Teratur yang tahan tarikan satu arah." },
+             { question: "Sel darah putih yang jumlahnya meningkat secara khusus pada kondisi alergi dan infeksi parasit adalah...", answers: [{ text: "Eosinofil", correct: true }, { text: "Neutrofil", correct: false }, { text: "Basofil", correct: false }, { text: "Limfosit", correct: false }], explanation: "Kisi-kisi poin 3 menyatakan 'Eosinofil secara khusus meningkat jumlahnya pada kondisi alergi dan infeksi parasit'." },
+             { question: "Manakah dari jenis kartilago berikut yang paling tahan terhadap tekanan dan ditemukan di diskus intervertebralis?", answers: [{ text: "Fibrokartilago", correct: true }, { text: "Kartilago Hialin", correct: false }, { text: "Kartilago Elastis", correct: false }, { text: "Semua jenis kartilago sama kuatnya", correct: false }], explanation: "Kisi-kisi poin 1 mengklasifikasikan Fibrokartilago sebagai salah satu jenis Kartilago. Kisi-kisi poin 2 menyebutkan fungsi kartilago secara umum adalah menahan tekanan." },
+             { question: "Sel fagositosis utama dalam jaringan ikat yang berasal dari monosit darah adalah...", answers: [{ text: "Makrofag", correct: true }, { text: "Fibroblas", correct: false }, { text: "Sel Mast", correct: false }, { text: "Kondrosit", correct: false }], explanation: "Kisi-kisi poin 3 mendefinisikan Makrofag (dari Monosit) sebagai sel yang berfungsi untuk Fagositosis." },
+             { question: "Manakah yang BUKAN fungsi umum dari jaringan ikat seperti yang tercantum dalam kisi-kisi?", answers: [{ text: "Menghantarkan impuls saraf", correct: true }, { text: "Dukungan struktural", correct: false }, { text: "Transportasi", correct: false }, { text: "Penyimpanan energi", correct: false }], explanation: "Kisi-kisi poin 2 mencantumkan daftar fungsi umum jaringan ikat, yang tidak termasuk menghantarkan impuls saraf (itu adalah fungsi jaringan saraf)." }
+        ];
+
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const endScreen = document.getElementById('end-screen');
+        const reviewScreen = document.getElementById('review-screen');
+
+        const startBtn = document.getElementById('start-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const reviewBtn = document.getElementById('review-btn');
+        const backToEndBtn = document.getElementById('back-to-end-btn');
+
+        const questionCounterEl = document.getElementById('question-counter');
+        const scoreEl = document.getElementById('score');
+        const progressBar = document.getElementById('progress-bar');
+        const questionTextEl = document.getElementById('question-text');
+        const answerButtonsEl = document.getElementById('answer-buttons');
+
+        const finalScoreEl = document.getElementById('final-score');
+        const finalStatsEl = document.getElementById('final-stats');
+        const reviewContentEl = document.getElementById('review-content');
+
+        let quizData, currentQuestionIndex, score, incorrectAnswers;
+
+        startBtn.addEventListener('click', startQuiz);
+        restartBtn.addEventListener('click', startQuiz);
+        nextBtn.addEventListener('click', () => {
+            currentQuestionIndex++;
+            setNextQuestion();
+        });
+        reviewBtn.addEventListener('click', showReview);
+        backToEndBtn.addEventListener('click', () => {
+            reviewScreen.classList.add('hidden');
+            endScreen.classList.remove('hidden');
+        });
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function startQuiz() {
+            quizData = [...quizDataSource];
+            shuffleArray(quizData);
+
+            currentQuestionIndex = 0;
+            score = 0;
+            incorrectAnswers = [];
+
+            startScreen.classList.add('hidden');
+            endScreen.classList.add('hidden');
+            reviewScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+
+            updateScore();
+            setNextQuestion();
+        }
+
+        function setNextQuestion() {
+            resetState();
+            if (currentQuestionIndex < quizData.length) {
+                showQuestion(quizData[currentQuestionIndex]);
+            } else {
+                showResults();
+            }
+        }
+
+        function showQuestion(question) {
+            questionCounterEl.innerText = `Pertanyaan ${currentQuestionIndex + 1} / ${quizData.length}`;
+            const progressPercentage = ((currentQuestionIndex + 1) / quizData.length) * 100;
+            progressBar.style.width = `${progressPercentage}%`;
+            
+            questionTextEl.innerText = question.question;
+
+            const shuffledAnswers = [...question.answers];
+            shuffleArray(shuffledAnswers);
+
+            shuffledAnswers.forEach(answer => {
+                const button = document.createElement('button');
+                button.innerText = answer.text;
+                button.classList.add('btn-answer', 'w-full', 'text-left', 'p-4', 'rounded-lg');
+                button.dataset.correct = answer.correct;
+                button.addEventListener('click', selectAnswer);
+                answerButtonsEl.appendChild(button);
+            });
+        }
+        
+        function resetState() {
+            nextBtn.classList.add('hidden');
+            while (answerButtonsEl.firstChild) {
+                answerButtonsEl.removeChild(answerButtonsEl.firstChild);
+            }
+        }
+        
+        function selectAnswer(e) {
+            const selectedBtn = e.target;
+            const isCorrect = selectedBtn.dataset.correct === "true";
+            
+            if (isCorrect) {
+                score++;
+                updateScore();
+            } else {
+                const currentQ = quizData[currentQuestionIndex];
+                incorrectAnswers.push({
+                    question: currentQ.question,
+                    yourAnswer: selectedBtn.innerText,
+                    correctAnswer: currentQ.answers.find(ans => ans.correct).text,
+                    explanation: currentQ.explanation
+                });
+            }
+
+            Array.from(answerButtonsEl.children).forEach(button => {
+                setStatusClass(button, button.dataset.correct === "true");
+                button.disabled = true;
+            });
+
+            nextBtn.classList.remove('hidden');
+        }
+
+        function setStatusClass(element, isCorrect) {
+            if (isCorrect) {
+                element.classList.add('correct');
+            } else {
+                element.classList.add('wrong');
+            }
+        }
+        
+        function updateScore() {
+            scoreEl.innerText = `Skor: ${score}`;
+        }
+
+        function showResults() {
+            quizScreen.classList.add('hidden');
+            endScreen.classList.remove('hidden');
+            
+            const scorePercentage = Math.round((score / quizData.length) * 100);
+            finalScoreEl.innerText = `Skor Akhir: ${scorePercentage}%`;
+            finalStatsEl.innerText = `Anda menjawab benar ${score} dari ${quizData.length} pertanyaan.`;
+            reviewBtn.style.display = incorrectAnswers.length > 0 ? 'inline-block' : 'none';
+        }
+        
+        function showReview() {
+            endScreen.classList.add('hidden');
+            reviewScreen.classList.remove('hidden');
+            reviewContentEl.innerHTML = '';
+            
+            incorrectAnswers.forEach(item => {
+                const itemEl = document.createElement('div');
+                itemEl.classList.add('review-item', 'p-4', 'rounded-lg', 'text-left');
+                itemEl.innerHTML = `
+                    <p class="font-bold text-lg mb-2">${item.question}</p>
+                    <p class="mb-1"><span class="font-semibold text-red-600">Jawaban Anda:</span> ${item.yourAnswer}</p>
+                    <p class="mb-2"><span class="font-semibold text-green-700">Jawaban Benar:</span> ${item.correctAnswer}</p>
+                    <p class="text-sm bg-gray-100 p-2 rounded"><span class="font-semibold">Penjelasan:</span> ${item.explanation}</p>
+                `;
+                reviewContentEl.appendChild(itemEl);
+            });
+        }
+    </script>
+</body>
+</html>
+

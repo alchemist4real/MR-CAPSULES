@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis CBT 1.4 - Mochi Edition (100 Soal)</title>
+    <!-- Impor Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Impor Google Font (Inter & Poppins) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@500;700&display=swap" rel="stylesheet">
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        /* CSS Kustom - Tema Emerald Green Glassmorphism */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --text-primary: #ffffff;
+            --text-secondary: #ecfdf5;
+            --btn-primary: #047857;
+            --btn-primary-hover: #065f46;
+            --correct: #34d399; /* Emerald 400 */
+            --incorrect: #f87171; /* Red 400 */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--primary-gradient);
+            color: var(--text-primary);
+            user-select: none;
+            padding: 1rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Scrollbar kustom */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 4px;
+        }
+
+        /* Kontainer utama */
+        .quiz-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+            padding: 2rem;
+            width: 95%;
+            max-width: 900px;
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1, h2, h3 {
+            font-family: 'Poppins', sans-serif;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Tombol Aksi Utama */
+        .action-btn {
+            background-color: white;
+            color: #065f46; /* Emerald dark */
+            border: none;
+            padding: 1rem 1.5rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border-radius: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            background-color: #ecfdf5;
+        }
+
+        .action-btn:active {
+            transform: translateY(0);
+        }
+
+        .action-btn:disabled {
+            background-color: rgba(255,255,255,0.5);
+            color: #999;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Tombol Navigasi Kecil */
+        .nav-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.4);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Tombol Opsi Jawaban */
+        .option-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            width: 100%;
+            text-align: left;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            border-radius: 0.75rem;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.2s;
+            position: relative;
+            font-weight: 500;
+        }
+
+        .option-btn:hover:not(.disabled) {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateX(4px);
+        }
+
+        /* State Jawaban */
+        .option-btn.correct {
+            background: rgba(52, 211, 153, 0.9) !important; /* Emerald Green */
+            border-color: #10b981 !important;
+            color: #022c22;
+        }
+        
+        .option-btn.incorrect {
+            background: rgba(248, 113, 113, 0.9) !important; /* Red */
+            border-color: #ef4444 !important;
+        }
+
+        .option-btn.disabled {
+            cursor: default;
+            opacity: 0.8;
+        }
+
+        /* Kotak Penjelasan */
+        .explanation-box {
+            background: rgba(0, 0, 0, 0.25);
+            border-left: 4px solid #fbbf24; /* Amber accent */
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Flashcard Styles */
+        .flashcard {
+            perspective: 1000px;
+            height: 400px;
+            cursor: pointer;
+        }
+        
+        .flashcard-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        
+        .flashcard.flipped .flashcard-inner {
+            transform: rotateY(180deg);
+        }
+        
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+        
+        .flashcard-back {
+            transform: rotateY(180deg);
+            background: rgba(255,255,255,0.25);
+            align-items: flex-start;
+            text-align: left;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background: #fff;
+            width: 0%;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        /* Utility */
+        .hidden { display: none !important; }
+
+    </style>
+</head>
+<body>
+
+    <!-- 1. Layar Mulai -->
+    <div id="start-screen" class="quiz-container text-center flex flex-col items-center justify-center min-h-[500px]">
+        <div class="mb-8 p-4 bg-white/10 rounded-full">
+            <i class="ph ph-plant text-6xl text-white"></i>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-bold mb-2">KUIS CBT 1.4</h1>
+        <h2 class="text-xl text-emerald-100 mb-8 font-medium">Mochi Edition (Emerald)</h2>
+        
+        <div class="grid gap-4 w-full max-w-md">
+            <button onclick="startMode('flashcard')" class="action-btn group">
+                <i class="ph ph-cards text-2xl group-hover:scale-110 transition"></i>
+                Mode Flashcard
+            </button>
+            <button onclick="startMode('practice')" class="action-btn group">
+                <i class="ph ph-student text-2xl group-hover:scale-110 transition"></i>
+                Mode Latihan
+            </button>
+            <button onclick="startMode('exam')" class="action-btn group">
+                <i class="ph ph-timer text-2xl group-hover:scale-110 transition"></i>
+                Mode Ujian
+            </button>
+        </div>
+        <p class="mt-8 text-sm opacity-70">Total 100 Soal</p>
+    </div>
+
+    <!-- 2. Layar Kuis (Latihan & Ujian) -->
+    <div id="quiz-screen" class="quiz-container hidden">
+        <!-- Header Kuis -->
+        <div class="flex justify-between items-end mb-2">
+            <div class="text-sm font-semibold text-emerald-100">Soal <span id="current-q-num">1</span> / <span id="total-q-num">100</span></div>
+            <div class="text-sm font-bold bg-white/20 px-3 py-1 rounded-lg" id="score-badge">Skor: 0</div>
+        </div>
+        
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div id="quiz-progress-bar" class="progress-bar"></div>
+        </div>
+
+        <!-- Area Soal -->
+        <div class="mb-6 min-h-[100px]">
+            <h3 id="question-text" class="text-xl md:text-2xl font-semibold leading-relaxed"></h3>
+        </div>
+
+        <!-- Opsi Jawaban -->
+        <div id="options-container" class="flex flex-col gap-2">
+            <!-- Buttons generated by JS -->
+        </div>
+
+        <!-- Feedback (Mode Latihan) -->
+        <div id="feedback-container" class="hidden explanation-box">
+            <h4 class="font-bold text-yellow-300 mb-1 flex items-center gap-2"><i class="ph ph-info"></i> Pembahasan:</h4>
+            <p id="feedback-text" class="text-white/90"></p>
+        </div>
+
+        <!-- Kontrol Navigasi -->
+        <div class="flex justify-between mt-8 pt-4 border-t border-white/20">
+            <button id="prev-btn" onclick="navigateQuestion(-1)" class="nav-btn flex items-center gap-2 disabled:opacity-50" disabled>
+                <i class="ph ph-caret-left"></i> Sebelumnya
+            </button>
+            
+            <button onclick="backToMenu()" class="nav-btn bg-red-500/20 border-red-400/40 hover:bg-red-500/40">
+                Menu
+            </button>
+
+            <button id="next-btn" onclick="navigateQuestion(1)" class="nav-btn flex items-center gap-2 bg-emerald-600/40 border-emerald-400 hover:bg-emerald-600/60">
+                Selanjutnya <i class="ph ph-caret-right"></i>
+            </button>
+            
+            <button id="finish-btn" onclick="finishQuiz()" class="nav-btn bg-yellow-500/40 border-yellow-400 hover:bg-yellow-500/60 hidden">
+                Selesai <i class="ph ph-check-circle"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 3. Layar Flashcard -->
+    <div id="flashcard-screen" class="quiz-container hidden flex flex-col items-center">
+        <div class="w-full flex justify-between mb-4">
+            <span class="text-emerald-100 font-bold">Flashcard Mode</span>
+            <span id="fc-progress">1 / 100</span>
+        </div>
+
+        <!-- Kartu -->
+        <div class="flashcard w-full mb-6" onclick="this.classList.toggle('flipped')">
+            <div class="flashcard-inner">
+                <!-- Depan -->
+                <div class="flashcard-front">
+                    <span class="uppercase text-xs tracking-widest opacity-70 mb-4">Pertanyaan</span>
+                    <p id="fc-question" class="text-xl font-bold">Loading...</p>
+                    <p class="mt-8 text-sm opacity-60 animate-pulse">(Ketuk untuk balik)</p>
+                </div>
+                <!-- Belakang -->
+                <div class="flashcard-back">
+                    <span class="uppercase text-xs tracking-widest opacity-70 mb-2 w-full border-b border-white/20 pb-2">Jawaban & Pembahasan</span>
+                    <div id="fc-answer" class="text-lg mb-4 font-bold text-green-300"></div>
+                    <div id="fc-explanation" class="text-sm leading-relaxed opacity-90"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigasi Flashcard -->
+        <div class="flex gap-4 w-full justify-center">
+            <button onclick="navFlashcard(-1)" class="action-btn text-sm py-2"><i class="ph ph-caret-left"></i> Prev</button>
+            <button onclick="backToMenu()" class="nav-btn">Menu</button>
+            <button onclick="navFlashcard(1)" class="action-btn text-sm py-2">Next <i class="ph ph-caret-right"></i></button>
+        </div>
+    </div>
+
+    <!-- 4. Layar Hasil -->
+    <div id="result-screen" class="quiz-container hidden text-center">
+        <h2 class="text-3xl font-bold mb-2">Hasil Kuis</h2>
+        <div class="text-6xl font-bold my-8" id="final-score">0</div>
+        <p class="text-emerald-100 mb-8">Nilai Akhir Anda</p>
+        
+        <div class="grid grid-cols-2 gap-4 mb-8 text-left bg-white/10 p-4 rounded-xl">
+            <div>
+                <span class="block text-xs opacity-70">Benar</span>
+                <span id="result-correct" class="text-xl font-bold text-emerald-400">0</span>
+            </div>
+            <div>
+                <span class="block text-xs opacity-70">Salah</span>
+                <span id="result-incorrect" class="text-xl font-bold text-red-400">0</span>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-3">
+            <button onclick="startMode(currentMode)" class="action-btn w-full">Ulangi Kuis</button>
+            <button onclick="backToMenu()" class="nav-btn w-full justify-center">Kembali ke Menu Utama</button>
+        </div>
+    </div>
+
+    <script>
+        // --- DATABASE SOAL (100 SOAL) ---
+        // Diekstrak dari "MOCHI CBT 2 BLOK 1.4.pdf"
+        const questions = [
+            {
+                q: "Sel sensorik pada utrikulus dan sakulus yang banyak berakhiran aferen (nerve chalice) adalah...",
+                o: ["Hair cell type 1", "Hair cell type 2", "Marginal cell", "Light cell", "Dark cell"],
+                a: "Hair cell type 1",
+                exp: "<b>Hair cell type I</b> memiliki bentuk seperti botol (flask-shaped) dan dikelilingi oleh ujung saraf aferen berbentuk piala (nerve chalice). Type II berbentuk silinder."
+            },
+            {
+                q: "Struktur yang berfungsi menghasilkan endolimfe adalah...",
+                o: ["Stria vascularis", "Ligamen spiral", "Ganglion spiralis", "Lamina ossea spiral", "Membran basilaris"],
+                a: "Stria vascularis",
+                exp: "<b>Stria vascularis</b> terletak di dinding lateral duktus koklearis dan berfungsi memproduksi endolimfe serta menjaga keseimbangan ion (terutama Kalium)."
+            },
+            {
+                q: "Hormon utama yang bekerja pada sistem reproduksi laki-laki adalah...",
+                o: ["Testosterone", "Estrogen", "Progesteron", "Prolaktin", "Oksitosin"],
+                a: "Testosterone",
+                exp: "<b>Testosteron</b> adalah androgen utama yang dihasilkan testis, berperan dalam spermatogenesis dan karakteristik sekunder pria."
+            },
+            {
+                q: "Berikut ini yang TIDAK benar mengenai refleks endokrin adalah...",
+                o: ["Hipofisis merupakan organ pengatur utama", "Dapat dipengaruhi komponen cairan ECF", "Dapat dipengaruhi neurotransmitter", "Dapat dipengaruhi hormon lain", "Dapat dipengaruhi oleh banyak hormon"],
+                a: "Hipofisis merupakan organ pengatur utama",
+                exp: "Meskipun hipofisis penting, <b>Hipotalamus</b>-lah yang menyediakan kontrol tingkat tertinggi sistem endokrin, bukan hipofisis semata."
+            },
+            {
+                q: "Apakah jenis sel penyusun folikel tiroid dalam keadaan sehat atau normal?",
+                o: ["Kuboid simpleks", "Skuamus simpleks", "Kolumner simpleks", "Skuamus kompleks", "Kuboid kompleks"],
+                a: "Kuboid simpleks",
+                exp: "Dalam keadaan normal/istirahat, epitel folikel tiroid berbentuk <b>kuboid selapis</b>. Jika sangat aktif menjadi kolumner, jika inaktif menjadi gepeng."
+            },
+            {
+                q: "Pernyataan yang benar mengenai hipofisis adalah...",
+                o: ["Pars superiornya adalah diafragma sellae, salah satu bagian dari lipatan duramater", "Terletak pada sella tursica os ethmoidale", "Divaskularisasi a. hipofisialis cabang a. carotis externa", "Pars anterior menghasilkan ADH", "Tidak berhubungan dengan hipotalamus"],
+                a: "Pars superiornya adalah diafragma sellae, salah satu bagian dari lipatan duramater",
+                exp: "Hipofisis ditutupi oleh <b>diafragma sellae</b> (lipatan duramater). Ia terletak di sella tursica os *sphenoid*, bukan ethmoid."
+            },
+            {
+                q: "Hormon tiroid terstimulasi karena pengeluaran hormon...",
+                o: ["Thyroid Stimulating Hormone (TSH)", "Oxytocine hormone", "Adrenocorticotropic hormone", "Melanocytes stimulating hormone", "Growth hormone"],
+                a: "Thyroid Stimulating Hormone (TSH)",
+                exp: "<b>TSH</b> dari hipofisis anterior merangsang kelenjar tiroid untuk memproduksi dan melepaskan T3 dan T4."
+            },
+            {
+                q: "Struktur apakah yang berfungsi mengatur pergerakan membran timpani dan tulang pendengaran untuk proteksi suara keras?",
+                o: ["Otot tensor timpani & Stapedius", "Kartilago elastis", "Tulang temporal", "Oval window", "Round window"],
+                a: "Otot tensor timpani & Stapedius",
+                exp: "<b>M. Tensor Timpani</b> dan <b>M. Stapedius</b> berkontraksi untuk meredam getaran ossicula saat ada suara keras (refleks akustik)."
+            },
+            {
+                q: "Apa struktur yang terletak pada regio olfactori cavum nasi?",
+                o: ["Concha nasalis superior", "Concha nasalis media", "Concha nasalis inferior", "Choana", "Vestibulum nasi"],
+                a: "Concha nasalis superior",
+                exp: "Mukosa olfaktori terletak di atap rongga hidung, meliputi <b>Concha Nasalis Superior</b> dan septum nasi bagian atas."
+            },
+            {
+                q: "Pasien mata merah, nyeri, pandangan kabur, TIO meningkat (Glaukoma). Penyebabnya adalah...",
+                o: ["Sumbatan di kanalis Schlemm", "Gangguan saraf optik", "Gangguan absorbsi kornea", "Hiperlakrimasi", "Sumbatan duktus nasolakrimalis"],
+                a: "Sumbatan di kanalis Schlemm",
+                exp: "Glaukoma sering disebabkan hambatan aliran keluar humor akuos melalui <b>Kanalis Schlemm</b>, menyebabkan TIO naik."
+            },
+            {
+                q: "Pernyataan yang benar mengenai sifat umum hormon adalah...",
+                o: ["Dapat menuju organ jauh (via darah)", "Aksi hormon selalu berlangsung sangat cepat", "Tidak bisa masuk membran plasma", "Hanya mempengaruhi sel tetangga", "Tidak membutuhkan reseptor"],
+                a: "Dapat menuju organ jauh (via darah)",
+                exp: "Hormon disekresikan ke darah dan berefek pada sel target yang letaknya <b>jauh</b> (endokrin)."
+            },
+            {
+                q: "Pernyataan benar mengenai auris interna adalah...",
+                o: ["Skala media dan skala timpani dipisahkan membran basilaris", "Di skala vestibuli ada endolimfe", "Terdapat sakulus di dalam kanalis semisirkularis", "Membran basilaris berada di atas skala vestibuli", "Skala timpani bermuara ke oval window"],
+                a: "Skala media dan skala timpani dipisahkan membran basilaris",
+                exp: "<b>Membran basilaris</b> memisahkan Skala Media (atas) dan Skala Timpani (bawah). Skala Vestibuli berisi perilimfe."
+            },
+            {
+                q: "Sel penghasil aldosteron terdapat di lapisan adrenal bagian...",
+                o: ["Zona Glomerulosa", "Zona Fasikulata", "Zona Retikularis", "Medulla", "Kapsul"],
+                a: "Zona Glomerulosa",
+                exp: "<b>Zona Glomerulosa</b> (lapisan terluar korteks) menghasilkan mineralokortikoid yaitu Aldosteron."
+            },
+            {
+                q: "Saat menelan, otot yang berfungsi untuk membuka tuba auditiva adalah...",
+                o: ["M. tensor veli palatini", "M. stapedius", "M. tensor tympani", "M. digastricus", "M. masseter"],
+                a: "M. tensor veli palatini",
+                exp: "<b>M. Tensor Veli Palatini</b> (dan levator) berkontraksi saat menelan/menguap untuk membuka muara tuba eustachius."
+            },
+            {
+                q: "Penghasil polipeptida pankreas pada pulau Langerhans adalah...",
+                o: ["Sel F (PP cell)", "Sel A (Alpha)", "Sel B (Beta)", "Sel D (Delta)", "Sel Acini"],
+                a: "Sel F (PP cell)",
+                exp: "<b>Sel F</b> (atau sel PP) menghasilkan Polipeptida Pankreas. Sel A: Glukagon, Sel B: Insulin, Sel D: Somatostatin."
+            },
+            {
+                q: "Berikut ini yang termasuk peristiwa termolisis (pelepasan panas) adalah...",
+                o: ["Radiasi dan Konveksi", "Aktivitas otot rangka", "Vasokonstriksi", "Menggigil", "Makan"],
+                a: "Radiasi dan Konveksi",
+                exp: "Termolisis adalah pelepasan panas, contohnya: <b>Radiasi, Konveksi, Evaporasi</b>. Aktivitas otot adalah termogenesis."
+            },
+            {
+                q: "Aksis hipothalamus - hipofisis terkait sistem reproduksi melibatkan hormon...",
+                o: ["GnRH -> FSH & LH", "GHRH -> FSH", "GHIH -> LH", "TRH -> TSH", "CRH -> ACTH"],
+                a: "GnRH -> FSH & LH",
+                exp: "<b>GnRH</b> (Gonadotropin Releasing Hormone) menstimulasi pelepasan FSH dan LH (Gonadotropin)."
+            },
+            {
+                q: "Bagian telinga yang memiliki inervasi sensorik cabang N. V (Trigeminus) seperti gigi adalah...",
+                o: ["Membran timpani & MAE", "Koklea", "Tuba auditiva", "Kanalis semisirkularis", "Sakulus"],
+                a: "Membran timpani & MAE",
+                exp: "<b>N. Auriculotemporalis</b> (cabang V3) menginervasi sebagian aurikula, MAE, dan membran timpani luar."
+            },
+            {
+                q: "Yang benar tentang hormon prolaktin adalah...",
+                o: ["Organ target glandula mammae (laktasi)", "Stimulasi kontraksi uterus", "Menghambat dopamin", "Dihasilkan neurohipofisis", "Hanya pada wanita"],
+                a: "Organ target glandula mammae (laktasi)",
+                exp: "<b>Prolaktin</b> merangsang pertumbuhan payudara dan produksi susu. Ia dihambat oleh Dopamin."
+            },
+            {
+                q: "Kondisi yang menstimulasi pengeluaran hormon aldosteron adalah...",
+                o: ["Peningkatan kalium darah", "Peningkatan natrium darah", "Peningkatan volume darah", "Peningkatan tekanan darah", "Penurunan kalium"],
+                a: "Peningkatan kalium darah",
+                exp: "Aldosteron disekresikan saat <b>Kalium tinggi</b> (untuk dibuang) atau saat Natrium/Volume darah rendah (untuk ditahan)."
+            },
+            {
+                q: "Pernyataan yang sesuai dengan refraksi mata adalah...",
+                o: ["Refraksi terbesar terjadi di kornea (perbedaan densitas udara-kornea)", "Indeks refraksi terbesar vitreous humor", "Lensa tidak membiaskan cahaya", "Sudut jatuh cahaya tidak berpengaruh", "Semua salah"],
+                a: "Refraksi terbesar terjadi di kornea (perbedaan densitas udara-kornea)",
+                exp: "Kekuatan bias terbesar ada di permukaan anterior <b>kornea</b> karena perbedaan indeks bias yang besar dengan udara."
+            },
+            {
+                q: "Kelenjar saliva yang memproduksi volume saliva terbanyak (terutama saat istirahat/terstimulasi) adalah...",
+                o: ["Glandula Submandibularis (istirahat) / Parotis (stimulasi)", "Glandula Sublingualis", "Glandula Lingualis", "Glandula Palatina", "Glandula Labialis"],
+                a: "Glandula Submandibularis (istirahat) / Parotis (stimulasi)",
+                exp: "Secara total harian, <b>Submandibularis</b> (70%) paling banyak. Saat makan (stimulasi), Parotis menyusul. (Opsi soal biasanya merujuk Submandibularis)."
+            },
+            {
+                q: "Aliran sekresi air mata yang benar adalah...",
+                o: ["Glandula lakrimalis -> Punctum -> Kanalikuli -> Saccus -> Ductus Nasolakrimalis -> Meatus Nasi Inf", "Saccus -> Glandula -> Ductus", "Punctum -> Saccus -> Kanalikuli", "Ductus -> Saccus -> Punctum", "Meatus -> Ductus -> Saccus"],
+                a: "Glandula lakrimalis -> Punctum -> Kanalikuli -> Saccus -> Ductus Nasolakrimalis -> Meatus Nasi Inf",
+                exp: "Air mata mengalir dari kelenjar ke mata, lalu masuk punctum, kanalikuli, saccus, duktus nasolakrimalis, dan keluar di hidung."
+            },
+            {
+                q: "Jenis sel pada kelenjar epifisis (pineal) yang mensekresikan melatonin adalah...",
+                o: ["Pinealosit", "Pituisit", "Oksifil", "Kromofil", "Kromofob"],
+                a: "Pinealosit",
+                exp: "<b>Pinealosit</b> adalah sel utama kelenjar pineal yang memproduksi melatonin."
+            },
+            {
+                q: "Stimulasi sistem saraf simpatis pada kelenjar adrenal memicu pelepasan hormon dari bagian...",
+                o: ["Medulla adrenal (Epinefrin)", "Cortex adrenal", "Zona glomerulosa", "Zona retikularis", "Zona fasikulata"],
+                a: "Medulla adrenal (Epinefrin)",
+                exp: "<b>Medula adrenal</b> adalah modifikasi ganglion simpatis yang melepas katekolamin (epinefrin)."
+            },
+            {
+                q: "Hormon yang diproduksi di hipofisis anterior antara lain...",
+                o: ["Gonadotropin (FSH/LH), TSH, ACTH", "Oxytocin, ADH", "CRH, TRH", "Aldosteron, Kortisol", "Insulin, Glukagon"],
+                a: "Gonadotropin (FSH/LH), TSH, ACTH",
+                exp: "Hipofisis anterior memproduksi hormon tropik: FSH, LH, TSH, ACTH, GH, Prolaktin."
+            },
+            {
+                q: "Karakteristik hormon hidrofobik (steroid) adalah...",
+                o: ["Reseptornya di dalam sel (intraseluler) & mempengaruhi regulasi gen", "Larut air", "Reseptor di permukaan membran", "Butuh second messenger cAMP", "Tidak butuh protein transport"],
+                a: "Reseptornya di dalam sel (intraseluler) & mempengaruhi regulasi gen",
+                exp: "Hormon steroid (lipofilik/hidrofobik) menembus membran sel dan berikatan dengan reseptor <b>intraseluler</b>."
+            },
+            {
+                q: "Efferen untuk refleks dilatasi pupil (midriasis) berasal dari...",
+                o: ["Ganglion cervicalis superior (Simpatis)", "Nukleus Edinger Westphal (Parasimpatis)", "N. Facialis", "N. Opticus", "Korteks visual"],
+                a: "Ganglion cervicalis superior (Simpatis)",
+                exp: "Dilatasi pupil diatur oleh saraf <b>Simpatis</b> yang berasal dari Ganglion Cervicalis Superior."
+            },
+            {
+                q: "Pernyataan yang benar mengenai Fenestra Ovale (Oval Window) adalah...",
+                o: ["Tempat masuknya getaran stapes ke telinga dalam (skala vestibuli)", "Bermuara ke skala timpani", "Ditutupi membran timpani sekunder", "Lebih besar dari membran timpani", "Tidak bergetar"],
+                a: "Tempat masuknya getaran stapes ke telinga dalam (skala vestibuli)",
+                exp: "<b>Oval window</b> adalah tempat basis stapes menempel dan mentransfer getaran ke perilimfe skala vestibuli."
+            },
+            {
+                q: "Pernyataan yang benar mengenai ovarium adalah...",
+                o: ["Difiksasi ke dinding pelvis oleh ligamentum suspensorium ovarii", "Diperdarahi oleh A. Uterina saja", "Terletak di fosa iliaca", "Hanya organ eksokrin", "Tidak punya inervasi"],
+                a: "Difiksasi ke dinding pelvis oleh ligamentum suspensorium ovarii",
+                exp: "Ligamentum suspensorium ovarii (infundibulopelvicum) menggantung ovarium ke dinding pelvis dan berisi A./V. Ovarica."
+            },
+            {
+                q: "Pernyataan yang benar mengenai Melanocyte Stimulating Hormone (MSH)...",
+                o: ["Fungsi meningkatkan pigmentasi kulit", "Dihasilkan hipofisis posterior", "Menurunkan melanin", "Target organ tulang", "Distimulasi dopamin"],
+                a: "Fungsi meningkatkan pigmentasi kulit",
+                exp: "<b>MSH</b> merangsang melanosit memproduksi melanin. Produksinya meningkat pada kehamilan (linea nigra)."
+            },
+            {
+                q: "Bagian kelenjar adrenal yang mensintesis norepinefrin adalah...",
+                o: ["Medulla", "Korteks", "Glomerulosa", "Fasikulata", "Retikularis"],
+                a: "Medulla",
+                exp: "Katekolamin (Epinefrin & Norepinefrin) diproduksi oleh sel kromafin di <b>Medula Adrenal</b>."
+            },
+            {
+                q: "Hormon yang termasuk golongan eikosanoid (asam lemak) adalah...",
+                o: ["Prostaglandin", "Epinefrin", "Insulin", "Tiroksin", "Estrogen"],
+                a: "Prostaglandin",
+                exp: "<b>Prostaglandin</b> diturunkan dari asam arakidonat (asam lemak) dan merupakan hormon lokal (parakrin)."
+            },
+            {
+                q: "Pernyataan yang benar mengenai kelenjar pankreas...",
+                o: ["Ductus pancreaticus major bermuara di papilla duodeni major", "Hanya organ endokrin", "Terletak intraperitoneal", "Diperdarahi arteri carotis", "Menghasilkan empedu"],
+                a: "Ductus pancreaticus major bermuara di papilla duodeni major",
+                exp: "Ductus Wirsungi (major) bergabung dengan ductus choledochus bermuara di <b>Papilla Duodeni Major</b>."
+            },
+            {
+                q: "Ny. S suaranya serak setelah menyanyi. Bagian anatomi yang paling mungkin mengalami gangguan adalah...",
+                o: ["Pita suara (Plica Vocalis)", "Epiglottis", "Faring", "Uvula", "Lidah"],
+                a: "Pita suara (Plica Vocalis)",
+                exp: "Suara serak (disfonia) biasanya akibat gangguan pada vibrator suara utama yaitu <b>Pita Suara</b>."
+            },
+            {
+                q: "Apa yang terjadi pada fotoreseptor (sel batang) saat terpapar cahaya terang (setelah gelap)?",
+                o: ["Terjadi hiperpolarisasi (Kanal Na tutup)", "Terjadi depolarisasi", "Peningkatan cGMP", "Pelepasan glutamat meningkat", "Pembentukan rodopsin"],
+                a: "Terjadi hiperpolarisasi (Kanal Na tutup)",
+                exp: "Cahaya memecah rodopsin -> mengaktifkan transdusin -> cGMP turun -> kanal Na tutup -> <b>Hiperpolarisasi</b>."
+            },
+            {
+                q: "Sel epitel pada sakulus dan utrikulus yang berperan dalam absorbsi endolimfe adalah...",
+                o: ["Dark cell", "Light cell", "Hair cell", "Basal cell", "Pillar cell"],
+                a: "Dark cell",
+                exp: "<b>Dark cells</b> di area non-reseptor vestibulum berperan menjaga komposisi ion dan absorbsi endolimfe."
+            },
+            {
+                q: "Hormon yang diproduksi di hipotalamus (bukan hipofisis) adalah...",
+                o: ["Oxytocin & ADH", "TSH", "FSH", "ACTH", "GH"],
+                a: "Oxytocin & ADH",
+                exp: "Hipotalamus memproduksi <b>Oksitosin dan ADH</b>, lalu dikirim ke hipofisis posterior untuk disimpan."
+            },
+            {
+                q: "Respon tubuh saat suhu perifer lebih rendah dari suhu inti (kedinginan) adalah...",
+                o: ["Aktivitas otot rangka (menggigil) & Vasokonstriksi", "Berkeringat", "Vasodilatasi", "Napas cepat", "Diam saja"],
+                a: "Aktivitas otot rangka (menggigil) & Vasokonstriksi",
+                exp: "Tubuh memproduksi panas (termogenesis) lewat otot dan mencegah panas hilang lewat vasokonstriksi."
+            },
+            {
+                q: "Karakteristik dinding medial orbita yang benar adalah...",
+                o: ["Lebih anterior dibanding dinding lateral, membuat bola mata terekspos di sisi lateral", "Sangat tebal dan kuat", "Terdiri dari tulang zigomatik", "Melindungi sisi lateral mata", "Tidak ada"],
+                a: "Lebih anterior dibanding dinding lateral, membuat bola mata terekspos di sisi lateral",
+                exp: "Dinding lateral orbita 'mundur' (recessed), sehingga sisi <b>lateral</b> bola mata lebih terekspos (rawan trauma)."
+            },
+            {
+                q: "Diskriminasi intensitas suara (keras/lemah) dipengaruhi oleh...",
+                o: ["Amplitudo gelombang", "Frekuensi gelombang", "Warna suara", "Kecepatan rambat", "Arah suara"],
+                a: "Amplitudo gelombang",
+                exp: "Keras lemahnya suara (loudness) ditentukan oleh <b>Amplitudo</b>. Tinggi rendah nada (pitch) oleh Frekuensi."
+            },
+            {
+                q: "Pengukuran suhu tubuh inti yang paling akurat secara klinis adalah...",
+                o: ["Perrektal (Anus)", "Peroral", "Aksila", "Dahi", "Tangan"],
+                a: "Perrektal (Anus)",
+                exp: "Suhu rektal dianggap sebagai 'gold standard' klinis untuk suhu inti."
+            },
+            {
+                q: "Gerakan mata cepat involunter (bergetar) disebut...",
+                o: ["Nistagmus", "Strabismus", "Diplopia", "Ptosis", "Miosis"],
+                a: "Nistagmus",
+                exp: "<b>Nistagmus</b> adalah gerakan bola mata ritmik dan involunter, sering terkait gangguan vestibuler."
+            },
+            {
+                q: "Arteri centralis retina (cabang A. Ophthalmica) berfungsi menutrisi...",
+                o: ["Lapisan dalam retina (kecuali sel fotoreseptor)", "Seluruh bola mata", "Kornea", "Lensa", "Sclera"],
+                a: "Lapisan dalam retina (kecuali sel fotoreseptor)",
+                exp: "A. Centralis Retina mendarahi lapisan dalam retina. Fotoreseptor (cones/rods) dinutrisi oleh difusi dari koriokapilaris (choroid)."
+            },
+            {
+                q: "Hormon manakah yang termasuk struktur peptida/protein?",
+                o: ["Insulin", "Epinefrin (Amine)", "Aldosteron (Steroid)", "Testosteron (Steroid)", "Tiroksin (Amine)"],
+                a: "Insulin",
+                exp: "<b>Insulin</b> adalah hormon polipeptida. Hormon korteks adrenal dan gonad adalah steroid."
+            },
+            {
+                q: "Hormon yang berperan meningkatkan kadar kalsium darah adalah...",
+                o: ["Parathyroid Hormone (PTH)", "Kalsitonin", "Insulin", "Aldosteron", "Melatonin"],
+                a: "Parathyroid Hormone (PTH)",
+                exp: "<b>PTH</b> meningkatkan kalsium darah (dari tulang & ginjal). Kalsitonin menurunkannya."
+            },
+            {
+                q: "Area korteks olfaktori primer di otak terletak di...",
+                o: ["Lobus Temporalis (Uncus/Piriform cortex)", "Lobus Occipitalis", "Lobus Frontalis", "Lobus Parietalis", "Cerebellum"],
+                a: "Lobus Temporalis (Uncus/Piriform cortex)",
+                exp: "Korteks olfaktori primer (area 34) terletak di bagian medial <b>Lobus Temporal</b>."
+            },
+            {
+                q: "Barotrauma saat naik pesawat menyebabkan telinga terasa penuh. Struktur yang gagal menyamakan tekanan adalah...",
+                o: ["Tuba Auditiva (Eustachius)", "Koklea", "Kanalis Semisirkularis", "MAE", "Pinna"],
+                a: "Tuba Auditiva (Eustachius)",
+                exp: "<b>Tuba Eustachius</b> berfungsi menyamakan tekanan telinga tengah dengan udara luar. Jika gagal membuka, terjadi barotrauma."
+            },
+            {
+                q: "Impuls saraf dari reseptor penghidu (sel olfaktori) diteruskan pertama kali ke...",
+                o: ["Bulbus Olfaktorius (Sel Mitral)", "Thalamus", "Korteks", "Batang otak", "Medula spinalis"],
+                a: "Bulbus Olfaktorius (Sel Mitral)",
+                exp: "Akson sel reseptor menembus lamina cribrosa dan bersinaps dengan sel mitral di <b>Bulbus Olfaktorius</b>."
+            },
+            {
+                q: "Jaras penglihatan primer melibatkan sinaps di thalamus pada nukleus...",
+                o: ["Corpus Geniculatum Lateral (CGL)", "Corpus Geniculatum Medial (CGM)", "VPL", "VPM", "Pulvinar"],
+                a: "Corpus Geniculatum Lateral (CGL)",
+                exp: "Jaras visual: Retina -> N. II -> Chiasma -> Tractus -> <b>CGL</b> -> Radiatio -> Korteks Visual. (CGM untuk pendengaran)."
+            },
+            {
+                q: "Kelenjar Timus terletak di mediastinum superior, di sebelah posterior dari...",
+                o: ["Manubrium sterni", "Vertebra", "Esofagus", "Aorta", "Jantung"],
+                a: "Manubrium sterni",
+                exp: "Timus terletak tepat di belakang tulang dada (<b>sternum</b>) dan di depan perikardium/pembuluh besar."
+            },
+            {
+                q: "Jenis sel kelenjar paratiroid yang mensekresikan PTH adalah...",
+                o: ["Chief cell (Sel utama)", "Oksifil", "Sel C", "Sel folikel", "Sel G"],
+                a: "Chief cell (Sel utama)",
+                exp: "<b>Chief cells</b> adalah sel fungsional utama paratiroid yang menghasilkan PTH."
+            },
+            {
+                q: "Buffalo Hump dan Moon Face adalah tanda kelebihan hormon...",
+                o: ["Kortisol (Sindrom Cushing)", "Insulin", "Tiroksin", "GH", "Aldosteron"],
+                a: "Kortisol (Sindrom Cushing)",
+                exp: "Kelebihan glukokortikoid (<b>Kortisol</b>) menyebabkan redistribusi lemak ke punggung (buffalo hump) dan wajah."
+            },
+            {
+                q: "Efek hormon kalsitonin adalah...",
+                o: ["Menghambat osteoklas (menurunkan kalsium darah)", "Meningkatkan osteoklas", "Meningkatkan absorpsi kalsium usus", "Meningkatkan reabsorpsi ginjal", "Meningkatkan gula darah"],
+                a: "Menghambat osteoklas (menurunkan kalsium darah)",
+                exp: "<b>Kalsitonin</b> mencegah pengeroposan tulang dengan menghambat sel pemakan tulang (osteoklas)."
+            },
+            {
+                q: "Pembukaan kanal ion pada reseptor penghidu dipicu oleh second messenger...",
+                o: ["cAMP (Cyclic AMP)", "cGMP", "Ca2+", "IP3", "DAG"],
+                a: "cAMP (Cyclic AMP)",
+                exp: "Odoran mengaktifkan G-protein -> Adenilat siklase -> <b>cAMP</b> naik -> kanal kation terbuka."
+            },
+            {
+                q: "Hormon oksitosin disintesis terutama oleh nukleus hipotalamus...",
+                o: ["Nukleus Paraventrikularis", "Nukleus Supraoptikus", "Nukleus Arkuata", "Nukleus Suprachiasmatic", "Nukleus Mamillare"],
+                a: "Nukleus Paraventrikularis",
+                exp: "<b>Nukleus Paraventrikularis</b> dominan memproduksi Oksitosin (Supraoptikus dominan ADH)."
+            },
+            {
+                q: "Kumpulan badan sel saraf koklearis di dalam modiolus disebut...",
+                o: ["Ganglion Spiralis", "Ganglion Vestibularis", "Ganglion Geniculatum", "Ganglion Ciliare", "Ganglion Oticum"],
+                a: "Ganglion Spiralis",
+                exp: "Badan sel neuron pendengaran berkumpul membentuk <b>Ganglion Spiralis</b> (Corti) di dalam sumbu koklea."
+            },
+            {
+                q: "Hormon yang berperan mencegah inflamasi (anti-inflamasi) kuat adalah...",
+                o: ["Kortisol (Glukokortikoid)", "Aldosteron", "Adrenalin", "Insulin", "Glukagon"],
+                a: "Kortisol (Glukokortikoid)",
+                exp: "<b>Kortisol</b> menekan sistem imun dan peradangan (menghambat fosfolipase A2)."
+            },
+            {
+                q: "Hormon ADH (Vasopresin) disimpan dan dilepaskan oleh...",
+                o: ["Hipofisis Posterior (Neurohipofisis)", "Hipofisis Anterior", "Tiroid", "Ginjal", "Adrenal"],
+                a: "Hipofisis Posterior (Neurohipofisis)",
+                exp: "ADH dibuat di hipotalamus, tapi disimpan di <b>Hipofisis Posterior</b>."
+            },
+            {
+                q: "Reseptor keseimbangan dinamis (akselerasi angular/rotasi) terletak di...",
+                o: ["Krista Ampullaris (Kanalis Semisirkularis)", "Makula Utrikulus", "Makula Sakulus", "Organ Corti", "Helicotrema"],
+                a: "Krista Ampullaris (Kanalis Semisirkularis)",
+                exp: "Rotasi kepala dideteksi oleh cupula di <b>Krista Ampullaris</b>."
+            },
+            {
+                q: "Kelenjar tiroid dibungkus oleh kapsul (capsula propria & spuria). Capsula spuria berasal dari...",
+                o: ["Fascia Pretrachealis", "Fascia Superficialis", "Platysma", "Perikondrium", "Duramater"],
+                a: "Fascia Pretrachealis",
+                exp: "Lapisan luar pembungkus tiroid berasal dari lapisan <b>Fascia Pretrachealis</b> leher."
+            },
+            {
+                q: "Manakah yang BUKAN fungsi utama hormon tiroid?",
+                o: ["Meningkatkan eritropoesis", "Meningkatkan denyut jantung", "Meningkatkan metabolisme basal", "Menurunkan konsumsi oksigen", "Meningkatkan sensitivitas simpatis"],
+                a: "Menurunkan konsumsi oksigen",
+                exp: "Hormon tiroid justru <b>meningkatkan konsumsi oksigen</b> (efek kalorigenik) dan metabolisme."
+            },
+            {
+                q: "Kartilago penyusun daun telinga (aurikula) adalah tipe...",
+                o: ["Kartilago Elastis", "Kartilago Hialin", "Kartilago Fibrosa", "Tulang rawan sendi", "Tulang keras"],
+                a: "Kartilago Elastis",
+                exp: "Daun telinga harus fleksibel namun mempertahankan bentuk, tersusun dari <b>Kartilago Elastis</b>."
+            },
+            {
+                q: "Transporter GLUT-4 pada otot rangka ditranslokasi ke membran sel oleh pengaruh hormon...",
+                o: ["Insulin", "Glukagon", "FSH", "Aldosteron", "Kortisol"],
+                a: "Insulin",
+                exp: "<b>Insulin</b> memicu vesikel berisi GLUT-4 bergerak ke permukaan sel untuk memasukkan glukosa."
+            },
+            {
+                q: "Papila lidah yang paling banyak mengandung kuncup rasa (taste buds) dan berukuran besar di pangkal lidah adalah...",
+                o: ["Papila Valata (Sirkumvalata)", "Papila Filiformis", "Papila Fungiformis", "Papila Foliata", "Tonsil"],
+                a: "Papila Valata (Sirkumvalata)",
+                exp: "<b>Papila Valata</b> membentuk huruf V di pangkal lidah dan memiliki ribuan taste buds."
+            },
+            {
+                q: "Second messenger untuk hormon Nitric Oxide (NO) dan ANP adalah...",
+                o: ["cGMP", "cAMP", "Kalsium", "IP3", "DAG"],
+                a: "cGMP",
+                exp: "NO dan ANP bekerja melalui jalur <b>cGMP</b> (Cyclic Guanosine Monophosphate)."
+            },
+            {
+                q: "Pada transduksi sinyal insulin, protein kinase yang berperan adalah...",
+                o: ["Tyrosine Kinase", "Protein Kinase A", "Protein Kinase C", "G-Protein", "Adenilat Siklase"],
+                a: "Tyrosine Kinase",
+                exp: "Reseptor insulin adalah reseptor <b>Tirosin Kinase</b>."
+            },
+            {
+                q: "Otot yang berfungsi meredam getaran suara keras dengan menarik malleus adalah...",
+                o: ["M. Tensor Tympani", "M. Stapedius", "M. Masseter", "M. Temporalis", "M. Digastricus"],
+                a: "M. Tensor Tympani",
+                exp: "<b>M. Tensor Tympani</b> melekat pada malleus dan mengencangkan membran timpani untuk meredam suara."
+            },
+            {
+                q: "Prekursor (bahan baku) utama sintesis semua hormon steroid adalah...",
+                o: ["Kolesterol", "Protein", "Asam Amino", "Gula", "Yodium"],
+                a: "Kolesterol",
+                exp: "Semua hormon steroid (aldosteron, kortisol, seks) disintesis dari rangka dasar <b>Kolesterol</b>."
+            },
+            {
+                q: "Hormon prolaktin dihambat secara tonik oleh...",
+                o: ["Dopamin (PIH)", "TRH", "Estrogen", "Oksitosin", "Serotonin"],
+                a: "Dopamin (PIH)",
+                exp: "<b>Dopamin</b> dari hipotalamus bertindak sebagai Prolactin Inhibiting Hormone (PIH)."
+            },
+            {
+                q: "Peristiwa adaptasi penciuman (hidung tidak lagi membaui bau yang sama terus menerus) terjadi karena...",
+                o: ["Adaptasi cepat reseptor olfaktori", "Kerusakan saraf", "Polip", "Otak lelah", "Reseptor mati"],
+                a: "Adaptasi cepat reseptor olfaktori",
+                exp: "Reseptor olfaktori bersifat <b>phasic</b> (beradaptasi sangat cepat) terhadap stimulus yang konstan."
+            },
+            {
+                q: "Kadar gula darah tinggi (Hiperglikemia) adalah ciri penyakit...",
+                o: ["Diabetes Melitus", "Diabetes Insipidus", "Hipotiroid", "Addison", "Graves"],
+                a: "Diabetes Melitus",
+                exp: "<b>Diabetes Melitus</b> ditandai dengan hiperglikemia akibat kurang insulin atau resistensi insulin."
+            },
+            {
+                q: "Unsur kimia penting untuk pembentukan hormon tiroid adalah...",
+                o: ["Iodium (Iodine)", "Kalsium", "Zat Besi", "Magnesium", "Kalium"],
+                a: "Iodium (Iodine)",
+                exp: "Kelenjar tiroid butuh <b>Iodium</b> untuk membentuk T3 dan T4."
+            },
+            {
+                q: "Bau dapat mengubah suasana hati karena jaras olfaktori terhubung langsung ke...",
+                o: ["Sistem Limbik (Amigdala)", "Cerebellum", "Medula Spinalis", "Korteks Motorik", "Ganglia Basalis"],
+                a: "Sistem Limbik (Amigdala)",
+                exp: "Sistem limbik adalah pusat emosi. Koneksi langsung olfaktori ke sana membuat bau memicu emosi kuat."
+            },
+            {
+                q: "Pernyataan yang BENAR mengenai Skala Timpani adalah...",
+                o: ["Berisi Perilimfe & bermuara ke Round Window", "Berisi Endolimfe", "Terletak di atas membran vestibular", "Bermuara ke Oval Window", "Berisi udara"],
+                a: "Berisi Perilimfe & bermuara ke Round Window",
+                exp: "Skala Timpani berisi perilimfe dan berakhir di <b>Fenestra Rotundum (Round Window)</b>."
+            },
+            {
+                q: "Tiga tulang pendengaran (ossicula auditiva) dari luar ke dalam adalah...",
+                o: ["Malleus -> Incus -> Stapes", "Stapes -> Incus -> Malleus", "Incus -> Malleus -> Stapes", "Malleus -> Stapes -> Incus", "Tulang rawan -> Tulang keras -> Tulang spon"],
+                a: "Malleus -> Incus -> Stapes",
+                exp: "Urutan transmisi: Membran timpani -> <b>Malleus (martil) -> Incus (landasan) -> Stapes (sanggurdi)</b> -> Oval window."
+            },
+            {
+                q: "Refleks lakrimasi (keluar air mata) saat memakan makanan pedas disebut...",
+                o: ["Gustatory-lacrimal reflex", "Trigeminal reflex", "Psychogenic tearing", "Optic reflex", "Auditory reflex"],
+                a: "Gustatory-lacrimal reflex",
+                exp: "Rangsangan pengecap (pedas/panas) yang memicu air mata disebut <b>Gustatory-lacrimal reflex</b> (seperti 'crocodile tears')."
+            },
+            {
+                q: "Gerakan bola mata tidak terkoordinasi atau melompat-lompat disebut...",
+                o: ["Nistagmus", "Miosis", "Ptosis", "Katarak", "Glaukoma"],
+                a: "Nistagmus",
+                exp: "<b>Nistagmus</b> adalah osilasi ritmik bola mata."
+            },
+            {
+                q: "Peningkatan intensitas suara (loudness) dikodekan oleh...",
+                o: ["Amplitudo gelombang suara", "Frekuensi suara", "Kecepatan suara", "Warna suara", "Panjang gelombang"],
+                a: "Amplitudo gelombang suara",
+                exp: "Semakin besar <b>amplitudo</b> getaran, semakin keras suara yang terdengar."
+            },
+            {
+                q: "Otot polos yang berfungsi mempertahankan kelopak mata tetap terbuka (selain levator) adalah...",
+                o: ["M. Tarsalis Superior (Otot Muller)", "M. Orbicularis Oculi", "M. Rectus Superior", "M. Frontalis", "M. Zygomaticus"],
+                a: "M. Tarsalis Superior (Otot Muller)",
+                exp: "<b>M. Tarsalis Superior</b> adalah otot polos simpatis. Jika lumpuh (Horner syndrome), terjadi ptosis parsial."
+            },
+            {
+                q: "Reseptor membran plasma dengan struktur 7-transmembran (7-helix) biasanya bekerja dengan...",
+                o: ["Protein G (G-Protein Coupled Receptor)", "Kanal ion", "Enzim kinase", "DNA", "RNA"],
+                a: "Protein G (G-Protein Coupled Receptor)",
+                exp: "Reseptor 7-helix adalah ciri khas <b>GPCR</b> (G-Protein Coupled Receptors)."
+            },
+            {
+                q: "Pusat koordinasi gerakan mata volunter (frontal eye field) terletak di...",
+                o: ["Lobus Frontalis", "Lobus Occipitalis", "Cerebellum", "Batang otak", "Medula spinalis"],
+                a: "Lobus Frontalis",
+                exp: "Area 8 (Frontal Eye Field) di <b>lobus frontal</b> mengontrol gerakan mata sakadik volunter."
+            },
+            {
+                q: "Hiperkalsemia (kalsium darah tinggi) akan memicu sekresi hormon...",
+                o: ["Kalsitonin", "PTH", "Vitamin D", "Aldosteron", "Glukagon"],
+                a: "Kalsitonin",
+                exp: "Tubuh merespons kalsium tinggi dengan melepas <b>Kalsitonin</b> (tiroid) untuk menurunkannya."
+            },
+            {
+                q: "Sekresi hormon kortisol dari adrenal dipicu oleh hormon hipofisis...",
+                o: ["ACTH (Adrenocorticotropic Hormone)", "TSH", "FSH", "GH", "LH"],
+                a: "ACTH (Adrenocorticotropic Hormone)",
+                exp: "Aksis HPA: CRH -> <b>ACTH</b> -> Kortisol."
+            },
+            {
+                q: "Hormon yang termasuk golongan protein/polipeptida adalah...",
+                o: ["Insulin, Glukagon, GH", "Estrogen, Progesteron", "Tiroksin", "Adrenalin", "Kolesterol"],
+                a: "Insulin, Glukagon, GH",
+                exp: "Sebagian besar hormon hipofisis dan pankreas (Insulin, GH) adalah <b>protein</b>."
+            },
+            {
+                q: "Area identifikasi dan diskriminasi bau secara sadar di otak adalah...",
+                o: ["Korteks Orbitofrontal", "Hipotalamus", "Batang otak", "Cerebellum", "Medula spinalis"],
+                a: "Korteks Orbitofrontal",
+                exp: "Informasi olfaktori diteruskan ke <b>Korteks Orbitofrontal</b> untuk persepsi sadar dan diskriminasi bau."
+            },
+            {
+                q: "Pasien pasca cabut gigi mengalami kebas lidah kanan tapi pengecapan normal (akson pengecap utuh). Kerusakan kemungkinan pada...",
+                o: ["N. Lingualis (Saraf sensorik umum)", "Chorda Tympani", "N. Hypoglossus", "N. Glossopharyngeus", "Taste buds"],
+                a: "N. Lingualis (Saraf sensorik umum)",
+                exp: "Jika rasa raba hilang tapi pengecapan (via chorda tympani) utuh, berarti cedera spesifik pada serat sensorik <b>N. Lingualis</b>."
+            },
+            {
+                q: "Peningkatan osmolaritas darah (darah kental) akan menstimulasi produksi...",
+                o: ["ADH (Vasopresin)", "Aldosteron", "Insulin", "ANP", "Kortisol"],
+                a: "ADH (Vasopresin)",
+                exp: "<b>ADH</b> menahan air di ginjal untuk mengencerkan darah yang terlalu kental (osmolaritas tinggi)."
+            },
+            {
+                q: "Transporter glukosa yang sensitif insulin di sel lemak dan otot adalah...",
+                o: ["GLUT-4", "GLUT-1", "GLUT-2", "SGLT-1", "SGLT-2"],
+                a: "GLUT-4",
+                exp: "<b>GLUT-4</b> adalah transporter utama yang diatur insulin."
+            },
+            {
+                q: "Sel pada organ Corti yang berfungsi sebagai reseptor pendengaran (mengubah getaran jadi listrik) adalah...",
+                o: ["Hair cells (Sel Rambut)", "Sel penunjang", "Sel pilar", "Sel basal", "Sel marginal"],
+                a: "Hair cells (Sel Rambut)",
+                exp: "<b>Sel rambut</b> (luar dan dalam) di Organ Corti adalah mekanoreseptor pendengaran."
+            },
+            {
+                q: "Membran yang memisahkan skala media dan skala vestibuli adalah...",
+                o: ["Membran Reissner (Vestibularis)", "Membran Basilaris", "Membran Tektorial", "Membran Timpani", "Membran Otokonia"],
+                a: "Membran Reissner (Vestibularis)",
+                exp: "Atap skala media adalah <b>Membran Reissner</b>, dasarnya adalah Membran Basilaris."
+            },
+            {
+                q: "Di retina, sel yang aksonnya membentuk Nervus Optikus (N. II) adalah...",
+                o: ["Sel Ganglion", "Sel Bipolar", "Sel Fotoreseptor", "Sel Amakrin", "Sel Horizontal"],
+                a: "Sel Ganglion",
+                exp: "Lapisan terdalam retina berisi <b>Sel Ganglion</b>, aksonnya berkumpul keluar mata sebagai N. Optikus."
+            },
+            {
+                q: "Hormon yang memicu ovulasi pada wanita adalah lonjakan...",
+                o: ["LH (Luteinizing Hormone)", "FSH", "Estrogen", "Progesteron", "Prolaktin"],
+                a: "LH (Luteinizing Hormone)",
+                exp: "Lonjakan <b>LH (LH Surge)</b> di tengah siklus memicu pecahnya folikel (ovulasi)."
+            },
+            {
+                q: "Kekurangan hormon tiroid pada masa bayi dapat menyebabkan...",
+                o: ["Kretinisme (Retardasi mental & fisik)", "Gigantisme", "Dwarfisme hipofisis", "Akromegali", "Diabetes"],
+                a: "Kretinisme (Retardasi mental & fisik)",
+                exp: "Tiroid krusial untuk perkembangan otak janin/bayi. Kekurangannya menyebabkan <b>Kretinisme</b>."
+            },
+            {
+                q: "Lapisan vaskular mata (Uvea) terdiri dari...",
+                o: ["Iris, Corpus Ciliare, Choroid", "Kornea, Sclera", "Retina, Lensa", "Palpebra, Konjungtiva", "Pupil, Lensa"],
+                a: "Iris, Corpus Ciliare, Choroid",
+                exp: "Traktus uvealis (tunika vaskulosa) terdiri dari <b>Iris, Badan Siliar, dan Koroid</b>."
+            },
+            {
+                q: "Saluran yang menghubungkan faring dengan telinga tengah adalah...",
+                o: ["Tuba Eustachius", "Kanalis Akustikus Eksternus", "Kanalis Semisirkularis", "Duktus Koklearis", "Akuaduktus"],
+                a: "Tuba Eustachius",
+                exp: "<b>Tuba Eustachius</b> menyeimbangkan tekanan udara telinga tengah."
+            },
+            {
+                q: "Kelenjar endokrin yang mengalami atrofi (mengecil) seiring bertambahnya usia adalah...",
+                o: ["Kelenjar Timus", "Kelenjar Tiroid", "Pankreas", "Adrenal", "Hipofisis"],
+                a: "Kelenjar Timus",
+                exp: "<b>Timus</b> aktif pada anak-anak untuk maturasi imun, lalu mengecil (involusi) saat dewasa."
+            },
+            {
+                q: "Ion kalsium di dalam sel otot (sarkoplasma) disimpan di...",
+                o: ["Retikulum Sarkoplasma", "Mitokondria", "Nukleus", "Lisosom", "Badan Golgi"],
+                a: "Retikulum Sarkoplasma",
+                exp: "Kalsium untuk kontraksi otot disimpan di <b>Retikulum Sarkoplasma</b>."
+            },
+            {
+                q: "Dalam sistem endokrin, komunikasi parakrin berarti...",
+                o: ["Hormon bekerja pada sel tetangga yang berbeda jenis", "Hormon bekerja pada diri sendiri", "Hormon masuk darah ke organ jauh", "Hormon melalui sinaps", "Hormon keluar tubuh"],
+                a: "Hormon bekerja pada sel tetangga yang berbeda jenis",
+                exp: "<b>Parakrin</b> = efek lokal pada sel tetangga. Autokrin = efek pada diri sendiri."
+            },
+            {
+                q: "Reseptor nyeri disebut...",
+                o: ["Nosiseptor", "Termoreseptor", "Mekanoreseptor", "Kemoreseptor", "Fotoreseptor"],
+                a: "Nosiseptor",
+                exp: "Reseptor yang mendeteksi kerusakan jaringan (nyeri) adalah <b>Nosiseptor</b>."
+            },
+            {
+                q: "Lapisan meninges yang paling luar dan tebal adalah...",
+                o: ["Duramater", "Arachnoid", "Piamater", "Subarachnoid", "Epidural"],
+                a: "Duramater",
+                exp: "<b>Duramater</b> adalah lapisan pelindung otak paling luar, tebal dan kuat."
+            },
+            {
+                q: "Cairan serebrospinal (LCS) diproduksi oleh...",
+                o: ["Pleksus Choroideus", "Villi Arachnoid", "Duramater", "Ventrikel", "Sinus Sagitalis"],
+                a: "Pleksus Choroideus",
+                exp: "<b>Pleksus Choroideus</b> di dalam ventrikel otak memproduksi cairan serebrospinal."
+            },
+            {
+                q: "Bagian otak yang berfungsi sebagai pusat koordinasi keseimbangan dan gerakan halus adalah...",
+                o: ["Cerebellum (Otak Kecil)", "Cerebrum", "Hipotalamus", "Thalamus", "Pons"],
+                a: "Cerebellum (Otak Kecil)",
+                exp: "<b>Cerebellum</b> mengatur koordinasi motorik halus, postur, dan keseimbangan."
+            },
+            {
+                q: "Hormon Gastrointestinal 'Gastrin' dihasilkan oleh...",
+                o: ["Sel G di lambung", "Sel Beta pankreas", "Hati", "Usus halus", "Kolon"],
+                a: "Sel G di lambung",
+                exp: "<b>Sel G</b> di antrum lambung memproduksi Gastrin untuk memicu asam lambung."
+            }
+        ];
+
+        // --- LOGIKA APLIKASI ---
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userAnswers = new Array(questions.length).fill(null);
+        let currentMode = '';
+
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const flashcardScreen = document.getElementById('flashcard-screen');
+        const resultScreen = document.getElementById('result-screen');
+        
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const feedbackContainer = document.getElementById('feedback-container');
+        const feedbackText = document.getElementById('feedback-text');
+        
+        const currentQNum = document.getElementById('current-q-num');
+        const totalQNum = document.getElementById('total-q-num');
+        const scoreBadge = document.getElementById('score-badge');
+        const progressBar = document.getElementById('quiz-progress-bar');
+        
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const finishBtn = document.getElementById('finish-btn');
+
+        const fcQuestion = document.getElementById('fc-question');
+        const fcAnswer = document.getElementById('fc-answer');
+        const fcExplanation = document.getElementById('fc-explanation');
+        const fcProgress = document.getElementById('fc-progress');
+
+        function startMode(mode) {
+            currentMode = mode;
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = new Array(questions.length).fill(null);
+            
+            startScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            
+            if (mode === 'flashcard') {
+                flashcardScreen.classList.remove('hidden');
+                renderFlashcard();
+            } else {
+                quizScreen.classList.remove('hidden');
+                renderQuestion();
+            }
+        }
+
+        function backToMenu() {
+            quizScreen.classList.add('hidden');
+            flashcardScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+        }
+
+        function renderQuestion() {
+            const q = questions[currentQuestionIndex];
+            
+            currentQNum.innerText = currentQuestionIndex + 1;
+            totalQNum.innerText = questions.length;
+            scoreBadge.innerText = `Skor: ${score}`;
+            scoreBadge.classList.toggle('hidden', currentMode === 'exam');
+            
+            const percent = ((currentQuestionIndex + 1) / questions.length) * 100;
+            progressBar.style.width = `${percent}%`;
+
+            questionText.innerHTML = q.q;
+            
+            optionsContainer.innerHTML = '';
+            feedbackContainer.classList.add('hidden');
+
+            let opts = [...q.o];
+            if (currentMode === 'exam') {
+                opts.sort(() => Math.random() - 0.5);
+            }
+
+            opts.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                
+                const existingAns = userAnswers[currentQuestionIndex];
+                if (existingAns) {
+                    btn.classList.add('disabled');
+                    btn.disabled = true;
+                    
+                    if (currentMode === 'practice') {
+                        if (opt === q.a) btn.classList.add('correct');
+                        if (opt === existingAns && opt !== q.a) btn.classList.add('incorrect');
+                    } else {
+                        if (opt === existingAns) btn.style.background = 'rgba(255,255,255,0.4)';
+                    }
+                } else {
+                    btn.onclick = () => handleAnswer(opt, btn, q);
+                }
+
+                optionsContainer.appendChild(btn);
+            });
+
+            if (currentMode === 'practice' && userAnswers[currentQuestionIndex]) {
+                showFeedback(q);
+            }
+
+            prevBtn.disabled = currentQuestionIndex === 0;
+            if (currentQuestionIndex === questions.length - 1) {
+                nextBtn.classList.add('hidden');
+                finishBtn.classList.remove('hidden');
+            } else {
+                nextBtn.classList.remove('hidden');
+                finishBtn.classList.add('hidden');
+            }
+        }
+
+        function handleAnswer(selectedOpt, btnElem, questionObj) {
+            userAnswers[currentQuestionIndex] = selectedOpt;
+            
+            const allBtns = optionsContainer.querySelectorAll('.option-btn');
+            allBtns.forEach(b => {
+                b.classList.add('disabled');
+                b.disabled = true;
+            });
+
+            const isCorrect = selectedOpt === questionObj.a;
+            
+            if (isCorrect) {
+                score++;
+                if(currentMode === 'practice') btnElem.classList.add('correct');
+            } else {
+                if(currentMode === 'practice') {
+                    btnElem.classList.add('incorrect');
+                    allBtns.forEach(b => {
+                        if (b.innerText === questionObj.a) b.classList.add('correct');
+                    });
+                }
+            }
+
+            scoreBadge.innerText = `Skor: ${score}`;
+
+            if (currentMode === 'practice') {
+                showFeedback(questionObj);
+            } else {
+                btnElem.style.background = 'rgba(255,255,255,0.4)';
+            }
+        }
+
+        function showFeedback(qObj) {
+            feedbackText.innerHTML = qObj.exp;
+            feedbackContainer.classList.remove('hidden');
+        }
+
+        function navigateQuestion(direction) {
+            currentQuestionIndex += direction;
+            renderQuestion();
+        }
+
+        function finishQuiz() {
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            
+            const finalEl = document.getElementById('final-score');
+            const correctEl = document.getElementById('result-correct');
+            const incorrectEl = document.getElementById('result-incorrect');
+            
+            let currentVal = 0;
+            const interval = setInterval(() => {
+                currentVal++;
+                finalEl.innerText = currentVal;
+                if (currentVal >= score) clearInterval(interval);
+            }, 10);
+
+            correctEl.innerText = score;
+            incorrectEl.innerText = questions.length - score;
+        }
+
+        function renderFlashcard() {
+            const q = questions[currentQuestionIndex];
+            document.querySelector('.flashcard').classList.remove('flipped');
+            
+            fcProgress.innerText = `${currentQuestionIndex + 1} / ${questions.length}`;
+            
+            setTimeout(() => {
+                fcQuestion.innerHTML = q.q;
+                fcAnswer.innerText = q.a;
+                fcExplanation.innerHTML = q.exp;
+            }, 200);
+        }
+
+        function navFlashcard(dir) {
+            const newIndex = currentQuestionIndex + dir;
+            if (newIndex >= 0 && newIndex < questions.length) {
+                currentQuestionIndex = newIndex;
+                renderFlashcard();
+            }
+        }
+    </script>
+</body>
+</html>

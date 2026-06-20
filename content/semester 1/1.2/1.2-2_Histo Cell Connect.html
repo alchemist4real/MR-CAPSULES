@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tantangan Histologi: Edisi Meja Tinggi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            touch-action: manipulation;
+            background-color: #110c0e;
+            background-image: radial-gradient(ellipse at bottom, rgba(120, 29, 29, 0.2), transparent 60%);
+        }
+        .quiz-container {
+            background: rgba(10, 5, 7, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(202, 138, 4, 0.3);
+            box-shadow: 0 0 40px rgba(202, 138, 4, 0.1);
+        }
+        .title-text {
+            font-family: 'Playfair Display', serif;
+            color: #fef08a; /* yellow-200 */
+            text-shadow: 0 0 10px rgba(252, 211, 77, 0.5),
+                         0 0 20px rgba(252, 211, 77, 0.3);
+        }
+        .btn-primary {
+            background-color: #9f1239; /* rose-800 */
+            color: #fde2e4;
+            border: 1px solid #be123c;
+            box-shadow: 0 0 15px rgba(225, 29, 72, 0.4);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #be123c; /* rose-700 */
+            box-shadow: 0 0 25px rgba(225, 29, 72, 0.6);
+            transform: scale(1.05);
+        }
+        .option-btn {
+            background: rgba(30, 20, 23, 0.7);
+            transition: all 0.3s ease;
+            border: 1px solid #5c3b41;
+            color: #d1d5db; /* gray-300 */
+        }
+        .option-btn:hover {
+            background: rgba(50, 40, 43, 0.9);
+            border-color: #ca8a04; /* yellow-600 */
+        }
+        .correct {
+            background: rgba(21, 128, 61, 0.8) !important;
+            border-color: #16a34a !important;
+            color: white !important;
+            transform: scale(1.02);
+        }
+        .incorrect {
+            background: rgba(153, 27, 27, 0.8) !important;
+            border-color: #dc2626 !important;
+            color: white !important;
+        }
+        .disabled-option {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+        #timer-bar-inner {
+            transition: width 0.1s linear;
+            background: linear-gradient(90deg, #ca8a04, #facc15);
+            box-shadow: 0 0 10px #ca8a04;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+    </style>
+</head>
+<body class="text-gray-300 flex items-center justify-center min-h-screen p-4">
+
+    <div id="quiz-container" class="quiz-container rounded-2xl p-6 md:p-8 w-full max-w-3xl">
+        
+        <!-- Tampilan Pengaturan -->
+        <div id="settings-screen">
+            <h1 class="text-5xl font-bold text-center title-text mb-4">Klub Sitologi</h1>
+            <p class="text-center text-lg text-gray-400 mb-8">Hanya untuk Intelektual Terpilih. Atur waktu Anda.</p>
+            <div class="mb-6">
+                <label for="timer-input" class="block text-center text-yellow-400 font-medium mb-2">Waktu per Pertanyaan (detik):</label>
+                <input type="number" id="timer-input" value="15" min="5" max="60" class="w-1/2 mx-auto block bg-gray-900 border border-gray-600 text-white text-center text-xl rounded-lg p-2 focus:ring-yellow-500 focus:border-yellow-500">
+            </div>
+            <button id="start-btn" class="w-full btn-primary font-bold py-3 px-6 rounded-lg text-xl">Mulai Sesi</button>
+        </div>
+
+        <!-- Tampilan Pertanyaan Kuis -->
+        <div id="question-screen" class="hidden">
+            <div id="timer-bar" class="w-full bg-gray-800 rounded-full h-2.5 mb-4 overflow-hidden border border-gray-700">
+                <div id="timer-bar-inner" class="h-2.5 rounded-full" style="width: 100%"></div>
+            </div>
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-rose-300">Pertanyaan <span id="question-number"></span>/<span id="total-questions"></span></h2>
+                <div class="text-lg font-semibold bg-gray-900 px-4 py-2 rounded-lg border border-gray-700">Skor: <span id="score">0</span></div>
+            </div>
+            <div class="bg-black bg-opacity-20 p-6 rounded-lg border border-gray-700 mb-6">
+                <p id="question-text" class="text-xl leading-relaxed"></p>
+            </div>
+            <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            </div>
+            <div id="feedback-container" class="mt-6 p-4 rounded-lg text-center hidden border">
+                <p id="feedback-text" class="font-medium"></p>
+            </div>
+        </div>
+
+        <!-- Tampilan Hasil Akhir -->
+        <div id="result-screen" class="hidden text-center">
+            <h1 class="text-5xl font-bold title-text mb-4">Sesi Selesai</h1>
+            <p class="text-2xl text-gray-300 mb-2">Performa Anda:</p>
+            <p id="final-score" class="text-6xl font-extrabold text-white mb-6"></p>
+            <p id="result-message" class="text-lg text-yellow-300 mb-8"></p>
+            <button id="restart-btn" class="w-full btn-primary font-bold py-3 px-6 rounded-lg text-xl">Mulai Sesi Baru</button>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            { question: "Menurut slide 3, manakah yang BUKAN merupakan jenis persinyalan sel?", options: [{ text: "Paracrine signaling", correct: false },{ text: "Endocrine signaling", correct: false },{ text: "Catalytic signaling", correct: true },{ text: "Direct contacts", correct: false }], explanation: "Catalytic signaling tidak tercantum sebagai jenis utama persinyalan sel." },
+            { question: "Persinyalan yang melepaskan hormon ke dalam aliran darah untuk mencapai sel target yang jauh disebut...", options: [{ text: "Paracrine signaling", correct: false },{ text: "Synaptic signaling", correct: false },{ text: "Direct contact", correct: false },{ text: "Endocrine signaling", correct: true }], explanation: "Persinyalan endokrin menggunakan sistem peredaran darah untuk mengirim hormon." },
+            { question: "Reseptor intraseluler (di dalam sel) biasanya merespons sinyal yang bersifat apa?", options: [{ text: "Larut dalam air", correct: false },{ text: "Larut dalam lemak", correct: true },{ text: "Bermuatan positif", correct: false },{ text: "Berukuran besar", correct: false }], explanation: "Sinyal yang larut dalam lemak (lipid-soluble) dapat menembus membran sel." },
+            { question: "Manakah dari berikut ini yang merupakan 'pembawa pesan kedua' (second messenger) yang paling umum?", options: [{ text: "ATP dan G Protein", correct: false },{ text: "cAMP dan Kalsium (Ca++)", correct: true },{ text: "DNA dan RNA", correct: false },{ text: "Occludin dan Claudin", correct: false }], explanation: "Slide 11 menyebutkan cAMP dan Kalsium sebagai second messenger yang banyak digunakan." },
+            { question: "Proses di mana satu molekul sinyal dapat memicu respons seluler yang masif disebut...", options: [{ text: "Signal termination", correct: false },{ text: "Signal specificity", correct: false },{ text: "Signal amplification", correct: true },{ text: "Signal reception", correct: false }], explanation: "Amplifikasi sinyal adalah proses di mana sinyal awal diperkuat di setiap langkah." },
+            { question: "Jenis tautan sel yang berfungsi sebagai 'segel' untuk mencegah kebocoran antar sel epitel adalah...", options: [{ text: "Gap junctions", correct: false },{ text: "Desmosomes", correct: false },{ text: "Hemidesmosomes", correct: false },{ text: "Tight junctions", correct: true }], explanation: "Tight junctions (Zonula Occludens) menyegel ruang antar sel." },
+            { question: "Protein utama yang menyusun Tight Junctions adalah...", options: [{ text: "Connexin dan Connexon", correct: false },{ text: "Actin dan Myosin", correct: false },{ text: "Occludin dan Claudin", correct: true },{ text: "Cadherin dan Catenin", correct: false }], explanation: "Slide 23 menyebutkan Occludin dan Claudin sebagai protein integral pada tight junctions." },
+            { question: "Tautan penjangkar yang menghubungkan filamen aktin dari satu sel ke sel tetangganya adalah...", options: [{ text: "Desmosomes", correct: false },{ text: "Adherens junctions", correct: true },{ text: "Hemidesmosomes", correct: false },{ text: "Tight junctions", correct: false }], explanation: "Adherens junctions secara spesifik menautkan filamen aktin antar sel." },
+            { question: "Penyakit kulit Pemphigus vulgaris disebabkan oleh serangan autoimun terhadap protein pada...", options: [{ text: "Gap junctions", correct: false },{ text: "Tight junctions", correct: false },{ text: "Desmosomes", correct: true },{ text: "Hemidesmosomes", correct: false }], explanation: "Pemphigus vulgaris menargetkan desmoglein, protein kaderin pada desmosom." },
+            { question: "Apa fungsi utama dari Hemidesmosome?", options: [{ text: "Menghubungkan sel ke sel lain", correct: false },{ text: "Membentuk saluran komunikasi", correct: false },{ text: "Menambatkan sel ke matriks ekstraseluler", correct: true },{ text: "Mencegah kebocoran antar sel", correct: false }], explanation: "Hemidesmosome menambatkan sel pada membran basal di bawahnya." },
+            { question: "Tautan komunikasi pada sel hewan yang memungkinkan pertukaran ion secara langsung adalah...", options: [{ text: "Plasmodesmata", correct: false },{ text: "Gap junctions", correct: true },{ text: "Desmosomes", correct: false },{ text: "Tight junctions", correct: false }], explanation: "Gap junctions membentuk saluran yang menghubungkan sitoplasma sel hewan." },
+            { question: "Struktur yang analog dengan Gap Junction pada sel tumbuhan disebut...", options: [{ text: "Connexon", correct: false },{ text: "Cell wall", correct: false },{ text: "Plasmodesmata", correct: true },{ text: "Vacuole channel", correct: false }], explanation: "Plasmodesmata adalah saluran komunikasi yang melintasi dinding sel tumbuhan." },
+            { question: "Enam subunit protein Connexin berkumpul untuk membentuk satu unit saluran yang disebut...", options: [{ text: "Connexon", correct: true },{ text: "Cadherin", correct: false },{ text: "Claudin", correct: false },{ text: "Desmoglein", correct: false }], explanation: "Enam connexin membentuk satu connexon. Dua connexon membentuk satu saluran utuh." },
+            { question: "Di otot jantung, Gap Junctions sangat penting untuk...", options: [{ text: "Memberikan kekuatan mekanis", correct: false },{ text: "Menyimpan kalsium", correct: false },{ text: "Pasangan elektrokimia dan kontraksi serempak", correct: true },{ text: "Menempelkan otot ke tulang", correct: false }], explanation: "Gap junctions memungkinkan sinyal listrik menyebar cepat untuk kontraksi terkoordinasi." },
+            { question: "Manakah dari tautan sel berikut yang terhubung ke filamen intermediet (seperti keratin)?", options: [{ text: "Adherens junctions dan Tight junctions", correct: false },{ text: "Desmosomes dan Hemidesmosomes", correct: true },{ text: "Gap junctions dan Adherens junctions", correct: false },{ text: "Hanya Tight junctions", correct: false }], explanation: "Desmosom dan Hemidesmosom menggunakan filamen intermediet sebagai jangkar." },
+            { question: "Jalur transportasi zat yang bergerak *melewati* sel disebut...", options: [{ text: "Paracellular pathway", correct: false },{ text: "Transcellular pathway", correct: true },{ text: "Occluding pathway", correct: false },{ text: "Junctional pathway", correct: false }], explanation: "Jalur transelular berarti 'melintasi sel', berbeda dengan paraselular ('di antara sel')." },
+            { question: "Reseptor permukaan sel yang membuka gerbang bagi ion saat sinyal terikat adalah...", options: [{ text: "G-protein linked receptor", correct: false },{ text: "Enzyme-linked receptor", correct: false },{ text: "Chemically gated ion channel", correct: true },{ text: "Intracellular receptor", correct: false }], explanation: "Kanal ion berpagar kimia berfungsi sebagai gerbang yang merespons sinyal kimia." },
+            { question: "Persinyalan sinaptik (synaptic signaling) khas untuk sel jenis apa?", options: [{ text: "Sel epitel", correct: false },{ text: "Sel otot", correct: false },{ text: "Sel saraf (neuron)", correct: true },{ text: "Sel endokrin", correct: false }], explanation: "Persinyalan sinaptik adalah metode komunikasi cepat yang digunakan oleh sel saraf." },
+            { question: "Urutan tautan yang paling umum dari apikal ke basal pada sel epitel adalah...", options: [{ text: "Desmosome, Tight Junction, Adherens Junction", correct: false },{ text: "Tight Junction, Adherens Junction, Desmosome", correct: true },{ text: "Gap Junction, Desmosome, Tight Junction", correct: false },{ text: "Hemidesmosome, Tight Junction, Gap Junction", correct: false }], explanation: "Urutan tipikal adalah Tight Junction (atas), Adherens Junction (tengah), dan Desmosome (bawah)." },
+            { question: "Protein Cadherin adalah komponen kunci dari tautan penjangkar mana?", options: [{ text: "Hanya Hemidesmosomes", correct: false },{ text: "Hanya Tight Junctions", correct: false },{ text: "Adherens Junctions dan Desmosomes", correct: true },{ text: "Hanya Gap Junctions", correct: false }], explanation: "Kaderin adalah molekul adhesi utama pada Adherens Junctions dan Desmosomes." }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timer;
+        let timerInterval;
+        let timePerQuestion = 15; // Default
+
+        const settingsScreen = document.getElementById('settings-screen');
+        const questionScreen = document.getElementById('question-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const startBtn = document.getElementById('start-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const timerInput = document.getElementById('timer-input');
+        const questionNumberEl = document.getElementById('question-number');
+        const totalQuestionsEl = document.getElementById('total-questions');
+        const questionTextEl = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const scoreEl = document.getElementById('score');
+        const feedbackContainer = document.getElementById('feedback-container');
+        const feedbackTextEl = document.getElementById('feedback-text');
+        const finalScoreEl = document.getElementById('final-score');
+        const resultMessageEl = document.getElementById('result-message');
+        const timerBarInner = document.getElementById('timer-bar-inner');
+
+        startBtn.addEventListener('click', startQuiz);
+        restartBtn.addEventListener('click', restartQuiz);
+        
+        function startQuiz() {
+            timePerQuestion = parseInt(timerInput.value) || 15;
+            if (timePerQuestion < 5) timePerQuestion = 5;
+            if (timePerQuestion > 60) timePerQuestion = 60;
+            settingsScreen.classList.add('hidden');
+            questionScreen.classList.remove('hidden');
+            totalQuestionsEl.textContent = quizData.length;
+            showQuestion();
+        }
+        
+        function showQuestion() {
+            resetState();
+            startTimer();
+            const currentQuestion = quizData[currentQuestionIndex];
+            questionNumberEl.textContent = currentQuestionIndex + 1;
+            questionTextEl.textContent = currentQuestion.question;
+            currentQuestion.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option.text;
+                button.classList.add('option-btn', 'p-4', 'rounded-lg', 'text-left');
+                button.dataset.correct = option.correct;
+                button.addEventListener('click', selectAnswer);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function startTimer() {
+            let timeLeft = timePerQuestion;
+            timerBarInner.style.width = '100%';
+            timerBarInner.style.transitionDuration = '0.1s';
+            timerInterval = setInterval(() => {
+                timeLeft -= 0.1;
+                const percentLeft = (timeLeft / timePerQuestion) * 100;
+                timerBarInner.style.width = `${percentLeft}%`;
+                if(timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeout();
+                }
+            }, 100);
+        }
+
+        function handleTimeout() {
+            showFeedback(false, "Waktu habis! Jawaban yang benar telah ditandai.");
+        }
+
+        function resetState() {
+            clearTimeout(timer);
+            clearInterval(timerInterval);
+            feedbackContainer.classList.add('hidden');
+            while (optionsContainer.firstChild) {
+                optionsContainer.removeChild(optionsContainer.firstChild);
+            }
+        }
+
+        function selectAnswer(e) {
+            clearInterval(timerInterval);
+            const selectedBtn = e.target;
+            const isCorrect = selectedBtn.dataset.correct === 'true';
+            showFeedback(isCorrect, quizData[currentQuestionIndex].explanation);
+        }
+        
+        function showFeedback(isCorrect, explanation) {
+             if (isCorrect) {
+                score++;
+                scoreEl.textContent = score;
+                feedbackContainer.classList.remove('bg-red-900', 'border-red-500');
+                feedbackContainer.classList.add('bg-green-900', 'bg-opacity-50', 'border-green-500');
+            } else {
+                 feedbackContainer.classList.remove('bg-green-900', 'border-green-500');
+                 feedbackContainer.classList.add('bg-red-900', 'bg-opacity-50', 'border-red-500');
+            }
+            feedbackTextEl.textContent = explanation;
+            feedbackContainer.classList.remove('hidden');
+            Array.from(optionsContainer.children).forEach(button => {
+                if (button.dataset.correct === 'true') {
+                    button.classList.add('correct');
+                } else {
+                    button.classList.add('incorrect');
+                }
+                button.classList.add('disabled-option');
+            });
+            timer = setTimeout(moveToNext, 2500);
+        }
+
+        function moveToNext() {
+            if (quizData.length > currentQuestionIndex + 1) {
+                currentQuestionIndex++;
+                showQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            questionScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            finalScoreEl.textContent = `${score} / ${quizData.length}`;
+            const percentage = (score / quizData.length) * 100;
+            let message = '';
+            if (percentage === 100) message = 'Pencapaian Master! Pengetahuan Anda tak tertandingi.';
+            else if (percentage >= 80) message = 'Pengetahuan Elit! Performa yang sangat mengesankan.';
+            else if (percentage >= 50) message = 'Hasil yang Solid! Anda layak berada di meja ini.';
+            else message = 'Perlu Latihan Lagi. Sesi berikutnya menanti.';
+            resultMessageEl.textContent = message;
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            scoreEl.textContent = 0;
+            resultScreen.classList.add('hidden');
+            settingsScreen.classList.remove('hidden');
+        }
+
+    </script>
+</body>
+</html>
+

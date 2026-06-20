@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Anatomi Visual: Otot & Osteo-Arthro</title>
+    <style>
+        :root {
+            --scarlet: #FF2400;
+            --orange: #FF9900;
+            --gold: #FFD700;
+            --text-color: #333;
+            --card-bg: rgba(255, 255, 255, 0.96);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-color);
+            min-height: 100vh;
+            /* Gradient Mesh Effect */
+            background-color: var(--scarlet);
+            background-image: 
+                radial-gradient(at 0% 0%, var(--gold) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, var(--orange) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, var(--scarlet) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, var(--orange) 0px, transparent 50%),
+                radial-gradient(at 50% 50%, var(--gold) 0px, transparent 50%);
+            background-attachment: fixed;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 50px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 950px;
+            margin: 2rem auto;
+            padding: 2.5rem;
+            background: var(--card-bg);
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: var(--glass-border);
+            position: relative;
+            min-height: 80vh;
+        }
+
+        h1, h2 {
+            text-align: center;
+            background: -webkit-linear-gradient(45deg, #d32f2f, #f57c00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.5rem;
+            text-shadow: 0px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* --- Menu Buttons --- */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .menu-btn {
+            padding: 2rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            background: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            color: #d32f2f;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-btn:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(255, 100, 0, 0.2);
+            border-color: var(--gold);
+        }
+
+        /* --- Return Button --- */
+        .return-btn {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            padding: 10px 25px;
+            background: linear-gradient(90deg, var(--scarlet), var(--orange));
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 100;
+            transition: transform 0.2s;
+        }
+
+        .return-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* --- Mode Sections --- */
+        .mode-section {
+            display: none;
+        }
+        
+        .mode-section.active {
+            display: block;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Summary with Visual Gallery --- */
+        .summary-content {
+            max-height: 700px;
+            overflow-y: auto;
+            padding-right: 15px;
+            line-height: 1.7;
+        }
+        
+        .summary-content h3 {
+            color: #d32f2f;
+            border-bottom: 3px solid var(--gold);
+            padding-bottom: 8px;
+            margin-top: 30px;
+            display: inline-block;
+        }
+
+        .summary-block {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 40px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 25px;
+        }
+
+        .summary-gallery {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding-bottom: 15px;
+            align-items: flex-start;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .gallery-item {
+            flex: 0 0 220px;
+            background: white;
+            padding: 10px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 1px solid #eee;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 180px;
+            object-fit: contain;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            background-color: #fff;
+        }
+
+        .img-caption {
+            font-size: 0.8rem;
+            color: #555;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        /* --- Flashcards --- */
+        .flashcard-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            perspective: 1000px;
+            margin-top: 1rem;
+            min-height: 400px; 
+            justify-content: flex-start;
+        }
+
+        .flashcard {
+            width: 100%;
+            max-width: 450px; 
+            height: 240px;    
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            cursor: pointer;
+            margin-bottom: 2rem;
+            margin-top: 1rem;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            font-size: 1.2rem;
+            font-weight: bold;
+            flex-direction: column;
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, #ffffff, #fff8e1);
+            color: var(--scarlet);
+            border: 2px solid var(--gold);
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, var(--scarlet), #c62828);
+            color: white;
+            transform: rotateY(180deg);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .controls {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 10px;
+            z-index: 10;
+        }
+
+        .control-btn {
+            padding: 12px 24px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        
+        .control-btn:hover {
+            background: var(--orange);
+            transform: translateY(-2px);
+        }
+
+        /* --- Quiz Cards --- */
+        .question-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            border-left: 6px solid var(--scarlet);
+        }
+
+        .options-grid {
+            display: grid;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .option-btn {
+            padding: 16px;
+            text-align: left;
+            background: #fff;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+            position: relative;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: #fff8e1;
+            border-color: var(--gold);
+        }
+
+        .option-btn.correct {
+            background-color: #e8f5e9 !important;
+            border-color: #43a047 !important;
+            color: #1b5e20;
+        }
+        .option-btn.correct::after {
+            content: '✓';
+            position: absolute;
+            right: 15px;
+            font-weight: bold;
+        }
+
+        .option-btn.wrong {
+            background-color: #ffebee !important;
+            border-color: #e53935 !important;
+            color: #b71c1c;
+        }
+        .option-btn.wrong::after {
+            content: '✕';
+            position: absolute;
+            right: 15px;
+            font-weight: bold;
+        }
+
+        .explanation {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f1f8e9;
+            border-radius: 10px;
+            display: none;
+            border-left: 5px solid #43a047;
+            color: #33691e;
+        }
+
+        /* Exam Final Screen */
+        .exam-score-area {
+            text-align: center;
+            display: none;
+            padding: 40px;
+        }
+        .score-display {
+            font-size: 5rem;
+            font-weight: 800;
+            background: -webkit-linear-gradient(#FF2400, #FF9900);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 10px 0;
+        }
+        .score-msg {
+            font-size: 1.8rem;
+            margin: 1rem 0 2rem 0;
+            font-weight: 600;
+            color: #444;
+        }
+
+        .submit-btn {
+            background: linear-gradient(90deg, #d32f2f, #f57c00);
+            color: white;
+            padding: 16px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 30px;
+            box-shadow: 0 5px 15px rgba(211, 47, 47, 0.3);
+            transition: transform 0.2s;
+        }
+        
+        .exam-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            background: #f5f5f5;
+            padding: 10px 20px;
+            border-radius: 50px;
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 1.5rem; width: 95%; }
+            .menu-grid { grid-template-columns: 1fr; }
+            .gallery-item { flex: 0 0 80%; } 
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <button id="returnBtn" class="return-btn" style="display: none;" onclick="goHome()">🏠 Menu Utama</button>
+    
+    <!-- MENU UTAMA -->
+    <div id="mainMenu" class="mode-section active">
+        <h1>Anatomi Interaktif</h1>
+        <p style="text-align: center; font-size: 1.1rem; color: #555;">
+            Media pembelajaran komprehensif untuk struktur Otot dan Tulang.<br>
+            Dilengkapi ilustrasi visual dan mode evaluasi.
+        </p>
+        <div class="menu-grid">
+            <button class="menu-btn" onclick="startMode('summary')">
+                <span>📚 Mode Ringkasan<br><small style="font-size:0.9rem; font-weight:normal;">+ Ilustrasi Visual Lengkap</small></span>
+            </button>
+            <button class="menu-btn" onclick="startMode('flashcard')">
+                <span>🗂️ Mode Flashcard<br><small style="font-size:0.9rem; font-weight:normal;">Hafalan Cepat</small></span>
+            </button>
+            <button class="menu-btn" onclick="startMode('practice')">
+                <span>💪 Mode Latihan<br><small style="font-size:0.9rem; font-weight:normal;">Drill Soal & Pembahasan</small></span>
+            </button>
+            <button class="menu-btn" onclick="startMode('exam')">
+                <span>📝 Mode Ujian<br><small style="font-size:0.9rem; font-weight:normal;">Evaluasi Akhir</small></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- MODE RINGKASAN -->
+    <div id="summaryMode" class="mode-section">
+        <h2>Ringkasan Materi Visual</h2>
+        <div class="summary-content">
+            
+            <!-- Blok 1: Otot -->
+            <div class="summary-block">
+                <div class="summary-text">
+                    <h3>1. Struktur Makroskopis & Mikroskopis Otot</h3>
+                    <ul>
+                        <li><strong>Lapisan Pembungkus (Jaringan Ikat):</strong>
+                            <ul>
+                                <li><em>Epimisium:</em> Lapisan terluar membungkus seluruh otot.</li>
+                                <li><em>Perimisium:</em> Membungkus <em>fasikulus</em> (berkas serat otot). Tempat lewatnya pembuluh darah & saraf.</li>
+                                <li><em>Endomisium:</em> Membungkus tiap satu serat otot.</li>
+                            </ul>
+                        </li>
+                        <li><strong>Unit Kontraksi (Sarkomer):</strong>
+                            <ul>
+                                <li>Terdiri dari filamen tebal (<em>Myosin</em>) dan tipis (<em>Actin</em>).</li>
+                                <li>Garis Z ke Garis Z. Saat kontraksi, Zona H menghilang.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div class="summary-gallery">
+                    <div class="gallery-item">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Illu_muscle_structure.jpg/640px-Illu_muscle_structure.jpg" alt="Struktur Otot" onerror="this.parentElement.style.display='none'">
+                        <div class="img-caption">Struktur Otot Lengkap</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blok 2: Tulang Belakang -->
+            <div class="summary-block">
+                <div class="summary-text">
+                    <h3>2. Columna Vertebralis (Klinis & Struktur)</h3>
+                    <ul>
+                        <li><strong>Regio Tulang Belakang:</strong>
+                            <ul>
+                                <li><em>Cervical (7):</em> Lordosis. C1 (Atlas) tidak punya corpus; C2 (Axis) punya dens.</li>
+                                <li><em>Thoracal (12):</em> Kyphosis. Bersendi dengan costae.</li>
+                                <li><em>Lumbal (5):</em> Lordosis. Corpus besar & kuat.</li>
+                                <li><em>Sacrum & Coccyx:</em> Tulang yang menyatu (fusi).</li>
+                            </ul>
+                        </li>
+                        <li><strong>Aplikasi Klinis Penting:</strong>
+                            <ul>
+                                <li><strong>HNP (Hernia Nucleus Pulposus):</strong> Bantalan sendi menonjol menekan saraf. Sering di L4-L5.</li>
+                                <li><strong>Scoliosis:</strong> Tulang belakang bengkok ke samping (huruf S/C).</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div class="summary-gallery">
+                    <div class="gallery-item">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/4/4b/Gray_111_-_Vertebral_column-coloured.png" alt="Vertebral Column" onerror="this.parentElement.style.display='none'">
+                        <div class="img-caption">Kolom Vertebra Utuh</div>
+                    </div>
+                    <div class="gallery-item">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Lumbar_vertebrae_lateral.png/300px-Lumbar_vertebrae_lateral.png" alt="Lumbar Vertebrae" onerror="this.parentElement.style.display='none'">
+                        <div class="img-caption">Vertebra Lumbalis (Samping)</div>
+                    </div>
+                     <div class="gallery-item">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Gray84.png/300px-Gray84.png" alt="Atlas (C1)" onerror="this.parentElement.style.display='none'">
+                        <div class="img-caption">Atlas (C1) - Tanpa Corpus</div>
+                    </div>
+                     <div class="gallery-item">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Gray85.png/300px-Gray85.png" alt="Axis (C2)" onerror="this.parentElement.style.display='none'">
+                        <div class="img-caption">Axis (C2) - Dens Odontoid</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blok 3: Ekstremitas Atas -->
+            <div class="summary-block">
+                <div class="summary-text">
+                    <h3>3. Ekstremitas Atas (Bahu & Tangan)</h3>
+                    <ul>
+                        <li><strong>Sendi Bahu (Glenohumeral):</strong>
+                            <ul>
+                                <li>Rawan dislokasi anterior.</li>
+                                <li>Dijaga oleh <strong>Rotator Cuff (SITS):</strong> Supraspinatus, Infraspinatus, Teres minor, Subscapularis.</li>
+                            </ul>
+                        </li>
+                        <li><strong>Fraktur Khas:</strong>
+                            <ul>
+                                <li><strong>Fraktur Colles:</strong> Patah radius distal, fragmen ke posterior (Dinner Fork Deformity).</li>
+                                <li><strong>Boxer's Fracture:</strong> Patah leher metacarpal ke-5 (kelingking).</li>
+                            </ul>
+                        </li>
+                        <li><strong>Carpal Tunnel Syndrome (CTS):</strong> Penekanan <em>Nervus Medianus</em> di pergelangan tangan.</li>
+                    </ul>
+                </div>
+                <div class="summary-gallery">
+                    <div class="gallery-item">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Shoulder_Capsule.png/400px-Shoulder_Capsule.png" alt="Shoulder Joint Capsule" onerror="this.parentElement.style.display='none'">
+                        <div class="img-caption">Kapsul Sendi Bahu</div>
+                    </div>
+                    <div class="gallery-item">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/d/d3/Gray212.png" alt="Radius Ulna" onerror="this.parentElement.style.display='none'">
+                        <div class="img-caption">Radius (Lateral) & Ulna (Medial)</div>
+                    </div>
+                    <div class="gallery-item">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Gray219.png/300px-Gray219.png" alt="Hand Bones Volar" onerror="this.parentElement.style.display='none'">
+                        <div class="img-caption">Tulang Tangan (Volar)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blok 4: Ekstremitas Bawah -->
+            <div class="summary-block">
+                <div class="summary-text">
+                    <h3>4. Ekstremitas Bawah (Lutut & Kaki)</h3>
+                    <ul>
+                        <li><strong>Sendi Lutut (Genu):</strong>
+                            <ul>
+                                <li><strong>ACL:</strong> Mencegah tibia geser ke depan. Tes: Anterior Drawer.</li>
+                                <li><strong>PCL:</strong> Mencegah tibia geser ke belakang.</li>
+                                <li><strong>Meniscus:</strong> Bantalan sendi peredam kejut.</li>
+                            </ul>
+                        </li>
+                        <li><strong>Tulang & Sendi Lain:</strong>
+                            <ul>
+                                <li><strong>Femur:</strong> Fraktur leher femur pada lansia menyebabkan kaki memendek & rotasi luar.</li>
+                                <li><strong>Ankle Sprain:</strong> Cedera inversi merobek Ligamen Talofibular Anterior (ATFL).</li>
+                                <li><strong>Pes Planus:</strong> Kaki datar (flat foot), hilangnya arcus longitudinal medial.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div class="summary-gallery">
+                    <div class="gallery-item">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/8/87/Gray347.png" alt="Knee Joint Anterior" onerror="this.parentElement.style.display='none'">
+                        <div class="img-caption">Sendi Lutut (Depan)</div>
+                    </div>
+                     <div class="gallery-item">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Gray290.png/640px-Gray290.png" alt="Foot Bones Medial" onerror="this.parentElement.style.display='none'">
+                        <div class="img-caption">Tulang Kaki (Medial)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODE FLASHCARD -->
+    <div id="flashcardMode" class="mode-section">
+        <h2>Flashcard Hafalan</h2>
+        <div class="flashcard-container">
+            <div class="flashcard" onclick="flipCard(this)">
+                <div class="card-face card-front">
+                    <div style="font-size:2.5rem; margin-bottom:10px;">🤔</div>
+                    <div id="fcFront" style="font-size: 1.1rem; line-height: 1.4;">Siap Belajar?</div>
+                    <div style="font-size:0.8rem; font-weight:normal; margin-top:15px; color:#666;">(Klik kartu untuk balik)</div>
+                </div>
+                <div class="card-face card-back">
+                    <div style="font-size:2.5rem; margin-bottom:10px;">💡</div>
+                    <div id="fcBack" style="font-size: 1.1rem; line-height: 1.4;">Jawaban akan muncul di sini</div>
+                </div>
+            </div>
+            <div class="controls">
+                <button class="control-btn" onclick="prevFlashcard()">⬅️ Sebelumnya</button>
+                <button class="control-btn" onclick="nextFlashcard()">Selanjutnya ➡️</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODE LATIHAN -->
+    <div id="practiceMode" class="mode-section">
+        <h2>Mode Latihan (Drill)</h2>
+        <div id="practiceContainer"></div>
+        <div class="controls" style="justify-content: center; margin-top: 20px;">
+            <button class="control-btn" onclick="loadPracticeQuestion()">Soal Berikutnya ➡️</button>
+        </div>
+    </div>
+
+    <!-- MODE UJIAN -->
+    <div id="examMode" class="mode-section">
+        <h2>Mode Ujian Akhir</h2>
+        <div id="examContainer">
+            <div id="examQuestionArea" class="question-card"></div>
+        </div>
+        
+        <div class="exam-navigation">
+            <button class="control-btn" onclick="prevExamQ()">⬅️ Prev</button>
+            <span id="examProgress" style="font-weight: bold; color: #555;">1 / 60</span>
+            <button class="control-btn" onclick="nextExamQ()">Next ➡️</button>
+        </div>
+
+        <button class="submit-btn" onclick="finishExam()">Kumpulkan Jawaban 🏁</button>
+
+        <div id="examResult" class="exam-score-area">
+            <h3>Hasil Ujian Kamu</h3>
+            <div class="score-display" id="scoreValue">0</div>
+            <div class="score-msg" id="scoreText"></div>
+            <button class="menu-btn" onclick="goHome()"><span>Kembali ke Menu</span></button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // --- DATA ---
+    const flashcardsData = [
+        { q: "Unit fungsional terkecil dari kontraksi otot adalah...", a: "Sarkomer" },
+        { q: "Lapisan jaringan ikat yang membungkus seluruh otot...", a: "Epimisium" },
+        { q: "Otot yang bekerja di luar kesadaran, terdapat pada dinding organ dalam...", a: "Otot Polos (Smooth Muscle)" },
+        { q: "Sifat otot untuk kembali ke bentuk semula setelah meregang...", a: "Elastisitas" },
+        { q: "Tulang leher pertama (C1) disebut...", a: "Atlas" },
+        { q: "Tulang leher kedua (C2) yang memiliki dens axis...", a: "Axis" },
+        { q: "Kelengkungan tulang belakang yang cembung ke posterior (normal di Thoracal)...", a: "Kyphosis" },
+        { q: "Kelengkungan tulang belakang abnormal ke arah samping (lateral)...", a: "Scoliosis" },
+        { q: "Kondisi keluarnya nucleus pulposus menekan saraf spinal...", a: "HNP (Hernia Nucleus Pulposus)" },
+        { q: "4 Otot penyusun Rotator Cuff (SITS)...", a: "Supraspinatus, Infraspinatus, Teres Minor, Subscapularis" },
+        { q: "Fraktur radius distal dengan angulasi posterior (Dinner fork)...", a: "Fraktur Colles" },
+        { q: "Ligamen lutut yang mencegah tibia bergeser ke depan (anterior)...", a: "ACL (Anterior Cruciate Ligament)" },
+        { q: "Tulang sesamoid terbesar di tubuh...", a: "Patella" },
+        { q: "Kondisi telapak kaki datar disebut...", a: "Pes Planus" },
+        { q: "Sendi bahu termasuk jenis sendi...", a: "Ball and Socket (Peluru)" }
+    ];
+
+    const questionsData = [
+        // OTOT (1-15)
+        { q: "Lapisan jaringan ikat yang membungkus fasikulus (berkas serat otot) adalah:", options: ["Epimisium", "Perimisium", "Endomisium", "Sarkolema"], correct: 1, explanation: "Perimisium membungkus fasikulus. Epimisium membungkus seluruh otot, Endomisium membungkus serat individu." },
+        { q: "Sifat otot yang memungkinkan otot merespons rangsangan dengan menghasilkan sinyal listrik disebut:", options: ["Contractility", "Extensibility", "Excitability", "Elasticity"], correct: 2, explanation: "Excitability (iritabilitas) adalah kemampuan menerima dan merespons rangsangan." },
+        { q: "Manakah ciri khas dari otot jantung?", options: ["Inti banyak di tepi", "Bentuk gelendong", "Memiliki discus interkalaris", "Bekerja secara sadar (volunter)"], correct: 2, explanation: "Otot jantung memiliki discus interkalaris yang menghubungkan antar sel. Sifatnya involunter." },
+        { q: "Otot yang berfungsi sebagai penggerak utama dalam suatu gerakan disebut:", options: ["Antagonis", "Sinergis", "Agonis", "Fiksator"], correct: 2, explanation: "Agonis (Prime Mover) adalah otot utama yang berkontraksi." },
+        { q: "Penyusutan ukuran otot akibat tidak digunakan (misalnya saat di-gips) disebut:", options: ["Hipertrofi", "Distrofi", "Disuse Atrophy", "Denervation Atrophy"], correct: 2, explanation: "Disuse Atrophy terjadi karena otot tidak aktif dalam waktu lama." },
+        { q: "Struktur membran plasma yang membungkus serat otot disebut:", options: ["Sarkoplasma", "Sarkolema", "Miofibril", "Tubulus T"], correct: 1, explanation: "Sarkolema adalah membran sel/plasma dari serat otot." },
+        { q: "Jenis kontraksi dimana panjang otot tetap sama tetapi ketegangan meningkat adalah:", options: ["Isotonik", "Isometrik", "Eksentrik", "Konsentrik"], correct: 1, explanation: "Isometrik: Ukuran (meter) tetap, tegangan berubah. Contoh: mendorong tembok." },
+        { q: "Bagian otot yang melekat pada tulang yang *tidak* bergerak saat kontraksi disebut:", options: ["Insersio", "Origo", "Belly", "Tendon"], correct: 1, explanation: "Origo adalah perlekatan proksimal yang relatif diam/stabil." },
+        { q: "Protein kontraktil utama dalam otot adalah:", options: ["Aktin dan Myosin", "Kolagen dan Elastin", "Keratin dan Melanin", "Fibrin dan Trombin"], correct: 0, explanation: "Aktin (filamen tipis) dan Myosin (filamen tebal) bergesekan untuk kontraksi." },
+        { q: "Otot polos paling banyak ditemukan di:", options: ["Jantung", "Dinding usus dan pembuluh darah", "Bisep dan Trisep", "Wajah"], correct: 1, explanation: "Otot polos menyusun dinding organ berongga (visceral)." },
+        { q: "Sel induk yang berperan dalam perbaikan jaringan otot yang rusak adalah:", options: ["Osteoblast", "Kondrosit", "Sel Myosatellite", "Fibroblast"], correct: 2, explanation: "Sel Myosatellite berada di endomisium dan membantu regenerasi terbatas." },
+        { q: "Otot yang memiliki pola serat melingkar (sirkuler) biasanya berfungsi sebagai:", options: ["Pengangkat beban", "Sfingter (penutup lubang)", "Pendorong", "Pemutar"], correct: 1, explanation: "Otot sirkuler (seperti Orbicularis Oris) berfungsi menutup lubang (sfingter)." },
+        { q: "Pada otot rangka, ion Kalsium disimpan di dalam:", options: ["Mitokondria", "Retikulum Sarkoplasma", "Inti sel", "Ribosom"], correct: 1, explanation: "Retikulum Sarkoplasma menyimpan Ca2+ yang dilepas saat kontraksi." },
+        { q: "Apa yang terjadi pada zona H saat kontraksi otot penuh?", options: ["Melebar", "Menghilang", "Tetap sama", "Menjadi gelap"], correct: 1, explanation: "Saat kontraksi penuh, filamen aktin bertemu di tengah, sehingga zona H menghilang." },
+        { q: "Otot biceps brachii memiliki berapa kepala (head)?", options: ["Satu", "Dua", "Tiga", "Empat"], correct: 1, explanation: "Bi-ceps berarti dua kepala (caput)." },
+
+        // OSTEO UPPER & SPINE (16-40)
+        { q: "Tulang punggung manusia (Vertebrae) terdiri dari berapa ruas tulang Cervical?", options: ["5", "7", "12", "4"], correct: 1, explanation: "Cervical ada 7 (C1-C7). Thoracal 12, Lumbal 5." },
+        { q: "Tulang leher C2 dikenal dengan nama:", options: ["Atlas", "Axis", "Prominens", "Sacrum"], correct: 1, explanation: "C2 adalah Axis, memiliki dens (odontoid) untuk poros putar kepala." },
+        { q: "Kelengkungan tulang belakang yang normal pada daerah Lumbal adalah:", options: ["Kyphosis", "Lordosis", "Scoliosis", "Lurus"], correct: 1, explanation: "Lumbal dan Cervical normalnya Lordosis (cekung ke posterior)." },
+        { q: "Bagian tulang belakang yang menyatu menjadi satu kesatuan segitiga adalah:", options: ["Lumbal", "Thoracal", "Sacrum", "Cervical"], correct: 2, explanation: "Sacrum terdiri dari 5 ruas vertebra yang fusi (menyatu)." },
+        { q: "Kondisi patologis berupa lengkungan tulang belakang ke arah lateral (samping) disebut:", options: ["Lordosis", "Kyphosis", "Scoliosis", "Gibbus"], correct: 2, explanation: "Scoliosis adalah deviasi lateral tulang belakang." },
+        { q: "Hernia Nucleus Pulposus (HNP) paling sering terjadi di regio:", options: ["Cervical atas", "Thoracal tengah", "Lumbal bawah (L4-L5, L5-S1)", "Sacral"], correct: 2, explanation: "Beban tubuh terbesar ada di lumbal bawah, tempat tersering HNP." },
+        { q: "Struktur 'mata' pada gambaran radiologis 'Scottie Dog' vertebra lumbal mewakili:", options: ["Pedicle", "Transverse Process", "Spinous Process", "Lamina"], correct: 0, explanation: "Pada rontgen oblik lumbal, mata Scottie Dog adalah Pedicle." },
+        { q: "Tulang yang menghubungkan sternum dengan scapula adalah:", options: ["Humerus", "Clavicula", "Costae", "Vertebra"], correct: 1, explanation: "Clavicula (tulang selangka) menghubungkan manubrium sterni ke acromion scapula." },
+        { q: "Bagian humerus yang paling sering mengalami fraktur pada lansia adalah:", options: ["Caput humeri", "Collum chirurgicum", "Epicondylus", "Trochlea"], correct: 1, explanation: "Collum chirurgicum (leher bedah) adalah area lemah di humerus proksimal." },
+        { q: "Cedera pada nervus radialis di sulcus nervus radialis humerus menyebabkan:", options: ["Claw hand", "Wrist drop", "Ape hand", "Carpal tunnel syndrome"], correct: 1, explanation: "N. Radialis mengurus ekstensor. Kerusakan menyebabkan ketidakmampuan ekstensi pergelangan (Wrist drop)." },
+        { q: "Tulang lengan bawah yang terletak lurus dengan jari kelingking adalah:", options: ["Radius", "Ulna", "Humerus", "Femur"], correct: 1, explanation: "Ulna ada di sisi medial (kelingking), Radius di sisi lateral (jempol) posisi anatomis." },
+        { q: "Fraktur distal radius dengan pergeseran fragmen ke arah posterior (dorsal) disebut:", options: ["Fraktur Smith", "Fraktur Colles", "Fraktur Monteggia", "Fraktur Galeazzi"], correct: 1, explanation: "Colles = Posterior displacement (Dinner fork). Smith = Anterior." },
+        { q: "Otot-otot Rotator Cuff berfungsi utama untuk:", options: ["Menstabilkan sendi bahu", "Ekstensi siku", "Fleksi jari", "Memutar leher"], correct: 0, explanation: "Rotator cuff (SITS) menjaga caput humeri tetap di glenoid scapula." },
+        { q: "Tulang carpal yang paling sering mengalami fraktur akibat jatuh dengan tangan menumpu adalah:", options: ["Lunate", "Scaphoid", "Capitate", "Pisiform"], correct: 1, explanation: "Scaphoid (navicular) paling sering patah, nyeri di anatomical snuffbox." },
+        { q: "Sendi siku (Articulatio Cubiti) merupakan tipe sendi:", options: ["Peluru (Ball and Socket)", "Engsel (Hinge)", "Pelana (Saddle)", "Putar (Pivot)"], correct: 1, explanation: "Humeroulnar joint bekerja seperti engsel pintu (Fleksi-Ekstensi)." },
+        { q: "Nervus yang tertekan pada sindrom terowongan karpal (Carpal Tunnel Syndrome) adalah:", options: ["N. Ulnaris", "N. Radialis", "N. Medianus", "N. Axillaris"], correct: 2, explanation: "N. Medianus berjalan di dalam terowongan karpal." },
+        { q: "Prosesus pada scapula yang menjadi atap sendi bahu adalah:", options: ["Coracoid", "Acromion", "Glenoid", "Spina scapulae"], correct: 1, explanation: "Acromion bersendi dengan clavicula dan melindungi sendi bahu dari atas." },
+        { q: "Tulang dada tempat melekatnya tulang rusuk sejati adalah:", options: ["Sternum", "Clavicula", "Scapula", "Vertebra"], correct: 0, explanation: "Sternum adalah tempat melekat anterior costae verae (1-7)." },
+        { q: "Fraktur 'Boxer' biasanya terjadi pada tulang:", options: ["Radius distal", "Metacarpal ke-5", "Phalanges", "Scaphoid"], correct: 1, explanation: "Boxer's fracture terjadi di leher metacarpal ke-5 (jari kelingking)." },
+        { q: "Manakah yang BUKAN bagian dari tulang pelvis (Os Coxae)?", options: ["Ilium", "Ischium", "Pubis", "Sacrum"], correct: 3, explanation: "Os Coxae terdiri dari Ilium, Ischium, Pubis. Sacrum adalah tulang terpisah yang bersendi dengannya." },
+        { q: "Sendi antara C1 (Atlas) dan C2 (Axis) memungkinkan gerakan:", options: ["Mengangguk (Ya)", "Menggeleng (Tidak)", "Miring kanan-kiri", "Fleksi total"], correct: 1, explanation: "Atlanto-axial joint adalah sendi putar (pivot) untuk menggeleng." },
+        { q: "Ligamen yang menghubungkan tulang dengan tulang disebut:", options: ["Tendon", "Ligamen", "Fasia", "Aponeurosis"], correct: 1, explanation: "Ligamen = Tulang ke Tulang. Tendon = Otot ke Tulang." },
+        { q: "Sudut Louis (Angulus Ludovici) pada sternum sejajar dengan kosta ke:", options: ["1", "2", "3", "4"], correct: 1, explanation: "Angulus sterni adalah patokan untuk kosta ke-2." },
+        { q: "Otot yang menyebabkan 'Winged Scapula' jika lumpuh adalah:", options: ["Trapezius", "Serratus Anterior", "Deltoid", "Latissimus Dorsi"], correct: 1, explanation: "Serratus anterior menahan scapula ke dinding dada." },
+        { q: "Fontanella mayor (ubun-ubun besar) pada bayi biasanya menutup pada usia:", options: ["2 bulan", "6 bulan", "18 bulan", "5 tahun"], correct: 2, explanation: "Fontanella anterior menutup sekitar usia 18 bulan." },
+
+        // OSTEO LOWER (41-60)
+        { q: "Tulang terpanjang dan terkuat di tubuh manusia adalah:", options: ["Tibia", "Femur", "Humerus", "Fibula"], correct: 1, explanation: "Femur (tulang paha) adalah yang terbesar." },
+        { q: "Ligamen pada sendi panggul yang terkuat dan berbentuk Y adalah:", options: ["Ischiofemoral", "Pubofemoral", "Iliofemoral", "Ligamen Capitis"], correct: 2, explanation: "Ligamen Iliofemoral (Y ligament of Bigelow) mencegah hiperekstensi panggul." },
+        { q: "Sudut inklinasi normal pada collum femur dewasa adalah sekitar:", options: ["90 derajat", "125 derajat", "160 derajat", "180 derajat"], correct: 1, explanation: "Normalnya 125 derajat. Kurang = Coxa Vara, Lebih = Coxa Valga." },
+        { q: "Ligamen lutut yang paling sering cedera pada atlet (mencegah tibia ke depan) adalah:", options: ["PCL", "LCL", "MCL", "ACL"], correct: 3, explanation: "ACL (Anterior Cruciate Ligament) sering putus saat gerakan memutar mendadak." },
+        { q: "Bantalan fibrokartilago berbentuk C di sendi lutut disebut:", options: ["Bursa", "Meniscus", "Tendon patella", "Plica"], correct: 1, explanation: "Meniscus (medial dan lateral) berfungsi sebagai peredam kejut." },
+        { q: "Tes laci (Drawer test) anterior digunakan untuk memeriksa integritas:", options: ["ACL", "PCL", "Meniscus", "MCL"], correct: 0, explanation: "Menarik tibia ke depan untuk cek ACL." },
+        { q: "Tulang kaki yang membentuk tumit adalah:", options: ["Talus", "Calcaneus", "Navicular", "Cuboid"], correct: 1, explanation: "Calcaneus adalah tulang tumit." },
+        { q: "Sendi pergelangan kaki (Ankle Joint) dibentuk oleh:", options: ["Femur, Tibia, Patella", "Tibia, Fibula, Talus", "Tibia, Fibula, Calcaneus", "Femur, Tibia, Talus"], correct: 1, explanation: "Mortise ankle dibentuk oleh Tibia, Fibula, dan Talus." },
+        { q: "Ligamen ankle lateral yang paling lemah dan sering keseleo (sprain) adalah:", options: ["Anterior Talofibular Ligament (ATFL)", "Calcaneofibular Ligament", "Deltoid Ligament", "Posterior Talofibular Ligament"], correct: 0, explanation: "ATFL paling sering robek saat cedera inversi." },
+        { q: "Kondisi kaki di mana arkus longitudinal medialis rata/hilang disebut:", options: ["Pes Cavus", "Pes Planus", "Club foot", "Hallux Valgus"], correct: 1, explanation: "Pes Planus = Flat foot (kaki datar)." },
+        { q: "Otot betis yang menyatu membentuk tendon Achilles adalah:", options: ["Tibialis Anterior & Extensor Digitorum", "Gastrocnemius & Soleus", "Peroneus Longus & Brevis", "Quadriceps & Hamstring"], correct: 1, explanation: "Gastrocnemius dan Soleus menyatu ke tendon Calcaneus (Achilles)." },
+        { q: "Tulang tarsal yang tidak memiliki perlekatan otot adalah:", options: ["Calcaneus", "Talus", "Navicular", "Cuboid"], correct: 1, explanation: "Talus unik karena tidak ada otot yang melekat padanya, hanya ligamen." },
+        { q: "Hallux Valgus adalah deformitas pada:", options: ["Jari kelingking tangan", "Ibu jari kaki", "Lutut", "Panggul"], correct: 1, explanation: "Bunion/Hallux Valgus adalah bengkoknya jempol kaki ke arah lateral." },
+        { q: "Tempat injeksi intramuskular (IM) yang aman di bokong adalah kuadran:", options: ["Kanan bawah", "Kiri bawah", "Atas luar (Upper Outer)", "Dalam atas"], correct: 2, explanation: "Kuadran atas luar (Upper Outer Quadrant) aman dari Nervus Ischiadicus (Sciatic)." },
+        { q: "Kumpulan saraf di ujung korda spinalis (seperti ekor kuda) disebut:", options: ["Conus Medullaris", "Cauda Equina", "Filum Terminale", "Plexus Brachialis"], correct: 1, explanation: "Cauda Equina adalah kumpulan akar saraf lumbal dan sakral." },
+        { q: "Otot Hamstring berfungsi utama untuk:", options: ["Ekstensi lutut", "Fleksi lutut & Ekstensi panggul", "Abduksi paha", "Dorsifleksi kaki"], correct: 1, explanation: "Hamstring (di paha belakang) menekuk lutut dan meluruskan panggul." },
+        { q: "Q-Angle yang berlebihan pada wanita dapat meningkatkan risiko:", options: ["Dislokasi bahu", "Masalah patellofemoral", "HNP", "Fraktur femur"], correct: 1, explanation: "Sudut Q yang besar membuat tarikan patella ke lateral lebih kuat." },
+        { q: "Fraktur leher femur pada lansia sering menyebabkan kaki tampak:", options: ["Memanjang dan rotasi internal", "Memendek dan rotasi eksternal", "Memendek dan rotasi internal", "Normal"], correct: 1, explanation: "Tarikan otot kuat (iliopsoas dll) menyebabkan pemendekan dan rotasi luar (eksorotasi)." },
+        { q: "Tulang tipis di tungkai bawah sisi lateral (luar) adalah:", options: ["Tibia", "Fibula", "Femur", "Patella"], correct: 1, explanation: "Fibula ada di lateral, Tibia di medial." },
+        { q: "Struktur yang memisahkan kompartemen otot di tungkai adalah:", options: ["Septum intermuskular (Fasia)", "Periosteum", "Ligamen", "Bursa"], correct: 0, explanation: "Fasia profunda membentuk septum yang membagi otot menjadi kompartemen." }
+    ];
+
+    // --- STATE ---
+    let currentFlashcard = 0;
+    let practiceQIndex = 0;
+    let examQIndex = 0;
+    let examAnswers = new Array(questionsData.length).fill(null);
+    let shuffledPracticeQuestions = [];
+
+    // --- LOGIC ---
+    function hideAllModes() {
+        document.querySelectorAll('.mode-section').forEach(el => el.classList.remove('active'));
+        document.getElementById('returnBtn').style.display = 'block';
+    }
+
+    function goHome() {
+        document.querySelectorAll('.mode-section').forEach(el => el.classList.remove('active'));
+        document.getElementById('mainMenu').classList.add('active');
+        document.getElementById('returnBtn').style.display = 'none';
+        
+        // Reset Visuals for Exam
+        document.querySelector('.submit-btn').style.display = 'block';
+        document.querySelector('.exam-navigation').style.display = 'flex';
+        document.getElementById('examResult').style.display = 'none';
+        document.getElementById('examQuestionArea').style.display = 'block';
+    }
+
+    function startMode(mode) {
+        hideAllModes();
+        document.getElementById(mode + 'Mode').classList.add('active');
+
+        if (mode === 'flashcard') {
+            currentFlashcard = 0;
+            renderFlashcard();
+        } else if (mode === 'practice') {
+            shuffledPracticeQuestions = [...questionsData].sort(() => 0.5 - Math.random());
+            practiceQIndex = 0;
+            loadPracticeQuestion();
+        } else if (mode === 'exam') {
+            examQIndex = 0;
+            examAnswers.fill(null);
+            renderExamQuestion();
+        }
+    }
+
+    // Flashcard Logic
+    function renderFlashcard() {
+        const card = document.querySelector('.flashcard');
+        card.classList.remove('flipped');
+        setTimeout(() => {
+            document.getElementById('fcFront').innerText = flashcardsData[currentFlashcard].q;
+            document.getElementById('fcBack').innerText = flashcardsData[currentFlashcard].a;
+        }, 200);
+    }
+    function flipCard(el) { el.classList.toggle('flipped'); }
+    function nextFlashcard() { if (currentFlashcard < flashcardsData.length - 1) { currentFlashcard++; renderFlashcard(); } }
+    function prevFlashcard() { if (currentFlashcard > 0) { currentFlashcard--; renderFlashcard(); } }
+
+    // Practice Logic
+    function loadPracticeQuestion() {
+        const container = document.getElementById('practiceContainer');
+        const qData = shuffledPracticeQuestions[practiceQIndex];
+        
+        if (!qData) {
+            container.innerHTML = "<div style='text-align:center;'><h3>Latihan Selesai! 🎉</h3><p>Silakan kembali dan coba Mode Ujian.</p></div>";
+            document.querySelector('#practiceMode .controls').style.display = 'none';
+            return;
+        } else {
+             document.querySelector('#practiceMode .controls').style.display = 'flex';
+        }
+
+        let html = `
+            <div class="question-card">
+                <div style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">Soal Latihan #${practiceQIndex + 1}</div>
+                <h3 style="margin-top:0">${qData.q}</h3>
+                <div class="options-grid" id="practiceOptions">
+                    ${qData.options.map((opt, i) => 
+                        `<button class="option-btn" onclick="checkPracticeAnswer(this, ${i}, ${qData.correct})">${opt}</button>`
+                    ).join('')}
+                </div>
+                <div class="explanation" id="practiceExplanation">
+                    <strong>💡 Pembahasan:</strong><br>${qData.explanation}
+                </div>
+            </div>
+        `;
+        container.innerHTML = html;
+    }
+
+    function checkPracticeAnswer(btn, chosenIndex, correctIndex) {
+        const parent = document.getElementById('practiceOptions');
+        const buttons = parent.getElementsByClassName('option-btn');
+        const explanation = document.getElementById('practiceExplanation');
+
+        for (let b of buttons) b.disabled = true;
+
+        if (chosenIndex === correctIndex) {
+            btn.classList.add('correct');
+        } else {
+            btn.classList.add('wrong');
+            buttons[correctIndex].classList.add('correct');
+        }
+        explanation.style.display = 'block';
+        practiceQIndex++;
+    }
+
+    // Exam Logic
+    function renderExamQuestion() {
+        const qData = questionsData[examQIndex];
+        const container = document.getElementById('examQuestionArea');
+        const progress = document.getElementById('examProgress');
+
+        progress.innerText = `${examQIndex + 1} / ${questionsData.length}`;
+
+        let optionsHtml = qData.options.map((opt, i) => {
+            const isSelected = examAnswers[examQIndex] === i ? 'background: #fff8e1; border-color: var(--orange); box-shadow: 0 0 5px var(--gold);' : '';
+            return `<button class="option-btn" style="${isSelected}" onclick="selectExamAnswer(${i})">${opt}</button>`;
+        }).join('');
+
+        container.innerHTML = `
+            <div style="margin-bottom:10px; color:#555;">Pertanyaan Ujian</div>
+            <h3 style="margin-top:0;">${qData.q}</h3>
+            <div class="options-grid">
+                ${optionsHtml}
+            </div>
+        `;
+    }
+
+    function selectExamAnswer(index) {
+        examAnswers[examQIndex] = index;
+        renderExamQuestion();
+    }
+
+    function nextExamQ() { if (examQIndex < questionsData.length - 1) { examQIndex++; renderExamQuestion(); } }
+    function prevExamQ() { if (examQIndex > 0) { examQIndex--; renderExamQuestion(); } }
+
+    function finishExam() {
+        if(!confirm("Yakin ingin menyelesaikan ujian sekarang?")) return;
+
+        let scoreRaw = 0;
+        questionsData.forEach((q, i) => {
+            if (examAnswers[i] === q.correct) scoreRaw++;
+        });
+
+        const finalScore = Math.round((scoreRaw / questionsData.length) * 100);
+        
+        document.getElementById('examQuestionArea').style.display = 'none';
+        document.querySelector('.exam-navigation').style.display = 'none';
+        document.querySelector('.submit-btn').style.display = 'none';
+        document.getElementById('examResult').style.display = 'block';
+
+        const scoreVal = document.getElementById('scoreValue');
+        const scoreTxt = document.getElementById('scoreText');
+        
+        // Animation for score
+        let currentVal = 0;
+        const interval = setInterval(() => {
+            currentVal++;
+            scoreVal.innerText = currentVal;
+            if (currentVal >= finalScore) clearInterval(interval);
+        }, 20);
+
+        if (finalScore <= 39) {
+            scoreTxt.innerText = "kamu harus belajar lagi, jangan main mulu 😭/🗿";
+        } else if (finalScore <= 69) {
+            scoreTxt.innerText = "tingkatin lagi yaa! 😬/✊";
+        } else {
+            scoreTxt.innerText = "selamat kamu sudah paham sejauh ini 🤩/🥳";
+        }
+    }
+</script>
+
+</body>
+</html>

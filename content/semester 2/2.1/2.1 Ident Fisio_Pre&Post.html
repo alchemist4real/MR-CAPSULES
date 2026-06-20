@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Physiology Times - Blok 2.1</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts: Chomsky (Masthead), Merriweather (Body), Lora (Headers) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chomsky&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700&family=Libre+Franklin:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        nyt: {
+                            bg: '#f8f7f3',       /* Classic paper off-white */
+                            text: '#121212',     /* Soft black */
+                            gray: '#5a5a5a',     /* Muted gray for secondary text */
+                            border: '#e2e2e2',   /* Divider lines */
+                            accent: '#000000',   /* Deep black accents */
+                            correct: '#e8f3ec',  /* Subdued green bg */
+                            correctBorder: '#1a7332', /* Classic green */
+                            incorrect: '#fce8e6', /* Subdued red bg */
+                            incorrectBorder: '#c5221f' /* Classic red */
+                        }
+                    },
+                    fontFamily: {
+                        masthead: ['"Playfair Display"', 'Georgia', 'serif'], 
+                        serif: ['Lora', 'Georgia', 'serif'],
+                        body: ['Merriweather', 'Georgia', 'serif'],
+                        sans: ['"Libre Franklin"', 'Helvetica', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        @import url('https://fonts.cdnfonts.com/css/chomsky');
+
+        body {
+            background-color: #f8f7f3;
+            color: #121212;
+            font-family: 'Merriweather', serif;
+            -webkit-tap-highlight-color: transparent; /* Remove mobile tap highlight */
+        }
+
+        /* NYT Style specific elements */
+        .masthead {
+            font-family: 'Chomsky', 'Playfair Display', serif;
+            font-size: 2.5rem;
+            line-height: 1;
+            text-align: center;
+            border-bottom: 3px solid #121212;
+            border-top: 1px solid #121212;
+            padding: 1rem 0;
+            margin-bottom: 0.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .masthead { font-size: 4rem; padding: 1.5rem 0; }
+        }
+
+        .edition-bar {
+            border-bottom: 1px solid #121212;
+            border-top: 1px solid #121212;
+            padding: 0.25rem 0;
+            font-family: 'Libre Franklin', sans-serif;
+            text-transform: uppercase;
+            font-size: 0.65rem;
+            letter-spacing: 0.05em;
+        }
+
+        @media (min-width: 768px) {
+            .edition-bar { font-size: 0.75rem; }
+        }
+
+        /* Buttons & Interactions */
+        .btn-nyt {
+            font-family: 'Libre Franklin', sans-serif;
+            border: 1px solid #121212;
+            background: transparent;
+            color: #121212;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+
+        .btn-nyt:hover, .btn-nyt:active {
+            background: #121212;
+            color: #f8f7f3;
+        }
+
+        .btn-option {
+            font-family: 'Lora', serif;
+            background: #ffffff;
+            border: 1px solid #cccccc;
+            transition: all 0.2s ease;
+            text-align: left;
+            position: relative;
+        }
+
+        .btn-option:hover:not(:disabled) {
+            background: #f0f0f0;
+            border-color: #121212;
+        }
+
+        .btn-option.correct {
+            background: #e8f3ec !important;
+            border-color: #1a7332 !important;
+            color: #0d3d1a;
+            font-weight: 600;
+        }
+
+        .btn-option.incorrect {
+            background: #fce8e6 !important;
+            border-color: #c5221f !important;
+            color: #7a1513;
+        }
+
+        /* Article/Explanation Styling */
+        .explanation-box {
+            position: relative;
+            background: transparent;
+            border-left: 3px solid #121212;
+            padding-left: 1.25rem;
+            margin-top: 2rem;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .explanation-box::before {
+            content: "PENJELASAN EDITOR";
+            font-family: 'Libre Franklin', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: #5a5a5a;
+            position: absolute;
+            top: -1.2rem;
+            left: 0;
+        }
+
+        /* 3D Flashcard Flip Effect */
+        .flashcard-container {
+            perspective: 1500px; /* Enhanced perspective for mobile */
+            width: 100%;
+            /* Fixed height strategies for mobile vs desktop */
+            height: 65vh; 
+            min-height: 480px;
+            max-height: 600px;
+        }
+
+        @media (min-width: 768px) {
+            .flashcard-container {
+                height: 500px;
+            }
+        }
+
+        .flashcard {
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .flashcard.is-flipped {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden; /* Safari */
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+            border: 1px solid #121212;
+            box-shadow: 4px 4px 0px 0px rgba(0,0,0,0.1);
+        }
+
+        .flashcard-front {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 1.5rem;
+        }
+
+        .flashcard-back {
+            transform: rotateY(180deg);
+            background: #fcfcfc;
+            border-top: 4px solid #121212;
+            justify-content: flex-start;
+            align-items: flex-start;
+            padding: 1.5rem;
+            overflow-y: auto; /* Essential for mobile readability */
+        }
+
+        @media (min-width: 768px) {
+            .flashcard-front, .flashcard-back { padding: 2.5rem; }
+        }
+
+        /* Typography overrides for reading */
+        .prose strong { font-family: 'Lora', serif; font-weight: 700; color: #000; }
+        .prose ul { list-style-type: square; padding-left: 1.2em; margin-top: 0.5em; }
+        .prose li { margin-bottom: 0.5em; line-height: 1.5; }
+        .drop-cap:first-letter {
+            float: left;
+            font-size: 3rem;
+            line-height: 0.8;
+            padding-top: 4px;
+            padding-right: 8px;
+            padding-left: 3px;
+            font-family: 'Playfair Display', serif;
+            font-weight: bold;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Custom Scrollbar for flashcard back */
+        .flashcard-back::-webkit-scrollbar { width: 6px; }
+        .flashcard-back::-webkit-scrollbar-track { background: transparent; }
+        .flashcard-back::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col p-4 md:p-8 max-w-5xl mx-auto">
+
+    <!-- HEADER: MASTHEAD -->
+    <header class="mb-6 md:mb-8 w-full">
+        <h1 class="masthead">The Physiology Times</h1>
+        <div class="edition-bar flex justify-between items-center text-nyt-gray">
+            <span class="hidden md:inline">Vol. CLXXII . No. 59,715</span>
+            <span class="font-bold text-nyt-text">BLOK 2.1 — EDISI 2026</span>
+            <span id="current-date">Today's Paper</span>
+        </div>
+    </header>
+
+    <!-- START SCREEN (MAIN MENU) -->
+    <main id="start-screen" class="grid grid-cols-1 md:grid-cols-2 gap-8 py-4 md:py-8 border-b-2 border-nyt-accent">
+        <div class="pr-0 md:pr-8 md:border-r border-nyt-border flex flex-col h-full">
+            <h2 class="font-serif text-2xl md:text-3xl font-bold mb-3 md:mb-4">Uji Kompetensi: <br><span class="italic text-xl md:text-2xl font-normal">Pretest Pilihan Ganda</span></h2>
+            <p class="font-body text-sm md:text-base text-nyt-gray mb-6 leading-relaxed flex-grow">
+                20 pertanyaan komprehensif terkait hemodinamika kardiovaskular, elektrofisiologi EKG, spirometri, dan kesanggupan fisik. Diadaptasi dari kurikulum Blok 2.1 dengan pembahasan mendalam ala rubrik sains kami.
+            </p>
+            <button onclick="startApp('pretest')" class="btn-nyt px-5 py-4 w-full flex justify-between items-center text-sm md:text-base">
+                Mulai Ujian Pretest <i class="ph ph-arrow-right text-xl"></i>
+            </button>
+        </div>
+
+        <div class="flex flex-col h-full mt-4 md:mt-0">
+            <h2 class="font-serif text-2xl md:text-3xl font-bold mb-3 md:mb-4">Ulasan Klinis: <br><span class="italic text-xl md:text-2xl font-normal">Posttest Flashcards</span></h2>
+            <p class="font-body text-sm md:text-base text-nyt-gray mb-6 leading-relaxed flex-grow">
+                20 kartu pembelajaran memori aktif (Active Recall) yang mencakup hukum Frank-Starling, regulasi RAAS, efek Bohr, hingga interpretasi instrumen Harvard Step Test.
+            </p>
+            <button onclick="startApp('posttest')" class="btn-nyt px-5 py-4 w-full flex justify-between items-center bg-nyt-text text-nyt-bg hover:bg-nyt-gray text-sm md:text-base">
+                Muka Kartu Posttest <i class="ph ph-cards text-xl"></i>
+            </button>
+        </div>
+    </main>
+
+    <!-- PRETEST SCREEN -->
+    <section id="pretest-screen" class="hidden flex-col w-full max-w-3xl mx-auto py-2 md:py-4">
+        <div class="flex justify-between items-center mb-6 md:mb-8 border-b border-nyt-border pb-2">
+            <button onclick="backToHome()" class="text-nyt-gray hover:text-nyt-accent font-sans text-[10px] md:text-xs uppercase tracking-widest flex items-center gap-1">
+                <i class="ph ph-caret-left text-sm"></i> Halaman Utama
+            </button>
+            <span class="font-sans text-[10px] md:text-xs font-bold tracking-widest text-nyt-accent">
+                PERTANYAAN <span id="pt-curr">1</span> DARI <span id="pt-total">20</span>
+            </span>
+        </div>
+
+        <div class="mb-8 md:mb-10">
+            <h2 id="pt-question" class="font-serif text-xl md:text-3xl leading-snug font-bold text-nyt-text drop-cap mb-6 md:mb-8">
+                <!-- Question Text -->
+            </h2>
+            <div id="pt-options" class="flex flex-col gap-3">
+                <!-- Options via JS -->
+            </div>
+            
+            <div id="pt-feedback" class="hidden explanation-box prose prose-p:font-body prose-p:text-sm md:prose-p:text-base prose-p:leading-relaxed text-nyt-text">
+                <!-- Explanation via JS -->
+            </div>
+        </div>
+
+        <div class="flex justify-between pt-4 md:pt-6 border-t border-nyt-border mt-auto">
+            <button onclick="navPretest(-1)" id="pt-btn-prev" class="btn-nyt px-4 md:px-5 py-3 md:py-2 text-xs md:text-sm disabled:opacity-30 disabled:cursor-not-allowed">
+                Sebelumnnya
+            </button>
+            <button onclick="navPretest(1)" id="pt-btn-next" class="btn-nyt px-4 md:px-5 py-3 md:py-2 text-xs md:text-sm hidden">
+                Selanjutnya
+            </button>
+            <button onclick="finishPretest()" id="pt-btn-finish" class="btn-nyt px-4 md:px-5 py-3 md:py-2 text-xs md:text-sm bg-nyt-text text-white hidden hover:bg-nyt-gray">
+                Selesaikan Ujian
+            </button>
+        </div>
+    </section>
+
+    <!-- FLASHCARD SCREEN -->
+    <section id="posttest-screen" class="hidden flex-col w-full max-w-4xl mx-auto py-2 md:py-4">
+        <div class="flex justify-between items-center mb-6 md:mb-8 border-b border-nyt-border pb-2">
+            <button onclick="backToHome()" class="text-nyt-gray hover:text-nyt-accent font-sans text-[10px] md:text-xs uppercase tracking-widest flex items-center gap-1">
+                <i class="ph ph-caret-left text-sm"></i> Halaman Utama
+            </button>
+            <span class="font-sans text-[10px] md:text-xs font-bold tracking-widest text-nyt-accent">
+                KARTU <span id="fc-curr">1</span> DARI <span id="fc-total">20</span>
+            </span>
+        </div>
+
+        <div class="flashcard-container mb-6 md:mb-8 mx-auto">
+            <div id="fc-card" class="flashcard" onclick="flipCard()">
+                <!-- Front -->
+                <div class="flashcard-face flashcard-front">
+                    <span class="font-sans text-[10px] md:text-xs font-bold tracking-widest text-nyt-gray mb-4 md:mb-6 uppercase">Pertanyaan Posttest</span>
+                    <h2 id="fc-question" class="font-serif text-xl md:text-4xl font-bold leading-tight max-w-2xl px-2">
+                        <!-- FC Question -->
+                    </h2>
+                    <span class="mt-8 font-sans text-[10px] md:text-xs italic text-nyt-gray flex items-center justify-center gap-2">
+                        <i class="ph ph-hand-tap text-lg"></i> Ketuk kartu untuk membalik
+                    </span>
+                </div>
+                <!-- Back -->
+                <div class="flashcard-face flashcard-back">
+                    <span class="font-sans text-[10px] md:text-xs font-bold tracking-widest text-nyt-accent mb-3 md:mb-4 uppercase w-full">Kunci Jawaban & Pembahasan</span>
+                    <div id="fc-answer" class="prose prose-p:font-body prose-p:text-sm md:prose-p:text-base prose-p:leading-relaxed text-left w-full max-w-none font-serif text-base md:text-xl">
+                        <!-- FC Answer -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-between items-center pt-4 border-t border-nyt-border">
+            <button onclick="navFlashcard(-1)" id="fc-btn-prev" class="btn-nyt px-3 md:px-4 py-3 md:py-2 text-[10px] md:text-sm disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1">
+                <i class="ph ph-arrow-left text-sm"></i> <span class="hidden md:inline">Sebelumnya</span>
+            </button>
+            <button onclick="flipCard()" class="font-sans text-[10px] md:text-xs font-bold uppercase tracking-widest text-nyt-text hover:underline underline-offset-4 px-2 py-3">
+                Balik Kartu
+            </button>
+            <button onclick="navFlashcard(1)" id="fc-btn-next" class="btn-nyt px-3 md:px-4 py-3 md:py-2 text-[10px] md:text-sm disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1">
+                <span class="hidden md:inline">Selanjutnya</span> <i class="ph ph-arrow-right text-sm"></i>
+            </button>
+        </div>
+    </section>
+
+    <!-- PRETEST RESULT SCREEN -->
+    <section id="result-screen" class="hidden flex-col items-center text-center max-w-2xl mx-auto py-10 md:py-16">
+        <h1 class="masthead border-none mb-2" style="font-size: 2.5rem; md:font-size: 3rem;">Evaluation Report</h1>
+        <p class="font-serif text-base md:text-lg italic text-nyt-gray mb-8 md:mb-10 px-4">Berikut adalah analisis hasil uji performa akademik Anda.</p>
+        
+        <div class="text-7xl md:text-8xl font-serif font-bold mb-8 text-nyt-text" id="final-score">0</div>
+        
+        <div class="flex gap-8 md:gap-12 border-y border-nyt-border py-4 md:py-6 mb-8 md:mb-10 w-full max-w-xs justify-center">
+            <div class="text-center">
+                <div class="font-sans text-[10px] md:text-sm tracking-widest text-nyt-gray uppercase mb-1">Benar</div>
+                <div class="text-2xl md:text-3xl font-bold font-serif text-green-800" id="res-correct">0</div>
+            </div>
+            <div class="border-l border-nyt-border pl-8 md:pl-12 text-center">
+                <div class="font-sans text-[10px] md:text-sm tracking-widest text-nyt-gray uppercase mb-1">Salah</div>
+                <div class="text-2xl md:text-3xl font-bold font-serif text-red-800" id="res-wrong">0</div>
+            </div>
+        </div>
+
+        <button onclick="backToHome()" class="btn-nyt px-8 py-4 w-full md:w-auto text-sm">
+            Kembali ke Beranda
+        </button>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="mt-auto pt-6 pb-4 w-full border-t border-nyt-border text-center font-sans text-[10px] md:text-xs text-nyt-gray uppercase tracking-widest mt-8 md:mt-12">
+        &copy; 2026 The Physiology Times — Fakultas Kedokteran
+    </footer>
+
+    <script>
+        // Set Today's Date NYT Style
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('current-date').innerText = new Date().toLocaleDateString('en-US', options);
+
+        // --- DATA PRETEST (20 Soal) ---
+        const pretestData = [
+            {
+                q: "Rata-rata tekanan darah (Mean Arterial Pressure/MAP) dipengaruhi langsung oleh variabel hemodinamik berikut:",
+                o: ["Curah jantung (CO) dan total resistensi perifer (TPR)", "Curah jantung dan stroke volume", "Jari-jari pembuluh dan panjang pembuluh darah", "Darah balik vena dan aktivitas pompa respirasi", "Dominasi regulasi saraf otonom (simpatik)"],
+                a: "Curah jantung (CO) dan total resistensi perifer (TPR)",
+                exp: `<p><strong>Jawaban yang Tepat: Curah jantung dan total resistensi perifer.</strong></p>
+                <p>Secara fisiologis, <em>Mean Arterial Pressure</em> (MAP) adalah pendorong utama sirkulasi darah ke jaringan (perfusi). MAP direpresentasikan melalui persamaan hemodinamik fundamental:</p>
+                <p><strong>MAP = Cardiac Output (CO) &times; Total Peripheral Resistance (TPR)</strong></p>
+                <p>CO mewakili jumlah darah yang dipompa jantung per menit, sedangkan TPR mewakili tingkat tahanan/gesekan yang diberikan oleh pembuluh darah arteriolar terhadap aliran darah.</p>`
+            },
+            {
+                q: "Untuk mengkalkulasi besaran Curah Jantung (Cardiac Output), formula parameter fisis yang digunakan adalah:",
+                o: ["Stroke Volume (SV) dikali Heart Rate (HR)", "Total Peripheral Resistance (TPR) dikali Sistolic Pressure", "Volume Darah Akhir Diastolik dikurangi Akhir Sistolik", "Tekanan Vena Sentral dibagi Resistensi Arteri"],
+                a: "Stroke Volume (SV) dikali Heart Rate (HR)",
+                exp: `<p><strong>Jawaban yang Tepat: Stroke Volume (SV) dikali Heart Rate (HR).</strong></p>
+                <p>Curah Jantung atau <em>Cardiac Output</em> (CO) menunjukkan volume darah yang diekskresikan oleh ventrikel kiri ke aorta dalam waktu satu menit. Perhitungannya adalah:</p>
+                <ul>
+                    <li><strong>Stroke Volume (SV):</strong> Volume darah yang disemburkan dalam satu kali kontraksi detak jantung (sekitar 70 ml saat istirahat).</li>
+                    <li><strong>Heart Rate (HR):</strong> Frekuensi denyut jantung per menit (rata-rata 75 kali/menit).</li>
+                </ul>
+                <p>Oleh karena itu, CO = SV &times; HR (normal istirahat = &plusmn; 5.25 Liter/menit).</p>`
+            },
+            {
+                q: "Berdasarkan pedoman auskultasi, nilai Tekanan Darah Diastolik ditandai oleh bunyi Korotkoff pada fase ke berapa?",
+                o: ["Fase 1", "Fase 2", "Fase 3", "Fase 4", "Fase 5"],
+                a: "Fase 5",
+                exp: `<p><strong>Jawaban yang Tepat: Fase 5.</strong></p>
+                <p>Saat tekanan manset diturunkan perlahan-lahan dalam pengukuran tensi (sphygmomanometri), sirkulasi darah menghasilkan serangkaian suara turbulensi. <strong>Fase 5</strong> merujuk pada titik presisi di mana seluruh suara berdetak <strong>menghilang sepenuhnya</strong> (silence).</p>
+                <p>Menghilangnya bunyi ini mengindikasikan bahwa pembuluh arteri brachialis tidak lagi terjepit oleh manset, dan aliran darah telah kembali menjadi <em>laminar</em> dan halus (menandakan tekanan diastolik).</p>`
+            },
+            {
+                q: "Di antara pilihan berikut, manakah faktor yang secara langsung berperan dalam memfasilitasi kontrol vasokonstriktor intrinsik/ekstrinsik lokal?",
+                o: ["Stimulus Saraf Simpatis-Parasimpatis", "Sinergisme Pompa Respirasi", "Fluktuasi Aliran Darah Regional", "Fungsi Mekanis Katup Jantung", "Perubahan Konstan Jari-jari Pembuluh Darah"],
+                a: "Stimulus Saraf Simpatis-Parasimpatis",
+                exp: `<p><strong>Jawaban yang Tepat: Stimulus Saraf Simpatis-Parasimpatis.</strong></p>
+                <p>Kontrol pembuluh darah (vaskular) dikelola secara ekstensif oleh divisi <strong>Saraf Otonom</strong>, dengan dominasi mutlak dari saraf simpatis. Serabut saraf simpatis melepaskan neurotransmiter <em>norepinefrin</em> yang berikatan dengan reseptor <em>alpha-1 adrenergik</em> pada membran otot polos pembuluh darah, memicu respons konstriksi (penyempitan).</p>`
+            },
+            {
+                q: "Berikut ini adalah faktor-faktor konstitusional maupun lingkungan yang secara ilmiah memengaruhi indeks kesanggupan kardiovaskular seseorang, KECUALI:",
+                o: ["Profil Genetik Bawaan", "Rentang Umur Kronologis", "Distribusi Jenis Kelamin", "Komposisi Rasio Lemak Tubuh", "Tinggi Badan Definitif"],
+                a: "Tinggi Badan Definitif",
+                exp: `<p><strong>Jawaban yang Tepat: Tinggi Badan Definitif.</strong></p>
+                <p>Menurut literatur fisiologi olahraga, tinggi badan *bukanlah* determinan primer bagi efisiensi sistem kardiovaskular. Indeks kesanggupan atau kebugaran aerobik (VO2 Max) sangat dipengaruhi oleh:</p>
+                <ul>
+                    <li><strong>Genetik:</strong> Menentukan plafon maksimal VO2 seseorang.</li>
+                    <li><strong>Umur & Kelamin:</strong> Memuncak di awal 20-an, pria cenderung lebih tinggi kapasitasnya karena volume otot besar & konsentrasi hemoglobin.</li>
+                    <li><strong>Gaya Hidup:</strong> Intensitas aktivitas fisik dan ada/tidaknya kebiasaan merokok (karbon monoksida merusak transportasi oksigen).</li>
+                </ul>`
+            },
+            {
+                q: "Pernyataan A: Bunyi hilang saat tekanan manset di bawah tekanan diastolik. <br><br>Pernyataan B: Aliran darah berubah kembali menjadi aliran laminar. <br><br>Hubungan kedua aksioma ini adalah?",
+                o: ["Pernyataan A Benar, B Benar, dan Berhubungan secara kausal", "Pernyataan A Benar, B Benar, namun Tidak Berhubungan", "Pernyataan A Benar, B Salah", "Pernyataan A Salah, B Benar", "Kedua Pernyataan Salah"],
+                a: "Pernyataan A Benar, B Benar, dan Berhubungan secara kausal",
+                exp: `<p><strong>Jawaban yang Tepat: Pernyataan A Benar, B Benar, dan Berhubungan.</strong></p>
+                <p>Ini adalah prinsip hidrodinamika auskultasi Korotkoff.</p>
+                <p><strong>Aksi (Sebab):</strong> Tekanan eksternal dari manset sphygmomanometer akhirnya turun melampaui tekanan diastolik (ambang batas bawah tekanan arteri), sehingga pembuluh arteri kembali terbuka lebar ke bentuk silindris alaminya (Pernyataan B benar).</p>
+                <p><strong>Reaksi (Akibat):</strong> Karena pipa arteri tak lagi mengerut, turbulensi berhenti. Aliran fluida darah berjalan sejajar dan teratur (laminar). Aliran laminar bersifat *silent* (tidak menghasilkan suara), sehingga bunyi Korotkoff lenyap/hilang (Pernyataan A benar).</p>`
+            },
+            {
+                q: "Aliran darah di dalam suatu sistem pembuluh amat bergantung pada dinamika vaskular. Dari opsi di bawah ini, mana yang BUKAN merupakan faktor kelenturan/resistensi (faktor vaskular)?",
+                o: ["Volume cairan darah yang mengalir", "Gerakan ejeksi/pompa jantung", "Frekuensi denyut jantung (Heart Rate)", "Viskositas (tingkat kekentalan) darah", "Derajat elastisitas tunika media pembuluh darah"],
+                a: "Frekuensi denyut jantung (Heart Rate)",
+                exp: `<p><strong>Jawaban yang Tepat: Frekuensi denyut jantung (Heart Rate).</strong></p>
+                <p>Dalam analisis kardiovaskular, variabel dibagi berdasarkan asal organ: <strong>Kardiak (Jantung)</strong> dan <strong>Vaskular (Pembuluh).</strong></p>
+                <p>Denyut jantung murni merepresentasikan kinerja kelistrikan dan miokardial dari jantung itu sendiri, karenanya disebut *faktor kardiak*. Di sisi lain, kondisi struktur pembuluh darah (elastisitas/kekakuan), panjang lintasan, dan tekstur fluida darah (volume & viskositas) adalah atribut resistensi yang mendefinisikan *faktor vaskular*.</p>`
+            },
+            {
+                q: "Spirometri adalah prosedur krusial untuk mengevaluasi parameter paru. Di bawah ini, indikasi klinis apa yang diklasifikasikan sebagai KONTRAINDIKASI spirometri?",
+                o: ["Pasien dengan riwayat batuk kronis > 40 tahun", "Kecurigaan riwayat penyakit paru obstruktif (PPOK)", "Status kardiovaskular pasien yang tidak stabil", "Riwayat sakit dada atipikal ringan", "Tanda klinis jari tabuh (Clubbing finger)"],
+                a: "Status kardiovaskular pasien yang tidak stabil",
+                exp: `<p><strong>Jawaban yang Tepat: Status kardiovaskular pasien yang tidak stabil.</strong></p>
+                <p>Spirometri mengharuskan pasien melakukan ekspirasi paksa yang agresif (mengingatkan pada manuver Valsalva). Upaya ekspirasi brutal ini meningkatkan tekanan <em>intratoraks</em> (di dalam rongga dada) secara masif.</p>
+                <p>Pada individu yang jantungnya rentan (mis. infark miokard baru, aneurisma, tekanan darah tak terkontrol), lonjakan tekanan dada ini mengurangi aliran darah balik ke jantung secara akut, yang dapat berpotensi fatal memicu sinkop atau gagal jantung akut.</p>`
+            },
+            {
+                q: "Setelah Anda menghembuskan napas secara dramatis hingga mencapai titik maksimal (ekspirasi paksa absolut), masih ada sebagian volume udara yang menduduki rongga paru-paru. Apakah nomenklaturnya?",
+                o: ["Volume Tidal (VT)", "Volume Cadangan Inspirasi (VCI)", "Volume Cadangan Ekspirasi (VCE)", "Volume Residu (VR)", "Kapasitas Vital Fungsional (FVC)"],
+                a: "Volume Residu (VR)",
+                exp: `<p><strong>Jawaban yang Tepat: Volume Residu (VR).</strong></p>
+                <p><strong>Volume Residu</strong> adalah kuantitas udara konstan (rata-rata 1.200 ml pada orang dewasa) yang <em>mustahil</em> dikosongkan secara sukarela dari dalam unit paru. Udara tak tertandingi ini berperan sebagai penopang arsitektur, memastikan kantung-kantung alveoli tidak kolaps seperti balon kempis dan mempertahankan keberlangsungan difusi oksigen tanpa jeda di antara tiap nafas.</p>`
+            },
+            {
+                q: "Penyimpangan pengukuran tekanan darah klinis tak luput dari intervensi perilaku. Berapa mmHg simpangan rata-rata (in-akurasi) yang terjadi bila pasien berbicara atau mendengar secara aktif saat dites?",
+                o: ["Deviasi 2 hingga 7 mmHg", "Deviasi 7 mmHg secara linear", "Peningkatan akut sekitar 10 mmHg", "Peningkatan hingga ambang 15 mmHg atau lebih"],
+                a: "Peningkatan akut sekitar 10 mmHg",
+                exp: `<p><strong>Jawaban yang Tepat: Peningkatan akut sekitar 10 mmHg.</strong></p>
+                <p>Menurut literatur fisiologi modern dan The American Heart Association (AHA), tindakan sederhana seperti berbicara (<em>active talking</em>) dapat memprovokasi kewaspadaan kognitif ringan dan menstimulasi sistem persarafan simpatis. Respons ini mendorong pelepasan katekolamin temporal yang menaikkan resistensi pembuluh perifer, acapkali menciptakan selisih pembacaan rata-rata <strong>10 mmHg</strong> lebih tinggi dari realitas fisiologis saat basal istirahat.</p>`
+            },
+            {
+                q: "Menurut estimasi medis referensial, berapakah Kapasitas Total Paru (Total Lung Capacity) ekuivalen rata-rata pada anatomis pria dewasa sehat?",
+                o: ["2.200 mililiter", "3.800 mililiter", "4.800 mililiter", "6.000 mililiter (6 Liter)"],
+                a: "6.000 mililiter (6 Liter)",
+                exp: `<p><strong>Jawaban yang Tepat: 6.000 mililiter (6 Liter).</strong></p>
+                <p>Kapasitas Total Paru (TLC) adalah parameter gabungan dari kapasitas maksimal organ respirasi setelah menarik napas sekuat-kuatnya. Secara agregat matematis:<br>
+                <em>TLC = Kapasitas Vital + Volume Residu</em>.<br>
+                Bagi demografi laki-laki dengan ukuran toraks tipikal, rasio kumulatif ini berada di kisaran masif 6.000 ml atau 6 Liter (sementara sekitar 4.200 ml pada wanita). Angka 2200 ml mewakili Kapasitas Residu Fungsional (KRF).</p>`
+            },
+            {
+                q: "Kapasitas Vital (Vital Capacity) adalah metrik krusial kapasitas hidup respirasi. Bagaimana formula penjumlahan volumenya?",
+                o: ["Volume Tidal (VT) + Volume Cadangan Inspirasi (VCI)", "Volume Cadangan Ekspirasi (VCE) + Volume Residu (VR)", "Volume Cadangan Inspirasi (VCI) + Volume Tidal (VT) + Volume Cadangan Ekspirasi (VCE)", "Kapasitas Fungsional (VK) + Volume Residu (VR)"],
+                a: "Volume Cadangan Inspirasi (VCI) + Volume Tidal (VT) + Volume Cadangan Ekspirasi (VCE)",
+                exp: `<p><strong>Jawaban yang Tepat: VCI + VT + VCE.</strong></p>
+                <p>Secara definitif, Kapasitas Vital mewakili rentang maksimal keluar-masuknya udara dari instrumen pernapasan manusia; dari titik tarikan nafas terjauh hingga dorongan nafas terdalam.</p>
+                <ul>
+                    <li><strong>VT (Tidal):</strong> Napas damai & istirahat.</li>
+                    <li><strong>VCI (Cadangan Inspirasi):</strong> Ruang sisa ekstra untuk menarik udara tambahan (tarik dalam).</li>
+                    <li><strong>VCE (Cadangan Ekspirasi):</strong> Udara tersisa yang bisa disemburkan paksa (keluarkan semua).</li>
+                </ul>
+                <p>Gabungan dari ketiganya mengabaikan eksistensi Volume Residu (udara mati di paru).</p>`
+            },
+            {
+                q: "Pencatatan Tekanan Darah Sistolik dilakukan pada saat auskultator pertama kali mendengar spektrum Bunyi Korotkoff pada fase...",
+                o: ["Fase 1", "Fase 2", "Fase 3", "Fase 4", "Fase 5"],
+                a: "Fase 1",
+                exp: `<p><strong>Jawaban yang Tepat: Fase 1.</strong></p>
+                <p>Di detik ketika tekanan udara dalam manset turun hingga persis di bawah tekanan puncak saat bilik jantung berkontraksi (sistol), seberkas darah yang tadinya tertahan dengan keras mulai menerobos masuk lewat celah pembuluh yang masih menyempit secara artifisial. Benturan turbulen darah pertama ini menghantam dinding arteri dan menciptakan gema akustik yang jernih, tajam layaknya ketukan (<em>tapping sound</em>). Suara perdana inilah yang disepakati dokter sebagai batas absolut <strong>Tekanan Darah Sistolik</strong> (Fase 1).</p>`
+            },
+            {
+                q: "Dalam interpretasi Elektrokardiogram (EKG) dasar, Gelombang P secara definitif merepresentasikan fase kelistrikan apa pada jantung?",
+                o: ["Repolarisasi ventrikel", "Depolarisasi atrium", "Depolarisasi ventrikel", "Repolarisasi atrium", "Aktivasi nodus atrioventrikuler (AV)"],
+                a: "Depolarisasi atrium",
+                exp: `<p><strong>Jawaban yang Tepat: Depolarisasi atrium.</strong></p>
+                <p>Dalam arsitektur kelistrikan miokardium, impuls dimulai dari Nodus Sinoatrial (SA). Penyebaran gelombang listrik ini melintasi kedua ruang atrium memicu kontraksinya. Pada cetakan EKG, defleksi positif pertama yang lembut dan landai ini terekam sebagai <strong>Gelombang P</strong>, yang mewakili secara murni proses <em>depolarisasi atrium</em>.</p>`
+            },
+            {
+                q: "Apabila tekanan darah sistemik merosot tajam secara mendadak, mekanisme refleks saraf otonom manakah yang pertama kali mendeteksi dan mengkoreksinya?",
+                o: ["Kemoreseptor di badan karotid", "Sistem Renin-Angiotensin-Aldosteron (RAAS)", "Refleks Baroreseptor di arkus aorta dan sinus karotikus", "Pusat pneumotaksik di pons", "Regulasi osmoreseptor di hipotalamus"],
+                a: "Refleks Baroreseptor di arkus aorta dan sinus karotikus",
+                exp: `<p><strong>Jawaban yang Tepat: Refleks Baroreseptor di arkus aorta dan sinus karotikus.</strong></p>
+                <p>Baroreseptor adalah reseptor regangan mekanis (*stretch receptors*) berkecepatan tinggi yang tertanam di dinding arkus aorta dan sinus karotikus. Penurunan tensi akut menyebabkan dinding pembuluh mengendur, menurunkan laju tembakan (*firing rate*) ke medula oblongata, yang seketika direspons dengan melepaskan gelombang saraf simpatis untuk vasokonstriksi dan takikardia.</p>`
+            },
+            {
+                q: "Surfaktan pulmonal memainkan peranan vital dalam mekanika ventilasi. Sel spesifik apa dalam arsitektur alveolar yang memproduksinya?",
+                o: ["Sel Alveolar Tipe I (Pneumosit Tipe I)", "Sel Alveolar Tipe II (Pneumosit Tipe II)", "Makrofag Alveolar (Dust cells)", "Sel Goblet bronkial", "Sel endotel kapiler paru"],
+                a: "Sel Alveolar Tipe II (Pneumosit Tipe II)",
+                exp: `<p><strong>Jawaban yang Tepat: Sel Alveolar Tipe II (Pneumosit Tipe II).</strong></p>
+                <p>Meski populasinya lebih sedikit secara luasan permukaan dibanding Tipe I, Sel Alveolar Tipe II adalah pabrik biokimiawi paru. Mereka mensekresikan <strong>surfaktan</strong>—campuran kompleks fosfolipid dan protein—yang berfungsi memecah kohesi molekul air di permukaan alveolus, secara dramatis menurunkan tegangan permukaan dan mencegah paru-paru kolaps (atelektasis).</p>`
+            },
+            {
+                q: "Prinsip mekanis di mana peregangan esktra pada serat miokardium sesaat sebelum sistol (peningkatan Preload) akan menghasilkan daya kontraksi yang lebih kuat dikenal sebagai...",
+                o: ["Hukum Boyle", "Efek Haldane", "Hukum Jantung Frank-Starling", "Hukum Laplace", "Refleks Bainbridge"],
+                a: "Hukum Jantung Frank-Starling",
+                exp: `<p><strong>Jawaban yang Tepat: Hukum Jantung Frank-Starling.</strong></p>
+                <p>Hukum Frank-Starling menarasikan kebijaksanaan intrinsik jantung: "Apa yang masuk, harus keluar." Semakin banyak volume darah yang mengisi ventrikel di akhir relaksasi (*End-Diastolic Volume*/EDV), semakin optimal panjang filamen aktin-miosin diregangkan, memicu lentingan kontraksi (*Stroke Volume*) yang jauh lebih masif dan efisien.</p>`
+            },
+            {
+                q: "Dalam dinamika transpor gas, afinitas molekul hemoglobin terhadap oksigen akan menurun drastis (kurva disosiasi bergeser ke KANAN) saat berada di lingkungan jaringan yang aktif. Fenomena ini disebut:",
+                o: ["Efek Bohr", "Efek Haldane", "Siklus Hamburger", "Hukum Henry", "Kapasitas Diffusi Berlebih"],
+                a: "Efek Bohr",
+                exp: `<p><strong>Jawaban yang Tepat: Efek Bohr.</strong></p>
+                <p>Ditemukan oleh Christian Bohr, efek ini menjelaskan bahwa peningkatan konsentrasi karbon dioksida (pCO2) dan penurunan pH darah (suasana asam akibat asam laktat jaringan) akan mengubah konformasi molekul hemoglobin. Perubahan ini membuat hemoglobin enggan "menggenggam" oksigen, sehingga memfasilitasi pelepasan paksa (*unloading*) molekul oksigen langsung ke sel otot yang kelaparan.</p>`
+            },
+            {
+                q: "Pusat ritmisitas pernapasan utama (*Primary Respiratory Pacemaker*) yang membangkitkan impuls saraf dasar untuk inspirasi otot diafragma berlokasi di area anatomis...",
+                o: ["Korteks serebri motorik primer", "Pons varolii", "Hipotalamus anterior", "Medula Oblongata", "Serebelum"],
+                a: "Medula Oblongata",
+                exp: `<p><strong>Jawaban yang Tepat: Medula Oblongata.</strong></p>
+                <p>Medula Oblongata, di batang otak bawah, mengorkestrasi napas bawah sadar kita. Struktur krusial di dalamnya, <em>Dorsal Respiratory Group</em> (DRG), bertindak layaknya metronom, secara periodik menembakkan impuls menuruni nervus phrenicus untuk memerintahkan diafragma berkontraksi (inspirasi normal/basal).</p>`
+            },
+            {
+                q: "Auskultasi jantung normal menghasilkan irama dua nada, sering disimbolkan 'Lub-Dup'. Bunyi jantung pertama (S1/Lub) secara murni diakibatkan oleh dinamika hemodinamik dari...",
+                o: ["Penutupan katup semilunar (Aorta dan Pulmonal)", "Pembukaan mendadak katup atrioventrikuler", "Turbulensi penutupan katup atrioventrikuler (Mitral dan Trikuspid)", "Darah yang membentur dinding atrium secara retrograd", "Kontraksi serempak otot papilaris tanpa katup"],
+                a: "Turbulensi penutupan katup atrioventrikuler (Mitral dan Trikuspid)",
+                exp: `<p><strong>Jawaban yang Tepat: Turbulensi penutupan katup atrioventrikuler.</strong></p>
+                <p>Bunyi jantung <strong>S1 ("Lub")</strong> menandai dimulainya fase <em>Sistol</em> (kontraksi ventrikel). Ketika tekanan di ruang bilik melampaui serambi, darah mencoba berbalik arah, namun dicegah oleh <strong>menutupnya Katup Mitral dan Trikuspid (AV valves)</strong> dengan hentakan kuat. Benturan darah pada katup yang tertutup rapat inilah yang menggemakan suara S1 ke stetoskop.</p>`
+            }
+        ];
+
+        // --- DATA POSTTEST (20 FLASHCARDS) ---
+        const posttestData = [
+            {
+                q: "Sebutkan 3 variabel perilaku atau teknis yang secara klinis mendistorsi (mengurangi akurasi) hasil pengukuran tekanan darah pasien.",
+                a: `<strong>Faktor Pengganggu (Confounders):</strong>
+                <ul>
+                    <li><strong>Berbicara/Mendengar Aktif:</strong> Berinteraksi verbal selama tes mengaktifkan sistem saraf sadar, memicu lonjakan resistensi perifer yang meninggikan tensi hingga ~10 mmHg.</li>
+                    <li><strong>Menahan Kencing:</strong> Peregangan dinding kandung kemih merefleksikan stres fisiologis pada saraf simpatik sentral, meningkatkan heart rate dan tensi.</li>
+                    <li><strong>Manset Terlalu Kecil:</strong> Penggunaan manset yang sempit mengharuskan pemompaan udara ekstrem untuk menekan arteri, menghasilkan bias "overestimasi".</li>
+                </ul>`
+            },
+            {
+                q: "Uraikan faktor-faktor intrinsik dan ekstrinsik yang menjadi determinan Kesanggupan Kardiovaskular (VO2 Max) manusia.",
+                a: `<strong>Pilar Utama Kesanggupan Jantung-Paru:</strong>
+                <ul>
+                    <li><strong>Arsitektur Genetik:</strong> Mengkalibrasi ukuran absolut jantung dan rasio serat otot.</li>
+                    <li><strong>Umur:</strong> Puncak utilitas aerobik terjadi di awal 20-an; lalu menurun.</li>
+                    <li><strong>Gender:</strong> Massa otot dan sel darah merah dominan pria membuat VO2 Max umumnya lebih tinggi.</li>
+                    <li><strong>Latihan Fisik:</strong> Olahraga merangsang hipertrofi miokardium, menebalkan volume sekuncup (SV).</li>
+                    <li><strong>Komposisi Lemak:</strong> Lemak adalah jaringan inaktif secara respiratori (beban sirkulasi).</li>
+                    <li><strong>Merokok:</strong> Ikatan CO (Karbon Monoksida) mendepak oksigen dari hemoglobin secara drastis.</li>
+                </ul>`
+            },
+            {
+                q: "Identifikasikan empat instrumen utama vaskular yang menjadi arsitek di balik terjadinya fluktuasi Tekanan Darah secara fisik.",
+                a: `<strong>Mekanika Hidrolik Pembuluh Darah:</strong>
+                <ul>
+                    <li><strong>Kapasitas Pompa Miokardium (CO):</strong> Debit volume cairan yang didorong ke aorta per menit.</li>
+                    <li><strong>Volume Darah Absolut:</strong> Pendarahan/dehidrasi akan menjatuhkan tekanan (syok hipovolemik).</li>
+                    <li><strong>Viskositas Darah:</strong> Darah kental (polisitemia) menciptakan hambatan gesekan ekstrem.</li>
+                    <li><strong>Elastisitas Pembuluh (Compliance):</strong> Arteri sehat meredam kejut tekanan layaknya pegas; pembuluh yang kaku (aterosklerosis) menyebabkan tensi sistolik melonjak tajam.</li>
+                </ul>`
+            },
+            {
+                q: "Apa yang didefinisikan secara klinis sebagai Kapasitas Residu Fungsional (KRF/FRC)? Sertakan formulasi dan nilai normatifnya.",
+                a: `<strong>Definisi:</strong> Kapasitas Residu Fungsional adalah parameter volume udara yang berdiam di paru <strong>tepat sesudah akhir ekspirasi pasif normal</strong> (tanpa mengedan).
+                <br><br>
+                <strong>Komposisi Rumus:</strong>
+                <p class="pl-3 border-l-2 border-nyt-gray italic my-2">KRF = Volume Cadangan Ekspirasi (VCE) + Volume Residu (VR)</p>
+                <strong>Tolok Ukur Normatif:</strong><br>
+                Pria rata-rata: <strong>2.200 ml</strong> | Wanita rata-rata: <strong>1.800 ml</strong>.`
+            },
+            {
+                q: "Sebuah pengujian Spirometri diakui sahih bila memenuhi kriteria Acceptability (Keberterimaan). Sebutkan minimal 3 kriteria tersebut.",
+                a: `<strong>Syarat verifikasi protokol Spirometri:</strong>
+                <ul>
+                    <li><strong>Manuver Awalan Presisi:</strong> Hembusan tidak tertunda (*hesitation*) dan kurva aliran-volume melesat tajam instan tanpa diretas batuk.</li>
+                    <li><strong>Durasi Ekspirasi Paripurna:</strong> Pasien dituntut mengosongkan dadanya habis-habisan memutar paksa mesin ekspiratori tak kurang dari <strong>6 detik nonstop</strong>.</li>
+                    <li><strong>Grafik Bebas Artefak:</strong> Puncak Aliran Ekspirasi (PEF) meruncing tegas, menurun halus tanpa gelombang gergaji (tanda kebocoran bibir/lidah menutupi).</li>
+                </ul>`
+            },
+            {
+                q: "Bagaimana ilmu faal mendeskripsikan 'Volume Inspirasi Cadangan' (VCI)? Berapa besar nilai standar untuk kompartemen udara ini?",
+                a: `<strong>Volume Cadangan Inspirasi (IRV)</strong> mendefinisikan batas absolut kapasitas "ekspansi". Ini adalah kompartemen cadangan yang mewakili udara ekstra maksimal yang dapat ditarik/dihirup secara paksa <strong>setelah inspirasi pasif-tidal usai</strong>.
+                <br><br>
+                <strong>Dimensi Standar:</strong>
+                <ul>
+                    <li>Laki-laki (Rongga toraks besar): <strong>&plusmn; 3.300 ml</strong></li>
+                    <li>Perempuan: <strong>&plusmn; 1.900 ml</strong></li>
+                </ul>`
+            },
+            {
+                q: "Catatan rekam medis menunjukkan pasien memiliki tekanan tensi konstan di ambang 130/85 mmHg. Berikan interpretasi diagnostik dari temuan kardiovaskular tersebut.",
+                a: `<strong>Status Diagnostik: Hipertensi Stadium 1</strong>
+                <br><br>
+                Merujuk pada parameter klinis kontemporer (AHA/ACC):
+                Bila <strong>Sistolik</strong> berada di pita 130-139 mmHg, ATAU <strong>Diastolik</strong> berada pada rentang 80-89 mmHg, pasien diklasifikasikan masuk ambang bahaya Hipertensi Stage 1.<br>
+                Dalam skenario ini, sistolik (130) dan diastolik (85) memenuhi kualifikasi diagnosis tersebut.`
+            },
+            {
+                q: "Uraikan analisis akustik 5 fase sekuensial dari Bunyi Korotkoff pada prosedur Auskultasi Tensimeter.",
+                a: `<strong>Dekonstruksi Orkestra Korotkoff:</strong>
+                <ol class="list-decimal pl-4">
+                    <li><strong>Fase I (Sistolik):</strong> Gedoran tajam (<em>tapping</em>) saat semburan pertama darah menembus jepitan arteri.</li>
+                    <li><strong>Fase II:</strong> Suara meredup jadi desir/mendengus (<em>swishing</em>).</li>
+                    <li><strong>Fase III:</strong> Aliran membesar, suara kembali keras dan tajam (<em>thumping</em>).</li>
+                    <li><strong>Fase IV:</strong> Suara mendadak melempem bagai diredam kapas (<em>muffling</em>).</li>
+                    <li><strong>Fase V (Diastolik):</strong> Hilang total (<em>silence</em>). Pipa kembali utuh; aliran kembali laminar (tanpa turbulensi/suara).</li>
+                </ol>`
+            },
+            {
+                q: "Data lab (Harvard Step Test): Denyut pemulihan 3 interval @30 detik = 30x, 30x, 30x. Kalkulasi indeks dan jabarkan interpretasinya.",
+                a: `<strong>Kalkulasi Indeks (Persamaan Cepat):</strong>
+                <p class="font-sans text-xs italic border-b border-nyt-border mb-3 pb-2">Indeks = (Durasi Uji 300 detik &times; 100) / (2 &times; Jumlah Denyut Nadi Pemulihan)</p>
+                <p>Menggunakan koefisien penyederhanaan rumus (Durasi diubah proporsional jadi 9000):</p>
+                <ul class="mb-3">
+                    <li>Pembilang = 90 &times; 100 = 9000</li>
+                    <li>Penyebut = 2 &times; (30 + 30 + 30) = 180</li>
+                    <li>Indeks = 9000 &divide; 180 = <strong>50</strong>.</li>
+                </ul>
+                <p><strong>Interpretasi Klinis: KURANG (Poor).</strong> <br>Skor 50 (di bawah 55) menempatkan miokardium di kelas pemulihan yang lambat merespons stres metabolik ekstrem.</p>`
+            },
+            {
+                q: "Jelaskan esensi dari Hukum Jantung Frank-Starling dalam regulasi curah jantung (Cardiac Output).",
+                a: `<strong>Hukum Jantung Frank-Starling:</strong>
+                <br><br>
+                Secara fundamental menyatakan bahwa volume darah yang masuk (Preload) akan sebanding dengan daya ejeksi (Stroke Volume).
+                <br><br>
+                Semakin besar regangan ruang ventrikel akibat pengisian darah di akhir diastol (<em>End-Diastolic Volume / EDV</em>), maka panjang serat otot aktin-miosin miokardium akan meregang mendekati konfigurasi paling optimal. Hasilnya, otot jantung melenting membalas dengan kekuatan kontraksi sistolik yang jauh lebih masif dan efisien.`
+            },
+            {
+                q: "Sebutkan urutan hierarkis jalur konduksi impuls listrik di dalam anatomi miokardium jantung.",
+                a: `<strong>Arsitektur Kelistrikan Jantung:</strong>
+                <ol class="list-decimal pl-4">
+                    <li><strong>Sinoatrial (SA) Node:</strong> Sang <em>Pacemaker</em> utama di dinding atrium kanan. Membangkitkan impuls 60-100x/menit.</li>
+                    <li><strong>Atrioventricular (AV) Node:</strong> Stasiun penunda sementara agar atrium punya waktu mengosongkan darah ke ventrikel.</li>
+                    <li><strong>Berkas His (Bundle of His):</strong> Kabel listrik tebal yang menembus sekat keras antar ruang.</li>
+                    <li><strong>Cabang Berkas (Bundle Branches Kiri & Kanan):</strong> Membelah sepanjang septum interventrikuler ke arah apeks.</li>
+                    <li><strong>Serabut Purkinje:</strong> Jaringan halus di dinding ventrikel yang memicu kontraksi masif serentak dari bawah ke atas.</li>
+                </ol>`
+            },
+            {
+                q: "Bedah asal muasal anatomis dari bunyi jantung S1 ('Lub') dan S2 ('Dup').",
+                a: `<strong>Auskultasi Katup Jantung:</strong>
+                <ul>
+                    <li><strong>S1 (Bunyi Pertama - "Lub"):</strong> Terjadi pada awal Sistol. Dihasilkan oleh resonansi turbulensi dari <strong>penutupan mendadak Katup Atrioventrikuler</strong> (Mitral dan Trikuspid) saat ventrikel mulai memompa.</li>
+                    <li><strong>S2 (Bunyi Kedua - "Dup"):</strong> Terjadi pada awal Diastol. Dihasilkan oleh <strong>penutupan Katup Semilunar</strong> (Aorta dan Pulmonal) akibat tekanan aorta berbalik arah dan mengunci katup saat ventrikel relaksasi.</li>
+                </ul>`
+            },
+            {
+                q: "Di manakah lokasi spesifik baroreseptor dan bagaimana mereka merespons krisis hipertensi akut secara refleks?",
+                a: `<strong>Mekanika Baroreseptor Tensi:</strong>
+                <br><br>
+                <strong>Lokasi:</strong> Tertanam di dinding elastis <em>Sinus Karotikus</em> (leher) dan <em>Arkus Aorta</em> (dada).
+                <br><br>
+                <strong>Respons Hipertensi (Tensi Naik Mendadak):</strong><br>
+                Dinding arteri meregang keras -> reseptor melepaskan sinyal kejut ke Medula Oblongata -> Medula menekan saraf Simpatis & memacu saraf Parasimpatis (N. Vagus) -> Hasilnya: Vasodilatasi (pembuluh melebar) dan Bradikardia (jantung melambat) -> Tensi kembali normal.`
+            },
+            {
+                q: "Uraikan fungsi kritis Surfaktan Pulmonal dan jenis sel yang memproduksinya di alveolus.",
+                a: `<strong>Fisiologi Surfaktan (Zat Aktif Permukaan):</strong>
+                <br><br>
+                Diproduksi oleh <strong>Sel Alveolar Tipe II (Pneumosit Tipe 2)</strong>.
+                <br><br>
+                <strong>Fungsi:</strong> Molekul air di dalam kantung alveolus saling tarik-menarik kuat (Tegangan Permukaan) yang cenderung mencekik alveolus hingga kolaps. Surfaktan menyelip di antara molekul air tersebut untuk memecah ikatan hidrogen, mengacu pada <em>Hukum Laplace</em>, membuat paru-paru lentur (compliance tinggi) dan mencegah kolaps permanen (atelektasis) saat buang napas.`
+            },
+            {
+                q: "Apa yang dimaksud dengan Efek Bohr dalam konstelasi dinamis transpor Oksigen darah?",
+                a: `<strong>Efek Bohr (O2 Unloading):</strong>
+                <br><br>
+                Suatu adaptasi molekuler menakjubkan di mana molekul <strong>Hemoglobin kehilangan afinitasnya terhadap Oksigen (Kurva bergeser ke Kanan)</strong>. 
+                <br><br>
+                Ini dipicu oleh lingkungan mikro jaringan aktif yang penuh dengan limbah asam (pH darah menurun) dan karbon dioksida tinggi (pCO2 naik). Bentuk protein hemoglobin merenggang, sehingga "memuntahkan" suplai oksigen membanjiri sel-sel otot/organ yang tengah kehausan energi saat beraktivitas berat.`
+            },
+            {
+                q: "Bedakan batas fungsional antara Anatomical Dead Space dan Alveolar Dead Space pada sistem respirasi.",
+                a: `<strong>Ruang Rugi Pernapasan (Dead Space):</strong>
+                <ul>
+                    <li><strong>Anatomical Dead Space:</strong> Volume udara (sekitar 150 ml) yang murni hanya parkir di area konduksi "pipa" (trakea, bronkus, bronkiolus) di mana dindingnya terlalu tebal sehingga <em>mustahil</em> terjadi pertukaran gas.</li>
+                    <li><strong>Alveolar Dead Space:</strong> Udara yang berhasil masuk kantung alveolus tipis, <strong>TETAPI</strong> aliran darah kapilernya mampet/rusak, sehingga udara tersebut terbuang percuma tanpa ditukar dengan darah.</li>
+                </ul>
+                (Gabungan keduanya disebut <em>Physiologic Dead Space</em>).`
+            },
+            {
+                q: "Mengapa kalkulasi rasio FEV1/FVC amat esensial dalam interpretasi kelainan Spirometri klinis?",
+                a: `<strong>Diagnostic Spirometry (FEV1/FVC Ratio):</strong>
+                <br><br>
+                Digunakan sebagai "Pisau Bedah Emas" untuk membelah diagnosis penyakit paru:
+                <ul>
+                    <li><strong>Penyakit Obstruktif (PPOK, Asma, Emfisema):</strong> Jalan napas menyempit lambat. FVC bisa normal, tapi udara lambat keluar. <strong>Rasio turun (< 70%).</strong></li>
+                    <li><strong>Penyakit Restriktif (Fibrosis Paru, Skoliosis parah):</strong> Paru-paru kaku mengecil, tapi jalan udaranya plong. FVC turun drastis, tapi porsi udara keluar di detik pertama tetap utuh. <strong>Rasio Normal / Malah Tinggi ( > 80%).</strong></li>
+                </ul>`
+            },
+            {
+                q: "Bagaimana Medula Oblongata di batang otak secara otonom mengorkestrasi siklus pernapasan basal kita?",
+                a: `<strong>Komando Pusat Napas (Medullary Respiratory Center):</strong>
+                <br><br>
+                Di dalam medula, neuron berkumpul dalam dua departemen:
+                <ul>
+                    <li><strong>Dorsal Respiratory Group (DRG):</strong> Bertindak sebagai "Pemacu Jantung" pernapasan inspirasi normal. Secara ritmis menembak sinyal ke Nervus Phrenicus untuk menarik otot diafragma ke bawah (tarik napas basal).</li>
+                    <li><strong>Ventral Respiratory Group (VRG):</strong> Biasanya terlelap senyap saat istirahat. Baru bangun jika diminta <em>Napas Ekstra/Paksa</em> (olahraga), bertugas membangkitkan otot aksesori inspirasi dan mengekskusi ekspirasi paksa (mengedan).</li>
+                </ul>`
+            },
+            {
+                q: "Gambarkan secara hierarkis peran sistem hormon RAAS (Renin) dalam kompensasi hipotensi persisten jangka panjang.",
+                a: `<strong>Sistem Renin-Angiotensin-Aldosteron (RAAS):</strong>
+                <ol class="list-decimal pl-4">
+                    <li>Ginjal mendeteksi tensi anjlok -> merilis enzim <strong>Renin</strong> ke darah.</li>
+                    <li>Renin memotong protein inaktif hati (Angiotensinogen) menjadi <strong>Angiotensin I</strong>.</li>
+                    <li>Di sirkulasi paru, enzim <strong>ACE</strong> mengubahnya menjadi wujud radikal: <strong>Angiotensin II</strong> (Vasokonstriktor terkuat di tubuh).</li>
+                    <li>Angiotensin II mencekik pembuluh darah (tensi naik instan) sekaligus memaksa kelenjar adrenal merilis <strong>Aldosteron</strong>.</li>
+                    <li>Aldosteron memaksa ginjal menyerap balik Natrium (Garam) & Air -> Volume darah membengkak, tensi kembali pulih jangka panjang.</li>
+                </ol>`
+            },
+            {
+                q: "Sebutkan 5 faktor metabolik kuat yang sanggup menggeser Kurva Disosiasi Oksihemoglobin ke KANAN.",
+                a: `<strong>Mnemonic Penggeser Kurva ke Kanan: "CADET face RIGHT"</strong>
+                <br><br>
+                Kurva geser kanan berarti sel darah merah rela membuang/mengikhlaskan oksigen ekstra ke jaringan perifer. Dipicu oleh status organ yang sedang "berolahraga/stres":
+                <ul>
+                    <li><strong>C</strong>: CO2 meningkat (Hiperkapnia).</li>
+                    <li><strong>A</strong>: Acid (Asam/pH darah menurun - Efek Bohr).</li>
+                    <li><strong>D</strong>: 2,3-DPG (Bisfosfogliserat) meningkat di dalam eritrosit.</li>
+                    <li><strong>E</strong>: Exercise (Olahraga berat).</li>
+                    <li><strong>T</strong>: Temperature (Suhu tubuh meningkat/Demam).</li>
+                </ul>`
+            }
+        ];
+
+        // --- APP STATE ---
+        let currentPretestIndex = 0;
+        let pretestScore = 0;
+        let pretestAnswers = new Array(pretestData.length).fill(null);
+        
+        let currentFlashcardIndex = 0;
+
+        // UI Elements
+        const screens = {
+            home: document.getElementById('start-screen'),
+            pretest: document.getElementById('pretest-screen'),
+            posttest: document.getElementById('posttest-screen'),
+            result: document.getElementById('result-screen')
+        };
+
+        // --- NAVIGATION ---
+        function showScreen(screenId) {
+            Object.values(screens).forEach(el => el.classList.add('hidden'));
+            screens[screenId].classList.remove('hidden');
+            screens[screenId].classList.add('flex');
+            window.scrollTo(0, 0); // Reset scroll on screen change
+        }
+
+        function backToHome() {
+            showScreen('home');
+        }
+
+        function startApp(mode) {
+            if (mode === 'pretest') {
+                currentPretestIndex = 0;
+                pretestScore = 0;
+                pretestAnswers = new Array(pretestData.length).fill(null);
+                loadPretestQuestion();
+                showScreen('pretest');
+            } else if (mode === 'posttest') {
+                currentFlashcardIndex = 0;
+                loadFlashcard();
+                showScreen('posttest');
+            }
+        }
+
+        // --- PRETEST LOGIC ---
+        function loadPretestQuestion() {
+            const q = pretestData[currentPretestIndex];
+            
+            document.getElementById('pt-curr').innerText = currentPretestIndex + 1;
+            document.getElementById('pt-total').innerText = pretestData.length;
+            
+            document.getElementById('pt-question').innerHTML = q.q;
+            
+            const optContainer = document.getElementById('pt-options');
+            const feedbackArea = document.getElementById('pt-feedback');
+            
+            optContainer.innerHTML = '';
+            feedbackArea.classList.add('hidden');
+
+            q.o.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                const alpha = String.fromCharCode(65 + idx);
+                btn.className = 'btn-option px-4 py-3 md:px-5 md:py-4 w-full flex items-start gap-3 md:gap-4 text-left text-sm md:text-base';
+                btn.innerHTML = `<span class="font-sans font-bold text-nyt-gray">${alpha}.</span> <span>${opt}</span>`;
+                
+                // State checking
+                if (pretestAnswers[currentPretestIndex]) {
+                    btn.disabled = true;
+                    if (opt === q.a) {
+                        btn.classList.add('correct');
+                        btn.innerHTML += ' <i class="ph ph-check-circle ml-auto text-lg md:text-xl self-center flex-shrink-0"></i>';
+                    } else if (opt === pretestAnswers[currentPretestIndex]) {
+                        btn.classList.add('incorrect');
+                        btn.innerHTML += ' <i class="ph ph-x-circle ml-auto text-lg md:text-xl self-center flex-shrink-0"></i>';
+                    }
+                } else {
+                    btn.onclick = () => selectPretestAnswer(opt, q, btn);
+                }
+                
+                optContainer.appendChild(btn);
+            });
+
+            if (pretestAnswers[currentPretestIndex]) {
+                feedbackArea.innerHTML = q.exp;
+                feedbackArea.classList.remove('hidden');
+            }
+
+            // Buttons
+            document.getElementById('pt-btn-prev').disabled = currentPretestIndex === 0;
+            
+            const btnNext = document.getElementById('pt-btn-next');
+            const btnFinish = document.getElementById('pt-btn-finish');
+            
+            if (currentPretestIndex === pretestData.length - 1) {
+                btnNext.classList.add('hidden');
+                btnFinish.classList.remove('hidden');
+            } else {
+                btnNext.classList.remove('hidden');
+                btnFinish.classList.add('hidden');
+            }
+        }
+
+        function selectPretestAnswer(ans, q, btnElem) {
+            pretestAnswers[currentPretestIndex] = ans;
+            
+            const allBtns = document.getElementById('pt-options').querySelectorAll('button');
+            allBtns.forEach(b => b.disabled = true);
+
+            if (ans === q.a) {
+                pretestScore++;
+                btnElem.classList.add('correct');
+                btnElem.innerHTML += ' <i class="ph ph-check-circle ml-auto text-lg md:text-xl self-center flex-shrink-0"></i>';
+            } else {
+                btnElem.classList.add('incorrect');
+                btnElem.innerHTML += ' <i class="ph ph-x-circle ml-auto text-lg md:text-xl self-center flex-shrink-0"></i>';
+                
+                allBtns.forEach(b => {
+                    const btnText = b.querySelector('span:nth-child(2)').innerText;
+                    if (btnText === q.a) { 
+                        b.classList.add('correct');
+                        b.innerHTML += ' <i class="ph ph-check-circle ml-auto text-lg md:text-xl self-center flex-shrink-0"></i>';
+                    }
+                });
+            }
+
+            const feedbackArea = document.getElementById('pt-feedback');
+            feedbackArea.innerHTML = q.exp;
+            feedbackArea.classList.remove('hidden');
+            
+            // Scroll down a bit to show feedback on mobile
+            setTimeout(() => {
+                feedbackArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+        }
+
+        function navPretest(dir) {
+            currentPretestIndex += dir;
+            loadPretestQuestion();
+            window.scrollTo(0,0);
+        }
+
+        function finishPretest() {
+            showScreen('result');
+            
+            const finalScoreEl = document.getElementById('final-score');
+            let tempScore = 0;
+            const targetScore = Math.round((pretestScore / pretestData.length) * 100);
+            
+            finalScoreEl.innerText = "0%";
+            document.getElementById('res-correct').innerText = pretestScore;
+            document.getElementById('res-wrong').innerText = pretestData.length - pretestScore;
+
+            const interval = setInterval(() => {
+                if (tempScore >= targetScore) {
+                    finalScoreEl.innerText = targetScore + "%";
+                    clearInterval(interval);
+                } else {
+                    tempScore += 2;
+                    if(tempScore > targetScore) tempScore = targetScore;
+                    finalScoreEl.innerText = tempScore + "%";
+                }
+            }, 30);
+            window.scrollTo(0,0);
+        }
+
+        // --- FLASHCARD LOGIC ---
+        let isCardFlipped = false;
+
+        function loadFlashcard() {
+            const f = posttestData[currentFlashcardIndex];
+            
+            document.getElementById('fc-curr').innerText = currentFlashcardIndex + 1;
+            document.getElementById('fc-total').innerText = posttestData.length;
+            
+            document.getElementById('fc-question').innerHTML = f.q;
+            document.getElementById('fc-answer').innerHTML = f.a;
+
+            // Reset flip state
+            isCardFlipped = false;
+            document.getElementById('fc-card').classList.remove('is-flipped');
+            
+            // Reset scroll position on the back of the card
+            document.querySelector('.flashcard-back').scrollTop = 0;
+
+            // Button state
+            document.getElementById('fc-btn-prev').disabled = currentFlashcardIndex === 0;
+            document.getElementById('fc-btn-next').disabled = currentFlashcardIndex === posttestData.length - 1;
+        }
+
+        function flipCard() {
+            const card = document.getElementById('fc-card');
+            isCardFlipped = !isCardFlipped;
+            if (isCardFlipped) {
+                card.classList.add('is-flipped');
+            } else {
+                card.classList.remove('is-flipped');
+            }
+        }
+
+        function navFlashcard(dir) {
+            if (isCardFlipped) {
+                flipCard();
+                setTimeout(() => {
+                    currentFlashcardIndex += dir;
+                    loadFlashcard();
+                }, 400); 
+            } else {
+                currentFlashcardIndex += dir;
+                loadFlashcard();
+            }
+        }
+
+        // Keyboard navigation for flashcards
+        window.addEventListener('keydown', function(e) {
+            if (!screens.posttest.classList.contains('hidden')) {
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    flipCard();
+                } else if (e.code === 'ArrowRight' && currentFlashcardIndex < posttestData.length - 1) {
+                    navFlashcard(1);
+                } else if (e.code === 'ArrowLeft' && currentFlashcardIndex > 0) {
+                    navFlashcard(-1);
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>

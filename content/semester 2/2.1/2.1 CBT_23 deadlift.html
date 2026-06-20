@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>23 bench press</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Phosphor Icons (Monochrome) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['"Times New Roman"', 'Times', 'serif'],
+                        sans: ['Helvetica', 'Arial', 'sans-serif'],
+                    },
+                    colors: {
+                        editorial: {
+                            black: '#111111',
+                            darkGray: '#333333',
+                            gray: '#777777',
+                            lightGray: '#E5E5E5',
+                            white: '#FFFFFF'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #F9F9F9;
+            font-family: 'Times New Roman', Times, serif;
+            color: #111111;
+            line-height: 1.6;
+        }
+
+        /* Newspaper Aesthetic Elements */
+        .nyt-header {
+            border-bottom: 4px solid #111;
+            border-top: 1px solid #111;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .nyt-title {
+            font-size: 3rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            text-align: center;
+            line-height: 1.1;
+        }
+
+        .nyt-subtitle {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #555;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #111;
+            padding-bottom: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .quiz-container {
+            background: #FFFFFF;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: 1px solid #E5E5E5;
+        }
+
+        /* Buttons Editorial Style */
+        .btn-editorial {
+            font-family: Helvetica, Arial, sans-serif;
+            background: transparent;
+            border: 1px solid #111;
+            color: #111;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .btn-editorial:hover:not(:disabled) {
+            background: #111;
+            color: #FFF;
+        }
+
+        .btn-editorial:disabled {
+            border-color: #CCC;
+            color: #CCC;
+            cursor: not-allowed;
+        }
+
+        /* Options Style */
+        .btn-option {
+            display: block;
+            width: 100%;
+            text-align: left;
+            background: #FFF;
+            border: 1px solid #CCC;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 1.1rem;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .btn-option:hover:not(:disabled) {
+            border-color: #111;
+            background-color: #FAFAFA;
+        }
+
+        /* Correct / Incorrect Monochromatic Styling */
+        .btn-option.selected {
+            border-color: #111;
+            background: #EFEFEF;
+            font-weight: bold;
+        }
+
+        .btn-option.correct {
+            border-color: #111 !important;
+            background: #F0F0F0 !important;
+            font-weight: bold;
+            color: #111;
+        }
+
+        .btn-option.incorrect {
+            border-color: #E5E5E5 !important;
+            background: #FFF !important;
+            color: #999;
+            text-decoration: line-through;
+        }
+
+        .icon-indicator {
+            position: absolute;
+            right: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.25rem;
+        }
+
+        /* Detailed Explanation Box */
+        .explanation-box {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #F9F9F9;
+            border-left: 4px solid #111;
+            font-size: 1.05rem;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .explanation-box strong {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: block;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px dotted #CCC;
+        }
+
+        .explanation-box ul {
+            list-style-type: none;
+            padding-left: 0;
+            margin-top: 1rem;
+        }
+
+        .explanation-box ul li {
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .explanation-box ul li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dropcap {
+            float: left;
+            font-size: 3.5rem;
+            line-height: 0.8;
+            padding-right: 0.5rem;
+            padding-top: 0.2rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="quiz-container">
+        
+        <!-- NYT HEADER -->
+        <header class="nyt-header">
+            <h1 class="nyt-title">23 bench press</h1>
+            <div class="nyt-subtitle">
+                <span>Vol. III — Cardiorespiratory Science</span>
+                <span>The Complete Medical Assessment</span>
+                <span><span id="date-display"></span></span>
+            </div>
+        </header>
+
+        <!-- START SCREEN -->
+        <div id="start-screen" class="flex flex-col items-center py-8">
+            <p class="font-serif text-xl text-center mb-8 max-w-lg">
+                <span class="dropcap">A</span>n exhaustive compilation evaluating physiological and anatomical knowledge pertaining to both the cardiovascular and respiratory systems. Please select your testing modality to commence.
+            </p>
+            
+            <div class="space-y-4 w-full max-w-sm">
+                <button onclick="startQuiz('practice')" class="btn-editorial w-full flex items-center justify-center gap-2">
+                    <i class="ph ph-article text-lg"></i>
+                    Study Mode (Detailed Feedback)
+                </button>
+                <button onclick="startQuiz('exam')" class="btn-editorial w-full flex items-center justify-center gap-2">
+                    <i class="ph ph-exam text-lg"></i>
+                    Exam Mode (Blind)
+                </button>
+            </div>
+            <p class="mt-8 font-sans text-xs text-gray-500 uppercase tracking-widest">81 Standardized Inquiries</p>
+        </div>
+
+        <!-- QUIZ SCREEN -->
+        <div id="quiz-screen" class="hidden flex-col min-h-[500px]">
+            <div class="flex justify-between items-center mb-6 border-b border-black pb-4 font-sans uppercase text-xs tracking-wider">
+                <div>
+                    Question <span id="curr-q" class="font-bold text-base">1</span> of <span id="total-q">81</span>
+                </div>
+                <div id="score-display" class="font-bold">
+                    Score: 0
+                </div>
+            </div>
+
+            <div class="flex-grow">
+                <div class="mb-8">
+                    <p id="question-text" class="text-xl md:text-2xl font-serif text-editorial-black leading-snug"></p>
+                </div>
+                <div id="options-container" class="space-y-3"></div>
+                <div id="feedback-area" class="hidden explanation-box text-editorial-darkGray leading-relaxed"></div>
+            </div>
+
+            <div class="flex justify-between items-center mt-10 pt-6 border-t border-black">
+                <button onclick="prevQuestion()" id="btn-prev" class="btn-editorial text-xs px-3 py-1 disabled:opacity-30">
+                    &larr; Previous
+                </button>
+                <button onclick="backToHome()" class="font-sans text-xs uppercase tracking-wider text-gray-500 hover:text-black underline-offset-4 hover:underline transition">
+                    Return to Index
+                </button>
+                <button onclick="nextQuestion()" id="btn-next" class="btn-editorial text-xs px-3 py-1">
+                    Next &rarr;
+                </button>
+                <button onclick="finishQuiz()" id="btn-finish" class="hidden bg-black text-white btn-editorial text-xs px-4 py-1">
+                    Conclude Exam
+                </button>
+            </div>
+        </div>
+
+        <!-- RESULT SCREEN -->
+        <div id="result-screen" class="hidden flex-col items-center py-10">
+            <h2 class="font-sans text-sm uppercase tracking-widest text-gray-500 mb-2">Final Assessment</h2>
+            <h1 class="font-serif text-4xl font-bold mb-10 border-b-2 border-black pb-4 text-center">Examination Concluded</h1>
+
+            <div class="flex items-center justify-center mb-10 w-48 h-48 border-4 border-black rounded-full">
+                <div class="text-7xl font-serif font-bold text-black" id="final-score">0</div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-px bg-black border border-black w-full max-w-md mb-10">
+                <div class="bg-white p-6 text-center">
+                    <div class="font-sans text-xs text-gray-500 uppercase tracking-wider mb-1">Correct</div>
+                    <div class="text-3xl font-serif font-bold text-black" id="res-correct">0</div>
+                </div>
+                <div class="bg-white p-6 text-center">
+                    <div class="font-sans text-xs text-gray-500 uppercase tracking-wider mb-1">Incorrect</div>
+                    <div class="text-3xl font-serif font-bold text-gray-400" id="res-wrong">0</div>
+                </div>
+            </div>
+            
+            <button onclick="location.reload()" class="btn-editorial w-full max-w-md">Retake Examination</button>
+        </div>
+
+    </div>
+
+    <script>
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('date-display').innerText = new Date().toLocaleDateString('en-US', options);
+
+        const questions = [
+            // --- CARDIOVASCULAR SECTION (33 Questions) ---
+            { q: "Fraksi ejeksi menurun apabila", o: ["EDV menurun", "ESV menurun", "Kontraktilitas meningkat", "Venous return meningkat", "HR menurun"], a: "EDV menurun", exp: "<strong>Penjelasan Detail: EDV menurun</strong><br>Fraksi Ejeksi (EF) adalah persentase absolut matematis isi awal yang berhasil dibuang. Jika End Diastolic Volume (EDV) melorot anjlok akibat kurangnya pengisian awal, maka persentase kapasitas ejeksi bilik ventrikel mutlak menukik radikal turun secara proporsional.<ul><li><i>Opsi lain:</i> Meningkatnya kontraktilitas, HR melambat, atau venous return (isian) naik justru akan mendongkrak memompa membesarkan nilai persentase curah EF fasik murni.</li></ul>" },
+            { q: "Seseorang mengalami perdarahan profuse akibat trauma pada palma manum. Tekanan pada arteri apa yang paling efektif menghentikan perdarahan?", o: ["a. digitalis communis", "arcus palmaris profundus", "a. radialis", "a. ulnaris", "A. Brachialis"], a: "A. Brachialis", exp: "<strong>Penjelasan Detail: A. Brachialis</strong><br>Pendarahan arteri tumpah di tangan disuplai oleh jaringan anastomosis melingkar Arcus Palmaris ganda (Radialis & Ulnaris). Satu-satunya keran sentral absolut untuk mematikan dan mencekik mati suplai bocor dari kedua sisi jalan ini secara radikal adalah dengan memblok hulunya murni: Arteri Brachialis fasik.<ul><li><i>Opsi lain:</i> Mengompresi Radialis atau Ulnaris secara tunggal mutlak bocor, karena darah mengalir lancar dari rute cabang anastomosis pasangannya murni.</li></ul>" },
+            { q: "Dalam kondisi istirahat, denyut jantung rendah. Hal ini diatur oleh", o: ["Simpatis", "Parasimpatis", "Hormon", "Autoregulasi", "Nodus SA"], a: "Parasimpatis", exp: "<strong>Penjelasan Detail: Parasimpatis</strong><br>Ritme dasar tenang santai istirahat tubuh mutlak dikendalikan dan dibajak oleh dominasi takhta tonus Nervus Vagus parasimpatis. Ia mengerem keras Nodus SA agar tak memompa liar radikal, menjaga nadi tetap hemat energi fasik.<ul><li><i>Opsi lain:</i> Badai saraf simpatis dan epinefrin hormonal murni bertugas memantik ledakan pacu takikardia darurat mutlak, bukan memperlambatnya fasik.</li></ul>" },
+            { q: "Seorang penderita mengalami trauma anggota tubuh bagian bawah yang mengganggu a. tibialis anterior. Dengan demikian, anda akan mengkhawatirkan mengenai pendarahan manakah dari yang berikut ini?", o: ["Bagian posterior paha", "Kompartemen lateral tungkai bawah", "Kompartemen posterior tungkai bawah", "Dorsum pedis", "Kompartemen posterior tungkai bawah dan telapak kaki"], a: "Dorsum pedis", exp: "<strong>Penjelasan Detail: Dorsum pedis</strong><br>A. Tibialis Anterior menembus meluncur ke depan tulang kering (kompartemen anterior) dan ujungnya berlanjut murni menyuplai area punggung kaki sebagai Arteri Dorsalis Pedis absolut. Perdarahan trauma pembuluh ini mutlak mengancam pasokan punggung kaki fasik.<ul><li><i>Opsi lain:</i> Posterior paha atau tungkai bawah murni disuplai mutlak oleh a. Tibialis Posterior dan komplotannya radikal fasik.</li></ul>" },
+            { q: "Irama jantung dalam kondisi normal mengikuti irama dari?", o: ["Nodus SA", "Internodal", "Nodus AV", "Bundle His", "Purkinye"], a: "Nodus SA", exp: "<strong>Penjelasan Detail: Nodus SA</strong><br>Nodus Sinoatrial (SA) murni didapuk sebagai *The Primary Pacemaker* absolut yang mengomandoi takhta ritme detak 60-100x/menit. Sifat depolarisasi spontannya yang tertinggi mutlak mensupresi (membajak) paksa semua pacu otonom sel bawahan lainnya fasik.<ul><li><i>Opsi lain:</i> Nodus AV atau Purkinje murni hanya akan mengambil alih menjadi komandan darurat (Escape Rhythm) mutlak jika SA dihancurkan mati radikal.</li></ul>" },
+            { q: "Berikut merupakan pengaruh epinefrin", o: ["Memperpendek repolarisasi", "Menurunkan HR", "Menyebabkan hiperpolarisasi", "Persingkat periode refrakter absolut", "Meningkatkan influks magnesium"], a: "Memperpendek repolarisasi", exp: "<strong>Penjelasan Detail: Memperpendek repolarisasi</strong><br>Serangan badai adrenergik Simpatis (NE/Epinefrin) mendobrak curah kanal ion, mempercepat curamnya lereng depolarisasi pacu dan murni memangkas waktu pemulihan (Memperpendek repolarisasi) agar siklus nadi ngebut masuk persneling Takikardia fasik radikal mutlak.<ul><li><i>Opsi lain:</i> Simpatis diharamkan alam menurunkan irama (Bradikardia) atau menancapkan hiperpolarisasi (yang membuat sel makin malas mengejang murni).</li></ul>" },
+            { q: "Aliran dari tibialis anterior akan masuk ke vena cava inferior melalui mekanisme kecuali", o: ["Katup vena", "Pompa jantung", "Pompa respirasi", "Pompa otot rangka", "Gravitasi"], a: "Pompa jantung", exp: "<strong>Penjelasan Detail: Pompa jantung</strong><br>Lumpur darah Vena dari dasar tungkai bawah kaki dipaksa merayap melawan gravitasi absolut. Penopangnya murni adalah perasan otot betis (Pompa Otot rangka), penyangga anti-turun (Katup searah), dan sedotan hampa toraks (Pompa Respirasi). Pompa otot ventrikel jantung BUKAN mekanisme penyedot pasif balik vena dari kaki murni.<ul><li><i>Opsi lain:</i> Mekanisme pompa otot dan respirasi murni adalah tonggak absolut kelangsungan arus balik vena (Venous Return) radikal.</li></ul>" },
+            { q: "Daerah yang mengalami perfusi tidak adekuat, memberikan respon vaskuler berupa", o: ["Vasodilatasi", "Vasokonstriksi", "Vasospasme", "Aliran laminer", "Aliran turbulen"], a: "Vasodilatasi", exp: "<strong>Penjelasan Detail: Vasodilatasi</strong><br>Jaringan perifer yang dicekik iskemia akan menumpuk limbah racun asam CO2/H+. Secara otonom reaktif pelindung (Autoregulasi metabolik), otot polos kapiler lokal melemas murni (Vasodilatasi), mengemis membukakan jalur melebar lebar agar suplai darah bersih pembuang limbah masuk radikal absolut.<ul><li><i>Opsi lain:</i> Vasokonstriksi (menciutkan pipa) mutlak merupakan bunuh diri sel murni, karena mencekik leher pipa pasokan di kala sel kehabisan Oksigen fasik.</li></ul>" },
+            { q: "Dalam kondisi HR yang sangat tinggi, cardiac output akan menurun. Hal ini disebabkan oleh", o: ["Filling time menurun", "ESV menurun", "SV meningkat", "Kontraktilitas meningkat", "Frank starling"], a: "Filling time menurun", exp: "<strong>Penjelasan Detail: Filling time menurun</strong><br>Bila takikardia pacu meledak ekstrem gila (misal >180 bpm), durasi santai fase pengisian hampa (Filling Time Diastolik) terpangkas habis murni. Jantung menembak panik menendang sebelum ruangnya terisi, memuntahkan peluru kosong yang membuat nilai absolut Cardiac Output anjlok radikal.<ul><li><i>Opsi lain:</i> Meroketnya kontraktilitas atau curah (SV meningkat) murni merupakan pemicu kebaikan nilai Output, bukan biang kerok keruntuhan jatuhnya output fasik mutlak.</li></ul>" },
+            { q: "Seseorang yang didiagnosis menderita pericarditis retrosternal dapat merasakan nyeri tajam retrosternal karena rangsang nyeri dibawa oleh saraf:", o: ["n. Laryngeus recurrens", "Plexus cardiacus", "n. phrenicus", "n. intercostalis terdekat", "n. Intercostobrachialis"], a: "n. phrenicus", exp: "<strong>Penjelasan Detail: n. phrenicus</strong><br>Kantung keras perikardium parietal dan fibrosa mutlak diselimuti jejaring kabel somatik murni dari Nervus Phrenicus (C3-C5). Gesekan radang kasar di lapisan pelapis ini mengirimkan gema guncangan tajam absolut, yang otak terjemahkan menjalar menipu radikal (Referred Pain) hingga ke pundak/bahu ipsilateral murni.<ul><li><i>Opsi lain:</i> Plexus cardiacus membawa gema nyeri organ otot jantung bagian dalamnya mutlak, bukan kantung kulit bungkus luar fibrosanya fasik.</li></ul>" },
+            { q: "Dada tertusuk pisau 5cm, luka iris ada pada spatium intercostalis V 0.5 cm dari lateral. Tertusuk di bagian manakah?", o: ["Ventrikel kanan", "Ventrikel kiri", "Atrium kanan", "Atrium kiri", "Conus aorticus"], a: "Ventrikel kanan", exp: "<strong>Penjelasan Detail: Ventrikel kanan</strong><br>Permukaan frontal absolut wajah jantung yang langsung melekat paling telanjang memeluk bidang tulang belakang rusuk sternum dada depan (Facies Sternocostalis) adalah bentangan luas Ventrikel Kanan murni. Ini menjadikannya sasaran empuk pertama yang terekspos radikal tusukan fasik.<ul><li><i>Opsi lain:</i> Atrium Kiri dan Ventrikel Kiri mutlak bersembunyi pengecut di relung jauh belakang punggung (posterior) dan lekukan apex lateral terujung murni.</li></ul>" },
+            { q: "Seseorang dengan atherosklerosis vertebra cervicalis mengalami stenosis pada foramen transversaria. Hal ini mengganggu aliran arteri yang melaluinya. Dari manakah kolateral dari arteri tersebut?", o: ["a. Brachiocephalica sinister", "a. Subclavia pars I dextra", "a. Subclavia pars III", "Truncus brachiocephalica", "Truncus thyrocervicalis"], a: "Truncus thyrocervicalis", exp: "<strong>Penjelasan Detail: Truncus thyrocervicalis</strong><br>Jika Arteri Vertebralis di dalam lubang leher (Foramen Transversaria) menyempit kaku tergencet mampet, rute penyelamat jalur tikus (Kolateral) utama datang mutlak dari Arteri Cervicalis Ascendens. Cabang penolong sakti ini diterbitkan murni oleh akar Truncus Thyrocervicalis fasik radikal.<ul><li><i>Opsi lain:</i> Pars 3 subclavia memfokuskan pendarahannya jauh terlempar murni ke rongga belikat lengan, tak singgah mem-bypass area sumbatan leher tulang vertikal mutlak.</li></ul>" },
+            { q: "Pembuluh darah manakah yang termasuk jenis arteri elastika?", o: ["Arteri iliaka komunis", "Arteri hepatica", "Arteri radialis", "Arteri brachialis", "Arteri renalis"], a: "Arteri iliaka komunis", exp: "<strong>Penjelasan Detail: Arteri iliaka komunis</strong><br>Lapisan karet penyerap godam pukulan sistolik (Arteri Elastik/Conducting) terbatas murni hanya disarungkan pada gerbang raksasa keluar pompa: Aorta, Truncus Pulmonalis, Subclavia, Karotis Komunis, dan mutlak perpecahan ujungnya yaitu Arteri Iliaca Communis fasik radikal.<ul><li><i>Opsi lain:</i> Arteri radialis, hepatik, brakialis radikal tergolong ke kasta Arteri Muskuler murni yang didominasi cincin otot polos pengatur vasokonstriksi absolut.</li></ul>" },
+            { q: "Berapa banyak persentase Ca2+ di sitoplasma yang diperlukan agar terjadi kontraksi retikulum sarkoplasma?", o: ["0", "0.1", "0.2", "0.8", "1"], a: "0.2", exp: "<strong>Penjelasan Detail: 0.2</strong><br>Aturan gembok kalsium mutlak otot jantung (Calcium-induced Calcium Release/CICR): Sel murni membutuhkan pancingan suntikan hanya 20% (0.2) ion kalsium ekstrasel dari fase plateau luar untuk memicu tuas tendangan gila membebaskan sisa ruah 80% lumbung kalsium raksasa dari bungker Retikulum Sarkoplasma fasik.<ul><li><i>Opsi lain:</i> Retikulum sarkoplasma buta mutlak dan menolak membuka pintu tanpa ada sentuhan pemantik 20% kalsium asing ekstraseluler radikal murni.</li></ul>" },
+            { q: "Sel nodus SA mencapai puncak potensial aksi ketika:", o: ["Pembukaan kanal voltage gated Ca2+", "Pembukaan kanal voltage gated Na+", "Pembukaan kanal voltage gated Cl-", "Penutupan kanal voltage gated Ca2+", "Penutupan kanal voltage gated K+"], a: "Pembukaan kanal voltage gated Ca2+", exp: "<strong>Penjelasan Detail: Pembukaan kanal voltage gated Ca2+</strong><br>Anatomi kelistrikan ganjil Nodus SA murni tidak mengandalkan Natrium. Ledakan letupan tajam memanjat bukit aksi potensial (Fase 0 spike) digerakkan seratus persen mutlak oleh serbuan influks masuknya gerombolan ion Kalsium (Ca2+) voltage-gated radikal fasik.<ul><li><i>Opsi lain:</i> Pembukaan kanal cepat Natrium (Na+) mutlak adalah hak milik serabut purkinje dan otot ventrikel kontraktil biasa untuk memecah depolarisasi fasik murni.</li></ul>" },
+            { q: "Peristiwa pada fase T", o: ["Diastolik ventrikel", "Sistolik atrium", "Sistolik ventrikel", "Depolarisasi atrium", "Katup mitral terbuka"], a: "Diastolik ventrikel", exp: "<strong>Penjelasan Detail: Diastolik ventrikel</strong><br>Grafik lambaian pamit Gelombang T EKG terekam saat sel bilik ventrikel memulihkan tegangan ionnya kembali negatif (Repolarisasi). Relaksasi pemulihan listrik ini mutlak membuahkan fase istirahat mekanik melemas jatuhnya dinding ruang: Diastolik Ventrikel fasik murni.<ul><li><i>Opsi lain:</i> Sistolik Ventrikel mengejang brutal dikomandoi murni oleh lonjakan jarum tinggi tajam Kompleks QRS radikal absolut.</li></ul>" },
+            { q: "Periode refrakter otot jantung yang lama melibatkan", o: ["Ion Calsium", "Saraf simpatis", "Nodus SA", "Kanal bocor", "Tetani"], a: "Ion Calsium", exp: "<strong>Penjelasan Detail: Ion Calsium</strong><br>Masuknya rembesan lamban Kalsium mengukir grafis bukit datar panjang (Fase 2 Plateau) radikal yang menunda sengaja fase kepekaan pelepasan pemulihan (Refrakter absolut memanjang). Keajaiban Kalsium inilah murni yang menyelamatkan jantung agar tak terkunci kejang kaku (Tetani) mati mutlak saat memeras berdetak fasik.<ul><li><i>Opsi lain:</i> Nodus SA dan saraf simpatis murni berperan memantik irama, bukan aktor perumus arsitektur grafis panjang refrakter pencegah tetanus miokard absolut.</li></ul>" },
+            { q: "Sekresi hormon berikut dapat meningkatkan tekanan darah kecuali", o: ["Adrenalin", "Cortisol", "Aldosteron", "ADH", "ANP"], a: "ANP", exp: "<strong>Penjelasan Detail: ANP</strong><br>Atrial Natriuretic Peptide (ANP) diproduksi serambi bilik atrium jantung sebagai komplain menjerit saat dindingnya kepenuhan regangan ekstrem volume air darah. Hormon ini murni bergegas memerintah ginjal merusak tandon garam untuk kencing membuang air, yang MENURUNKAN mutlak tensi darah radikal merosot fasik.<ul><li><i>Opsi lain:</i> Adrenalin, Aldosteron (penahan garam), Kortisol, dan ADH mutlak merupakan skuad komplotan pengerek pelonjak volume dan tekanan pembuluh meroket absolut murni.</li></ul>" },
+            { q: "Ion yang berperan dalam sistem konduksi dan kontraktilitas otot jantung?", o: ["Natrium", "Kalsium", "Kalium", "Cesium", "Magnesium"], a: "Kalsium", exp: "<strong>Penjelasan Detail: Kalsium</strong><br>Kalsium adalah raja ganda penguasa takhta miokard absolut: pengukir arsitektur grafis listrik penahan plateau (Fase 2) sel konduksi aksi, sekaligus peluru mekanik saklar pembuka gembok Troponin sliding-filament meremas tuas serabut jantung fasik murni.<ul><li><i>Opsi lain:</i> Natrium murni mendobrak pintu kejut kilat masuk, namun menyingkir tak bersentuhan sama sekali memicu gesekan serat aktin-miosin otot mutlak.</li></ul>" },
+            { q: "Pada saat berdiri tekanan darah dipertahankan stabil oleh", o: ["simpatis", "parasimpatis", "hormon", "autoregulasi", "kontraksi otot"], a: "simpatis", exp: "<strong>Penjelasan Detail: simpatis</strong><br>Saat tubuh bangkit tegak sentakan gravitasi, genangan darah jatuh merosot ke kolam kaki, memicu sensor melompongnya baroreseptor di leher panik menjerit. Sistem otonom menembakkan badai kilat Simpatis (Symphatetic discharge) mutlak seketika untuk mengekang meremas pembuluh darah perifer agar perfusi tensi otak tak syok jatuh pingsan radikal fasik.<ul><li><i>Opsi lain:</i> Respon lamban hormon atau parasimpatis santai mutlak akan menyebabkan pasien telat mengompensasi dan pingsan blackout mutlak (Ortostatik Hipotensi murni).</li></ul>" },
+            { q: "Darah dapat masuk ke ventrikel kiri pada saat...", o: ["Periode isovolumetrik kontraksi", "Periode isovolumetrik relaksasi", "Sistolik", "Diastolik", "Katup trikuspid terbuka"], a: "Diastolik", exp: "<strong>Penjelasan Detail: Diastolik</strong><br>Jatuhnya guyuran gelombang tumpahan peluru volume darah ke ceruk bilik ventrikel murni mutlak hanya diizinkan terealisasi saat dinding otot kaku ventrikel melemas melonggar hampa tekanan pada fase istirahat pamit: Diastolik absolut.<ul><li><i>Opsi lain:</i> Isovolumetrik relaksasi murni masih mengunci gembok keempat gerbang pintunya rapat, sementara sistolik murni malah menendang darah melawan dan membuangnya ke jalur keluar fasik.</li></ul>" },
+            { q: "Mekanisme perpindahan substansi interstisial ke venula melalui...", o: ["Tekanan hidrostatik", "Tekanan osmotik plasma", "Pompa otot", "Pompa jantung", "Pompa respirasi"], a: "Tekanan osmotik plasma", exp: "<strong>Penjelasan Detail: Tekanan osmotik plasma</strong><br>Di penghujung ujung ranjang buangan kapiler (Venula), tenaga tembak pendorong air hidrolik telah terkuras habis hampa. Cairan limbah interstisial ditarik pulang merembes menyeberang masuk kembali ke dalam pipa mutlak mengandalkan daya sedot hisap magnet pekat albumin protein gergasi (Tekanan Osmotik Koloid Plasma) fasik radikal.<ul><li><i>Opsi lain:</i> Tekanan Hidrostatik berlaku radikal memompa di pangkal pelabuhan Arteriola untuk menendang kencang cairan KELUAR merembes menembus jaringan, bukan menghisapnya pulang.</li></ul>" },
+            { q: "Endotel arteri mensintesis dalam proses koagulasi waktu proses pembekuan darah", o: ["Serat elastik", "Serat kolagen", "Protein elastik", "Faktor von willebrand", "Heparin murni"], a: "Faktor von willebrand", exp: "<strong>Penjelasan Detail: Faktor von willebrand</strong><br>Meski pipa Endotel dirancang teflon licin mutlak, ia menyimpan bungkusan granula darurat Weibel-Palade sakti di dinding selnya. Saat dindingnya disayat robek, granula ini mutlak dilempar muntah menebarkan jaring lem glikoprotein paten (Faktor Von Willebrand) untuk menangkap menjebak sel Trombosit menambal pendarahan fasik murni.<ul><li><i>Opsi lain:</i> Serat kolagen keras terpaku telanjang di rahang matriks subendotel bawahnya murni, bukan dicetak semprot sebagai pelumas dari dapur selapis atas sel endotel pembuluh mutlak.</li></ul>" },
+            { q: "Respon vaskuler otak saat tekanan darah naik adalah", o: ["Vasodilatasi", "Vasokonstriksi", "Vasospasme", "Aliran laminar", "Aliran turbulens"], a: "Vasokonstriksi", exp: "<strong>Penjelasan Detail: Vasokonstriksi</strong><br>Bila otak dihantam hulu ledak aliran mendadak tensi hipertensi ekstrem, otot polos pelindung cerebri refleks langsung menyempit mengekang membentengi perlawanan (Autoregulasi Vasokonstriksi Miogenik radikal) agar jaringan spons empuk otak tidak kebanjiran meledak pembuluh tembus berdarah mutlak.<ul><li><i>Opsi lain:</i> Vasodilatasi murni melonggarkan keran dan membiarkan tsunami semprotan aliran itu membunuh menenggelamkan membakar lobus otak secara fasik mutlak.</li></ul>" },
+            { q: "Perbedaan kelistrikan otot jantung dan skeletal:", o: ["Adanya Plateau", "Adanya depolarisasi", "Adanya Repolarisasi", "Adanya hiperpolarisasi", "Adanya treshold"], a: "Adanya Plateau", exp: "<strong>Penjelasan Detail: Adanya Plateau</strong><br>Perbedaan signature jurang kelistrikan Jantung radikal vs Otot Rangka murni ada pada Fase 2 (Plateau Kalsium) merenggang tumpul panjang. Desain anomali sengaja menahan jeda tancap gas arus listrik ini mutlak diciptakan agar rongga jantung sempat memeras isian darahnya sempurna mutlak, mencegah tabrakan siklus kejut kaku tetanus sel fasik.<ul><li><i>Opsi lain:</i> Kedua kasta otot biologis ini mutlak setara harus melewati fase absolut batas gawang repolarisasi, ambang letup depolarisasi, dan threshold pacuan mutlak murni.</li></ul>" },
+            { q: "Seorang dokter sedang mengamati foto ronsen thorax AP pasiennya. Bayangan radioopaq (putih)vertikal parasternal kiri berturut-turut dari atas ke bawah adalah:", o: ["Arcus aorta dan truncus pulmonalis", "Vena cava superior dan arcus aorta", "Vena subclavia dan arcus aorta", "Atrium sinister dan truncus pulmonalis", "Atrium sinister dan arteri pulmonalis"], a: "Arcus aorta dan truncus pulmonalis", exp: "<strong>Penjelasan Detail: Arcus aorta dan truncus pulmonalis</strong><br>Kontur siluet topografi batas bayangan putih radikal di perbatasan margin parasternal Kiri (Left Heart Border) rontgen toraks berjejer urutan vertikal murni teratas dari bonggol Knob Arcus Aorta menonjol gagah, dilanjutkan segera tonjolan perut lekuk pembuluh darah Truncus Pulmonalis di tengah kiri pinggang mutlak fasik.<ul><li><i>Opsi lain:</i> Vena Cava Superior mutlak mengangkang tegak berpatroli menjulang di koridor margin Kanan rontgen radikal, mustahil nyasar murni ke sisi rute belahan kiri pasien fasik.</li></ul>" },
+            { q: "Otak memiliki sawar darah yang lebih efektif sehingga hanya molekul tertentu yang bisa menembus kapiler darahnya. Oleh karena itu, otak memiliki kapiler berjenis...", o: ["Continous capillary", "Fenestrae capillary", "Discontinous capillary", "Sinusoid besar", "Fenestrae mikroskopis"], a: "Continous capillary", exp: "<strong>Penjelasan Detail: Continous capillary</strong><br>Penjaga sabuk gembok ketat tak tertembus lapis paten Blood Brain Barrier (Sawar Darah Otak) murni mutlak mengandalkan beton pertahanan selapis dinding sangat rapat saling mengunci rapat (Tight Junction) dari Endotel Tipe Kontinyu (Continuous Capillary), menolak menyensor celah debu pori bocor fasik radikal.<ul><li><i>Opsi lain:</i> Fenestrasi ginjal berpori radikal dan Sinusoid lubang putus-putus Hati murni sengaja menganga meloloskan banjir protein bocor besar yang diharamkan secara mutlak di istana susunan saraf otak fasik.</li></ul>" },
+            { q: "Saat tekanan ventrikel kiri menurun hingga dibawah tekanan aorta, maka", o: ["darah mengalir kembali dari aorta ke ventrikel", "katup semilunar aorta menutup", "katup mitral terbuka", "terjadi reduced ejection", "terjadi rapid filling"], a: "katup semilunar aorta menutup", exp: "<strong>Penjelasan Detail: katup semilunar aorta menutup</strong><br>Bila siklus tenaga pompa otot ventrikel kehabisan daya letup bensin, ruangnya jatuh dalam fase diastolik santai dan tekanan merosot ke bawah angka cadangan tangki godam Aorta. Gravitasi genangan darah di Aorta mencoba jatuh bergulung balik mundur menjebol lubang ventrikel, dan hempasan gulungan cairan inilah yang mutlak menjebrak membanting rapat tertutup benteng daun Katup Semilunaris Aorta secara keras radikal murni membunyikan dentum nada S2 mutlak fasik.<ul><li><i>Opsi lain:</i> Darah mutlak terlarang balik mengisi bocor kembali dari Aorta (Regurgitasi Patologis). Bukaan Katup Mitral murni baru akan terbuka saat tekanan bilik terus merosot anjlok tajam menukik drastis jauh di bawah tekanan loyo Atrium di akhir siklus mutlak.</li></ul>" },
+            { q: "saat jaga di igd,ada pasien keluhan nyeri dada dan dada terasa penuh, pemeriksaan fisik ircus cordis tidak teraba, pemeriksaan rontgen sebagian besar jantung di hemithorax dexter dan radix cordis terdorong ke kanan, bagaimana kondisi jantung pasien?", o: ["dextrocardia", "dextroposisi", "konginental jantung", "semua salah", "Situs inversus totalis"], a: "dextroposisi", exp: "<strong>Penjelasan Detail: dextroposisi</strong><br>Organ jantung anatomi normal bawaan yang murni terseret paksa translasi fisik tergusur paksa tertekan akibat luapan cairan pleura efusi patologis parah atau efek bedah paru kolaps murni ke kanan, mutlak divonis sebagai pergeseran fungsional mekanis akut akuisita: Dextroposisi murni radikal.<ul><li><i>Opsi lain:</i> Dextrocardia atau Situs inversus genetik mutlak merotasi lahir cermin ruang jantung biliknya terbalik asli primer anatomis ruang dari masa embrio murni tanpa pemicu desakan massa eksternal mutlak radikal fasik.</li></ul>" },
+            { q: "Seorang wanita berumur 35 tahun mengeluh kakinya bengkak karena sering berdiri/duduk, pembuluh darah apa yang berkaitan?", o: ["arteri", "vena", "kapiler", "arteriol", "venule"], a: "vena", exp: "<strong>Penjelasan Detail: vena</strong><br>Sistem balikan arus mudik vena ekstremitas mutlak pasif dan mati langkah mengandalkan sekedar dorongan engsel mekanik perasan pompa otot. Diam mematung duduk berdiri kaku absolut mengunci pompa betis menihilkan kembalian, menahan laju memupuk beban tekanan hidrostatik air vena murni sehingga plasma air mata terperas bocor merembes bengkak membuncit fasik (Edema perifer mutlak).<ul><li><i>Opsi lain:</i> Sistem arteri dengan tegangan tinggi elastis jantung dan pelindung reaktif otot tunika media tidak pernah mengenal mampet tertahan gravitasi kaku hingga bengkak pasif radikal mutlak.</li></ul>" },
+            { q: "seseorang mengalami infark miokard, rasa nyeri terasa sampai medial lengan, rangsangan nyeri dibawa oleh", o: ["N. Laryngeus reccurent", "Plexus Cardiacus", "N. Phrenicus", "N. simpaticus", "N. intercostobrachial"], a: "N. intercostobrachial", exp: "<strong>Penjelasan Detail: N. intercostobrachial</strong><br>Fenomena gema bayangan perih (Referred Pain) murni berpusat pada penipuan korsleting terminal otak yang membingungkan tumpang tindih jalur iskemik visceral mematikan rute jantung dengan jalur akar rabaan kulit tangan. Jalur pemantik kesetrum rasa nyasar medial lengan bawah tersebut ditarik merayap mutlak menjalar persilangan Dermatom saraf cabang somatik N. Intercostobrachialis fasik radikal (T1-T4).<ul><li><i>Opsi lain:</i> N. Phrenicus mutlak menembak menayangkan proyektor rasa tipuan gema iritasi kantung jantung menjalar radikal hanya ke bahu pundak atas leher C3-C5 murni, bukan lengan ulnaris panjang absolut fasik.</li></ul>" },
+            { q: "Pada individu dgn tekanan darah 120/80 mmHg, selama periode ejeksi, tekanan tertinggi dalam ventrikel kiri dapat mencapai?", o: ["25 mm Hg", "65 mm Hg", "85 mm Hg", "105 mm Hg", "125 mm Hg"], a: "125 mm Hg", exp: "<strong>Penjelasan Detail: 125 mm Hg</strong><br>Logika mekanika dinamika peluru pendorong hidraulik absolut fasik: Agar daun gerbang baja katup Aorta bisa ditendang terbuka jebol menerobos palang 120 mmHg mutlak di selangnya, maka pompa piston bilik ventrikel kiri mutlak secara radikal harus memuntahkan memompakan paksa gelombang tembakan ekstrem curah bertegangan lebih tinggi memuncak mendaki menaiki garis tekanan puncak (sekitar ± 125 mmHg murni).<ul><li><i>Opsi lain:</i> Angka 85 atau 105 mm Hg adalah tenaga loyo yang murni dijamin akan mentok membentur gerbang aorta tertutup, gagal memuntahkan segenap darah ke seluruh sistem sirkuit radikal absolut jantung fasik.</li></ul>" },
+            { q: "Jalur konduksi yang benar adalah...", o: ["Nodus SA => Nodus AV => Bundle Branches => Bundle of HIS => Purkinje Fibers", "Nodus SA => Nodus AV => Bundle of HIS => Bundle Branches => Purkinje Fibers", "Nodus SA => Nodus AV => Bundle of HIS => Purkinje Fibers => Bundle Branches", "Nodus AV => Nodus SA => Bundle of HIS => Bundle Branches => Purkinje Fibers", "Purkinje Fibers => Bundle Branches => Bundle of HIS => Nodus AV => Nodus SA"], a: "Nodus SA => Nodus AV => Bundle of HIS => Bundle Branches => Purkinje Fibers", exp: "<strong>Penjelasan Detail: Nodus SA => Nodus AV => Bundle of HIS => Bundle Branches => Purkinje Fibers</strong><br>Urutan paten absolut arsitektur rambat penyebaran letupan listrik otonom jantung murni berawal melompat dari gardu atap kubah serambi atrium (SA Node) -> merambat ke sekat batas (AV Node) -> melesat meluncur di jembatan kabel pemisah jurang bilik (Bundle of His) -> bercabang membelah tebing septum vertikal (Bundle Branches kanan-kiri) -> lalu mencakar naik ke sisa tebing otot serabut terminal penembak ujung mutlak (Purkinje Fibers radikal fasik).<ul><li><i>Opsi lain:</i> Semua formasi bolak balik lainnya mutlak keliru anatomi topografi kasta fasik jaringan konduktif his-purkinje system radikal murni.</li></ul>" },
+
+            // --- RESPIRATORY SECTION (48 Questions) ---
+            { q: "Berikut ini yang benar mengenai respirasi seluler adalah", o: ["Dilakukan oleh organisme tertentu", "Dilakukan di luar jaringan sel", "Hasilnya berupa energi dalam bentuk AMP", "Terbagi menjadi respirasi aerob dan anaerob", "Hasilnya berupa oksigen dan glukosa"], a: "Terbagi menjadi respirasi aerob dan anaerob", exp: "<strong>Penjelasan Detail: Terbagi menjadi respirasi aerob dan anaerob</strong><br>Respirasi seluler mutlak merupakan lintasan katabolik sentral pemanen energi yang diklasifikasikan radikal menjadi dua rute besar: jalur Aerobik (bergantung mutlak pada oksigen) dan Anaerobik (tanpa oksigen).<ul><li><i>Opsi lain:</i> Hasil akhirnya adalah kantong energi tunai ATP (bukan AMP) murni, terjadi absolut di dalam kompartemen sel (mitokondria & sitosol), dan merupakan sirkuit universal seluruh organisme hidup fasik.</li></ul>" },
+            { q: "Yang mempengaruhi difusi O2 kecuali", o: ["Luas permukaan", "Tebal membran", "Tekanan", "Panjang membran", "Kapasitas inspirasi"], a: "Kapasitas inspirasi", exp: "<strong>Penjelasan Detail: Kapasitas inspirasi</strong><br>Hukum Fick mengatur laju difusi gas murni melintasi membran alveolar. Parameter penentunya mutlak adalah Luas Permukaan (A), Ketebalan/Panjang Membran (d), dan Gradien Tekanan Parsial (P). Kapasitas inspirasi murni adalah volume mekanis paru, bukan variabel difusi mikroskopik fasik radikal.<ul><li><i>Opsi lain:</i> Keempat opsi lainnya adalah komponen matematis absolut penentu laju hukum difusi Fick murni.</li></ul>" },
+            { q: "Berikut yang bukan penyusun waldeyers ring", o: ["Adenoid", "Tonsila palatina", "Tonsilla Lingua", "Tonsila Tuba", "Uvula"], a: "Uvula", exp: "<strong>Penjelasan Detail: Uvula</strong><br>Cincin Waldeyer adalah benteng sirkuler jaringan limfoid penjaga pintu masuk faring mutlak. Komponen radikalnya murni terdiri dari: Tonsila Pharyngea (Adenoid), Tubaria, Palatina, dan Lingualis. Uvula murni hanyalah juluran daging palatum molle hampa tanpa barikade limfoid masif sentral.<ul><li><i>Opsi lain:</i> Keempat opsi lainnya adalah pilar absolut penyusun benteng Cincin Waldeyer fasik murni.</li></ul>" },
+            { q: "Apa yang terjadi pada asam amino dalam kondisi alkali jika bertindak sebagai buffer?", o: ["Melepaskan H+ pada gugus karboksil", "Melepaskan H+ pada amina", "Menangkap H+ pada gugus karboksil", "Menangkap H+ para gugus amina", "Netralisasi air murni"], a: "Melepaskan H+ pada gugus karboksil", exp: "<strong>Penjelasan Detail: Melepaskan H+ pada gugus karboksil</strong><br>Protein plasma sangat sakti bertindak amfoterik. Dalam lingkungan basa (Alkali murni), darah rakus mencari H+. Asam amino berkorban menjadi asam melepaskan proton (H+) murni dari ikatan gugus Karboksil (COOH) miliknya untuk menetralisir pH radikal.<ul><li><i>Opsi lain:</i> Menangkap H+ via gugus amina (NH2) dilakukan eksklusif hanya jika darah sedang tenggelam dalam lautan asam (Asidosis mutlak).</li></ul>" },
+            { q: "Tekanan parsial oksigen di kapiler 100mmhg. Tekanan parsial oksigen di sel jaringan 40mmhg. Maka apa yang akan terjadi?", o: ["Oksigen berdifusi memasuki kapiler", "Oksigen berdifusi memasuki alveolus", "Oksigen berdifusi memasuki sel/jaringan", "Oksigen berdifusi keluar sel jaringan", "Salah semua"], a: "Oksigen berdifusi memasuki sel/jaringan", exp: "<strong>Penjelasan Detail: Oksigen berdifusi memasuki sel/jaringan</strong><br>Hukum pergerakan gas mutlak tunduk pada gradien tekanan parsial murni. Oksigen berekspansi radikal meluncur pasif dari reservoir tinggi (Kapiler: 100 mmHg) menerobos masuk merembes ke palung jaringan yang kelaparan (Sel: 40 mmHg) absolut fasik.<ul><li><i>Opsi lain:</i> Berdifusi melawan gradien alamiah dari 40 ke 100 adalah pelanggaran termodinamika mutlak yang mustahil fasik.</li></ul>" },
+            { q: "Seorang pendaki berhasil menaiki puncak. Apa yang terjadi pada keadaan sistem respirasinya?", o: ["pH dan CO2 naik", "pH dan CO2 turun", "pH dan CO2 normal", "pH naik, CO2 turun", "pH turun, CO2 naik"], a: "pH naik, CO2 turun", exp: "<strong>Penjelasan Detail: pH naik, CO2 turun</strong><br>Di puncak elevasi radikal, hipoksia memicu badai Hiperventilasi nafas cepat sebagai kompensasi. Guyuran napas ini menguras buang tandon asam Karbondioksida (CO2 turun drastis). Lenyapnya asam ini menukikkan neraca menuju Alkalosis Respiratorik murni (pH melambung basa radikal mutlak).<ul><li><i>Opsi lain:</i> Asidosis (pH turun) mutlak mustahil terjadi kecuali pendaki henti napas atau hipoventilasi berat.</li></ul>" },
+            { q: "Analog lobus pulmo media dextra?", o: ["lobus inferior pulmo sinistra", "lobus superior pulmo sinistra", "lingula", "fissura horizontalis", "fissura obliqua"], a: "lingula", exp: "<strong>Penjelasan Detail: lingula</strong><br>Paru kiri terhimpit ruang kompresi Jantung (Cardiac Notch) sehingga kehilangan lobus tengahnya. Sebagai kompensasi sisa embriologis anatomis murni, paru kiri menumbuhkan lidah memanjang (Lingula) pada lobus superior yang merupakan analog absolut dari Lobus Media kanan fasik.<ul><li><i>Opsi lain:</i> Fissura adalah celah, bukan blok daging paru. Lobus lain tidak memiliki kemiripan asimetris radikal murni ini.</li></ul>" },
+            { q: "Seseorang menangis dan merasakan hidungnya berair", o: ["merangsang reaksi simpatis sehingga meningkatkan produksi mukus", "Terdapat saluran yang menghubungkan palpebra yang bermuara di meatus nasi inferior", "terdapat bulla ehtmoidalis yang menghubungkan palpebra dengan cavum nasi", "Kelenjar air mata berlebihan", "Reaksi alergi murni"], a: "Terdapat saluran yang menghubungkan palpebra yang bermuara di meatus nasi inferior", exp: "<strong>Penjelasan Detail: Terdapat saluran yang menghubungkan palpebra yang bermuara di meatus nasi inferior</strong><br>Luapan tangisan genangan air mata di sudut mata (palpebra) akan disedot jatuh bebas membanjiri lorong pipa absolut Ductus Nasolacrimalis, yang bermuara membongkar buangannya murni tepat di bawah atap Meatus Nasi Inferior hidung.<ul><li><i>Opsi lain:</i> Ini adalah proses mekanika gravitasi selang drainase mutlak, bukan produk kelenjar mukus simpatis atau alergi rinitis fasik.</li></ul>" },
+            { q: "Di mana tempat terjadinya tracheatomy?", o: ["ligamentum trachelis 1 - 2", "cartilago trachea 2", "ligamentum trachealis 2 - 3", "cartilago trachea 3", "ligamentum trachealis 3 - 4"], a: "ligamentum trachealis 2 - 3", exp: "<strong>Penjelasan Detail: ligamentum trachealis 2 - 3</strong><br>Insesi pisau bedah darurat trakeostomi diukir secara presisi murni menembus membran ligamen empuk di antara cincin tulang rawan (Cartilago) ke-2 dan ke-3 trakea untuk menghindari penebasan Isthmus Tiroid radikal yang rentan perdarahan fatal di atasnya.<ul><li><i>Opsi lain:</i> Menebas terlalu atas atau bawah akan murni mengundang komplikasi cedera pembuluh pita suara atau kegagalan intubasi absolut.</li></ul>" },
+            { q: "Fungsi sistem respirasi adalah semua yang di bawah ini, kecuali", o: ["Pertukaran gas respirasi", "Fungsi ventilasi", "Fungsi vonasi", "Fungsi pertahanan", "Bukan semua jawaban di atas"], a: "Bukan semua jawaban di atas", exp: "<strong>Penjelasan Detail: Bukan semua jawaban di atas</strong><br>Paru-paru dirancang multitalenta mutlak. Pertukaran gas, pompa ventilasi mekanik, pita suara laring (fonasi), dan makrofag/silia (pertahanan) SEMUANYA merupakan fungsi sah radikal. Karena semua opsi benar, maka 'kecuali'-nya murni adalah 'bukan semua jawaban di atas'.<ul><li><i>Opsi lain:</i> Memilih A, B, C, atau D berarti menyangkal fakta fisiologis bawaan paten sistem respirasi fasik.</li></ul>" },
+            { q: "Berikut yang benar tentang transport O2", o: ["1,5% O2 terlarut", "98,5% terikat Hb di eritrosit", "Hb mengikat O2 jadi berbentuk tegang(T)", "A, B, dan C benar", "A dan B"], a: "A dan B", exp: "<strong>Penjelasan Detail: A dan B</strong><br>Mayoritas 98,5% kargo Oksigen dimuat membonceng kursi Hemoglobin eritrosit murni. Sisanya 1,5% sangat pelit melarut berenang pasif di air plasma. Pernyataan A dan B adalah fakta persentase radikal absolut.<ul><li><i>Opsi lain:</i> Pernyataan C keliru mutlak karena Hb yang mengikat oksigen berubah wujud rileks (Formasi Relaxed/R), bukan Tegang (Tense/T) yang justru pelit menolak oksigen.</li></ul>" },
+            { q: "kekuatan respirasi tidak dapat diukur dengan", o: ["Tes lapangan", "Tes laboratorium", "Tes sit up", "Step test", "Tes jalan dan lari"], a: "Tes sit up", exp: "<strong>Penjelasan Detail: Tes sit up</strong><br>Sit Up murni adalah instrumen penguji daya tahan dan kekuatan otot rangka inti lokal (anaerobik core). Tes ini mutlak gagal dan buta dalam memeras kinerja pompa makro jantung dan paru (VO2 Max).<ul><li><i>Opsi lain:</i> Tes jalan, lari, step test, dan lab spirometri adalah alat ukur paten mutlak fungsi kardiorespirasi fasik.</li></ul>" },
+            { q: "Hb.O2->Hb + O2, terjadi pada kondisi sebagai berikut...", o: ["Peningkatan oksigen", "Peningkatan karbondioksida", "Hipotermia", "Penurunan 2,3 DPG", "Peningkatan pH"], a: "Peningkatan karbondioksida", exp: "<strong>Penjelasan Detail: Peningkatan karbondioksida</strong><br>Reaksi di atas menggambarkan terurainya ikatan melepas buang Oksigen ke jaringan (Shift to the Right / Efek Bohr mutlak). Kondisi ini murni diprovokasi oleh medan otot yang sedang membakar energi ekstrem: penumpukan asap Karbondioksida tinggi fasik.<ul><li><i>Opsi lain:</i> Dingin (Hipotermia), pH basa, dan turunnya 2,3-DPG malah membuat Hb egois mengunci Oksigen mati-matian (Shift to the Left).</li></ul>" },
+            { q: "Manakah pernyataan berikut ini yang paling benar...", o: ["VO2 max merupakan indikator fungsi kardiorespirasi dan neuromuskuler", "VO2 max merupakan hasil dari latihan fisik aerobik", "VO2 max merupakan hasil dari latihan fisik anaerobik", "A dan B", "A dan C"], a: "A dan B", exp: "<strong>Penjelasan Detail: A dan B</strong><br>VO2 Max mutlak merupakan indikator emas (gold standard) performa pompa kardio-paru dan otot, yang secara biologis murni hanya dapat didongkrak tajam melalui siksaan latihan adaptasi ketahanan Aerobik jangka panjang.<ul><li><i>Opsi lain:</i> Latihan fisik anaerobik (angkat beban) murni membangun hipertrofi serabut otot lokal, bukan memodifikasi dimensi makro tangki paru kardiorespirasi absolut.</li></ul>" },
+            { q: "Struktur berikut berada pada mediastinum anterior", o: ["esofagus", "Thymus", "aorta", "cor", "bronkus primer"], a: "Thymus", exp: "<strong>Penjelasan Detail: Thymus</strong><br>Mediastinum Anterior adalah celah sempit memanjang tepat di balik tameng tulang sternum. Penghuni eksklusif murni kompartemen dangkal ini pada anak-anak adalah kelenjar Thymus (yang kemudian menyusut menjadi lemak).<ul><li><i>Opsi lain:</i> Cor (Jantung) mendominasi ruang Medius. Esofagus dan aorta descending menguasai lorong belakang Posterior fasik radikal mutlak.</li></ul>" },
+            { q: "Penurunan denyut nadi istirahat merupakan akibat dari", o: ["Penurunan volume sekuncup", "Peningkatan volume sekuncup", "Penurunan kontraktilitas miokardium", "Peningkatan curah jantung", "Penurunan curah jantung"], a: "Peningkatan volume sekuncup", exp: "<strong>Penjelasan Detail: Peningkatan volume sekuncup</strong><br>Adaptasi kronis atletik jantung murni adalah melonggarnya bilik untuk menampung dan memompa curah sekuncup (Stroke Volume) yang masif radikal. Karena 1 kali tembakan sudah terlampau besar, Nodus SA menurunkan ritme (nadi lambat) untuk menghemat energi fasik.<ul><li><i>Opsi lain:</i> Penurunan kontraktilitas adalah tanda payah gagal jantung patologis, bukan adaptasi kebugaran absolut murni.</li></ul>" },
+            { q: "Penurunan tekanan darah adalah", o: ["Respon kronik kardiovaskular terhadap latihan fisik", "Respon akut kardiovaskular terhadap latihan fisik", "Respon akut kardiorespirasi terhadap latihan fisik", "Respon kronik respirasi terhadap latihan fisik", "Respon patologis murni"], a: "Respon kronik kardiovaskular terhadap latihan fisik", exp: "<strong>Penjelasan Detail: Respon kronik kardiovaskular terhadap latihan fisik</strong><br>Menurunnya rata-rata tensi tekanan darah istirahat secara permanen adalah hasil adaptasi remodeling struktural dinding pembuluh darah jangka panjang (kronik) akibat latihan repetitif murni.<ul><li><i>Opsi lain:</i> Respon akut murni saat berolahraga (saat berlari) justru akan MELONJAKKAN memompa tensi tekanan darah fasik, bukan menurunkannya mutlak.</li></ul>" },
+            { q: "Bagian paru yg tidak dilapisi oleh pleura adalah", o: ["Carina", "Lingula", "Incissura cardiaca", "Hilum pulmonale", "Recessus"], a: "Hilum pulmonale", exp: "<strong>Penjelasan Detail: Hilum pulmonale</strong><br>Hilum (radix paru) adalah titik akar pusat terminal tempat menancapnya tumpukan kabel pembuluh darah dan bronkus yang menebus paru. Di titik akar murni inilah selaput bungkus Pleura Visceral melipat berbalik menjadi Parietal, meninggalkannya telanjang polos tanpa selaput absolut.<ul><li><i>Opsi lain:</i> Permukaan luar lobus lain mutlak dibungkus rapat kemasan pleura visceral radikal.</li></ul>" },
+            { q: "Apakah jenis sel pada sistem respirasi yang berfungsi dalam rangsangan sensorik secara umum?", o: ["sel goblet", "sel brush", "sel granula", "sel stem", "Epitel pseudokompleks bersilia"], a: "sel brush", exp: "<strong>Penjelasan Detail: sel brush</strong><br>Sel Sikat (Brush Cells) dibekali rimbunan mikrovili tumpul di puncaknya yang bersinaps langsung dengan ujung saraf aferen di bawahnya. Ini menjadikannya gardu pengintai kemo/taktil sensorik umum murni di jalan napas.<ul><li><i>Opsi lain:</i> Sel goblet memuntahkan lendir, Granula melepas hormon neuroendokrin, dan Stem cell membelah diri. Tak ada satupun dari ketiganya yang memegang fungsi kabel sensorik fasik.</li></ul>" },
+            { q: "Batas lateral dari trachea adalah", o: ["lobus glandula thyroid", "isthmus thyroid", "m. sternothyroid", "Nervus laringeus rekuren", "Esophagus"], a: "lobus glandula thyroid", exp: "<strong>Penjelasan Detail: lobus glandula thyroid</strong><br>Cincin trakea leher diapit dan dipeluk tebal dari sayap sisi kiri dan kanannya (lateral mutlak) oleh massa daging Lobus Glandula Thyroid.<ul><li><i>Opsi lain:</i> Isthmus melintang mencekik tepat di DEPAN (anterior) cincin trakea. Esofagus bersembunyi menempel lurus tepat di BELAKANG (posterior) trakea fasik absolut.</li></ul>" },
+            { q: "Dilakukan rhinoscopy anterior melalui nostril, struktur apa yang paling terlihat", o: ["concha nasalis superior", "concha nasalis media", "concha nasalis inferior", "tonsilla pharyngea", "torus tubarius"], a: "concha nasalis inferior", exp: "<strong>Penjelasan Detail: concha nasalis inferior</strong><br>Mengintip melalui lubang hidung depan (Rinoskopi anterior), gundukan karang daging memanjang yang pertama kali menghadang dan paling masif terekspos visual murni adalah Concha Nasalis Inferior yang duduk paling dasar bawah.<ul><li><i>Opsi lain:</i> Superior tersembunyi jauh di atap gelap atas. Tonsil dan Torus bermukim jauh menjorok di ruang nasofaring belakang (posterior) mutlak tak terlihat dari luar.</li></ul>" },
+            { q: "Berikut pernyataan yang tidak benar adalah", o: ["hemoglobin bisa berikatan dengan 4 oksigen", "hemoglobin berikatan dengan karbondioksida", "methemoglobin mengikat oksigen", "methemoglobin kekurangan elektron", "karbokhemoglobin lebih mudah berikatan dengan karbon monoksida daripada oksigen"], a: "methemoglobin mengikat oksigen", exp: "<strong>Penjelasan Detail: methemoglobin mengikat oksigen</strong><br>Pernyataan ini SALAH mutlak. Besi pada Methemoglobin cacat teroksidasi menjadi karat Feri (Fe3+). Besi karat ini buta radikal dan KEHILANGAN afinitas/kemampuan sama sekali untuk mengikat oksigen murni, memicu sianosis mematikan.<ul><li><i>Opsi lain:</i> Semua pernyataan lainnya adalah hukum biokimia hemoglobin normal fasik yang diakui absolut.</li></ul>" },
+            { q: "Mekanisme perpindahan substansia interstitial ke venula melalui:", o: ["Tekanan hidrostatik", "Tekanan osmosis plasma", "Pompa otot", "Pompa jantung", "Pompa respirasi"], a: "Tekanan osmosis plasma", exp: "<strong>Penjelasan Detail: Tekanan osmosis plasma</strong><br>Di ujung buangan Venula, tenaga pendorong air hidrolik telah habis hampa. Cairan limbah ditarik pulang merembes masuk kembali ke pipa murni mengandalkan daya hisap magnet pekat protein (Tekanan Osmotik Koloid Plasma) fasik mutlak.<ul><li><i>Opsi lain:</i> Tekanan Hidrostatik berlaku di pangkal Arteriola untuk menendang cairan KELUAR, bukan menghisapnya masuk.</li></ul>" },
+            { q: "Kebugaran jantung dan paru dapat diukur dengan", o: ["Angkat beban", "Jalan atau lari", "VO2 max", "A dan B", "B dan C"], a: "VO2 max", exp: "<strong>Penjelasan Detail: VO2 max</strong><br>Meski diuji dengan berlari, metrik penggaris biologis emas (gold standard) absolut yang mencetak angka paten kapasitas serapan maksimal mesin kardiorespirasi mutlak dinamakan metrik VO2 Max murni.<ul><li><i>Opsi lain:</i> Lari adalah metodenya. Angkat beban adalah uji otot anaerobik radikal yang tak ada hubungannya dengan kapasitas paru makro fasik.</li></ul>" },
+            { q: "Hal yang berbeda dari transportasi oksigen dan karbondioksida...", o: ["Karbondioksida dapat terikat dalam bentuk HCO3, sedangkan oksigen tidak", "Oksigen dapat terikat dalam bentuk HCO3, sedangkan karbondioksida tidak", "Karbondioksida dapat terikat haemoglobin, sedangkan oksigen tidak", "Oksigen dapat terikat haemoglobin, sedangkan karbondioksida tidak", "Karbondioksida dapat larut dalam plasma, sedangkan oksigen tidak"], a: "Karbondioksida dapat terikat dalam bentuk HCO3, sedangkan oksigen tidak", exp: "<strong>Penjelasan Detail: Karbondioksida dapat terikat dalam bentuk HCO3, sedangkan oksigen tidak</strong><br>Beda absolut mutlak transportasi keduanya: CO2 bermutasi dipecah cairan menjadi molekul menyamar Ion Bikarbonat (HCO3-) sebagai moda transportasi utamanya (60%). Oksigen mutlak diharamkan alam bermanifestasi menjadi Bikarbonat fasik.<ul><li><i>Opsi lain:</i> Keduanya sama-sama mampu mengikat Hemoglobin dan sama-sama memiliki sepersekian persen porsi larut di air plasma murni.</li></ul>" },
+            { q: "Yang termasuk zona konduksi pada sistem respirasi adalah semua yang di bawah ini kecuali..", o: ["Cavum nasalis", "Pharynx", "Larynx", "Bronchus", "Alveolus"], a: "Alveolus", exp: "<strong>Penjelasan Detail: Alveolus</strong><br>Sistem konduksi murni berfungsi sebagai pipa paralon hampa pengantar tiupan angin tanpa fungsi difusi. Alveolus adalah terminal akhir berdinding tipis mikroskopis tempat pertukaran gas (Zona Respiratori absolut) fasik radikal terjadi.<ul><li><i>Opsi lain:</i> Hidung, Faring, Laring, dan Bronkus terlapisi pelindung tebal yang mengharamkan dan mencegat terjadinya pertukaran difusi gas murni.</li></ul>" },
+            { q: "Respon akut sistem kardiovaskuler terhadap latihan fisik...", o: ["Peningkatan denyut nadi", "Peningkatan denyut nadi istirahat", "Penurunan denyut nadi istirahat", "Peningkatan volume sekuncup", "Peningkatan kontraktilitas miokardium"], a: "Peningkatan denyut nadi", exp: "<strong>Penjelasan Detail: Peningkatan denyut nadi</strong><br>Begitu peluit latihan ditiup, saklar simpatis meledak seketika (akut). Reaksi perlindungan hemodinamik radikal pertama yang paling instan terlihat memuncak adalah lompatan takikardia Denyut Nadi memburu fasik murni.<ul><li><i>Opsi lain:</i> Perubahan nadi *istirahat* adalah adaptasi pasif jangka panjang (kronik) berbulan-bulan, bukan respon panik akut saat otot membakar kalori murni.</li></ul>" },
+            { q: "Sel pada bronkiolus yang berfungsi untuk lisozim kotoran yang masuk disebut", o: ["Sel brush", "Sel granula", "Sel stem", "Sel dust", "Sel clara"], a: "Sel clara", exp: "<strong>Penjelasan Detail: Sel clara</strong><br>Saat bronkiolus membuang tameng tulang rawan dan silia, Sel Clara (Club cell) maju tak berambut memuntahkan granula sakti enzim Lisozim pemecah bakteri dan membongkar penangkal racun (sitokrom P450) mutlak murni di tabung sempit fasik.<ul><li><i>Opsi lain:</i> Sel Dust/Makrofag adalah mesin pemakan kotoran murni yang beroperasi di wilayah Alveolus bawah, bukan di koridor bronkiolus.</li></ul>" },
+            { q: "struktur apakah yang ikut berperan dalam membentuk membran respirasi?", o: ["epitel alveolar tipe I", "epitel alveolar tipe II", "sel goblet", "sel brush", "sel granula"], a: "epitel alveolar tipe I", exp: "<strong>Penjelasan Detail: epitel alveolar tipe I</strong><br>Pneumosit tipe 1 ini dibentuk gepeng setipis lembaran kertas skuamosa murni, menyelimuti 97% tembok alveolus dan menempel lebur dengan endotel kapiler untuk menciptakan sekat difusi ultra-tipis membran respirasi radikal absolut.<ul><li><i>Opsi lain:</i> Tipe II tebal kuboid bertugas memproduksi oli surfaktan, tidak akan diizinkan merusak menebalkan jalur tembus pandang membran pernapasan murni.</li></ul>" },
+            { q: "Sel epitel respirasi apakah yang berfungsi sebagai neuroepitel?", o: ["sel goblet", "sel brush", "sel granula kecil", "sel stem", "kolumner pseudokompleks bersilia"], a: "sel granula kecil", exp: "<strong>Penjelasan Detail: sel granula kecil</strong><br>Sel Kulchitsky (Small Granule Cell) murni adalah unit tentara sistem neuroendokrin difus. Ia menyimpan pelet granula amina pekat yang mengintegrasikan sinyal lokal saraf (neuroepitel) mutlak di celah basalis jalan napas radikal.<ul><li><i>Opsi lain:</i> Sel goblet murni pabrik pencetak lendir, stem cell pabrik kloning sel, sama sekali tidak memiliki fungsi konduksi impuls neuro absolut fasik.</li></ul>" },
+            { q: "Respon kronik sistem respirasi terhadap latihan fisik...", o: ["Peningkatan frekuensi nafas", "Penurunan tidal volume", "Penurunan ventilasi", "Peningkatan efisiensi kerja otot respirasi", "Penurunan efisiensi kerja otot respirasi"], a: "Peningkatan efisiensi kerja otot respirasi", exp: "<strong>Penjelasan Detail: Peningkatan efisiensi kerja otot respirasi</strong><br>Olahraga maraton menimpa paru bertahun-tahun merombak (kronik) tuas daging otot Diafragma dan Interkostal menjadi ksatria hipertrofi fasik. Tarikan tuas menjadi sedemikian efektif (efisiensi meningkat radikal) hingga tak mudah lelah absolut murni.<ul><li><i>Opsi lain:</i> Menurunnya volume atau efisiensi adalah dekompensasi patologis penyakit, bukan hasil adaptasi atletik tempaan keras murni.</li></ul>" },
+            { q: "Volume Tambahan udara yang masih dapat dikeluarkan dengan ekspirasi kuat setelah akhir suatu ekspirasi biasa meupakan pegertian dari...", o: ["Volume Cadangan Inspirasi", "Volume Cadangan Ekspirasi", "Volume Tidal", "Volume Biasa", "Volume Residu"], a: "Volume Cadangan Ekspirasi", exp: "<strong>Penjelasan Detail: Volume Cadangan Ekspirasi</strong><br>Definisi klinis paten: Kuota perasan ampas ekstra (±1100 ml) yang secara sadar dipaksa didorong kuat keluar otot perut SETELAH hembusan pasif bernapas normal (tidal) usai, murni dijuluki Volume Cadangan Ekspirasi (ERV) fasik absolut.<ul><li><i>Opsi lain:</i> Volume Residu adalah tabungan hampa mati yang diharamkan alam untuk dikuras habis, akan selalu tersisa paten mencegah kolaps paru.</li></ul>" },
+            { q: "Anak kecil mengalami batuk dan demam serta hilang suara", o: ["Cavum nasi", "Epiglotting", "Larynx", "Bronkus", "Pulmo"], a: "Larynx", exp: "<strong>Penjelasan Detail: Larynx</strong><br>Hilang suara (afonia/serak parau) adalah stempel diagnostik radikal bahwa infeksi peradangan membakar mutlak kotak resonansi pita suara. Plica vocalis ini dipasang eksklusif terjepit di dalam bilik kompartemen anatomi Larynx murni.<ul><li><i>Opsi lain:</i> Radang di paru/bronkus (Pneumonia/Bronkitis) memicu batuk dahak hebat, namun absolut tidak akan mematikan membisukan fungsi kotak pita suara leher atas.</li></ul>" },
+            { q: "Sinus apa saja yang dapat di palpasi/perkusi saat pemeriksaan sinus paranasalis", o: ["Sinus frontalis dan sinus spenoidalis", "Sinus sphenoidalis dan Sinus ethmoidalis", "Sinus maxillaris dan Sinus sphenoidalis", "Sinus frontalis dan sinus ethmoidalis", "Sinus frontalis dan sinus maxillaris"], a: "Sinus frontalis dan sinus maxillaris", exp: "<strong>Penjelasan Detail: Sinus frontalis dan sinus maxillaris</strong><br>Hanya 2 rongga sinus besar yang memeluk tengkorak depan persis di bawah kulit cetek yang bisa ditekan ketuk jari dokter (palpasi murni): Sinus Frontalis (dahi alis) dan Maxillaris (pipi rahang atas) radikal absolut.<ul><li><i>Opsi lain:</i> Sphenoidalis dan Ethmoidalis terkubur sangat dalam di pusat kegelapan basis kranii otak tengkorak sentral, mustahil dijangkau rabaan tangan fasik mutlak.</li></ul>" },
+            { q: "Kurva disosiasi Hb-O2 bergeser ke kanan, berarti bahwa...", o: ["Afinitas Hb terhadap O2 meningkat", "Adanya kenaikan O2", "Hb semakin mudah melepaskan O2 ke jaringan", "Jawaban A dan B benar", "Semua jawaban benar"], a: "Hb semakin mudah melepaskan O2 ke jaringan", exp: "<strong>Penjelasan Detail: Hb semakin mudah melepaskan O2 ke jaringan</strong><br>Fenomena pergeseran Kanan (Shift Right) adalah alarm darurat Hb. Afinitas ikatannya dirusak menurun radikal, memaksa molekul ini muntah menjatuhkan seluruh pasokan bekal Oksigennya secara mudah mutlak ke sel otot yang kehabisan napas fasik murni.<ul><li><i>Opsi lain:</i> Afinitas meningkat (menjadi egois menahan O2) adalah ciri kurva bergeser ke Arah KIRI, bukan Kanan mutlak.</li></ul>" },
+            { q: "Yang merupakan respon kronik kardiovaskuler", o: ["Peningkatan denyut nadi", "Peningkatan frekuensi respirasi", "Penurunan ventilasi", "Peningkatan denyut nadi istirahat", "Penurunan denyut nadi istirahat"], a: "Penurunan denyut nadi istirahat", exp: "<strong>Penjelasan Detail: Penurunan denyut nadi istirahat</strong><br>Tanda mutlak adaptasi remodel jangka panjang jantung atlet adalah Jantung melebar tebal kuat efisien, menyebabkan tuas rem vagal parasimpatik dominan radikal menekan angka *resting heart rate* jatuh ke level bradikardia sehat fasik absolut.<ul><li><i>Opsi lain:</i> Peningkatan nadi atau napas adalah tembakan adrenergik akut sesaat murni saat durasi lari dilakukan fasik.</li></ul>" },
+            { q: "Sebelum masuk ke siklus asam sitrat, terjadi reaksi dekarboksilase piruvat, manakah pernyataan yang benar dibawah ini", o: ["Terjadi di membran dalam mitokondria", "Terjadi perubahan piruvat menjadi asetil KOA", "Koenzim A menjadi penanda untuk masuk kedalam membran", "Di katalisasi oleh enzim piruvat karboksilasi", "Hasilnya FADH2, CO2, Piruvat"], a: "Terjadi perubahan piruvat menjadi asetil KOA", exp: "<strong>Penjelasan Detail: Terjadi perubahan piruvat menjadi asetil KOA</strong><br>Fase transisi dekarboksilasi radikal ini memenggal satu karbon dari Piruvat (3C), lantas mengikatkannya dengan enzim katalis melahirkan struktur reaktif pembuka gerbang absolut Krebs: Asetil Ko-A (2C) murni fasik.<ul><li><i>Opsi lain:</i> Hasil rekasinya melahirkan senyawa Asetil KoA, NADH, dan CO2 mutlak, bukan FADH2 yang dicadangkan murni untuk produksi mesin Krebs nanti.</li></ul>" },
+            { q: "tahap terakhir dalam respirasi seluler adalah fosfolirasi oksidatif yang terdiri dari rantai transpor elektron / RTE dan kemiosmosis, pernyataanyg bener mengenai rte...", o: ["terjadi di matriks mitokondria", "terdiri dari protein kompleks I-III", "FADH jadi FAD+, elektron masuk kompleks 1", "NADH jadi NAD+, elektron masuk kompleks 1", "CO2 merupakan akseptor elektron terakhir"], a: "NADH jadi NAD+, elektron masuk kompleks 1", exp: "<strong>Penjelasan Detail: NADH jadi NAD+, elektron masuk kompleks 1</strong><br>Kendaraan pengangkut energi utama NADH merapat melepaskan kargonya (elektron) radikal mutlak di gerbang pertama, mengembalikan bentuknya teroksidasi murni fasik menjadi NAD+ yang kosong di Kompleks Protein I.<ul><li><i>Opsi lain:</i> Kendaraan FADH2 menyetorkan kargonya murni di gerbang cadangan Kompleks II absolut. Akseptor mutlak terakhir sistem ini adalah Oksigen, BUKAN CO2.</li></ul>" },
+            { q: "Bayi prematur kemungkinan memiliki sindrom gagal nafas dimana surfaktan dalam paru tidak berkembang dengan baik. Fungsi surfaktan adalah", o: ["Mempertahankan agar larynx tetap terbuka", "Mempertahankan agar trakea tidak tersumbat", "Mempertahankan agar bronkus tidak kolaps", "Mempertahankan agar alveolus tidak kolaps", "Mempertahankan agar tidak ada hambatan ventilasi"], a: "Mempertahankan agar alveolus tidak kolaps", exp: "<strong>Penjelasan Detail: Mempertahankan agar alveolus tidak kolaps</strong><br>Absennya sabun biologi Surfaktan pada bayi belum matang (NRDS) membiarkan daya tarik air tegangan permukaan menjepit kejam lengket meruntuhkan balon Alveoli hingga kolaps hampa angin tak bernapas fasik mutlak.<ul><li><i>Opsi lain:</i> Kartilago hialin tulang rawanlah penyokong keras murni agar Trakea dan Laring tidak gepeng runtuh; bukan tugas cairan surfaktan mutlak.</li></ul>" },
+            { q: "semakin tinggi tekanan maka semakin tinggi larutannya dan gas mudah terlarut", o: ["hukum henry", "perbedaan tekanan menjadi lebih mudah kelarutannya", "hukum dalton", "a dan b", "b dan c"], a: "hukum henry", exp: "<strong>Penjelasan Detail: hukum henry</strong><br>Definisi kelarutan gas cair absolut: Kelarutan gas (Solubility) dalam cairan berbanding lurus murni mutlak dengan Tekanan Parsial dorongan memompanya dari luar. Pernyataan radikal fisika biologis ini adalah stempel paten penemuan Henry Law murni.<ul><li><i>Opsi lain:</i> Hukum Dalton berbicara faksi persentase tekanan campuran total gas absolut ruang hampa bebas, bukan mengukur gaya larut tumpah meresap cairan fasik.</li></ul>" },
+            { q: "Seseorang siswa gugup ketika akan mengikuti ujian dan bernapas dengan cepat. Apakah kondisi yang di alami tersebut?", o: ["Asidosis respiratorik", "Asidosis metabolik", "Alkalosis respiratorik", "Alkalosis metabolik", "Salah semua"], a: "Alkalosis respiratorik", exp: "<strong>Penjelasan Detail: Alkalosis respiratorik</strong><br>Napas terengah panik (Hiperventilasi) mencuci bersih stok asam Karbondioksida (CO2) buang meruap radikal. Akibat hilangnya beban asam penyangga ini secara mutlak instan, pH darah darah tak terkendali melonjak menjadi Alkalosis basa murni.<ul><li><i>Opsi lain:</i> Asidosis respiratorik mutlak radikal hanya akan terjadi jika siswa tersedak tahan napas memendam CO2 dalam dada fasik.</li></ul>" },
+            { q: "cartilago elastik terdapat pada organ apa", o: ["epiglottis", "trachea", "bronkus", "bronkiolus", "Alveolus"], a: "epiglottis", exp: "<strong>Penjelasan Detail: epiglottis</strong><br>Flap pelindung Epiglotis menuntut mobilitas engsel ekstrem (melipat tutup jalan napas lalu memegas lentur buka). Sifat lentur radikal ini hanya bisa dipasok murni oleh sisipan melimpah serat jaringan Kartilago Elastik fasik mutlak.<ul><li><i>Opsi lain:</i> Batang trakea dan bronkus dikunci oleh tameng Cartilago Hialin yang kaku solid keras pecah jika dibengkokkan tajam radikal murni.</li></ul>" },
+            { q: "Reaksi: CO2 + H2O <-> H2CO3 <-> H+ + HCO3-. Apakah yang terjadi pada pada peningkatan [H+] pada kesetimbangan tersebut?", o: ["penurunan pembentukan H2CO3", "peningkatan produksi HCO3-", "peningkatan produksi CO2", "reaksi bergeser ke kanan", "B dan D Benar"], a: "peningkatan produksi CO2", exp: "<strong>Penjelasan Detail: peningkatan produksi CO2</strong><br>Prinsip neraca Le Chatelier mutlak: Jika sistem dibanjiri asam H+ radikal dari ujung kanan (Asidosis), ekuilibrium memeras putar balik arah ke KIRI melarikan diri untuk menetralisirnya, memicu reaksi berantai mutlak menyemburkan produksi gas buang akhir CO2 fasik murni di paru.<ul><li><i>Opsi lain:</i> Menggeser ke Kanan justru akan semakin melipatgandakan keparahan banjir H+ mutlak mematikan mesin keseimbangan asam basa fasik.</li></ul>" },
+            { q: "Enzim yang berperan dalam pemecahan fruktosa 1,6-bifosfat menjadi G3P dan DHAP adalah", o: ["Heksokinase", "Glukokinase", "Isomerase", "Fosfofruktokinase", "Aldolase"], a: "Aldolase", exp: "<strong>Penjelasan Detail: Aldolase</strong><br>Fase pembelahan radikal di tengah jembatan Glikolisis memotong mutlak cincin enam karbon gula stabil (Fruktosa 1,6-bisP) menjadi dua pisau molekul berkarbon 3 terpisah (G3P dan DHAP). Kapak biokimia murni yang mengkatalis tebasan absolut ini dinamakan Aldolase fasik.<ul><li><i>Opsi lain:</i> Heksokinase menanam investasi fosfat awal mutlak, sementara Isomerase murni merombak bentuk cermin, bukan membelah dua fasik radikal.</li></ul>" },
+            { q: "Pada anaerob, untuk menurunkan pH ada mekanisme mengganti H+ dengan K+. hal ini dikatalis oleh...", o: ["Karbonik anhidrase", "Enzim dekarboksilase", "ATPase Na+/K+", "Enzim Aldolase", "Buffer Bikarbonat"], a: "ATPase Na+/K+", exp: "<strong>Penjelasan Detail: ATPase Na+/K+</strong><br>Saat darah keracunan tenggelam asidosis (H+ ekstrem), H+ berdesakan diungsikan disembunyikan radikal ke dalam kompartemen inti intraseluler. Tukarannya murni mutlak: Kalium (K+) ditendang keluar membran membanjiri darah dipandu mutlak pompa tukar ion membran (Na+/K+ ATPase murni kompensatoris).<ul><li><i>Opsi lain:</i> Anhidrase murni mengurus cairan H2O + CO2 menjadi asam bikarbonat di perairan ekstrasel plasma radikal fasik.</li></ul>" },
+            { q: "Pada reaksi kesetimbangan bikarbonat, apabila co2 naik, maka akan terjadi...", o: ["peningkatan hco3-", "pergeseran reaksi ke kiri", "penurunan h2co3", "penurunan hco3-", "semua benar"], a: "peningkatan hco3-", exp: "<strong>Penjelasan Detail: peningkatan hco3-</strong><br>Prinsip neraca alam radikal: Luapan bendungan gas CO2 (Kiri) akan mendesak brutal dorongan ekuilibrium bergeser maju beruntun merosot ke KANAN mutlak, memaksa hidrasi massal menciptakan produksi panen Ion Bikarbonat (HCO3-) yang melimpah ruah fasik murni.<ul><li><i>Opsi lain:</i> Reaksi bergerak radikal ke arah pembuangan produksi penyeimbang di seberangnya, bukan menukik mundur menciutkan HCO3 fasik mutlak.</li></ul>" },
+            { q: "Berikut pernyataan yang benar tentang ventilasi pulmoner", o: ["Pernapasan ada 2 jenis, thorakal dan abdominal", "Kontraksi diafragma akan menimbulkan ekspirasi pada pernapasan abdominal", "Relaksasi diafragma akan menimbulkan ekspirasi pada pernapasan abdominal", "Elevasi costa akan menimbulkan inspirasi pada pernapasan thorakal", "Depresi costa akan menimbulkan ekspirasi pada pernapasan thorakal"], a: "Elevasi costa akan menimbulkan inspirasi pada pernapasan thorakal", exp: "<strong>Penjelasan Detail: Elevasi costa akan menimbulkan inspirasi pada pernapasan thorakal</strong><br>Gerak elevasi (mengangkat melengkung naik) tulang iga Kosta oleh tuas m. Intercostalis Eksternal mutlak mendongkrak lebar lingkar dinding rongga toraks layaknya gagang ember, menyedot negatif pompa udara jatuh masuk (Inspirasi Thorakal fasik).<ul><li><i>Opsi lain:</i> Relaksasi diafragma memang mendorong udara buang murni (ekspirasi), namun Elevasi costa merupakan stempel absolut mekanisme penyedot pernapasan dinding dada murni.</li></ul>" },
+            { q: "Emfisema mengakibatkan inefisiensi pertukaran karena", o: ["Berkurangnya luas permukaan alveolus", "Penumpukan cairan interstisial", "Membran respirasi menebal", "Bronkus konstriksi", "Kehilangan surfaktan"], a: "Berkurangnya luas permukaan alveolus", exp: "<strong>Penjelasan Detail: Berkurangnya luas permukaan alveolus</strong><br>Badai enzim patologis Emfisema menghancurkan merobek dinding antar sekat Alveolus mutlak, menggabungkan banyak kantung kecil murni menjadi satu balon kistik raksasa hampa. Hilangnya sekat-sekat pembatas ini berarti terjun payungnya (berkurangnya) luas permukaan lahan total arena difusi Oksigen radikal.<ul><li><i>Opsi lain:</i> Penumpukan air cairan (Edema) dan Tembok menebal (Fibrosis) adalah patologi mutlak penyakit restriktif yang berbeda kasta radikal dengan destruktif Emfisema murni.</li></ul>" }
+        ];
+
+        // --- GAME LOGIC ---
+        let currentIdx = 0;
+        let score = 0;
+        let mode = '';
+        let userAnswers = [];
+
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const qText = document.getElementById('question-text');
+        const optContainer = document.getElementById('options-container');
+        const feedbackArea = document.getElementById('feedback-area');
+        const btnNext = document.getElementById('btn-next');
+        const btnPrev = document.getElementById('btn-prev');
+        const btnFinish = document.getElementById('btn-finish');
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById('total-q').innerText = questions.length;
+        });
+
+        function startQuiz(selectedMode) {
+            mode = selectedMode;
+            currentIdx = 0;
+            score = 0;
+            userAnswers = new Array(questions.length).fill(null);
+            
+            startScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            resultScreen.classList.remove('flex');
+            
+            quizScreen.classList.remove('hidden');
+            quizScreen.classList.add('flex');
+            
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = questions[currentIdx];
+            
+            document.getElementById('curr-q').innerText = currentIdx + 1;
+            
+            if(mode === 'exam') {
+                document.getElementById('score-display').innerText = `EXAM IN PROGRESS`;
+            } else {
+                document.getElementById('score-display').innerText = `SCORE: ${score}`;
+            }
+
+            qText.innerHTML = q.q;
+            feedbackArea.classList.add('hidden');
+            optContainer.innerHTML = '';
+
+            q.o.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-option';
+                btn.innerHTML = `<span>${opt}</span>`;
+                
+                if (userAnswers[currentIdx]) {
+                    btn.disabled = true;
+                    if (opt === q.a && mode === 'practice') {
+                        btn.classList.add('correct');
+                        btn.innerHTML += '<i class="ph-bold ph-check icon-indicator"></i>';
+                    } else if (opt === userAnswers[currentIdx]) {
+                        if (mode === 'practice' && opt !== q.a) {
+                            btn.classList.add('incorrect');
+                            btn.innerHTML += '<i class="ph-bold ph-x icon-indicator"></i>';
+                        } else {
+                            btn.classList.add('selected');
+                        }
+                    }
+                } else {
+                    btn.onclick = () => selectAnswer(opt, q, btn);
+                }
+                
+                optContainer.appendChild(btn);
+            });
+
+            if (userAnswers[currentIdx] && mode === 'practice') {
+                feedbackArea.innerHTML = q.exp;
+                feedbackArea.classList.remove('hidden');
+            }
+
+            btnPrev.disabled = currentIdx === 0;
+            if (currentIdx === questions.length - 1) {
+                btnNext.classList.add('hidden');
+                btnFinish.classList.remove('hidden');
+            } else {
+                btnNext.classList.remove('hidden');
+                btnFinish.classList.add('hidden');
+            }
+        }
+
+        function selectAnswer(ans, q, btnElem) {
+            userAnswers[currentIdx] = ans;
+            const allBtns = optContainer.querySelectorAll('button');
+            allBtns.forEach(b => b.disabled = true);
+
+            if (ans === q.a) {
+                score++;
+                if (mode === 'practice') {
+                    btnElem.classList.add('correct');
+                    btnElem.innerHTML += '<i class="ph-bold ph-check icon-indicator"></i>';
+                }
+            } else {
+                if (mode === 'practice') {
+                    btnElem.classList.add('incorrect');
+                    btnElem.innerHTML += '<i class="ph-bold ph-x icon-indicator"></i>';
+                    
+                    allBtns.forEach(b => {
+                        if (b.innerText === q.a) {
+                            b.classList.add('correct');
+                            b.innerHTML += '<i class="ph-bold ph-check icon-indicator"></i>';
+                        }
+                    });
+                } else {
+                    btnElem.classList.add('selected');
+                }
+            }
+
+            if(mode !== 'exam') {
+                document.getElementById('score-display').innerText = `SCORE: ${score}`;
+            }
+
+            if (mode === 'practice') {
+                feedbackArea.innerHTML = q.exp;
+                feedbackArea.classList.remove('hidden');
+            }
+        }
+
+        function nextQuestion() {
+            if (currentIdx < questions.length - 1) {
+                currentIdx++;
+                loadQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentIdx > 0) {
+                currentIdx--;
+                loadQuestion();
+            }
+        }
+
+        function finishQuiz() {
+            quizScreen.classList.add('hidden');
+            quizScreen.classList.remove('flex');
+            
+            resultScreen.classList.remove('hidden');
+            resultScreen.classList.add('flex');
+            
+            const finalScoreEl = document.getElementById('final-score');
+            let tempScore = 0;
+            const finalGrade = Math.round((score / questions.length) * 100);
+            
+            const interval = setInterval(() => {
+                if (tempScore >= finalGrade) {
+                    finalScoreEl.innerText = finalGrade;
+                    clearInterval(interval);
+                } else {
+                    tempScore++;
+                    finalScoreEl.innerText = tempScore;
+                }
+            }, 20);
+
+            document.getElementById('res-correct').innerText = score;
+            document.getElementById('res-wrong').innerText = questions.length - score;
+        }
+
+        function backToHome() {
+            quizScreen.classList.add('hidden');
+            quizScreen.classList.remove('flex');
+            resultScreen.classList.add('hidden');
+            resultScreen.classList.remove('flex');
+            
+            startScreen.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histology Quest</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Open+Sans:wght@600&display=swap');
+
+        :root {
+            --bg-sky: #87CEEB;
+            --bg-ground: #98FB98;
+            --container-bg: #F5DEB3; /* Parchment color */
+            --text-color: #3a2e24; /* Dark brown */
+            --title-color: #D2691E; /* Chocolate */
+            --btn-bg: #8B4513; /* SaddleBrown */
+            --btn-text: #FFFFFF;
+            --btn-hover: #A0522D; /* Sienna */
+            --correct-green: #2ecc71;
+            --incorrect-red: #e74c3c;
+            --font-title: 'Bangers', cursive;
+            --font-body: 'Open Sans', sans-serif;
+            --border-color: #6B4226;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            font-size: 100%;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-image: linear-gradient(to bottom, var(--bg-sky), var(--bg-ground));
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            padding: 2rem;
+            border: 8px solid var(--border-color);
+            border-radius: 12px;
+            background-color: var(--container-bg);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3), inset 0 0 15px rgba(0,0,0,0.2);
+            text-align: center;
+            position: relative;
+        }
+        
+        h1, h2 {
+            font-family: var(--font-title);
+            color: var(--title-color);
+            margin-bottom: 1.5rem;
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            line-height: 1.1;
+            letter-spacing: 2px;
+            text-shadow: 3px 3px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+        }
+        
+        h2 {
+           font-size: clamp(1.8rem, 6vw, 2.5rem);
+        }
+
+        #start-screen, #end-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+        }
+        
+        p {
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            padding: 0 1rem;
+            font-weight: 600;
+        }
+
+        #quiz-screen {
+            display: none;
+        }
+
+        #question-container {
+            margin-bottom: 1.5rem;
+        }
+
+        #question-text {
+             font-size: clamp(1rem, 3vw, 1.25rem);
+             line-height: 1.6;
+             margin-bottom: 2rem;
+             min-height: 100px;
+             font-weight: 600;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        
+        @media (min-width: 768px) {
+            .options-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .option-btn {
+            font-family: var(--font-body);
+            font-weight: 600;
+            font-size: clamp(0.85rem, 2vw, 1rem);
+            width: 100%;
+            padding: 1rem;
+            background-color: var(--btn-bg);
+            border: 2px solid var(--border-color);
+            border-bottom: 6px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--btn-text);
+            cursor: pointer;
+            transition: all 0.1s ease-in-out;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background-color: var(--btn-hover);
+        }
+        
+        .option-btn:active:not(:disabled) {
+            transform: translateY(4px);
+            border-bottom-width: 2px;
+        }
+        
+        .option-btn.selected {
+            background-color: var(--btn-hover);
+            transform: translateY(2px);
+            border-bottom-width: 4px;
+        }
+
+        .option-btn.correct {
+            background-color: var(--correct-green);
+            border-color: #27ae60;
+            color: #fff;
+        }
+
+        .option-btn.incorrect {
+            background-color: var(--incorrect-red);
+            border-color: #c0392b;
+            color: #fff;
+        }
+        
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        .btn {
+            font-family: var(--font-title);
+            letter-spacing: 1.5px;
+            background-color: var(--title-color);
+            color: var(--btn-text);
+            border: 2px solid var(--border-color);
+            border-bottom: 6px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1rem 2rem;
+            cursor: pointer;
+            font-size: clamp(1.2rem, 3vw, 1.5rem);
+            margin-top: 1.5rem;
+            text-transform: uppercase;
+            transition: all 0.1s ease-in-out;
+        }
+        
+        .btn:hover {
+            background-color: #e67e22;
+        }
+        .btn:active {
+            transform: translateY(4px);
+            border-bottom-width: 2px;
+        }
+
+        #feedback-container {
+            display: none;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 8px;
+            background-color: rgba(255,255,255,0.4);
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        #review-text {
+            font-size: clamp(0.9rem, 2vw, 1rem);
+            line-height: 1.6;
+            margin-bottom: 0;
+            padding: 0;
+        }
+
+        #progress-text {
+            margin-top: 1.5rem;
+            font-size: 1rem;
+            font-family: var(--font-title);
+            color: var(--text-color);
+        }
+
+        footer {
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            color: var(--text-color);
+            font-weight: 600;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Start Screen -->
+        <div id="start-screen">
+            <h1>Histology Quest</h1>
+            <p id="greeting-text">Seorang penantang? Hmph. Buktikan kecerdasanmu dalam Kuis Epitel ini, jika kau berani.</p>
+            <button id="start-btn" class="btn">Mulai Petualangan</button>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen">
+            <h2 id="question-number-title"></h2>
+            <div id="question-container">
+                <p id="question-text"></p>
+                <div class="options-grid" id="options-container">
+                    <!-- Options will be inserted here by JS -->
+                </div>
+            </div>
+            <button id="submit-btn" class="btn" style="display: none;">Jawab</button>
+            <div id="feedback-container">
+                <h2 id="feedback-text"></h2>
+                <p id="review-text"></p>
+            </div>
+            <button id="next-btn" class="btn" style="display: none;">Lanjut</button>
+            <p id="progress-text"></p>
+        </div>
+
+        <!-- End Screen -->
+        <div id="end-screen" style="display: none;">
+            <h1>Quest Selesai!</h1>
+            <p id="final-score"></p>
+            <p id="end-text"></p>
+            <button id="restart-btn" class="btn">Ulangi Quest</button>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>created by @beenspace</p>
+    </footer>
+
+    <script>
+        const quizData = [
+            { question: "Karakteristik epitel yang berarti ia tersusun atas sel-sel yang sangat rapat dengan sedikit matriks ekstraseluler adalah...", options: ["Polaritas", "Avascularitas", "Selularitas", "Regenerasi"], answer: "Selularitas", review: "Selularitas mengacu pada fakta bahwa sel-sel epitel tersusun sangat padat, membentuk lapisan pelindung yang efektif." },
+            { question: "Permukaan sel epitel yang menghadap ke lumen atau dunia luar disebut permukaan...", options: ["Basal", "Lateral", "Apikal", "Retikular"], answer: "Apikal", review: "Permukaan Apikal adalah sisi 'atas' atau 'luar' dari sel epitel, yang seringkali memiliki spesialisasi seperti mikrovili atau silia." },
+            { question: "Jaringan epitel mendapatkan nutrisi melalui difusi dari jaringan di bawahnya. Karakteristik ini disebut...", options: ["Inervasi", "Avascularitas", "Vaskularitas", "Polaritas"], answer: "Avascularitas", review: "Avascularitas berarti 'tanpa pembuluh darah'. Epitel bergantung pada jaringan ikat di bawahnya untuk pasokan darah dan nutrisi." },
+            { question: "Epitel selapis pipih (simple squamous) ideal untuk fungsi...", options: ["Proteksi mekanis", "Difusi dan filtrasi", "Sekresi mukus kental", "Gerakan partikel"], answer: "Difusi dan filtrasi", review: "Ketipisannya yang ekstrim membuat epitel selapis pipih sangat efisien untuk proses pertukaran zat seperti difusi gas di alveoli paru-paru." },
+            { question: "Di manakah lokasi utama ditemukannya epitel transisional?", options: ["Kulit", "Usus halus", "Saluran pernapasan", "Kandung kemih"], answer: "Kandung kemih", review: "Epitel transisional (urothelium) melapisi organ-organ sistem kemih dan memiliki kemampuan unik untuk meregang saat organ terisi." },
+            { question: "Struktur apikal yang berfungsi memperluas area permukaan untuk absorpsi dan memiliki inti filamen aktin adalah...", options: ["Silia", "Flagela", "Mikrovili", "Stereosilia"], answer: "Mikrovili", review: "Mikrovili adalah tonjolan sitoplasma kecil yang tidak bergerak, penuh dengan aktin, dan berfungsi utama untuk meningkatkan penyerapan." },
+            { question: "Struktur apikal motil (dapat bergerak) dengan inti mikrotubulus dalam susunan 9+2 adalah...", options: ["Mikrovili", "Desmosom", "Silia", "Stereosilia"], answer: "Silia", review: "Silia adalah struktur seperti rambut yang dapat bergerak aktif berkat inti mikrotubulusnya, berfungsi untuk menggerakkan cairan atau partikel." },
+            { question: "Apa perbedaan utama antara stereosilia dan mikrovili?", options: ["Stereosilia dapat bergerak, mikrovili tidak", "Stereosilia lebih pendek dari mikrovili", "Stereosilia pada dasarnya adalah mikrovili yang sangat panjang dan bercabang", "Stereosilia punya inti mikrotubulus"], answer: "Stereosilia pada dasarnya adalah mikrovili yang sangat panjang dan bercabang", review: "Meskipun namanya 'stereo-silia', secara struktural mereka lebih mirip mikrovili (berinti aktin), namun jauh lebih panjang dan sering bercabang." },
+            { question: "Epitel yang tampak berlapis-lapis namun sebenarnya semua selnya menyentuh membrana basalis disebut...", options: ["Stratified columnar", "Transitional", "Pseudostratified columnar", "Stratified cuboidal"], answer: "Pseudostratified columnar", review: "Pseudo- berarti 'palsu'. Epitel ini tampak berlapis karena nukleusnya berada di berbagai ketinggian, tetapi sebenarnya hanya satu lapis." },
+            { question: "Jenis kelenjar eksokrin yang melepaskan produknya melalui eksositosis tanpa merusak sel adalah...", options: ["Holokrin", "Apokrin", "Endokrin", "Merokrin"], answer: "Merokrin", review: "Sekresi Merokrin (atau ekrin) adalah metode yang paling umum, di mana vesikel sekretori menyatu dengan membran sel untuk melepaskan isinya." },
+            { question: "Kelenjar sebasea di kulit adalah contoh dari kelenjar dengan mode sekresi...", options: ["Apokrin", "Merokrin", "Holokrin", "Endokrin"], answer: "Holokrin", review: "Pada sekresi Holokrin, seluruh sel hancur dan menjadi bagian dari produk sekresi. Kelenjar sebasea (minyak) adalah contoh klasiknya." },
+            { question: "Bagian dari sel apikal 'terlepas' bersama dengan produk sekresi adalah ciri dari kelenjar...", options: ["Holokrin", "Merokrin", "Apokrin", "Serosa"], answer: "Apokrin", review: "Pada sekresi Apokrin, sebagian kecil sitoplasma di puncak sel ikut terlepas bersama vesikel sekresi, contoh klasiknya adalah kelenjar susu." },
+            { question: "Sel Goblet adalah contoh dari kelenjar...", options: ["Multiseluler endokrin", "Uniseluler eksokrin", "Multiseluler eksokrin", "Uniseluler endokrin"], answer: "Uniseluler eksokrin", review: "Sel Goblet adalah kelenjar uniseluler (satu sel) yang tersebar di antara sel epitel lain dan mensekresikan mukus (lendir)." },
+            { question: "Epitel skuamosa berlapis berkeratin ditemukan di...", options: ["Esofagus", "Rongga mulut", "Epidermis kulit", "Vagina"], answer: "Epidermis kulit", review: "Keratin adalah protein kuat yang membuat kulit tahan air dan tahan abrasi. Lapisan permukaan kulit terdiri dari sel-sel mati yang penuh keratin." },
+            { question: "Sambungan sel yang berfungsi menyegel ruang antar sel untuk mencegah kebocoran adalah...", options: ["Desmosom", "Gap junction", "Hemidesmosom", "Tight junction"], answer: "Tight junction", review: "Tight junction (zonula occludens) bertindak seperti 'lem' yang sangat rapat, mengikat membran sel tetangga untuk membentuk sawar yang tidak tembus." },
+            { question: "Sambungan sel yang menambatkan sel epitel ke lamina basalis di bawahnya adalah...", options: ["Desmosom", "Adherens junction", "Hemidesmosom", "Gap junction"], answer: "Hemidesmosom", review: "'Hemi' berarti setengah. Hemidesmosom mirip dengan setengah desmosom dan berfungsi untuk mengikat sel ke struktur di bawahnya, bukan ke sel lain." },
+            { question: "Kelenjar yang tidak memiliki saluran dan melepaskan produknya (hormon) langsung ke aliran darah disebut...", options: ["Eksokrin", "Apokrin", "Endokrin", "Holokrin"], answer: "Endokrin", review: "Kelenjar endokrin adalah sistem pensinyalan tubuh, melepaskan hormon ke darah untuk mempengaruhi organ target yang jauh." },
+            { question: "Jenis epitel yang melapisi bagian dalam pembuluh darah dan jantung adalah...", options: ["Mesotelium", "Endotelium", "Urotelium", "Epitelium germinal"], answer: "Endotelium", review: "Endotelium adalah nama khusus untuk epitel selapis pipih yang melapisi seluruh sistem vaskular." },
+            { question: "Jenis epitel yang melapisi rongga tubuh seperti pleura, perikardium, dan peritoneum adalah...", options: ["Endotelium", "Urotelium", "Mesotelium", "Epidermis"], answer: "Mesotelium", review: "Mesotelium adalah nama khusus untuk epitel selapis pipih yang melapisi rongga tubuh serosa dan menghasilkan cairan pelumas." },
+            { question: "Fungsi utama epitel kolumnar bersilia di trakea adalah...", options: ["Absorpsi nutrisi", "Mensekresi hormon", "Menggerakkan mukus ke arah faring", "Pertukaran gas"], answer: "Menggerakkan mukus ke arah faring", review: "Silia pada epitel pseudostratified di saluran napas bergerak serempak untuk mendorong lapisan mukus (yang menangkap debu dan kuman) keluar." },
+            { question: "Epitel kuboid berlapis (stratified cuboidal) jarang ditemukan, tetapi dapat dilihat pada...", options: ["Alveoli paru-paru", "Tubulus ginjal", "Saluran kelenjar keringat besar", "Permukaan lambung"], answer: "Saluran kelenjar keringat besar", review: "Epitel berlapis kuboid dan kolumnar tidak umum, biasanya ditemukan di saluran keluar kelenjar eksokrin yang lebih besar." },
+            { question: "Sel mioepitel memiliki karakteristik epitel dan juga kemampuan untuk...", options: ["Menyerap air", "Mensekresi enzim", "Berkontraksi", "Beregenerasi cepat"], answer: "Berkontraksi", review: "Sel mioepitel ('mio' = otot) adalah sel epitel khusus yang dapat berkontraksi untuk 'memeras' kelenjar dan membantu mengeluarkan sekresinya." },
+            { question: "Struktur di bawah epitel yang terdiri dari lamina basalis dan lamina retikularis disebut...", options: ["Lamina propria", "Membrana basalis", "Submukosa", "Adventisia"], answer: "Membrana basalis", review: "Membrana basalis adalah lapisan non-seluler tempat epitel 'duduk', terdiri dari produk sel epitel (lamina basalis) dan jaringan ikat (lamina retikularis)." },
+            { question: "Berdasarkan struktur duktusnya, kelenjar yang tidak bercabang disebut...", options: ["Kompleks (Compound)", "Tubular", "Alveolar", "Simpleks (Simple)"], answer: "Simpleks (Simple)", review: "Klasifikasi struktural kelenjar eksokrin membedakan antara duktus simpleks (tidak bercabang) dan kompleks (bercabang)." },
+            { question: "Berdasarkan bentuk bagian sekretorinya, kelenjar berbentuk kantung atau bola disebut...", options: ["Tubular", "Acinar (Alveolar)", "Simpleks", "Kompleks"], answer: "Acinar (Alveolar)", review: "Bagian sekretori bisa berbentuk tabung (tubular) atau seperti buah anggur/kantung (acinar atau alveolar)." },
+            { question: "Neuroepitel adalah sel-sel epitel yang terspesialisasi untuk fungsi...", options: ["Mekanis", "Sekresi", "Sensorik", "Absorpsi"], answer: "Sensorik", review: "Neuroepitel adalah reseptor khusus untuk indra seperti pengecapan (taste buds) dan penciuman." },
+            { question: "Manakah dari berikut ini BUKAN fungsi utama jaringan epitel?", options: ["Proteksi", "Kontraksi untuk pergerakan tubuh", "Sekresi", "Absorpsi"], answer: "Kontraksi untuk pergerakan tubuh", review: "Meskipun sel mioepitel bisa berkontraksi, fungsi kontraksi untuk pergerakan tubuh secara keseluruhan adalah domain utama dari jaringan otot." },
+            { question: "Tipe epitel yang paling umum di tubuh adalah...", options: ["Epitel Transisional", "Epitel Kolumnar Selapis", "Epitel Skuamosa Berlapis", "Epitel Kuboid Selapis"], answer: "Epitel Skuamosa Berlapis", review: "Epitel skuamosa berlapis sangat baik untuk proteksi, sehingga ditemukan di semua area yang rentan terhadap abrasi seperti kulit dan lapisan saluran cerna atas." },
+            { question: "Sel epitel yang menghasilkan sekresi berair dan kaya enzim (seperti di pankreas) disebut sel...", options: ["Mukosa", "Goblet", "Serosa", "Endokrin"], answer: "Serosa", review: "Sel serosa menghasilkan sekresi yang tipis dan encer, seringkali mengandung enzim. Sel mukosa menghasilkan sekresi yang kental dan licin (mukus)." },
+            { question: "Pewarnaan H&E pada sel mukosa biasanya tampak pucat karena...", options: ["Intinya besar", "Glikoprotein pada mukus tidak terwarnai dengan baik", "Sitoplasmanya sedikit", "Tidak memiliki aparatus Golgi"], answer: "Glikoprotein pada mukus tidak terwarnai dengan baik", review: "Musinogen (prekursor mukus) dalam vesikel tidak mengikat pewarna H&E dengan baik, sehingga sitoplasma sel mukosa sering terlihat 'kosong' atau pucat." },
+            { question: "Struktur 'serous demilune' ditemukan pada kelenjar...", options: ["Serosa murni", "Mukosa murni", "Endokrin", "Seromukosa (campuran)"], answer: "Seromukosa (campuran)", review: "Demilune ('setengah bulan') serosa adalah kelompok sel serosa yang menempel di ujung asinus mukosa pada kelenjar campuran." },
+            { question: "Epitel di ovarium dan tubulus seminiferus disebut epitel...", options: ["Germinal", "Pigmented", "Sensorik", "Transisional"], answer: "Germinal", review: "Epitel germinal adalah lapisan sel yang akan berkembang menjadi gamet (sel telur atau sperma)." },
+            { question: "Kemampuan epitel untuk terus-menerus mengganti sel yang hilang atau rusak adalah karena adanya...", options: ["Pembuluh darah yang banyak", "Serat kolagen", "Sel punca (stem cells)", "Cairan interstisial"], answer: "Sel punca (stem cells)", review: "Sel punca di lapisan basal epitel terus-menerus membelah untuk menggantikan sel-sel yang lebih tua di permukaan." },
+            { question: "Manakah yang paling tepat mendeskripsikan epitel selapis kuboid?", options: ["Satu lapis sel yang tingginya melebihi lebarnya", "Banyak lapis sel pipih", "Satu lapis sel yang tinggi dan lebarnya kira-kira sama", "Sel yang bisa berubah bentuk dari kuboid ke pipih"], answer: "Satu lapis sel yang tinggi dan lebarnya kira-kira sama", review: "Kuboid berarti 'seperti kubus', di mana sel-selnya memiliki dimensi tinggi dan lebar yang serupa, dengan inti bulat di tengah." },
+            { question: "Organ yang dilapisi oleh epitel selapis kolumnar bersilia adalah...", options: ["Kandung empedu", "Rektum", "Tuba falopi (oviduct)", "Lambung"], answer: "Tuba falopi (oviduct)", review: "Silia di tuba falopi membantu menggerakkan sel telur dari ovarium menuju rahim." },
+            { question: "Sambungan yang memungkinkan komunikasi sitoplasma langsung antar sel adalah...", options: ["Tight junction", "Desmosom", "Gap junction", "Hemidesmosom"], answer: "Gap junction", review: "Gap junction membentuk kanal atau pori-pori kecil yang menghubungkan sitoplasma sel-sel tetangga, memungkinkan lewatnya ion dan molekul kecil." },
+            { question: "Kelenjar parotis (kelenjar ludah) adalah contoh kelenjar eksokrin tipe...", options: ["Serosa murni", "Mukosa murni", "Campuran (seromukosa)", "Endokrin"], answer: "Serosa murni", review: "Kelenjar parotis terutama menghasilkan sekresi serosa (encer dan kaya amilase), berbeda dengan kelenjar sublingual yang dominan mukosa." },
+            { question: "Kelenjar eksokrin diklasifikasikan berdasarkan...", options: ["Bentuk sel dan jumlah lapisan", "Struktur duktus dan bentuk unit sekretori", "Keberadaan silia dan mikrovili", "Metode pelepasan hormonnya"], answer: "Struktur duktus dan bentuk unit sekretori", review: "Klasifikasi struktural utama kelenjar eksokrin adalah apakah duktusnya bercabang (compound) atau tidak (simple), dan bentuk unit sekretorinya (tubular/acinar)." },
+            { question: "Kutikula pada lensa mata dan enamel gigi adalah produk sekresi dari sel...", options: ["Otot", "Saraf", "Epitel", "Ikat"], answer: "Epitel", review: "Ini adalah contoh ekstrem dari kemampuan sekresi sel epitel, menghasilkan beberapa struktur terkeras di tubuh." },
+            { question: "Semua jaringan epitel dipisahkan dari jaringan ikat oleh...", options: ["Lapisan otot polos", "Ruang kosong", "Membrana basalis", "Lapisan lemak"], answer: "Membrana basalis", review: "Membrana basalis adalah lapisan perantara non-seluler yang penting untuk perlekatan, polaritas, dan filtrasi epitel." },
+            { question: "Fungsi utama epitel kuboid selapis di tubulus ginjal adalah...", options: ["Proteksi", "Filtrasi", "Absorpsi dan sekresi", "Kontraksi"], answer: "Absorpsi dan sekresi", review: "Sel kuboid di ginjal sangat aktif dalam memompa ion dan molekul, baik menyerap kembali zat dari filtrat maupun mensekresikan produk sisa ke dalamnya." },
+            { question: "Jaringan epitel yang tidak memiliki keratin dan melapisi rongga mulut disebut...", options: ["Epitel skuamosa berlapis berkeratin", "Epitel skuamosa berlapis non-keratin", "Epitel transisional", "Epitel kolumnar selapis"], answer: "Epitel skuamosa berlapis non-keratin", review: "Area basah yang mengalami gesekan, seperti mulut dan esofagus, dilindungi oleh epitel skuamosa berlapis, tetapi tidak memerlukan keratin karena tidak terpapar udara kering." },
+            { question: "Kelenjar submandibularis adalah contoh kelenjar...", options: ["Serosa murni", "Mukosa murni", "Campuran seromukosa", "Tubular simpleks"], answer: "Campuran seromukosa", review: "Kelenjar ini menghasilkan campuran air liur serosa dan mukosa, dengan unit sekretori keduanya." },
+            { question: "Manakah yang BUKAN merupakan domain polaritas sel epitel?", options: ["Apikal", "Nuklear", "Basal", "Lateral"], answer: "Nuklear", review: "Polaritas sel epitel mengacu pada perbedaan antara permukaan apikal (atas), basal (bawah), dan lateral (samping), bukan pada nukleus itu sendiri." },
+            { question: "Epitel yang melapisi lambung memiliki fungsi utama...", options: ["Absorpsi air", "Sekresi asam dan mukus pelindung", "Pertukaran gas", "Mengerakkan makanan dengan silia"], answer: "Sekresi asam dan mukus pelindung", review: "Epitel lambung terspesialisasi untuk mensekresikan asam lambung yang kuat untuk pencernaan, serta lapisan mukus yang tebal untuk melindungi dirinya sendiri." },
+            { question: "Organ yang tersusun hampir seluruhnya dari jaringan epitel adalah...", options: ["Otot bisep", "Tulang paha", "Hati (liver)", "Otak"], answer: "Hati (liver)", review: "Hati adalah kelenjar terbesar di tubuh, dan sebagian besar massanya terdiri dari sel-sel epitel (hepatosit) yang tersusun dalam lobulus." },
+            { question: "Epitel skuamosa berlapis memberikan proteksi terbaik terhadap...", options: ["Stres kimia", "Stres termal", "Stres mekanis (abrasi)", "Kehilangan air"], answer: "Stres mekanis (abrasi)", review: "Banyaknya lapisan sel pada epitel ini memungkinkan lapisan permukaan untuk mengelupas akibat gesekan tanpa merusak jaringan di bawahnya." },
+            { question: "Inti sel pada epitel kolumnar selapis biasanya berbentuk...", options: ["Pipih dan horizontal", "Bulat di tengah", "Oval dan terletak di basal", "Tidak beraturan"], answer: "Oval dan terletak di basal", review: "Bentuk sel yang tinggi (kolumnar) membuat intinya terdesak ke arah basal (dasar) dan berbentuk oval memanjang." },
+            { question: "Apa fungsi utama dari 'terminal web' yang terkait dengan mikrovili?", options: ["Menghasilkan energi untuk silia", "Menjangkarkan inti filamen aktin mikrovili", "Mensekresi mukus", "Menghubungkan sel ke membrana basalis"], answer: "Menjangkarkan inti filamen aktin mikrovili", review: "Terminal web adalah jalinan filamen di bawah permukaan apikal yang memberikan stabilitas dan jangkar bagi filamen aktin di dalam setiap mikrovili." },
+            { question: "Manakah dari organ berikut yang dilapisi epitel skuamosa selapis?", options: ["Usus besar", "Trakea", "Alveoli paru-paru", "Ureter"], answer: "Alveoli paru-paru", review: "Lapisan tunggal sel yang sangat tipis di alveoli memungkinkan difusi oksigen dan karbon dioksida yang cepat dan efisien antara udara dan darah." }
+        ];
+
+        // --- DOM Elements ---
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const endScreen = document.getElementById('end-screen');
+        const startBtn = document.getElementById('start-btn');
+        const submitBtn = document.getElementById('submit-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const feedbackContainer = document.getElementById('feedback-container');
+        const feedbackText = document.getElementById('feedback-text');
+        const reviewText = document.getElementById('review-text');
+        const progressText = document.getElementById('progress-text');
+        const finalScoreText = document.getElementById('final-score');
+        const questionNumberTitle = document.getElementById('question-number-title');
+
+
+        // --- State Variables ---
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let selectedOption = null;
+        let shuffledQuestions = [];
+
+        // --- Event Listeners ---
+        startBtn.addEventListener('click', startQuiz);
+        submitBtn.addEventListener('click', submitAnswer);
+        nextBtn.addEventListener('click', nextQuestion);
+        restartBtn.addEventListener('click', startQuiz);
+        
+        // --- Functions ---
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            shuffledQuestions = [...quizData].sort(() => Math.random() - 0.5);
+            
+            startScreen.style.display = 'none';
+            endScreen.style.display = 'none';
+            quizScreen.style.display = 'block';
+
+            feedbackContainer.style.display = 'none';
+            nextBtn.style.display = 'none';
+            submitBtn.style.display = 'block';
+
+            showQuestion();
+        }
+
+        function showQuestion() {
+            resetState();
+            const question = shuffledQuestions[currentQuestionIndex];
+            questionNumberTitle.textContent = `Tantangan ${currentQuestionIndex + 1}`;
+            questionText.textContent = question.question;
+            
+            question.options.forEach(optionText => {
+                const button = document.createElement('button');
+                button.textContent = optionText;
+                button.classList.add('option-btn');
+                button.addEventListener('click', () => selectOption(button));
+                optionsContainer.appendChild(button);
+            });
+            
+            progressText.textContent = `Soal ${currentQuestionIndex + 1} dari ${quizData.length}`;
+        }
+        
+        function resetState() {
+            while (optionsContainer.firstChild) {
+                optionsContainer.removeChild(optionsContainer.firstChild);
+            }
+            selectedOption = null;
+            submitBtn.style.display = 'none';
+            nextBtn.style.display = 'none';
+            feedbackContainer.style.display = 'none';
+        }
+
+        function selectOption(button) {
+            Array.from(optionsContainer.children).forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            button.classList.add('selected');
+            selectedOption = button;
+            submitBtn.style.display = 'block';
+        }
+
+        function submitAnswer() {
+            const question = shuffledQuestions[currentQuestionIndex];
+            const isCorrect = selectedOption.textContent === question.answer;
+
+            Array.from(optionsContainer.children).forEach(button => {
+                button.disabled = true;
+                if (button.textContent === question.answer) {
+                    button.classList.add('correct');
+                }
+            });
+
+            if (isCorrect) {
+                score++;
+                selectedOption.classList.add('correct');
+                feedbackText.textContent = "Tepat Sekali!";
+            } else {
+                selectedOption.classList.add('incorrect');
+                feedbackText.textContent = "Meleset!";
+            }
+            
+            reviewText.textContent = question.review;
+            feedbackContainer.style.display = 'block';
+            submitBtn.style.display = 'none';
+            nextBtn.style.display = 'block';
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizData.length) {
+                showQuestion();
+            } else {
+                showEndScreen();
+            }
+        }
+        
+        function showEndScreen() {
+            quizScreen.style.display = 'none';
+            endScreen.style.display = 'flex';
+            finalScoreText.textContent = `Skor Akhir: ${score} dari ${quizData.length}`;
+            
+            let endMessage = "";
+            const percentage = (score / quizData.length) * 100;
+            if (percentage === 100) {
+                endMessage = "Sempurna! Pengetahuanmu setajam pedang legendaris, Tuan Robin. Para naga pun akan hormat padamu.";
+            } else if (percentage >= 75) {
+                endMessage = "Hasil yang hebat! Kau telah membuktikan diri sebagai pahlawan pengetahuan sejati.";
+            } else if (percentage >= 50) {
+                endMessage = "Tidak buruk. Latihanmu belum sia-sia, tapi jalanmu masih panjang, petualang.";
+            } else {
+                endMessage = "Hmmph. Bahkan goblin pun bisa lebih baik. Asah lagi pedang... maksudku, otakmu itu!";
+            }
+            document.getElementById('end-text').textContent = endMessage;
+        }
+
+        // --- Initial Load ---
+        startScreen.style.display = 'flex';
+        quizScreen.style.display = 'none';
+        endScreen.style.display = 'none';
+
+    </script>
+</body>
+</html>
+

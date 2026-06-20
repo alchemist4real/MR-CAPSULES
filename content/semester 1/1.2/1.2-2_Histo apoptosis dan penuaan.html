@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulasi CBT: Apoptosis & Penuaan Sel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+        }
+        .title-font {
+            font-family: 'Cormorant Garamond', serif;
+        }
+        .bg-olive-dark { background-color: #2d382c; }
+        .bg-olive-deep { background-color: #1e251d; }
+        .text-gold { color: #d4af37; }
+        .border-gold { border-color: #d4af37; }
+        .btn {
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .btn-primary {
+            background-color: #556B2F; /* Olive Drab */
+            color: #f5f5dc; /* Beige */
+        }
+        .btn-primary:hover {
+            background-color: #6B8E23; /* Olive Drab light */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+        }
+        .btn-secondary {
+            background-color: transparent;
+            border: 1px solid #d4af37;
+            color: #d4af37;
+        }
+        .btn-secondary:hover {
+            background-color: rgba(212, 175, 55, 0.1);
+            transform: translateY(-2px);
+        }
+        .nav-item {
+            border: 1px solid #4a4a4a;
+            transition: all 0.2s ease;
+        }
+        .nav-item:hover {
+            border-color: #d4af37;
+            background-color: #3a4639;
+        }
+        .nav-item.active {
+            background-color: #556B2F;
+            border-color: #d4af37;
+            color: white;
+        }
+        .nav-item.answered {
+            background-color: #3e4a3d;
+        }
+        .nav-item.flagged {
+            position: relative;
+        }
+        .nav-item.flagged::after {
+            content: '';
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 8px;
+            height: 8px;
+            background-color: #d4af37;
+            border-radius: 50%;
+        }
+        .option.selected {
+            background-color: rgba(212, 175, 55, 0.2);
+            border-color: #d4af37;
+        }
+        .option.correct {
+            background-color: rgba(34, 197, 94, 0.2);
+            border-color: #22c55e;
+        }
+        .option.incorrect {
+            background-color: rgba(239, 68, 68, 0.2);
+            border-color: #ef4444;
+        }
+        /* Custom Checkbox */
+        .custom-checkbox input { display: none; }
+        .custom-checkbox span {
+            height: 20px;
+            width: 20px;
+            border: 1px solid #d4af37;
+            display: inline-block;
+            position: relative;
+            background-color: transparent;
+            border-radius: 3px;
+        }
+        .custom-checkbox input:checked + span::after {
+            content: '✔';
+            font-size: 14px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #d4af37;
+        }
+        /* Flashcard Styles */
+        .card-container {
+            perspective: 1000px;
+        }
+        .card {
+            width: 100%;
+            height: 300px;
+            position: relative;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .card.is-flipped {
+            transform: rotateY(180deg);
+        }
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border-radius: 0.5rem;
+            border: 1px solid #d4af37;
+            background-color: #3e4a3d;
+        }
+        .card-back {
+            transform: rotateY(180deg);
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div id="main-container" class="max-w-7xl mx-auto">
+        <!-- Start Screen -->
+        <div id="start-screen" class="bg-olive-dark rounded-lg p-8 text-center shadow-2xl">
+            <h1 class="text-5xl title-font text-gold mb-4">Ujian Pengetahuan Seluler</h1>
+            <p class="text-lg mb-8 max-w-3xl mx-auto">Selamat datang di sesi eksklusif ini. Uji pemahaman Anda mengenai Apoptosis dan Penuaan Sel. Pilih mode Anda untuk memulai.</p>
+            <div class="flex flex-col md:flex-row justify-center gap-4">
+                <button id="start-flashcard-btn" class="btn btn-primary text-lg font-bold py-3 px-8 rounded-lg">Mode Flashcard</button>
+                <button id="start-latihan-btn" class="btn btn-primary text-lg font-bold py-3 px-8 rounded-lg">Mode Latihan</button>
+                <button id="start-ujian-btn" class="btn btn-secondary text-lg font-bold py-3 px-8 rounded-lg">Mode Ujian</button>
+            </div>
+            <p class="mt-8 text-sm text-gray-400">
+                <b>Mode Flashcard:</b> Hafalkan istilah-istilah kunci.<br>
+                <b>Mode Latihan:</b> Dapatkan umpan balik instan setelah menjawab setiap soal.<br>
+                <b>Mode Ujian:</b> Jawab semua soal, hasil akan ditampilkan di akhir sesi.
+            </p>
+        </div>
+
+        <!-- CBT Interface -->
+        <div id="cbt-screen" class="hidden">
+            <header class="bg-olive-dark p-4 rounded-t-lg flex justify-between items-center shadow-lg">
+                <h2 class="text-2xl title-font text-gold">Apoptosis & Penuaan Sel</h2>
+                <div class="bg-olive-deep px-4 py-2 rounded text-xl font-bold border border-gray-600">
+                    <span id="timer">60:00</span>
+                </div>
+            </header>
+            <div class="flex flex-col md:flex-row gap-4 mt-4">
+                <!-- Question Panel -->
+                <div id="question-panel" class="bg-olive-dark p-6 rounded-b-lg md:rounded-bl-lg md:rounded-br-none flex-grow shadow-lg">
+                    <p class="mb-2 text-sm text-gray-400">Pertanyaan <span id="question-number">1</span> dari 15</p>
+                    <div id="question-text" class="text-lg leading-relaxed mb-6"></div>
+                    <div id="options-container" class="space-y-3"></div>
+                    <div id="feedback-container" class="mt-4 p-3 rounded-md text-sm hidden"></div>
+                </div>
+
+                <!-- Navigation Panel -->
+                <div class="bg-olive-dark p-4 rounded-b-lg md:rounded-r-lg md:rounded-bl-none w-full md:w-80 shadow-lg">
+                    <h3 class="font-bold mb-4 text-center">Navigasi Soal</h3>
+                    <div id="nav-grid" class="grid grid-cols-5 gap-2 mb-4"></div>
+                    <div class="flex items-center justify-start space-x-4 mb-4">
+                         <label class="custom-checkbox flex items-center cursor-pointer">
+                            <input type="checkbox" id="flag-checkbox">
+                            <span class="mr-2"></span>
+                            Ragu-ragu
+                        </label>
+                    </div>
+                    <div class="flex justify-between mb-4">
+                        <button id="prev-btn" class="btn btn-secondary px-4 py-2 rounded-md">&lt; Sebelumnya</button>
+                        <button id="next-btn" class="btn btn-secondary px-4 py-2 rounded-md">Selanjutnya &gt;</button>
+                    </div>
+                    <button id="submit-btn" class="btn btn-primary w-full py-3 rounded-md font-bold">Kumpulkan Jawaban</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Result Screen -->
+        <div id="result-screen" class="hidden bg-olive-dark rounded-lg p-8 text-center shadow-2xl">
+             <h1 class="text-5xl title-font text-gold mb-4">Analisis Sesi Selesai</h1>
+             <p class="text-2xl mb-2">Skor Akhir Anda:</p>
+             <p id="final-score" class="text-7xl font-bold mb-6"></p>
+             <div class="text-lg mb-8">
+                 <span id="correct-count" class="text-green-400"></span> Jawaban Benar &nbsp;&nbsp;&nbsp;
+                 <span id="incorrect-count" class="text-red-400"></span> Jawaban Salah
+             </div>
+             <button id="review-btn" class="btn btn-primary text-lg font-bold py-3 px-8 rounded-lg mb-4">Tinjau Jawaban</button>
+             <button id="restart-btn" class="btn btn-secondary text-lg font-bold py-3 px-8 rounded-lg">Ulangi Sesi</button>
+        </div>
+        
+         <!-- Review Screen -->
+        <div id="review-screen" class="hidden">
+             <button id="back-to-result-btn" class="btn btn-primary text-lg font-bold py-3 px-8 rounded-lg mt-8 mx-auto block">Kembali ke Hasil</button>
+        </div>
+        
+        <!-- Flashcard Screen -->
+        <div id="flashcard-screen" class="hidden bg-olive-dark rounded-lg p-8 shadow-2xl">
+            <h1 class="text-4xl title-font text-gold mb-6 text-center">Mode Flashcard</h1>
+            <div id="flashcard-container" class="card-container cursor-pointer mb-6">
+                <div id="flashcard" class="card">
+                    <div class="card-face card-front text-3xl font-bold"></div>
+                    <div class="card-face card-back"></div>
+                </div>
+            </div>
+            <div class="flex justify-between items-center">
+                <button id="prev-card-btn" class="btn btn-secondary px-6 py-2 rounded-md">&lt; Sebelumnya</button>
+                <p id="card-counter" class="font-semibold"></p>
+                <button id="next-card-btn" class="btn btn-secondary px-6 py-2 rounded-md">Selanjutnya &gt;</button>
+            </div>
+             <button id="back-to-menu-btn" class="btn btn-primary w-full py-3 rounded-md font-bold mt-8">Kembali ke Menu Utama</button>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            { question: "Manakah proses kematian sel yang ditandai dengan pecahnya sel dan memicu respons peradangan hebat?", options: ["Apoptosis", "Nekrosis", "Senescence", "Autofagi", "Mitosis"], answer: "Nekrosis", explanation: "Nekrosis adalah kematian sel akibat cedera akut yang menyebabkan sel pecah dan isinya tumpah, memicu peradangan. Ini kontras dengan apoptosis yang teratur." },
+            { question: "Keluarga enzim protease yang menjadi eksekutor utama dalam kaskade apoptosis disebut...", options: ["Kinase", "Bcl-2", "p53", "Caspase", "Telomerase"], answer: "Caspase", explanation: "Inti dari mesin apoptosis adalah keluarga enzim protease yang disebut Caspase, yang diaktifkan melalui sebuah kaskade sinyal." },
+            { question: "Jalur intrinsik apoptosis dipicu oleh sinyal dari dalam sel dan sangat bergantung pada pelepasan molekul ini dari mitokondria:", options: ["Sitokrom c", "FasL", "TNF-alpha", "p21", "pRb"], answer: "Sitokrom c", explanation: "Pelepasan Sitokrom c dari mitokondria ke sitoplasma adalah titik kritis dalam jalur intrinsik yang memicu pembentukan apoptosom." },
+            { question: "Kompleks protein besar yang terbentuk setelah pelepasan Sitokrom c dan mengaktifkan caspase-9 adalah...", options: ["DISC", "SASP", "Apoptosom", "Sentrosom", "Lisosom"], answer: "Apoptosom", explanation: "Sitokrom c berikatan dengan Apaf-1 dan procaspase-9 untuk membentuk apoptosom, yang kemudian mengaktifkan kaskade caspase." },
+            { question: "Jalur ekstrinsik apoptosis diinisiasi oleh ikatan ligan kematian (seperti FasL) dengan...", options: ["Mitokondria", "Reseptor Kematian (Death Receptor)", "Nukleus", "Protein Bcl-2", "Telomer"], answer: "Reseptor Kematian (Death Receptor)", explanation: "Jalur ekstrinsik dimulai ketika sinyal dari luar sel (ligan kematian) berikatan dengan reseptor kematian di permukaan sel target." },
+            { question: "Apa nama kompleks pensinyalan yang terbentuk di bawah reseptor kematian pada jalur ekstrinsik?", options: ["Apoptosom", "Inflammasome", "DISC (Death-Inducing Signaling Complex)", "SASP (Senescence-Associated Secretory Phenotype)", "MOMP"], answer: "DISC (Death-Inducing Signaling Complex)", explanation: "Ikatan ligan-reseptor merekrut protein adaptor untuk membentuk DISC, yang kemudian mengaktifkan caspase-8." },
+            { question: "Kondisi di mana sel berhenti membelah secara permanen namun tetap aktif secara metabolik disebut...", options: ["Apoptosis", "Nekrosis", "Penuaan Sel (Senescence)", "Diferensiasi", "Hiperplasia"], answer: "Penuaan Sel (Senescence)", explanation: "Senescence adalah keadaan 'pensiun' atau 'zombie' di mana sel tetap hidup tetapi tidak lagi dapat bereplikasi." },
+            { question: "Pemendekan struktur di ujung kromosom yang terjadi setiap kali sel membelah dan dapat memicu senescence disebut...", options: ["Sentromer", "Kromatin", "Histon", "Telomer", "Nukleolus"], answer: "Telomer", explanation: "Telomer adalah tutup pelindung di ujung kromosom. Pemendekannya hingga batas kritis (batas Haylick) memicu penuaan replikatif." },
+            { question: "Dua jalur penekan tumor utama yang menginduksi senescence adalah...", options: ["Jalur Bcl-2 dan Jalur Caspase", "Jalur p53/p21 dan Jalur p16/pRb", "Jalur Intrinsik dan Jalur Ekstrinsik", "Jalur MAPK dan Jalur mTOR", "Jalur G-protein dan Jalur tirosin kinase"], answer: "Jalur p53/p21 dan Jalur p16/pRb", explanation: "Kedua jalur ini adalah mekanisme utama yang menghentikan siklus sel secara permanen sebagai respons terhadap stres." },
+            { question: "Campuran molekul pro-inflamasi yang disekresikan oleh sel senesen dikenal sebagai...", options: ["Sitokin", "Kemokin", "Protease", "SASP", "Badan Apoptosis"], answer: "SASP", explanation: "SASP (Senescence-Associated Secretory Phenotype) adalah campuran sitokin, kemokin, dan protease yang dilepaskan oleh sel senesen dan dapat menyebabkan peradangan kronis." },
+            { question: "Fenomena peradangan kronis tingkat rendah yang terkait dengan penuaan dan didorong oleh akumulasi sel senesen disebut...", options: ["Apoptosis", "Autofagi", "Karsinogenesis", "Inflammaging", "Metastasis"], answer: "Inflammaging", explanation: "Inflammaging adalah peradangan kronis yang didorong oleh SASP dari sel senesen yang terakumulasi, berkontribusi pada banyak penyakit terkait usia." },
+            { question: "Manakah tujuan utama dari apoptosis dalam perkembangan embrio?", options: ["Menambah jumlah sel", "Menghilangkan jaringan yang tidak diinginkan", "Mempercepat pembelahan sel", "Membentuk pembuluh darah", "Mencegah penuaan"], answer: "Menghilangkan jaringan yang tidak diinginkan", explanation: "Contoh klasik apoptosis dalam embriogenesis adalah menghilangkan selaput di antara jari-jari tangan dan kaki janin." },
+            { question: "Protein pro-apoptosis seperti Bax dan Bak berfungsi untuk...", options: ["Menghambat pelepasan Sitokrom c", "Membentuk pori-pori di membran mitokondria", "Mengikat ligan kematian", "Menghentikan siklus sel", "Memperpanjang telomer"], answer: "Membentuk pori-pori di membran mitokondria", explanation: "Bax dan Bak yang aktif menyebabkan Permeabilisasi Membran Luar Mitokondria (MOMP), yang memungkinkan Sitokrom c keluar." },
+            { question: "Apa ciri khas sel senesen yang membuatnya sulit dihilangkan dari tubuh seiring waktu?", options: ["Mereka membelah terlalu cepat", "Mereka sangat resisten terhadap apoptosis", "Mereka berukuran sangat kecil", "Mereka tidak memiliki metabolisme", "Mereka tidak dapat dikenali sistem imun"], answer: "Mereka sangat resisten terhadap apoptosis", explanation: "Salah satu karakteristik sel senesen adalah resistensi terhadap sinyal bunuh diri terprogram, yang menyebabkan akumulasi mereka di jaringan." },
+            { question: "Obat yang dirancang secara spesifik untuk membunuh sel senesen yang terakumulasi disebut...", options: ["Antibiotik", "Antiviral", "Kemoterapi", "Senolitik", "Analgesik"], answer: "Senolitik", explanation: "Senolitik adalah kelas terapi baru yang bertujuan untuk membersihkan sel-sel senesen untuk mengurangi peradangan dan meningkatkan kesehatan di usia tua." }
+        ];
+
+        const flashcardData = [
+            { term: "Apoptosis", definition: "Proses 'bunuh diri' sel terprogram yang teratur dan bersih, tanpa menyebabkan peradangan." },
+            { term: "Nekrosis", definition: "Kematian sel akibat cedera akut, ditandai dengan pecahnya sel yang memicu respons peradangan." },
+            { term: "Senescence", definition: "Kondisi di mana sel berhenti membelah secara permanen tetapi tetap hidup dan aktif secara metabolik (sel 'zombie')." },
+            { term: "Caspase", definition: "Keluarga enzim protease yang bertindak sebagai eksekutor utama dalam proses apoptosis." },
+            { term: "Sitokrom c", definition: "Molekul yang dilepaskan oleh mitokondria sebagai respons terhadap stres seluler, berfungsi sebagai sinyal kematian untuk memulai jalur intrinsik apoptosis." },
+            { term: "Apoptosom", definition: "Kompleks protein besar yang terbentuk di sitoplasma untuk mengaktifkan caspase inisiator (caspase-9) pada jalur intrinsik." },
+            { term: "Reseptor Kematian", definition: "Protein di permukaan sel yang menerima sinyal kematian dari luar sel untuk memulai jalur ekstrinsik apoptosis." },
+            { term: "DISC", definition: "Kompleks pensinyalan (Death-Inducing Signaling Complex) yang terbentuk di bawah reseptor kematian untuk mengaktifkan caspase-8." },
+            { term: "Telomer", definition: "Struktur pelindung di ujung kromosom yang memendek setiap kali sel membelah, pemendekannya dapat memicu senescence." },
+            { term: "Jalur p53/p21 & p16/pRb", definition: "Dua jalur penekan tumor utama yang berfungsi sebagai 'rem' untuk menghentikan siklus sel secara permanen dan menginduksi senescence." },
+            { term: "SASP", definition: "Campuran molekul pro-inflamasi (Senescence-Associated Secretory Phenotype) yang dilepaskan oleh sel senesen." },
+            { term: "Inflammaging", definition: "Peradangan kronis tingkat rendah yang terkait dengan proses penuaan, sebagian besar didorong oleh akumulasi sel senesen dan SASP." },
+            { term: "Bax dan Bak", definition: "Protein pro-apoptosis yang membentuk pori-pori di membran mitokondria, memungkinkan pelepasan Sitokrom c." },
+            { term: "Senolitik", definition: "Kelas obat baru yang dirancang untuk secara selektif menghancurkan sel senesen yang terakumulasi di tubuh." },
+            { term: "Autofagi", definition: "Proses 'memakan diri sendiri' di mana sel mendaur ulang komponennya yang rusak. Berbeda dari apoptosis." }
+        ];
+
+        let currentQuestionIndex = 0;
+        let userAnswers = new Array(quizData.length).fill(null);
+        let flaggedQuestions = new Array(quizData.length).fill(false);
+        let testMode = 'ujian'; 
+        let timerInterval;
+        let currentCardIndex = 0;
+
+        // Element Selectors
+        const startScreen = document.getElementById('start-screen');
+        const cbtScreen = document.getElementById('cbt-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const reviewScreen = document.getElementById('review-screen');
+        const flashcardScreen = document.getElementById('flashcard-screen');
+        
+        // CBT Functions
+        function initTest(mode) {
+            testMode = mode;
+            currentQuestionIndex = 0;
+            userAnswers.fill(null);
+            flaggedQuestions.fill(false);
+            
+            startScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            reviewScreen.classList.add('hidden');
+            flashcardScreen.classList.add('hidden');
+            cbtScreen.classList.remove('hidden');
+
+            renderNavGrid();
+            renderQuestion();
+            startTimer(59, 59);
+        }
+
+        function renderQuestion() {
+            const qData = quizData[currentQuestionIndex];
+            document.getElementById('question-number').textContent = currentQuestionIndex + 1;
+            document.getElementById('question-text').textContent = qData.question;
+            
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            qData.options.forEach(optionText => {
+                const optionEl = document.createElement('div');
+                optionEl.textContent = optionText;
+                optionEl.classList.add('option', 'p-3', 'border', 'border-gray-600', 'rounded-md', 'cursor-pointer', 'hover:border-gold');
+                optionEl.addEventListener('click', () => selectAnswer(optionText));
+                if (userAnswers[currentQuestionIndex] === optionText) {
+                    optionEl.classList.add('selected');
+                }
+                optionsContainer.appendChild(optionEl);
+            });
+
+            document.getElementById('flag-checkbox').checked = flaggedQuestions[currentQuestionIndex];
+            updateNavButtons();
+            updateActiveNavItem();
+            
+            document.getElementById('feedback-container').classList.add('hidden');
+            if (testMode === 'latihan' && userAnswers[currentQuestionIndex] !== null) {
+                showImmediateFeedback();
+            }
+        }
+
+        function selectAnswer(selectedOption) {
+            if(testMode === 'latihan' && userAnswers[currentQuestionIndex] !== null) return;
+            userAnswers[currentQuestionIndex] = selectedOption;
+            updateNavGridItem(currentQuestionIndex);
+            if(testMode === 'latihan') {
+                showImmediateFeedback();
+            } else {
+                 renderQuestion();
+            }
+        }
+        
+        function showImmediateFeedback() {
+            const qData = quizData[currentQuestionIndex];
+            const userAnswer = userAnswers[currentQuestionIndex];
+            const isCorrect = userAnswer === qData.answer;
+            const feedbackContainer = document.getElementById('feedback-container');
+            
+            feedbackContainer.innerHTML = `<b>${isCorrect ? 'Benar!' : 'Salah.'}</b> ${qData.explanation}`;
+            feedbackContainer.classList.remove('hidden', 'bg-green-900', 'bg-red-900');
+            feedbackContainer.classList.add(isCorrect ? 'bg-green-900' : 'bg-red-900');
+
+            document.querySelectorAll('.option').forEach(optEl => {
+                optEl.style.pointerEvents = 'none'; // Disable further clicks
+                if (optEl.textContent === qData.answer) {
+                    optEl.classList.add('correct');
+                } else if (optEl.textContent === userAnswer) {
+                    optEl.classList.add('incorrect');
+                }
+            });
+        }
+
+        function renderNavGrid() {
+            const navGrid = document.getElementById('nav-grid');
+            navGrid.innerHTML = '';
+            for (let i = 0; i < quizData.length; i++) {
+                const item = document.createElement('div');
+                item.textContent = i + 1;
+                item.classList.add('nav-item', 'w-12', 'h-12', 'flex', 'items-center', 'justify-center', 'cursor-pointer', 'rounded-md');
+                item.addEventListener('click', () => goToQuestion(i));
+                navGrid.appendChild(item);
+            }
+        }
+        
+        function updateNavGridItem(index) {
+            const navItem = document.getElementById('nav-grid').children[index];
+            navItem.classList.remove('answered', 'flagged');
+            if (userAnswers[index] !== null) {
+                navItem.classList.add('answered');
+            }
+            if (flaggedQuestions[index]) {
+                navItem.classList.add('flagged');
+            }
+        }
+
+        function updateActiveNavItem() {
+            document.querySelectorAll('.nav-item').forEach((item, index) => {
+                item.classList.toggle('active', index === currentQuestionIndex);
+            });
+        }
+        
+        function updateNavButtons() {
+            document.getElementById('prev-btn').disabled = currentQuestionIndex === 0;
+            document.getElementById('next-btn').disabled = currentQuestionIndex === quizData.length - 1;
+        }
+
+        function goToQuestion(index) {
+            currentQuestionIndex = index;
+            renderQuestion();
+        }
+
+        function startTimer(minutes, seconds) {
+            const timerEl = document.getElementById('timer');
+            let totalSeconds = minutes * 60 + seconds;
+            timerInterval = setInterval(() => {
+                if (totalSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    submitTest();
+                }
+                const min = Math.floor(totalSeconds / 60);
+                const sec = totalSeconds % 60;
+                timerEl.textContent = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+                totalSeconds--;
+            }, 1000);
+        }
+        
+        function submitTest() {
+            clearInterval(timerInterval);
+            let score = 0;
+            userAnswers.forEach((answer, index) => {
+                if (answer === quizData[index].answer) {
+                    score++;
+                }
+            });
+            
+            const totalScore = Math.round((score / quizData.length) * 100);
+            document.getElementById('final-score').textContent = totalScore;
+            document.getElementById('correct-count').textContent = score;
+            document.getElementById('incorrect-count').textContent = quizData.length - score;
+            
+            cbtScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+        }
+        
+        function renderReview() {
+            resultScreen.classList.add('hidden');
+            reviewScreen.innerHTML = ''; 
+            reviewScreen.classList.remove('hidden');
+            
+            quizData.forEach((qData, index) => {
+                const userAnswer = userAnswers[index] || "Tidak Dijawab";
+                const reviewBlock = document.createElement('div');
+                reviewBlock.classList.add('bg-olive-dark', 'p-6', 'rounded-lg', 'mb-4', 'shadow-lg');
+                reviewBlock.innerHTML = `<p class="mb-2 text-sm text-gray-400">Pertanyaan ${index + 1}</p><p class="text-lg leading-relaxed mb-4">${qData.question}</p><div class="space-y-2">${qData.options.map(opt => `<div class="p-3 border rounded-md ${opt === qData.answer ? 'bg-green-900 border-green-700' : (opt === userAnswer ? 'bg-red-900 border-red-700' : 'border-gray-600')}">${opt}</div>`).join('')}</div><div class="mt-4 p-3 rounded-md text-sm bg-olive-deep"><b>Jawaban Anda:</b> ${userAnswer} <br><b>Kunci Jawaban:</b> ${qData.answer} <br><b>Penjelasan:</b> ${qData.explanation}</div>`;
+                reviewScreen.appendChild(reviewBlock);
+            });
+             const backBtnClone = document.getElementById('back-to-result-btn').cloneNode(true);
+             reviewScreen.appendChild(backBtnClone);
+             backBtnClone.addEventListener('click', () => {
+                reviewScreen.classList.add('hidden');
+                resultScreen.classList.remove('hidden');
+            });
+        }
+
+        // Flashcard Functions
+        function initFlashcards() {
+            currentCardIndex = 0;
+            startScreen.classList.add('hidden');
+            cbtScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            flashcardScreen.classList.remove('hidden');
+            renderFlashcard();
+        }
+
+        function renderFlashcard() {
+            const card = document.getElementById('flashcard');
+            const cardFront = card.querySelector('.card-front');
+            const cardBack = card.querySelector('.card-back');
+            const cardCounter = document.getElementById('card-counter');
+
+            card.classList.remove('is-flipped');
+            
+            setTimeout(() => {
+                const currentCard = flashcardData[currentCardIndex];
+                cardFront.textContent = currentCard.term;
+                cardBack.textContent = currentCard.definition;
+                cardCounter.textContent = `Kartu ${currentCardIndex + 1} dari ${flashcardData.length}`;
+            }, 150); // Delay to allow flip back animation
+            
+            document.getElementById('prev-card-btn').disabled = currentCardIndex === 0;
+            document.getElementById('next-card-btn').disabled = currentCardIndex === flashcardData.length - 1;
+        }
+
+        // Event Listeners
+        document.getElementById('start-flashcard-btn').addEventListener('click', initFlashcards);
+        document.getElementById('start-latihan-btn').addEventListener('click', () => initTest('latihan'));
+        document.getElementById('start-ujian-btn').addEventListener('click', () => initTest('ujian'));
+        
+        document.getElementById('next-btn').addEventListener('click', () => { if(currentQuestionIndex < quizData.length - 1) goToQuestion(currentQuestionIndex + 1); });
+        document.getElementById('prev-btn').addEventListener('click', () => { if(currentQuestionIndex > 0) goToQuestion(currentQuestionIndex - 1); });
+        
+        document.getElementById('flag-checkbox').addEventListener('change', (e) => {
+            flaggedQuestions[currentQuestionIndex] = e.target.checked;
+            updateNavGridItem(currentQuestionIndex);
+        });
+        document.getElementById('submit-btn').addEventListener('click', () => {
+            if (confirm('Apakah Anda yakin ingin mengumpulkan jawaban Anda?')) {
+                submitTest();
+            }
+        });
+        document.getElementById('restart-btn').addEventListener('click', () => {
+             resultScreen.classList.add('hidden');
+             startScreen.classList.remove('hidden');
+        });
+        document.getElementById('review-btn').addEventListener('click', renderReview);
+        document.getElementById('back-to-result-btn').addEventListener('click', () => {
+            reviewScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+        });
+
+        // Flashcard Event Listeners
+        document.getElementById('flashcard-container').addEventListener('click', () => {
+            document.getElementById('flashcard').classList.toggle('is-flipped');
+        });
+        document.getElementById('next-card-btn').addEventListener('click', () => {
+            if (currentCardIndex < flashcardData.length - 1) {
+                currentCardIndex++;
+                renderFlashcard();
+            }
+        });
+        document.getElementById('prev-card-btn').addEventListener('click', () => {
+            if (currentCardIndex > 0) {
+                currentCardIndex--;
+                renderFlashcard();
+            }
+        });
+        document.getElementById('back-to-menu-btn').addEventListener('click', () => {
+             flashcardScreen.classList.add('hidden');
+             startScreen.classList.remove('hidden');
+        });
+        
+    </script>
+</body>
+</html>
+

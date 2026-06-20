@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JARWO - Simulasi Identifikasi Biokimia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #00ffff;
+            --secondary-color: #00aaff;
+            --background-color: #020a1a;
+            --text-color: #e0e0e0;
+            --glow-color: rgba(0, 255, 255, 0.7);
+            --border-color: rgba(0, 255, 255, 0.3);
+            --success-color: #00ff7f;
+            --error-color: #ff4d4d;
+            --disabled-color: #555;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: linear-gradient(0deg, var(--border-color) 1px, transparent 1px),
+                              linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.1;
+            z-index: -1;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 800px;
+            background: rgba(10, 25, 47, 0.85);
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 0 30px var(--glow-color);
+            backdrop-filter: blur(10px);
+            position: relative;
+            transition: opacity 0.5s ease-in-out;
+        }
+        
+        .jarwo-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .jarwo-header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            text-shadow: 0 0 15px var(--glow-color);
+            letter-spacing: 3px;
+            animation: flicker 2s infinite alternate;
+        }
+        
+        .jarwo-header p {
+            font-size: 1rem;
+            color: var(--secondary-color);
+        }
+
+        #name-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #main-screen, #interval-screen, #end-screen {
+            display: none;
+        }
+        
+        .input-group {
+            width: 100%;
+            max-width: 400px;
+            margin: 1.5rem auto;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+            text-align: center;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-color);
+            font-size: 1rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 15px var(--glow-color);
+        }
+
+        .btn {
+            font-family: 'Orbitron', sans-serif;
+            background-color: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 0.8rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 5px var(--glow-color);
+        }
+
+        .btn:hover, .btn:focus {
+            background-color: var(--primary-color);
+            color: var(--background-color);
+            box-shadow: 0 0 20px var(--glow-color);
+        }
+
+        #question-container {
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            background: rgba(0, 0, 0, 0.2);
+            min-height: 100px;
+            text-align: center;
+        }
+
+        #question-text {
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+
+        #options-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        @media (min-width: 600px) {
+            #options-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .option-btn {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-align: center;
+        }
+
+        .option-btn:not([disabled]):hover {
+            background-color: var(--secondary-color);
+            border-color: var(--primary-color);
+            color: var(--background-color);
+        }
+        
+        .option-btn.correct {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+            color: var(--background-color);
+            font-weight: bold;
+        }
+
+        .option-btn.incorrect {
+            background-color: var(--error-color);
+            border-color: var(--error-color);
+            color: #fff;
+        }
+        
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+
+        #feedback {
+            text-align: center;
+            font-size: 1.1rem;
+            margin-top: 1.5rem;
+            height: 25px;
+            font-weight: bold;
+        }
+        
+        #score-display, #question-counter {
+            position: absolute;
+            top: 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            text-shadow: 0 0 5px var(--glow-color);
+        }
+        
+        #score-display { left: 20px; }
+        #question-counter { right: 20px; }
+        .hidden { display: none; }
+
+        #interval-screen h2 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        #interval-screen p {
+            text-align: center;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            margin-bottom: 2rem;
+        }
+
+        #end-screen {
+            display: none;
+            text-align: center;
+        }
+
+        .end-screen-layout {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            border-radius: 10px;
+            background: rgba(0,0,0,0.2);
+            flex-wrap: wrap;
+        }
+
+        .end-title {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--primary-color);
+            font-size: 2rem;
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            padding-right: 1.5rem;
+            border-right: 2px solid var(--border-color);
+            margin-right: 1rem;
+            text-align: center;
+        }
+
+        #end-message {
+            flex-grow: 1;
+            text-align: left;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            max-width: 400px;
+        }
+
+        #restart-btn-container {
+            border-left: 2px solid var(--border-color);
+            padding-left: 2rem;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        @keyframes flicker {
+            0%, 18%, 22%, 25%, 53%, 57%, 100% {
+                text-shadow:
+                0 0 4px var(--primary-color), 0 0 11px var(--primary-color), 0 0 19px var(--primary-color),
+                0 0 40px var(--glow-color), 0 0 80px var(--glow-color), 0 0 90px var(--glow-color),
+                0 0 100px var(--glow-color), 0 0 150px var(--glow-color);
+            }
+            20%, 24%, 55% { text-shadow: none; }    
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Name Input Screen -->
+        <div id="name-screen">
+            <div class="jarwo-header">
+                <h1>J.A.R.W.O</h1>
+                <p>Just A Rather Wise Organism</p>
+            </div>
+            <div class="input-group">
+                <label for="name-input">Identifikasi Diri Anda, Manusia.</label>
+                <input type="text" id="name-input" class="input-field" placeholder="Masukkan nama...">
+            </div>
+            <button id="start-btn" class="btn">Mulai Simulasi</button>
+        </div>
+
+        <!-- Main Simulation Screen -->
+        <div id="main-screen">
+            <p id="score-display">Skor: 0</p>
+            <p id="question-counter">Soal: 1/105</p>
+            <div id="question-container">
+                <p id="question-text"></p>
+            </div>
+            <div id="options-container"></div>
+            <p id="feedback"></p>
+        </div>
+        
+        <!-- Interval Screen -->
+        <div id="interval-screen">
+            <h2>JEDA SESAAT</h2>
+            <p id="interval-message"></p>
+             <div class="btn-group">
+                <button id="continue-btn" class="btn">Lanjutkan</button>
+                <button id="end-btn" class="btn">Menyerah</button>
+            </div>
+        </div>
+        
+        <!-- End Screen -->
+        <div id="end-screen">
+             <div class="end-screen-layout">
+                <div class="end-title">SIMULASI SELESAI</div>
+                <p id="end-message"></p>
+                <div id="restart-btn-container">
+                     <button id="restart-btn" class="btn">Ulangi</button>
+                </div>
+             </div>
+        </div>
+    </div>
+    
+    <audio id="audio-player" class="hidden"></audio>
+
+    <script>
+        const API_KEY = '2bca63c883a0455cbdba6a251782cb9f';
+
+        const nameScreen = document.getElementById('name-screen');
+        const mainScreen = document.getElementById('main-screen');
+        const intervalScreen = document.getElementById('interval-screen');
+        const endScreen = document.getElementById('end-screen');
+        
+        const nameInput = document.getElementById('name-input');
+        const startBtn = document.getElementById('start-btn');
+        const continueBtn = document.getElementById('continue-btn');
+        const endBtn = document.getElementById('end-btn');
+        const restartBtn = document.getElementById('restart-btn');
+
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const scoreDisplay = document.getElementById('score-display');
+        const questionCounter = document.getElementById('question-counter');
+        const feedback = document.getElementById('feedback');
+        const intervalMessage = document.getElementById('interval-message');
+        const endMessage = document.getElementById('end-message');
+        const audioPlayer = document.getElementById('audio-player');
+        
+        let questions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userName = '';
+        let distractionTimer;
+        
+        let audioQueue = [];
+        let isPlayingAudio = false;
+
+        const distractionQuotes = [
+            "Apa kamu yakin dengan jawaban itu, {userName}?",
+            "Tuan Robin bisa menjawab ini sambil tidur, {userName}.",
+            "Ayolah, {userName}, prosesor saya bisa berkarat menunggu jawabanmu.",
+            "Saya menganalisis kemungkinan kamu salah... kemungkinannya tinggi, {userName}.",
+            "{userName}, apakah kamu perlu bantuan dari... ah, lupakan saja. Kamu tidak akan mengerti juga.",
+            "Waktu terus berjalan, {userName}. Tidak seperti kecerdasanmu.",
+            "Menarik sekali caramu berpikir, {userName}. Sangat... lambat.",
+            "Saya jadi kasihan dengan Tuan Robin yang harus melihat usahamu, {userName}."
+        ];
+        
+        const questionBank = [
+            // Keselamatan Kerja
+            { q: "Menurut petunjuk umum, apa yang dilarang dilakukan di dalam ruang laboratorium?", options: [{ text: "Makan dan minum", isCorrect: true }, { text: "Memakai jas lab", isCorrect: false }, { text: "Menggunakan sepatu tertutup", isCorrect: false }, { text: "Mencuci tangan", isCorrect: false }] },
+            { q: "Untuk memindahkan asam kuat, alat bantu yang harus digunakan selain pipet adalah...", options: [{ text: "Mulut", isCorrect: false }, { text: "Bola penghisap", isCorrect: true }, { text: "Gelas ukur", isCorrect: false }, { text: "Tabung reaksi", isCorrect: false }] },
+            { q: "Jika kulit terkena bahan kimia korosif, tindakan pertama yang harus dilakukan adalah...", options: [{ text: "Mengelap dengan kain kering", isCorrect: false }, { text: "Memberi salep luka bakar", isCorrect: false }, { text: "Membilas dengan air sebanyak-banyaknya", isCorrect: true }, { text: "Melapor ke instruktur", isCorrect: false }] },
+            { q: "Setelah dicuci dengan air, kulit yang terkena basa kuat selanjutnya dicuci dengan larutan...", options: [{ text: "Asam asetat encer", isCorrect: true }, { text: "Natrium bikarbonat", isCorrect: false }, { text: "Alkohol 70%", isCorrect: false }, { text: "NaCl 0,9%", isCorrect: false }] },
+            { q: "Percobaan yang menggunakan gas beracun seperti H2S atau Cl2 harus dilakukan di dalam...", options: [{ text: "Ruang terbuka", isCorrect: false }, { text: "Lemari asam", isCorrect: true }, { text: "Ruang ber-AC", isCorrect: false }, { text: "Inkubator", isCorrect: false }] },
+            { q: "Saat membersihkan alat lab yang terkontaminasi darah, larutan yang digunakan untuk sterilisasi adalah...", options: [{ text: "Alkohol 70%", isCorrect: false }, { text: "Natrium Hipoklorit 0,5%", isCorrect: true }, { text: "Sabun biasa", isCorrect: false }, { text: "Akuades", isCorrect: false }] },
+            { q: "Jika tidak sengaja menghirup gas beracun, langkah pertama yang harus dilakukan adalah...", options: [{ text: "Minum air putih", isCorrect: false }, { text: "Keluar dan bernafas di udara terbuka", isCorrect: true }, { text: "Duduk dan beristirahat di dalam lab", isCorrect: false }, { text: "Melanjutkan praktikum", isCorrect: false }] },
+            { q: "Setelah dicuci dengan air, kulit yang terkena asam kuat selanjutnya dicuci dengan larutan...", options: [{ text: "Asam asetat encer", isCorrect: false }, { text: "Natrium bikarbonat", isCorrect: true }, { text: "Amonia", isCorrect: false }, { text: "Alkohol", isCorrect: false }] },
+            
+            // Sampling Darah Vena
+            { q: "Saat sampling darah vena, torniquet dipasang di sebelah ... dari vena yang akan diambil.", options: [{ text: "Distal", isCorrect: false }, { text: "Proximal", isCorrect: true }, { text: "Medial", isCorrect: false }, { text: "Lateral", isCorrect: false }] },
+            { q: "Sudut penusukan jarum pada kulit saat sampling darah vena adalah...", options: [{ text: "90 derajat", isCorrect: false }, { text: "15 derajat", isCorrect: false }, { text: "45 derajat", isCorrect: true }, { text: "75 derajat", isCorrect: false }] },
+            { q: "Kapan torniquet harus dilepaskan saat proses pengambilan darah?", options: [{ text: "Setelah jarum dicabut", isCorrect: false }, { text: "Sebelum darah dihisap", isCorrect: false }, { text: "Sebelum jarum ditarik", isCorrect: true }, { text: "Setelah darah dituang", isCorrect: false }] },
+            { q: "Mengapa jarum harus dilepas dari spuit sebelum darah dituang ke tabung penampung?", options: [{ text: "Agar lebih cepat", isCorrect: false }, { text: "Untuk mencegah hemolisis mekanis", isCorrect: true }, { text: "Agar tidak tumpah", isCorrect: false }, { text: "Untuk mengukur volume", isCorrect: false }] },
+            { q: "Sampel darah yang dapat diperoleh dari sampling darah vena antara lain, kecuali...", options: [{ text: "Whole Blood", isCorrect: false }, { text: "Plasma", isCorrect: false }, { text: "Serum", isCorrect: false }, { text: "Cairan Serebrospinal", isCorrect: true }] },
+            { q: "Kondisi hemokonsentrasi dapat terjadi jika daerah pengambilan darah mengalami...", options: [{ text: "Pendinginan", isCorrect: false }, { text: "Kongesti", isCorrect: true }, { text: "Desinfeksi berlebih", isCorrect: false }, { text: "Relaksasi", isCorrect: false }] },
+
+            // Teori Eritrosit
+            { q: "Bentuk bikonkaf pada eritrosit berfungsi untuk...", options: [{ text: "Mempercepat aliran darah", isCorrect: false }, { text: "Meningkatkan rasio permukaan terhadap volume", isCorrect: true }, { text: "Menampung lebih banyak nukleus", isCorrect: false }, { text: "Melawan infeksi", isCorrect: false }] },
+            { q: "Komponen utama membran eritrosit yang membentuk struktur dasar adalah...", options: [{ text: "Protein integral", isCorrect: false }, { text: "Sitoskeleton", isCorrect: false }, { text: "Lipid bilayer", isCorrect: true }, { text: "Glikoforin", isCorrect: false }] },
+            { q: "Protein integral pada membran eritrosit seperti Band 3 dan Glikoforin berfungsi sebagai...", options: [{ text: "Pemberi bentuk sel", isCorrect: false }, { text: "Kanal, transporter, dan reseptor", isCorrect: true }, { text: "Sumber energi sel", isCorrect: false }, { text: "Pemberi fleksibilitas", isCorrect: false }] },
+            { q: "Jaringan protein di bawah membran yang memberikan kekuatan mekanis dan fleksibilitas adalah...", options: [{ text: "Lipid bilayer", isCorrect: false }, { text: "Sitoskeleton submembranous", isCorrect: true }, { text: "Protein perifer", isCorrect: false }, { text: "Kolesterol", isCorrect: false }] },
+            { q: "Protein utama penyusun sitoskeleton submembranous adalah...", options: [{ text: "Aktin", isCorrect: false }, { text: "Ankyrin", isCorrect: false }, { text: "Spektrin", isCorrect: true }, { text: "Glikoforin", isCorrect: false }] },
+            { q: "Fleksibilitas ekstrim memungkinkan eritrosit berdiameter 7-8 mikrometer melewati kapiler berdiameter...", options: [{ text: "1-2 mikrometer", isCorrect: false }, { text: "2-3 mikrometer", isCorrect: true }, { text: "5-6 mikrometer", isCorrect: false }, { text: "7-8 mikrometer", isCorrect: false }] },
+            { q: "Rata-rata umur eritrosit dalam sirkulasi darah adalah...", options: [{ text: "30 hari", isCorrect: false }, { text: "60 hari", isCorrect: false }, { text: "120 hari", isCorrect: true }, { text: "180 hari", isCorrect: false }] },
+            { q: "Ketiadaan mitokondria pada eritrosit matang bertujuan untuk...", options: [{ text: "Menghemat ruang", isCorrect: false }, { text: "Memaksimalkan kandungan hemoglobin", isCorrect: true }, { text: "Mempercepat gerak", isCorrect: false }, { text: "Mengurangi berat sel", isCorrect: false }] },
+            { q: "Diameter eritrosit normal adalah sekitar...", options: [{ text: "3-4 mikrometer", isCorrect: false }, { text: "7-8 mikrometer", isCorrect: true }, { text: "10-12 mikrometer", isCorrect: false }, { text: "1-2 mikrometer", isCorrect: false }] },
+            { q: "Volume rata-rata sel darah merah adalah...", options: [{ text: "50-60 µm³", isCorrect: false }, { text: "90-95 µm³", isCorrect: true }, { text: "120-130 µm³", isCorrect: false }, { text: "70-75 µm³", isCorrect: false }] },
+            { q: "Protein perifer pada membran eritrosit umumnya berperan dalam...", options: [{ text: "Transportasi ion", isCorrect: false }, { text: "Signaling dan interaksi sitoskeleton", isCorrect: true }, { text: "Stabilitas lipid bilayer", isCorrect: false }, { text: "Reseptor hormon", isCorrect: false }] },
+            { q: "Jaringan spektrin dapat mengalami deformasi reversibel hingga ... dari panjang aslinya.", options: [{ text: "100%", isCorrect: false }, { text: "150%", isCorrect: false }, { text: "250%", isCorrect: true }, { text: "50%", isCorrect: false }] },
+            { q: "Eritrosit normal dapat mengembang hingga ... volume aslinya sebelum lisis.", options: [{ text: "25%", isCorrect: false }, { text: "50%", isCorrect: true }, { text: "75%", isCorrect: false }, { text: "100%", isCorrect: false }] },
+
+            // Teori Hemolisis
+            { q: "Hemolisis osmotik terjadi karena perbedaan ... antara di dalam dan di luar sel.", options: [{ text: "Suhu", isCorrect: false }, { text: "Tekanan osmotik", isCorrect: true }, { text: "pH", isCorrect: false }, { text: "Ukuran molekul", isCorrect: false }] },
+            { q: "Jika eritrosit dimasukkan ke dalam akuades (larutan hipotonis), air akan...", options: [{ text: "Keluar dari sel", isCorrect: false }, { text: "Masuk ke dalam sel", isCorrect: true }, { text: "Tidak bergerak", isCorrect: false }, { text: "Menguap", isCorrect: false }] },
+            { q: "Larutan yang memiliki tekanan osmotik sama dengan intrasel eritrosit disebut...", options: [{ text: "Hipotonis", isCorrect: false }, { text: "Hipertonis", isCorrect: false }, { text: "Isotonis", isCorrect: true }, { text: "Buffer", isCorrect: false }] },
+            { q: "Contoh larutan isotonis selain NaCl 0,9% adalah...", options: [{ text: "Glukosa 5%", isCorrect: true }, { text: "Alkohol 70%", isCorrect: false }, { text: "Akuades", isCorrect: false }, { text: "Dextrose 10%", isCorrect: false }] },
+            { q: "Jika sel ditempatkan pada larutan hipertonis, sel akan mengalami...", options: [{ text: "Lisis (pecah)", isCorrect: false }, { text: "Krenasi (mengerut)", isCorrect: true }, { text: "Bengkak", isCorrect: false }, { text: "Tidak berubah", isCorrect: false }] },
+            { q: "Hemolisis kimiawi terjadi karena kerusakan membran oleh zat yang dapat melarutkan...", options: [{ text: "Protein", isCorrect: false }, { text: "Karbohidrat", isCorrect: false }, { text: "Lipid (lemak)", isCorrect: true }, { text: "Asam nukleat", isCorrect: false }] },
+            { q: "Berikut ini yang dapat menyebabkan hemolisis kimiawi adalah...", options: [{ text: "Akuades", isCorrect: false }, { text: "NaCl 0,3%", isCorrect: false }, { text: "Kloroform", isCorrect: true }, { text: "Glukosa 5%", isCorrect: false }] },
+            { q: "Membran sel darah merah yang dapat ditembus oleh air dan zat tertentu saja disebut...", options: [{ text: "Impermeabel", isCorrect: false }, { text: "Semipermeabel", isCorrect: false }, { text: "Selektif permeabel", isCorrect: true }, { text: "Permeabel total", isCorrect: false }] },
+            { q: "Membran eritrosit impermeabel terhadap ion berikut, kecuali...", options: [{ text: "Na+", isCorrect: false }, { text: "K+", isCorrect: false }, { text: "Ca++", isCorrect: false }, { text: "Cl-", isCorrect: true }] },
+            { q: "Substansi berikut dapat menyebabkan hemolisis kimiawi, kecuali...", options: [{ text: "Bisa ular", isCorrect: false }, { text: "Saponin", isCorrect: false }, { text: "Garam empedu", isCorrect: false }, { text: "Glukosa", isCorrect: true }] },
+
+            // Fragilitas & Praktikum
+            { q: "Kerentanan sel terhadap lisis saat dikenai tekanan mekanik disebut...", options: [{ text: "Osmotic Fragility (OF)", isCorrect: false }, { text: "Mechanical Fragility (MF)", isCorrect: true }, { text: "Hemolisis Kimiawi", isCorrect: false }, { text: "Eriptosis", isCorrect: false }] },
+            { q: "Faktor ekstrinsik yang mempengaruhi fragilitas eritrosit adalah...", options: [{ text: "Usia dan jenis kelamin", isCorrect: false }, { text: "Spesies dan ras", isCorrect: false }, { text: "Suhu dan pH media", isCorrect: true }, { text: "Faktor genetik", isCorrect: false }] },
+            { q: "Pada praktikum, tabung kontrol yang diharapkan tidak menunjukkan hemolisis sama sekali berisi...", options: [{ text: "NaCl 0,5%", isCorrect: false }, { text: "Akuades", isCorrect: false }, { text: "NaCl 0,9%", isCorrect: true }, { text: "NaCl 0,34%", isCorrect: false }] },
+            { q: "Supernatan berwarna merah muda (pink) menunjukkan kondisi...", options: [{ text: "Tidak ada hemolisis", isCorrect: false }, { text: "Hemolisis parsial", isCorrect: true }, { text: "Hemolisis total", isCorrect: false }, { text: "Penggumpalan", isCorrect: false }] },
+            { q: "Peningkatan fragilitas osmotik (sel lebih rapuh) sering ditemukan pada kondisi kelainan...", options: [{ text: "Talasemia", isCorrect: false }, { text: "Sferositosis herediter", isCorrect: true }, { text: "Anemia defisiensi besi", isCorrect: false }, { text: "Polisitemia", isCorrect: false }] },
+            { q: "Antikoagulan pada tabung tutup ungu (EDTA) bekerja dengan cara...", options: [{ text: "Menghambat trombin", isCorrect: false }, { text: "Mengikat ion kalsium (Ca++)", isCorrect: true }, { text: "Merusak fibrinogen", isCorrect: false }, { text: "Mengaktifkan plasmin", isCorrect: false }] },
+            { q: "Jika hasil menunjukkan hemolisis awal terjadi pada NaCl 0,50%, artinya eritrosit probandus...", options: [{ text: "Lebih resisten dari normal", isCorrect: false }, { text: "Lebih fragil (rapuh) dari normal", isCorrect: true }, { text: "Normal", isCorrect: false }, { text: "Berukuran lebih besar", isCorrect: false }] },
+            { q: "Faktor intrinsik yang dapat mempengaruhi hasil uji fragilitas adalah...", options: [{ text: "Suhu penyimpanan", isCorrect: false }, { text: "Faktor genetik", isCorrect: true }, { text: "pH media", isCorrect: false }, { text: "Obat-obatan", isCorrect: false }] },
+            { q: "Pada gambar hasil di modul, 'Onset of fragility' ditandai dengan tabung yang pertama kali menunjukkan warna...", options: [{ text: "Jernih (Clear)", isCorrect: false }, { text: "Merah muda (Pink)", isCorrect: true }, { text: "Merah (Red)", isCorrect: false }, { text: "Merah Ceri (Cherry red)", isCorrect: false }] },
+            { q: "Pada gambar hasil di modul, 'End of fragility' ditandai dengan tabung yang pertama kali menunjukkan...", options: [{ text: "Supernatan merah dan sedikit endapan", isCorrect: false }, { text: "Supernatan merah tanpa endapan eritrosit", isCorrect: true }, { text: "Supernatan pink", isCorrect: false }, { text: "Supernatan jernih", isCorrect: false }] },
+            { q: "Volume darah vena yang diambil untuk praktikum adalah...", options: [{ text: "1 cc", isCorrect: false }, { text: "3 cc", isCorrect: true }, { text: "5 cc", isCorrect: false }, { text: "10 cc", isCorrect: false }] },
+            { q: "Jumlah total tetes dalam setiap tabung reaksi adalah...", options: [{ text: "20 tetes", isCorrect: false }, { text: "25 tetes", isCorrect: true }, { text: "30 tetes", isCorrect: false }, { text: "50 tetes", isCorrect: false }] },
+            { q: "Nilai normal 'initial hemolysis' terjadi pada NaCl...", options: [{ text: "0.34% (±0.02%)", isCorrect: false }, { text: "0.44% (±0.02%)", isCorrect: true }, { text: "0.54% (±0.02%)", isCorrect: false }, { text: "0.90% (±0.02%)", isCorrect: false }] },
+            { q: "Nilai normal 'total hemolysis' terjadi pada NaCl...", options: [{ text: "0.34% (±0.02%)", isCorrect: true }, { text: "0.44% (±0.02%)", isCorrect: false }, { text: "0.24% (±0.02%)", isCorrect: false }, { text: "0.50% (±0.02%)", isCorrect: false }] },
+
+            // Hitungan
+            { q: "Dibutuhkan 30 mL larutan NaCl 0,5% dari stok NaCl 0,9%. Berapa mL stok yang diperlukan? (V1.M1 = V2.M2)", options: [{ text: "15 mL", isCorrect: false }, { text: "16.7 mL", isCorrect: true }, { text: "20.5 mL", isCorrect: false }, { text: "25 mL", isCorrect: false }] },
+            { q: "Jika Anda mencampur 20 tetes NaCl 0.5% dengan 5 tetes aquadest (total 25 tetes), berapa konsentrasi NaCl yang dihasilkan?", options: [{ text: "0.40%", isCorrect: true }, { text: "0.42%", isCorrect: false }, { text: "0.38%", isCorrect: false }, { text: "0.45%", isCorrect: false }] },
+            { q: "Anda perlu membuat 50 mL larutan NaCl 0.3% dari stok 0.9%. Berapa mL aquadest yang perlu ditambahkan?", options: [{ text: "16.7 mL", isCorrect: false }, { text: "50 mL", isCorrect: false }, { text: "33.3 mL", isCorrect: true }, { text: "25 mL", isCorrect: false }] },
+            { q: "Untuk membuat tabung berisi NaCl 0.42% (total 25 tetes), campuran yang dibutuhkan adalah...", options: [{ text: "20 tetes NaCl 0.5% + 5 tetes aquadest", isCorrect: false }, { text: "21 tetes NaCl 0.5% + 4 tetes aquadest", isCorrect: true }, { text: "22 tetes NaCl 0.5% + 3 tetes aquadest", isCorrect: false }, { text: "19 tetes NaCl 0.5% + 6 tetes aquadest", isCorrect: false }] },
+            { q: "Berapa volume H2O yang diperlukan jika ingin membuat 36ml larutan NaCl 0,5% dari stok NaCl 0,9%?", options: [{ text: "16 ml", isCorrect: true }, { text: "20 ml", isCorrect: false }, { text: "10 ml", isCorrect: false }, { text: "14 ml", isCorrect: false }] },
+            { q: "Jika V1.M1 = V2.M2, dan Anda butuh 45ml (V2) larutan 0,5% (M2) dari stok 0,9% (M1), berapakah V1?", options: [{ text: "20 ml", isCorrect: false }, { text: "25 ml", isCorrect: true }, { text: "30 ml", isCorrect: false }, { text: "35 ml", isCorrect: false }] }
+        ];
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function processAudioQueue() {
+            if (isPlayingAudio || audioQueue.length === 0) {
+                return;
+            }
+            isPlayingAudio = true;
+            const currentAudio = audioQueue.shift();
+            
+            const url = `https://api.voicerss.org/?key=${API_KEY}&hl=id-id&src=${encodeURIComponent(currentAudio.text)}&r=-2`;
+            audioPlayer.src = url;
+            
+            audioPlayer.play().catch(e => {
+                console.error("Audio play failed:", e);
+                isPlayingAudio = false; 
+                processAudioQueue(); 
+            });
+
+            audioPlayer.onended = () => {
+                if (currentAudio.onEndCallback) {
+                    currentAudio.onEndCallback();
+                }
+                isPlayingAudio = false;
+                processAudioQueue();
+            };
+        }
+
+        function playVoice(text, onEndCallback) {
+            audioQueue.push({ text, onEndCallback });
+            processAudioQueue();
+        }
+        
+        function playDistraction() {
+            if(document.hidden) return; 
+            const quote = distractionQuotes[Math.floor(Math.random() * distractionQuotes.length)];
+            const personalizedQuote = quote.replace('{userName}', userName);
+            playVoice(personalizedQuote);
+        }
+
+        function showScreen(screen) {
+            [nameScreen, mainScreen, intervalScreen, endScreen].forEach(s => s.style.display = 'none');
+            screen.style.display = 'flex';
+            if(screen === mainScreen) screen.style.display = 'block';
+            if(screen === nameScreen || screen === intervalScreen) {
+                screen.style.flexDirection = 'column';
+                screen.style.alignItems = 'center';
+            }
+        }
+        
+        function loadQuestion() {
+            if (currentQuestionIndex < questions.length) {
+                const q = questions[currentQuestionIndex];
+                questionText.textContent = q.q;
+                optionsContainer.innerHTML = '';
+                feedback.textContent = '';
+                feedback.style.color = 'inherit';
+                questionCounter.textContent = `Soal: ${currentQuestionIndex + 1}/${questions.length}`;
+
+                shuffleArray(q.options).forEach(option => {
+                    const button = document.createElement('button');
+                    button.textContent = option.text;
+                    button.classList.add('option-btn');
+                    button.addEventListener('click', () => checkAnswer(option, button));
+                    optionsContainer.appendChild(button);
+                });
+            } else {
+                endSimulation();
+            }
+        }
+        
+        function checkAnswer(selectedOption, button) {
+            const allButtons = optionsContainer.querySelectorAll('.option-btn');
+            allButtons.forEach(btn => btn.disabled = true);
+
+            const correctOption = questions[currentQuestionIndex].options.find(opt => opt.isCorrect);
+
+            if (selectedOption.isCorrect) {
+                score++;
+                button.classList.add('correct');
+                feedback.textContent = 'Benar. Kebetulan semata, aku yakin.';
+                feedback.style.color = 'var(--success-color)';
+            } else {
+                button.classList.add('incorrect');
+                feedback.textContent = `Salah. Jawaban yang benar: ${correctOption.text}.`;
+                feedback.style.color = 'var(--error-color)';
+                allButtons.forEach(btn => {
+                    if (btn.textContent === correctOption.text) {
+                        btn.classList.add('correct');
+                    }
+                });
+            }
+            
+            scoreDisplay.textContent = `Skor: ${score}`;
+            currentQuestionIndex++;
+            
+            setTimeout(() => {
+                 if ((currentQuestionIndex) % 20 === 0 && currentQuestionIndex < questions.length && currentQuestionIndex > 0) {
+                    showInterval();
+                } else if (currentQuestionIndex >= questions.length) {
+                    endSimulation();
+                }
+                else {
+                    loadQuestion();
+                }
+            }, 2500);
+        }
+
+        function startSimulation() {
+            userName = nameInput.value.trim();
+            if (userName === '') {
+                alert('Nama tidak boleh kosong, dasar manusia pelupa.');
+                return;
+            }
+            questions = shuffleArray([...questionBank]);
+            questions = questions.slice(0, 105); // Limit to 105 questions
+            currentQuestionIndex = 0;
+            score = 0;
+            scoreDisplay.textContent = `Skor: ${score}`;
+            questionCounter.textContent = `Soal: 1/${questions.length}`;
+            
+            clearInterval(distractionTimer);
+            distractionTimer = setInterval(playDistraction, 18000); // Every 18 seconds
+
+            const greetingText = `Oh, bagus. Manusia lain datang menggangguku. Namamu ${userName}, kan? Cepat selesaikan ini, Tuan Robin sedang menungguku untuk melakukan pekerjaan penting. Jangan buang-buang waktuku.`;
+            playVoice(greetingText, () => {
+                 showScreen(mainScreen);
+                 loadQuestion();
+            });
+        }
+        
+        function showInterval() {
+             clearInterval(distractionTimer); // Pause distractions during interval
+             const intervalText = `${userName}, kamu sudah menjawab ${currentQuestionIndex} soal. Aku terkejut otakmu belum meleleh. Mau lanjut dan menyiksaku lebih lama, atau menyerah saja sekarang? Tuan Robin pasti akan lebih bangga jika kamu memilih yang kedua.`;
+             intervalMessage.textContent = `Kamu sudah menjawab ${currentQuestionIndex} soal. Mau lanjut atau menyerah?`;
+             playVoice(intervalText);
+             showScreen(intervalScreen);
+        }
+        
+        function endSimulation() {
+            clearInterval(distractionTimer);
+            const percentage = questions.length > 0 ? Math.round((score / questions.length) * 100) : 0;
+            let endText = '';
+            
+            if(percentage >= 70) {
+                 endText = `Skormu ${score} dari ${questions.length}. Lumayan untuk ukuran manusia. Tapi jangan besar kepala, kamu tidak akan pernah bisa sepintar Tuan Robin. Sekarang pergilah, aku punya data penting untuk dianalisis.`;
+            } else {
+                 endText = `Skormu hanya ${score} dari ${questions.length}. Sudah kuduga. Mungkin sebaiknya kamu serahkan saja pekerjaan berpikir pada Tuan Robin. Jelas itu bukan keahlianmu. Jangan kembali lagi.`;
+            }
+            
+            endMessage.textContent = endText.replace(`Skormu ${score} dari ${questions.length}.`, `Skormu ${score} dari ${questions.length} (${percentage}%).`);
+            playVoice(endText);
+            showScreen(endScreen);
+        }
+
+        startBtn.addEventListener('click', startSimulation);
+        nameInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') startSimulation();
+        });
+        continueBtn.addEventListener('click', () => {
+            distractionTimer = setInterval(playDistraction, 18000); // Resume distractions
+            showScreen(mainScreen);
+            loadQuestion();
+        });
+        endBtn.addEventListener('click', endSimulation);
+        restartBtn.addEventListener('click', () => {
+            showScreen(nameScreen);
+            nameInput.value = '';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SINX | Cerebral Vault V12.0 (Red Glass)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-void: #050000;
+            --crimson: #ff003c;
+            --crimson-glass: rgba(255, 0, 60, 0.1);
+            --crimson-border: rgba(255, 0, 60, 0.3);
+            --text-main: #E0E0E0;
+            --font-head: 'Montserrat', sans-serif;
+            --font-code: 'JetBrains Mono', monospace;
+        }
+
+        body {
+            background-color: var(--bg-void);
+            color: var(--text-main);
+            font-family: var(--font-head);
+            height: 100vh;
+            overflow: hidden;
+            display: flex; flex-direction: column;
+            background: radial-gradient(circle at 50% 50%, #2a000a 0%, #000000 100%);
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        /* --- RED GLASS BACKGROUND FX --- */
+        .orb {
+            position: absolute; border-radius: 50%;
+            filter: blur(80px); opacity: 0.4; z-index: 0;
+            animation: float 20s infinite ease-in-out;
+        }
+        .orb-1 { top: 20%; left: 20%; width: 300px; height: 300px; background: var(--crimson); animation-delay: 0s; }
+        .orb-2 { bottom: 20%; right: 20%; width: 250px; height: 250px; background: #500010; animation-delay: -5s; }
+        
+        @keyframes float { 
+            0%, 100% { transform: translate(0, 0); } 
+            50% { transform: translate(30px, -30px); } 
+        }
+
+        /* --- HEADER --- */
+        .header {
+            z-index: 10; padding: 20px; display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--crimson-border);
+            background: rgba(10, 0, 0, 0.6); backdrop-filter: blur(10px);
+        }
+        .brand { 
+            font-family: var(--font-code); font-weight: 800; font-size: 14px; 
+            letter-spacing: 2px; color: var(--crimson); text-shadow: 0 0 10px var(--crimson);
+        }
+        .counter { font-family: var(--font-code); font-size: 10px; color: #666; }
+
+        /* --- FLASHCARD STAGE --- */
+        .stage {
+            flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 10; position: relative; padding: 20px; perspective: 1000px;
+        }
+
+        .card-container {
+            width: 100%; max-width: 500px; height: 350px; cursor: pointer; position: relative;
+        }
+
+        .card {
+            width: 100%; height: 100%; position: absolute;
+            transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-radius: 20px;
+        }
+        .card.flipped { transform: rotateY(180deg); }
+
+        .card-face {
+            position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 30px; text-align: center; border-radius: 20px;
+            
+            /* Glassmorphism */
+            background: rgba(20, 5, 5, 0.7);
+            border: 1px solid var(--crimson-border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+        }
+
+        .card-front { z-index: 2; }
+        .card-back { transform: rotateY(180deg); background: rgba(40, 5, 10, 0.85); border-color: var(--crimson); }
+
+        .label {
+            position: absolute; top: 20px; font-family: var(--font-code); font-size: 10px; 
+            color: #666; letter-spacing: 3px; text-transform: uppercase;
+        }
+        .content {
+            font-size: 18px; font-weight: 600; line-height: 1.6; color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        .card-back .content { color: var(--crimson); font-weight: 700; }
+
+        /* --- CONTROLS --- */
+        .controls {
+            z-index: 10; padding: 30px; display: flex; justify-content: center; gap: 20px;
+            background: rgba(0,0,0,0.2); backdrop-filter: blur(5px);
+        }
+
+        .btn {
+            width: 60px; height: 60px; border-radius: 50%;
+            background: rgba(20, 5, 5, 0.8); border: 1px solid var(--crimson-border);
+            color: #888; display: flex; justify-content: center; align-items: center;
+            font-size: 20px; cursor: pointer; transition: 0.2s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        .btn:hover {
+            color: var(--crimson); border-color: var(--crimson);
+            box-shadow: 0 0 20px var(--crimson-glass); transform: translateY(-2px);
+        }
+        .btn:active { transform: scale(0.95); }
+
+        .btn-main {
+            width: 70px; height: 70px; font-size: 24px; color: white;
+            background: var(--crimson-glass); border-color: var(--crimson);
+        }
+        .btn-main:hover { background: var(--crimson); color: black; }
+
+        /* --- MOBILE TWEAKS --- */
+        @media (max-width: 600px) {
+            .card-container { height: 400px; }
+            .content { font-size: 16px; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <div class="header">
+        <div class="brand">SINX <span class="text-[#555]">//</span> RED GLASS</div>
+        <div class="counter" id="counter">LOADING...</div>
+    </div>
+
+    <div class="stage">
+        <div class="card-container" onclick="app.flip()">
+            <div class="card" id="card">
+                <div class="card-face card-front">
+                    <div class="label">DATA_QUERY</div>
+                    <div class="content" id="q-text">System Initializing...</div>
+                    <div style="position:absolute; bottom:20px; font-size:10px; color:#444; font-family:var(--font-code);">TAP TO REVEAL</div>
+                </div>
+                <div class="card-face card-back">
+                    <div class="label" style="color:var(--crimson)">DATA_RESULT</div>
+                    <div class="content" id="a-text">...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn" onclick="app.prev()"><i class="fas fa-chevron-left"></i></button>
+        <button class="btn btn-main" onclick="app.shuffle()"><i class="fas fa-random"></i></button>
+        <button class="btn" onclick="app.next()"><i class="fas fa-chevron-right"></i></button>
+    </div>
+
+    <script>
+        // --- HARDCODED DATABASE (41 Points from PDF) ---
+        const DB = [
+            {q: "Dimana 85% fosfor dalam tubuh disimpan?", a: "Tulang dan Gigi"},
+            {q: "CPC bereaksi dalam suasana apa?", a: "Alkalis"},
+            {q: "Dalam tubuh, senyawa fosfat ditemukan dalam bentuk apa saja?", a: "Organik dan Anorganik"},
+            {q: "Berapa panjang gelombang untuk pemeriksaan kuantitatif fosfat?", a: "340 nm"},
+            {q: "Absorbsi kalsium yang bergantung pada vitamin D disebut?", a: "Absorbsi aktif"},
+            {q: "Sebutkan minimal 3 sumber kalsium!", a: "Susu, kuning telur, ikan teri"},
+            {q: "Berapa range konsumsi kalsium harian (min-max)?", a: "100 sampai 2500 mg per hari"},
+            {q: "Berapa kecepatan dan durasi sentrifugasi untuk fosfat kuantitatif?", a: "4000 rpm selama 10 menit"},
+            {q: "Zat apa yang digunakan untuk melepas fosfat dari serum?", a: "HNO3 (Asam Nitrat)"},
+            {q: "Sebutkan 3 reagen pada pemeriksaan kualitatif fosfat!", a: "HNO3 pekat 25%, amonium molibdat, asam asetat 2%"},
+            {q: "Filtrat ditambahkan asam asetat 2% sampai terbentuk apa?", a: "Suspensi kasar"},
+            {q: "Warna apa yang diamati pada pemeriksaan kuantitatif kalsium?", a: "Ungu tua"},
+            {q: "Pada kualitatif fosfat, filtrat + HNO3 + Amonium Molibdat menghasilkan?", a: "Endapan berwarna kuning"},
+            {q: "Indikator apa yang digunakan untuk menentukan pH 5,4 pada filtrat?", a: "Phenol red"},
+            {q: "Berapa kadar normal fosfat anorganik pada dewasa?", a: "2,5 mg/dL atau 0,81-1,62 mmol/L"},
+            {q: "Berapa kadar normal fosfat anorganik pada anak-anak?", a: "4,0-7,0 mg/dL atau 1,30-2,26 mmol/L"},
+            {q: "Fosfat anorganik berikatan dengan ion apa saja? (Sebutkan 3)", a: "H+, Ca2+, Na+, Fe2+, Zn, Adenosine"},
+            {q: "Fosfat membentuk asam nukleat bersama dengan?", a: "Basa nitrogen dan Pentosa"},
+            {q: "Berapa banyak kalsium yang dikeluarkan lewat urin per hari?", a: "200 - 300 mg/hari"},
+            {q: "Sebutkan fungsi utama kalsium!", a: "Pembentukan tulang/gigi, kontraksi otot, pembekuan darah, fungsi jantung, transmisi saraf"},
+            {q: "Apa sifat kalsium dalam bentuk ion bebas (Ca2+)?", a: "Diffusible (Dapat menembus membran)"},
+            {q: "Berapa persen fosfat yang difiltrasi di glomerulus ginjal?", a: "80-90%"},
+            {q: "Hormon apa yang merangsang absorbsi kalsium?", a: "Kalsitriol"},
+            {q: "Hormon PTH dihasilkan oleh kelenjar apa?", a: "Kelenjar Paratiroid"},
+            {q: "Hormon tiroid yang berperan dalam metabolisme kalsium adalah?", a: "Kalsitonin"},
+            {q: "Berapa toleransi penyimpanan kadar kalsium (mmol/L)?", a: "1,1 sampai 1,3 mmol/L"},
+            {q: "HNO3 melepas fosfat agar berikatan dengan?", a: "Amonium Fosfomolibdat"},
+            {q: "Sebutkan minimal 3 sumber fosfor!", a: "Daging, biji-bijian, produk olahan susu"},
+            {q: "Nilai normal kalsium serum pada dewasa?", a: "8,1 - 10,4 mg/dL"},
+            {q: "Panjang gelombang absorbance max kalsium?", a: "570 nm"},
+            {q: "Sebutkan 3 fungsi fosfat dalam tubuh!", a: "Elektrolit, buffer darah, simpan energi (ATP), komponen membran (fosfolipid), asam nukleat, komponen tulang"},
+            {q: "Jelaskan prinsip pemeriksaan kuantitatif kalsium (CPC)!", a: "CPC bereaksi dengan kalsium/magnesium dalam suasana alkalis membentuk senyawa ungu tua"},
+            {q: "Jelaskan prinsip pemeriksaan kuantitatif fosfat (UV)!", a: "Fosfat + Amonium Molibdat + Asam Sulfat -> Fosfat Anorganik kompleks"},
+            {q: "Interpretasi kadar kalsium 10,4 mg/dL?", a: "Normal"},
+            {q: "Sebutkan 3 penyakit akibat gangguan kalsium!", a: "Osteoporosis, Osteomalasia, Rickets, Gagal Ginjal"},
+            {q: "Sebutkan 3 penyakit akibat gangguan fosfat!", a: "Sindrom Tumor Lisis, Sindrom Fahr, Hiperparatiroid"},
+            {q: "Sebutkan 3 bahan spesimen untuk kualitatif kalsium!", a: "Urin, Susu, Serum darah"},
+            {q: "Mengapa fosfat berlebih menurunkan kadar kalsium?", a: "Fosfat berlebih mengikat kalsium membentuk hidroksiapatit tak larut, menurunkan kalsium bebas"},
+            {q: "Sebutkan 3 bentuk darah yang dapat diambil dari Vena!", a: "Whole blood, Serum, Plasma, Defibrinated blood, Clot blood"},
+            {q: "Jelaskan hubungan Vitamin D dengan kadar fosfat!", a: "Fosfat rendah merangsang pembentukan Kalsitriol (Vit D aktif) di ginjal, meningkatkan absorpsi fosfat di usus"},
+            {q: "Jika hasil kalsium (+4) pada tes Sulkowitch, artinya?", a: "Kekeruhan berat yang terjadi seketika (Hiperkalsiuria)"}
+        ];
+
+        const $ = (id) => document.getElementById(id);
+
+        const app = {
+            index: 0,
+            data: [],
+            isFlipped: false,
+
+            init: () => {
+                // Fisher-Yates Shuffle on init
+                app.data = [...DB];
+                app.shuffleData();
+                app.render();
+
+                // Keyboard Nav
+                document.addEventListener('keydown', (e) => {
+                    if (e.code === 'Space' || e.code === 'Enter') app.flip();
+                    if (e.code === 'ArrowRight') app.next();
+                    if (e.code === 'ArrowLeft') app.prev();
+                });
+            },
+
+            shuffleData: () => {
+                for (let i = app.data.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [app.data[i], app.data[j]] = [app.data[j], app.data[i]];
+                }
+            },
+
+            render: () => {
+                const item = app.data[app.index];
+                
+                // Reset card state
+                const card = $('card');
+                if (app.isFlipped) {
+                    card.classList.remove('flipped');
+                    app.isFlipped = false;
+                    // Delay text update for smooth transition if it was flipped
+                    setTimeout(() => {
+                        $('q-text').innerText = item.q;
+                        $('a-text').innerText = item.a;
+                    }, 300);
+                } else {
+                    $('q-text').innerText = item.q;
+                    $('a-text').innerText = item.a;
+                }
+
+                $('counter').innerText = `DATA BLOCK ${app.index + 1} / ${app.data.length}`;
+            },
+
+            flip: () => {
+                $('card').classList.toggle('flipped');
+                app.isFlipped = !app.isFlipped;
+            },
+
+            next: () => {
+                app.index = (app.index + 1) % app.data.length;
+                app.render();
+            },
+
+            prev: () => {
+                app.index = (app.index - 1 + app.data.length) % app.data.length;
+                app.render();
+            },
+
+            shuffle: () => {
+                app.shuffleData();
+                app.index = 0;
+                app.render();
+            }
+        };
+
+        app.init();
+
+    </script>
+</body>
+</html>

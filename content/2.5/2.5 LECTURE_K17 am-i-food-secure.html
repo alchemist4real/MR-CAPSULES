@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Am I Food Secure? — Quiz Blok 2.5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f8f8f5;--bg2:#f1f1ed;--bg3:#e7e7e2;--bg4:#dcdcd6;
+  --border:rgba(40,55,110,.10);--border2:rgba(40,55,110,.20);
+  --text:#161b2e;--text2:#384068;--text3:#7c85a8;
+  --green:#1f7a4a;--greenbg:rgba(31,122,74,.09);--greenb:rgba(31,122,74,.25);
+  --gold:#7a6010;--goldbg:rgba(122,96,16,.09);--goldb:rgba(122,96,16,.28);
+  --red:#b03030;--redbg:rgba(176,48,48,.08);--redb:rgba(176,48,48,.25);
+  --blue:#1a4faa;--bluebg:rgba(26,79,170,.09);--blueb:rgba(26,79,170,.28);
+  --purp:#4433a0;--purpbg:rgba(68,51,160,.08);--purpb:rgba(68,51,160,.25);
+  --teal:#136ba8;--tealbg:rgba(19,107,168,.08);--tealb:rgba(19,107,168,.25);
+  --r:10px;--rl:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.6;min-height:100vh}
+.app{max-width:900px;margin:0 auto;padding:0 16px 60px}
+header{padding:40px 0 28px;text-align:center}
+.eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--text3);text-transform:uppercase;margin-bottom:10px}
+h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(30px,6vw,54px);letter-spacing:-.03em;line-height:1;margin-bottom:10px}
+h1 span{color:var(--red)}
+.sub{font-size:13px;color:var(--text2);max-width:500px;margin:0 auto}
+.main-tabs{display:flex;gap:3px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:24px}
+.main-tab{flex:1;padding:9px 6px;border-radius:9px;border:none;background:transparent;color:var(--text3);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .18s}
+.main-tab:hover{color:var(--text)}
+.main-tab.active{background:var(--green);color:#fff;font-weight:600}
+.main-panel{display:none}
+.main-panel.active{display:block;animation:fi .2s ease}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.sub-tabs{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:4px;margin-bottom:20px}
+.sub-tab{padding:8px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text3);font-family:'DM Mono',monospace;font-size:10.5px;cursor:pointer;transition:all .18s;text-align:center;line-height:1.4}
+.sub-tab:hover{background:var(--bg3);color:var(--text2);border-color:var(--border2)}
+.sub-tab.active{background:var(--green);color:#fff;border-color:var(--text);font-weight:600}
+.sub-panel{display:none}
+.sub-panel.active{display:block;animation:fi .18s ease}
+.sec-h{font-family:'Syne',sans-serif;font-weight:700;font-size:14.5px;color:var(--text);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.divider{height:1px;background:var(--border);margin:20px 0}
+.note{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:0 var(--r) var(--r) 0;padding:10px 14px;font-size:12.5px;color:var(--text2);line-height:1.65;margin-bottom:10px}
+.note strong{color:var(--text)}
+.note.blue{border-left-color:var(--blue)}
+.note.green{border-left-color:var(--green)}
+.note.red{border-left-color:var(--red)}
+.note.purp{border-left-color:var(--purp)}
+.note.teal{border-left-color:var(--teal)}
+.dtable-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:14px}
+.dtable-wrap table{width:100%;border-collapse:collapse;font-size:12px}
+.dtable-wrap thead tr{background:var(--bg3)}
+.dtable-wrap th{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.05em;color:var(--text3);font-weight:600;padding:8px 12px;text-align:left;border-bottom:1px solid var(--border)}
+.dtable-wrap td{padding:7px 12px;border-bottom:1px solid var(--border);font-family:'DM Mono',monospace;font-size:11px;color:var(--text2)}
+.dtable-wrap td:first-child{color:var(--text);font-weight:600}
+.dtable-wrap tr:last-child td{border-bottom:none}
+.dtable-wrap tr:nth-child(even){background:rgba(40,55,110,.02)}
+.formula{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;font-family:'DM Mono',monospace;font-size:12px;color:var(--text);margin:8px 0;line-height:1.8}
+.formula .fkey{color:var(--text3);margin-right:6px}
+.ind-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:4px}
+.ind-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;position:relative;overflow:hidden}
+.ind-card .stripe{position:absolute;top:0;left:0;width:3px;height:100%}
+.ind-card .ind-name{font-family:'Syne',sans-serif;font-size:12.5px;font-weight:700;margin-bottom:6px}
+.ind-card .ind-desc{font-size:12px;color:var(--text2);margin-bottom:8px;line-height:1.6}
+.ind-table{width:100%;border-collapse:collapse}
+.ind-table td{font-family:'DM Mono',monospace;font-size:10.5px;padding:3px 0;border-bottom:1px solid var(--border)}
+.ind-table tr:last-child td{border-bottom:none}
+.ind-table td:first-child{color:var(--text3);width:120px}
+.ind-table td:last-child{font-weight:600;color:var(--text)}
+/* QUIZ */
+.qconfig{text-align:center;padding:28px 0}
+.qconfig-title{font-family:'Syne',sans-serif;font-weight:700;font-size:18px;margin-bottom:6px}
+.qconfig-sub{font-size:13px;color:var(--text2);margin-bottom:22px}
+.cfg-grid{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:26px}
+.cfg-btn{padding:8px 16px;border-radius:20px;border:2px solid var(--border2);background:var(--bg2);color:var(--text3);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;transition:all .18s}
+.cfg-btn:hover{color:var(--text2)}
+.cfg-btn.sel{background:var(--green);color:#fff;border-color:var(--text);font-weight:600}
+.start-btn{padding:12px 34px;border-radius:var(--r);border:none;background:var(--green);color:var(--bg);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.02em;transition:all .18s}
+.start-btn:hover{background:var(--text)}
+.qheader{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.qnum-display{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);white-space:nowrap}
+.qnum-display strong{color:var(--text);font-size:15px}
+.qscore-display{margin-left:auto;font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);white-space:nowrap}
+.qscore-display strong{color:var(--green);font-size:15px}
+.qtype-pill{display:inline-block;padding:3px 10px;border-radius:10px;font-family:'DM Mono',monospace;font-size:10px;font-weight:600}
+.qcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:20px 22px;margin-bottom:12px}
+.qscen{font-size:13px;color:var(--text2);margin-bottom:10px;line-height:1.65}
+.qdata{font-family:'DM Mono',monospace;font-size:12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:12px;line-height:2}
+.qdata .dv{font-weight:700;color:var(--text)}
+.qdata .da{font-size:10.5px;color:var(--text3);margin-left:4px}
+.qtext{font-size:14px;font-weight:600;color:var(--text);line-height:1.55}
+.opts{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.opt{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-radius:var(--r);border:1.5px solid var(--border2);background:var(--bg);color:var(--text);text-align:left;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.5;transition:all .15s;width:100%}
+.opt:hover:not(:disabled){background:var(--bg3);border-color:rgba(40,55,110,.3)}
+.opt:disabled{cursor:default}
+.opt-key{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;min-width:22px;height:22px;border-radius:6px;background:var(--bg3);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;color:var(--text3);transition:all .15s}
+.opt.correct{background:var(--bluebg);border-color:var(--blueb)}
+.opt.correct .opt-key{background:var(--blue);color:#fff;border-color:var(--blue)}
+.opt.wrong{background:var(--redbg);border-color:var(--redb)}
+.opt.wrong .opt-key{background:var(--red);color:#fff;border-color:var(--red)}
+.opt.reveal{background:var(--bluebg);border-color:var(--blueb);opacity:.75}
+.opt.reveal .opt-key{background:var(--blue);color:#fff;border-color:var(--blue)}
+.expbox{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:12px;font-size:12.5px;color:var(--text2);line-height:1.72;display:none}
+.expbox.show{display:block;animation:fi .2s ease}
+.expbox strong{color:var(--text)}
+.actrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.next-btn{padding:10px 24px;border-radius:var(--r);border:none;background:var(--text);color:var(--bg);font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .18s;display:none}
+.next-btn:hover{background:var(--red)}
+.end-btn{padding:10px 18px;border-radius:var(--r);border:1px solid var(--redb);background:transparent;color:var(--red);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;transition:all .18s;margin-left:auto}
+.end-btn:hover{background:var(--redbg)}
+.results-wrap{text-align:center;padding:28px 12px}
+.res-big{font-family:'Syne',sans-serif;font-size:64px;font-weight:800;color:var(--text);line-height:1;margin-bottom:4px}
+.res-sub{font-family:'DM Mono',monospace;font-size:13px;color:var(--text3);margin-bottom:18px}
+.res-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:20px;text-align:left}
+.res-stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:11px 14px}
+.res-stat .rv{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--text);margin-bottom:2px}
+.res-stat .rl{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)}
+.retry-btn{padding:12px 32px;border-radius:var(--r);border:none;background:var(--text);color:var(--bg);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .18s;margin-bottom:20px}
+.retry-btn:hover{background:var(--red)}
+footer{text-align:center;padding-top:36px;font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="eyebrow">Ketahanan Pangan · Blok 2.5 · FK Unsoed</div>
+  <h1>Am I <span style="color:var(--green)">Food Secure?</span></h1>
+  <p class="sub">Quiz aksesibilitas pangan beragam, distribusi pangan, dan kemandirian pangan lokal.</p>
+</header>
+
+<div class="main-tabs">
+  <button class="main-tab active" onclick="switchMain('materi',this)">📋 Materi</button>
+  <button class="main-tab" onclick="switchMain('quiz',this)">🎯 Quiz</button>
+</div>
+
+<!-- MATERI -->
+<div class="main-panel active" id="mp-materi">
+<div class="sub-tabs">
+<button class="sub-tab active" onclick="switchSub('tab-ketahananpangan',this)">Ketahanan Pangan</button>
+</div>
+
+<div class="sub-panel active" id="tab-ketahananpangan">
+<div class="sec-h">Peningkatan Aksesibilitas Pangan yang Beragam</div>
+
+<div class="note">
+<strong>Oleh:</strong> Madya Ardi Wicaksono
+</div>
+
+<div class="divider"></div>
+
+<div class="sec-h">Capaian Pembelajaran</div>
+<ul>
+<li>Mahasiswa mampu menjelaskan produksi pangan dalam negeri</li>
+<li>Mahasiswa mampu menjelaskan penyediaan pangan berbasis sumber daya lokal</li>
+<li>Mahasiswa mampu menjelaskan distribusi pangan</li>
+<li>Mahasiswa mampu menjelaskan peningkatan akses pangan bagi masyarakat miskin dan masyarakat yang mengalami rawan pangan</li>
+</ul>
+
+<div class="divider"></div>
+
+<div class="sec-h">Pangan Sumber Karbohidrat</div>
+<div class="note blue">
+<ul>
+<li>Beras</li>
+<li>Jagung</li>
+<li>Alternatif: ubi, singkong, sagu, talas</li>
+</ul>
+</div>
+<div style="margin: 20px 0; text-align: center;">
+<div style="background:#fff;padding:10px;border-radius:8px;margin:10px 0;text-align:center;border:1px solid var(--border);overflow-x:auto;"><svg style="max-width:100%; height:auto;" id="container" width="189.40625" xmlns="http://www.w3.org/2000/svg" class="flowchart" height="483.296875" viewBox="0 0 189.40625 483.296875" role="graphics-document document" aria-roledescription="flowchart-v2"><style>#container{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#container .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#container .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#container .error-icon{fill:#552222;}#container .error-text{fill:#552222;stroke:#552222;}#container .edge-thickness-normal{stroke-width:1px;}#container .edge-thickness-thick{stroke-width:3.5px;}#container .edge-pattern-solid{stroke-dasharray:0;}#container .edge-thickness-invisible{stroke-width:0;fill:none;}#container .edge-pattern-dashed{stroke-dasharray:3;}#container .edge-pattern-dotted{stroke-dasharray:2;}#container .marker{fill:#333333;stroke:#333333;}#container .marker.cross{stroke:#333333;}#container svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#container p{margin:0;}#container .label{font-family:"trebuchet ms",verdana,arial,sans-serif;color:#333;}#container .cluster-label text{fill:#333;}#container .cluster-label span{color:#333;}#container .cluster-label span p{background-color:transparent;}#container .label text,#container span{fill:#333;color:#333;}#container .node rect,#container .node circle,#container .node ellipse,#container .node polygon,#container .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#container .rough-node .label text,#container .node .label text,#container .image-shape .label,#container .icon-shape .label{text-anchor:middle;}#container .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#container .rough-node .label,#container .node .label,#container .image-shape .label,#container .icon-shape .label{text-align:center;}#container .node.clickable{cursor:pointer;}#container .root .anchor path{fill:#333333!important;stroke-width:0;stroke:#333333;}#container .arrowheadPath{fill:#333333;}#container .edgePath .path{stroke:#333333;stroke-width:1px;}#container .flowchart-link{stroke:#333333;fill:none;}#container .edgeLabel{background-color:rgba(232,232,232, 0.8);text-align:center;}#container .edgeLabel p{background-color:rgba(232,232,232, 0.8);}#container .edgeLabel rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#container .labelBkg{background-color:rgba(232, 232, 232, 0.5);}#container .cluster rect{fill:#ffffde;stroke:#aaaa33;stroke-width:1px;}#container .cluster text{fill:#333;}#container .cluster span{color:#333;}#container div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:12px;background:hsl(80, 100%, 96.2745098039%);border:1px solid #aaaa33;border-radius:2px;pointer-events:none;z-index:100;}#container .flowchartTitleText{text-anchor:middle;font-size:18px;fill:#333;}#container rect.text{fill:none;stroke-width:0;}#container .icon-shape,#container .image-shape{background-color:rgba(232,232,232, 0.8);text-align:center;}#container .icon-shape p,#container .image-shape p{background-color:rgba(232,232,232, 0.8);padding:2px;}#container .icon-shape .label rect,#container .image-shape .label rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#container .label-icon{display:inline-block;height:1em;overflow:visible;vertical-align:-0.125em;}#container .node .label-icon path{fill:currentColor;stroke:revert;stroke-width:revert;}#container .node .neo-node{stroke:#9370DB;}#container [data-look="neo"].node rect,#container [data-look="neo"].cluster rect,#container [data-look="neo"].node polygon{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node path{stroke:#9370DB;stroke-width:1px;}#container [data-look="neo"].node .outer-path{filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node .neo-line path{stroke:#9370DB;filter:none;}#container [data-look="neo"].node circle{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node circle .state-start{fill:#000000;}#container [data-look="neo"].icon-shape .icon{fill:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].icon-shape .icon-neo path{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}#container .default&gt;*{fill:rgb(249, 249, 249)!important;stroke:rgb(51, 51, 51)!important;stroke-width:2px!important;}#container .default span{fill:rgb(249, 249, 249)!important;stroke:rgb(51, 51, 51)!important;stroke-width:2px!important;}#container .center&gt;*{fill:rgb(255, 204, 153)!important;stroke:rgb(230, 138, 0)!important;stroke-width:4px!important;}#container .center span{fill:rgb(255, 204, 153)!important;stroke:rgb(230, 138, 0)!important;stroke-width:4px!important;}</style><g><marker id="container_flowchart-v2-pointEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="4.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 5 L 10 10 L 10 0 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointEnd-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="11.5" refY="7" markerUnits="userSpaceOnUse" markerWidth="10.5" markerHeight="14" orient="auto"><path d="M 0 0 L 11.5 7 L 0 14 z" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointStart-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="1" refY="7" markerUnits="userSpaceOnUse" markerWidth="11.5" markerHeight="14" orient="auto"><polygon points="0,7 11.5,14 11.5,0" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></polygon></marker><marker id="container_flowchart-v2-circleEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="11" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-1" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleEnd-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refY="5" refX="12.25" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleStart-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-2" refY="5" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-crossEnd" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="12" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-crossStart" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="-1" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-crossEnd-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="17.7" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5;"></path></marker><marker id="container_flowchart-v2-crossStart-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="-3.5" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5; stroke-dasharray: 1, 0;"></path></marker><g class="root"><g class="clusters"></g><g class="edgePaths"><path d="M107.895,105.37L115.556,112.571C123.217,119.773,138.538,134.175,146.199,145.543C153.859,156.911,153.859,165.245,153.859,169.411L153.859,173.578" id="container-L_A_B_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_A_B_0" data-points="W3sieCI6MTA3Ljg5NTA2NDA3NDMxOTY2LCJ5IjoxMDUuMzcwMTIzMzI1MjUxOTd9LHsieCI6MTUzLjg1OTM3NSwieSI6MTQ4LjU3ODEyNX0seyJ4IjoxNTMuODU5Mzc1LCJ5IjoxNzMuNTc4MTI1fV0=" data-look="classic"></path><path d="M65.789,123.578L65.789,127.745C65.789,131.911,65.789,140.245,65.789,153.169C65.789,166.094,65.789,183.609,65.789,201.125C65.789,218.641,65.789,236.156,67.67,249.48C69.551,262.804,73.314,271.937,75.195,276.503L77.076,281.069" id="container-L_A_C_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_A_C_0" data-points="W3sieCI6NjUuNzg5MDYyNSwieSI6MTIzLjU3ODEyNX0seyJ4Ijo2NS43ODkwNjI1LCJ5IjoxNDguNTc4MTI1fSx7IngiOjY1Ljc4OTA2MjUsInkiOjIwMS4xMjV9LHsieCI6NjUuNzg5MDYyNSwieSI6MjUzLjY3MTg3NX0seyJ4Ijo3Ny4wNzU3NjEzMjMyMTQ5NSwieSI6MjgxLjA2ODk3MDMwNzEwMjc1fV0=" data-look="classic"></path><path d="M38.959,116.972L36.197,122.24C33.436,127.507,27.913,138.043,25.152,152.068C22.391,166.094,22.391,183.609,22.391,201.125C22.391,218.641,22.391,236.156,22.391,254.38C22.391,272.604,22.391,291.536,22.391,310.469C22.391,329.401,22.391,348.333,28.62,364.003C34.85,379.673,47.31,392.08,53.54,398.284L59.77,404.487" id="container-L_A_D_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_A_D_0" data-points="W3sieCI6MzguOTU4NjUyNDM5NTE2MDE1LCJ5IjoxMTYuOTcyMTE0Nzc5MTk4Njl9LHsieCI6MjIuMzkwNjI1LCJ5IjoxNDguNTc4MTI1fSx7IngiOjIyLjM5MDYyNSwieSI6MjAxLjEyNX0seyJ4IjoyMi4zOTA2MjUsInkiOjI1My42NzE4NzV9LHsieCI6MjIuMzkwNjI1LCJ5IjozMTAuNDY4NzV9LHsieCI6MjIuMzkwNjI1LCJ5IjozNjcuMjY1NjI1fSx7IngiOjU5Ljc2OTY1MzA1NzMxNjc3LCJ5Ijo0MDQuNDg3MjY3Njc2MDIyODR9XQ==" data-look="classic"></path><path d="M139.083,224.373L135.979,229.256C132.876,234.14,126.668,243.906,120.908,253.613C115.149,263.32,109.836,272.967,107.18,277.791L104.524,282.615" id="container-L_B_C_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_B_C_0" data-points="W3sieCI6MTM5LjA4Mjg4MzQ5NjY2NjE3LCJ5IjoyMjQuMzczMzQ2NjMxOTExOX0seyJ4IjoxMjAuNDYwOTM3NSwieSI6MjUzLjY3MTg3NX0seyJ4IjoxMDQuNTI0MjQ1Mjk4NjQwNzksInkiOjI4Mi42MTUxMDU2NTI5ODA2fV0=" data-look="classic"></path><path d="M89.188,342.266L89.188,346.432C89.188,350.599,89.188,358.932,89.188,367.266C89.188,375.599,89.188,383.932,89.188,388.099L89.188,392.266" id="container-L_C_D_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_C_D_0" data-points="W3sieCI6ODkuMTg3NSwieSI6MzQyLjI2NTYyNX0seyJ4Ijo4OS4xODc1LCJ5IjozNjcuMjY1NjI1fSx7IngiOjg5LjE4NzUsInkiOjM5Mi4yNjU2MjV9XQ==" data-look="classic"></path><path d="M120.188,406.167L127.466,399.684C134.745,393.2,149.302,380.233,156.581,364.283C163.859,348.333,163.859,329.401,163.859,310.469C163.859,291.536,163.859,272.604,163.051,258.89C162.243,245.177,160.626,236.681,159.818,232.434L159.009,228.186" id="container-L_D_B_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_D_B_0" data-points="W3sieCI6MTIwLjE4NzY1ODgxMzU4MDY3LCJ5Ijo0MDYuMTY3MTcyNTYzNDIwNn0seyJ4IjoxNjMuODU5Mzc1LCJ5IjozNjcuMjY1NjI1fSx7IngiOjE2My44NTkzNzUsInkiOjMxMC40Njg3NX0seyJ4IjoxNjMuODU5Mzc1LCJ5IjoyNTMuNjcxODc1fSx7IngiOjE1OS4wMDkyOTE2MjMwOTk5OCwieSI6MjI4LjE4NjIwMjUwNTQ0NTc1fV0=" data-look="classic"></path></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" data-id="L_A_B_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_A_C_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_A_D_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_B_C_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_C_D_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_D_B_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g></g><g class="nodes"><g class="node default center" id="container-flowchart-A-0" data-look="classic" transform="translate(65.7890625, 65.7890625)"><circle class="basic label-container" style="fill:#ffcc99 !important;stroke:#e68a00 !important;stroke-width:4px !important" r="57.7890625" cx="0" cy="0"></circle><g class="label" style="" transform="translate(-50.2890625, -12)"><rect></rect><foreignObject width="100.578125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Pangan Pokok</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-B-1" data-look="classic" transform="translate(153.859375, 201.125)"><circle class="basic label-container" style="fill:#f9f9f9 !important;stroke:#333 !important;stroke-width:2px !important" r="27.546875" cx="0" cy="0"></circle><g class="label" style="" transform="translate(-20.046875, -12)"><rect></rect><foreignObject width="40.09375" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Beras</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-C-2" data-look="classic" transform="translate(89.1875, 310.46875)"><circle class="basic label-container" style="fill:#f9f9f9 !important;stroke:#333 !important;stroke-width:2px !important" r="31.796875" cx="0" cy="0"></circle><g class="label" style="" transform="translate(-24.296875, -12)"><rect></rect><foreignObject width="48.59375" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Jagung</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-D-3" data-look="classic" transform="translate(89.1875, 433.78125)"><circle class="basic label-container" style="fill:#f9f9f9 !important;stroke:#333 !important;stroke-width:2px !important" r="41.515625" cx="0" cy="0"></circle><g class="label" style="" transform="translate(-34.015625, -12)"><rect></rect><foreignObject width="68.03125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Alternatif</p></span></div></foreignObject></g></g></g></g></g><defs><filter id="container-drop-shadow" height="130%" width="130%"><feDropShadow dx="4" dy="4" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs><defs><filter id="container-drop-shadow-small" height="150%" width="150%"><feDropShadow dx="2" dy="2" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs></svg></div>
+</div>
+
+<div class="divider"></div>
+
+<div class="sec-h">Produksi Pangan Sumber Karbohidrat</div>
+<div class="dtable-wrap">
+<div class="dtable-wrap"><table>
+<thead>
+<tr>
+<th rowspan="2">Komoditas Tanaman Pangan</th>
+<th colspan="9">Produksi Tanaman Pangan Nasional (Ton) - 2026</th>
+</tr>
+<tr>
+<th>Januari</th>
+<th>Februari</th>
+<th>Maret</th>
+<th>April</th>
+<th>Mei</th>
+<th>Juni</th>
+<th>Juli</th>
+<th>Agustus</th>
+<th>September</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Padi</td>
+<td>3.007.278,00</td>
+<td>5.008.573,00</td>
+<td>8.708.970,00</td>
+<td>7.632.319,00</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Jagung</td>
+<td>1.405.529,00</td>
+<td>1.818.704,00</td>
+<td>1.415.442,00</td>
+<td>1.375.909,00</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+
+<div class="divider"></div>
+
+<div class="sec-h">Komoditas Pangan di Indonesia</div>
+<div class="ind-grid">
+  <div class="ind-card">Ubi Kayu / Singkong</div>
+  <div class="ind-card">Jagung</div>
+  <div class="ind-card">Sorgum</div>
+  <div class="ind-card">Sagu</div>
+  <div class="ind-card">Pisang</div>
+  <div class="ind-card">Kentang</div>
+</div>
+
+<div class="divider"></div>
+
+<div class="sec-h">Pangan Berbasis Sumber Daya Lokal</div>
+<ul>
+<li>Sistem penyediaan dan konsumsi makanan yang memanfaatkan potensi alam, kearifan, dan budaya setempat</li>
+<li>Fokus utamanya adalah mengurangi ketergantungan pada beras atau terigu dengan memaksimalkan komoditas khas daerah seperti umbi-umbian (singkong, ubi jalar), jagung, sagu, sorgum, hingga hasil perikanan</li>
+</ul>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Keuntungan Pangan Lokal</div>
+<ul>
+<li><strong>Kemandirian Pangan:</strong> Mengurangi ketergantungan pada pasokan impor atau daerah lain. Pangan lokal sangat diandalkan saat terjadi gangguan rantai pasok.</li>
+<li><strong>Potensi Gizi &amp; Keragaman:</strong> Pangan lokal non-beras terbukti kaya karbohidrat, protein, dan nutrisi penting lainnya.</li>
+<li><strong>Dampak Lingkungan:</strong> Memangkas biaya dan emisi karbon dari transportasi logistik karena diproduksi serta dikonsumsi di wilayah setempat.</li>
+<li><strong>Ekonomi Kerakyatan:</strong> Menjadi roda penggerak industri skala kecil dan menengah (UMKM) serta memberdayakan petani lokal</li>
+</ul>
+
+<div class="divider"></div>
+
+<div class="sec-h">Landasan Hukum</div>
+<div class="note green">
+Pemerintah memperkuat sistem ini melalui berbagai regulasi seperti <strong>Peraturan Presiden Nomor 81 Tahun 2024</strong> tentang Percepatan Penganekaragaman Pangan Berbasis Potensi Sumber Daya Lokal. Aturan ini mendorong pengarusutamaan produksi, peningkatan nilai tambah, hingga optimalisasi lahan pekarangan oleh masyarakat.<sup>[1]</sup>
+</div>
+
+<div class="divider"></div>
+
+<div class="sec-h">Rantai Distribusi</div>
+<div style="margin: 20px 0; text-align: center; overflow-x: auto;">
+<div style="background:#fff;padding:10px;border-radius:8px;margin:10px 0;text-align:center;border:1px solid var(--border);overflow-x:auto;"><svg style="max-width:100%; height:auto;" id="container" width="870.84375" xmlns="http://www.w3.org/2000/svg" class="flowchart" height="145.953125" viewBox="0 0 870.84375 145.953125" role="graphics-document document" aria-roledescription="flowchart-v2"><style>#container{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#container .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#container .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#container .error-icon{fill:#552222;}#container .error-text{fill:#552222;stroke:#552222;}#container .edge-thickness-normal{stroke-width:1px;}#container .edge-thickness-thick{stroke-width:3.5px;}#container .edge-pattern-solid{stroke-dasharray:0;}#container .edge-thickness-invisible{stroke-width:0;fill:none;}#container .edge-pattern-dashed{stroke-dasharray:3;}#container .edge-pattern-dotted{stroke-dasharray:2;}#container .marker{fill:#333333;stroke:#333333;}#container .marker.cross{stroke:#333333;}#container svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#container p{margin:0;}#container .label{font-family:"trebuchet ms",verdana,arial,sans-serif;color:#333;}#container .cluster-label text{fill:#333;}#container .cluster-label span{color:#333;}#container .cluster-label span p{background-color:transparent;}#container .label text,#container span{fill:#333;color:#333;}#container .node rect,#container .node circle,#container .node ellipse,#container .node polygon,#container .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#container .rough-node .label text,#container .node .label text,#container .image-shape .label,#container .icon-shape .label{text-anchor:middle;}#container .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#container .rough-node .label,#container .node .label,#container .image-shape .label,#container .icon-shape .label{text-align:center;}#container .node.clickable{cursor:pointer;}#container .root .anchor path{fill:#333333!important;stroke-width:0;stroke:#333333;}#container .arrowheadPath{fill:#333333;}#container .edgePath .path{stroke:#333333;stroke-width:1px;}#container .flowchart-link{stroke:#333333;fill:none;}#container .edgeLabel{background-color:rgba(232,232,232, 0.8);text-align:center;}#container .edgeLabel p{background-color:rgba(232,232,232, 0.8);}#container .edgeLabel rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#container .labelBkg{background-color:rgba(232, 232, 232, 0.5);}#container .cluster rect{fill:#ffffde;stroke:#aaaa33;stroke-width:1px;}#container .cluster text{fill:#333;}#container .cluster span{color:#333;}#container div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:12px;background:hsl(80, 100%, 96.2745098039%);border:1px solid #aaaa33;border-radius:2px;pointer-events:none;z-index:100;}#container .flowchartTitleText{text-anchor:middle;font-size:18px;fill:#333;}#container rect.text{fill:none;stroke-width:0;}#container .icon-shape,#container .image-shape{background-color:rgba(232,232,232, 0.8);text-align:center;}#container .icon-shape p,#container .image-shape p{background-color:rgba(232,232,232, 0.8);padding:2px;}#container .icon-shape .label rect,#container .image-shape .label rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#container .label-icon{display:inline-block;height:1em;overflow:visible;vertical-align:-0.125em;}#container .node .label-icon path{fill:currentColor;stroke:revert;stroke-width:revert;}#container .node .neo-node{stroke:#9370DB;}#container [data-look="neo"].node rect,#container [data-look="neo"].cluster rect,#container [data-look="neo"].node polygon{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node path{stroke:#9370DB;stroke-width:1px;}#container [data-look="neo"].node .outer-path{filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node .neo-line path{stroke:#9370DB;filter:none;}#container [data-look="neo"].node circle{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node circle .state-start{fill:#000000;}#container [data-look="neo"].icon-shape .icon{fill:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].icon-shape .icon-neo path{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}#container .default&gt;*{fill:rgb(153, 204, 51)!important;stroke:rgb(255, 255, 255)!important;stroke-width:2px!important;color:rgb(255, 255, 255)!important;}#container .default span{fill:rgb(153, 204, 51)!important;stroke:rgb(255, 255, 255)!important;stroke-width:2px!important;color:rgb(255, 255, 255)!important;}#container .default tspan{fill:rgb(255, 255, 255)!important;}</style><g><marker id="container_flowchart-v2-pointEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="4.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 5 L 10 10 L 10 0 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointEnd-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="11.5" refY="7" markerUnits="userSpaceOnUse" markerWidth="10.5" markerHeight="14" orient="auto"><path d="M 0 0 L 11.5 7 L 0 14 z" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointStart-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="1" refY="7" markerUnits="userSpaceOnUse" markerWidth="11.5" markerHeight="14" orient="auto"><polygon points="0,7 11.5,14 11.5,0" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></polygon></marker><marker id="container_flowchart-v2-circleEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="11" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-1" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleEnd-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refY="5" refX="12.25" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleStart-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-2" refY="5" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-crossEnd" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="12" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-crossStart" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="-1" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-crossEnd-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="17.7" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5;"></path></marker><marker id="container_flowchart-v2-crossStart-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="-3.5" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5; stroke-dasharray: 1, 0;"></path></marker><g class="root"><g class="clusters"></g><g class="edgePaths"><path d="M91.469,72.977L95.635,72.977C99.802,72.977,108.135,72.977,115.802,72.977C123.469,72.977,130.469,72.977,133.969,72.977L137.469,72.977" id="container-L_A_B_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_A_B_0" data-points="W3sieCI6OTEuNDY4NzUsInkiOjcyLjk3NjU2MjV9LHsieCI6MTE2LjQ2ODc1LCJ5Ijo3Mi45NzY1NjI1fSx7IngiOjE0MS40Njg3NSwieSI6NzIuOTc2NTYyNX1d" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M223.672,72.977L227.839,72.977C232.005,72.977,240.339,72.977,248.005,72.977C255.672,72.977,262.672,72.977,266.172,72.977L269.672,72.977" id="container-L_B_C_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_B_C_0" data-points="W3sieCI6MjIzLjY3MTg3NSwieSI6NzIuOTc2NTYyNX0seyJ4IjoyNDguNjcxODc1LCJ5Ijo3Mi45NzY1NjI1fSx7IngiOjI3My42NzE4NzUsInkiOjcyLjk3NjU2MjV9XQ==" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M367.297,72.977L371.464,72.977C375.63,72.977,383.964,72.977,391.63,72.977C399.297,72.977,406.297,72.977,409.797,72.977L413.297,72.977" id="container-L_C_D_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_C_D_0" data-points="W3sieCI6MzY3LjI5Njg3NSwieSI6NzIuOTc2NTYyNX0seyJ4IjozOTIuMjk2ODc1LCJ5Ijo3Mi45NzY1NjI1fSx7IngiOjQxNy4yOTY4NzUsInkiOjcyLjk3NjU2MjV9XQ==" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M547.25,72.977L551.417,72.977C555.583,72.977,563.917,72.977,571.583,72.977C579.25,72.977,586.25,72.977,589.75,72.977L593.25,72.977" id="container-L_D_E_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_D_E_0" data-points="W3sieCI6NTQ3LjI1LCJ5Ijo3Mi45NzY1NjI1fSx7IngiOjU3Mi4yNSwieSI6NzIuOTc2NTYyNX0seyJ4Ijo1OTcuMjUsInkiOjcyLjk3NjU2MjV9XQ==" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M721.328,72.977L725.495,72.977C729.661,72.977,737.995,72.977,745.661,72.977C753.328,72.977,760.328,72.977,763.828,72.977L767.328,72.977" id="container-L_E_F_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_E_F_0" data-points="W3sieCI6NzIxLjMyODEyNSwieSI6NzIuOTc2NTYyNX0seyJ4Ijo3NDYuMzI4MTI1LCJ5Ijo3Mi45NzY1NjI1fSx7IngiOjc3MS4zMjgxMjUsInkiOjcyLjk3NjU2MjV9XQ==" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" data-id="L_A_B_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_B_C_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_C_D_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_D_E_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_E_F_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g></g><g class="nodes"><g class="node default" id="container-flowchart-A-0" data-look="classic" transform="translate(49.734375, 72.9765625)"><circle class="basic label-container" style="fill:#99cc33 !important;stroke:#fff !important;stroke-width:2px !important" r="41.734375" cx="0" cy="0"></circle><g class="label" style="color:#fff !important" transform="translate(-34.234375, -12)"><rect></rect><foreignObject width="68.46875" height="24"><div style="color: rgb(255, 255, 255) !important; display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span style="color:#fff !important" class="nodeLabel"><p>Produsen</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-B-1" data-look="classic" transform="translate(182.5703125, 72.9765625)"><circle class="basic label-container" style="fill:#99cc33 !important;stroke:#fff !important;stroke-width:2px !important" r="41.1015625" cx="0" cy="0"></circle><g class="label" style="color:#fff !important" transform="translate(-33.6015625, -12)"><rect></rect><foreignObject width="67.203125" height="24"><div style="color: rgb(255, 255, 255) !important; display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span style="color:#fff !important" class="nodeLabel"><p>Pengepul</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-C-3" data-look="classic" transform="translate(320.484375, 72.9765625)"><circle class="basic label-container" style="fill:#99cc33 !important;stroke:#fff !important;stroke-width:2px !important" r="46.8125" cx="0" cy="0"></circle><g class="label" style="color:#fff !important" transform="translate(-39.3125, -12)"><rect></rect><foreignObject width="78.625" height="24"><div style="color: rgb(255, 255, 255) !important; display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span style="color:#fff !important" class="nodeLabel"><p>Distributor</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-D-5" data-look="classic" transform="translate(482.2734375, 72.9765625)"><circle class="basic label-container" style="fill:#99cc33 !important;stroke:#fff !important;stroke-width:2px !important" r="64.9765625" cx="0" cy="0"></circle><g class="label" style="color:#fff !important" transform="translate(-57.4765625, -12)"><rect></rect><foreignObject width="114.953125" height="24"><div style="color: rgb(255, 255, 255) !important; display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span style="color:#fff !important" class="nodeLabel"><p>Pedagang Besar</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-E-7" data-look="classic" transform="translate(659.2890625, 72.9765625)"><circle class="basic label-container" style="fill:#99cc33 !important;stroke:#fff !important;stroke-width:2px !important" r="62.0390625" cx="0" cy="0"></circle><g class="label" style="color:#fff !important" transform="translate(-54.5390625, -12)"><rect></rect><foreignObject width="109.078125" height="24"><div style="color: rgb(255, 255, 255) !important; display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span style="color:#fff !important" class="nodeLabel"><p>Pedagang Kecil</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-F-9" data-look="classic" transform="translate(817.0859375, 72.9765625)"><circle class="basic label-container" style="fill:#99cc33 !important;stroke:#fff !important;stroke-width:2px !important" r="45.7578125" cx="0" cy="0"></circle><g class="label" style="color:#fff !important" transform="translate(-38.2578125, -12)"><rect></rect><foreignObject width="76.515625" height="24"><div style="color: rgb(255, 255, 255) !important; display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span style="color:#fff !important" class="nodeLabel"><p>Konsumen</p></span></div></foreignObject></g></g></g></g></g><defs><filter id="container-drop-shadow" height="130%" width="130%"><feDropShadow dx="4" dy="4" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs><defs><filter id="container-drop-shadow-small" height="150%" width="150%"><feDropShadow dx="2" dy="2" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs></svg></div>
+</div>
+
+<div class="divider"></div>
+
+<div class="sec-h">Diagram Sistem Pangan &amp; Status Gizi</div>
+<div style="margin: 20px 0; text-align: center; overflow-x: auto;">
+<div style="background:#fff;padding:10px;border-radius:8px;margin:10px 0;text-align:center;border:1px solid var(--border);overflow-x:auto;"><svg style="max-width:100%; height:auto;" id="container" width="821.47265625" xmlns="http://www.w3.org/2000/svg" class="flowchart" height="1104" viewBox="0 0 821.47265625 1104" role="graphics-document document" aria-roledescription="flowchart-v2"><style>#container{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#container .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#container .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#container .error-icon{fill:#552222;}#container .error-text{fill:#552222;stroke:#552222;}#container .edge-thickness-normal{stroke-width:1px;}#container .edge-thickness-thick{stroke-width:3.5px;}#container .edge-pattern-solid{stroke-dasharray:0;}#container .edge-thickness-invisible{stroke-width:0;fill:none;}#container .edge-pattern-dashed{stroke-dasharray:3;}#container .edge-pattern-dotted{stroke-dasharray:2;}#container .marker{fill:#333333;stroke:#333333;}#container .marker.cross{stroke:#333333;}#container svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#container p{margin:0;}#container .label{font-family:"trebuchet ms",verdana,arial,sans-serif;color:#333;}#container .cluster-label text{fill:#333;}#container .cluster-label span{color:#333;}#container .cluster-label span p{background-color:transparent;}#container .label text,#container span{fill:#333;color:#333;}#container .node rect,#container .node circle,#container .node ellipse,#container .node polygon,#container .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#container .rough-node .label text,#container .node .label text,#container .image-shape .label,#container .icon-shape .label{text-anchor:middle;}#container .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#container .rough-node .label,#container .node .label,#container .image-shape .label,#container .icon-shape .label{text-align:center;}#container .node.clickable{cursor:pointer;}#container .root .anchor path{fill:#333333!important;stroke-width:0;stroke:#333333;}#container .arrowheadPath{fill:#333333;}#container .edgePath .path{stroke:#333333;stroke-width:1px;}#container .flowchart-link{stroke:#333333;fill:none;}#container .edgeLabel{background-color:rgba(232,232,232, 0.8);text-align:center;}#container .edgeLabel p{background-color:rgba(232,232,232, 0.8);}#container .edgeLabel rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#container .labelBkg{background-color:rgba(232, 232, 232, 0.5);}#container .cluster rect{fill:#ffffde;stroke:#aaaa33;stroke-width:1px;}#container .cluster text{fill:#333;}#container .cluster span{color:#333;}#container div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:12px;background:hsl(80, 100%, 96.2745098039%);border:1px solid #aaaa33;border-radius:2px;pointer-events:none;z-index:100;}#container .flowchartTitleText{text-anchor:middle;font-size:18px;fill:#333;}#container rect.text{fill:none;stroke-width:0;}#container .icon-shape,#container .image-shape{background-color:rgba(232,232,232, 0.8);text-align:center;}#container .icon-shape p,#container .image-shape p{background-color:rgba(232,232,232, 0.8);padding:2px;}#container .icon-shape .label rect,#container .image-shape .label rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#container .label-icon{display:inline-block;height:1em;overflow:visible;vertical-align:-0.125em;}#container .node .label-icon path{fill:currentColor;stroke:revert;stroke-width:revert;}#container .node .neo-node{stroke:#9370DB;}#container [data-look="neo"].node rect,#container [data-look="neo"].cluster rect,#container [data-look="neo"].node polygon{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node path{stroke:#9370DB;stroke-width:1px;}#container [data-look="neo"].node .outer-path{filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node .neo-line path{stroke:#9370DB;filter:none;}#container [data-look="neo"].node circle{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node circle .state-start{fill:#000000;}#container [data-look="neo"].icon-shape .icon{fill:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].icon-shape .icon-neo path{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g><marker id="container_flowchart-v2-pointEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="4.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 5 L 10 10 L 10 0 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointEnd-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="11.5" refY="7" markerUnits="userSpaceOnUse" markerWidth="10.5" markerHeight="14" orient="auto"><path d="M 0 0 L 11.5 7 L 0 14 z" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointStart-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="1" refY="7" markerUnits="userSpaceOnUse" markerWidth="11.5" markerHeight="14" orient="auto"><polygon points="0,7 11.5,14 11.5,0" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></polygon></marker><marker id="container_flowchart-v2-circleEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="11" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-1" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleEnd-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refY="5" refX="12.25" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleStart-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-2" refY="5" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-crossEnd" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="12" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-crossStart" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="-1" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-crossEnd-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="17.7" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5;"></path></marker><marker id="container_flowchart-v2-crossStart-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="-3.5" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5; stroke-dasharray: 1, 0;"></path></marker><g class="root"><g class="clusters"><g class="cluster" id="container-S1" data-look="classic"><rect style="fill:none !important;stroke:none !important" x="8" y="8" width="290.69140625" height="480"></rect><g class="cluster-label" transform="translate(153.345703125, 8)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5;"><span class="nodeLabel"></span></div></foreignObject></g></g></g><g class="edgePaths"><path d="M157.121,111L156.47,115.167C155.819,119.333,154.517,127.667,153.866,137.333C153.215,147,153.215,158,153.215,163.5L153.215,169" id="container-L_A_B_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_A_B_0" data-points="W3sieCI6MTU3LjEyMTA5Mzc1LCJ5IjoxMTF9LHsieCI6MTUzLjIxNDg0Mzc1LCJ5IjoxMzZ9LHsieCI6MTUzLjIxNDg0Mzc1LCJ5IjoxNzN9XQ==" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M148.083,251L147.272,257.167C146.46,263.333,144.838,275.667,144.026,291.333C143.215,307,143.215,326,143.215,335.5L143.215,345" id="container-L_B_C_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_B_C_0" data-points="W3sieCI6MTQ4LjA4MzI2NDgwMjYzMTYsInkiOjI1MX0seyJ4IjoxNDMuMjE0ODQzNzUsInkiOjI4OH0seyJ4IjoxNDMuMjE0ODQzNzUsInkiOjM0OX1d" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M198.399,111L202.158,115.167C205.917,119.333,213.435,127.667,235.984,137.976C258.533,148.286,296.112,160.573,314.902,166.716L333.691,172.859" id="container-L_A_A1_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_A_A1_0" data-points="W3sieCI6MTk4LjM5OTEwODg4NjcxODc1LCJ5IjoxMTF9LHsieCI6MjIwLjk1MzEyNSwieSI6MTM2fSx7IngiOjMzMy42OTE0MDYyNSwieSI6MTcyLjg1ODg5NTI5MzE0ODkyfV0=" data-look="classic"></path><path d="M182.844,251L187.529,257.167C192.214,263.333,201.583,275.667,226.725,291.686C251.866,307.705,292.779,327.41,313.235,337.262L333.691,347.114" id="container-L_B_B1_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_B_B1_0" data-points="W3sieCI6MTgyLjg0MzY5ODYwMTk3MzcsInkiOjI1MX0seyJ4IjoyMTAuOTUzMTI1LCJ5IjoyODh9LHsieCI6MzMzLjY5MTQwNjI1LCJ5IjozNDcuMTE0MjU1MDc0OTcyMn1d" data-look="classic"></path><path d="M143.215,427L143.215,437.167C143.215,447.333,143.215,467.667,143.215,482C143.215,496.333,143.215,504.667,168.236,517.765C193.258,530.864,243.301,548.729,268.322,557.661L293.344,566.593" id="container-L_C_C1_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_C_C1_0" data-points="W3sieCI6MTQzLjIxNDg0Mzc1LCJ5Ijo0Mjd9LHsieCI6MTQzLjIxNDg0Mzc1LCJ5Ijo0ODh9LHsieCI6MTQzLjIxNDg0Mzc1LCJ5Ijo1MTN9LHsieCI6MjkzLjM0Mzc1LCJ5Ijo1NjYuNTkyNzkzNDk2Mjk3OH1d" data-look="classic"></path><path d="M683.473,463L683.473,467.167C683.473,471.333,683.473,479.667,683.473,488C683.473,496.333,683.473,504.667,662.407,516.932C641.341,529.196,599.209,545.393,578.143,553.491L557.077,561.589" id="container-L_F1_C1_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_F1_C1_0" data-points="W3sieCI6NjgzLjQ3MjY1NjI1LCJ5Ijo0NjN9LHsieCI6NjgzLjQ3MjY1NjI1LCJ5Ijo0ODh9LHsieCI6NjgzLjQ3MjY1NjI1LCJ5Ijo1MTN9LHsieCI6NTUzLjM0Mzc1LCJ5Ijo1NjMuMDI0Nzc3Mzc5MDAzOH1d" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M125.813,652L125.813,662.167C125.813,672.333,125.813,692.667,132.283,706.661C138.753,720.654,151.693,728.309,158.163,732.136L164.633,735.963" id="container-L_F2_C2_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_F2_C2_0" data-points="W3sieCI6MTI1LjgxMjUsInkiOjY1Mn0seyJ4IjoxMjUuODEyNSwieSI6NzEzfSx7IngiOjE2OC4wNzU0NjE2NDc3MjcyNSwieSI6NzM4fV0=" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M423.344,688L423.344,692.167C423.344,696.333,423.344,704.667,416.874,712.661C410.404,720.654,397.464,728.309,390.994,732.136L384.524,735.963" id="container-L_C1_C2_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_C1_C2_0" data-points="W3sieCI6NDIzLjM0Mzc1LCJ5Ijo2ODh9LHsieCI6NDIzLjM0Mzc1LCJ5Ijo3MTN9LHsieCI6MzgxLjA4MDc4ODM1MjI3Mjc1LCJ5Ijo3Mzh9XQ==" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M274.578,864L274.578,868.167C274.578,872.333,274.578,880.667,274.578,888.333C274.578,896,274.578,903,274.578,906.5L274.578,910" id="container-L_C2_D_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_C2_D_0" data-points="W3sieCI6Mjc0LjU3ODEyNSwieSI6ODY0fSx7IngiOjI3NC41NzgxMjUsInkiOjg4OX0seyJ4IjoyNzQuNTc4MTI1LCJ5Ijo5MTR9XQ==" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M274.578,968L274.578,972.167C274.578,976.333,274.578,984.667,274.578,992.333C274.578,1000,274.578,1007,274.578,1010.5L274.578,1014" id="container-L_D_E_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_D_E_0" data-points="W3sieCI6Mjc0LjU3ODEyNSwieSI6OTY4fSx7IngiOjI3NC41NzgxMjUsInkiOjk5M30seyJ4IjoyNzQuNTc4MTI1LCJ5IjoxMDE4fV0=" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" data-id="L_A_B_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_B_C_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_A_A1_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_B_B1_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_C_C1_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_F1_C1_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_F2_C2_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_C1_C2_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_C2_D_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_D_E_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g></g><g class="nodes"><g class="node default" id="container-flowchart-A-0" data-look="classic" transform="translate(163.21484375, 72)"><rect class="basic label-container" style="" x="-100.4765625" y="-39" width="200.953125" height="78"></rect><g class="label" style="" transform="translate(-70.4765625, -24)"><rect></rect><foreignObject width="140.953125" height="48"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Penyediaan Pangan<br/>1</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-B-1" data-look="classic" transform="translate(153.21484375, 212)"><rect class="basic label-container" style="" x="-93.1953125" y="-39" width="186.390625" height="78"></rect><g class="label" style="" transform="translate(-63.1953125, -24)"><rect></rect><foreignObject width="126.390625" height="48"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Distribusi Pangan<br/>2</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-C-3" data-look="classic" transform="translate(143.21484375, 388)"><rect class="basic label-container" style="" x="-99.953125" y="-39" width="199.90625" height="78"></rect><g class="label" style="" transform="translate(-69.953125, -24)"><rect></rect><foreignObject width="139.90625" height="48"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Konsumsi Makanan<br/>3</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-A1-4" data-look="classic" transform="translate(453.41015625, 212)"><rect class="basic label-container" style="" x="-119.71875" y="-51" width="239.4375" height="102"></rect><g class="label" style="" transform="translate(-89.71875, -36)"><rect></rect><foreignObject width="179.4375" height="72"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>- produksi pangan<br/>- perlakuan pasca panen<br/>- perdagangan</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-B1-7" data-look="classic" transform="translate(418.58203125, 388)"><rect class="basic label-container" style="" x="-84.890625" y="-75" width="169.78125" height="150"></rect><g class="label" style="" transform="translate(-54.890625, -60)"><rect></rect><foreignObject width="109.78125" height="120"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>- transport<br/>- penyimpanan<br/>- pengolahan<br/>- pengemasan<br/>- pemasaran</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-C1-10" data-look="classic" transform="translate(423.34375, 613)"><rect class="basic label-container" style="" x="-130" y="-75" width="260" height="150"></rect><g class="label" style="" transform="translate(-100, -60)"><rect></rect><foreignObject width="200" height="120"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table; white-space: break-spaces; line-height: 1.5; max-width: 200px; text-align: center; width: 200px;"><span class="nodeLabel"><p>- pangan yg dibeli<br/>- pemasakan<br/>- distribusi dlm keluarga<br/>- kebiasaan makan perorangan</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-F1-13" data-look="classic" transform="translate(683.47265625, 388)"><rect class="basic label-container" style="" x="-130" y="-75" width="260" height="150"></rect><g class="label" style="" transform="translate(-100, -60)"><rect></rect><foreignObject width="200" height="120"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table; white-space: break-spaces; line-height: 1.5; max-width: 200px; text-align: center; width: 200px;"><span class="nodeLabel"><p>- pendapatan<br/>- agama/adat kebiasaan/pendidikan masyarakat<br/>- jumlah anggota keluarga</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-F2-16" data-look="classic" transform="translate(125.8125, 613)"><rect class="basic label-container" style="" x="-117.53125" y="-39" width="235.0625" height="78"></rect><g class="label" style="" transform="translate(-87.53125, -24)"><rect></rect><foreignObject width="175.0625" height="48"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>- kebersihan lingkungan<br/>- penyakit</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-C2-18" data-look="classic" transform="translate(274.578125, 801)"><rect class="basic label-container" style="" x="-130" y="-63" width="260" height="126"></rect><g class="label" style="" transform="translate(-100, -48)"><rect></rect><foreignObject width="200" height="96"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table; white-space: break-spaces; line-height: 1.5; max-width: 200px; text-align: center; width: 200px;"><span class="nodeLabel"><p>Utilisasi Makanan:<br/>- pencernaan &amp; penyerapan<br/>- metabolisme zat gizi</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-D-22" data-look="classic" transform="translate(274.578125, 941)"><rect class="basic label-container" style="" x="-34.2578125" y="-27" width="68.515625" height="54"></rect><g class="label" style="" transform="translate(-4.2578125, -12)"><rect></rect><foreignObject width="8.515625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>4</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-E-24" data-look="classic" transform="translate(274.578125, 1057)"><rect class="basic label-container" style="" x="-107.515625" y="-39" width="215.03125" height="78"></rect><g class="label" style="" transform="translate(-77.515625, -24)"><rect></rect><foreignObject width="155.03125" height="48"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>STATUS GIZI<br/>Kurang / Baik / Lebih</p></span></div></foreignObject></g></g></g></g></g><defs><filter id="container-drop-shadow" height="130%" width="130%"><feDropShadow dx="4" dy="4" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs><defs><filter id="container-drop-shadow-small" height="150%" width="150%"><feDropShadow dx="2" dy="2" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs></svg></div>
+</div>
+
+<div class="divider"></div>
+
+<div class="sec-h">Rawan Pangan</div>
+<ul>
+<li>Bencana alam</li>
+<li>Kekeringan</li>
+<li>Paceklik / gagal panen</li>
+<li>Pengungsi</li>
+<li>Daerah Konflik</li>
+</ul>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Mengatasi Rawan Pangan</div>
+<ul>
+<li><strong>Diversifikasi pangan:</strong> mengurangi ketergantungan pada beras dengan umbi-umbian, jagung, dan sagu</li>
+<li><strong>Penguatan sentra produksi desa</strong></li>
+<li><strong>Penerapan teknologi pascapanen:</strong> untuk memperpanjang umur simpan bahan makanan</li>
+</ul>
+
+<div class="divider"></div>
+
+<div class="sec-h">Strategi Operasional</div>
+<ul>
+<li><strong>Diversifikasi Konsumsi:</strong> Menggalakkan kembali konsumsi pangan pokok lokal seperti singkong, ubi jalar, talas, dan sagu. Makanan ini dapat diolah menjadi produk turunan seperti tepung mocaf atau mi non-beras agar lebih menarik dan tahan lama.</li>
+<li><strong>Optimalisasi Pekarangan:</strong> Mendorong pemanfaatan lahan pekarangan rumah tangga untuk menanam tanaman sayur, buah, dan umbi guna menjamin ketersediaan gizi harian keluarga tanpa harus bergantung pada pasar.</li>
+<li><strong>Teknologi Pascapanen &amp; Pengolahan:</strong> Menerapkan teknik pengawetan dan pengemasan yang tepat untuk meminimalkan susut panen (losses). Ini mengubah hasil panen musiman menjadi cadangan pangan yang stabil sepanjang tahun.</li>
+<li><strong>Penguatan Lumbung Pangan Desa:</strong> Membangun atau mengaktifkan kembali lumbung pangan komunal di tingkat desa untuk menyimpan hasil panen masyarakat sebagai cadangan saat musim paceklik atau darurat.</li>
+<li><strong>Pemberdayaan UMKM Pangan Lokal:</strong> Memberikan pelatihan kewirausahaan dan dukungan modal bagi usaha mikro kecil menengah (UMKM) yang memproduksi olahan pangan lokal bernilai ekonomi tinggi.<sup>[2]</sup></li>
+</ul>
+
+<div class="divider"></div>
+
+<div class="sec-h">Daftar Pustaka</div>
+<ol>
+<li>Peraturan Presiden (Perpres) Nomor 81 Tahun 2024 tentang Percepatan Penganekaragaman Pangan Berbasis Potensi Sumber Daya Lokal.</li>
+<li>Salman D et al. (2026). Relational, cognitive, and structural social capital in shaping livelihood resilience in informal agri-food systems. (PMID: 42312299).</li>
+</ol>
+</div>
+
+</div>
+
+<!-- QUIZ -->
+<div class="main-panel" id="mp-quiz">
+  <div id="qconfig" class="qconfig">
+    <div class="qconfig-title">Mulai Sesi Quiz</div>
+    <div class="qconfig-sub">Pilih topik (multi-pilih)</div>
+    <div class="cfg-grid" id="cfg-grid">
+<button class="cfg-btn sel" data-type="pool_sumber_karbo">Sumber Karbo</button>
+<button class="cfg-btn sel" data-type="pool_produksi_data">Produksi Data</button>
+<button class="cfg-btn sel" data-type="pool_komoditas_indonesia">Komoditas Indonesia</button>
+<button class="cfg-btn sel" data-type="pool_pangan_lokal_keuntungan">Pangan Lokal Keuntungan</button>
+<button class="cfg-btn sel" data-type="pool_landasan_hukum">Landasan Hukum</button>
+<button class="cfg-btn sel" data-type="pool_rantai_distribusi">Rantai Distribusi</button>
+<button class="cfg-btn sel" data-type="pool_sistem_pangan">Sistem Pangan</button>
+<button class="cfg-btn sel" data-type="pool_rawan_pangan_sebab">Rawan Pangan Sebab</button>
+<button class="cfg-btn sel" data-type="pool_strategi_operasional">Strategi Operasional</button>
+<button class="cfg-btn sel" data-type="pool_cases_aksesibilitas">Cases Aksesibilitas</button>
+
+</div>
+    <button class="start-btn" onclick="startSession()">Mulai →</button>
+  </div>
+  <div id="qactive" style="display:none">
+    <div class="qheader">
+      <div class="qnum-display">Soal ke-<strong id="qnum">1</strong></div>
+      <div id="qpill" class="qtype-pill"></div>
+      <div class="qscore-display"><strong id="qscore">0</strong> benar</div>
+    </div>
+    <div class="qcard">
+      <div id="qscen" class="qscen" style="display:none"></div>
+      <div id="qdata" class="qdata" style="display:none"></div>
+      <div id="qtext" class="qtext"></div>
+    </div>
+    <div class="opts" id="opts"></div>
+    <div class="expbox" id="expbox"></div>
+    <div class="actrow">
+      <button class="next-btn" id="nextbtn" onclick="nextQ()">Soal Berikutnya →</button>
+      <button class="end-btn" onclick="endSession()">Akhiri Sesi</button>
+    </div>
+  </div>
+  <div id="qresults" style="display:none">
+    <div class="results-wrap">
+      <div class="res-big" id="res-pct">—</div>
+      <div class="res-sub" id="res-sub">—</div>
+      <div class="res-grid" id="res-grid"></div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:20px">
+        <button class="retry-btn" style="margin-bottom:0" onclick="restartQuiz()">Coba Lagi</button>
+        <button class="retry-btn" style="margin-bottom:0;background:var(--green)" onclick="downloadCert()">⬇ Unduh Sertifikat</button>
+      </div>
+      <div class="dtable-wrap" style="margin-bottom:14px"><table><thead><tr><th>Topik</th><th>Soal</th><th>Benar</th></tr></thead><tbody id="res-bytype"></tbody></table></div>
+      <div class="dtable-wrap"><table><thead><tr><th>#</th><th>Soal (ringkas)</th><th>Jawaban Benar</th><th>Hasil</th></tr></thead><tbody id="res-tbody"></tbody></table></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div>am i food secure? · Blok 2.5 · FK Unsoed</div>
+  <div style="margin-top:5px">crafted by alchemist4real · <a href="https://174-three.vercel.app" target="_blank" style="color:var(--text3);text-decoration:none;border-bottom:1px dashed var(--text3);transition:color .18s" onmouseover="this.style.color='var(--blue)'" onmouseout="this.style.color='var(--text3)'">check other quizzes → 174 archive ↗</a></div>
+</footer>
+</div>
+
+<script>
+// ═══ TAB ═══
+window.switchMain=function(id,b){document.querySelectorAll('.main-panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.main-tab').forEach(x=>x.classList.remove('active'));document.getElementById('mp-'+id).classList.add('active');b.classList.add('active');};
+window.switchSub=function(id,b){document.querySelectorAll('.sub-panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.sub-tab').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');b.classList.add('active');};
+window.startSession=startSession;window.nextQ=nextQ;window.endSession=endSession;window.restartQuiz=restartQuiz;
+
+// ═══ CONFIG ═══
+const activeTypes=new Set(['pool_sumber_karbo','pool_produksi_data','pool_komoditas_indonesia','pool_pangan_lokal_keuntungan','pool_landasan_hukum','pool_rantai_distribusi','pool_sistem_pangan','pool_rawan_pangan_sebab','pool_strategi_operasional','pool_cases_aksesibilitas']);
+document.querySelectorAll('.cfg-btn').forEach(b=>{b.addEventListener('click',()=>{const t=b.dataset.type;if(activeTypes.has(t)){if(activeTypes.size===1)return;activeTypes.delete(t);b.classList.remove('sel');}else{activeTypes.add(t);b.classList.add('sel');}});});
+
+// ═══ UTILS ═══
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const shuf=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]];}return b;};
+const KEYS='ABCDE'.split('');
+function stripHtml(s){return s.replace(/<[^>]*>/g,'');}
+// Pool-based sequential picker (no repeat until exhausted)
+function makePicker(pool){let idx=[];return function(){if(idx.length>=pool.length)idx=[];const av=pool.map((_,i)=>i).filter(i=>!idx.includes(i));const si=rnd(av);idx.push(si);return pool[si];};}
+
+// ═══════════════════════════════════════
+// BANKS
+// ═══════════════════════════════════════
+const pool_sumber_karbo = [
+        {
+            q: `Berdasarkan pedoman peningkatan aksesibilitas pangan, apa saja yang termasuk alternatif pangan sumber karbohidrat selain beras dan jagung?`,
+            a: `Ubi, singkong, sagu, dan talas`,
+            opt: [`Gandum, oats, dan barley`, `Kedelai, kacang hijau, dan kacang merah`, `Sayuran hijau dan buah-buahan`, `Daging, telur, dan ikan`],
+            hint: `Fokus pada komoditas lokal yang tinggi pati seperti umbi-umbian dan sagu.`
+        },
+        {
+            q: `Dalam bagan pangan pokok, pangan alternatif diposisikan sebagai pengganti dari dua sumber utama karbohidrat. Apa dua sumber utama tersebut?`,
+            a: `Beras dan Jagung`,
+            opt: [`Gandum dan Sorgum`, `Sagu dan Singkong`, `Kedelai dan Kacang Tanah`, `Kentang dan Ubi`],
+            hint: `Dua makanan pokok yang paling banyak dikonsumsi di Indonesia.`
+        },
+        {
+            q: `Mengapa beras dan jagung diletakkan pada posisi utama dalam penyediaan pangan sumber karbohidrat di Indonesia?`,
+            a: `Karena keduanya merupakan makanan pokok mayoritas penduduk dengan tingkat konsumsi tertinggi`,
+            opt: [`Karena harganya paling murah dibanding ubi dan sagu`, `Karena hanya beras dan jagung yang bisa ditanam di Indonesia`, `Karena keduanya merupakan komoditas ekspor utama`, `Karena pemerintah melarang konsumsi umbi-umbian`],
+            hint: `Terkait dengan pola konsumsi mayoritas masyarakat Indonesia.`
+        },
+        {
+            q: `Seorang ahli gizi menyarankan keluarga di Papua untuk tetap mempertahankan makanan pokok mereka selain beralih sepenuhnya ke beras. Makanan sumber karbohidrat alternatif apa yang paling sesuai untuk wilayah tersebut?`,
+            a: `Sagu dan Ubi`,
+            opt: [`Gandum`, `Kentang`, `Oats`, `Singkong dan Talas`],
+            hint: `Papua terkenal dengan makanan pokok berbahan dasar pati batang pohon dan umbi jalar.`
+        },
+        {
+            q: `Talas merupakan salah satu alternatif pangan sumber karbohidrat. Di wilayah mana di Indonesia talas banyak dikembangkan sebagai pangan lokal unggulan?`,
+            a: `Papua dan beberapa daerah di Jawa (seperti Bogor)`,
+            opt: [`Nusa Tenggara Timur`, `Kalimantan Tengah`, `Sumatera Barat`, `Sulawesi Selatan`],
+            hint: `Ingat talas bogor atau pangan lokal umbi-umbian di daerah pegunungan.`
+        }
+    ];
+const pick_pool_sumber_karbo = makePicker(pool_sumber_karbo);
+const pool_produksi_data = [
+        {
+            q: `Berdasarkan data Produksi Tanaman Pangan Nasional (Ton) tahun 2026, pada bulan apa produksi padi mencapai puncaknya (berdasarkan kuartal pertama)?`,
+            a: `Maret`,
+            opt: [`Januari`, `Februari`, `April`, `Juni`],
+            hint: `Bulan ketiga dalam tahun 2026 mencatat angka 8.708.970,00 Ton.`
+        },
+        {
+            q: `Berapa jumlah produksi jagung nasional pada bulan Februari 2026 berdasarkan tabel data?`,
+            a: `1.818.704,00 Ton`,
+            opt: [`1.405.529,00 Ton`, `1.415.442,00 Ton`, `1.375.909,00 Ton`, `3.007.278,00 Ton`],
+            hint: `Perhatikan baris Jagung pada kolom Februari.`
+        },
+        {
+            q: `Tren produksi jagung pada bulan Januari hingga April 2026 menunjukkan fluktuasi. Pada bulan apa produksi jagung berada di titik terendah dalam periode tersebut?`,
+            a: `April`,
+            opt: [`Januari`, `Februari`, `Maret`, `Mei`],
+            hint: `Angka pada bulan tersebut adalah 1.375.909,00 Ton.`
+        },
+        {
+            q: `Jika diakumulasikan secara kasar, tren produksi padi dari Januari hingga Maret 2026 mengalami...`,
+            a: `Peningkatan yang signifikan setiap bulannya`,
+            opt: [`Penurunan secara bertahap`, `Stagnasi tanpa perubahan berarti`, `Fluktuasi yang tidak menentu`, `Penurunan drastis pada bulan Maret`],
+            hint: `Dari sekitar 3 juta, naik ke 5 juta, lalu ke 8,7 juta.`
+        },
+        {
+            q: `Kesenjangan antara produksi padi dan jagung sangat terlihat pada bulan Maret 2026. Berapa perkiraan perbandingan produksi padi dan jagung pada bulan tersebut?`,
+            a: `Produksi padi lebih dari enam kali lipat produksi jagung`,
+            opt: [`Produksi padi sama dengan produksi jagung`, `Produksi jagung dua kali lipat produksi padi`, `Produksi padi lebih kecil dari produksi jagung`, `Produksi keduanya berada pada angka 5 juta ton`],
+            hint: `Padi: 8.708.970, Jagung: 1.415.442.`
+        }
+    ];
+const pick_pool_produksi_data = makePicker(pool_produksi_data);
+const pool_komoditas_indonesia = [
+        {
+            q: `Di antara komoditas berikut, mana yang termasuk dalam kelompok enam besar komoditas pangan utama non-beras di Indonesia menurut materi?`,
+            a: `Ubi Kayu, Jagung, Sorgum, Sagu, Pisang, Kentang`,
+            opt: [`Gandum, Oats, Kedelai, Kacang Tanah, Sagu, Talas`, `Beras, Jagung, Kedelai, Singkong, Ubi Jalar, Kentang`, `Sorgum, Gandum, Beras Merah, Sagu, Pisang, Talas`, `Ubi Jalar, Talas, Bengkoang, Gembili, Sagu, Pisang`],
+            hint: `Termasuk singkong, jagung, serealia Afrika (sorgum), sagu, pisang, dan kentang.`
+        },
+        {
+            q: `Sorgum merupakan salah satu komoditas pangan unggulan di wilayah yang cenderung kering. Wilayah mana di Indonesia yang paling cocok untuk pengembangan sorgum?`,
+            a: `Nusa Tenggara Timur (NTT)`,
+            opt: [`Jawa Barat`, `Sumatera Utara`, `Papua`, `Kalimantan Barat`],
+            hint: `Wilayah dengan iklim sabana kering sangat cocok untuk sorgum.`
+        },
+        {
+            q: `Dalam upaya penganekaragaman, ubi kayu (singkong) sering diolah menjadi produk tepung apa untuk menggantikan terigu?`,
+            a: `Tepung Mocaf (Modified Cassava Flour)`,
+            opt: [`Tepung Tapioka`, `Tepung Maizena`, `Tepung Sagu`, `Tepung Ketan`],
+            hint: `Tepung singkong termodifikasi (fermentasi).`
+        },
+        {
+            q: `Mengapa pisang dimasukkan sebagai salah satu komoditas pangan penting di Indonesia?`,
+            a: `Karena pisang dapat berfungsi sebagai sumber karbohidrat sekaligus banyak ditanam merata di berbagai daerah tropis`,
+            opt: [`Karena pisang adalah buah impor termahal`, `Hanya sebagai bahan pembuatan minuman energi`, `Karena pisang merupakan satu-satunya sumber protein bagi masyarakat miskin`, `Karena pemerintah mewajibkan penanaman pisang di seluruh lahan sawah`],
+            hint: `Pisang kaya akan pati (terutama pisang kepok/tanduk) dan mudah tumbuh di pekarangan.`
+        },
+        {
+            q: `Kentang termasuk komoditas pangan di Indonesia namun biasanya ditanam pada daerah dengan topografi tertentu. Daerah seperti apa?`,
+            a: `Dataran tinggi dengan suhu sejuk`,
+            opt: [`Dataran rendah berawa`, `Pesisir pantai bersuhu panas`, `Gurun pasir`, `Lahan gambut`],
+            hint: `Contoh daerah penanaman kentang adalah Dieng dan Brastagi.`
+        }
+    ];
+const pick_pool_komoditas_indonesia = makePicker(pool_komoditas_indonesia);
+const pool_pangan_lokal_keuntungan = [
+        {
+            q: `Apa fokus utama dari sistem penyediaan pangan berbasis sumber daya lokal?`,
+            a: `Mengurangi ketergantungan pada beras atau terigu dengan memaksimalkan komoditas khas daerah`,
+            opt: [`Meningkatkan impor pangan murah dari negara tetangga`, `Mengganti seluruh lahan pertanian menjadi perkebunan kelapa sawit`, `Memfokuskan produksi hanya pada padi hibrida`, `Menghilangkan makanan tradisional dari menu harian`],
+            hint: `Mengurangi kebiasaan makan yang hanya bergantung pada satu jenis karbohidrat konvensional.`
+        },
+        {
+            q: `Dari segi 'Dampak Lingkungan', bagaimana pangan lokal dapat memberikan keuntungan?`,
+            a: `Memangkas biaya dan emisi karbon dari transportasi logistik karena diproduksi dan dikonsumsi setempat`,
+            opt: [`Membutuhkan lebih banyak pupuk kimia impor`, `Meningkatkan deforestasi secara massal untuk ladang berpindah`, `Menambah penggunaan plastik kemasan secara eksponensial`, `Menyebabkan pencemaran air tanah secara lokal`],
+            hint: `Mengurangi jejak karbon (Food Miles).`
+        },
+        {
+            q: `Pangan lokal sangat mendukung 'Kemandirian Pangan'. Konsep ini berarti...`,
+            a: `Mengurangi ketergantungan pada pasokan impor atau dari daerah lain sehingga wilayah bertahan saat gangguan rantai pasok`,
+            opt: [`Masyarakat bebas menanam apa saja asal ditujukan untuk ekspor`, `Pemerintah daerah melepaskan tanggung jawab penyediaan pangan`, `Seluruh kebutuhan gizi disuplai oleh industri raksasa`, `Hanya menanam satu jenis komoditas untuk dijual ke luar pulau`],
+            hint: `Dapat bertahan (resilient) meski ada krisis transportasi global.`
+        },
+        {
+            q: `Bagaimana pangan lokal berkontribusi terhadap 'Ekonomi Kerakyatan'?`,
+            a: `Menjadi roda penggerak industri skala kecil dan menengah (UMKM) serta memberdayakan petani lokal`,
+            opt: [`Memperkaya tengkulak besar dari luar negeri`, `Menutup akses pasar bagi petani kecil`, `Meningkatkan pajak ekspor yang harus dibayar petani`, `Menurunkan harga jual hasil panen secara drastis hingga merugi`],
+            hint: `Nilai ekonomi tetap berputar di dalam desa atau daerah tersebut.`
+        },
+        {
+            q: `Dari segi 'Potensi Gizi & Keragaman', apa keunggulan pangan lokal non-beras?`,
+            a: `Kaya karbohidrat, protein, dan nutrisi mikronutrien penting lainnya yang sangat bervariasi`,
+            opt: [`Hanya mengandung kalori kosong tanpa vitamin`, `Gizi yang terkandung sangat rendah sehingga menyebabkan balita stunting`, `Hanya cocok untuk pakan ternak karena sulit dicerna`, `Kandungan racun alaminya sangat tinggi dan tidak bisa dihilangkan dengan masak`],
+            hint: `Keragaman jenis komoditas memberikan profil zat gizi yang komprehensif.`
+        }
+    ];
+const pick_pool_pangan_lokal_keuntungan = makePicker(pool_pangan_lokal_keuntungan);
+const pool_landasan_hukum = [
+        {
+            q: `Peraturan Presiden (Perpres) apa yang secara spesifik mengatur tentang Percepatan Penganekaragaman Pangan Berbasis Potensi Sumber Daya Lokal?`,
+            a: `Peraturan Presiden Nomor 81 Tahun 2024`,
+            opt: [`Undang-Undang Nomor 18 Tahun 2012`, `Peraturan Pemerintah Nomor 17 Tahun 2015`, `Peraturan Menteri Kesehatan Nomor 28 Tahun 2019`, `Keputusan Presiden Nomor 50 Tahun 2020`],
+            hint: `Peraturan yang disahkan pada tahun 2024.`
+        },
+        {
+            q: `Apa salah satu strategi utama di tingkat rumah tangga yang didorong oleh Perpres No 81 Tahun 2024?`,
+            a: `Optimalisasi lahan pekarangan oleh masyarakat`,
+            opt: [`Pembangunan pabrik pupuk bersubsidi di setiap desa`, `Impor beras dalam skala besar untuk bantuan sosial`, `Pengurangan subsidi pertanian untuk komoditas padi`, `Penghapusan bantuan pangan miskin yang berbasis beras`],
+            hint: `Tindakan yang bisa dilakukan langsung oleh tiap keluarga.`
+        },
+        {
+            q: `Berdasarkan jurnal oleh Salman D et al. (2026), resiliensi mata pencaharian dalam sistem pangan informal dibentuk oleh tiga jenis 'social capital' (modal sosial). Apa saja ketiganya?`,
+            a: `Relational, cognitive, dan structural social capital`,
+            opt: [`Financial, physical, dan natural capital`, `Political, human, dan technological capital`, `Cultural, spiritual, dan emotional capital`, `Industrial, commercial, dan digital capital`],
+            hint: `Lihat pada rujukan referensi nomor 2 di Daftar Pustaka.`
+        },
+        {
+            q: `Perpres Nomor 81 Tahun 2024 mendorong pengarusutamaan produksi, dan satu hal penting lain dalam rantai agroindustri, yaitu...`,
+            a: `Peningkatan nilai tambah (added value)`,
+            opt: [`Ekspor mentah ke pasar global`, `Standarisasi benih internasional`, `Penurunan harga eceran tertinggi sembako`, `Pemberian subsidi pupuk secara ganda`],
+            hint: `Berkaitan dengan industri pengolahan agar produk pangan lokal memiliki daya jual tinggi dan awet.`
+        },
+        {
+            q: `Mengapa Perpres ini sangat menekankan pada "Potensi Sumber Daya Lokal"?`,
+            a: `Untuk memaksimalkan kekayaan alam daerah guna menjamin ketersediaan gizi tanpa harus bergantung pada pasokan eksternal`,
+            opt: [`Agar pemerintah daerah bisa menaikkan pajak pangan lokal`, `Sebagai syarat utama untuk mendapatkan bantuan dana asing`, `Untuk memaksa masyarakat menghapus peredaran beras putih`, `Hanya untuk program simbolis perayaan hari tani nasional`],
+            hint: `Pemanfaatan 'lokal' berkaitan langsung dengan kemandirian wilayah.`
+        }
+    ];
+const pick_pool_landasan_hukum = makePicker(pool_landasan_hukum);
+const pool_rantai_distribusi = [
+        {
+            q: `Dalam skema Rantai Distribusi pangan, pihak mana yang menampung hasil panen langsung dari 'Produsen'?`,
+            a: `Pengepul`,
+            opt: [`Distributor`, `Pedagang Besar`, `Konsumen`, `Pedagang Kecil`],
+            hint: `Individu atau badan yang bertugas mengumpulkan barang skala kecil dari banyak petani.`
+        },
+        {
+            q: `Siapa pihak yang menjadi perantara besar yang menghubungkan Pengepul dan Pedagang Besar dalam rantai distribusi?`,
+            a: `Distributor`,
+            opt: [`Produsen`, `Pedagang Kecil`, `Konsumen`, `Tengkulak`],
+            hint: `Fungsinya mendistribusikan barang dalam partai sangat besar antardaerah.`
+        },
+        {
+            q: `Tahap terakhir dari rantai distribusi yang membeli komoditas pangan dari Pedagang Kecil untuk dimanfaatkan adalah?`,
+            a: `Konsumen`,
+            opt: [`Pengepul`, `Produsen`, `Supermarket`, `Pedagang Besar`],
+            hint: `Individu keluarga atau masyarakat sebagai end user.`
+        },
+        {
+            q: `Jika rantai distribusi pangan terlalu panjang (dari Produsen melewati 4 lapis pedagang sebelum ke Konsumen), apa dampaknya terhadap harga dan kualitas?`,
+            a: `Harga di tingkat konsumen menjadi jauh lebih mahal dan kualitas pangan segar (tanpa pengawet) rentan menurun`,
+            opt: [`Harga pangan menjadi sangat murah karena subsidi silang antarpedagang`, `Mutu pangan selalu meningkat pesat di setiap perpindahan tangan`, `Waktu pengiriman menjadi lebih singkat dan efisien`, `Petani produsen akan menerima harga beli yang sangat tinggi`],
+            hint: `Setiap perpindahan tangan menambah margin biaya (cost) dan waktu tunda (delay).`
+        },
+        {
+            q: `Koperasi desa berinisiatif memotong peran 'Pengepul' dan 'Distributor' dengan menjual langsung hasil bumi (misal singkong) ke 'Pedagang Kecil' di pasar kota. Apa manfaat utama skenario ini?`,
+            a: `Meningkatkan margin keuntungan bagi petani (produsen) sekaligus menstabilkan harga bagi konsumen`,
+            opt: [`Mempersulit konsumen mencari barang karena stok terbatas`, `Menurunkan kualitas hasil panen karena tidak disortir distributor`, `Membuat pedagang besar memonopoli seluruh akses pasar`, `Menurunkan tingkat konsumsi masyarakat terhadap singkong`],
+            hint: `Memotong rantai pasok berarti membagi margin yang hilang ke titik awal (produsen) dan titik akhir (konsumen).`
+        }
+    ];
+const pick_pool_rantai_distribusi = makePicker(pool_rantai_distribusi);
+const pool_sistem_pangan = [
+        {
+            q: `Berdasarkan Diagram Sistem Pangan & Status Gizi, komponen apa saja yang masuk ke dalam Tahap 1: "Penyediaan Pangan"?`,
+            a: `Produksi pangan, perlakuan pasca panen, dan perdagangan`,
+            opt: [`Pemasakan, distribusi keluarga, kebiasaan makan perorangan`, `Transportasi, penyimpanan, pengolahan, pengemasan`, `Pencernaan, penyerapan, metabolisme gizi`, `Kebersihan lingkungan, pengendalian penyakit infeksi`],
+            hint: `Segala hal yang terkait pengadaan barang sebelum masuk rantai pasok panjang.`
+        },
+        {
+            q: `Faktor eksternal apa yang secara spesifik memengaruhi tahap "Konsumsi Makanan" (Tahap 3) berdasarkan diagram?`,
+            a: `Pendapatan, agama/adat kebiasaan/pendidikan masyarakat, dan jumlah anggota keluarga`,
+            opt: [`Kebersihan lingkungan sekitar dan prevalensi penyakit infeksi`, `Sistem transportasi antar pulau dan metode pengolahan pangan`, `Cuaca saat produksi pangan dan teknologi perlakuan pascapanen`, `Kondisi keasaman tanah dan ketersediaan irigasi desa`],
+            hint: `Faktor-faktor sosio-demografi dan ekonomi rumah tangga.`
+        },
+        {
+            q: `Tahap "Utilisasi Makanan" (Tahap 4) dalam sistem pangan mencakup proses biologis yang terjadi dalam tubuh manusia, yaitu...`,
+            a: `Pencernaan & penyerapan, serta metabolisme zat gizi`,
+            opt: [`Pemasakan makanan dan penentuan porsi dalam keluarga`, `Pengemasan produk olahan dan penyimpanannya`, `Perlakuan pengawetan pascapanen di tingkat petani`, `Perdagangan internasional dan pengolahan pabrik`],
+            hint: `Bagaimana sel tubuh memanfaatkan makanan yang telah ditelan.`
+        },
+        {
+            q: `Faktor dominan yang dapat mengganggu keberhasilan "Utilisasi Makanan" (Tahap 4) sehingga berujung pada status gizi kurang adalah...`,
+            a: `Kebersihan lingkungan yang buruk dan infeksi penyakit (seperti kecacingan atau diare)`,
+            opt: [`Jumlah anggota keluarga yang terlalu banyak (lebih dari 5 orang)`, `Infrastruktur transportasi dan penyimpanan yang tidak memadai`, `Adat istiadat yang melarang konsumsi makanan laut`, `Sistem perdagangan yang dimonopoli segelintir orang`],
+            hint: `Penyakit infeksi akan menghambat penyerapan gizi biarpun asupan makannya banyak.`
+        },
+        {
+            q: `Tahap "Distribusi Pangan" (Tahap 2) meliputi proses krusial pascapanen, antara lain...`,
+            a: `Transport, penyimpanan, pengolahan, pengemasan, dan pemasaran`,
+            opt: [`Pemanenan, pemupukan lahan, dan pencarian bibit unggul`, `Pangan yang dibeli, pemasakan, distribusi porsi meja makan`, `Pencernaan mekanik di mulut, metabolisme sel`, `Tingkat pendapatan keluarga, pendidikan ibu, dan agama`],
+            hint: `Segala aktivitas fisik pergerakan barang dan *handling* di luar *farm*.`
+        }
+    ];
+const pick_pool_sistem_pangan = makePicker(pool_sistem_pangan);
+const pool_rawan_pangan_sebab = [
+        {
+            q: `Berikut ini adalah faktor-faktor penyebab terjadinya rawan pangan yang disebutkan secara eksplisit dalam materi, KECUALI...`,
+            a: `Inflasi nilai tukar Rupiah (kurs)`,
+            opt: [`Bencana alam (gempa, banjir)`, `Daerah rawan konflik (perang, kerusuhan)`, `Banyaknya pengungsi di satu titik`, `Paceklik atau gagal panen massal`],
+            hint: `Meskipun inflasi bisa menyebabkan rawan pangan secara ekonomi, pilih opsi yang tidak terdaftar spesifik di poin "Rawan Pangan" materi.`
+        },
+        {
+            q: `Pada musim El Nino berkepanjangan, lahan pertanian sawah tadah hujan di suatu kabupaten mengalami kekeringan total dan gagal panen. Fenomena ini merujuk pada penyebab rawan pangan, yaitu...`,
+            a: `Kekeringan dan Paceklik / gagal panen`,
+            opt: [`Bencana alam vulkanik (letusan gunung)`, `Adanya pengungsi dari wilayah tetangga`, `Sistem logistik dan distribusi pangan yang rusak`, `Kebijakan impor pangan yang terlalu masif`],
+            hint: `Terkait cuaca ekstrem yang menyebabkan panen tidak berhasil.`
+        },
+        {
+            q: `Dalam materi, apa salah satu rekomendasi konkrit untuk "Mengatasi Rawan Pangan" terkait diversifikasi?`,
+            a: `Mengurangi ketergantungan pada beras dengan membudidayakan umbi-umbian, jagung, dan sagu yang lebih tahan iklim tertentu`,
+            opt: [`Meningkatkan impor gandum dan membagikannya secara gratis`, `Memperluas lahan sawah padi secara eksklusif ke dalam hutan lindung`, `Hanya menanam sayur hidroponik di pekarangan beton`, `Menyimpan beras di lumbung luar provinsi agar tidak dicuri`],
+            hint: `Jawaban mengandung esensi dari Penganekaragaman.`
+        },
+        {
+            q: `Bagaimana "Penerapan teknologi pascapanen" berperan penting sebagai solusi rawan pangan?`,
+            a: `Memperpanjang umur simpan bahan makanan sehingga dapat menjadi stok di masa paceklik`,
+            opt: [`Mempercepat usia panen tanaman secara rekayasa genetika`, `Meningkatkan jumlah air pada umbi agar timbangannya lebih berat saat dijual`, `Mengubah rasa asli makanan pokok agar mirip beras secara instan`, `Mengurangi kebutuhan tenaga kerja panen di ladang`],
+            hint: `Makanan lokal (seperti singkong) sangat mudah membusuk. Teknologi pascapanen menyelesaikan masalah ini.`
+        },
+        {
+            q: `Salah satu langkah strategis untuk memperkuat ketahanan di tingkat paling bawah dalam menghadapi rawan pangan adalah dengan...`,
+            a: `Penguatan sentra produksi desa`,
+            opt: [`Membangun pabrik industri skala besar di ibu kota negara`, `Sentralisasi kontrol pangan di kementerian pusat`, `Melarang desa untuk menanam tanaman selain padi hibrida`, `Menghapus lumbung-lumbung penyimpanan desa`],
+            hint: `Desa sebagai ujung tombak kemandirian wilayah.`
+        }
+    ];
+const pick_pool_rawan_pangan_sebab = makePicker(pool_rawan_pangan_sebab);
+const pool_strategi_operasional = [
+        {
+            q: `Strategi operasional "Diversifikasi Konsumsi" mendorong olahan turunan agar pangan lokal lebih awet dan menarik. Contoh pengolahan dari singkong yang direkomendasikan adalah...`,
+            a: `Pembuatan tepung mocaf atau mi non-beras`,
+            opt: [`Fermentasi menjadi alkohol murni`, `Pengekstrakan menjadi tepung maizena`, `Pengolahan ampas menjadi pakan unggas`, `Pengekstrakkan cairan menjadi sirup fruktosa tinggi`],
+            hint: `Tepung Mocaf adalah Modified Cassava Flour.`
+        },
+        {
+            q: `Apa sasaran utama dari inisiatif "Optimalisasi Pekarangan"?`,
+            a: `Memanfaatkan lahan di sekitar rumah untuk menanam sayur, buah, atau umbi demi menjamin kebutuhan gizi harian keluarga secara mandiri`,
+            opt: [`Membangun instalasi rumah kaca komersial berbiaya miliaran`, `Meniadakan fungsi pasar tradisional secara total`, `Meningkatkan luas hutan kota untuk rekreasi`, `Memaksa keluarga menyewakan pekarangannya pada perusahaan multinasional`],
+            hint: `Pekarangan rumah sangat efektif untuk ketahanan pangan mikro.`
+        },
+        {
+            q: `Tujuan dari "Penguatan Lumbung Pangan Desa" adalah...`,
+            a: `Menyimpan sebagian hasil panen warga secara komunal sebagai cadangan (buffer stock) saat musim darurat atau paceklik`,
+            opt: [`Menjadi tempat penimbunan produk impor sebelum dijual ke kota`, `Menyewakan gudang kepada distributor pupuk kimia`, `Sebagai satu-satunya pusat perdagangan ekspor komoditas elit`, `Membangun museum sejarah alat-alat pertanian tua`],
+            hint: `Lumbung desa berfungsi sebagai cadangan hari buruk (safety net).`
+        },
+        {
+            q: `Dalam rangka memberdayakan ekonomi lokal, strategi operasional menyebutkan "Pemberdayaan UMKM Pangan Lokal". Bentuk dukungan yang krusial adalah...`,
+            a: `Memberikan pelatihan kewirausahaan, inovasi produk, dan dukungan akses modal`,
+            opt: [`Membagikan uang tunai langsung ke rumah tangga untuk dibelikan beras`, `Menyediakan traktor raksasa untuk membajak sawah penduduk`, `Melarang UMKM menjual produk di luar batas kecamatan`, `Mewajibkan UMKM membayar pajak ganda ke pemerintah desa`],
+            hint: `UMKM butuh penguatan kapasitas (skill) dan pembiayaan (capital).`
+        },
+        {
+            q: `Penerapan teknologi pengawetan dan pengemasan dalam pascapanen bertujuan utama untuk meminimalkan "losses" (susut panen). Keuntungan strategis dari hal ini adalah...`,
+            a: `Mengubah hasil panen komoditas musiman menjadi cadangan pangan yang stabil dan tersedia sepanjang tahun`,
+            opt: [`Menaikkan harga jual pangan menjadi sangat eksklusif dan tak terjangkau rakyat`, `Mempercepat proses pembusukan biologis bahan organik`, `Menciptakan limbah kemasan plastik dalam skala tak terkendali`, `Mewajibkan ekspor 100% dari hasil panen yang diawetkan`],
+            hint: `Hasil panen yang musiman (banyak di satu bulan) bisa dimakan kapan saja bila diawetkan.`
+        }
+    ];
+const pick_pool_strategi_operasional = makePicker(pool_strategi_operasional);
+const pool_cases_aksesibilitas = [
+        {
+            q: `Skenario: Di sebuah daerah dataran tinggi berbatu di NTT, curah hujan sangat rendah sehingga panen padi dipastikan gagal total. Kepala desa meminta saran Anda. Strategi pangan lokal yang paling berketahanan iklim (climate-resilient) untuk di daerah tersebut adalah...`,
+            a: `Fokus mengembangkan budidaya dan mengolah komoditas sorgum serta jagung lokal yang terbukti sangat toleran kekeringan.`,
+            opt: [
+                `Membangun bendungan raksasa berbiaya triliunan agar bisa menanam padi.`,
+                `Menggantungkan hidup 100% pada kiriman mi instan dari ibukota provinsi.`,
+                `Meminta penduduk beralih menanam kelapa sawit di tanah bebatuan.`,
+                `Menebang pohon-pohon yang tersisa untuk dijadikan kayu bakar pengganti pangan.`
+            ],
+            hint: `Pilih pangan lokal yang genetiknya tahan lahan kering/kritis (sorgum/jagung).`
+        },
+        {
+            q: `Skenario: Sebuah survei gizi menemukan angka stunting di Desa Pinggir Pantai cukup tinggi. Secara ekonomi, keluarga mampu membeli bahan pangan (ikan berlimpah, ubi ada), namun sanitasi lingkungan sangat buruk sehingga prevalensi diare anak mencapai 40%. Berdasarkan 'Diagram Sistem Pangan & Status Gizi', masalah utama terjadi pada tahap?`,
+            a: `Utilisasi Makanan (Tahap 4), karena infeksi diare merusak sistem penyerapan zat gizi secara biologis.`,
+            opt: [
+                `Distribusi Pangan (Tahap 2), karena ikan rusak akibat tidak adanya pendingin.`,
+                `Produksi Pangan (Tahap 1), akibat ikan yang ditangkap terlalu kecil.`,
+                `Konsumsi Makanan (Tahap 3), karena keluarga miskin ekstrem tidak punya uang.`,
+                `Sistem Perdagangan (Tahap 1), akibat tidak adanya pasar.`
+            ],
+            hint: `Penyakit infeksi langsung mengintervensi Tahap Utilisasi gizi.`
+        },
+        {
+            q: `Skenario: Sebuah kabupaten pegunungan sering terisolir longsor selama berbulan-bulan, menyebabkan truk beras tidak bisa masuk dan memicu rawan pangan. Intervensi kebijakan pangan lokal apa yang paling mandiri dan efektif untuk level desa?`,
+            a: `Mendorong "Optimalisasi Pekarangan" (tanam umbi/sayur sendiri) dan "Penguatan Lumbung Pangan Desa" untuk menyimpan stok saat jalan putus.`,
+            opt: [
+                `Menyewa armada helikopter swasta untuk mengirim beras putih ke desa.`,
+                `Memaksa warga memakan dedaunan hutan tanpa pengolahan gizi sama sekali.`,
+                `Membangun pabrik pupuk urea kimia skala besar di puncak gunung.`,
+                `Memberdayakan UMKM untuk membuat kerajinan ukiran kayu guna dijual ke luar.`
+            ],
+            hint: `Ketika logistik luar terputus, ketahanan bertumpu pada apa yang ada di pekarangan dan apa yang tersimpan di lumbung.`
+        },
+        {
+            q: `Skenario: Kelompok Tani Singkong mengeluh. Saat musim panen raya, singkong melimpah namun cepat busuk (umur simpan pendek), sehingga harganya hancur di tingkat pengepul. Akibatnya petani merugi parah. Pendekatan operasional apa yang paling solutif?`,
+            a: `Menerapkan teknologi pengolahan pascapanen (misalnya mengolah singkong menjadi tepung mocaf) yang didukung pemberdayaan UMKM lokal.`,
+            opt: [
+                `Melarang Kelompok Tani menanam singkong dan diwajibkan tanam apel.`,
+                `Membiarkan singkong membusuk agar stok di pasar turun dan harga tahun depan naik.`,
+                `Meminta pemerintah membeli singkong busuk tersebut dengan harga beras.`,
+                `Memaksa keluarga petani mengonsumsi 20 kg singkong per hari agar tidak sisa.`
+            ],
+            hint: `Mengubah komoditas mentah cepat busuk menjadi produk antara (tepung) yang awet adalah solusi kerugian pascapanen.`
+        },
+        {
+            q: `Skenario: Di daerah Z, pangan berlimpah dan murah (tahap penyediaan & distribusi prima). Sayangnya, karena adat istiadat yang kuat, pria dewasa diutamakan mengambil lauk ikan dan daging, sedangkan ibu hamil dan anak balita hanya mendapat sisa kuah. Akibatnya gizi buruk balita tinggi. Intervensi gizi harus difokuskan pada tahap?`,
+            a: `Konsumsi Makanan (Tahap 3), secara khusus pada aspek distribusi makanan dalam keluarga dan edukasi pergeseran kebiasaan adat.`,
+            opt: [
+                `Distribusi Pangan (Tahap 2), dengan mensubsidi biaya transportasi antar pulau.`,
+                `Penyediaan Pangan (Tahap 1), dengan membagikan traktor gratis.`,
+                `Utilisasi Makanan (Tahap 4), dengan membagikan obat cacing massal tanpa mengubah pola makan.`,
+                `Kebersihan Lingkungan, dengan membangun jamban mahal.`
+            ],
+            hint: `Budaya patriarki meja makan masuk ke dalam "distribusi dlm keluarga" pada ranah "Konsumsi Makanan".`
+        },
+        {
+            q: `Skenario: Suatu kawasan transmigrasi sangat rentan terhadap kekeringan yang memicu paceklik beras. Untuk mengatasi rawan pangan jangka panjang, Dinas Pertanian setempat membagikan bibit sorgum dan sagu, serta mesin pengolahnya. Tindakan ini mencerminkan prinsip penanganan rawan pangan berupa...`,
+            a: `Diversifikasi pangan (mengurangi ketergantungan beras) dan penguatan sentra produksi desa.`,
+            opt: [
+                `Impor komoditas substitusi pangan pokok negara asing secara berlebihan.`,
+                `Pemberian bantuan tunai BLT langsung secara sporadis.`,
+                `Membangun ketergantungan pada rantai distribusi modern perkotaan.`,
+                `Eksploitasi lahan gambut untuk dicetak menjadi sawah padi berskala besar.`
+            ],
+            hint: `Penyebaran bibit tanaman alternatif yang tahan iklim adalah bentuk diversifikasi hulu.`
+        },
+        {
+            q: `Skenario: Ibu Ana rajin memasak variasi karbohidrat lokal bagi keluarganya. Senin (nasi), Selasa (singkong rebus), Rabu (kue sagu), Kamis (jagung manis), Jumat (talas kukus). Ditinjau dari sudut pandang Keuntungan Pangan Lokal, apa manfaat fisiologis utamanya bagi anak-anaknya?`,
+            a: `Meningkatkan asupan nutrisi yang bervariasi karena pangan lokal non-beras terbukti memiliki profil vitamin, mineral, dan protein yang saling melengkapi (Potensi Gizi & Keragaman).`,
+            opt: [
+                `Meningkatkan risiko alergi pada lambung anak karena terlalu banyak pergantian menu.`,
+                `Menyebabkan anak rentan stunting karena tidak memakan beras setiap saat.`,
+                `Karbohidratnya kurang padat sehingga anak tidak akan pernah merasa kenyang.`,
+                `Menghemat biaya masak tetapi mengorbankan kualitas kecerdasan otak.`
+            ],
+            hint: `Setiap umbi/serealia punya kandungan fitokimia dan serat yang berbeda, melengkapi profil gizi.`
+        },
+        {
+            q: `Skenario: Di sebuah pulau, warga menebang semua pohon sagu asli dan menggantinya dengan komoditas kelapa sawit komersial. Untuk makan, warga kini harus membeli beras kiriman kapal dari Pulau Jawa. Jika gelombang laut ganas selama berbulan-bulan (kapal tak bisa berlayar), apa ancaman struktural terbesar bagi warga?`,
+            a: `Mereka kehilangan kemandirian pangan absolut dan sangat rentan mengalami krisis kelaparan akibat ketergantungan total pada logistik dari luar daerah.`,
+            opt: [
+                `Masyarakat bisa menjadi kaya mendadak dari sawit lalu membeli pangan via udara.`,
+                `Status gizi masyarakat pasti akan meningkat karena memakan beras dari Jawa.`,
+                `Mereka bisa bertahan hanya dengan meminum minyak kelapa sawit segar mentah.`,
+                `Sistem distribusi pangan mereka justru dinilai sangat modern dan canggih.`
+            ],
+            hint: `Kemandirian pangan hilang saat komoditas pangan pokok tak lagi diproduksi secara lokal.`
+        },
+        {
+            q: `Skenario: Petugas Puskesmas mendapati banyak rumah warga yang memiliki pekarangan luas, tetapi dibiarkan kosong dan gersang. Di sisi lain, angka anemia pada ibu hamil di desa itu tinggi karena kurang asupan zat besi dari sayuran. Program apa yang paling TEPAT secara regulasi Perpres 81/2024?`,
+            a: `Menginisiasi program "Optimalisasi Pekarangan" agar warga menanam sayur mayur kaya zat besi (seperti bayam, daun kelor) di pekarangan rumahnya.`,
+            opt: [
+                `Mewajibkan ibu hamil membeli suplemen besi komersial setiap hari di apotek kota.`,
+                `Membangun mega-proyek rumah kaca hidroponik seharga miliaran dari APBN.`,
+                `Membagikan bantuan mi instan fortifikasi impor dari negara asing.`,
+                `Memindahkan warga secara paksa ke daerah pertanian subur di luar provinsi.`
+            ],
+            hint: `Masalah pekarangan kosong dan kurang sayur -> Optimalisasi pekarangan adalah solusinya.`
+        },
+        {
+            q: `Skenario: Harga beras lokal di petani adalah Rp 10.000/kg. Namun ketika beras tersebut melewati Pengepul -> Distributor Provinsi -> Pedagang Besar di Pasar Induk kota -> Pedagang Eceran, harga beras menjadi Rp 18.000/kg di tingkat konsumen akhir. Proses bertingkat ini menyoroti permasalahan dalam hal...`,
+            a: `Panjangnya Rantai Distribusi yang menyebabkan harga menjadi tidak efisien di tingkat konsumen dan margin petani tidak bertambah.`,
+            opt: [
+                `Tingginya nilai utilisasi beras di saluran pencernaan konsumen.`,
+                `Kegagalan petani dalam memproduksi gabah dengan mutu premium dunia.`,
+                `Rendahnya kebersihan lingkungan di setiap titik pasar tradisional.`,
+                `Kurangnya kesadaran masyarakat dalam memakan beras gandum impor.`
+            ],
+            hint: `Rantai Distribusi yang berlapis-lapis akan menyebabkan eskalasi harga.`
+        }
+    ];
+const pick_pool_cases_aksesibilitas = makePicker(pool_cases_aksesibilitas);
+
+
+// ═══ DISPATCHER ═══
+function makeQ(type){
+    
+        if(type === 'pool_sumber_karbo') {
+            const item = pick_pool_sumber_karbo();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'pool_sumber_karbo',
+                typeName: 'Sumber Karbo',
+                tpColor: 'var(--green)',
+                tpBg: 'var(--greenbg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+        if(type === 'pool_produksi_data') {
+            const item = pick_pool_produksi_data();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'pool_produksi_data',
+                typeName: 'Produksi Data',
+                tpColor: 'var(--green)',
+                tpBg: 'var(--greenbg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+        if(type === 'pool_komoditas_indonesia') {
+            const item = pick_pool_komoditas_indonesia();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'pool_komoditas_indonesia',
+                typeName: 'Komoditas Indonesia',
+                tpColor: 'var(--green)',
+                tpBg: 'var(--greenbg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+        if(type === 'pool_pangan_lokal_keuntungan') {
+            const item = pick_pool_pangan_lokal_keuntungan();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'pool_pangan_lokal_keuntungan',
+                typeName: 'Pangan Lokal Keuntungan',
+                tpColor: 'var(--green)',
+                tpBg: 'var(--greenbg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+        if(type === 'pool_landasan_hukum') {
+            const item = pick_pool_landasan_hukum();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'pool_landasan_hukum',
+                typeName: 'Landasan Hukum',
+                tpColor: 'var(--green)',
+                tpBg: 'var(--greenbg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+        if(type === 'pool_rantai_distribusi') {
+            const item = pick_pool_rantai_distribusi();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'pool_rantai_distribusi',
+                typeName: 'Rantai Distribusi',
+                tpColor: 'var(--green)',
+                tpBg: 'var(--greenbg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+        if(type === 'pool_sistem_pangan') {
+            const item = pick_pool_sistem_pangan();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'pool_sistem_pangan',
+                typeName: 'Sistem Pangan',
+                tpColor: 'var(--green)',
+                tpBg: 'var(--greenbg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+        if(type === 'pool_rawan_pangan_sebab') {
+            const item = pick_pool_rawan_pangan_sebab();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'pool_rawan_pangan_sebab',
+                typeName: 'Rawan Pangan Sebab',
+                tpColor: 'var(--green)',
+                tpBg: 'var(--greenbg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+        if(type === 'pool_strategi_operasional') {
+            const item = pick_pool_strategi_operasional();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'pool_strategi_operasional',
+                typeName: 'Strategi Operasional',
+                tpColor: 'var(--green)',
+                tpBg: 'var(--greenbg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+        if(type === 'pool_cases_aksesibilitas') {
+            const item = pick_pool_cases_aksesibilitas();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'pool_cases_aksesibilitas',
+                typeName: 'Cases Aksesibilitas',
+                tpColor: 'var(--green)',
+                tpBg: 'var(--greenbg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+    return {type:'dummy', typeName:'End of Pool', tpColor:'gray', tpBg:'lightgray', q:'No more questions', opts:['A'], ans:'A', exp:''};
+}
+
+// ═══ SESSION ═══
+let typeQueue=[],sessIdx=0,sessScore=0,sessLog=[],currentQ=null;
+function nextType(){if(!typeQueue.length){const t=[...activeTypes];for(let i=t.length-1;i>0;i--){const j=0|Math.random()*(i+1);[t[i],t[j]]=[t[j],t[i]];}typeQueue=[...t];}return typeQueue.shift();}
+function startSession(){
+  sessIdx=0;sessScore=0;sessLog=[];typeQueue=[];
+  document.getElementById('qconfig').style.display='none';
+  document.getElementById('qresults').style.display='none';
+  document.getElementById('qactive').style.display='block';
+  renderQ();
+}
+function renderQ(){
+  const q=makeQ(nextType());currentQ=q;
+  document.getElementById('qnum').textContent=sessIdx+1;
+  document.getElementById('qscore').textContent=sessScore;
+  const pill=document.getElementById('qpill');
+  pill.textContent=q.typeName;pill.style.background=q.tpBg;pill.style.color=q.tpColor;pill.style.border=`1px solid ${q.tpColor}44`;
+  const scen=document.getElementById('qscen');
+  if(q.scenario){scen.innerHTML=`<strong>Kasus:</strong> ${q.scenario}`;scen.style.display='block';}else scen.style.display='none';
+  const db=document.getElementById('qdata');
+  if(q.rawData){db.innerHTML=q.rawData;db.style.display='block';}else db.style.display='none';
+  document.getElementById('qtext').innerHTML=q.q;
+  const og=document.getElementById('opts');og.innerHTML='';
+  q.opts.forEach((opt,i)=>{
+    const btn=document.createElement('button');btn.className='opt';
+    btn.innerHTML=`<span class="opt-key">${KEYS[i]}</span><span>${opt}</span>`;
+    btn.onclick=()=>selectAns(opt,q,btn);og.appendChild(btn);
+  });
+  const ebox=document.getElementById('expbox');ebox.classList.remove('show');ebox.style.display='none';
+  document.getElementById('nextbtn').style.display='none';
+}
+function selectAns(chosen,q,clickedBtn){
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  const correct=stripHtml(chosen)===stripHtml(q.ans);
+  if(correct)sessScore++;
+  document.querySelectorAll('.opt').forEach(b=>{
+    const label=b.querySelector('span:last-child').innerHTML;
+    if(stripHtml(label)===stripHtml(q.ans)){
+      if(b===clickedBtn&&correct)b.classList.add('correct');
+      else if(b!==clickedBtn)b.classList.add('reveal');
+      else b.classList.add('correct');
+    }
+    if(b===clickedBtn&&!correct)b.classList.add('wrong');
+  });
+  const ebox=document.getElementById('expbox');
+  ebox.innerHTML=`<div style="margin-bottom:7px;font-weight:700;color:${correct?'var(--blue)':'var(--red)'}">${correct?'✅ Benar!':'❌ Kurang tepat.'} Jawaban: <strong>${q.ans}</strong></div>${q.exp}`;
+  ebox.style.display='block';setTimeout(()=>ebox.classList.add('show'),10);
+  sessLog.push({idx:sessIdx+1,type:q.typeName,q:q.q.replace(/<[^>]+>/g,'').slice(0,55)+'…',ans:q.ans,correct});
+  document.getElementById('qscore').textContent=sessScore;
+  document.getElementById('nextbtn').style.display='inline-block';
+}
+function nextQ(){sessIdx++;document.getElementById('expbox').style.display='none';document.getElementById('expbox').classList.remove('show');renderQ();}
+function endSession(){
+  document.getElementById('qactive').style.display='none';document.getElementById('qresults').style.display='block';
+  const total=sessLog.length;if(!total){restartQuiz();return;}
+  const pct=Math.round((sessScore/total)*100);
+  document.getElementById('res-pct').textContent=pct+'%';
+  document.getElementById('res-sub').textContent=`${sessScore} / ${total} soal benar`;
+  const byType={};
+  sessLog.forEach(l=>{if(!byType[l.type])byType[l.type]={total:0,correct:0};byType[l.type].total++;if(l.correct)byType[l.type].correct++;});
+  const rg=document.getElementById('res-grid');rg.innerHTML='';
+  const medal=pct>=80?'🏆':pct>=60?'👍':'📚';
+  [{v:medal,l:'Nilai'},{v:pct+'%',l:'Persentase'},{v:sessScore+'',l:'Benar'},{v:(total-sessScore)+'',l:'Salah'},{v:total+'',l:'Total'}].forEach(s=>{
+    const d=document.createElement('div');d.className='res-stat';
+    d.innerHTML=`<div class="rv">${s.v}</div><div class="rl">${s.l}</div>`;rg.appendChild(d);
+  });
+  document.getElementById('res-bytype').innerHTML=Object.entries(byType).map(([t,v])=>{
+    const p=Math.round((v.correct/v.total)*100);const c=p>=80?'var(--blue)':p>=60?'var(--gold)':'var(--red)';
+    return`<tr><td>${t}</td><td>${v.total}</td><td style="color:${c};font-weight:700">${v.correct} (${p}%)</td></tr>`;
+  }).join('');
+  document.getElementById('res-tbody').innerHTML=sessLog.map(l=>`<tr><td>${l.idx}</td><td>${l.q}</td><td>${l.ans}</td><td style="color:${l.correct?'var(--green)':'var(--red)'}">${l.correct?'✅':'❌'}</td></tr>`).join('');
+}
+function restartQuiz(){typeQueue=[];document.getElementById('qresults').style.display='none';document.getElementById('qconfig').style.display='block';}
+
+function downloadCert(){
+  const total=sessLog.length;
+  const pct=Math.round((sessScore/total)*100);
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+  const medal=pct>=80?'LULUS':pct>=60?'CUKUP':'PERLU BELAJAR LAGI';
+  const medalColor=pct>=80?'#1f7a4a':pct>=60?'#7a6010':'#b03030';
+  const byType={};
+  sessLog.forEach(l=>{if(!byType[l.type])byType[l.type]={total:0,correct:0};byType[l.type].total++;if(l.correct)byType[l.type].correct++;});
+  const rows=Object.entries(byType).map(([t,v])=>{
+    const p=Math.round(v.correct/v.total*100);
+    const bar=Math.round(p*1.4);
+    const bc=p>=80?'#1f7a4a':p>=60?'#7a6010':'#b03030';
+    return`<tr><td style="padding:5px 8px;font-size:11px;color:#384068;width:200px">${t}</td><td style="padding:5px 8px"><div style="background:#e7e7e2;border-radius:4px;height:10px;width:140px"><div style="background:${bc};width:${bar}px;height:10px;border-radius:4px"></div></div></td><td style="padding:5px 8px;font-size:11px;font-weight:700;color:${bc}">${v.correct}/${v.total} (${p}%)</td></tr>`;
+  }).join('');
+
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="680" height="520" font-family="Georgia,serif">
+  <defs>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <path d="M 28 0 L 0 0 0 28" fill="none" stroke="#e0ddd5" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+  <rect width="680" height="520" fill="#fdfdf9"/>
+  <rect width="680" height="520" fill="url(#grid)"/>
+  <rect x="20" y="20" width="640" height="480" rx="12" fill="none" stroke="#b03030" stroke-width="2"/>
+  <rect x="26" y="26" width="628" height="468" rx="9" fill="none" stroke="#b03030" stroke-width="0.5" opacity="0.4"/>
+
+  <text x="340" y="66" text-anchor="middle" font-size="11" letter-spacing="4" fill="#7c85a8" font-family="Georgia,serif">SERTIFIKAT PENYELESAIAN KUIS</text>
+  <line x1="120" y1="74" x2="260" y2="74" stroke="#b03030" stroke-width="0.8"/>
+  <circle cx="340" cy="74" r="3" fill="#b03030"/>
+  <line x1="420" y1="74" x2="560" y2="74" stroke="#b03030" stroke-width="0.8"/>
+
+  <text x="340" y="116" text-anchor="middle" font-size="34" font-weight="bold" fill="#161b2e" font-family="Georgia,serif">Am I Food Secure?</text>
+  <text x="340" y="138" text-anchor="middle" font-size="11" fill="#7c85a8" letter-spacing="2" font-family="Georgia,serif">KETAHANAN PANGAN · BLOK 2.5 · FK UNSOED</text>
+
+  <line x1="100" y1="152" x2="580" y2="152" stroke="#e0ddd5" stroke-width="1"/>
+
+  <text x="340" y="185" text-anchor="middle" font-size="13" fill="#384068" font-family="Georgia,serif">Telah menyelesaikan sesi quiz dengan hasil</text>
+
+  <rect x="230" y="196" width="220" height="80" rx="8" fill="none" stroke="${medalColor}" stroke-width="1.5"/>
+  <text x="340" y="245" text-anchor="middle" font-size="52" font-weight="bold" fill="${medalColor}" font-family="Georgia,serif">${pct}%</text>
+  <text x="340" y="265" text-anchor="middle" font-size="10" fill="${medalColor}" letter-spacing="3" font-family="Georgia,serif">${medal}</text>
+
+  <text x="340" y="300" text-anchor="middle" font-size="12" fill="#384068" font-family="Georgia,serif">${sessScore} soal benar dari ${total} soal · ${dateStr}</text>
+
+  <line x1="100" y1="314" x2="580" y2="314" stroke="#e0ddd5" stroke-width="1"/>
+  <text x="340" y="332" text-anchor="middle" font-size="10" fill="#7c85a8" letter-spacing="2" font-family="Georgia,serif">DISTRIBUSI SKOR PER TOPIK</text>
+
+  <foreignObject x="80" y="340" width="520" height="120">
+    <div xmlns="http://www.w3.org/1999/xhtml">
+      <table style="width:100%;border-collapse:collapse">${rows}</table>
+    </div>
+  </foreignObject>
+
+  <line x1="100" y1="472" x2="580" y2="472" stroke="#e0ddd5" stroke-width="1"/>
+  <text x="340" y="490" text-anchor="middle" font-size="10" fill="#7c85a8" font-family="Georgia,serif">Am I Food Secure? · Blok 2.5 · FK Unsoed</text>
+</svg>`;
+
+  const blob=new Blob([svg],{type:'image/svg+xml'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`am-i-food-secure-${pct}pct.svg`;
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+window.downloadCert=downloadCert;
+</script>
+</body>
+</html>

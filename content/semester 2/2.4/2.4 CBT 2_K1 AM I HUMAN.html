@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Am I Human? — Quiz Hakikat Manusia K1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f8f8f5;--bg2:#f1f1ed;--bg3:#e7e7e2;--bg4:#dcdcd6;
+  --border:rgba(40,55,110,.10);--border2:rgba(40,55,110,.20);
+  --text:#161b2e;--text2:#384068;--text3:#7c85a8;
+  --green:#1f7a4a;--greenbg:rgba(31,122,74,.09);--greenb:rgba(31,122,74,.25);
+  --gold:#7a6010;--goldbg:rgba(122,96,16,.09);--goldb:rgba(122,96,16,.28);
+  --red:#b03030;--redbg:rgba(176,48,48,.08);--redb:rgba(176,48,48,.25);
+  --blue:#1a4faa;--bluebg:rgba(26,79,170,.09);--blueb:rgba(26,79,170,.28);
+  --purp:#4433a0;--purpbg:rgba(68,51,160,.08);--purpb:rgba(68,51,160,.25);
+  --teal:#136ba8;--tealbg:rgba(19,107,168,.08);--tealb:rgba(19,107,168,.25);
+  --r:10px;--rl:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.6;min-height:100vh}
+.app{max-width:900px;margin:0 auto;padding:0 16px 60px}
+header{padding:40px 0 28px;text-align:center}
+.eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--text3);text-transform:uppercase;margin-bottom:10px}
+h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(30px,6vw,54px);letter-spacing:-.03em;line-height:1;margin-bottom:10px}
+h1 span{color:var(--red)}
+.sub{font-size:13px;color:var(--text2);max-width:500px;margin:0 auto}
+.main-tabs{display:flex;gap:3px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:24px}
+.main-tab{flex:1;padding:9px 6px;border-radius:9px;border:none;background:transparent;color:var(--text3);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .18s}
+.main-tab:hover{color:var(--text)}
+.main-tab.active{background:var(--text);color:#fff;font-weight:600}
+.main-panel{display:none}
+.main-panel.active{display:block;animation:fi .2s ease}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.sub-tabs{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:4px;margin-bottom:20px}
+.sub-tab{padding:8px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text3);font-family:'DM Mono',monospace;font-size:10.5px;cursor:pointer;transition:all .18s;text-align:center;line-height:1.4}
+.sub-tab:hover{background:var(--bg3);color:var(--text2);border-color:var(--border2)}
+.sub-tab.active{background:var(--text);color:#fff;border-color:var(--text);font-weight:600}
+.sub-panel{display:none}
+.sub-panel.active{display:block;animation:fi .18s ease}
+.sec-h{font-family:'Syne',sans-serif;font-weight:700;font-size:14.5px;color:var(--text);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.divider{height:1px;background:var(--border);margin:20px 0}
+.note{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:0 var(--r) var(--r) 0;padding:10px 14px;font-size:12.5px;color:var(--text2);line-height:1.65;margin-bottom:10px}
+.note strong{color:var(--text)}
+.note.blue{border-left-color:var(--blue)}
+.note.green{border-left-color:var(--green)}
+.note.red{border-left-color:var(--red)}
+.note.purp{border-left-color:var(--purp)}
+.note.teal{border-left-color:var(--teal)}
+.dtable-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:14px}
+.dtable-wrap table{width:100%;border-collapse:collapse;font-size:12px}
+.dtable-wrap thead tr{background:var(--bg3)}
+.dtable-wrap th{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.05em;color:var(--text3);font-weight:600;padding:8px 12px;text-align:left;border-bottom:1px solid var(--border)}
+.dtable-wrap td{padding:7px 12px;border-bottom:1px solid var(--border);font-family:'DM Mono',monospace;font-size:11px;color:var(--text2)}
+.dtable-wrap td:first-child{color:var(--text);font-weight:600}
+.dtable-wrap tr:last-child td{border-bottom:none}
+.dtable-wrap tr:nth-child(even){background:rgba(40,55,110,.02)}
+.formula{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;font-family:'DM Mono',monospace;font-size:12px;color:var(--text);margin:8px 0;line-height:1.8}
+.formula .fkey{color:var(--text3);margin-right:6px}
+.ind-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:4px}
+.ind-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;position:relative;overflow:hidden}
+.ind-card .stripe{position:absolute;top:0;left:0;width:3px;height:100%}
+.ind-card .ind-name{font-family:'Syne',sans-serif;font-size:12.5px;font-weight:700;margin-bottom:6px}
+.ind-card .ind-desc{font-size:12px;color:var(--text2);margin-bottom:8px;line-height:1.6}
+.ind-table{width:100%;border-collapse:collapse}
+.ind-table td{font-family:'DM Mono',monospace;font-size:10.5px;padding:3px 0;border-bottom:1px solid var(--border)}
+.ind-table tr:last-child td{border-bottom:none}
+.ind-table td:first-child{color:var(--text3);width:120px}
+.ind-table td:last-child{font-weight:600;color:var(--text)}
+/* QUIZ */
+.qconfig{text-align:center;padding:28px 0}
+.qconfig-title{font-family:'Syne',sans-serif;font-weight:700;font-size:18px;margin-bottom:6px}
+.qconfig-sub{font-size:13px;color:var(--text2);margin-bottom:22px}
+.cfg-grid{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:26px}
+.cfg-btn{padding:8px 16px;border-radius:20px;border:2px solid var(--border2);background:var(--bg2);color:var(--text3);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;transition:all .18s}
+.cfg-btn:hover{color:var(--text2)}
+.cfg-btn.sel{background:var(--text);color:#fff;border-color:var(--text);font-weight:600}
+.start-btn{padding:12px 34px;border-radius:var(--r);border:none;background:var(--text);color:var(--bg);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.02em;transition:all .18s}
+.start-btn:hover{background:var(--red)}
+.qheader{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.qnum-display{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);white-space:nowrap}
+.qnum-display strong{color:var(--text);font-size:15px}
+.qscore-display{margin-left:auto;font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);white-space:nowrap}
+.qscore-display strong{color:var(--green);font-size:15px}
+.qtype-pill{display:inline-block;padding:3px 10px;border-radius:10px;font-family:'DM Mono',monospace;font-size:10px;font-weight:600}
+.qcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:20px 22px;margin-bottom:12px}
+.qscen{font-size:13px;color:var(--text2);margin-bottom:10px;line-height:1.65}
+.qdata{font-family:'DM Mono',monospace;font-size:12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:12px;line-height:2}
+.qdata .dv{font-weight:700;color:var(--text)}
+.qdata .da{font-size:10.5px;color:var(--text3);margin-left:4px}
+.qtext{font-size:14px;font-weight:600;color:var(--text);line-height:1.55}
+.opts{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.opt{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-radius:var(--r);border:1.5px solid var(--border2);background:var(--bg);color:var(--text);text-align:left;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.5;transition:all .15s;width:100%}
+.opt:hover:not(:disabled){background:var(--bg3);border-color:rgba(40,55,110,.3)}
+.opt:disabled{cursor:default}
+.opt-key{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;min-width:22px;height:22px;border-radius:6px;background:var(--bg3);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;color:var(--text3);transition:all .15s}
+.opt.correct{background:var(--bluebg);border-color:var(--blueb)}
+.opt.correct .opt-key{background:var(--blue);color:#fff;border-color:var(--blue)}
+.opt.wrong{background:var(--redbg);border-color:var(--redb)}
+.opt.wrong .opt-key{background:var(--red);color:#fff;border-color:var(--red)}
+.opt.reveal{background:var(--bluebg);border-color:var(--blueb);opacity:.75}
+.opt.reveal .opt-key{background:var(--blue);color:#fff;border-color:var(--blue)}
+.expbox{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:12px;font-size:12.5px;color:var(--text2);line-height:1.72;display:none}
+.expbox.show{display:block;animation:fi .2s ease}
+.expbox strong{color:var(--text)}
+.actrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.next-btn{padding:10px 24px;border-radius:var(--r);border:none;background:var(--text);color:var(--bg);font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .18s;display:none}
+.next-btn:hover{background:var(--red)}
+.end-btn{padding:10px 18px;border-radius:var(--r);border:1px solid var(--redb);background:transparent;color:var(--red);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;transition:all .18s;margin-left:auto}
+.end-btn:hover{background:var(--redbg)}
+.results-wrap{text-align:center;padding:28px 12px}
+.res-big{font-family:'Syne',sans-serif;font-size:64px;font-weight:800;color:var(--text);line-height:1;margin-bottom:4px}
+.res-sub{font-family:'DM Mono',monospace;font-size:13px;color:var(--text3);margin-bottom:18px}
+.res-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:20px;text-align:left}
+.res-stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:11px 14px}
+.res-stat .rv{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--text);margin-bottom:2px}
+.res-stat .rl{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)}
+.retry-btn{padding:12px 32px;border-radius:var(--r);border:none;background:var(--text);color:var(--bg);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .18s;margin-bottom:20px}
+.retry-btn:hover{background:var(--red)}
+footer{text-align:center;padding-top:36px;font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="eyebrow">Filsafat Hakikat Manusia · K1 · Blok 2.4</div>
+  <h1>Am I <span>Human?</span></h1>
+  <p class="sub">Quiz mandiri mengenai hakikat manusia, sejarah filsafat, dimensi biopsikososiospiritual, dan perspektif medis.</p>
+</header>
+
+<div class="main-tabs">
+  <button class="main-tab active" onclick="switchMain('materi',this)">📋 Materi</button>
+  <button class="main-tab" onclick="switchMain('quiz',this)">🎯 Quiz</button>
+</div>
+
+<!-- MATERI -->
+<div class="main-panel active" id="mp-materi">
+
+  <div class="note">Materi ini membahas hakikat manusia dari berbagai perspektif, termasuk definisi, sejarah pemikiran filsafat, serta tinjauan manusia sebagai makhluk biologis, sosial, beradab, bermoral, spiritual, dan perspektif medis (biopsikososiospiritual).</div>
+  
+  <div class="divider"></div>
+  <div class="sec-h">1. Definisi Hakikat Manusia</div>
+  <p style="font-size:13px;color:var(--text2);margin-bottom:12px;">Filsafat hakikat manusia membahas pertanyaan mendasar seperti "Apa itu manusia?", "Apa bedanya dengan makhluk lain?", "Tujuan hidup", "Kebebasan", dan "Hubungan dengan Tuhan, masyarakat, dan alam".</p>
+  
+  <div class="ind-grid">
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--blue)"></div>
+      <div class="ind-name" style="color:var(--blue)">Biologi</div>
+      <div class="ind-desc">Organisme biologis (Homo sapiens) dengan sistem saraf kompleks, otak berkapasitas besar untuk berpikir abstrak, dan bahasa simbolik.</div>
+    </div>
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--gold)"></div>
+      <div class="ind-name" style="color:var(--gold)">Psikologi</div>
+      <div class="ind-desc">Kemampuan berpikir rasional, abstrak, memori, pemecahan masalah, emosi kompleks. Perilaku dipengaruhi refleksi batin, rasa ingin tahu.</div>
+    </div>
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--green)"></div>
+      <div class="ind-name" style="color:var(--green)">Sosial &amp; Budaya</div>
+      <div class="ind-desc">Kemampuan membentuk masyarakat, simbol, norma. Manusia menciptakan dan memelihara budaya.</div>
+    </div>
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--purp)"></div>
+      <div class="ind-name" style="color:var(--purp)">Interaksi</div>
+      <div class="ind-desc">Kombinasi warisan genetik, adaptasi lingkungan, dan proses perkembangan sosial-kultural.</div>
+    </div>
+  </div>
+
+  <div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Neuroplastisitas dan Plastisitas Otak</div>
+  <div class="note blue">Otak manusia bersifat dinamis dan dapat berubah struktur, fungsi, atau koneksinya sebagai respons terhadap pengalaman, pembelajaran, cedera, atau lingkungan.</div>
+  <div class="dtable-wrap"><table>
+    <thead><tr><th>Aspek</th><th>Keterangan</th></tr></thead>
+    <tbody>
+      <tr><td>Mekanisme</td><td>Neurogenesis, synaptogenesis, LTP (penguatan), pruning (pemangkasan), reorganization.</td></tr>
+      <tr><td>Plastisitas Dewasa</td><td>Sel induk saraf multipoten di dinding ventrikel dan hipokampus.</td></tr>
+      <tr><td>Faktor Pertumbuhan</td><td>BDNF (memori), CNTF (kelangsungan hidup), EGF (penyembuhan), GDNF (dopamin), FGF, GF-2, IGF, NT-3.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="divider"></div>
+  <div class="sec-h">2. Sejarah Pemikiran Filsafat</div>
+  <div class="ind-grid">
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--red)"></div>
+      <div class="ind-name" style="color:var(--red)">Yunani Kuno</div>
+      <table class="ind-table">
+        <tr><td>Socrates</td><td>Virtue = Knowledge. "Know Thyself".</td></tr>
+        <tr><td>Plato</td><td>Dualisme. Jiwa: Rasional, Spiritual, Nafsu.</td></tr>
+        <tr><td>Aristoteles</td><td>Hylomorphism. Zoon politikon. Eudaimonia.</td></tr>
+      </table>
+    </div>
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--purp)"></div>
+      <div class="ind-name" style="color:var(--purp)">Abad Pertengahan</div>
+      <table class="ind-table">
+        <tr><td>Augustinus</td><td>Imago Dei, mewarisi dosa asal, beristirahat dalam Tuhan.</td></tr>
+        <tr><td>Thomas Aquinas</td><td>Iman Kristen &amp; akal budi. Beatitudo.</td></tr>
+      </table>
+    </div>
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--blue)"></div>
+      <div class="ind-name" style="color:var(--blue)">Zaman Modern</div>
+      <table class="ind-table">
+        <tr><td>Descartes</td><td>Cogito Ergo Sum (Dualisme).</td></tr>
+        <tr><td>John Locke</td><td>Tabula Rasa (Empirisme).</td></tr>
+        <tr><td>I. Kant</td><td>Kritisisme. Imperatif Kategoris.</td></tr>
+        <tr><td>Schopenhauer</td><td>Kehendak (Wille) yang buta. Pembebasan: seni/asketisme.</td></tr>
+        <tr><td>A. Comte</td><td>Positivisme, Altruisme.</td></tr>
+      </table>
+    </div>
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--gold)"></div>
+      <div class="ind-name" style="color:var(--gold)">Eksistensialisme</div>
+      <table class="ind-table">
+        <tr><td>Kierkegaard</td><td>Lompatan iman (estetis, etis, religius).</td></tr>
+        <tr><td>Husserl</td><td>Fenomenologi.</td></tr>
+        <tr><td>Heidegger</td><td>Dasein (keberadaan otentik dengan sadar kematian).</td></tr>
+        <tr><td>J.P. Sartre</td><td>Eksistensi mendahului esensi.</td></tr>
+        <tr><td>Nietzsche</td><td>Übermensch. Amor Fati. Will to Power.</td></tr>
+      </table>
+    </div>
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--green)"></div>
+      <div class="ind-name" style="color:var(--green)">Psikologi Modern</div>
+      <table class="ind-table">
+        <tr><td>S. Freud</td><td>Id, Ego, Superego (dorongan bawah sadar).</td></tr>
+        <tr><td>C. Jung</td><td>Ketidaksadaran kolektif, Arketipe, Individuasi.</td></tr>
+        <tr><td>E. Fromm</td><td>To Have (materi) vs To Be (makna).</td></tr>
+        <tr><td>V. Frankl</td><td>Will to Meaning (Logoterapi).</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="sec-h">3. Makhluk Beradab, Bermoral, Spiritual</div>
+  <div class="dtable-wrap"><table>
+    <thead><tr><th>Konsep</th><th>Penjelasan &amp; Dasar Neurobiologis</th></tr></thead>
+    <tbody>
+      <tr><td>Belief System</td><td>Dipengaruhi pendidikan/genetik. Dopamin tinggi memicu pemikiran magis.</td></tr>
+      <tr><td>Otak Spiritual</td><td>Pengalaman spiritual melibatkan vmPFC (reward) &amp; insula (penolakan).</td></tr>
+      <tr><td>Empati</td><td>Theory of mind &amp; mirror neuron.</td></tr>
+      <tr><td>Moralitas</td><td>vmPFC dan orbitofrontal cortex (menimbang rasio &amp; emosi).</td></tr>
+      <tr><td>Altruisme</td><td>Mengaktifkan reward pathways di otak.</td></tr>
+      <tr><td>Psikopat</td><td>Logis tapi amigdala tumpul (kurang empati).</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="divider"></div>
+  <div class="sec-h">4. Manusia sebagai Makhluk Biologi</div>
+  <ul style="font-size:13px;color:var(--text2);margin-left:20px;margin-bottom:12px;line-height:1.6">
+    <li><strong>Otak Kiri vs Kanan:</strong> Kiri = logis, analitik. Kanan = intuitif, emosional.</li>
+    <li><strong>MPFC:</strong> Medial prefrontal cortex aktif saat memikirkan diri (Default Mode Network).</li>
+    <li><strong>Mirroring Neuron:</strong> (G. Rizzolatti) aktif saat melihat/melakukan gerakan, dasar empati/keteladanan.</li>
+  </ul>
+
+  <div class="divider"></div>
+  <div class="sec-h">5. Manusia sebagai Makhluk Sosial</div>
+  <div class="note green">Kesadaran Sosial diatur oleh mPFC, TPJ, STS, Amigdala.</div>
+  <div class="dtable-wrap"><table>
+    <thead><tr><th>Fenomena</th><th>Keterangan</th></tr></thead>
+    <tbody>
+      <tr><td>Hormon Sosial</td><td>Oksitosin (ikatan/nyaman) &amp; Dopamin (motivasi ikatan).</td></tr>
+      <tr><td>Contagious Yawning</td><td>Menyelaraskan perilaku kelompok secara bawah sadar.</td></tr>
+      <tr><td>Ekspresi Wajah</td><td>6 emosi dasar universal. Amigdala = emosi bawah sadar; Fusiform gyrus = wajah.</td></tr>
+      <tr><td>Penolakan Sosial</td><td>Memicu Anterior Cingulate Cortex (ACC) layaknya nyeri fisik.</td></tr>
+      <tr><td>Theory of Mind (ToM)</td><td>Paham perspektif lain. Uji klasik: Sally-Anne Test.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="divider"></div>
+  <div class="sec-h">6. Perspektif Medis (Biopsikososiospiritual)</div>
+  <div class="note">Ilmu kedokteran holistik: Dimensi Biologis, Psikologis, Sosial, Spiritual saling mempengaruhi.</div>
+  <div class="ind-grid">
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--blue)"></div>
+      <div class="ind-name" style="color:var(--blue)">Praktik Holistik</div>
+      <table class="ind-table">
+        <tr><td>Patient-Centered Care</td><td>Pasien = subjek unik, shared decision making.</td></tr>
+        <tr><td>Kolaborasi Interdisipliner</td><td>Dokter, psikolog, gizi, dll bekerja sama.</td></tr>
+        <tr><td>Penyembuhan vs Pengobatan</td><td>Mencapai kesejahteraan utuh (sehat WHO), bukan sekadar mengobati gejala fisik.</td></tr>
+      </table>
+    </div>
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--green)"></div>
+      <div class="ind-name" style="color:var(--green)">Harmoni Hidup (3 Pilar)</div>
+      <table class="ind-table">
+        <tr><td>Tuhan</td><td>Makna, nilai, ketenangan rohani.</td></tr>
+        <tr><td>Masyarakat</td><td>Solidaritas, keadilan, kerja sama (Zoon Politikon).</td></tr>
+        <tr><td>Alam</td><td>Kelestarian, tanpa eksploitasi (Makhluk Ekologis).</td></tr>
+      </table>
+    </div>
+  </div>
+  
+  <div class="note blue"><strong>Kesimpulan:</strong> Manusia entitas dinamis (biologi, sosial, rasional) yang butuh interaksi bermakna, kemampuan moral, dan tujuan holistik.</div>
+
+</div>
+
+<!-- QUIZ -->
+<div class="main-panel" id="mp-quiz">
+  <div id="qconfig" class="qconfig">
+    <div class="qconfig-title">Mulai Sesi Quiz K1</div>
+    <div class="qconfig-sub">Filsafat Hakikat Manusia</div>
+    <div class="cfg-grid" id="cfg-grid">
+      <button class="cfg-btn sel" data-type="K1">K1 - Filsafat Hakikat Manusia</button>
+    </div>
+<button class="start-btn" onclick="startSession()">Mulai →</button>
+  </div>
+  <div id="qactive" style="display:none">
+    <div class="qheader">
+      <div class="qnum-display">Soal ke-<strong id="qnum">1</strong></div>
+      <div id="qpill" class="qtype-pill"></div>
+      <div class="qscore-display"><strong id="qscore">0</strong> benar</div>
+    </div>
+    <div class="qcard">
+      <div id="qscen" class="qscen" style="display:none"></div>
+      <div id="qdata" class="qdata" style="display:none"></div>
+      <div id="qtext" class="qtext"></div>
+    </div>
+    <div class="opts" id="opts"></div>
+    <div class="expbox" id="expbox"></div>
+    <div class="actrow">
+      <button class="next-btn" id="nextbtn" onclick="nextQ()">Soal Berikutnya →</button>
+      <button class="end-btn" onclick="endSession()">Akhiri Sesi</button>
+    </div>
+  </div>
+  <div id="qresults" style="display:none">
+    <div class="results-wrap">
+      <div class="res-big" id="res-pct">—</div>
+      <div class="res-sub" id="res-sub">—</div>
+      <div class="res-grid" id="res-grid"></div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:20px">
+        <button class="retry-btn" style="margin-bottom:0" onclick="restartQuiz()">Coba Lagi</button>
+        <button class="retry-btn" style="margin-bottom:0;background:var(--green)" onclick="downloadCert()">⬇ Unduh Sertifikat</button>
+      </div>
+      <div class="dtable-wrap" style="margin-bottom:14px"><table><thead><tr><th>Topik</th><th>Soal</th><th>Benar</th></tr></thead><tbody id="res-bytype"></tbody></table></div>
+      <div class="dtable-wrap"><table><thead><tr><th>#</th><th>Soal (ringkas)</th><th>Jawaban Benar</th><th>Hasil</th></tr></thead><tbody id="res-tbody"></tbody></table></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div>Am I Human? · Filsafat Hakikat Manusia · Rangkuman K1</div>
+  <div style="margin-top:5px">crafted by alchemist4real · <a href="https://174-three.vercel.app" target="_blank" style="color:var(--text3);text-decoration:none;border-bottom:1px dashed var(--text3);transition:color .18s" onmouseover="this.style.color='var(--blue)'" onmouseout="this.style.color='var(--text3)'">check other quizzes → 174 archive ↗</a></div>
+</footer>
+</div>
+
+<script>
+
+// ═══ TAB ═══
+window.switchMain=function(id,b){document.querySelectorAll('.main-panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.main-tab').forEach(x=>x.classList.remove('active'));document.getElementById('mp-'+id).classList.add('active');b.classList.add('active');};
+window.startSession=startSession;window.nextQ=nextQ;window.endSession=endSession;window.restartQuiz=restartQuiz;
+
+// ═══ CONFIG ═══
+const activeTypes=new Set(['K1']);
+document.querySelectorAll('.cfg-btn').forEach(b=>{b.addEventListener('click',()=>{const t=b.dataset.type;if(activeTypes.has(t)){if(activeTypes.size===1)return;activeTypes.delete(t);b.classList.remove('sel');}else{activeTypes.add(t);b.classList.add('sel');}});});
+
+// ═══ UTILS ═══
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const shuf=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]];}return b;};
+const KEYS='ABCDE'.split('');
+function stripHtml(s){return s.replace(/<[^>]*>/g,'');}
+function makePicker(pool){let idx=[];return function(){if(idx.length>=pool.length)idx=[];const av=pool.map((_,i)=>i).filter(i=>!idx.includes(i));const si=rnd(av);idx.push(si);return pool[si];};}
+
+// ═══════════════════════════════════════
+// BANKS & DISPATCHER K1
+// ═══════════════════════════════════════
+const makeQ_K1 = (function() {
+
+// ==============================================================================
+// POOL SOAL STATIS: K1 - Filsafat Hakikat Manusia
+// ==============================================================================
+
+const K1_FILSAFAT_POOL = [
+  // -------------------------
+  // 1. Definisi Hakikat Manusia
+  // -------------------------
+  {
+      q: "Menurut tinjauan biologis, kekhasan manusia dibandingkan makhluk lain sangat ditentukan oleh...",
+      opts: [
+        "Sistem pencernaan yang kompleks untuk adaptasi lingkungan", 
+        "Otak berkapasitas besar untuk berpikir abstrak dan bahasa simbolik", 
+        "Kemampuan berlari dalam jarak jauh untuk berburu", 
+        "Struktur otot dan tulang yang lebih kuat"
+      ],
+      ans: "Otak berkapasitas besar untuk berpikir abstrak dan bahasa simbolik",
+      exp: "Secara biologi, manusia (Homo sapiens) memiliki <strong>sistem saraf kompleks dan otak berkapasitas besar</strong> yang menunjang pikiran abstrak dan bahasa simbolik."
+  },
+  {
+      q: "Manakah dari ciri berikut yang paling mencerminkan hakikat manusia dari segi psikologis?",
+      opts: [
+        "Mewariskan sifat genetik dari orang tua",
+        "Bertahan hidup menggunakan insting dan naluri primitif semata",
+        "Memiliki memori, pemecahan masalah rasional, emosi kompleks, dan refleksi batin",
+        "Membentuk kelompok sosial untuk perlindungan dari predator"
+      ],
+      ans: "Memiliki memori, pemecahan masalah rasional, emosi kompleks, dan refleksi batin",
+      exp: "Kualitas <strong>psikologis</strong> seperti refleksi batin, kognisi abstrak, dan emosi adalah pembeda utama cara pikir manusia dibanding spesies lain."
+  },
+  {
+      q: "Proses dinamis di mana otak manusia dapat berubah struktur, fungsi, atau koneksinya sebagai respons terhadap pembelajaran, pengalaman, atau cedera disebut...",
+      opts: ["Neurogenesis", "Neuroplastisitas", "Synaptogenesis", "Pruning"],
+      ans: "Neuroplastisitas",
+      exp: "<strong>Neuroplastisitas</strong> adalah plastisitas otak yang memungkinkannya beradaptasi secara dinamis."
+  },
+  {
+      q: "Plastisitas otak pada manusia dewasa (neurogenesis) masih dapat terjadi. Terdapat dua daerah utama sel induk saraf multipoten pada dewasa, yaitu...",
+      opts: [
+        "Korteks prefrontal dan amigdala", 
+        "Hipotalamus dan serebelum", 
+        "Dinding rongga otak (ventrikel) dan hipokampus", 
+        "Medula oblongata dan pons"
+      ],
+      ans: "Dinding rongga otak (ventrikel) dan hipokampus",
+      exp: "Sel induk saraf multipoten pada dewasa utamanya berlokasi di <strong>dinding ventrikel</strong> dan <strong>hipokampus</strong>."
+  },
+  {
+      q: "Mekanisme pemangkasan koneksi sinaps yang tidak lagi diperlukan agar efisiensi jaringan otak meningkat dikenal dengan istilah...",
+      opts: ["Neurogenesis", "Long-Term Potentiation (LTP)", "Reorganization", "Pruning"],
+      ans: "Pruning",
+      exp: "<strong>Pruning</strong> adalah proses pemangkasan koneksi saraf yang tidak terpakai (use it or lose it)."
+  },
+
+  // -------------------------
+  // 2. Sejarah Pemikiran Yunani Kuno & Abad Pertengahan
+  // -------------------------
+  {
+      q: "Filsuf Yunani yang berpandangan bahwa kejahatan terjadi semata-mata karena ketidaktahuan (Virtue = Knowledge) adalah...",
+      opts: ["Socrates", "Plato", "Aristoteles", "Augustinus"],
+      ans: "Socrates",
+      exp: "<strong>Socrates</strong> meyakini bahwa manusia pada dasarnya baik dan rasional; kejahatan bersumber dari ketidaktahuan."
+  },
+  {
+      q: "Konsep struktur jiwa manusia yang terdiri dari Logistikon (Rasional), Thymoeides (Spiritual), dan Epithymetikon (Nafsu) dikemukakan oleh...",
+      opts: ["Socrates", "Plato", "Aristoteles", "Thomas Aquinas"],
+      ans: "Plato",
+      exp: "<strong>Plato</strong> membagi jiwa menjadi tiga bagian tersebut dalam kerangka pandangan dualismenya."
+  },
+  {
+      q: "Pernyataan bahwa manusia adalah 'zoon logon echon' (hewan berakal budi) dan 'zoon politikon' (makhluk sosial-politis) dikemukakan oleh...",
+      opts: ["Socrates", "Plato", "Aristoteles", "Rene Descartes"],
+      ans: "Aristoteles",
+      exp: "<strong>Aristoteles</strong> mendefinisikan sifat dasar manusia sebagai entitas berakal dan makhluk sosial-politis."
+  },
+  {
+      q: "Filsuf Abad Pertengahan yang menyatakan bahwa manusia adalah makhluk ciptaan Tuhan (Imago Dei) yang hatinya terus gelisah sebelum beristirahat dalam Tuhan adalah...",
+      opts: ["Thomas Aquinas", "Augustinus", "Soren Kierkegaard", "Immanuel Kant"],
+      ans: "Augustinus",
+      exp: "<strong>Augustinus</strong> menekankan orientasi rohani manusia di mana ketenangan sejati hanya ada pada Tuhan."
+  },
+  {
+      q: "Siapakah tokoh yang berusaha menyatukan iman Kristen dengan akal budi, serta menyebut tujuan akhir hidup manusia adalah Beatitudo (kebahagiaan sejati melihat Tuhan)?",
+      opts: ["Thomas Aquinas", "Augustinus", "John Locke", "Arthur Schopenhauer"],
+      ans: "Thomas Aquinas",
+      exp: "<strong>Thomas Aquinas</strong> mengemukakan teori tentang hukum moral alami dan pencapaian <strong>Beatitudo</strong>."
+  },
+
+  // -------------------------
+  // 3. Pemikiran Zaman Modern
+  // -------------------------
+  {
+      q: "Diktum terkenal 'Cogito, Ergo Sum' (Saya berpikir, maka saya ada) yang mencerminkan pemisahan pikiran (res cogitans) dan tubuh (res extensa) dicetuskan oleh...",
+      opts: ["John Locke", "Immanuel Kant", "Rene Descartes", "Auguste Comte"],
+      ans: "Rene Descartes",
+      exp: "<strong>Rene Descartes</strong> mencetuskan dualisme radikal tersebut lewat 'Cogito, Ergo Sum'."
+  },
+  {
+      q: "Teori 'Tabula Rasa' yang menyatakan manusia dilahirkan ibarat kertas putih tanpa gagasan bawaan diajukan oleh...",
+      opts: ["John Locke", "Immanuel Kant", "Jean-Paul Sartre", "Sigmund Freud"],
+      ans: "John Locke",
+      exp: "<strong>John Locke</strong> merupakan penganut empirisme yang memandang pengetahuan lahir dari pengalaman (<strong>Tabula Rasa</strong>)."
+  },
+  {
+      q: "Konsep 'Imperatif Kategoris' yang menekankan otonomi moral dan tindakan berdasarkan hukum universal adalah buah pemikiran...",
+      opts: ["Arthur Schopenhauer", "Immanuel Kant", "Friedrich Nietzsche", "Auguste Comte"],
+      ans: "Immanuel Kant",
+      exp: "<strong>Immanuel Kant</strong> mempopulerkan <strong>Imperatif Kategoris</strong> sebagai pijakan moral dan etika."
+  },
+  {
+      q: "Menurut Arthur Schopenhauer, kehidupan manusia pada dasarnya dipenuhi penderitaan akibat dorongan buta yang tidak pernah terpuaskan. Dorongan ini disebutnya sebagai...",
+      opts: ["Will to Power", "Kehendak (Wille)", "Ketidaksadaran Kolektif", "Naluri Agresi"],
+      ans: "Kehendak (Wille)",
+      exp: "<strong>Schopenhauer</strong> berpendapat bahwa <strong>Wille (Kehendak)</strong> mendasari penderitaan eksistensial manusia."
+  },
+  {
+      q: "Bapak Sosiologi yang memandang perkembangan pikiran manusia melalui tiga tahap: teologis, metafisis, dan positif adalah...",
+      opts: ["Auguste Comte", "Soren Kierkegaard", "Sigmund Freud", "Erich Fromm"],
+      ans: "Auguste Comte",
+      exp: "<strong>Auguste Comte</strong> memperkenalkan ide <strong>positivisme</strong> dan 3 tahap perkembangan pemikiran manusia."
+  },
+
+  // -------------------------
+  // 4. Eksistensialisme, Fenomenologi, dan Psikologi
+  // -------------------------
+  {
+      q: "Bapak Eksistensialisme yang menyatakan kebenaran adalah subjektivitas dan manusia melewati eksistensi estetis, etis, hingga mencapai religius ('lompatan iman') adalah...",
+      opts: ["Soren Kierkegaard", "Edmund Husserl", "Martin Heidegger", "Jean-Paul Sartre"],
+      ans: "Soren Kierkegaard",
+      exp: "<strong>Kierkegaard</strong> membagi 3 tahap eksistensi yang bermuara pada lompatan iman religius."
+  },
+  {
+      q: "Filsuf yang mengembangkan metode Fenomenologi dengan slogan 'Kembali kepada hal-hal itu sendiri!' untuk mengkaji kesadaran murni adalah...",
+      opts: ["Soren Kierkegaard", "Edmund Husserl", "Martin Heidegger", "Jean-Paul Sartre"],
+      ans: "Edmund Husserl",
+      exp: "<strong>Edmund Husserl</strong> mengembangkan <strong>Fenomenologi</strong> untuk mempelajari struktur kesadaran murni."
+  },
+  {
+      q: "Istilah 'Dasein' yang bermakna keberadaan manusia di dunia secara otentik melalui kesadaran akan kematian diperkenalkan oleh...",
+      opts: ["Martin Heidegger", "Jean-Paul Sartre", "Friedrich Nietzsche", "Carl Jung"],
+      ans: "Martin Heidegger",
+      exp: "<strong>Heidegger</strong> menggunakan istilah <strong>Dasein</strong> untuk menggambarkan keberadaan yang otentik."
+  },
+  {
+      q: "Pernyataan 'Eksistensi mendahului esensi' yang menggambarkan bahwa manusia radikal secara bebas menentukan takdirnya dikemukakan oleh...",
+      opts: ["Jean-Paul Sartre", "Immanuel Kant", "Arthur Schopenhauer", "Rene Descartes"],
+      ans: "Jean-Paul Sartre",
+      exp: "<strong>Sartre</strong> menekankan kebebasan absolut karena manusia tidak memiliki esensi bawaan (eksistensi mendahului esensi)."
+  },
+  {
+      q: "Konsep tentang 'Ketidaksadaran Kolektif' dan pola dasar universal berupa 'Arketipe' diperkenalkan dalam ranah psikologi oleh...",
+      opts: ["Sigmund Freud", "Carl Jung", "Viktor Frankl", "Erich Fromm"],
+      ans: "Carl Jung",
+      exp: "<strong>Carl Jung</strong> memperluas ranah psikoanalisis ke arah <strong>ketidaksadaran kolektif</strong> dan arketipe universal."
+  },
+  {
+      q: "Dalam menghadapi penderitaan dan kamp konsentrasi, seorang psikolog menyimpulkan bahwa manusia didorong oleh 'Will to Meaning'. Ia mengembangkan Logoterapi. Siapakah dia?",
+      opts: ["Viktor Frankl", "Sigmund Freud", "Carl Jung", "Soren Kierkegaard"],
+      ans: "Viktor Frankl",
+      exp: "<strong>Viktor Frankl</strong> adalah pencipta Logoterapi yang berpusat pada pencarian makna hidup."
+  },
+  {
+      q: "Psikoanalisis Freud membagi kepribadian manusia ke dalam tiga unsur dasar. Elemen kepribadian yang berisi dorongan instingtual primitif disebut...",
+      opts: ["Id", "Ego", "Superego", "Kompleks Elektra"],
+      ans: "Id",
+      exp: "<strong>Id</strong> adalah pusat dari semua dorongan bawaan tak sadar."
+  },
+
+  // -------------------------
+  // 5. Manusia secara Neuro-Spiritual, Moral, Biologi, Sosial
+  // -------------------------
+  {
+      q: "Keputusan moral manusia melibatkan keseimbangan antara proses rasional logis dan proses emosional, yang pengaturannya secara neurobiologis berpusat di...",
+      opts: [
+        "Serebelum dan amigdala", 
+        "Korteks motorik dan ganglia basalis", 
+        "Ventromedial prefrontal cortex (vmPFC) dan orbitofrontal cortex", 
+        "Corpus callosum dan talamus"
+      ],
+      ans: "Ventromedial prefrontal cortex (vmPFC) dan orbitofrontal cortex",
+      exp: "Evaluasi moral banyak dipengaruhi oleh <strong>vmPFC</strong> dan <strong>orbitofrontal cortex</strong> untuk menimbang rasionalitas dan insting sosial."
+  },
+  {
+      q: "Perilaku menolong tanpa mengharapkan imbalan langsung sering kali tetap memicu rasa puas. Hal ini terkait aktivasi di...",
+      opts: ["Sistem otonom perifer", "Reward pathways di otak", "Korteks sensorik primer", "Sistem vestibular"],
+      ans: "Reward pathways di otak",
+      exp: "Tindakan <strong>altruisme</strong> terbukti mengaktivasi <em>reward pathway</em> sehingga otak kita mengasosiasikan kebaikan dengan perasaan positif."
+  },
+  {
+      q: "Banyak psikopat atau pelaku bullying dapat memahami logika rasa sakit, tetapi mereka tumpul dalam empati karena kurangnya reaktivitas secara khas pada area...",
+      opts: ["Korteks oksipital", "Amigdala", "Korteks prefrontal", "Broca's area"],
+      ans: "Amigdala",
+      exp: "Penurunan aktivitas pada <strong>Amigdala</strong> dikaitkan dengan ketiadaan empati dan penyesalan emosional."
+  },
+  {
+      q: "Sistem saraf yang memungkinkan kita berempati, memahami intensi orang lain, dan meniru secara naluriah ('keteladanan') karena aktif baik saat mengamati maupun melakukan gerakan adalah...",
+      opts: ["Saraf motorik piramidal", "Mirroring neuron", "Interneuron spinal", "Synaptic pruning"],
+      ans: "Mirroring neuron",
+      exp: "<strong>Mirror Neuron</strong> yang ditemukan Rizzolatti adalah dasar bagi proses empati dan Theory of Mind."
+  },
+  {
+      q: "Secara fungsional, otak kiri cenderung lebih dominan dalam memproses informasi secara...",
+      opts: [
+        "Intuitif, emosional, dan menyeluruh (holistik)", 
+        "Logis, analitis, terstruktur, dan mendetail", 
+        "Pasif dan reseptif terhadap stres", 
+        "Acak dan kreatif semata"
+      ],
+      ans: "Logis, analitis, terstruktur, dan mendetail",
+      exp: "<strong>Otak kiri</strong> memproses secara analitis, terstruktur, logis. Sebaliknya, otak kanan cenderung holistik, emosional, kreatif."
+  },
+  {
+      q: "Hormon sosial yang dijuluki 'hormon cinta', sangat berperan dalam membangun ikatan emosional ibu-anak dan rasa nyaman antar-manusia adalah...",
+      opts: ["Dopamin", "Adrenalin", "Oksitosin", "Kortisol"],
+      ans: "Oksitosin",
+      exp: "<strong>Oksitosin</strong> meningkatkan ikatan <em>attachment</em>, kedekatan, dan rasa saling percaya."
+  },
+  {
+      q: "Pengucilan atau penolakan sosial terbukti secara fMRI memicu rasa 'sakit' sosial yang direpresentasikan oleh aktivitas di area...",
+      opts: ["Anterior Cingulate Cortex (ACC)", "Serebelum", "Lobus parietal inferior", "Medula spinalis"],
+      ans: "Anterior Cingulate Cortex (ACC)",
+      exp: "<strong>ACC</strong> merespons penolakan sosial (social rejection) layaknya merasakan nyeri fisik akut."
+  },
+  {
+      q: "Kemampuan memahami bahwa orang lain memiliki keyakinan, pikiran, atau perspektif berbeda (yang kerap kurang berkembang pada individu autistik) disebut...",
+      opts: ["Contagious Yawning", "Imperatif Kategoris", "Theory of Mind (ToM)", "Split-brain functioning"],
+      ans: "Theory of Mind (ToM)",
+      exp: "<strong>Theory of Mind (ToM)</strong> adalah pondasi kognisi sosial untuk menebak intensi dan emosi orang lain."
+  },
+  {
+      q: "Dalam praktik kedokteran holistik, pendekatan yang memandang pasien memiliki kendali, merupakan subjek dan individu unik sehingga dilakukan 'shared decision making', dikenal sebagai...",
+      opts: ["Patient-Centered Care", "Terapi Paternalistik", "Intervensi Biomedik murni", "Positivisme kedokteran"],
+      ans: "Patient-Centered Care",
+      exp: "<strong>Patient-Centered Care</strong> menempatkan pasien dan dokter sebagai mitra yang sejajar dalam mengambil keputusan medis."
+  },
+  {
+      q: "Selain sifat biologis dan psikologis, manusia juga memiliki dimensi sosial-budaya. Bagaimana hubungan antara biologi (gen) dan budaya pada manusia?",
+      opts: [
+        "Budaya murni dibentuk oleh lingkungan, terlepas dari faktor genetik",
+        "Gen menentukan secara mutlak kebudayaan apa yang akan terbentuk",
+        "Manusia menciptakan budaya yang pada gilirannya dipengaruhi oleh interaksi pewarisan genetik dan lingkungan sosial",
+        "Kebudayaan hanya diwariskan melalui insting dasar tanpa proses pembelajaran"
+      ],
+      ans: "Manusia menciptakan budaya yang pada gilirannya dipengaruhi oleh interaksi pewarisan genetik dan lingkungan sosial",
+      exp: "Hakikat manusia terbentuk dari kombinasi antara <strong>warisan genetik, adaptasi lingkungan, dan perkembangan sosial-budaya</strong> yang saling memengaruhi."
+  },
+  {
+      q: "Selain pruning dan neurogenesis, terdapat mekanisme neuroplastisitas di mana koneksi antar sinaps diperkuat berkat stimulasi berulang, serta proses pengalihan fungsi dari area yang rusak ke area yang sehat. Keduanya secara berurutan disebut...",
+      opts: [
+        "Synaptogenesis dan Pruning",
+        "Long-Term Potentiation (LTP) dan Reorganization",
+        "Neurogenesis dan Synaptogenesis",
+        "Pruning dan Long-Term Potentiation (LTP)"
+      ],
+      ans: "Long-Term Potentiation (LTP) dan Reorganization",
+      exp: "<strong>LTP (Long-Term Potentiation)</strong> adalah penguatan sinaps, sementara <strong>Reorganization</strong> adalah pengalihan fungsi akibat cedera atau pembelajaran."
+  },
+  {
+      q: "Menurut Aristoteles, seluruh tindakan manusia dan perwujudan esensinya sebagai zoon politikon pada akhirnya bermuara pada satu tujuan akhir dalam hidup, yaitu...",
+      opts: ["Beatitudo", "Tabula Rasa", "Eudaimonia (Kebahagiaan)", "Will to Power"],
+      ans: "Eudaimonia (Kebahagiaan)",
+      exp: "<strong>Eudaimonia</strong> (kebahagiaan/kesejahteraan sejati) adalah tujuan hidup yang ditekankan Aristoteles."
+  },
+  {
+      q: "Di samping 'Kehendak Berkuasa' (Will to Power), Friedrich Nietzsche juga menekankan sikap afirmasi terhadap kehidupan, yaitu bersedia mencintai takdir dengan segala penderitaan dan kebahagiaannya. Konsep ini dikenal dengan istilah...",
+      opts: ["Amor Fati", "Cogito Ergo Sum", "Tabula Rasa", "Dasein"],
+      ans: "Amor Fati",
+      exp: "<strong>Amor Fati</strong> berarti mencintai nasib/takdir, suatu penerimaan heroik atas kehidupan sebagaimana adanya."
+  },
+  {
+      q: "Berdasarkan struktur kepribadian psikoanalisis Sigmund Freud, fungsi yang bertindak sebagai penengah yang rasional, serta aspek yang berisi aturan moral sosial adalah...",
+      opts: [
+        "Id sebagai penengah, Ego sebagai moral",
+        "Ego sebagai penengah, Superego sebagai moral",
+        "Superego sebagai penengah, Id sebagai moral",
+        "Id sebagai moral, Ego sebagai penengah"
+      ],
+      ans: "Ego sebagai penengah, Superego sebagai moral",
+      exp: "<strong>Ego</strong> bertugas menjadi penengah realitas, sedangkan <strong>Superego</strong> menaungi aturan moral dan nurani."
+  },
+  {
+      q: "Menurut Carl Jung, perjalanan hidup di mana seseorang mengintegrasikan ketidaksadaran dan kesadarannya untuk menjadi diri yang seutuhnya disebut sebagai proses...",
+      opts: ["Individuasi", "Altruisme", "Reorganization", "Lompatan Iman"],
+      ans: "Individuasi",
+      exp: "Proses <strong>Individuasi</strong> (Carl Jung) adalah proses psikologis untuk mencapai keutuhan diri secara penuh."
+  },
+  {
+      q: "Erich Fromm menyoroti dua orientasi hidup eksistensial manusia: ada yang terjebak pada materialism-konsumerisme, dan ada yang hidup produktif bermakna. Kedua orientasi ini masing-masing disebut...",
+      opts: [
+        "To Be (materialistis) vs To Have (produktif)",
+        "To Have (materialistis) vs To Be (produktif)",
+        "Altruisme vs Egoisme",
+        "Estetis vs Etis"
+      ],
+      ans: "To Have (materialistis) vs To Be (produktif)",
+      exp: "<strong>To Have</strong> berfokus pada kepemilikan benda/status, sedangkan <strong>To Be</strong> berfokus pada aktualisasi diri yang bermakna."
+  },
+  {
+      q: "Kecenderungan seseorang meyakini teori konspirasi, pemikiran magis, atau mencari pola/wajah pada benda mati (pareidolia), secara neurologis sering dikaitkan dengan...",
+      opts: [
+        "Defisit hormon oksitosin dalam aliran darah",
+        "Kadar dopamin yang terlalu tinggi pada otak",
+        "Penurunan aktivitas ventromedial prefrontal cortex",
+        "Kerusakan pada area Broca"
+      ],
+      ans: "Kadar dopamin yang terlalu tinggi pada otak",
+      exp: "Keyakinan yang berlebihan, fanatisme, atau pencarian pola semu (magical thinking) sangat dipengaruhi oleh hiperaktivitas <strong>dopamin</strong>."
+  },
+  {
+      q: "Ketika seseorang berhadapan dengan gagasan yang bertentangan dengan sistem keyakinan utamanya (misal: rasa tidak nyaman akibat ketidakpercayaan/ancaman eksistensial), bagian otak manakah yang dilaporkan sangat aktif bergejolak?",
+      opts: ["Insula", "Korteks motorik primer", "Serebelum", "Hipokampus"],
+      ans: "Insula",
+      exp: "<strong>Insula</strong> mengatur rasa jijik, ketidaknyamanan, atau penolakan, termasuk saat sistem keyakinan kita terancam."
+  },
+  {
+      q: "Seorang tokoh antagonis (psikopat/bullyer) mungkin memanipulasi orang dengan kejam karena ia mengerti cara kerjanya secara logis, namun ia tidak bisa 'merasakan' kesakitan korban karena area otaknya tumpul. Di sisi lain, tokoh protagonis menolong tanpa pamrih (altruisme) karena mengaktivasi area... secara kuat.",
+      opts: [
+        "Protagonis: Amigdala; Antagonis: Cortex Motorik",
+        "Protagonis: Reward Pathways; Antagonis: Amigdala yang tumpul",
+        "Protagonis: Insula; Antagonis: Hipokampus",
+        "Protagonis: Hipokampus; Antagonis: Cortex Parietal"
+      ],
+      ans: "Protagonis: Reward Pathways; Antagonis: Amigdala yang tumpul",
+      exp: "Perilaku altruistik mengaktivasi <strong>reward pathways</strong> (rasa puas). Sebaliknya, psikopat kekurangan reaktivitas <strong>amigdala</strong>, tumpul dalam hal emosi."
+  },
+  {
+      q: "Ketika seseorang sedang melamun, merenungkan diri sendiri (self-referential processing), atau memikirkan masa depan pribadinya, jaringan fungsional otak yang paling aktif bekerja adalah...",
+      opts: [
+        "Default Mode Network (DMN), berpusat di MPFC",
+        "Mirroring Neuron System",
+        "Sistem Saraf Simpatis",
+        "Central Executive Network"
+      ],
+      ans: "Default Mode Network (DMN), berpusat di MPFC",
+      exp: "<strong>Default Mode Network (DMN)</strong>, terutama <em>Medial Prefrontal Cortex (MPFC)</em>, aktif selama istirahat dan ketika memikirkan diri sendiri."
+  },
+  {
+      q: "Fenomena 'Contagious Yawning' (tertular menguap) dalam tinjauan biopsikologi manusia dipandang sebagai...",
+      opts: [
+        "Refleks patologis karena kekurangan oksigen secara tiba-tiba",
+        "Mekanisme bawah sadar untuk menyelaraskan perilaku dan kewaspadaan kelompok sosial",
+        "Tanda gangguan pada lobus oksipital",
+        "Bentuk defisit Theory of Mind (ToM) pada orang dewasa"
+      ],
+      ans: "Mekanisme bawah sadar untuk menyelaraskan perilaku dan kewaspadaan kelompok sosial",
+      exp: "Tertular menguap berkaitan dengan empati dasar dan merupakan cara evolusioner menjaga <strong>keselarasan perilaku kelompok</strong>."
+  },
+  {
+      q: "Area spesifik di otak yang sangat terspesialisasi untuk mengenali wajah individu secara sadar dan merespons ekspresi adalah...",
+      opts: ["Broca's Area", "Wernicke's Area", "Fusiform gyrus", "Cortex auditori primer"],
+      ans: "Fusiform gyrus",
+      exp: "<strong>Fusiform gyrus</strong> krusial untuk pengenalan visual atas wajah manusia."
+  },
+  {
+      q: "Defisit pada Theory of Mind (ToM) paling klasik dievaluasi menggunakan instrumen psikologis sederhana berupa...",
+      opts: [
+        "Sally-Anne Test",
+        "Uji Rorschach Inkblot",
+        "Eksperimen Pavlov",
+        "Eksperimen Split-Brain"
+      ],
+      ans: "Sally-Anne Test",
+      exp: "<strong>Sally-Anne Test</strong> dirancang untuk menilai apakah seorang anak (atau individu dengan autisme) memahami perspektif tersembunyi dari orang lain."
+  },
+  {
+      q: "Pendekatan medis yang utuh mengisyaratkan harmoni hidup melalui tiga pilar. Jika manusia adalah 'Zoon Politikon' dan entitas ekologis, maka tiga pilar harmoni tersebut mencakup relasi dengan...",
+      opts: [
+        "Keluarga, tempat kerja, dan diri sendiri",
+        "Tuhan, Masyarakat, dan Alam",
+        "Dokter, pasien, dan perawat",
+        "Pikiran, tubuh, dan jiwa"
+      ],
+      ans: "Tuhan, Masyarakat, dan Alam",
+      exp: "Harmoni holistik terwujud lewat hubungan spiritual (<strong>Tuhan</strong>), sosial (<strong>Masyarakat</strong>), dan ekologis (<strong>Alam</strong>)."
+  },
+  {
+      q: "Kesadaran sosial pada manusia tidak diatur oleh satu area otak tunggal, melainkan merupakan hasil kerja sama harmonis dari beberapa area. Area manakah yang TIDAK secara langsung disebut sebagai pengatur utama kesadaran sosial?",
+      opts: ["Medial Prefrontal Cortex (mPFC)", "Amigdala", "Temporoparietal Junction (TPJ) dan Superior Temporal Sulcus (STS)", "Medula Spinalis"],
+      ans: "Medula Spinalis",
+      exp: "Kesadaran sosial diatur oleh <strong>mPFC, TPJ, STS, dan Amigdala</strong>. Medula spinalis lebih berfokus pada refleks saraf tepi dan konduksi impuls somatik."
+  },
+  {
+      q: "Studi psikologi evolusioner mengenai ekspresi wajah dan gesture menunjukkan bahwa...",
+      opts: [
+        "Terdapat ribuan emosi dasar yang berbeda pada setiap budaya",
+        "Terdapat 6 emosi dasar yang bersifat universal bagi seluruh spesies manusia",
+        "Mata dan ukuran pupil tidak memiliki kaitan dengan intensi sosial",
+        "Manusia merespons ekspresi secara lambat melalui proses berpikir di lobus oksipital"
+      ],
+      ans: "Terdapat 6 emosi dasar yang bersifat universal bagi seluruh spesies manusia",
+      exp: "Ekspresi wajah berdasar pada <strong>6 emosi dasar universal</strong>. Arah pandangan mata dan ukuran pupil turut menyampaikan informasi intensi."
+  },
+  {
+      q: "Dalam memandang hakikat manusia, ilmu yang menitikberatkan manusia sebagai makhluk biologis yang juga menciptakan simbol, bahasa, dan mewariskan nilai (makhluk budaya) adalah...",
+      opts: ["Biologi Evolusioner", "Psikologi Modern", "Antropologi", "Sosiologi Klasik"],
+      ans: "Antropologi",
+      exp: "<strong>Antropologi</strong> memadukan tinjauan biologis dengan pembentukan kebudayaan (simbol, nilai, bahasa)."
+  },
+  {
+      q: "Perbedaan utama antara pandangan 'pengobatan' konvensional dengan 'penyembuhan' dalam konsep kedokteran holistik adalah...",
+      opts: [
+        "Pengobatan menggunakan obat kimia, penyembuhan menggunakan obat herbal murni",
+        "Pengobatan hanya mengobati penyakit fisik, sedangkan penyembuhan berupaya mencapai kesejahteraan fisik, mental, sosial, dan spiritual",
+        "Pengobatan dilakukan oleh dokter spesialis, penyembuhan hanya oleh psikiater",
+        "Tidak ada bedanya, keduanya merujuk pada eliminasi patogen dari tubuh"
+      ],
+      ans: "Pengobatan hanya mengobati penyakit fisik, sedangkan penyembuhan berupaya mencapai kesejahteraan fisik, mental, sosial, dan spiritual",
+      exp: "Sesuai definisi sehat WHO, kedokteran holistik mengedepankan <strong>penyembuhan</strong> (kesejahteraan biopsikososiospiritual), bukan sekadar mengobati gejala fisik."
+  },
+  {
+      q: "Penanganan pasien dalam kedokteran holistik melibatkan dokter, psikolog, ahli gizi, hingga pekerja sosial secara bersama-sama. Prinsip ini dinamakan...",
+      opts: ["Patient-Centered Care", "Shared decision making", "Kolaborasi Interdisipliner", "Promotif-Preventif"],
+      ans: "Kolaborasi Interdisipliner",
+      exp: "Pelibatan berbagai profesi dan keahlian untuk menangani seluruh dimensi pasien secara menyeluruh disebut <strong>Kolaborasi Interdisipliner</strong>."
+  },
+  {
+      q: "Menurut perspektif medis modern (Biopsikososiospiritual), dimensi yang mencakup interaksi ekonomi, budaya, dan dukungan lingkungan adalah dimensi...",
+      opts: ["Biologis", "Psikologis", "Sosial", "Spiritual"],
+      ans: "Sosial",
+      exp: "Dimensi <strong>Sosial</strong> berhubungan dengan bagaimana pasien berinteraksi dengan komunitasnya, dukungan keluarga, dan status ekonomi."
+  },
+  {
+      q: "Sistem keyakinan (Belief System) seseorang berfungsi sebagai kerangka dalam memahami dunia. Menurut materi filsafat manusia, sistem keyakinan ini dipengaruhi secara signifikan oleh...",
+      opts: [
+        "Semata-mata warisan genetik orang tua",
+        "Hanya dogma agama tanpa pengaruh biologis",
+        "Interaksi antara pendidikan, budaya, dan faktor genetik",
+        "Tingkat pendidikan formal saja"
+      ],
+      ans: "Interaksi antara pendidikan, budaya, dan faktor genetik",
+      exp: "Sistem keyakinan adalah hasil bentukan kompleks dari <strong>pendidikan, budaya lingkungan, serta predisposisi genetik</strong>."
+  },
+  {
+      q: "Selain faktor-faktor seperti BDNF, CNTF, EGF, dan GDNF, terdapat pula berbagai faktor neurotropik lain yang mendukung kelangsungan dan plastisitas saraf, yaitu...",
+      opts: [
+        "Insulin, Glukagon, Epinefrin, Tiroksin",
+        "FGF, GF-2, IGF, dan NT-3",
+        "Kortisol, Oksitosin, Melatonin",
+        "Asetilkolin, Serotonin, GABA"
+      ],
+      ans: "FGF, GF-2, IGF, dan NT-3",
+      exp: "Faktor pertumbuhan lain yang mendukung plastisitas antara lain <strong>FGF, GF-2, IGF, dan NT-3</strong>."
+  },
+  // --- SOAL TAMBAHAN EKSTRAKSI MATERI (TAHAP 2) ---
+  {
+      q: "Menurut pandangan filsafat, salah satu pertanyaan mendasar yang membedakan manusia dari makhluk lain dan berkaitan erat dengan otonominya adalah...",
+      opts: ["Bagaimana cara bertahan hidup?", "Bagaimana bereproduksi dengan optimal?", "Apa itu kebebasan dan tujuan hidup?", "Bagaimana cara beradaptasi dengan iklim?"],
+      ans: "Apa itu kebebasan dan tujuan hidup?",
+      exp: "Pertanyaan mendasar filsafat hakikat manusia mencakup <strong>'Apa itu manusia?', 'Tujuan hidup', dan 'Kebebasan'</strong>."
+  },
+  {
+      q: "Kualitas psikologis yang membedakan manusia dari spesies lain, yang tidak sekadar mengandalkan naluri untuk berperilaku, adalah kemampuannya dalam...",
+      opts: ["Berlari cepat menghindari ancaman", "Refleksi batin dan rasa ingin tahu", "Menghasilkan keturunan dalam jumlah besar", "Berkomunikasi menggunakan suara keras"],
+      ans: "Refleksi batin dan rasa ingin tahu",
+      exp: "Kualitas psikologis seperti <strong>refleksi batin dan rasa ingin tahu</strong> membedakan manusia karena perilakunya tidak sekadar didorong naluri."
+  },
+  {
+      q: "Mekanisme neuroplastisitas berupa pembentukan sel saraf baru di dalam otak dikenal dengan istilah...",
+      opts: ["Synaptogenesis", "Neurogenesis", "Pruning", "Reorganization"],
+      ans: "Neurogenesis",
+      exp: "<strong>Neurogenesis</strong> adalah proses pembentukan sel saraf (neuron) baru, sedangkan synaptogenesis adalah pembentukan sinaps."
+  },
+  {
+      q: "Proses pembentukan koneksi antar neuron yang baru, sebagai respons terhadap pengalaman dan pembelajaran, disebut...",
+      opts: ["Neurogenesis", "Synaptogenesis", "Pruning", "Long-Term Potentiation (LTP)"],
+      ans: "Synaptogenesis",
+      exp: "<strong>Synaptogenesis</strong> secara spesifik merujuk pada pembentukan sinaps (koneksi) antar sel saraf."
+  },
+  {
+      q: "Di antara berbagai faktor neurotropik yang mendukung kelangsungan hidup otak, faktor pertumbuhan yang sangat spesifik berkaitan dengan perkembangan dan pertahanan neuron dopaminergik adalah...",
+      opts: ["BDNF", "CNTF", "EGF", "GDNF"],
+      ans: "GDNF",
+      exp: "<strong>GDNF</strong> (Glial cell-derived neurotrophic factor) memiliki peran penting terhadap neuron <strong>dopaminergik</strong>."
+  },
+  {
+      q: "Selain 'Virtue is Knowledge', Socrates juga memiliki slogan utama yang menekankan pentingnya introspeksi mendalam bagi manusia. Slogan tersebut adalah...",
+      opts: ["Cogito Ergo Sum", "Amor Fati", "Know Thyself (Kenali dirimu sendiri)", "Tabula Rasa"],
+      ans: "Know Thyself (Kenali dirimu sendiri)",
+      exp: "Slogan <strong>'Know Thyself' (Kenali dirimu sendiri)</strong> merupakan dorongan Socrates bagi manusia untuk melakukan refleksi ke dalam dirinya."
+  },
+  {
+      q: "Pandangan bahwa tubuh dan jiwa merupakan satu kesatuan yang tidak terpisahkan, sebagaimana yang diajukan oleh Aristoteles, disebut dengan konsep...",
+      opts: ["Dualisme", "Hylomorphism", "Tabula Rasa", "Positivisme"],
+      ans: "Hylomorphism",
+      exp: "Aristoteles mengajukan konsep <strong>hylomorphism</strong>, yaitu bahwa jiwa dan tubuh merupakan satu kesatuan bentuk dan materi."
+  },
+  {
+      q: "Menurut teologi Augustinus, manusia merupakan makhluk yang mewarisi dosa asal dan hanya akan menemukan kedamaian atau peristirahatan ketika...",
+      opts: ["Mencapai pencerahan rasional penuh", "Berada di tahap positif sosiologis", "Beristirahat dalam Tuhan", "Mencapai kekuasaan mutlak"],
+      ans: "Beristirahat dalam Tuhan",
+      exp: "Augustinus meyakini bahwa hati manusia selalu gelisah hingga akhirnya <strong>beristirahat dalam Tuhan</strong>."
+  },
+  {
+      q: "Filsuf yang menggabungkan aliran rasionalisme dan empirisme melalui pendekatan 'Kritisisme' adalah...",
+      opts: ["Immanuel Kant", "Rene Descartes", "John Locke", "Auguste Comte"],
+      ans: "Immanuel Kant",
+      exp: "<strong>Immanuel Kant</strong> memadukan rasionalisme dan empirisme dalam epistemologi yang disebut <strong>Kritisisme</strong>."
+  },
+  {
+      q: "Menurut Arthur Schopenhauer, kehidupan manusia didorong oleh 'Kehendak' yang buta sehingga menimbulkan penderitaan. Di bawah ini, manakah yang termasuk jalan pembebasan yang diajukan oleh Schopenhauer?",
+      opts: ["Pencarian kekuasaan, akumulasi modal, dan kepemimpinan", "Seni, belas kasih, asketisme, dan peniadaan kehendak", "Revolusi politik, lompatan iman, dan aktualisasi diri", "Meditasi murni, konsumsi obat herbal, dan hedonisme"],
+      ans: "Seni, belas kasih, asketisme, dan peniadaan kehendak",
+      exp: "Bagi Schopenhauer, jalan pembebasan dari penderitaan eksistensial adalah lewat <strong>seni, belas kasih, asketisme (hidup bertapa), dan peniadaan kehendak</strong>."
+  },
+  {
+      q: "Sebagai Bapak Sosiologi, Auguste Comte mencetuskan positivisme dan menyatakan bahwa manusia sejati sejatinya hidup untuk kepentingan masyarakat luas, bukan dirinya sendiri. Konsep ini dikenal sebagai...",
+      opts: ["Nihilisme", "Altruisme", "Dualisme", "Eksistensialisme"],
+      ans: "Altruisme",
+      exp: "Auguste Comte mempopulerkan kata <strong>altruisme</strong> (hidup untuk orang lain/masyarakat) sebagai puncak etika positivisme."
+  },
+  {
+      q: "Soren Kierkegaard menyatakan bahwa kebenaran itu bersifat subjektivitas, dan manusia akan mencapai keutuhannya melalui 'lompatan iman' pada tahap eksistensi yang ke...",
+      opts: ["Tahap Positif", "Tahap Metafisis", "Tahap Religius", "Tahap Estetis"],
+      ans: "Tahap Religius",
+      exp: "Tiga tahap eksistensi Kierkegaard adalah: Estetis, Etis, dan bermuara pada <strong>Religius (lompatan iman)</strong>."
+  },
+  {
+      q: "Filsuf yang mencetuskan 'Kehendak Berkuasa' (Will to Power) dan memandang manusia sebagai tali perantara antara hewan dan 'manusia unggul' (Übermensch) adalah...",
+      opts: ["Arthur Schopenhauer", "Friedrich Nietzsche", "Jean-Paul Sartre", "Martin Heidegger"],
+      ans: "Friedrich Nietzsche",
+      exp: "<strong>Friedrich Nietzsche</strong> menolak nilai-nilai tradisional dan mencita-citakan lahirnya <strong>Übermensch</strong> (manusia unggul)."
+  },
+  {
+      q: "Pola dasar universal (seperti figur ibu pahlawan, the shadow, dll) yang terdapat dalam ketidaksadaran seluruh umat manusia menurut Carl Jung disebut sebagai...",
+      opts: ["Id", "Ego", "Arketipe", "Tabula Rasa"],
+      ans: "Arketipe",
+      exp: "<strong>Arketipe</strong> adalah pola-pola atau gambar primordial yang mengisi ketidaksadaran kolektif manusia (Carl Jung)."
+  },
+  {
+      q: "Viktor Frankl (Logoterapi) menyebutkan bahwa meskipun manusia menderita, ia dapat menemukan makna hidup melalui tiga cara utama, kecuali...",
+      opts: ["Melalui karya yang diciptakan", "Melalui pengalaman atau cinta terhadap orang lain", "Sikap dalam menghadapi penderitaan yang tak terhindarkan", "Dengan cara melupakan ingatan tentang masa lalu secara total"],
+      ans: "Dengan cara melupakan ingatan tentang masa lalu secara total",
+      exp: "Tiga cara utama menemukan makna menurut Frankl adalah: <strong>karya, pengalaman/cinta, dan sikap dalam menghadapi penderitaan</strong>."
+  },
+  {
+      q: "Bagaimana Biologi Evolusioner modern memandang hakikat spesies manusia dalam alam semesta?",
+      opts: ["Sebagai entitas yang turun langsung secara utuh tanpa melalui tahapan alamiah", "Sebagai hasil murni ciptaan sosiokultural tanpa ikatan dengan satwa lain", "Sebagai hasil evolusi, seleksi alam, dan kemampuan adaptasi lingkungan", "Sebagai makhluk yang hanya ditentukan oleh dorongan tak sadar (Id)"],
+      ans: "Sebagai hasil evolusi, seleksi alam, dan kemampuan adaptasi lingkungan",
+      exp: "<strong>Biologi Evolusioner</strong> menjelaskan manusia sebagai hasil dari proses panjang sejarah <strong>evolusi, seleksi alam, dan adaptasi</strong>."
+  },
+  {
+      q: "Bidang ilmu yang memandang bahwa manusia bukan hanya makhluk biologis yang rasional, namun juga entitas yang secara aktif 'menciptakan simbol, bahasa, dan mewariskan nilai lintas generasi' disebut...",
+      opts: ["Antropologi", "Neurosains", "Fisiologi Modern", "Kriminologi"],
+      ans: "Antropologi",
+      exp: "<strong>Antropologi</strong> mempelajari hakikat manusia dengan memadukan biologi evolusioner dan kapasitas kebudayaannya."
+  },
+  {
+      q: "Pengalaman religius dan spiritual dapat ditelusuri manifestasinya di dalam anatomi otak manusia. Bagian otak yang terkait dengan penghargaan atau emosi positif ketika meyakini suatu sistem keyakinan adalah...",
+      opts: ["Insula", "Ventromedial prefrontal cortex (vmPFC)", "Serebelum", "Amigdala"],
+      ans: "Ventromedial prefrontal cortex (vmPFC)",
+      exp: "Area <strong>vmPFC</strong> memproses <em>reward</em> atau emosi positif ketika kita mengafirmasi keyakinan kita."
+  },
+  {
+      q: "Selain hormon Oksitosin yang memicu rasa nyaman, hormon spesifik yang memberikan motivasi dan memperkuat ikatan emosional ibu-anak secara fisiologis adalah...",
+      opts: ["Melatonin", "Kortisol", "Dopamin", "Adrenalin"],
+      ans: "Dopamin",
+      exp: "Bersama oksitosin, pelepasan <strong>Dopamin</strong> memberikan efek kepuasan, motivasi, dan kelekatan emosional, khususnya pada ikatan ibu-anak."
+  },
+  {
+      q: "Ketika kita membaca isyarat sosial non-verbal, organ otak langsung merespons secara spesifik. Di bawah ini, manakah pasangan fungsi dan struktur otak yang paling tepat?",
+      opts: ["Amigdala mengatur pengenalan wajah secara sadar", "Fusiform gyrus untuk memproses emosi ketakutan secara tidak sadar", "Amigdala untuk memproses emosi ancaman secara tidak sadar, Fusiform gyrus untuk pengenalan wajah", "Korteks temporal untuk mendeteksi penolakan sosial akut"],
+      ans: "Amigdala untuk memproses emosi ancaman secara tidak sadar, Fusiform gyrus untuk pengenalan wajah",
+      exp: "<strong>Amigdala</strong> menangkap sinyal emosi (seperti ancaman) bahkan sebelum disadari, sedangkan <strong>Fusiform gyrus</strong> khusus memetakan identitas wajah."
+  },
+  {
+      q: "Menurut materi mengenai interaksi sosial manusia, bagian tubuh mana yang paling kompleks dalam menyampaikan isyarat mengenai 'intensi' (niat) seseorang?",
+      opts: ["Gerak bahu dan lengan", "Arah pandangan mata dan ukuran pupil", "Gerakan kaki", "Irama denyut nadi yang terlihat di leher"],
+      ans: "Arah pandangan mata dan ukuran pupil",
+      exp: "Mata tidak hanya alat penglihatan, tetapi <strong>arah pandangan (gaze) dan ukuran pupil</strong> berfungsi sosial menyiarkan ke mana atensi dan niat kita tertuju."
+  },
+  {
+      q: "Konsep holisme memandang bahwa ketidakseimbangan pada satu dimensi biopsikososiospiritual akan memberikan dampak pada dimensi lainnya. Manakah contoh yang paling menggambarkan hal tersebut?",
+      opts: ["Kehilangan pekerjaan (sosial) tidak berhubungan dengan penurunan sel imun (biologis)", "Gangguan keseimbangan mikrobioma usus (biologis) tidak mempengaruhi status mood pasien (psikologis)", "Diagnosis penyakit terminal (biologis) dapat memicu krisis makna hidup (spiritual) dan depresi klinis (psikologis)", "Seseorang yang secara religius taat (spiritual) dijamin bebas dari penyakit genetik keturunan (biologis)"],
+      ans: "Diagnosis penyakit terminal (biologis) dapat memicu krisis makna hidup (spiritual) dan depresi klinis (psikologis)",
+      exp: "Hubungan timbal-balik dalam <strong>Biopsikososiospiritual</strong> menyatakan stresor medis-biologis sangat mampu mengguncang jiwa dan rohani, begitu pula sebaliknya."
+  },
+  {
+      q: "Dimensi spiritual dalam kajian kedokteran holistik menitikberatkan pada aspek...",
+      opts: ["Fungsi pernapasan dan kardiovaskuler", "Regulasi emosi sesaat seperti marah dan sedih", "Interaksi ekonomi dalam masyarakat lokal", "Makna hidup, tujuan eksistensial, dan sistem keyakinan nilai"],
+      ans: "Makna hidup, tujuan eksistensial, dan sistem keyakinan nilai",
+      exp: "Dimensi <strong>Spiritual</strong> selalu berbicara tentang <em>meaning of life</em>, tujuan, dogma iman, dan tata nilai hidup pasien."
+  },
+  {
+      q: "Harmoni hidup pilar ketiga menyatakan manusia sebagai makhluk ekologis. Tindakan praktis dari relasi ini adalah...",
+      opts: ["Mengeksploitasi sumber daya alam sebanyak mungkin demi teknologi", "Membangun solidaritas dan keadilan politik dalam negara", "Menjaga kelestarian, meminimalkan polusi, dan hidup selaras dengan alam sekitar", "Melakukan ritual keagamaan di tempat ibadah"],
+      ans: "Menjaga kelestarian, meminimalkan polusi, dan hidup selaras dengan alam sekitar",
+      exp: "Hakikat manusia sebagai <strong>makhluk ekologis</strong> menuntut tanggung jawab menjaga bumi, flora, dan fauna untuk kelestarian sistem alam."
+  },
+  {
+      q: "Psikologi Modern merumuskan bahwa hakikat manusia bukan hanya sekadar merespons stimulus-respons mekanis, namun memiliki sistem dinamis yang dilengkapi kapasitas spesifik, yakni...",
+      opts: ["Amnesia anterograde spontan", "Regulasi emosi, berpikir abstrak, dan penalaran moral (moral reasoning)", "Kemampuan sonar ekolokasi seperti kelelawar", "Pembentukan sel telur di semua jenjang usia"],
+      ans: "Regulasi emosi, berpikir abstrak, dan penalaran moral (moral reasoning)",
+      exp: "Secara fungsional <strong>Psikologi Modern</strong> mendefinisikan manusia dengan keunggulan regulasi kognitif yang tinggi (berpikir konseptual dan moral)."
+  },
+  {
+      q: "Di antara tokoh-tokoh psikologi modern berikut, siapakah yang menyatakan bahwa kepribadian manusia dikemudikan secara kuat oleh 'dorongan bawah sadar' yang meliputi insting agresif dan seksual?",
+      opts: ["Erich Fromm", "Viktor Frankl", "Sigmund Freud", "Carl Jung"],
+      ans: "Sigmund Freud",
+      exp: "Bapak psikoanalisis <strong>Sigmund Freud</strong> sangat menekankan peran dorongan tak sadar (seks dan agresi) dalam membentuk ego manusia."
+  },
+  {
+      q: "Dalam materi Sejarah Filsafat, siapa tokoh utama dari Yunani Kuno yang lebih menitikberatkan pada kesatuan materi dan bentuk (hylomorphism), ketimbang memisahkannya menjadi jiwa immortal vs tubuh fana belaka?",
+      opts: ["Plato", "Aristoteles", "Socrates", "Epicurus"],
+      ans: "Aristoteles",
+      exp: "Jika Plato memisahkan tegas jiwa dan badan, muridnya <strong>Aristoteles</strong> menyatukannya dalam <em>hylomorphism</em>."
+  },
+  {
+      q: "Mekanisme pengalihan fungsi dari area otak yang mengalami kerusakan kepada area sehat di sekitarnya dalam konsep neuroplastisitas disebut...",
+      opts: ["Neurogenesis", "Synaptogenesis", "Reorganization", "Pruning"],
+      ans: "Reorganization",
+      exp: "Plastisitas fungsional otak yang mengambil alih kontrol fungsi jaringan yang cedera/rusak dinamakan <strong>Reorganization</strong>."
+  },
+  {
+      q: "Selain hormon dan wilayah otak, penemuan Giacomo Rizzolatti menunjukkan ada saraf yang aktif baik saat kita bergerak maupun saat mengamati orang bergerak. Saraf ini mendasari kemampuan...",
+      opts: ["Menyimpan memori jangka panjang prosedural", "Mengenali dan memetakan jalan pulang", "Meniru (keteladanan), empati, dan Theory of Mind", "Menghasilkan suara berbahasa verbal"],
+      ans: "Meniru (keteladanan), empati, dan Theory of Mind",
+      exp: "<strong>Mirroring neuron</strong> sangat fundamental untuk imitasi fisik, penularan emosional, dan memahami pikiran orang lain (ToM)."
+  },
+  {
+      q: "Sejarah pemikiran medis mencatat bahwa kerusakan spesifik pada bagian otak tertentu akan menghancurkan 'pusat komando' moral dan stabilitas emosi manusia. Berdasarkan rekam medis Phineas Gage, bagian tersebut terletak di...",
+      opts: ["Serebelum bagian inferior", "Lobus Frontal", "Medula Spinalis servikal", "Korteks Oksipital posterior"],
+      ans: "Lobus Frontal",
+      exp: "Kecelakaan batang besi Phineas Gage membuktikan fungsi luhur <strong>Lobus Frontal</strong> dalam menjaga moral dan adab manusia."
+  }
+];
+
+// Inisialisasi picker dari pool
+const pickK1Stat = makePicker(K1_FILSAFAT_POOL);
+
+// ==============================================================================
+// GENERATOR SOAL DINAMIS (LOGIKA KASUS & ALGORITMIK)
+// ==============================================================================
+
+/**
+ * 1. Generator Faktor Pertumbuhan Otak
+ * Merandom faktor neuroplastisitas dan menanyakan fungsi esensialnya.
+ */
+function genK1FaktorQ() {
+  const dataFaktor = [
+      { nama: "BDNF", fungsi: "memori dan pembelajaran", ans: "BDNF" },
+      { nama: "CNTF", fungsi: "kelangsungan hidup neuron secara umum", ans: "CNTF" },
+      { nama: "EGF", fungsi: "pertumbuhan dan penyembuhan jaringan pada plastisitas adaptif", ans: "EGF" },
+      { nama: "GDNF", fungsi: "perkembangan dan pertahanan neuron dopaminergik", ans: "GDNF" }
+  ];
+  
+  const selected = dataFaktor[Math.floor(Math.random() * dataFaktor.length)];
+  // Menggunakan method shuffle jika tersedia di global, jika tidak cukup array manual
+  const rawOpts = ["BDNF", "CNTF", "EGF", "GDNF"];
+  const finalOpts = typeof shuf === "function" ? shuf(rawOpts) : rawOpts;
+  
+  return {
+      type: 'k1_faktor',
+      typeName: 'Neuroplastisitas Otak',
+      tpColor: 'var(--blue)',
+      tpBg: 'rgba(48,120,176,.09)',
+      q: `Sebagai dokter saraf, Anda mempelajari peranan faktor pertumbuhan spesifik dalam proses plastisitas otak. Salah satu faktor diketahui sangat krusial dalam <strong>${selected.fungsi}</strong>. Faktor pertumbuhan saraf manakah yang dimaksud?`,
+      opts: finalOpts,
+      ans: selected.ans,
+      exp: `Faktor <strong>${selected.nama}</strong> memegang peranan utama dalam pengaturan ${selected.fungsi}.`
+  };
+}
+
+/**
+ * 2. Generator Tokoh Neuroscience Milestones
+ * Merandom skenario klinis klasik dari sejarah bedah saraf/kerusakan otak.
+ */
+function genK1NeurosainsQ() {
+  const skenario = [
+      {
+          kasus: "Seorang pekerja konstruksi mengalami kecelakaan dramatis di mana sebuah batang besi menembus lobus frontalnya. Ia secara ajaib selamat, namun kepribadian dan moralitasnya berubah drastis menjadi impulsif dan tidak stabil.",
+          tokoh: "Phineas Gage",
+          area: "Lobus Frontal (regulasi moral/emosi)"
+      },
+      {
+          kasus: "Seorang pasien pasca-cedera otak mampu memahami apa yang dikatakan orang lain secara sadar, tetapi ia kesulitan merangkai kata dan produksi bahasanya menjadi terganggu berat (afasia motorik).",
+          tokoh: "Paul Broca",
+          area: "Area Broca (Lobus frontal kiri)"
+      },
+      {
+          kasus: "Seorang pasien menjalani operasi pengangkatan organ otaknya untuk menyembuhkan kejang epilepsi yang mematikan. Setelah bangun, ia terbebas dari kejang namun terkena amnesia anterograde permanen (tidak bisa membentuk memori panjang baru).",
+          tokoh: "Henry G. Molaison (H.M.)",
+          area: "Hipokampus"
+      },
+      {
+          kasus: "Seorang pasien menjalani operasi radikal berupa pemotongan penghubung besar antara kedua hemisfer otaknya. Sesudahnya, eksperimen menunjukkan bahwa kedua sisi otaknya berfungsi secara independen seolah memiliki pikirannya masing-masing.",
+          tokoh: "Roger Sperry (Eksperimen Split-Brain)",
+          area: "Corpus Callosum"
+      }
+  ];
+  
+  const selected = skenario[Math.floor(Math.random() * skenario.length)];
+  const rawOpts = [
+    "Phineas Gage", 
+    "Paul Broca", 
+    "Henry G. Molaison (H.M.)", 
+    "Roger Sperry (Eksperimen Split-Brain)",
+    "Giacomo Rizzolatti"
+  ];
+  // Ambil 4 pilihan jawaban, pastikan ada jawaban benar
+  let opts = rawOpts.filter(o => o !== selected.tokoh);
+  opts = opts.slice(0, 3); 
+  opts.push(selected.tokoh);
+  if (typeof shuf === "function") opts = shuf(opts);
+  
+  return {
+      type: 'k1_neurosains',
+      typeName: 'Tonggak Neurosains Klinis',
+      tpColor: 'var(--red)',
+      tpBg: 'rgba(176,48,48,.09)',
+      scenario: selected.kasus,
+      q: `Berdasarkan ilustrasi kasus klasik di atas, temuan medis ini merujuk pada profil individu (atau tokoh) yang mengungkap rahasia organ otak, yang bernama...`,
+      opts: opts,
+      ans: selected.tokoh,
+      exp: `Kasus legendaris ini berkaitan dengan profil <strong>${selected.tokoh}</strong> yang mendedahkan fungsi spesifik dari <strong>${selected.area}</strong> dalam mengatur hakikat sifat manusia.`
+  };
+}
+
+/**
+ * 3. Generator Dinamis Konsep Filsafat
+ * Menggabungkan nama filsuf dengan kata kuncinya secara diacak.
+ */
+function genK1FilsufQ() {
+  const pandangan = [
+      { deskripsi: "manusia adalah jiwa yang menggunakan tubuh sebagai kendaraan (Dualisme Logistikon, Thymoeides, Epithymetikon)", nama: "Plato" },
+      { deskripsi: "pikiran tidak berwujud (res cogitans) dan tubuh fisik (res extensa) terpisah namun eksis (terkenal dengan diktum Cogito Ergo Sum)", nama: "Rene Descartes" },
+      { deskripsi: "eksistensi manusia mendahului esensinya, sehingga ia radikal bebas dan tidak memiliki sifat atau takdir bawaan sejak lahir", nama: "Jean-Paul Sartre" },
+      { deskripsi: "tindakan etis dan moral manusia harus tunduk pada rasionalitas universal yang disebut sebagai Imperatif Kategoris", nama: "Immanuel Kant" },
+      { deskripsi: "manusia ibarat kertas putih yang bersih pada saat dilahirkan (Tabula Rasa), di mana seluruh pengetahuan berasal dari pengalaman", nama: "John Locke" },
+      { deskripsi: "manusia adalah jembatan menuju makhluk yang lebih unggul (Übermensch) dan didorong oleh Will to Power", nama: "Friedrich Nietzsche" }
+  ];
+  
+  const selected = pandangan[Math.floor(Math.random() * pandangan.length)];
+  const rawOpts = pandangan.map(p => p.nama);
+  
+  let opts = rawOpts.filter(o => o !== selected.nama);
+  // ambil acak 3 opsi lain jika fungsi shuffle ada
+  if (typeof shuf === "function") opts = shuf(opts);
+  opts = opts.slice(0, 3);
+  opts.push(selected.nama);
+  if (typeof shuf === "function") opts = shuf(opts);
+
+  return {
+      type: 'k1_filsuf',
+      typeName: 'Pemikiran Filsafat Manusia',
+      tpColor: 'var(--purple)',
+      tpBg: 'rgba(120,48,176,.09)',
+      q: `Di dalam ranah filsafat mengenai hakikat manusia, terdapat pandangan bahwa <em>${selected.deskripsi}</em>. Gagasan mendasar ini dikemukakan oleh...`,
+      opts: opts,
+      ans: selected.nama,
+      exp: `Gagasan sentral tersebut merupakan pondasi pemikiran <strong>${selected.nama}</strong> dalam sejarah filsafat.`
+  };
+}
+
+/**
+ * 4. Generator Dimensi Biopsikososiospiritual
+ * Merandom kasus/deskripsi dan menanyakan dimensinya.
+ */
+function genK1DimensiQ() {
+  const dimensi = [
+      { nama: "Biologis", ciri: "tubuh fisik, genetika, sistem organ, dan penyakit seluler" },
+      { nama: "Psikologis", ciri: "kesadaran pikiran, emosi, kesehatan mental, dan regulasi afektif" },
+      { nama: "Sosial", ciri: "interaksi antarmanusia, pengaruh budaya, status ekonomi, dan dukungan komunitas" },
+      { nama: "Spiritual", ciri: "pencarian makna hidup, nilai-nilai, tujuan eksistensial, dan keyakinan agama" }
+  ];
+  
+  const selected = dimensi[Math.floor(Math.random() * dimensi.length)];
+  const rawOpts = ["Biologis", "Psikologis", "Sosial", "Spiritual"];
+  const finalOpts = typeof shuf === "function" ? shuf(rawOpts) : rawOpts;
+  
+  return {
+      type: 'k1_dimensi',
+      typeName: 'Perspektif Medis Holistik',
+      tpColor: 'var(--green)',
+      tpBg: 'rgba(48,176,120,.09)',
+      q: `Dalam memandang manusia secara holistik (Biopsikososiospiritual), seorang dokter mengevaluasi aspek yang berkaitan erat dengan <strong>${selected.ciri}</strong>. Aspek ini masuk ke dalam dimensi...`,
+      opts: finalOpts,
+      ans: selected.nama,
+      exp: `Evaluasi mengenai ${selected.ciri} merupakan ruang lingkup dari dimensi <strong>${selected.nama}</strong>.`
+  };
+}
+
+// ==============================================================================
+// MAIN DISPATCHER FUNCTION
+// ==============================================================================
+function makeK1Q() {
+  const rand = Math.random();
+  
+  // 15% kemunculan soal dinamis: Faktor Pertumbuhan Otak
+  if (rand < 0.15) return genK1FaktorQ();
+  
+  // 20% kemunculan soal dinamis: Tonggak Sejarah Bedah Saraf/Neurosains
+  if (rand < 0.35) return genK1NeurosainsQ();
+  
+  // 15% kemunculan soal dinamis: Tebak Tokoh Filsafat
+  if (rand < 0.50) return genK1FilsufQ();
+
+  // 15% kemunculan soal dinamis: Dimensi Holistik
+  if (rand < 0.65) return genK1DimensiQ();
+  
+  // 35% sisanya menggunakan Soal Statis dari Pool
+  const qStat = pickK1Stat();
+  return {
+      ...qStat,
+      type: 'k1_statis',
+      typeName: 'Konsep Hakikat Manusia',
+      tpColor: 'var(--gray)',
+      tpBg: 'rgba(100,100,100,.09)'
+  };
+}
+
+// (Optional) Ekspor fungsi ke global / module scope agar dikenali oleh engine utama
+// window.makeK1Q = makeK1Q;
+
+
+    return function(type) {
+        if(type === 'K1') return makeK1Q();
+        return null;
+    }
+})();
+
+window.makeQ = function(type) {
+    if(type.startsWith('K1')) return makeQ_K1(type);
+    return null;
+}
+
+// ═══ SESSION ═══
+let typeQueue=[],sessIdx=0,sessScore=0,sessLog=[],currentQ=null;
+function nextType(){if(!typeQueue.length){const t=[...activeTypes];for(let i=t.length-1;i>0;i--){const j=0|Math.random()*(i+1);[t[i],t[j]]=[t[j],t[i]];}typeQueue=[...t];}return typeQueue.shift();}
+function startSession(){
+  sessIdx=0;sessScore=0;sessLog=[];typeQueue=[];
+  document.getElementById('qconfig').style.display='none';
+  document.getElementById('qresults').style.display='none';
+  document.getElementById('qactive').style.display='block';
+  renderQ();
+}
+function renderQ(){
+  const q=makeQ(nextType());currentQ=q;
+  document.getElementById('qnum').textContent=sessIdx+1;
+  document.getElementById('qscore').textContent=sessScore;
+  const pill=document.getElementById('qpill');
+  pill.textContent=q.typeName;pill.style.background=q.tpBg;pill.style.color=q.tpColor;pill.style.border=`1px solid ${q.tpColor}44`;
+  const scen=document.getElementById('qscen');
+  if(q.scenario){scen.innerHTML=`<strong>Kasus:</strong> ${q.scenario}`;scen.style.display='block';}else scen.style.display='none';
+  const db=document.getElementById('qdata');
+  if(q.rawData){db.innerHTML=q.rawData;db.style.display='block';}else db.style.display='none';
+  document.getElementById('qtext').innerHTML=q.q;
+  const og=document.getElementById('opts');og.innerHTML='';
+  q.opts.forEach((opt,i)=>{
+    const btn=document.createElement('button');btn.className='opt';
+    btn.innerHTML=`<span class="opt-key">${KEYS[i]}</span><span>${opt}</span>`;
+    btn.onclick=()=>selectAns(opt,q,btn);og.appendChild(btn);
+  });
+  const ebox=document.getElementById('expbox');ebox.classList.remove('show');ebox.style.display='none';
+  document.getElementById('nextbtn').style.display='none';
+}
+function selectAns(chosen,q,clickedBtn){
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  const correct=stripHtml(chosen)===stripHtml(q.ans);
+  if(correct)sessScore++;
+  document.querySelectorAll('.opt').forEach(b=>{
+    const label=b.querySelector('span:last-child').innerHTML;
+    if(stripHtml(label)===stripHtml(q.ans)){
+      if(b===clickedBtn&&correct)b.classList.add('correct');
+      else if(b!==clickedBtn)b.classList.add('reveal');
+      else b.classList.add('correct');
+    }
+    if(b===clickedBtn&&!correct)b.classList.add('wrong');
+  });
+  const ebox=document.getElementById('expbox');
+  ebox.innerHTML=`<div style="margin-bottom:7px;font-weight:700;color:${correct?'var(--blue)':'var(--red)'}">${correct?'✅ Benar!':'❌ Kurang tepat.'} Jawaban: <strong>${q.ans}</strong></div>${q.exp}`;
+  ebox.style.display='block';setTimeout(()=>ebox.classList.add('show'),10);
+  sessLog.push({idx:sessIdx+1,type:q.typeName,q:q.q.replace(/<[^>]+>/g,'').slice(0,55)+'…',ans:q.ans,correct});
+  document.getElementById('qscore').textContent=sessScore;
+  document.getElementById('nextbtn').style.display='inline-block';
+}
+function nextQ(){sessIdx++;document.getElementById('expbox').style.display='none';document.getElementById('expbox').classList.remove('show');renderQ();}
+function endSession(){
+  document.getElementById('qactive').style.display='none';document.getElementById('qresults').style.display='block';
+  const total=sessLog.length;if(!total){restartQuiz();return;}
+  const pct=Math.round((sessScore/total)*100);
+  document.getElementById('res-pct').textContent=pct+'%';
+  document.getElementById('res-sub').textContent=`${sessScore} / ${total} soal benar`;
+  const byType={};
+  sessLog.forEach(l=>{if(!byType[l.type])byType[l.type]={total:0,correct:0};byType[l.type].total++;if(l.correct)byType[l.type].correct++;});
+  const rg=document.getElementById('res-grid');rg.innerHTML='';
+  const medal=pct>=80?'🏆':pct>=60?'👍':'📚';
+  [{v:medal,l:'Nilai'},{v:pct+'%',l:'Persentase'},{v:sessScore+'',l:'Benar'},{v:(total-sessScore)+'',l:'Salah'},{v:total+'',l:'Total'}].forEach(s=>{
+    const d=document.createElement('div');d.className='res-stat';
+    d.innerHTML=`<div class="rv">${s.v}</div><div class="rl">${s.l}</div>`;rg.appendChild(d);
+  });
+  document.getElementById('res-bytype').innerHTML=Object.entries(byType).map(([t,v])=>{
+    const p=Math.round((v.correct/v.total)*100);const c=p>=80?'var(--blue)':p>=60?'var(--gold)':'var(--red)';
+    return`<tr><td>${t}</td><td>${v.total}</td><td style="color:${c};font-weight:700">${v.correct} (${p}%)</td></tr>`;
+  }).join('');
+  document.getElementById('res-tbody').innerHTML=sessLog.map(l=>`<tr><td>${l.idx}</td><td>${l.q}</td><td>${l.ans}</td><td style="color:${l.correct?'var(--green)':'var(--red)'}">${l.correct?'✅':'❌'}</td></tr>`).join('');
+}
+function restartQuiz(){typeQueue=[];document.getElementById('qresults').style.display='none';document.getElementById('qconfig').style.display='block';}
+
+function downloadCert(){
+  const total=sessLog.length;
+  const pct=Math.round((sessScore/total)*100);
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+  const medal=pct>=80?'LULUS':pct>=60?'CUKUP':'PERLU BELAJAR LAGI';
+  const medalColor=pct>=80?'#1f7a4a':pct>=60?'#7a6010':'#b03030';
+  const byType={};
+  sessLog.forEach(l=>{if(!byType[l.type])byType[l.type]={total:0,correct:0};byType[l.type].total++;if(l.correct)byType[l.type].correct++;});
+  const rows=Object.entries(byType).map(([t,v])=>{
+    const p=Math.round(v.correct/v.total*100);
+    const bar=Math.round(p*1.4);
+    const bc=p>=80?'#1f7a4a':p>=60?'#7a6010':'#b03030';
+    return`<tr><td style="padding:5px 8px;font-size:11px;color:#384068;width:200px">${t}</td><td style="padding:5px 8px"><div style="background:#e7e7e2;border-radius:4px;height:10px;width:140px"><div style="background:${bc};width:${bar}px;height:10px;border-radius:4px"></div></div></td><td style="padding:5px 8px;font-size:11px;font-weight:700;color:${bc}">${v.correct}/${v.total} (${p}%)</td></tr>`;
+  }).join('');
+
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="680" height="520" font-family="Georgia,serif">
+  <defs>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <path d="M 28 0 L 0 0 0 28" fill="none" stroke="#e0ddd5" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+  <rect width="680" height="520" fill="#fdfdf9"/>
+  <rect width="680" height="520" fill="url(#grid)"/>
+  <rect x="20" y="20" width="640" height="480" rx="12" fill="none" stroke="#b03030" stroke-width="2"/>
+  <rect x="26" y="26" width="628" height="468" rx="9" fill="none" stroke="#b03030" stroke-width="0.5" opacity="0.4"/>
+
+  <text x="340" y="66" text-anchor="middle" font-size="11" letter-spacing="4" fill="#7c85a8" font-family="Georgia,serif">SERTIFIKAT PENYELESAIAN KUIS</text>
+  <line x1="120" y1="74" x2="260" y2="74" stroke="#b03030" stroke-width="0.8"/>
+  <circle cx="340" cy="74" r="3" fill="#b03030"/>
+  <line x1="420" y1="74" x2="560" y2="74" stroke="#b03030" stroke-width="0.8"/>
+
+  <text x="340" y="116" text-anchor="middle" font-size="34" font-weight="bold" fill="#161b2e" font-family="Georgia,serif">Am I Human?</text>
+  <text x="340" y="138" text-anchor="middle" font-size="11" fill="#7c85a8" letter-spacing="2" font-family="Georgia,serif">FILSAFAT HAKIKAT MANUSIA · RANGKUMAN K1</text>
+
+  <line x1="100" y1="152" x2="580" y2="152" stroke="#e0ddd5" stroke-width="1"/>
+
+  <text x="340" y="185" text-anchor="middle" font-size="13" fill="#384068" font-family="Georgia,serif">Telah menyelesaikan sesi quiz dengan hasil</text>
+
+  <rect x="230" y="196" width="220" height="80" rx="8" fill="none" stroke="${medalColor}" stroke-width="1.5"/>
+  <text x="340" y="245" text-anchor="middle" font-size="52" font-weight="bold" fill="${medalColor}" font-family="Georgia,serif">${pct}%</text>
+  <text x="340" y="265" text-anchor="middle" font-size="10" fill="${medalColor}" letter-spacing="3" font-family="Georgia,serif">${medal}</text>
+
+  <text x="340" y="300" text-anchor="middle" font-size="12" fill="#384068" font-family="Georgia,serif">${sessScore} soal benar dari ${total} soal · ${dateStr}</text>
+
+  <line x1="100" y1="314" x2="580" y2="314" stroke="#e0ddd5" stroke-width="1"/>
+  <text x="340" y="332" text-anchor="middle" font-size="10" fill="#7c85a8" letter-spacing="2" font-family="Georgia,serif">DISTRIBUSI SKOR PER TOPIK</text>
+
+  <foreignObject x="80" y="340" width="520" height="120">
+    <div xmlns="http://www.w3.org/1999/xhtml">
+      <table style="width:100%;border-collapse:collapse">${rows}</table>
+    </div>
+  </foreignObject>
+
+  <line x1="100" y1="472" x2="580" y2="472" stroke="#e0ddd5" stroke-width="1"/>
+  <text x="340" y="490" text-anchor="middle" font-size="10" fill="#7c85a8" font-family="Georgia,serif">174 Archive · 174-three.vercel.app · WHO 6th Ed. 2021</text>
+</svg>`;
+
+  const blob=new Blob([svg],{type:'image/svg+xml'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`am-i-human-${pct}pct.svg`;
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+window.downloadCert=downloadCert;
+</script>
+</body>
+</html>

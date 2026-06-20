@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>SYAFIQ GIGA — CBT Blok 2.3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #EEF4FB;
+  --surface: #F8FBFF;
+  --surface-2: #E3EDF8;
+  --surface-3: #D4E3F5;
+  --border: #B8CFEA;
+  --border-light: #CCDff0;
+  --ink: #0F1E30;
+  --ink-muted: #4A6480;
+  --ink-faint: #9DB3C8;
+  --blue: #1A5FA8;
+  --blue-mid: #2E7DD4;
+  --blue-dim: #C2D8F5;
+  --blue-glow: rgba(26,95,168,0.07);
+  --sky: #0E9CCC;
+  --sky-dim: #C0ECF7;
+  --sky-glow: rgba(14,156,204,0.07);
+  --gold: #7A6200;
+  --gold-dim: #F0E5B0;
+  --gold-glow: rgba(122,98,0,0.07);
+  --rose: #A82840;
+  --rose-dim: #F5C8D0;
+  --rose-glow: rgba(168,40,64,0.06);
+  --mint: #1A7A5E;
+  --mint-dim: #C0E8DC;
+  --mint-glow: rgba(26,122,94,0.07);
+  --r: 14px;
+  --r-sm: 9px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  padding: 16px;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 70% 50% at 15% 10%, rgba(42,112,200,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 90% 80%, rgba(14,156,204,0.05) 0%, transparent 55%);
+  pointer-events: none; z-index: 0;
+}
+.shell { max-width: 760px; margin: 0 auto; position: relative; z-index: 1; }
+
+/* ── START SCREEN ── */
+#start-screen { animation: fadeIn 0.5s ease; }
+.logo-row { display: flex; align-items: baseline; gap: 14px; padding: 36px 0 8px; flex-wrap: wrap; }
+.logo-wordmark {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.9rem, 6vw, 3.4rem);
+  letter-spacing: -0.5px;
+  color: var(--ink);
+  line-height: 1;
+}
+.logo-wordmark span { color: var(--blue-mid); }
+.logo-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--blue);
+  border: 1px solid var(--blue-dim);
+  padding: 4px 10px;
+  border-radius: 99px;
+  background: var(--blue-glow);
+}
+.divider { height: 1px; background: var(--border); margin: 20px 0; }
+.meta-row { display: flex; gap: 20px; flex-wrap: wrap; padding: 10px 0; }
+.meta-chip {
+  display: flex; align-items: center; gap: 7px;
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: var(--ink-muted); letter-spacing: 0.3px;
+}
+.meta-chip .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--blue-mid); flex-shrink: 0; }
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 24px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(26,95,168,0.05);
+}
+.card-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+.card-title::after { content:''; flex:1; height:1px; background: var(--blue-dim); }
+.mode-grid { display: flex; flex-direction: column; gap: 9px; }
+.mode-btn {
+  display: flex; align-items: center; gap: 15px;
+  padding: 15px 18px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+  cursor: pointer; text-align: left; width: 100%;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s ease;
+  position: relative; overflow: hidden;
+}
+.mode-btn::after { content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity 0.2s; }
+.mode-btn.study::after  { background: var(--mint-glow); }
+.mode-btn.exam::after   { background: var(--gold-glow); }
+.mode-btn.drill::after  { background: var(--sky-glow); }
+.mode-btn:hover::after  { opacity: 1; }
+.mode-btn:hover { border-color: var(--blue-dim); transform: translateY(-1px); box-shadow: 0 5px 16px rgba(26,95,168,0.1); }
+.mode-btn:active { transform: translateY(0); }
+.mode-icon {
+  width: 42px; height: 42px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0; position: relative; z-index: 1;
+}
+.mode-btn.study .mode-icon { background: var(--mint-dim); }
+.mode-btn.exam  .mode-icon { background: var(--gold-dim); }
+.mode-btn.drill .mode-icon { background: var(--sky-dim); }
+.mode-text { position: relative; z-index: 1; }
+.mode-text h3 { font-weight: 600; font-size: 15px; color: var(--ink); margin-bottom: 2px; }
+.mode-text p  { font-size: 12px; color: var(--ink-muted); font-weight: 300; line-height: 1.4; }
+.mode-arr { margin-left: auto; color: var(--ink-faint); font-size: 18px; position: relative; z-index: 1; transition: transform 0.2s, color 0.2s; }
+.mode-btn:hover .mode-arr { transform: translateX(4px); color: var(--blue-mid); }
+
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 4px; }
+.stat-box {
+  background: var(--surface-2);
+  border: 1px solid var(--border-light);
+  border-radius: var(--r-sm);
+  padding: 16px 12px;
+  text-align: center;
+}
+.stat-val { font-family: 'Playfair Display', serif; font-size: 1.9rem; line-height: 1; color: var(--blue); }
+.stat-val.mint { color: var(--mint); }
+.stat-val.gold { color: var(--gold); }
+.stat-val.rose { color: var(--rose); }
+.stat-lbl { font-family: 'DM Mono', monospace; font-size: 9.5px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink-muted); margin-top: 5px; }
+.session-hist { margin-top: 14px; }
+.session-hist-title { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 10px; }
+.hist-list { display: flex; flex-direction: column; gap: 5px; max-height: 140px; overflow-y: auto; }
+.hist-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px;
+  background: var(--bg);
+  border: 1px solid var(--border-light);
+  border-radius: 7px;
+  font-size: 12px;
+}
+.hist-item .hi-mode { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; padding: 2px 7px; border-radius: 99px; }
+.hi-mode.study { background: var(--mint-dim); color: var(--mint); }
+.hi-mode.exam  { background: var(--gold-dim); color: var(--gold); }
+.hi-mode.drill { background: var(--sky-dim); color: var(--sky); }
+.hist-item .hi-score { font-weight: 600; color: var(--ink); margin-left: auto; }
+.hist-item .hi-pct {
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  padding: 2px 7px; border-radius: 99px;
+}
+.hist-item .hi-date { font-size: 11px; color: var(--ink-faint); }
+.no-hist { font-size: 13px; color: var(--ink-faint); text-align: center; padding: 16px 0; font-style: italic; }
+.reset-btn { margin-top: 10px; background: none; border: 1px solid var(--border); border-radius: 7px; padding: 6px 14px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--ink-faint); cursor: pointer; transition: all 0.15s; }
+.reset-btn:hover { border-color: var(--rose-dim); color: var(--rose); }
+.topic-bar { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+.topic-row { display: flex; align-items: center; gap: 10px; font-size: 12px; }
+.topic-name { min-width: 160px; color: var(--ink-muted); font-size: 11px; }
+.topic-track { flex: 1; height: 5px; background: var(--surface-2); border-radius: 99px; overflow: hidden; }
+.topic-fill { height: 100%; border-radius: 99px; background: var(--blue-dim); transition: width 0.6s ease; }
+.topic-fill.good { background: linear-gradient(90deg, var(--mint-dim), var(--mint)); }
+.topic-fill.mid  { background: linear-gradient(90deg, var(--gold-dim), var(--gold)); }
+.topic-fill.low  { background: linear-gradient(90deg, var(--rose-dim), var(--rose)); }
+.topic-pct { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink-muted); min-width: 30px; text-align: right; }
+
+/* ── QUIZ SCREEN ── */
+#quiz-screen { display: none; }
+.quiz-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 20px 0 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 18px;
+}
+.btn-ghost {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 8px 14px;
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: var(--ink-muted); cursor: pointer;
+  transition: all 0.15s; letter-spacing: 0.5px; white-space: nowrap;
+}
+.btn-ghost:hover { border-color: var(--ink-muted); color: var(--ink); background: var(--surface-2); }
+.progress-block { flex: 1; }
+.progress-track { height: 4px; background: var(--surface-3); border-radius: 99px; overflow: hidden; margin-bottom: 5px; }
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--blue), var(--sky));
+  border-radius: 99px;
+  transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+.progress-label {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  color: var(--ink-muted); letter-spacing: 0.5px;
+  display: flex; justify-content: space-between;
+}
+.score-pill {
+  font-family: 'DM Mono', monospace; font-size: 12px;
+  padding: 6px 14px; border-radius: 99px;
+  background: var(--blue-dim); color: var(--blue);
+  border: 1px solid rgba(26,95,168,0.25); white-space: nowrap;
+}
+.nav-row-top { display: flex; gap: 10px; align-items: center; padding: 0 0 12px; }
+.q-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 28px;
+  margin-bottom: 12px;
+  animation: fadeIn 0.25s ease;
+  box-shadow: 0 2px 8px rgba(26,95,168,0.05);
+}
+.q-index {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--blue); margin-bottom: 14px;
+  display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+}
+.pill-tag {
+  background: var(--blue-dim);
+  border: 1px solid rgba(26,95,168,0.2);
+  padding: 2px 8px; border-radius: 99px;
+  color: var(--blue); font-size: 9px;
+}
+.q-text { font-size: clamp(14.5px,2.2vw,16.5px); line-height: 1.75; font-weight: 400; color: var(--ink); margin-bottom: 22px; }
+.opts { display: flex; flex-direction: column; gap: 7px; }
+.opt {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+  cursor: pointer; width: 100%; text-align: left;
+  font-family: 'DM Sans', sans-serif; font-size: 14px;
+  font-weight: 400; color: var(--ink-muted);
+  transition: all 0.15s ease; position: relative; overflow: hidden;
+}
+.opt:hover:not(:disabled) { border-color: var(--blue-dim); background: var(--surface-3); color: var(--ink); }
+.opt:disabled { cursor: default; }
+.opt-key {
+  width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%;
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  color: var(--ink-faint); background: var(--surface);
+  transition: all 0.15s;
+}
+.opt-body { flex: 1; line-height: 1.45; }
+.opt.correct { border-color: var(--mint) !important; background: var(--mint-glow) !important; color: var(--ink) !important; }
+.opt.correct .opt-key { background: var(--mint) !important; border-color: var(--mint) !important; color: #fff !important; }
+.opt.incorrect { border-color: var(--rose-dim) !important; background: var(--rose-glow) !important; color: var(--ink-muted) !important; }
+.opt.incorrect .opt-body { text-decoration: line-through; opacity: 0.5; }
+.opt.incorrect .opt-key { background: var(--rose-dim) !important; border-color: var(--rose) !important; color: var(--rose) !important; }
+.opt.selected { border-color: var(--blue-dim) !important; background: var(--blue-glow) !important; color: var(--ink) !important; }
+.opt.selected .opt-key { background: var(--blue) !important; border-color: var(--blue) !important; color: #fff !important; }
+.opt-badge { margin-left: auto; font-size: 14px; flex-shrink: 0; }
+.opt.drill-wrong-shake { animation: shake 0.4s ease; }
+@keyframes shake { 0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)} }
+
+.exp-box {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--blue-mid);
+  border-radius: var(--r-sm);
+  padding: 20px 22px; margin-top: 12px; display: none;
+  animation: slideUp 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+.exp-box.show { display: block; }
+@keyframes slideUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+.exp-header {
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--blue); margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.exp-header::after { content:''; flex:1; height:1px; background:var(--blue-dim); }
+.exp-answer { font-weight: 600; font-size: 15px; color: var(--mint); margin-bottom: 8px; }
+.exp-body { font-size: 13.5px; line-height: 1.75; color: var(--ink-muted); }
+.exp-body strong { color: var(--ink); font-weight: 600; }
+.exp-src { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--border); font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink-faint); letter-spacing: 0.3px; }
+
+.nav-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 11px 20px; border-radius: var(--r-sm);
+  font-family: 'DM Sans', sans-serif; font-size: 14px;
+  font-weight: 500; cursor: pointer; transition: all 0.15s; border: 1px solid;
+}
+.nav-btn.primary { background: var(--blue); border-color: var(--blue); color: #fff; box-shadow: 0 2px 10px rgba(26,95,168,0.22); }
+.nav-btn.primary:hover { background: #124985; border-color: #124985; box-shadow: 0 4px 18px rgba(26,95,168,0.3); transform: translateY(-1px); }
+.nav-btn.secondary { background: transparent; border-color: var(--border); color: var(--ink-muted); }
+.nav-btn.secondary:hover { border-color: var(--blue-dim); color: var(--ink); background: var(--surface-2); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+.nav-btn.danger { background: var(--rose); border-color: var(--rose); color: #fff; }
+.nav-btn.danger:hover { background: #8A1830; border-color: #8A1830; }
+.nav-spacer { flex: 1; }
+.flag-btn {
+  background: none; border: 1px solid var(--border);
+  border-radius: var(--r-sm); padding: 10px 14px;
+  cursor: pointer; font-size: 14px; color: var(--ink-muted); transition: all 0.15s;
+}
+.flag-btn:hover { border-color: var(--gold); color: var(--gold); }
+.flag-btn.flagged { border-color: var(--gold); color: var(--gold); background: var(--gold-glow); }
+
+.q-map-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 20px; margin-top: 12px;
+  box-shadow: 0 1px 4px rgba(26,95,168,0.04);
+}
+.q-map-title { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+.map-legend { display: flex; gap: 12px; margin-left: auto; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--ink-faint); }
+.legend-dot { width: 8px; height: 8px; border-radius: 3px; }
+.q-map-grid { display: flex; flex-wrap: wrap; gap: 5px; }
+.q-dot {
+  width: 30px; height: 30px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  cursor: pointer; transition: all 0.1s;
+  border: 1px solid var(--border-light);
+  background: var(--surface-2); color: var(--ink-faint);
+}
+.q-dot:hover { border-color: var(--blue-dim); color: var(--blue); }
+.q-dot.current { border-color: var(--blue); color: var(--blue); background: var(--blue-dim); }
+.q-dot.answered { border-color: rgba(26,122,94,0.4); background: var(--mint-dim); color: var(--mint); }
+.q-dot.wrong { border-color: rgba(168,40,64,0.4); background: var(--rose-dim); color: var(--rose); }
+.q-dot.flagged-dot { outline: 2px solid var(--gold); outline-offset: 1px; }
+
+.drill-reset-overlay {
+  position: fixed; inset: 0;
+  background: rgba(220,232,248,0.95);
+  z-index: 200; display: none; align-items: center; justify-content: center;
+  backdrop-filter: blur(8px); animation: fadeIn 0.2s ease;
+}
+.drill-reset-overlay.show { display: flex; }
+.drill-reset-modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--sky);
+  border-radius: var(--r); padding: 36px 32px;
+  max-width: 380px; width: 90%; text-align: center;
+  box-shadow: 0 8px 32px rgba(26,95,168,0.1);
+}
+.drill-reset-modal .big-icon { font-size: 2.8rem; margin-bottom: 14px; }
+.drill-reset-modal h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 8px; color: var(--ink); }
+.drill-reset-modal p { font-size: 14px; color: var(--ink-muted); margin-bottom: 24px; line-height: 1.6; }
+.drill-reset-modal .nav-btn { width: 100%; justify-content: center; margin-bottom: 8px; }
+
+/* ── RESULTS ── */
+#result-screen { display: none; animation: fadeIn 0.5s ease; }
+.result-hero { padding: 40px 0 24px; text-align: center; }
+.result-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--blue); margin-bottom: 12px; }
+.result-score { font-family: 'Playfair Display', serif; font-size: clamp(3.2rem, 11vw, 5.5rem); line-height: 1; color: var(--ink); letter-spacing: -2px; }
+.result-score span { color: var(--blue-mid); }
+.result-sub { font-size: 14px; color: var(--ink-muted); margin-top: 10px; }
+.result-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 16px; }
+.result-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 18px 16px; text-align: center; }
+.result-card .val { font-family: 'Playfair Display', serif; font-size: 2rem; line-height: 1; margin-bottom: 4px; }
+.result-card.correct .val { color: var(--mint); }
+.result-card.wrong   .val { color: var(--rose); }
+.result-card.skipped .val { color: var(--ink-muted); }
+.result-card .lbl { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink-muted); }
+.result-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.result-actions .nav-btn { flex: 1; justify-content: center; }
+.result-topic-review { margin-top: 16px; }
+
+.exam-overlay {
+  position: fixed; inset: 0;
+  background: rgba(220,232,248,0.94);
+  z-index: 100; display: none; align-items: center; justify-content: center;
+  backdrop-filter: blur(5px);
+}
+.exam-overlay.show { display: flex; }
+.exam-modal {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 34px; max-width: 400px; width: 90%;
+  text-align: center; box-shadow: 0 8px 32px rgba(26,95,168,0.08);
+}
+.exam-modal h2 { font-family: 'Playfair Display', serif; font-size: 1.8rem; margin-bottom: 8px; color: var(--ink); }
+.exam-modal p { font-size: 14px; color: var(--ink-muted); margin-bottom: 24px; line-height: 1.6; }
+.exam-modal .nav-btn { width: 100%; justify-content: center; margin-bottom: 8px; }
+
+.streak-toast {
+  position: fixed; bottom: 24px; left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--blue-dim); border: 1px solid rgba(26,95,168,0.4);
+  border-radius: 99px; padding: 10px 22px;
+  font-family: 'DM Mono', monospace; font-size: 12px;
+  color: var(--blue); letter-spacing: 1px;
+  transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  z-index: 999; white-space: nowrap;
+}
+.streak-toast.show { transform: translateX(-50%) translateY(0); }
+.timer-badge {
+  font-family: 'DM Mono', monospace; font-size: 12px;
+  color: var(--ink-muted); letter-spacing: 1px;
+  padding: 5px 12px; border-radius: 99px; border: 1px solid var(--border);
+}
+.timer-badge.warning { color: var(--gold); border-color: rgba(122,98,0,0.3); }
+.timer-badge.danger  { color: var(--rose); border-color: rgba(168,40,64,0.3); animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+.kbd-hint {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  color: var(--ink-faint); text-align: center;
+  padding: 12px 0 4px; letter-spacing: 0.5px;
+}
+kbd {
+  background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 4px; padding: 1px 5px; font-size: 10px; color: var(--ink-muted);
+}
+/* ── AUDIO TOGGLE ── */
+.sound-toggle-bar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-light);
+  border-radius: var(--r-sm);
+  margin-bottom: 10px;
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: var(--ink-muted); letter-spacing: 0.5px;
+}
+.sound-toggle-bar .stb-icon { font-size: 16px; flex-shrink: 0; }
+.sound-toggle-bar .stb-label { flex: 1; }
+.sound-toggle-bar .stb-status {
+  font-size: 10px; padding: 2px 8px; border-radius: 99px;
+  background: var(--surface-3); color: var(--ink-faint);
+  border: 1px solid var(--border-light);
+  transition: all 0.2s;
+}
+.sound-toggle-bar.active .stb-status {
+  background: var(--mint-dim); color: var(--mint);
+  border-color: rgba(26,122,94,0.3);
+}
+.toggle-switch {
+  position: relative; width: 38px; height: 20px; flex-shrink: 0;
+}
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute; inset: 0; cursor: pointer;
+  background: var(--border); border-radius: 99px;
+  transition: background 0.25s;
+}
+.toggle-slider::before {
+  content: '';
+  position: absolute; width: 14px; height: 14px;
+  left: 3px; top: 3px;
+  background: #fff; border-radius: 50%;
+  transition: transform 0.25s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+.toggle-switch input:checked + .toggle-slider { background: var(--mint); }
+.toggle-switch input:checked + .toggle-slider::before { transform: translateX(18px); }
+.now-playing-bar {
+  display: none; align-items: center; gap: 8px;
+  padding: 6px 12px;
+  background: var(--mint-glow);
+  border: 1px solid rgba(26,122,94,0.2);
+  border-radius: var(--r-sm);
+  margin-bottom: 8px;
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  color: var(--mint); letter-spacing: 0.5px;
+  animation: fadeIn 0.3s ease;
+}
+.now-playing-bar.show { display: flex; }
+.np-waves { display: flex; align-items: flex-end; gap: 2px; height: 14px; }
+.np-wave { width: 3px; background: var(--mint); border-radius: 2px; animation: npWave 0.8s ease-in-out infinite; }
+.np-wave:nth-child(1){ height:6px; animation-delay:0s; }
+.np-wave:nth-child(2){ height:12px; animation-delay:0.15s; }
+.np-wave:nth-child(3){ height:8px; animation-delay:0.3s; }
+.np-wave:nth-child(4){ height:10px; animation-delay:0.1s; }
+@keyframes npWave {
+  0%,100%{ transform: scaleY(0.4); }
+  50%{ transform: scaleY(1); }
+}
+.np-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+@media (max-width: 480px) {
+  body { padding: 10px; }
+  .q-card { padding: 18px 14px; }
+  .result-score { font-size: 3rem; }
+  .q-dot { width: 26px; height: 26px; font-size: 9px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .nav-row-top { flex-wrap: wrap; }
+  .topic-name { min-width: 110px; }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ═══ START ═══ -->
+<div id="start-screen">
+  <div class="logo-row">
+    <div class="logo-wordmark">SYAFIQ <span>GIGA</span></div>
+    <div class="logo-tag">BLOK 2.3</div>
+  </div>
+  <div class="meta-row">
+    <div class="meta-chip"><span class="dot"></span>Continuity &amp; Life Cycle</div>
+    <div class="meta-chip"><span class="dot"></span>100 Soal</div>
+    <div class="meta-chip"><span class="dot"></span>FK Unsoed · Sumber: Mochi CBT Blok 2.3</div>
+  </div>
+  <div class="divider"></div>
+  <div class="card">
+    <div class="card-title">Pilih Mode Belajar</div>
+    <div class="mode-grid">
+      <button class="mode-btn study" onclick="startQuiz('study')">
+        <div class="mode-icon">📖</div>
+        <div class="mode-text"><h3>Study Mode</h3><p>Lihat jawaban &amp; pembahasan langsung setelah pilih</p></div>
+        <div class="mode-arr">›</div>
+      </button>
+      <button class="mode-btn exam" onclick="startQuiz('exam')">
+        <div class="mode-icon">📝</div>
+        <div class="mode-text"><h3>Exam Mode</h3><p>Simulasi ujian — jawaban tersembunyi sampai kumpul</p></div>
+        <div class="mode-arr">›</div>
+      </button>
+      <button class="mode-btn drill" onclick="startQuiz('drill')">
+        <div class="mode-icon">🔁</div>
+        <div class="mode-text"><h3>Drill Mode</h3><p>Ulangi soal sampai benar, tanpa skor akhir</p></div>
+        <div class="mode-arr">›</div>
+      </button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Statistik &amp; Riwayat</div>
+    <div class="stats-grid">
+      <div class="stat-box"><div class="stat-val" id="stat-best">—</div><div class="stat-lbl">Best Score</div></div>
+      <div class="stat-box"><div class="stat-val mint" id="stat-avg">—</div><div class="stat-lbl">Avg Score</div></div>
+      <div class="stat-box"><div class="stat-val gold" id="stat-sessions">0</div><div class="stat-lbl">Sessions</div></div>
+      <div class="stat-box"><div class="stat-val rose">102</div><div class="stat-lbl">Total Soal</div></div>
+    </div>
+    <div class="session-hist" id="session-hist-wrap">
+      <div class="session-hist-title">Riwayat Sesi</div>
+      <div class="hist-list" id="hist-list"><div class="no-hist">Belum ada sesi — yuk mulai!</div></div>
+      <button class="reset-btn" onclick="clearHistory()">🗑 Hapus Riwayat</button>
+    </div>
+  </div>
+  <div class="card" id="topic-card">
+    <div class="card-title">Akurasi per Topik</div>
+    <div class="topic-bar" id="topic-bar"><div class="no-hist">Belum ada data — selesaikan satu sesi dulu.</div></div>
+  </div>
+</div>
+
+<!-- ═══ QUIZ ═══ -->
+<div id="quiz-screen">
+  <div id="sound-toggle-bar" class="sound-toggle-bar" style="display:none">
+    <span class="stb-icon" id="stb-icon">🔇</span>
+    <span class="stb-label">Sound Effects</span>
+    <span class="stb-status" id="stb-status">OFF</span>
+    <label class="toggle-switch">
+      <input type="checkbox" id="sound-toggle-input" onchange="toggleSound(this.checked)">
+      <span class="toggle-slider"></span>
+    </label>
+  </div>
+  <div class="now-playing-bar" id="now-playing-bar">
+    <div class="np-waves">
+      <div class="np-wave"></div><div class="np-wave"></div>
+      <div class="np-wave"></div><div class="np-wave"></div>
+    </div>
+    <span class="np-text" id="np-text">—</span>
+  </div>
+  <div class="quiz-header">
+    <button class="btn-ghost" onclick="confirmExit()">← Keluar</button>
+    <div class="progress-block">
+      <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+      <div class="progress-label"><span id="prog-txt">0 / 102</span><span id="mode-badge">—</span></div>
+    </div>
+    <div class="score-pill" id="score-display">0 / 0</div>
+    <div class="timer-badge" id="timer-el" style="display:none">00:00</div>
+  </div>
+  <div class="nav-row-top">
+    <button class="nav-btn secondary" id="btn-prev" onclick="navigate(-1)">‹ Prev</button>
+    <button class="flag-btn" id="btn-flag" onclick="toggleFlag()">🚩</button>
+    <div class="nav-spacer"></div>
+    <button class="nav-btn primary" id="btn-next" onclick="navigate(1)">Next ›</button>
+  </div>
+  <div class="q-card" id="q-card"></div>
+  <div class="exp-box" id="exp-box">
+    <div class="exp-header">Pembahasan</div>
+    <div class="exp-answer" id="exp-answer"></div>
+    <div class="exp-body" id="exp-body"></div>
+    <div class="exp-src" id="exp-src"></div>
+  </div>
+  <div class="q-map-section">
+    <div class="q-map-title">
+      Question Map
+      <span class="map-legend">
+        <span class="legend-item"><span class="legend-dot" style="background:var(--mint-dim);border:1px solid var(--mint)"></span>Benar</span>
+        <span class="legend-item"><span class="legend-dot" style="background:var(--rose-dim);border:1px solid var(--rose)"></span>Salah</span>
+        <span class="legend-item"><span class="legend-dot" style="background:var(--blue-dim);border:1px solid var(--blue)"></span>Aktif</span>
+      </span>
+    </div>
+    <div class="q-map-grid" id="q-map"></div>
+  </div>
+  <div class="kbd-hint">Keyboard: <kbd>A</kbd>–<kbd>E</kbd> pilih · <kbd>→</kbd> next · <kbd>←</kbd> prev · <kbd>F</kbd> flag</div>
+</div>
+
+<!-- ═══ RESULTS ═══ -->
+<div id="result-screen">
+  <div class="result-hero">
+    <div class="result-label">Session Complete</div>
+    <div class="result-score" id="final-score-display"><span>0</span>/102</div>
+    <div class="result-sub" id="final-sub">—</div>
+  </div>
+  <div class="result-grid">
+    <div class="result-card correct"><div class="val" id="r-correct">0</div><div class="lbl">Benar</div></div>
+    <div class="result-card wrong"><div class="val" id="r-wrong">0</div><div class="lbl">Salah</div></div>
+    <div class="result-card skipped"><div class="val" id="r-skip">0</div><div class="lbl">Skip</div></div>
+  </div>
+  <div class="result-topic-review card" id="result-topics" style="margin-bottom:12px">
+    <div class="card-title">Akurasi per Topik (Sesi Ini)</div>
+    <div class="topic-bar" id="result-topic-bar"></div>
+  </div>
+  <div class="result-actions">
+    <button class="nav-btn secondary" onclick="reviewAnswers()">📋 Review</button>
+    <button class="nav-btn primary" onclick="showStart()">↩ Menu</button>
+  </div>
+</div>
+
+<!-- overlays -->
+<div class="exam-overlay" id="exam-overlay">
+  <div class="exam-modal">
+    <h2>Akhiri Ujian?</h2>
+    <p>Semua jawaban akan dinilai dan kamu akan melihat hasilnya.</p>
+    <button class="nav-btn primary" onclick="submitExam()">Ya, Kumpulkan</button>
+    <button class="nav-btn secondary" onclick="closeOverlay('exam-overlay')">Lanjut Dulu</button>
+  </div>
+</div>
+<div class="exam-overlay" id="exit-overlay">
+  <div class="exam-modal">
+    <h2>Keluar Sesi?</h2>
+    <p>Progress sesi ini tidak akan tersimpan.</p>
+    <button class="nav-btn danger" onclick="showStart()">Ya, Keluar</button>
+    <button class="nav-btn secondary" onclick="closeOverlay('exit-overlay')">Batal</button>
+  </div>
+</div>
+<div class="drill-reset-overlay" id="drill-overlay">
+  <div class="drill-reset-modal">
+    <div class="big-icon">🎯</div>
+    <h2>Drill Selesai!</h2>
+    <p>Semua soal sudah dijawab dengan benar. Luar biasa!</p>
+    <button class="nav-btn primary" onclick="startQuiz('drill')">Drill Lagi</button>
+    <button class="nav-btn secondary" onclick="showStart()">Menu Utama</button>
+  </div>
+</div>
+<div class="streak-toast" id="streak-toast"></div>
+
+</div><!-- .shell -->
+
+<script>
+const QUESTIONS = [
+{n:1,t:"Anatomi Reproduksi Wanita",q:"Berikut yang SALAH mengenai struktur genitalia feminina interna adalah…",o:["Metastasis Ca cervix ke lateral dapat menyebabkan obstruksi ureter distal","Pelvic Inflammatory Disease dapat berasal dari infeksi ascenden tractus genitalia externa","Perdarahan akibat kehamilan ektopik (tubal) yang terganggu dapat sangat profuse karena adanya aliran darah dari a.ovarica dan a.uterina","Portio supravaginalis dapat diidentifikasi pada pemeriksaan inspekulo (kolposkopi menggunakan speculum)","Batu ureter distal memungkinkan untuk diraba pada fornix lateral"],a:"Portio supravaginalis dapat diidentifikasi pada pemeriksaan inspekulo (kolposkopi menggunakan speculum)",exp:"<strong>Portio supravaginalis</strong> adalah bagian serviks uteri yang berada di atas vagina — terletak di dalam kavum pelvis dan <strong>tidak dapat diidentifikasi</strong> dengan pemeriksaan inspekulo. Yang bisa diidentifikasi lewat inspekulo (spekulum) adalah portio vaginalis (ektosserviks). Pilihan A benar karena ureter berjalan dekat serviks. Pilihan B benar karena jalur ascending dari vagina ke rongga pelvis memungkinkan PID. Pilihan C benar karena ektopik tubal mendapat suplai dari dua arteri.",src:"MADU 2021 / PPT Anatomi Reproduksi Wanita"},
+{n:2,t:"Anatomi Reproduksi Wanita",q:"Berikut yang BENAR mengenai aplikasi klinis terkait spatium di sekeliling genitalia interna feminina adalah…",o:["Abses fossa ischiorectal dapat menyebar ke anterior mencapai spatium subperitoneal","Darah akibat ruptur urethra feminina pars membranosa terkumpul pada spatium perinei superficial","Gangguan sensorik pada dorsum clitoris dapat terjadi karena gangguan pada n. dorsalis clitoridis yang berjalan di spatium subperitoneal","Gangguan motorik pada trigonum UG dapat terjadi karena gangguan saraf yang berjalan di dinding fossa ischiorectalis","Darah menstruasi pada endometriosis peritoneum dasar pelvis terkumpul di fossa subfascial"],a:"Darah akibat ruptur urethra feminina pars membranosa terkumpul pada spatium perinei superficial",exp:"Urethra feminina pars membranosa terletak di spatium perinei profundum. Jika terjadi ruptur, darah dapat merembes ke <strong>spatium perinei superficial</strong> melalui membrana perinei. Spatium perinei superficial dibatasi fascia Colles di inferior dan membrana perinei di superior.",src:"MADU 2021 no 82 / PPT Anatomi Reproduksi Wanita"},
+{n:3,t:"Anatomi Obstetri",q:"Dalam proses persalinan, ujung jari hanya dapat melewati tepi bawah symphisis pubis dan langsung menyentuh kepala janin, tetapi tidak dapat terus menyusur lurus ke belakang. Hal ini menunjukkan bahwa kepala janin telah mencapai…",o:["Pintu atas panggul","Promontorium sacralis","Spina ischiadica","Tuberositas ossis ischii","Os coccygeus"],a:"Spina ischiadica",exp:"Bidang Hodge II setinggi <strong>spina ischiadica</strong>. Pada pemeriksaan dalam: jari melewati tepi bawah simfisis pubis, langsung menyentuh kepala janin tetapi tidak bisa menyusur lurus ke belakang → kepala janin sudah di level spina ischiadica (engagement / bidang Hodge II).",src:"PPT dr. Cath — Bidang Hodge dan Mekanisme Persalinan"},
+{n:4,t:"Anatomi Reproduksi Wanita",q:"Seorang wanita didiagnosis menderita hydrocele pada labia majoranya. Bagaimana penjelasan anatomis paling tepat mengenai kondisi ini?",o:["Pada masa embrional, vasa ovarica turun melalui canalis Nuck","Gubernaculum ovarii (feminine) melalui canalis inguinalis","Pada masa embrional, ovarium turun melalui canalis inguinalis","Semua salah","Semua benar"],a:"Semua salah",exp:"Hidrocele pada labia majora terjadi karena <strong>canal of Nuck (processus vaginalis feminina) gagal menutup</strong>. Canal of Nuck mengikuti gubernaculum ovarii melalui canalis inguinalis, namun bukan vasa ovarica yang turun. Ovarium sendiri tidak turun ke canalis inguinalis (berbeda dengan testis). Pilihan A, B, C masing-masing salah, sehingga jawabannya 'Semua salah'.",src:"Awetan tahun sebelumnya / PPT Anatomi Reproduksi Wanita"},
+{n:5,t:"Anatomi Reproduksi Wanita",q:"Yang BENAR mengenai G-Spot adalah…",o:["Homolog glandula paraurethral masculina","Di dinding anterior vagina distal","Sekresi sekret","Di kanan dan kiri urethra feminina","Terdapat jaringan erektil"],a:"Homolog glandula paraurethral masculina",exp:"<strong>G-Spot (Gräfenberg Spot)</strong> dianggap sebagai area yang berkorespondensi dengan glandula paraurethral (Skene's glands) pada wanita — homolog dengan kelenjar prostat pria. Letaknya di dinding anterior vagina proksimal (bukan distal), di sekitar urethra. Glandula ini dapat mensekresikan cairan mirip PSA saat terangsang.",src:"PPT Anatomi Reproduksi Wanita — G-Spot"},
+{n:6,t:"Anatomi Reproduksi Wanita",q:"Terkait senam Kegel, keadaan pasien yang benar adalah…",o:["Kontraksi lahiran buat relaksasi m.detrussor vesica","Persalinan lama membuat relaksasi diafragma urogenital","Senam Kegel meluruskan sudut urethrovesicae","Senam Kegel memperkuat diafragma pelvis","Kontraksi m. detrussor meningkat saat kegel"],a:"Persalinan lama membuat relaksasi diafragma urogenital",exp:"Persalinan lama menyebabkan <strong>peregangan dan relaksasi diafragma urogenital</strong> serta otot-otot dasar pelvis. Akibatnya terjadi stress incontinence. Senam Kegel berfungsi memperkuat otot-otot perineal dan memulihkan sudut urethrovesical — bukan meluruskan sudut tersebut.",src:"PPT Anatomi Reproduksi Wanita — Senam Kegel"},
+{n:7,t:"Anatomi Reproduksi Wanita",q:"Yang BENAR terkait ovarium adalah…",o:["Saat ovulasi ovum berada pada ruang peritonei","Ovarium dilapisi peritoneum visceral","Ovarium tidak memiliki pembuluh limfe","Ovarium hanya mendapat suplai dari a. ovarica saja","Ligamentum ovarii proprium menghubungkan ovarium ke dinding pelvis"],a:"Saat ovulasi ovum berada pada ruang peritonei",exp:"Saat ovulasi, oosit sekunder dilepaskan dari folikel Graafian ke <strong>ruang peritonei (kavum peritonei)</strong>. Oosit kemudian ditangkap oleh fimbriae tuba uterina. Ovarium secara unik <strong>tidak dilapisi peritoneum</strong> (dilapisi epitel germinativum). Ovarium mendapat suplai dari a. ovarica dan cabang a. uterina.",src:"PPT Anatomi Reproduksi Wanita — Ovarium"},
+{n:8,t:"Anatomi Reproduksi Wanita",q:"Berikut BENAR mengenai struktur penyangga uterus adalah…",o:["Ligamentum cervicalis lateralis homolog dengan gubernaculum testis","Plexus Frankenhauser berada di belakang ligamentum latum uteri","Ligamentum teres uteri menambat pada arcus tendineus musculi levator ani","Ligamentum pubocervicalis ditembus oleh struktur a. uterina","Ligamentum sacrouterina atau retrouterina membatasi cavum Douglass di lateralnya"],a:"Ligamentum sacrouterina atau retrouterina membatasi cavum Douglass di lateralnya",exp:"<strong>Ligamentum sacrouterina (retrouterina)</strong> berjalan dari serviks ke os sacrum di sisi lateral excavatio rectouterina (cavum Douglas), sehingga membatasinya di sisi lateral/medial. Plexus Frankenhauser (plexus uterovaginalis) berada di parametrium lateral setinggi serviks. Ligamentum teres uteri berakhir di labia majora.",src:"PPT Anatomi Reproduksi Wanita — Struktur Penyangga Uterus"},
+{n:9,t:"Anatomi Reproduksi Wanita",q:"Anda mengamati foto rontgen hasil dari HSG ditemukan tumpahan bilateral dari medial kasar pada cavum peritonei. Temuan apa itu?",o:["Ductus paramesonefros gagal terbentuk","Ductus mesonefros gagal terbentuk","Kedua tuba paten","Fistula rectouterina","Fistula vesico vaginalis"],a:"Kedua tuba paten",exp:"HSG (Hysterosalpingography): media kontras yang masuk uterus dan keluar melalui tuba uterina ke kavum peritonei menunjukkan <strong>tuba paten (terbuka)</strong>. Tumpahan bilateral = kedua tuba paten. Tidak ada tumpahan = oklusi/obstruksi tuba.",src:"PPT Anatomi Reproduksi Wanita — HSG"},
+{n:10,t:"Embriologi",q:"Seseorang wanita yakin sedang hamil namun didapati pembesaran uterus dan pembesaran endometrium berisi vili korionik tapi tidak dapat dibuktikan adanya embrio. Jaringan yang mengalami hiperplasia adalah pertumbuhan…",o:["Amnioblast","Endoderm","Trofoblast","Epiblast","Hipoblast"],a:"Trofoblast",exp:"Gambaran klinis menunjukkan <strong>mola hidatidosa</strong> — vili korionik tanpa embrio. Jaringan yang berproliferasi adalah <strong>trofoblas</strong> (lapisan terluar blastocyst yang membentuk plasenta). Pada mola, trofoblas berproliferasi abnormal tanpa pembentukan embrio yang normal.",src:"PPT Embriologi — Mola Hidatidosa"},
+{n:11,t:"Histologi Reproduksi Wanita",q:"Ciri perkembangan folikel ovarium saat fertilisasi adalah…",o:["Tertahan pada meiosis 1","Tertahan pada meiosis 2","Pembelahan meiosis aktif","Pembelahan mitosis aktif","Pembelahan meiosis 2 lengkap"],a:"Tertahan pada meiosis 2",exp:"Oosit sekunder yang diovulasikan dalam kondisi <strong>arrested di Meiosis II metafase</strong>. Saat fertilisasi terjadi (sperma menembus zona pelusida), meiosis II baru diselesaikan. Jika tidak ada fertilisasi, oosit berdegenerasi tetap dalam kondisi arrested meiosis II.",src:"PPT Embriologi — Oogenesis & Folikulogenesis"},
+{n:12,t:"Psikologi Perkembangan",q:"Dimensi perkembangan anak adalah…",o:["Mental, sosial, sensorik","Mental, sosial, motorik","Psikomotor, sosial, mental","Psikomotor, sensorik, fisik","Motorik, sensorik, fisik"],a:"Psikomotor, sosial, mental",exp:"Dimensi/domain perkembangan anak mencakup: (1) <strong>Psikomotor</strong> (motorik kasar dan halus), (2) <strong>Sosial</strong> (sosialisasi dan kemandirian), dan (3) <strong>Mental</strong> (bahasa, kognitif, emosi). Ketiga dimensi ini yang menjadi dasar skrining perkembangan anak.",src:"PPT Tumbuh Kembang — Dimensi Perkembangan"},
+{n:13,t:"Fisiologi Reproduksi Pria",q:"Pemeriksaan antibodi antisperma dapat dilakukan dengan cara direct adalah…",o:["Mixed antiglobulin reaction test","Direct immunobead test","Pemeriksaan antibodi di dalam cairan","A dan B benar","A, B, C benar"],a:"A dan B benar",exp:"Pemeriksaan antibodi antisperma secara <strong>direct</strong> dilakukan langsung pada sperma pasien: (1) <strong>Mixed Antiglobulin Reaction (MAR) test</strong> — menggunakan eritrosit berlapis IgG, dan (2) <strong>Direct Immunobead test</strong> — menggunakan manik-manik yang dilapisi antibodi. Keduanya mengukur antibodi yang terikat langsung pada permukaan sperma.",src:"PPT Analisis Sperma — Pemeriksaan Antibodi Antisperma"},
+{n:14,t:"Fisiologi Reproduksi Pria",q:"Pernyataan yang benar mengenai mekanisme terjadinya ereksi adalah…",o:["Serabut afferens n. Pudendus dan n. cavernosus","Pusat pengolahan di neuron inferolateral medspin lumbal 1-3","Serabut efferens dari saraf simpatis medulla spinalis S2-S4","Rangsang reseptor ductus deferens penuh","Efektor ductus epididimis, deferens, vesikula seminalis, prostat, m. sphincter vesicae"],a:"Serabut afferens n. Pudendus dan n. cavernosus",exp:"Mekanisme ereksi: <strong>Serabut afferens</strong> berasal dari n. pudendus dan n. cavernosus (sensorik dari genitalia). Pusat pengolahan di talamus/hipotalamus dan korteks. Serabut <strong>efferens parasimpatis</strong> dari S2-S4 (nervi erigentes) → pelepasan NO → vasodilatasi korpus kavernosum. Efektor adalah arteri dan otot polos korpus kavernosum (bukan ductus epididimis).",src:"PPT Fisiologi Fungsi Seksual — Mekanisme Ereksi"},
+{n:15,t:"Anatomi Reproduksi Pria",q:"Innervasi scrotum adalah…",o:["Gerakan involunter m dartos oleh ramus genitalis n. Genitofemoralis (L1)","2/3 posterior oleh n.ilioinguinalis dan ramus genitalis","1/3 anterior : cabang scrotalis posterior cabang perinealis (S3) dan cabang perinealis n. cutaneus posterior (S3)","Semua benar","Semua salah"],a:"Gerakan involunter m dartos oleh ramus genitalis n. Genitofemoralis (L1)",exp:"<strong>M. dartos</strong> adalah otot polos skrotum yang dikontrol oleh saraf otonom. Innervasi simpatisnya berjalan bersama <strong>ramus genitalis n. genitofemoralis (L1-L2)</strong>. Innervasi sensorik skrotum: anterior = n. ilioinguinalis (L1) dan ramus genitalis n. genitofemoralis; posterior = n. scrotalis posterior dari n. perinealis (S3) dan n. cutaneus femoris posterior.",src:"PPT Anatomi Reproduksi Pria — Innervasi Skrotum"},
+{n:16,t:"Histologi Reproduksi Wanita",q:"Wanita 29 tahun siklus menstruasi tidak teratur. Biopsi endometrium menunjukkan banyak sekali glandula uterina. Hal ini menunjukkan…",o:["Proses pada gambar mendahului ovulasi","Tergantung pada sekret progesteron oleh corpus luteum","Proses pada gambar bertepatan dengan perkembangan folikel","Proses pada gambar bertepatan dengan nekrosis stratum fungsional","Stroma fibromuakular mendominasi"],a:"Tergantung pada sekret progesteron oleh corpus luteum",exp:"Endometrium dengan banyak glandula uterina berkelok berisi sekret adalah gambaran <strong>fase sekretori (luteal)</strong>. Fase ini bergantung pada <strong>progesteron dari korpus luteum</strong> (pasca ovulasi). Progesteron menyebabkan glandula uterina bercorak 'gigi gergaji' dan berisi glikogen.",src:"PPT dr. Mimil — Histologi Reproduksi Wanita"},
+{n:17,t:"Fisiologi Reproduksi Wanita",q:"Wanita usia 23 tahun dengan menstruasi teratur. Perubahan hormonal saat menstruasi adalah…",o:["Penurunan progesteron dan vasodilatasi kontinyu","Penurunan estrogen dan vasodilatasi kontinyu","Penurunan progesteron dan kontraksi plasmodik pembuluh darah","Penurunan estrogen dan kontraksi plasmodik pembuluh darah","Kenaikan progesteron dan estrogen dan vasodilatasi kontinyu"],a:"Penurunan progesteron dan kontraksi plasmodik pembuluh darah",exp:"Menstruasi terjadi akibat <strong>penurunan progesteron (dan estrogen)</strong> saat korpus luteum berdegenerasi. Penurunan progesteron menyebabkan arteri spiralis mengalami <strong>kontraksi plasmodik (spastik)</strong> → iskemia → nekrosis stratum fungsionale → perdarahan. Bukan vasodilatasi.",src:"PPT Fisiologi Reproduksi Wanita — Siklus Menstruasi"},
+{n:18,t:"Histologi Reproduksi Wanita",q:"Perkembangan oogenesis folikel pada saat fertilisasi yang benar adalah…",o:["Tertahan pada mitosis 1","Tertahan pada meiosis 1","Tertahan pada meiosis 2","Tertahan pada profase","Tahap meiosis 2 lengkap"],a:"Tertahan pada meiosis 2",exp:"Pada saat fertilisasi, oosit sekunder yang baru saja diovulasikan berada dalam kondisi <strong>arrested di Meiosis II metafase</strong>. Penetrasi spermatozoa memicu penyelesaian meiosis II → terbentuk ootid + badan polar kedua → ootid matur menjadi ovum.",src:"PPT Embriologi — Oogenesis"},
+{n:19,t:"Histologi Reproduksi Wanita",q:"Wanita usia 43 tahun dengan riwayat keluarga kanker ovarium menjalani ooforektomi bilateral elektif. Jaringan kelenjar pada gambar menunjukkan fase yang benar…",o:["Bertepatan dengan fase proliferasi","Bertepatan dengan fase sekretori","Bertepatan dengan ovulasi","Jaringan kelenjar disusun oleh stroma fibromuskular","Bertepatan dengan peningkatan LH"],a:"Bertepatan dengan fase sekretori",exp:"Gambaran kelenjar endometrium dengan glandula berkelok dan berisi sekret menunjukkan <strong>fase sekretori</strong>. Pada fase ini progesteron dari korpus luteum aktif, terjadi setelah ovulasi (hari 15–28). Stroma endometrium edema, glandula penuh glikogen.",src:"PPT Histologi Reproduksi Wanita"},
+{n:20,t:"Embriologi",q:"Bersarangnya zygot dalam endometrium disebut…",o:["Ovulasi","Implantasi","Fekondasi","Menstruasi","Kapasitasi"],a:"Implantasi",exp:"<strong>Implantasi (nidasi)</strong> adalah proses bersarangnya blastocyst ke dalam endometrium, terjadi sekitar hari ke-6–7 pasca fertilisasi. Blastocyst menempel pada endometrium di fase sekretori, trofoblas menginvasi stroma endometrium. Fekondasi = fertilisasi. Ovulasi = keluarnya oosit.",src:"PPT Embriologi — Implantasi"},
+{n:21,t:"Histologi Reproduksi Wanita",q:"A biopsy is reviewed by a pathologist. She diagnoses the tumor as originating from the cell delineated with the star. The tumor would most likely produce which one of the following?",o:["Parathyroid hormone","Calcitonin","FSH","ICSH","Progesterone"],a:"Progesterone",exp:"Sel yang ditandai bintang dalam gambar histologi ovarium adalah <strong>sel granulosa korpus luteum</strong>. Korpus luteum terbentuk pasca ovulasi dan berfungsi menghasilkan <strong>progesteron</strong> (dan estrogen) untuk mempertahankan fase luteal. Tumor yang berasal dari sel granulosa menghasilkan progesteron dan estrogen.",src:"Soal pretest dr. Nafiisah — Histologi Reproduksi"},
+{n:22,t:"Histologi Reproduksi Pria",q:"Malignancies most frequently arise from which portion of the organ shown in the photomicrograph?",o:["Mammary alveoli","Outer peripheral glands","Lactiferous duct","Germ cells","Periurethral glands"],a:"Outer peripheral glands",exp:"Gambar menunjukkan kelenjar prostat. <strong>Karsinoma prostat</strong> paling sering timbul dari <strong>zona perifer (outer peripheral glands)</strong> kelenjar prostat — sekitar 70-80% kasus. BPH (Benign Prostatic Hyperplasia) timbul dari zona transisional/periuretral.",src:"PPT Histologi Reproduksi Pria — Kanker Prostat"},
+{n:23,t:"Histologi Reproduksi Pria",q:"As sperm pass through the male genital ducts, which of the following provides a clear mucus-like secretion?",o:["Seminal vesicles","Prostate gland","Bulbourethral (Cowper) gland","Interstitial cells of Leydig","Epididymis"],a:"Bulbourethral (Cowper) gland",exp:"<strong>Kelenjar bulbouretralis (Cowper)</strong> menghasilkan sekret berupa cairan <strong>mucus-like (kental, jernih)</strong> yang dikeluarkan sebelum ejakulasi untuk membersihkan dan melubrikasi urethra. Vesikula seminalis menghasilkan cairan kaya fruktosa. Prostat menghasilkan cairan asam/PSA.",src:"Junqueira's Basic Histology — Kelenjar Aksesori Pria"},
+{n:24,t:"Anatomi Reproduksi Pria",q:"Pernyataan benar mengenai glandula prostata…",o:["Kapsula glandula prostata lanjutan dari membrana viscera fascia pelvis","Vaskularisasi oleh a. Pudenda eksterna dan a.rectalis inferior","Inervasi simpatis oleh MS L1-L2 yang mengakibatkan kontraksi otot polos","Utriculus prostaticus masuk ke prostat melalui lobus anterolateral","Diinervasi saraf simpatis setinggi S2-4 yang menyebabkan sekresi kelenjar prostat"],a:"Inervasi simpatis oleh MS L1-L2 yang mengakibatkan kontraksi otot polos",exp:"<strong>Inervasi simpatis prostat</strong> berasal dari medulla spinalis setinggi <strong>L1-L2</strong> via n. hypogastricus, menyebabkan kontraksi otot polos dan sekresi kelenjar saat ejakulasi. Vaskularisasi prostat dari a. vesicalis inferior dan a. rectalis media (cabang a. iliaca interna). Kapsula prostat berasal dari fasia pelvis visceral.",src:"PPT Anatomi Reproduksi Pria — Glandula Prostata"},
+{n:25,t:"Anatomi Reproduksi Pria",q:"Yang BENAR mengenai posisi anatomis vas deferens…",o:["Masuk di pelvis dibungkus oleh peritoneum","Membentuk ductus ejaculatorius bersama ductus glandula prostata","Diinervasi oleh n.hypogastricus","Terdapat struktur ampulla vas deferens di bagian anterior vesica urinaria","Dilanjutkan lurus membentuk plexus hemorrhoidalis"],a:"Diinervasi oleh n.hypogastricus",exp:"Vas deferens diinervasi oleh <strong>n. hypogastricus (presacralis)</strong> — saraf otonom simpatis. Stimulasi simpatis → kontraksi otot polos vas deferens → mendorong sperma saat ejakulasi. Ampulla vas deferens terletak di <strong>posterior</strong> vesica urinaria (bukan anterior). Ductus ejaculatorius terbentuk dari vas deferens + ductus vesikula seminalis.",src:"PPT Anatomi Reproduksi Pria — Vas Deferens"},
+{n:26,t:"Anatomi Reproduksi Pria",q:"Isi funikulus spermatikus adalah…",o:["A. testicularis, plexus pampiniformis, ductus efferen","M. cremaster berasal dari lanjutan m. obliquus internus","A. testicularis, v. testicularis, ductus deferens, dan plexus saraf","Hanya ductus deferens dan pembuluh darah","Semua benar"],a:"A. testicularis, v. testicularis, ductus deferens, dan plexus saraf",exp:"Isi <strong>funikulus spermatikus</strong>: (1) ductus deferens, (2) a. testicularis, (3) plexus pampiniformis (v. testicularis), (4) a. ductus deferentis, (5) a. cremasterica, (6) plexus saraf (simpatis dan parasimpatis), (7) pembuluh limfe, (8) m. cremaster (lapisan). M. cremaster berasal dari m. obliquus internus abdominis (benar, tapi bukan isi utama).",src:"MADU no 92 / PPT Anatomi Reproduksi Pria"},
+{n:27,t:"Neonatologi",q:"Masa Gestasi 43 Minggu termasuk?",o:["Berat badan lahir kurang","Berat badan lahir cukup","Berat badan lahir lebih","Preterm","Post term"],a:"Post term",exp:"Klasifikasi berdasarkan usia gestasi: Preterm = &lt;37 minggu. Term = 37–40 minggu. <strong>Post term = ≥42 minggu</strong>. Usia gestasi 43 minggu → post term infant. Klasifikasi berdasarkan BB lahir berbeda dari klasifikasi berdasarkan usia gestasi.",src:"PPT dr. Ariadne — Neonatus"},
+{n:28,t:"Psikologi Perkembangan",q:"Masa remaja disebut juga dengan…",o:["Empty nest","Chatter box","Storm vs stress","Trust vs mistrust","Helpness"],a:"Storm vs stress",exp:"Masa remaja disebut juga <strong>'Storm and Stress'</strong> — istilah dari G. Stanley Hall yang menggambarkan masa remaja sebagai periode penuh badai dan tekanan emosional, konflik dengan orang tua, perubahan mood, dan perilaku berisiko. 'Empty nest' untuk lansia kehilangan anak. 'Trust vs mistrust' untuk bayi (Erikson).",src:"PPT Psikologi Perkembangan Remaja"},
+{n:29,t:"Fisiologi Reproduksi",q:"Berikut TIDAK BENAR mengenai fase kehidupan…",o:["Fase akhir kehidupan pria adalah andropause","Fase reproduksi akhir wanita adalah menopause","Batas akhir hidup pria jelas","Batas akhir hidup wanita jelas","Pembesaran payudara adalah ciri seks sekunder wanita"],a:"Batas akhir hidup pria jelas",exp:"Yang <strong>TIDAK BENAR</strong>: 'Batas akhir hidup pria jelas' — ini salah karena andropause tidak memiliki batas akhir yang jelas seperti menopause pada wanita. Menopause memiliki tanda jelas (berhentinya menstruasi). Andropause terjadi secara gradual tanpa batas yang definit. Semua pilihan lain benar.",src:"Awetan tahun sebelumnya / PPT Fase Kehidupan"},
+{n:30,t:"Embriologi",q:"Kapan hormon testosteron mulai dihasilkan?",o:["Setelah terjadi degenerasi ductus mulleri","Saat testis terbentuk","Saat sperma ketemu sama ovum","Setelah SRY menstimulasi TDF","Setelah pubertas"],a:"Setelah SRY menstimulasi TDF",exp:"<strong>Gen SRY</strong> pada kromosom Y menstimulasi produksi <strong>TDF (Testis Determining Factor)</strong> → gonad bipotensial berdiferensiasi menjadi testis. Setelah testis terbentuk, sel Leydig mulai memproduksi <strong>testosteron</strong> pada minggu ke-8 kehamilan. Testosteron ini penting untuk diferensiasi genitalia eksterna pria dan regresi duktus Müller (bersama AMH).",src:"PPT Embriologi — Diferensiasi Seksual"},
+{n:31,t:"Histologi Reproduksi Wanita",q:"Seorang perempuan 12 tahun mengalami menstruasi pertama kali. Dalam folikel sekunder sel yang menghasilkan estrogen adalah…",o:["Sel theca interna","Sel theca externa","Sel granulosa","Zona pellucida","Benar semua"],a:"Sel granulosa",exp:"Hipotesis <strong>two-cell two-gonadotropin</strong>: sel teka interna (LH) → androgen → berdifusi ke sel granulosa → sel granulosa (FSH) mengonversi androgen menjadi <strong>estrogen via aromatase</strong>. Jadi sel yang langsung menghasilkan estrogen adalah <strong>sel granulosa</strong>. Sel teka interna menghasilkan androgen (androstenedion, testosteron).",src:"PPT Fisiologi Reproduksi Wanita — Two-Cell Theory"},
+{n:32,t:"Histologi Reproduksi Wanita",q:"Setelah terjadinya ovulasi dan tidak terjadi pembuahan, folikel ovarium akan berubah menjadi struktur apakah?",o:["Folikel atresia","Folikel antrum","Corpus luteum","Corpus rubrum","Corpus albicans"],a:"Corpus albicans",exp:"Setelah ovulasi → terbentuk <strong>korpus luteum</strong> (aktif menghasilkan progesteron). Jika tidak ada fertilisasi → setelah ±14 hari, korpus luteum berdegenerasi → menjadi <strong>korpus albikans</strong> (jaringan parut fibrotik berwarna putih). Korpus rubrum adalah tahap awal setelah ovulasi (mengandung darah).",src:"PPT Histologi Reproduksi Wanita — Folikulogenesis"},
+{n:33,t:"Embriologi",q:"Oogenesis lengkap bisa sampai meiosis II jika terjadi apa?",o:["Terjadi Fertilisasi","Terjadi Implantasi","Terjadi Nidasi","Terjadi Ovulasi","Terjadi Luteinisasi"],a:"Terjadi Fertilisasi",exp:"Meiosis II pada oogenesis hanya akan diselesaikan jika terjadi <strong>fertilisasi</strong> oleh spermatozoa. Penetrasi sperma mengaktifkan mekanisme seluler yang memicu penyelesaian meiosis II → terbentuk ootid + badan polar kedua. Tanpa fertilisasi, oosit berdegenerasi dalam kondisi arrested meiosis II.",src:"PPT Embriologi — Oogenesis"},
+{n:34,t:"Fisiologi Reproduksi",q:"Hormon yang paling berperan dalam mempengaruhi bangkitan seksual wanita yaitu…",o:["Estrogen","Testosteron","FSH","Oksitosin","Prolaktin"],a:"Testosteron",exp:"<strong>Testosteron</strong> adalah hormon yang paling berperan dalam gairah seksual (libido) pada wanita. Wanita memproduksi testosteron dari ovarium dan adrenal dalam jumlah kecil. Defisiensi testosteron → penurunan libido. Terapi testosteron dosis rendah terbukti meningkatkan libido wanita pasca menopause.",src:"PPT dr. Mustofa — Fisiologi Fungsi Seksual"},
+{n:35,t:"Fisiologi Reproduksi Pria",q:"Motilitas sperma yang digunakan untuk interpretasi pemeriksaan sperma yaitu…",o:["Motilitas progresif + non progresif + imotil","Motilitas progresif + non progresif","Motilitas progresif","Motilitas nonprogresif","Imotil"],a:"Motilitas progresif + non progresif",exp:"Menurut <strong>WHO 2021</strong>, motilitas total sperma yang dinilai untuk interpretasi analisis sperma adalah <strong>motilitas progresif + non progresif</strong> (Total Motility). Normal: motilitas total ≥42% atau motilitas progresif ≥30%. Sperma imotil tidak dihitung dalam total motilitas.",src:"PPT Analisis Sperma — WHO 2021"},
+{n:36,t:"Anatomi Reproduksi Wanita",q:"Seorang wanita didiagnosis menderita hydrocele pada labia majoranya. Penjelasan anatomis paling tepat mengenai kondisi ini adalah…",o:["Pada masa embryonal, vasa ovarica turun melalui canalis Nuck","Gubernaculum ovarii (feminime) melalui canalis inguinalis","Pada masa embryonal, ovarium turun melalui canalis inguinalis","Semua benar","Semua salah"],a:"Semua salah",exp:"Hidrocele labia majora terjadi karena <strong>canal of Nuck (processus vaginalis feminina) gagal menutup</strong>. Canal of Nuck adalah evaginasi peritoneum yang mengikuti gubernaculum ovarii melalui canalis inguinalis ke labia majora. Namun vasa ovarica TIDAK turun melalui canalis Nuck, dan ovarium TIDAK turun ke canalis inguinalis. Semua pilihan A, B, C salah.",src:"Awetan tahun sebelumnya / PPT Anatomi Reproduksi Wanita"},
+{n:37,t:"Fisiologi Reproduksi Pria",q:"Sel-sel yang secara langsung dikontrol FSH adalah…",o:["Spermatogonia","Spermatosit primer","Spermatid","Sertoli","Leydig"],a:"Sertoli",exp:"<strong>FSH bekerja langsung pada sel Sertoli</strong> melalui reseptor FSH-R di permukaannya. Sel Sertoli kemudian mengatur spermatogenesis: mendukung nutrisi spermatosit, menghasilkan ABP (Androgen Binding Protein), inhibin, dan AMH. LH bekerja pada sel Leydig → testosteron.",src:"PPT Fisiologi Reproduksi Pria — Regulasi Hormonal"},
+{n:38,t:"Fisiologi Reproduksi Pria",q:"Berikut ini merupakan sumber utama dari energi spermatozoa…",o:["Asam lemak","Diasil gliserol","Fruktosa","Protamin","Arginin"],a:"Fruktosa",exp:"Sumber energi utama spermatozoa adalah <strong>fruktosa</strong>, yang disekresikan oleh vesikula seminalis. Fruktosa dimetabolisme melalui glikolisis anaerobik di ekor spermatozoa untuk menghasilkan ATP yang menggerakkan flagela. Fruktosa dalam semen juga digunakan sebagai marker fungsi vesikula seminalis.",src:"PPT Fisiologi Reproduksi Pria — Metabolisme Sperma"},
+{n:39,t:"Fisiologi Reproduksi Pria",q:"Berikut mekanisme ereksi yang BENAR…",o:["Dibawah rangsangan simpatis","Melibatkan NO (nitric oxide)","Penurunan cAMP otot polos vaskuler korpora cavernosa","Terjadi kontraksi otot polos vaskuler korpora cavernosa","Konstriksi di arteria corpora cavernosa"],a:"Melibatkan NO (nitric oxide)",exp:"Ereksi dimediasi oleh <strong>parasimpatis (S2-S4)</strong> → pelepasan asetilkolin dan <strong>NO (nitric oxide)</strong> dari sel endotel → aktivasi guanylate cyclase → peningkatan cGMP → <strong>relaksasi</strong> otot polos vaskuler korpora kavernosa → vasodilatasi → pengisian darah. Bukan simpatis, bukan kontraksi, bukan cAMP.",src:"PPT dr. Mustofa — Mekanisme Seluler Ereksi"},
+{n:40,t:"Fisiologi Reproduksi",q:"Hormon yang berkaitan dengan bangkitan seksual wanita adalah…",o:["Testosteron","Estrogen","Oksitosin","Prolaktin","FSH"],a:"Testosteron",exp:"<strong>Testosteron</strong> adalah hormon utama yang berkaitan dengan <strong>libido/bangkitan seksual</strong> pada wanita. Estrogen lebih berperan pada lubrikasi vagina dan kesehatan mukosa. Oksitosin berperan saat orgasme dan bonding. Prolaktin meningkat pasca orgasme (fase resolusi).",src:"PPT Fisiologi Fungsi Seksual — dr. Mustofa"},
+{n:41,t:"Fisiologi Reproduksi",q:"Orgasme berkaitan dengan pengeluaran…",o:["Dopamin","Serotonin","Morfin","Prolaktin","Histamin"],a:"Dopamin",exp:"<strong>Dopamin</strong> adalah neurotransmiter utama yang dilepaskan dari sistem reward (nukleus accumbens, area tegmentum ventral) yang berkaitan dengan pleasure dan orgasme. Testosteron merangsang rilis dopamin. Oksitosin juga meningkat saat orgasme (bonding). Prolaktin meningkat pasca orgasme di fase resolusi.",src:"PPT Fisiologi Fungsi Seksual Slide 16 — dr. Mustofa"},
+{n:42,t:"Fisiologi Reproduksi",q:"Rangsangan yang paling kuat pada fase plateau adalah…",o:["Sentuhan/Taktil","Visual","Audio","Pembauan","Penglihatan"],a:"Sentuhan/Taktil",exp:"Pada fase <strong>plateau</strong> (fase mempertahankan arousal), rangsangan yang paling kuat adalah <strong>taktil/sentuhan</strong>. Sentuhan pada zona erotogenik (klitoris, penis, dst) memberikan stimulus aferen terkuat melalui n. pudendus. Rangsangan visual, audio, dan olfaktori bersifat psikogenik dan lebih relevan di fase arousal awal.",src:"PPT Fisiologi Fungsi Seksual — Fase Plateau"},
+{n:43,t:"Fisiologi Reproduksi Pria",q:"Syarat pemeriksaan sperma yang paling tepat di bawah ini adalah…",o:["Tidak berhubungan seksual 2-7 hari","Ditampung dalam gelas plastik non toksik","Dibawa ke laboratorium maksimal 60 menit","Dibawa ke laboratorium pada suhu 2-8 derajat Celcius","A, B, C benar"],a:"A, B, C benar",exp:"Syarat pengambilan sperma yang tepat: (A) <strong>Abstinensi 2–7 hari</strong> (optimal 3–5 hari), (B) Ditampung dalam <strong>gelas plastik non toksik</strong> (bukan kaca karena ionnya merusak sperma), (C) Dibawa ke laboratorium dalam <strong>≤60 menit</strong>. Suhu transport: suhu kamar (20–37°C) — bukan 2–8°C karena suhu dingin merusak motilitas.",src:"PPT Analisis Sperma — Syarat Pengambilan"},
+{n:44,t:"Fisiologi Reproduksi Pria",q:"Cara pengeluaran dengan coitus interuptus akan mempengaruhi kondisi sperma, yaitu…",o:["Kontaminasi zat toksik dari vagina","pH vagina yang basa akan membunuh sperma","pH vagina yang asam akan mempengaruhi motilitas sperma","Tidak ada sperma yang hilang dari semen","Semua benar"],a:"pH vagina yang asam akan mempengaruhi motilitas sperma",exp:"Coitus interuptus (ejakulasi di luar vagina) tidak relevan dengan kontaminasi vagina. Masalah coitus interuptus untuk analisis sperma: fraksi awal ejakulat mengandung sperma terbanyak mungkin terbuang. Namun jika ditampung via coitus interuptus, <strong>pH vagina yang asam (3,8–4,5) dapat mempengaruhi motilitas sperma</strong> yang terkontaminasi.",src:"PPT Analisis Sperma — Coitus Interuptus"},
+{n:45,t:"Fisiologi Reproduksi Pria",q:"Pengamatan sperma 30 perbesaran 400x menggunakan pengenceran berapa?",o:["1:5","1:10","1:20","1:50","1:100"],a:"1:20",exp:"Pengenceran untuk analisis sperma menggunakan bilik hitung Neubauer Improved (NI): jika didapat rata-rata ≥16 sperma per kotak kecil (400× / 40×), gunakan pengenceran <strong>1:20</strong>. Pengenceran dipilih berdasarkan estimasi awal konsentrasi sperma dari preparat basah awal.",src:"PPT Analisis Sperma — Bilik Hitung NI"},
+{n:46,t:"Fisiologi Reproduksi Pria",q:"Motilitas sperma untuk menentukan interpretasi analisis sperma adalah…",o:["Progresif + nonprogresif + imotil","Progresif + nonprogresif","Motilitas progresif saja","Imotil saja","Semua komponen dinilai sama"],a:"Progresif + nonprogresif",exp:"Interpretasi motilitas total sperma menggunakan: <strong>motilitas progresif + non progresif</strong>. Menurut WHO 2021: Normal jika total motilitas (PR+NP) ≥42% dan/atau motilitas progresif (PR) ≥30%. Sperma imotil tidak dimasukkan dalam penilaian total motilitas.",src:"PPT Analisis Sperma — Kriteria WHO 2021"},
+{n:47,t:"Histologi Reproduksi Wanita",q:"Proses yang benar terkait oogenesis adalah…",o:["Oogenesis terjadi 11-12 hari untuk memenuhi sitoplasma embrio","Oogonia setelah mengalami mitosis di akhir bulan ketiga sel dilapisi sel folikel berbentuk gepeng","Oogenesis selesai sebelum kelahiran","Oogonia berdiferensiasi menjadi oosit primer setelah pubertas","Semua pilihan benar"],a:"Oogonia setelah mengalami mitosis di akhir bulan ketiga sel dilapisi sel folikel berbentuk gepeng",exp:"Proses oogenesis: oogonia berproliferasi → memasuki meiosis I (arrested profase I) → menjadi <strong>oosit primer</strong>. Pada akhir bulan ke-3 kehamilan, oosit primer dikelilingi sel folikel gepeng → membentuk <strong>folikel primordial</strong>. Semua folikel primordial terbentuk sebelum lahir (~2 juta folikel).",src:"PPT Histologi Reproduksi Wanita — Oogenesis"},
+{n:48,t:"Histologi Reproduksi Wanita",q:"Setelah terjadinya ovulasi dan tidak terjadi pembuahan, folikel ovarium akan berubah menjadi struktur apakah?",o:["Folikel atresia","Folikel antrum","Corpus luteum","Corpus rubrum","Corpus albicans"],a:"Corpus albicans",exp:"Tanpa fertilisasi: folikel pasca ovulasi → korpus luteum (aktif ~14 hari) → berdegenerasi → <strong>korpus albikans</strong> (jaringan parut). Korpus rubrum = tahap awal pasca ovulasi (mengandung darah). Folikel atresia = degenerasi folikel yang tidak diovulasikan.",src:"PPT Histologi Reproduksi Wanita — Fertilisasi (-)→ Corpus albicans"},
+{n:49,t:"Fisiologi Reproduksi Pria",q:"Cara pengeluaran dengan coitus interuptus akan mempengaruhi kondisi sperma dengan alasan…",o:["Kontaminasi zat toksik dari vagina","pH vagina yang basa akan membunuh sperma","pH vagina yang asam akan mempengaruhi motilitas sperma","Tidak ada sperma yang hilang dari semen","Semua benar"],a:"pH vagina yang asam akan mempengaruhi motilitas sperma",exp:"Jika semen terkontaminasi sekret vagina saat coitus interuptus, <strong>pH asam vagina (3,8–4,5)</strong> dapat menurunkan motilitas spermatozoa. Semen normal bersifat basa (pH 7,2–8,0) untuk menetralkan keasaman vagina. Kontaminasi cairan vagina ke sampel semen → analisis tidak valid.",src:"PPT Analisis Sperma"},
+{n:50,t:"Embriologi",q:"Proses embrionik yang BENAR adalah…",o:["Kornea berasal dari ektoderm","Kornea dan lensa mata berasal dari mesoderm","Bone marrow berasal dari mesoderm","Neural crest berasal dari endoderm","Epitel saluran cerna berasal dari ektoderm"],a:"Kornea berasal dari ektoderm",exp:"<strong>Kornea</strong> berasal dari dua komponen: epitel anterior dari <strong>ektoderm permukaan</strong>, dan stroma dari <strong>neural crest</strong>. Lensa berasal dari ektoderm permukaan (lens placode). Bone marrow berasal dari <strong>mesoderm</strong> (benar). Neural crest adalah turunan ektoderm neuralis, bukan endoderm.",src:"PPT Embriologi — Derivat Lapisan Germinal"},
+{n:51,t:"Embriologi",q:"Pernyataan yang benar tentang kapasitasi adalah…",o:["Langkah untuk mengeluarkan sperma","Proses terdiri dari perubahan akrosom agar dapat mengeluarkan enzim untuk menembus zona pelusida","Terjadi di saluran reproduksi pria dan wanita","Tidak membutuhkan kontak dengan saluran sekresi telur","Tidak terjadi perubahan fisiologis pada kepala, akrosom, ekor spermatozoa"],a:"Proses terdiri dari perubahan akrosom agar dapat mengeluarkan enzim untuk menembus zona pelusida",exp:"<strong>Kapasitasi</strong> adalah proses pematangan sperma yang terjadi di saluran reproduksi <strong>wanita</strong> selama 6–8 jam. Kapasitasi meliputi perubahan membran sel sperma, peningkatan motilitas (hipermotilitas), dan persiapan <strong>reaksi akrosom</strong> — pelepasan enzim akrosin untuk menembus zona pelusida. Tidak terjadi di saluran pria.",src:"PPT dr. Adityono — Proses Kehamilan"},
+{n:52,t:"Histologi Reproduksi Wanita",q:"Saat usia reproduksi jumlah folikel primordial adalah…",o:["2.000.000","1.000.000","400.000","40.000","400"],a:"400.000",exp:"Folikel primordial: saat lahir ~2 juta, menurun karena atresia. <strong>Saat pubertas/usia reproduksi: ~400.000 folikel primordial</strong>. Sepanjang hidup reproduksi wanita, hanya ~400–500 folikel yang diovulasikan (satu per siklus). Sisanya mengalami atresia.",src:"PPT Histologi Reproduksi Wanita — Folikulogenesis"},
+{n:53,t:"Histologi Reproduksi Pria",q:"Pernyataan berikut adalah benar tentang spermatogenesis…",o:["Spermatosit primer bermitosis dalam fase uterina","Hasil akhir adalah 4 spermatozoa yang identik","Terjadi crossing over pada meiosis II","Periode pematangan berlangsung antara 30-60 hari","Dimulai pada fase pubertas kedua"],a:"Hasil akhir adalah 4 spermatozoa yang identik",exp:"Spermatogenesis: 1 spermatogonium → (meiosis I) → 2 spermatosit sekunder → (meiosis II) → 4 spermatid → (spermiogenesis) → <strong>4 spermatozoa</strong>. Karena crossing over saat meiosis I, keempat spermatozoa tidak identik secara genetik. Crossing over terjadi saat <strong>meiosis I</strong> (bukan meiosis II). Spermatogenesis berlangsung ~74 hari.",src:"PPT Histologi Reproduksi Pria — Spermatogenesis"},
+{n:54,t:"Histologi Reproduksi Wanita",q:"Pada fase bentuk apa oosit yang dikeluarkan saat ovulasi?",o:["Oosit primer","Oosit sekunder","Oosit tersier","Badan polar primer","Badan polar sekunder"],a:"Oosit sekunder",exp:"Saat ovulasi, oosit yang dilepaskan adalah <strong>oosit sekunder</strong> — dalam kondisi arrested di metafase meiosis II. Oosit ini dikelilingi zona pelusida dan korona radiata. Meiosis II baru diselesaikan setelah fertilisasi oleh spermatozoa.",src:"PPT Embriologi — Oogenesis"},
+{n:55,t:"Embriologi",q:"Fase embrio apakah akan terjadi pembentukan organ pertama kali?",o:["Neuralisasi","Gastrulasi","Blastokista","Organogenesis","Fetus"],a:"Organogenesis",exp:"<strong>Organogenesis</strong> adalah fase embriologi (minggu ke 4–8) ketika organ-organ mulai terbentuk dari lapisan germinal (ektoderm, mesoderm, endoderm). Sebelumnya: gastrulasi (minggu ke-3) membentuk 3 lapisan germinal. Neuralisasi terjadi minggu ke-3 (pembentukan neural tube).",src:"Yogurt 2.3 no 14 / PPT Embriologi"},
+{n:56,t:"Embriologi",q:"Perkembangan neural crest pada tahap pembentukan saraf akan berkembang menjadi…",o:["Medulla spinalis","Ganglion","Tractus pyramidalis","Nucleus SSP","Sel ependim"],a:"Ganglion",exp:"<strong>Neural crest cells</strong> bermigrasi dari tepi neural tube dan berdiferensiasi menjadi: <strong>ganglion sensoris</strong> (DRG), ganglion otonom, sel Schwann, sel pigmen (melanosit), sel tulang rawan wajah, medula adrenal. Medulla spinalis dan nucleus SSP berasal dari neural tube (bukan neural crest).",src:"Tortora pg. 1116 / PPT Embriologi"},
+{n:57,t:"Embriologi",q:"Pada minggu ke 3 embriologi bagian manakah yang berkembang?",o:["Mesoderm","Ektoderm","Endoderm","Neural crest","Trofoblas"],a:"Mesoderm",exp:"Minggu ke-3 embriologi adalah fase <strong>gastrulasi</strong>: epiblast bermigrasi melalui primitive streak membentuk 3 lapisan germinal (ektoderm, mesoderm, endoderm). Pada minggu ke-3, <strong>mesoderm</strong> mulai terbentuk dan mengorganisir dirinya menjadi notochord, somit, dan lateral plate mesoderm. Juga dimulai neuralisasi (pembentukan neural plate → neural tube).",src:"PPT Embriologi — Gastrulasi Minggu ke-3"},
+{n:58,t:"Histologi Reproduksi Wanita",q:"Oosit pada wanita ketika ovulasi berhenti pada fase…",o:["Meiosis 1 profase","Meiosis 2 metafase","Meiosis 1 metafase","Mitosis profase","Meiosis 2 anafase"],a:"Meiosis 2 metafase",exp:"Oosit sekunder yang diovulasikan berada dalam kondisi <strong>arrested di metafase meiosis II</strong>. Ini adalah kondisi normal oosit saat ovulasi. Meiosis II baru diselesaikan bila terjadi fertilisasi. Jika tidak ada fertilisasi, oosit berdegenerasi tetap dalam kondisi arrested metafase II.",src:"PPT Embriologi — Oogenesis"},
+{n:59,t:"Histologi Reproduksi Pria",q:"Mitokondria di dalam spermatozoa berfungsi untuk…",o:["Menghasilkan DNA","Menghasilkan nutrisi","Menghasilkan energi","Menghasilkan akrosom","Menghasilkan flagela"],a:"Menghasilkan energi",exp:"Mitokondria dalam spermatozoa terkonsentrasi di bagian <strong>midpiece (leher)</strong> ekor. Fungsinya: menghasilkan <strong>ATP melalui fosforilasi oksidatif</strong> untuk menggerakkan flagela (motilitas sperma). Tanpa energi dari mitokondria, sperma tidak dapat bergerak (astenozoospermia).",src:"PPT Histologi Reproduksi Pria — Struktur Spermatozoa"},
+{n:60,t:"Embriologi",q:"Berasal dari derivat apa organ ginjal?",o:["Endoderm","Mesoderm","Ektoderm","Ekstraembrional","Neural crest"],a:"Mesoderm",exp:"<strong>Ginjal</strong> berasal dari <strong>mesoderm intermediet</strong> (intermediate mesoderm). Perkembangan ginjal: pronefros (minggu ke-4) → mesonefros (minggu ke-4–5) → metanefros (minggu ke-5, menjadi ginjal permanen). Ureter berasal dari ureteric bud (tunas ureter) dari mesonefrik duct — juga mesoderm.",src:"PPT EMBRIOLOGI dr. Lantip / PPT Embriologi Sistem Urogenital"},
+{n:61,t:"Neonatologi",q:"Usia gestasi 43 minggu termasuk?",o:["Berat cukup","Berat kurang","Berat lebih","Postterm infant","Preterm infant"],a:"Postterm infant",exp:"Klasifikasi neonatus berdasarkan usia gestasi: Preterm = &lt;37 minggu. Term = 37–42 minggu. <strong>Postterm = ≥42 minggu</strong>. Usia gestasi 43 minggu → <strong>postterm infant</strong>. Postterm infant berisiko oligohidramnion, distres fetus, meconium aspiration syndrome.",src:"PPT NEONATUS dr. Adriane"},
+{n:62,t:"Neonatologi",q:"Definisi neonatus adalah…",o:["Bayi usia 0-28 hari","Bayi usia 0-30 hari","Bayi usia 1-28 hari","Bayi usia 0-31 hari","Bayi usia 30 hari"],a:"Bayi usia 0-28 hari",exp:"<strong>Neonatus</strong> didefinisikan sebagai bayi baru lahir hingga usia <strong>28 hari (0–28 hari)</strong>. Periode ini dibagi menjadi: neonatus dini (0–7 hari) dan neonatus lanjut (8–28 hari). Setelah 28 hari disebut bayi/infant.",src:"PPT NEONATUS dr. Ariadne"},
+{n:63,t:"Neonatologi",q:"Klasifikasi berat badan lahir yang BENAR adalah…",o:["BBLC 2500-3500","BBLR 2200-2499","BBLSR 1000-1500","BBLR 1700-2400","BBLC 2500-3999"],a:"BBLC 2500-3999",exp:"Klasifikasi BB lahir: BBLASR (Amat Sangat Rendah) &lt;1000 g. BBLSR (Sangat Rendah) 1000–1499 g. BBLR (Lahir Rendah) 1500–2499 g. <strong>BBLC (Cukup) 2500–3999 g</strong>. BBLB (Besar) ≥4000 g.",src:"PPT Kuliah Neonatus — Klasifikasi BB Lahir"},
+{n:64,t:"Embriologi",q:"Yang dikenal sebagai master gen dalam proses embriologi dan organogenesis adalah…",o:["VEGF","IF","GF","SHH","Wnt"],a:"SHH",exp:"<strong>SHH (Sonic Hedgehog)</strong> adalah salah satu <strong>master gene</strong> utama dalam organogenesis — mengatur pola tubuh (body patterning), polaritas dorsoventral dan anteroposterior, serta perkembangan organ (sistem saraf, anggota gerak, pankreas, dll). Wnt juga penting untuk proliferasi sel. VEGF untuk angiogenesis.",src:"PPT Embriologi — Master Gene"},
+{n:65,t:"Neonatologi",q:"Perubahan intraunterin ke ekstrauterin yang BENAR adalah…",o:["Janin hidup dengan paru berisi udara","Bayi baru lahir dengan paru berisi cairan","Tekanan paru meningkat, pembuluh darah dilatasi","Atrium kanan ke atrium kiri sebagian kecil — disebabkan tekanan paru tinggi dan arteri konstriksi","Paru sebelum lahir berisi udara setelah lahir berisi cairan"],a:"Atrium kanan ke atrium kiri sebagian kecil — disebabkan tekanan paru tinggi dan arteri konstriksi",exp:"Pada janin: tekanan pulmoner tinggi, vaskular paru konstriksi → darah mengalir dari atrium kanan ke kiri via foramen ovale (bypass paru). Setelah lahir: paru mengembang, tekanan pulmoner turun, vaskular paru dilatasi → foramen ovale dan duktus arteriosus menutup. <strong>Janin: paru berisi cairan</strong> (bukan udara); <strong>bayi baru lahir: paru berisi udara</strong>.",src:"PPT Neonatologi — Perubahan Sirkulasi"},
+{n:66,t:"Neonatologi",q:"Hal-hal yang perlu diperhatikan saat golden hour neonatus adalah…",o:["Penundaan pemotongan umbilikus, pencegahan hipotermia, identifikasi gangguan respirasi, inisiasi menyusu dini","Hanya pencegahan hipotermia dan IMD","Pemberian vitamin K, imunisasi, dan tetes mata","Semua jawaban benar","Penimbangan dan pengukuran saja"],a:"Penundaan pemotongan umbilikus, pencegahan hipotermia, identifikasi gangguan respirasi, inisiasi menyusu dini",exp:"Golden hour neonatus: (1) <strong>Penundaan pemotongan tali pusat</strong> (delayed cord clamping ≥1–3 menit), (2) <strong>Pencegahan hipotermia</strong> (skin-to-skin, handuk hangat), (3) <strong>Identifikasi gangguan respirasi</strong> (APGAR, resusitasi bila perlu), (4) <strong>Inisiasi Menyusu Dini (IMD)</strong>.",src:"PPT Neonatologi — Golden Hour"},
+{n:67,t:"Histologi Reproduksi Pria",q:"The acrosome contains enzyme which help sperm cells…",o:["Develop from early spermatid","Mature within the lumen of seminiferous tubules","Acquire flagellar motility","Penetrate the oocyte","Produce testosterone"],a:"Penetrate the oocyte",exp:"<strong>Akrosom</strong> adalah organel di kepala spermatozoa yang mengandung enzim hidrolitik (akrosin, hialuronidase, enzim zona pelusida-penetrating). Selama <strong>reaksi akrosom</strong>, enzim-enzim ini dilepaskan untuk menembus zona pelusida oosit, memungkinkan sperma untuk <strong>menembus (penetrate) oosit</strong>.",src:"Junqueira's Basic Histology — Akrosom"},
+{n:68,t:"Fisiologi Reproduksi Wanita",q:"Hormon yang mempengaruhi sintesis estrogen adalah…",o:["GnRH","FSH & LH","FSH","LH","Oksitosin"],a:"FSH & LH",exp:"Sintesis estrogen membutuhkan <strong>FSH dan LH</strong> (hipotesis two-cell): LH → sel teka interna → androgen. FSH → sel granulosa → aromatase → konversi androgen menjadi estrogen (17β-estradiol). Keduanya diperlukan — FSH saja atau LH saja tidak cukup untuk produksi estrogen yang optimal.",src:"PPT Fisiologi Reproduksi Wanita — Two-Cell Theory"},
+{n:69,t:"Psikologi Perkembangan",q:"Ciri psikoseksual pada fase laten adalah…",o:["Kepuasan dari zona oral","Kepuasan dari zona anal","Tertarik pada kelaminnya sendiri","Energi fisik dan psikologis untuk mengeksplorasi pengetahuan dan pengalaman melalui aktivitas fisik dan sosial","Tertarik pada lawan jenis"],a:"Energi fisik dan psikologis untuk mengeksplorasi pengetahuan dan pengalaman melalui aktivitas fisik dan sosial",exp:"Fase <strong>laten (6–12 tahun)</strong> menurut Freud: energi seksual (libido) 'tersembunyi' atau tidak aktif secara eksplisit. Anak fokus pada <strong>eksplorasi pengetahuan, aktivitas fisik, dan sosial</strong> — tidak ada zona erogenik spesifik yang dominan. Fase ini penting untuk pengembangan keterampilan sosial dan kognitif.",src:"PPT Psikologi Perkembangan — Teori Freud"},
+{n:70,t:"Psikologi Perkembangan",q:"Terjadinya inferiority feeling pada seorang anak, salah satunya disebabkan karena…",o:["Memiliki cacat fisik","Pola asuh demokratis","Wajah kurang menarik","Bukan berasal dari keluarga kaya","Tidak pernah dipuji"],a:"Tidak pernah dipuji",exp:"Menurut Erikson tahap 4 (Industry vs Inferiority, 6–12 tahun): anak yang <strong>tidak pernah mendapat pengakuan atau pujian</strong> atas usahanya akan mengembangkan <strong>inferiority feeling</strong> (perasaan inferior/tidak mampu). Pujian yang tepat dan porsi yang cukup penting untuk membangun rasa percaya diri anak.",src:"PPT Psikologi Perkembangan — Erikson"},
+{n:71,t:"Psikologi Perkembangan",q:"Ciri khas kognitif anak pada masa balita adalah egocentris yang berarti…",o:["Ingin diperhatikan","Belum bisa berpikir ilmiah","Berpikir dengan sensori motor","Aktif memperhatikan sekeliling","Merasa dirinya selalu benar"],a:"Merasa dirinya selalu benar",exp:"<strong>Egosentris</strong> pada anak balita (Piaget: tahap praoperasional, 2–7 tahun) berarti anak belum dapat memahami perspektif orang lain dan <strong>menganggap sudut pandangnya sendiri sebagai satu-satunya kebenaran</strong>. Ini bukan egoisme, melainkan keterbatasan kognitif dalam memahami bahwa orang lain bisa memiliki pikiran yang berbeda.",src:"PPT Psikologi Perkembangan Balita"},
+{n:72,t:"Psikologi Perkembangan",q:"Sosioemosional proses pada perkembangan psikologi balita salah satunya ditandai dengan…",o:["Badan tumbuh sehat kuat","Merespon ketika diajak bermain cilukba","Nafsu makan meningkat","Berhasil diajak puasa","Perkembangan bahasa"],a:"Merespon ketika diajak bermain cilukba",exp:"Perkembangan sosioemosional balita ditandai dengan kemampuan <strong>berinteraksi sosial</strong>: tersenyum saat melihat wajah, bermain cilukba (object permanence + interaksi sosial), menunjuk, melambaikan tangan. <strong>Merespon permainan cilukba</strong> adalah milestone sosioemosional penting pada usia 8–12 bulan.",src:"SDIDTK 2016 — Sosialisasi Kemandirian Balita"},
+{n:73,t:"Psikologi Perkembangan",q:"Apakah istilah yang mendeskripsikan perkembangan remaja?",o:["Empty nest","Storm and stress","Trust vs mistrust","Helplessness","Industry vs inferiority"],a:"Storm and stress",exp:"<strong>'Storm and Stress'</strong> (G. Stanley Hall) adalah istilah yang menggambarkan masa remaja sebagai periode penuh konflik emosional, tekanan, dan ketidakstabilan. Ditandai dengan: konflik dengan orang tua, perubahan mood ekstrem, dan perilaku berisiko. 'Empty nest' untuk lansia. 'Trust vs mistrust' untuk bayi.",src:"PPT Psikologi Perkembangan Remaja"},
+{n:74,t:"Psikologi Perkembangan",q:"Disebut apakah perkembangan sosioemosional remaja menurut Erikson?",o:["Industry vs inferiority","Identity vs role confusion","Intimacy vs isolation","Autonomy vs shame and doubt","Generativity vs stagnation"],a:"Identity vs role confusion",exp:"Erikson Tahap 5: <strong>Identity vs Role Confusion</strong> (usia 12–18 tahun / remaja). Tugas perkembangan: membentuk identitas diri yang stabil (siapa aku?). Jika berhasil → <strong>identity</strong> yang jelas. Jika gagal → <strong>role confusion</strong> (kebingungan peran, tidak tahu siapa dirinya).",src:"PPT Psikologi Perkembangan — Erikson"},
+{n:75,t:"Psikologi Perkembangan",q:"Akibat gagalnya tugas perkembangan adalah…",o:["Disfungsi psikologis","Gangguan fisik","Maladaptif di progres berikutnya","Tidak dapat beradaptasi di lingkungan baru","Adanya konflik perilaku individu yang tidak terselesaikan"],a:"Maladaptif di progres berikutnya",exp:"Jika tugas perkembangan gagal diselesaikan, hasilnya adalah <strong>maladaptasi di tahap perkembangan berikutnya</strong>. Menurut teori Erikson, setiap tahap membangun di atas tahap sebelumnya — kegagalan di satu tahap mempengaruhi kemampuan menyelesaikan tahap berikutnya.",src:"PPT Psikologi Perkembangan — Tugas Perkembangan"},
+{n:76,t:"Geriatri",q:"Lansia yang berumur 70 tahun dalam kategori Hurlock termasuk dalam…",o:["Lansia madya","Lansia muda","Lansia tua","Lansia sangat tua","Lanjut usia"],a:"Lansia tua",exp:"Klasifikasi lansia menurut <strong>Hurlock</strong>: Early old age (lansia muda) = 60–70 tahun. <strong>Advanced old age (lansia tua) = di atas 70 tahun</strong>. Usia 70 tahun masuk kategori <strong>lansia tua</strong>. (Berbeda dengan WHO: lansia = 60–74 tahun, tua = 75–89 tahun, sangat tua ≥90 tahun).",src:"PPT Psikologi Perkembangan — Klasifikasi Hurlock"},
+{n:77,t:"Geriatri",q:"Usia minimal lansia menurut WHO adalah…",o:["40","50","60","70","80"],a:"60",exp:"Menurut <strong>WHO</strong>, batas usia minimal lansia (elderly) adalah <strong>60 tahun</strong>. WHO mengklasifikasikan: Elderly = 60–74 tahun. Old = 75–89 tahun. Very old = ≥90 tahun. Di Indonesia, UU No. 13 Tahun 1998 menetapkan lanjut usia ≥60 tahun.",src:"PPT dr. Maschun — Geriatri"},
+{n:78,t:"Geriatri",q:"Pengertian menua menurut Kirkwood adalah…",o:["Penurunan fungsi fisiologis secara gradual dan progresif yang berdampak kerentaan, disabilitas, dan penyakit terkait umur hingga kematian","Proses biologis yang tidak bisa dihindari","Akumulasi kerusakan sel akibat radikal bebas","Penurunan fungsi reproduksi","Proses degenerasi organ yang dimulai usia 40 tahun"],a:"Penurunan fungsi fisiologis secara gradual dan progresif yang berdampak kerentaan, disabilitas, dan penyakit terkait umur hingga kematian",exp:"<strong>Kirkwood</strong> mendefinisikan proses menua sebagai: '<strong>penurunan fungsi fisiologis secara gradual dan progresif</strong> yang berdampak pada kerentaan (frailty), disabilitas, dan penyakit terkait usia, hingga akhirnya kematian.' Definisi ini menekankan aspek progresif dan akumulatif dari aging.",src:"PPT dr. Ghea — Aging"},
+{n:79,t:"Geriatri",q:"Pada saat tua terjadi penurunan massa otot dan penurunan fungsi otot yang disebut…",o:["Osteoporosis","Atrofi otot","Sarcopenia","Cachexia","Frailty"],a:"Sarcopenia",exp:"<strong>Sarkopenia</strong> adalah penurunan massa otot rangka, kekuatan otot, dan performa fisik yang berkaitan dengan proses menua. Berbeda dengan atrofi otot biasa (yang bisa reversibel), sarkopenia bersifat progresif dan multifaktorial. Osteoporosis = penurunan massa tulang. Cachexia = wasting terkait penyakit kronik.",src:"PPT dr. Ghea — Aging"},
+{n:80,t:"Geriatri",q:"Sifat penyakit pada lansia, KECUALI…",o:["Etiologi lebih dominan endogen daripada eksogen","Diagnosis lebih sulit ditegakkan","Gejala seringkali khas","Perjalanan penyakit bersifat kronik, progresif dengan eksaserbasi","Bersifat multiple dan kumulatif"],a:"Gejala seringkali khas",exp:"Penyakit pada lansia memiliki karakteristik: (1) etiologi dominan endogen, (2) diagnosis sulit (karena gejala <strong>tidak khas, atipik, sering asimptomatik</strong>), (3) perjalanan penyakit kronik dan progresif, (4) bersifat multiple dan kumulatif. Yang SALAH adalah 'gejala seringkali khas' — justru sebaliknya, gejala tidak khas.",src:"PPT dr. Ghea — Aging"},
+{n:81,t:"Psikologi Perkembangan",q:"Ciri khas kognitif anak pada masa balita adalah egocentris yang berarti…",o:["Ingin diperhatikan","Belum bisa berpikir ilmiah","Berpikir dengan sensori motor","Aktif memperhatikan sekeliling","Merasa dirinya selalu benar"],a:"Merasa dirinya selalu benar",exp:"<strong>Egosentris</strong> (Piaget, tahap praoperasional) = anak belum mampu memahami perspektif orang lain dan menganggap sudut pandangnya sendiri sebagai satu-satunya yang benar. Bukan berarti sombong, melainkan keterbatasan kognitif. Contoh: anak percaya semua orang melihat hal yang sama dengan yang ia lihat.",src:"PPT Psikologi Perkembangan Balita"},
+{n:82,t:"Psikologi Perkembangan",q:"Socioemotional yaitu proses pada perkembangan psikologi balita salah satunya ditandai dengan…",o:["Badan tumbuh sehat kuat","Merespon ketika diajak bermain cilukba","Nafsu makan meningkat","Berhasil diajak puasa","Perkembangan bahasa"],a:"Merespon ketika diajak bermain cilukba",exp:"Sosioemosional pada balita: kemampuan berinteraksi dan merespons stimulus sosial. <strong>Merespon permainan cilukba</strong> menandakan perkembangan object permanence dan kemampuan sosial (berinteraksi dengan orang). Ini adalah milestone sosioemosional dan bukan motorik atau pertumbuhan fisik.",src:"PPT Psikologi Perkembangan Balita"},
+{n:83,t:"Geriatri",q:"Perkembangan lanjut usia yang berkaitan dengan grief cycle adalah…",o:["Mati dan kehilangan pasangan","Pensiun dan kekurangan penghasilan","Memenuhi kewajiban secara sosial dan sebagai warga sipil","Affiliasi dengan anggota kelompok sebaya","Menata kehidupan fisik dan psikis yang baik"],a:"Mati dan kehilangan pasangan",exp:"<strong>Grief cycle</strong> (siklus berduka — Kübler-Ross) berkaitan dengan respons terhadap kehilangan dan kematian. Tugas perkembangan lansia yang paling terkait dengan grief cycle adalah menghadapi <strong>kematian (sendiri) dan kehilangan pasangan</strong> — keduanya memerlukan proses berduka yang sehat.",src:"PPT Psikologi Perkembangan Lanjut Usia — Bu Arfi"},
+{n:84,t:"Tumbuh Kembang",q:"Faktor eksternal tumbuh kembang anak adalah…",o:["Ras/etnik","Keluarga","Gizi ibu","Jenis kelamin","Genetik"],a:"Keluarga",exp:"Faktor tumbuh kembang: <strong>Internal/endogen</strong>: ras/etnik, jenis kelamin, genetik, hormonal. <strong>Eksternal/eksogen</strong>: <strong>keluarga</strong>, gizi, stimulasi, psikologis, sosial, budaya, ekonomi, lingkungan. Gizi ibu termasuk faktor eksternal juga, namun 'keluarga' adalah jawaban yang paling tepat sebagai faktor eksternal.",src:"PPT Kuliah Tumbuh Kembang dr. Wening"},
+{n:85,t:"Tumbuh Kembang",q:"Definisi pertumbuhan adalah…",o:["Bertambahnya jumlah dan ukuran sel serta jaringan interseluler, yang dapat diukur dengan satuan panjang dan berat","Bertambahnya fungsi dan struktur yang lebih kompleks meliputi motorik kasar, motorik halus, bicara bahasa, dan sosial kemandirian","Proses kematangan organ reproduksi","Peningkatan kemampuan kognitif","Semua benar"],a:"Bertambahnya jumlah dan ukuran sel serta jaringan interseluler, yang dapat diukur dengan satuan panjang dan berat",exp:"<strong>Pertumbuhan</strong> = bertambahnya <strong>ukuran fisik yang dapat diukur</strong>: BB, TB/PB, lingkar kepala. Terjadi karena penambahan jumlah sel (hiperplasia) dan ukuran sel (hipertrofi) serta matriks ekstraseluler. Bersifat kuantitatif dan reversibel. Berbeda dengan perkembangan yang kualitatif.",src:"PPT Kuliah Tumbuh Kembang dr. Wening"},
+{n:86,t:"Tumbuh Kembang",q:"Definisi perkembangan adalah…",o:["Bertambahnya jumlah dan ukuran sel serta jaringan interseluler, yang dapat diukur dengan satuan panjang dan berat","Bertambahnya fungsi dan struktur yang lebih kompleks meliputi motorik kasar, motorik halus, bicara bahasa, dan sosial kemandirian","Peningkatan berat badan","Pertambahan tinggi badan","Penambahan massa tulang"],a:"Bertambahnya fungsi dan struktur yang lebih kompleks meliputi motorik kasar, motorik halus, bicara bahasa, dan sosial kemandirian",exp:"<strong>Perkembangan</strong> = bertambahnya fungsi dan struktur yang semakin kompleks (kualitatif). Mencakup 4 domain: (1) motorik kasar, (2) motorik halus, (3) bahasa/bicara, (4) sosial kemandirian. Tidak dapat diukur langsung dalam satuan panjang atau berat. Dinilai melalui milestone perkembangan.",src:"PPT Kuliah Tumbuh Kembang dr. Wening"},
+{n:87,t:"Tumbuh Kembang",q:"Tahap perkembangan menurut Hurlock mengklasifikasikan masa early childhood pada usia…",o:["2-6 tahun","6-12 tahun","Lahir sampai 2 minggu","2 minggu sampai 2 tahun","12-18 tahun"],a:"2-6 tahun",exp:"Klasifikasi tahap perkembangan menurut <strong>Hurlock</strong>: Prenatal. Infancy = lahir–2 minggu. Babyhood = 2 minggu–2 tahun. <strong>Early childhood = 2–6 tahun</strong>. Late childhood = 6–12 tahun. Adolescence = 12–18 tahun. Dewasa dst.",src:"PPT Kuliah Tumbuh Kembang dr. Wening"},
+{n:88,t:"Tumbuh Kembang",q:"Tahap perkembangan menurut Hurlock mengklasifikasikan masa remaja pada rentang…",o:["2-6 tahun","6-12 tahun","Lahir sampai 2 minggu","2 minggu sampai 2 tahun","12-18 tahun"],a:"12-18 tahun",exp:"Klasifikasi <strong>Hurlock</strong>: Adolescence (remaja) = <strong>12–18 tahun</strong>. Ini merupakan periode transisi dari anak menuju dewasa yang ditandai dengan perubahan fisik (pubertas), kognitif, dan sosioemosional ('storm and stress').",src:"PPT Kuliah Tumbuh Kembang dr. Wening"},
+{n:89,t:"Tumbuh Kembang",q:"Tahap perkembangan menurut Hurlock mengklasifikasikan masa late childhood pada usia…",o:["2-6 tahun","6-12 tahun","Lahir sampai 2 minggu","2 minggu sampai 2 tahun","12-18 tahun"],a:"6-12 tahun",exp:"Menurut <strong>Hurlock</strong>: <strong>Late childhood = 6–12 tahun</strong>. Masa ini sesuai dengan tahap Erikson 'Industry vs Inferiority' dan tahap operasional konkret Piaget. Anak mulai sekolah dan mengembangkan kompetensi sosial dan akademik.",src:"PPT Kuliah Tumbuh Kembang dr. Wening"},
+{n:90,t:"Tumbuh Kembang",q:"Apa itu asah?",o:["Kebutuhan stimulasi mental","Kebutuhan emosi, kasih sayang orang tua dan anggota keluarga","Kebutuhan fisik, gizi, sandang, papan","Kasih sayang orang tua","Semua benar"],a:"Kebutuhan stimulasi mental",exp:"3 Kebutuhan dasar tumbuh kembang anak: <strong>Asah = stimulasi mental/kognitif</strong> (permainan edukatif, sekolah, rangsang intelektual). Asih = kasih sayang dan kebutuhan emosional. Asuh = kebutuhan fisik (gizi, tempat tinggal, pakaian, pelayanan kesehatan). Stimulasi (asah) sangat penting untuk perkembangan otak.",src:"PPT Kuliah Tumbuh Kembang dr. Wening"},
+{n:91,t:"Tumbuh Kembang",q:"Apa itu asih?",o:["Kebutuhan stimulasi mental","Kebutuhan emosi, kasih sayang orang tua dan anggota keluarga","Kebutuhan fisik, gizi, sandang, papan","Kasih sayang orang tua saja","Kebutuhan akademis"],a:"Kebutuhan emosi, kasih sayang orang tua dan anggota keluarga",exp:"<strong>Asih</strong> = kebutuhan emosional anak: <strong>kasih sayang, rasa aman, pengakuan</strong> dari orang tua dan anggota keluarga. Asih mencakup: perasaan disayangi, dihargai, diakui keberadaannya, dan rasa aman. Kekurangan asih → gangguan perkembangan emosional dan sosialisasi.",src:"PPT Kuliah Tumbuh Kembang dr. Wening"},
+{n:92,t:"Tumbuh Kembang",q:"Apa itu asuh?",o:["Kebutuhan stimulasi mental","Kebutuhan emosi, kasih sayang orang tua dan anggota keluarga","Kebutuhan fisik, gizi, sandang, papan","Kasih sayang orang tua","Kebutuhan spiritual"],a:"Kebutuhan fisik, gizi, sandang, papan",exp:"<strong>Asuh</strong> = pemenuhan kebutuhan <strong>fisik</strong> anak: gizi/nutrisi, tempat tinggal (papan), pakaian (sandang), pelayanan kesehatan, dan kebersihan/higiene. Asuh adalah fondasi pertumbuhan fisik yang optimal. Tanpa asuh yang baik, pertumbuhan BB dan TB akan terganggu.",src:"PPT Kuliah Tumbuh Kembang dr. Wening"},
+{n:93,t:"Tumbuh Kembang",q:"Faktor eksternal perkembangan anak adalah…",o:["Keluarga","Ras","Jenis Kelamin","Gizi ibu saat hamil","Genetik"],a:"Keluarga",exp:"Faktor <strong>eksternal</strong> perkembangan anak: keluarga, budaya/lingkungan, gizi, stimulasi, sosial-ekonomi, pelayanan kesehatan, pola asuh. Faktor <strong>internal</strong>: ras, jenis kelamin, genetik, hormonal. <strong>Keluarga</strong> adalah faktor eksternal karena berasal dari luar individu anak.",src:"PPT Kuliah Tumbuh Kembang dr. Wening"},
+{n:94,t:"Tumbuh Kembang",q:"Bayi 15 bulan — yang BUKAN merupakan buku panduan skrining perkembangan adalah…",o:["KPSP dalam SDIDTK","DSM-V","Denver","Tes dengar SDIDTK","Buku KIA"],a:"DSM-V",exp:"<strong>DSM-V (Diagnostic and Statistical Manual of Mental Disorders)</strong> adalah panduan <strong>diagnosis</strong> gangguan mental, BUKAN alat <strong>skrining</strong> perkembangan. Alat skrining perkembangan anak: KPSP (dalam SDIDTK), Denver Developmental Screening Test, tes dengar SDIDTK, buku KIA. DSM-V digunakan untuk menegakkan diagnosis setelah ada indikasi.",src:"PPT Kuliah Tumbuh Kembang dr. Wening"},
+{n:95,t:"Psikologi Perkembangan",q:"Berdasarkan Freud, fase psikoseksual 0-11 bulan pada anak adalah…",o:["Oral","Anal","Phalik","Oedipal","Laten"],a:"Oral",exp:"Fase psikoseksual Freud: <strong>Oral (0–18 bulan)</strong> — kepuasan dari aktivitas oral (menyusu, menghisap). Anal (18 bulan–3 tahun). Falik/Oedipal (3–6 tahun). Laten (6–12 tahun). Genital (12 tahun ke atas). Usia 0–11 bulan → fase oral.",src:"PPT Kuliah Tumbuh Kembang dr. Wening"},
+{n:96,t:"Tumbuh Kembang",q:"Pertumbuhan sinaps paling cepat di umur berapa?",o:["0-3 tahun","3-5 tahun","5-10 tahun","2 minggu-2 tahun sejak kelahiran","0-6 bulan"],a:"0-3 tahun",exp:"Pertumbuhan sinaps otak paling cepat terjadi pada usia <strong>0–3 tahun</strong> — ini adalah periode kritis perkembangan otak ('golden period' atau 1000 HPK). Mielinisasi juga berlangsung cepat di fase ini. Pada usia 3 tahun, otak mencapai ~80% ukuran otak dewasa.",src:"PPT Kuliah Tumbuh Kembang dr. Wening — Mielinisasi"},
+{n:97,t:"Tumbuh Kembang",q:"Perkembangan berdasarkan domain motorik halus adalah…",o:["Berlari","Duduk","Menulis","Jalan","Melompat"],a:"Menulis",exp:"<strong>Motorik halus</strong> = gerakan yang memerlukan koordinasi otot-otot kecil dan koordinasi mata-tangan. Contoh: <strong>menulis</strong>, menggambar, menggenggam pensil, memotong dengan gunting, menjimpit. Berlari, duduk, jalan, melompat = motorik kasar (melibatkan otot-otot besar).",src:"PPT Kuliah Tumbuh Kembang dr. Wening"},
+{n:98,t:"Tumbuh Kembang",q:"Perkembangan motorik kasar adalah…",o:["Menjimpit","Menggunting","Mengancing baju","Menulis","Melompat"],a:"Melompat",exp:"<strong>Motorik kasar</strong> = gerakan yang melibatkan otot-otot besar dan koordinasi tubuh secara keseluruhan. Contoh: <strong>melompat</strong>, berlari, berdiri, berjalan, merangkak. Menjimpit, menggunting, mengancing baju, menulis = motorik halus (otot-otot kecil, koordinasi tangan-mata).",src:"PPT Kuliah Tumbuh Kembang dr. Wening"},
+{n:99,t:"Psikologi Perkembangan",q:"Perkembangan mental ditandai dengan…",o:["Tidak takut bertemu orang banyak","Mudah berbicara dengan orang lain","Takut di ruang terbuka","Marah ketika mainannya direbut","Menangis jika tidak dibelikan"],a:"Marah ketika mainannya direbut",exp:"<strong>Perkembangan mental/emosional</strong> meliputi kemampuan merasakan dan mengekspresikan emosi. <strong>Marah ketika mainannya direbut</strong> adalah respons emosional (perkembangan mental/emosional) yang normal — anak memahami konsep kepemilikan dan menunjukkan rasa tidak suka dengan cara yang sesuai usianya.",src:"PPT Kuliah Tumbuh Kembang dr. Wening"},
+{n:100,t:"Psikologi Perkembangan",q:"Apa yang harus dilakukan agar remaja tidak mengalami inferiority feeling?",o:["Lingkungan memberi respons yang tepat saat remaja mengajak bicara","Lingkungan tidak membatasi aktivitas","Lingkungan memberi pujian dengan porsi yang cukup sesuai dengan perilakunya","Lingkungan membatasi semua aktivitas","Lingkungan memberi kritik tajam dan punishment"],a:"Lingkungan memberi pujian dengan porsi yang cukup sesuai dengan perilakunya",exp:"Mencegah inferiority feeling pada remaja: <strong>lingkungan memberi pujian/reward yang proporsional sesuai pencapaiannya</strong>. 'Penting untuk menguatkan perasaan berhasil dalam melakukan sesuatu.' Pujian berlebihan tidak sehat; pujian yang cukup dan tepat sasaran membangun self-efficacy tanpa membuat remaja bergantung pada validasi eksternal.",src:"PPT Kuliah Tumbuh Kembang dr. Wening"}
+];
+let mode, cur, answered, flagged, score, streak, timerInterval;
+let sessions=0, bestScore=0, allScores=[], topicStats={};
+const TOTAL = QUESTIONS.length;
+
+function loadStats(){
+  try {
+    sessions=parseInt(localStorage.getItem('sg23_sessions'))||0;
+    bestScore=parseInt(localStorage.getItem('sg23_best'))||0;
+    allScores=JSON.parse(localStorage.getItem('sg23_scores')||'[]');
+    topicStats=JSON.parse(localStorage.getItem('sg23_topics')||'{}');
+  } catch(e){}
+  renderStats();
+}
+
+function renderStats(){
+  document.getElementById('stat-sessions').textContent=sessions;
+  if(allScores.length>0){
+    const avg=Math.round(allScores.reduce((s,x)=>s+x.score,0)/allScores.length);
+    document.getElementById('stat-best').textContent=bestScore;
+    document.getElementById('stat-avg').textContent=avg;
+  } else {
+    document.getElementById('stat-best').textContent='—';
+    document.getElementById('stat-avg').textContent='—';
+  }
+  const hl=document.getElementById('hist-list');
+  if(allScores.length===0){hl.innerHTML='<div class="no-hist">Belum ada sesi — yuk mulai!</div>';return;}
+  hl.innerHTML=[...allScores].reverse().map(s=>{
+    const pct=Math.round((s.score/TOTAL)*100);
+    const pctCls=pct>=75?'mint':pct>=60?'gold':'rose';
+    return `<div class="hist-item"><span class="hi-mode ${s.mode}">${s.mode}</span><span class="hi-date">${s.date}</span><span class="hi-score">${s.score}/${TOTAL}</span><span class="hi-pct" style="color:var(--${pctCls})">${pct}%</span></div>`;
+  }).join('');
+  renderTopicBar('topic-bar', topicStats);
+}
+
+function renderTopicBar(id, topicData){
+  const el=document.getElementById(id);
+  if(!el) return;
+  const keys=Object.keys(topicData);
+  if(keys.length===0){el.innerHTML='<div class="no-hist">Belum ada data.</div>';return;}
+  el.innerHTML=keys.map(t=>{
+    const d=topicData[t], tot=d.correct+d.wrong, pct=tot?Math.round(d.correct/tot*100):0;
+    const cls=pct>=75?'good':pct>=50?'mid':'low';
+    return `<div class="topic-row"><span class="topic-name">${t}</span><div class="topic-track"><div class="topic-fill ${cls}" style="width:${pct}%"></div></div><span class="topic-pct">${pct}%</span></div>`;
+  }).join('');
+}
+
+function clearHistory(){
+  localStorage.removeItem('sg23_sessions');
+  localStorage.removeItem('sg23_best');
+  localStorage.removeItem('sg23_scores');
+  localStorage.removeItem('sg23_topics');
+  sessions=0; bestScore=0; allScores=[]; topicStats={};
+  renderStats();
+}
+
+function startQuiz(m){
+  mode=m; cur=0; answered={}; flagged=new Set(); score=0; streak=0;
+  document.getElementById('start-screen').style.display='none';
+  document.getElementById('result-screen').style.display='none';
+  document.getElementById('quiz-screen').style.display='block';
+  document.getElementById('score-display').style.display = (m==='drill')?'none':'';
+  document.getElementById('sound-toggle-bar').style.display='flex';
+  const timerEl = document.getElementById('timer-el');
+  if(m==='exam'){
+    timerEl.style.display=''; let t=6120;
+    timerInterval = setInterval(()=>{
+      t--; const m2=Math.floor(t/60),s=t%60;
+      timerEl.textContent=(m2<10?'0':'')+m2+':'+(s<10?'0':'')+s;
+      timerEl.className='timer-badge'+(t<300?' warning':'')+(t<60?' danger':'');
+      if(t<=0){ clearInterval(timerInterval); submitExam(); }
+    },1000);
+  } else { timerEl.style.display='none'; clearInterval(timerInterval); }
+  renderQ();
+}
+
+function init(){ loadStats(); }
+
+function renderQ(){
+  const total=QUESTIONS.length, q=QUESTIONS[cur];
+  document.getElementById('prog-fill').style.width=(((cur+1)/total)*100)+'%';
+  document.getElementById('prog-txt').textContent=(cur+1)+' / '+total;
+  document.getElementById('mode-badge').textContent=mode.charAt(0).toUpperCase()+mode.slice(1)+' Mode';
+  const correct=Object.values(answered).filter(v=>v===true).length;
+  const attempted=Object.keys(answered).filter(k=>!k.includes('-')).length;
+  document.getElementById('score-display').textContent=correct+' / '+attempted;
+  document.getElementById('btn-prev').disabled=(cur===0);
+  document.getElementById('btn-next').textContent=cur===total-1?(mode==='exam'?'Kumpulkan ›':'Selesai ›'):'Next ›';
+  document.getElementById('btn-flag').className='flag-btn'+(flagged.has(cur)?' flagged':'');
+
+  let optsHTML=q.o.map((opt,i)=>{
+    const key=String.fromCharCode(65+i); let cls='opt', badge='';
+    if(answered.hasOwnProperty(cur)){
+      const isC=opt===q.a, wasC=answered[cur+'-choice']===opt;
+      if(mode==='exam'){ if(wasC) cls+=' selected'; }
+      else {
+        if(isC){ cls+=' correct'; badge='✓'; }
+        else if(wasC&&!isC){ cls+=' incorrect'; badge='✗'; }
+      }
+    }
+    const dis=answered.hasOwnProperty(cur)&&mode!=='drill'?'disabled':'';
+    return `<button class="${cls}" ${dis} onclick="selectOpt(this,'${opt.replace(/'/g,"\\'").replace(/"/g,'&quot;')}')"><span class="opt-key">${key}</span><span class="opt-body">${opt}</span><span class="opt-badge">${badge}</span></button>`;
+  }).join('');
+
+  document.getElementById('q-card').innerHTML=`
+    <div class="q-index">Soal ${q.n} dari ${total}
+      <span class="pill-tag">${mode.toUpperCase()}</span>
+      <span class="pill-tag" style="background:var(--sky-dim);color:var(--sky);border-color:rgba(14,156,204,0.25)">${q.t}</span>
+      ${flagged.has(cur)?'<span class="pill-tag" style="background:var(--gold-dim);color:var(--gold);border-color:rgba(122,98,0,0.3)">🚩 Flagged</span>':''}
+    </div>
+    <div class="q-text">${q.q}</div>
+    <div class="opts">${optsHTML}</div>`;
+
+  const expBox=document.getElementById('exp-box');
+  if(answered.hasOwnProperty(cur)&&mode==='study'){
+    document.getElementById('exp-answer').textContent='Jawaban: '+q.a;
+    document.getElementById('exp-body').innerHTML=q.exp;
+    document.getElementById('exp-src').textContent='Sumber: '+q.src;
+    expBox.className='exp-box show';
+  } else { expBox.className='exp-box'; }
+  renderMap();
+}
+
+function selectOpt(btn, chosen){
+  const q=QUESTIONS[cur], correct=chosen===q.a;
+  answered[cur+'-choice']=chosen;
+  if(mode==='drill'){
+    if(correct){
+      answered[cur]=true; streak++;
+      if(streak%5===0) showToast('🔥 '+streak+' streak!'); else showToast('✓ Benar!');
+      setTimeout(()=>{ if(cur<QUESTIONS.length-1) navigate(1); else { clearInterval(timerInterval); document.getElementById('drill-overlay').classList.add('show'); } },600);
+    } else {
+      btn.classList.add('drill-wrong-shake');
+      delete answered[cur]; delete answered[cur+'-choice'];
+      setTimeout(()=>btn.classList.remove('drill-wrong-shake'),400);
+      streak=0;
+    }
+    renderQ(); return;
+  }
+  answered[cur]=correct;
+  if(correct){
+    score++; streak++;
+    if(streak%5===0) showToast('🔥 '+streak+' streak!'); else showToast('✓ Benar!');
+    playWinMusic();
+  } else {
+    streak=0; showToast('✗ Salah');
+    playLoseSfx();
+  }
+  renderQ();
+}
+
+function navigate(dir){
+  if(dir===1&&cur===QUESTIONS.length-1){
+    if(mode==='exam'){ document.getElementById('exam-overlay').classList.add('show'); return; }
+    showResults(); return;
+  }
+  cur=Math.max(0,Math.min(QUESTIONS.length-1,cur+dir)); renderQ();
+}
+
+function toggleFlag(){
+  if(flagged.has(cur)) flagged.delete(cur); else flagged.add(cur);
+  renderQ();
+}
+
+function renderMap(){
+  document.getElementById('q-map').innerHTML=QUESTIONS.map((q,i)=>{
+    let cls='q-dot';
+    if(i===cur) cls+=' current';
+    else if(answered.hasOwnProperty(i)) cls+=answered[i]?' answered':' wrong';
+    if(flagged.has(i)) cls+=' flagged-dot';
+    return `<div class="${cls}" onclick="jumpTo(${i})">${i+1}</div>`;
+  }).join('');
+}
+
+function jumpTo(i){ cur=i; renderQ(); }
+
+function submitExam(){
+  closeOverlay('exam-overlay'); clearInterval(timerInterval);
+  QUESTIONS.forEach((_,i)=>{ if(!answered.hasOwnProperty(i)) answered[i]=false; });
+  showResults();
+}
+
+function showResults(){
+  clearInterval(timerInterval);
+  const total=QUESTIONS.length;
+  const correct=Object.values(answered).filter(v=>v===true).length;
+  const wrong=Object.values(answered).filter(v=>v===false).length;
+  const skip=total-Object.keys(answered).filter(k=>!k.includes('-')).length;
+  const pct=Math.round((correct/total)*100);
+
+  const sessionTopics={};
+  QUESTIONS.forEach((q,i)=>{
+    if(!sessionTopics[q.t]) sessionTopics[q.t]={correct:0,wrong:0};
+    if(answered.hasOwnProperty(i)){
+      if(answered[i]) sessionTopics[q.t].correct++;
+      else sessionTopics[q.t].wrong++;
+    }
+  });
+  Object.keys(sessionTopics).forEach(t=>{
+    if(!topicStats[t]) topicStats[t]={correct:0,wrong:0};
+    topicStats[t].correct+=sessionTopics[t].correct;
+    topicStats[t].wrong+=sessionTopics[t].wrong;
+  });
+
+  sessions++;
+  const dateStr=new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'2-digit'});
+  allScores.push({score:correct,mode,date:dateStr});
+  if(allScores.length>20) allScores.shift();
+  if(correct>bestScore) bestScore=correct;
+  try {
+    localStorage.setItem('sg23_sessions',sessions);
+    localStorage.setItem('sg23_best',bestScore);
+    localStorage.setItem('sg23_scores',JSON.stringify(allScores));
+    localStorage.setItem('sg23_topics',JSON.stringify(topicStats));
+  } catch(e){}
+
+  document.getElementById('quiz-screen').style.display='none';
+  document.getElementById('result-screen').style.display='block';
+  stopWinMusic(true);
+  updateNowPlaying(null);
+  document.getElementById('final-score-display').innerHTML=`<span>${correct}</span>/${total}`;
+  document.getElementById('final-sub').textContent=pct+'% benar — '+(pct>=75?'Lolos CBT! 🎉':pct>=60?'Hampir, terus drilling 💪':'Yuk belajar lagi, Sir — you got this!');
+  document.getElementById('r-correct').textContent=correct;
+  document.getElementById('r-wrong').textContent=wrong;
+  document.getElementById('r-skip').textContent=skip;
+  renderTopicBar('result-topic-bar', sessionTopics);
+}
+
+function reviewAnswers(){
+  document.getElementById('result-screen').style.display='none';
+  document.getElementById('quiz-screen').style.display='block';
+  mode='study'; cur=0; renderQ();
+}
+
+function showStart(){
+  clearInterval(timerInterval);
+  stopWinMusic(false);
+  updateNowPlaying(null);
+  document.getElementById('quiz-screen').style.display='none';
+  document.getElementById('result-screen').style.display='none';
+  document.getElementById('start-screen').style.display='block';
+  document.querySelectorAll('.drill-reset-overlay,.exam-overlay').forEach(el=>el.classList.remove('show'));
+  init();
+}
+
+function confirmExit(){ document.getElementById('exit-overlay').classList.add('show'); }
+function closeOverlay(id){ document.getElementById(id).classList.remove('show'); }
+
+function showToast(msg){
+  const t=document.getElementById('streak-toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),1800);
+}
+
+document.addEventListener('keydown',e=>{
+  if(document.getElementById('quiz-screen').style.display==='none') return;
+  const k=e.key.toLowerCase();
+  if(k==='arrowright'||k==='n') navigate(1);
+  else if(k==='arrowleft'||k==='p') navigate(-1);
+  else if(k==='f') toggleFlag();
+  else if(['a','b','c','d','e'].includes(k)){
+    const idx='abcde'.indexOf(k);
+    const q=QUESTIONS[cur];
+    if(idx<q.o.length&&!answered.hasOwnProperty(cur)){
+      const btns=document.querySelectorAll('.opts .opt');
+      if(btns[idx]) selectOpt(btns[idx],q.o[idx]);
+    }
+  }
+});
+
+// ══════════════════════════════════════════
+// AUDIO ENGINE
+// ══════════════════════════════════════════
+let soundEnabled = false;
+let winAudio     = null;
+let winPlaylist  = [];
+let winPlayIdx   = 0;
+let winFiles     = [];
+let loseFiles    = [];
+let loseAudio    = null;
+let audioReady   = false;
+let winFadeTimer = null;
+
+// Probe a specific list of filenames in a folder prefix
+function probeFileList(prefix, names){
+  return Promise.all(names.map(name => new Promise(resolve => {
+    const path = prefix + encodeURIComponent(name);
+    const a = new Audio();
+    a.addEventListener('canplaythrough', ()=>resolve(prefix + name), {once:true});
+    a.addEventListener('loadedmetadata', ()=>resolve(prefix + name), {once:true});
+    a.addEventListener('error', ()=>resolve(null), {once:true});
+    a.preload = 'metadata';
+    a.src = path;
+    setTimeout(()=>resolve(null), 4000);
+  }))).then(r => r.filter(Boolean));
+}
+
+async function fetchDirectory(folder) {
+  try {
+    const res = await fetch(`/api/content?folder=${folder}`);
+    if(res.ok) {
+      const data = await res.json();
+      return data.filter(f => /\.mp3$/i.test(f.name)).map(f => f.name);
+    }
+  } catch(e) {}
+  
+  try {
+    const res = await fetch(`https://api.github.com/repos/alchemist4real/174/contents/${folder}`);
+    if(res.ok) {
+      const data = await res.json();
+      return data.filter(f => /\.mp3$/i.test(f.name)).map(f => f.name);
+    }
+  } catch(e) {}
+  
+  return Array.from({length: 20}, (_, i) => `${i+1}.mp3`);
+}
+
+async function initAudio(){
+  if(audioReady) return;
+  audioReady = true;
+  try {
+    const [wNames, lNames] = await Promise.all([ fetchDirectory('win'), fetchDirectory('lose') ]);
+
+    const [wA, wB, wC] = await Promise.all([ 
+      probeFileList('../win/', wNames), 
+      probeFileList('./win/', wNames),
+      probeFileList('https://raw.githubusercontent.com/alchemist4real/174/main/win/', wNames)
+    ]);
+    winFiles = wA.length ? wA : (wB.length ? wB : wC);
+
+    const [lA, lB, lC] = await Promise.all([ 
+      probeFileList('../lose/', lNames), 
+      probeFileList('./lose/', lNames),
+      probeFileList('https://raw.githubusercontent.com/alchemist4real/174/main/lose/', lNames)
+    ]);
+    loseFiles = lA.length ? lA : (lB.length ? lB : lC);
+  } catch(e){
+    winFiles=[]; loseFiles=[];
+  }
+}
+
+// ── Web Audio API synthetic sound fallback ──
+let _audioCtx = null;
+function getAudioCtx(){
+  if(!_audioCtx) _audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  if(_audioCtx.state === 'suspended') _audioCtx.resume();
+  return _audioCtx;
+}
+function playSyntheticWin(){
+  try {
+    const ctx = getAudioCtx();
+    [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+      const osc = ctx.createOscillator(), gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = 'sine'; osc.frequency.value = freq;
+      const t = ctx.currentTime + i * 0.12;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.18, t + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+      osc.start(t); osc.stop(t + 0.3);
+    });
+  } catch(e){}
+}
+function playSyntheticLose(){
+  try {
+    const ctx = getAudioCtx();
+    [329.63, 261.63, 220.00].forEach((freq, i) => {
+      const osc = ctx.createOscillator(), gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = 'sawtooth'; osc.frequency.value = freq;
+      const t = ctx.currentTime + i * 0.15;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.14, t + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.30);
+      osc.start(t); osc.stop(t + 0.35);
+    });
+  } catch(e){}
+}
+
+function shuffleArray(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function updateNowPlaying(filename){
+  const bar = document.getElementById('now-playing-bar');
+  const txt = document.getElementById('np-text');
+  if(filename){
+    const name = filename.replace(/^.*[\/\\]/,'').replace(/\.mp3$/i,'');
+    txt.textContent = '\u266a ' + name;
+    bar.classList.add('show');
+  } else {
+    bar.classList.remove('show');
+  }
+  if(window.parent && window.parent !== window){
+    window.parent.postMessage({
+      __source: 'cbt-child', cmd: 'now-playing-update',
+      track: filename, enabled: soundEnabled
+    }, '*');
+  }
+}
+
+function fadeOutWin(duration=400){
+  if(!winAudio) return;
+  const audio = winAudio;
+  const startVol = audio.volume;
+  const steps = 20, interval = duration/steps, decrement = startVol/steps;
+  clearInterval(winFadeTimer);
+  winFadeTimer = setInterval(()=>{
+    if(audio.volume > decrement){ audio.volume = Math.max(0, audio.volume - decrement); }
+    else { audio.volume=0; audio.pause(); clearInterval(winFadeTimer); }
+  }, interval);
+}
+
+function playWinMusic(){
+  if(!soundEnabled) return;
+  if(loseAudio){ loseAudio.pause(); loseAudio.src=''; loseAudio=null; }
+  if(winAudio && !winAudio.paused) return;
+  if(winFiles.length === 0){ playSyntheticWin(); updateNowPlaying('\u2605 Win Sound'); return; }
+  if(winPlaylist.length===0){ winPlaylist=shuffleArray(winFiles.map((_,i)=>i)); winPlayIdx=0; }
+  playNextWin();
+}
+
+function playNextWin(){
+  if(!soundEnabled) return;
+  if(winFiles.length === 0){ playSyntheticWin(); return; }
+  if(winPlayIdx>=winPlaylist.length){ winPlaylist=shuffleArray(winFiles.map((_,i)=>i)); winPlayIdx=0; }
+  const src=winFiles[winPlaylist[winPlayIdx++]];
+  if(winAudio){ winAudio.pause(); winAudio.src=''; }
+  winAudio=new Audio(src);
+  winAudio.volume=0.75;
+  clearInterval(winFadeTimer);
+  winAudio.addEventListener('ended',()=>{ if(soundEnabled) playNextWin(); else updateNowPlaying(null); });
+  winAudio.play().catch(()=>{ playSyntheticWin(); });
+  updateNowPlaying(src);
+}
+
+function stopWinMusic(fade=true){
+  updateNowPlaying(null);
+  if(!winAudio) return;
+  if(fade){ fadeOutWin(350); } else { winAudio.pause(); winAudio.volume=0.75; clearInterval(winFadeTimer); }
+  winAudio=null;
+}
+
+function playLoseSfx(){
+  if(!soundEnabled) return;
+  stopWinMusic(true);
+  if(loseFiles.length === 0){ playSyntheticLose(); return; }
+  const src=loseFiles[Math.floor(Math.random()*loseFiles.length)];
+  if(loseAudio){ loseAudio.pause(); loseAudio.src=''; }
+  loseAudio=new Audio(src); loseAudio.volume=0.85; loseAudio.play().catch(()=>{ playSyntheticLose(); });
+}
+
+function toggleSound(enabled){
+  soundEnabled=enabled;
+  const bar=document.getElementById('sound-toggle-bar');
+  const icon=document.getElementById('stb-icon');
+  const stat=document.getElementById('stb-status');
+  if(enabled){ bar.classList.add('active'); icon.textContent='\uD83D\uDD0A'; stat.textContent='ON'; if(!audioReady) initAudio(); }
+  else { bar.classList.remove('active'); icon.textContent='\uD83D\uDD07'; stat.textContent='OFF'; stopWinMusic(false); updateNowPlaying(null); }
+  if(window.parent && window.parent !== window){
+    window.parent.postMessage({
+      __source: 'cbt-child', cmd: 'sound-status', enabled: soundEnabled,
+      nowPlaying: document.getElementById('np-text') ? document.getElementById('np-text').textContent : null,
+      npVisible: document.getElementById('now-playing-bar') ? document.getElementById('now-playing-bar').classList.contains('show') : false
+    }, '*');
+  }
+}
+// ══════════════════════════════════════════
+// END AUDIO ENGINE
+// ══════════════════════════════════════════
+
+// ══════════════════════════════════════════
+// POSTMESSAGE BRIDGE
+// ══════════════════════════════════════════
+window.addEventListener('message', function(e){
+  const d=e.data;
+  if(!d||typeof d!=='object'||d.__source!=='174-archive') return;
+  if(d.cmd==='sound-on'){ toggleSound(true); const i=document.getElementById('sound-toggle-input'); if(i) i.checked=true; }
+  else if(d.cmd==='sound-off'){ toggleSound(false); const i=document.getElementById('sound-toggle-input'); if(i) i.checked=false; }
+  else if(d.cmd==='sound-query'){
+    e.source.postMessage({
+      __source:'cbt-child', cmd:'sound-status', enabled:soundEnabled,
+      nowPlaying:document.getElementById('np-text')?document.getElementById('np-text').textContent:null,
+      npVisible:document.getElementById('now-playing-bar')?document.getElementById('now-playing-bar').classList.contains('show'):false
+    },'*');
+  }
+});
+window.addEventListener('load',function(){
+  if(window.parent&&window.parent!==window)
+    window.parent.postMessage({__source:'cbt-child',cmd:'ready',hasSoundEngine:true},'*');
+});
+// ══════════════════════════════════════════
+
+init();
+</script>
+</body>
+</html>

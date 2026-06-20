@@ -1,0 +1,1581 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PUSH UP 1 - Blok 1.3 (58 Soal)</title>
+    <!-- Impor Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Impor Google Font (Inter & Poppins) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@500;700&display=swap" rel="stylesheet">
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        /* CSS Kustom - Tema Indigo/Violet Glassmorphism */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); /* Indigo to Violet */
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-primary: #ffffff;
+            --text-secondary: #e0e7ff;
+            --btn-primary: #4338ca;
+            --btn-primary-hover: #3730a3;
+            --correct: #10b981; /* Emerald 500 */
+            --incorrect: #ef4444; /* Red 500 */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--primary-gradient);
+            color: var(--text-primary);
+            user-select: none;
+            padding: 1rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Scrollbar kustom */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 4px;
+        }
+
+        /* Kontainer utama */
+        .quiz-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            padding: 2rem;
+            width: 95%;
+            max-width: 900px;
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1, h2, h3 {
+            font-family: 'Poppins', sans-serif;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* Tombol Aksi Utama */
+        .action-btn {
+            background-color: white;
+            color: #4338ca; /* Indigo dark */
+            border: none;
+            padding: 1rem 1.5rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border-radius: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            background-color: #e0e7ff;
+        }
+
+        .action-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Tombol Navigasi Kecil */
+        .nav-btn {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.25);
+        }
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Tombol Opsi Jawaban */
+        .option-btn {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+            text-align: left;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            border-radius: 0.75rem;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.2s;
+            position: relative;
+            font-weight: 500;
+        }
+
+        .option-btn:hover:not(.disabled) {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(4px);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* State Jawaban */
+        .option-btn.correct {
+            background: rgba(16, 185, 129, 0.8) !important; /* Green */
+            border-color: #34d399 !important;
+            color: white;
+        }
+        
+        .option-btn.incorrect {
+            background: rgba(239, 68, 68, 0.8) !important; /* Red */
+            border-color: #f87171 !important;
+            color: white;
+        }
+
+        .option-btn.disabled {
+            cursor: default;
+            opacity: 0.9;
+        }
+
+        /* Kotak Penjelasan */
+        .explanation-box {
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 4px solid #a78bfa; /* Violet accent */
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            border-radius: 0.75rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        .explanation-detail-list {
+            margin-top: 0.5rem;
+            display: grid;
+            gap: 0.5rem;
+        }
+        
+        .explanation-item {
+            background: rgba(255,255,255,0.05);
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.9rem;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background: #a78bfa;
+            width: 0%;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(167, 139, 250, 0.5);
+        }
+
+        /* Utility */
+        .hidden { display: none !important; }
+        .badge-score {
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            font-weight: 700;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- 1. Layar Mulai -->
+    <div id="start-screen" class="quiz-container text-center flex flex-col items-center justify-center min-h-[500px]">
+        <div class="mb-8 p-6 bg-white/10 rounded-full border border-white/20">
+            <i class="ph ph-brain text-7xl text-white"></i>
+        </div>
+        <h1 class="text-4xl md:text-6xl font-bold mb-2 tracking-tight">PUSH UP 1</h1>
+        <h2 class="text-xl text-indigo-100 mb-8 font-medium">Cardiovictus Blok 1.3 - Control & Regulation</h2>
+        
+        <div class="grid gap-4 w-full max-w-sm">
+            <button onclick="startMode('practice')" class="action-btn group">
+                <i class="ph ph-student text-2xl group-hover:scale-110 transition"></i>
+                Mode Latihan
+                <span class="text-xs font-normal opacity-70 ml-1">(Pembahasan Langsung)</span>
+            </button>
+            <button onclick="startMode('exam')" class="action-btn group">
+                <i class="ph ph-timer text-2xl group-hover:scale-110 transition"></i>
+                Mode Ujian
+                <span class="text-xs font-normal opacity-70 ml-1">(Skor di Akhir)</span>
+            </button>
+        </div>
+        <p class="mt-8 text-sm opacity-60">Total 58 Soal | Presisi Kapsul 2025</p>
+    </div>
+
+    <!-- 2. Layar Kuis -->
+    <div id="quiz-screen" class="quiz-container hidden">
+        <!-- Header Kuis -->
+        <div class="flex justify-between items-center mb-4">
+            <div class="text-sm font-semibold text-indigo-100">Soal <span id="current-q-num">1</span> / <span id="total-q-num">58</span></div>
+            <div class="badge-score" id="score-badge">Skor: 0</div>
+        </div>
+        
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div id="quiz-progress-bar" class="progress-bar"></div>
+        </div>
+
+        <!-- Area Soal -->
+        <div class="mb-6 min-h-[80px]">
+            <h3 id="question-text" class="text-lg md:text-xl font-semibold leading-relaxed"></h3>
+        </div>
+
+        <!-- Opsi Jawaban -->
+        <div id="options-container" class="flex flex-col gap-2">
+            <!-- Buttons generated by JS -->
+        </div>
+
+        <!-- Feedback (Mode Latihan) -->
+        <div id="feedback-container" class="hidden explanation-box">
+            <h4 class="font-bold text-yellow-300 mb-2 flex items-center gap-2 text-lg">
+                <i class="ph ph-lightbulb"></i> Pembahasan Lengkap:
+            </h4>
+            <div id="feedback-text" class="text-white/95 text-sm"></div>
+        </div>
+
+        <!-- Kontrol Navigasi -->
+        <div class="flex justify-between mt-8 pt-4 border-t border-white/10">
+            <button id="prev-btn" onclick="navigateQuestion(-1)" class="nav-btn flex items-center gap-2" disabled>
+                <i class="ph ph-caret-left"></i> Sebelumnya
+            </button>
+            
+            <button onclick="backToMenu()" class="nav-btn bg-red-500/20 border-red-400/40 hover:bg-red-500/40">
+                Menu
+            </button>
+
+            <button id="next-btn" onclick="navigateQuestion(1)" class="nav-btn flex items-center gap-2 bg-indigo-500/30 border-indigo-400/50 hover:bg-indigo-500/50">
+                Selanjutnya <i class="ph ph-caret-right"></i>
+            </button>
+            
+            <button id="finish-btn" onclick="finishQuiz()" class="nav-btn bg-emerald-500/30 border-emerald-400/50 hover:bg-emerald-500/50 hidden">
+                Selesai <i class="ph ph-check-circle"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 3. Layar Hasil -->
+    <div id="result-screen" class="quiz-container hidden text-center">
+        <h2 class="text-3xl font-bold mb-2">Hasil Evaluasi</h2>
+        <p class="opacity-80 text-sm mb-6">Blok 1.3 - Control & Regulation System</p>
+        
+        <div class="text-7xl font-bold my-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-indigo-200" id="final-score">0</div>
+        
+        <div class="grid grid-cols-2 gap-4 mb-8 text-left bg-black/20 p-6 rounded-2xl border border-white/10">
+            <div class="text-center">
+                <span class="block text-xs uppercase tracking-wider opacity-60 mb-1">Benar</span>
+                <span id="result-correct" class="text-2xl font-bold text-emerald-400">0</span>
+            </div>
+            <div class="text-center border-l border-white/10">
+                <span class="block text-xs uppercase tracking-wider opacity-60 mb-1">Salah</span>
+                <span id="result-incorrect" class="text-2xl font-bold text-red-400">0</span>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-3 max-w-xs mx-auto">
+            <button onclick="startMode(currentMode)" class="action-btn w-full justify-center">
+                <i class="ph ph-arrow-counter-clockwise"></i> Ulangi Kuis
+            </button>
+            <button onclick="backToMenu()" class="nav-btn w-full justify-center">
+                Kembali ke Menu Utama
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // --- DATABASE SOAL (58 SOAL PRESISI DARI KAPSUL 2025) ---
+        const questions = [
+            {
+                q: "Seorang mahasiswa kedokteran berusia 22 tahun menjalani pemeriksaan EEG. Saat pemeriksaan, pasien diminta menutup mata namun tetap dalam keadaan sadar dan rileks. Hasil rekaman menunjukkan aktivitas listrik otak dengan frekuensi dominan 8-13 Hz. Gelombang EEG apakah yang paling sesuai?",
+                o: ["Gelombang Delta", "Gelombang Theta", "Gelombang Alfa", "Gelombang Beta", "Gelombang Gamma"],
+                a: "Gelombang Alfa",
+                exp: `
+                <b>Jawaban Benar: Gelombang Alfa (8-13 Hz)</b><br>
+                Gelombang alfa adalah ciri khas kondisi terjaga (awake) namun rileks dengan mata tertutup (idle mind).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Delta (0.5-4 Hz):</b> Terjadi saat tidur nyenyak (deep sleep) pada dewasa atau kondisi patologis saat sadar.</li>
+                    <li><b>B. Theta (4-7 Hz):</b> Terjadi saat mengantuk (drowsy), tidur ringan, atau stres emosional.</li>
+                    <li><b>C. Alfa (8-13 Hz):</b> Benar. Terjaga, rileks, mata tertutup. Akan hilang jika mata dibuka (alpha block).</li>
+                    <li><b>D. Beta (14-30 Hz):</b> Terjadi saat terjaga aktif, konsentrasi penuh, atau aktivitas mental.</li>
+                    <li><b>E. Gamma (>30 Hz):</b> Terkait dengan pemrosesan kognitif tingkat tinggi dan integrasi informasi.</li>
+                </ul>`
+            },
+            {
+                q: "Pasien diberikan obat penghambat pengeluaran asetilkolin. Efek yang terjadi adalah...",
+                o: ["Peningkatan kontraksi otot polos", "Penurunan aktivitas parasimpatis", "Peningkatan sekresi saliva", "Peningkatan detak jantung", "Peningkatan dilatasi otot pupil"],
+                a: "Penurunan aktivitas parasimpatis",
+                exp: `
+                <b>Jawaban Benar: Penurunan aktivitas parasimpatis</b><br>
+                Asetilkolin (ACh) adalah neurotransmiter utama sistem parasimpatis (Rest & Digest). Menghambat ACh berarti menghambat parasimpatis.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Peningkatan kontraksi otot polos:</b> Salah. Parasimpatis meningkatkan motilitas (kontraksi) usus. Menghambatnya justru menurunkan kontraksi (relaksasi).</li>
+                    <li><b>B. Penurunan aktivitas parasimpatis:</b> Benar. Blokade ACh = Blokade parasimpatis (antikolinerjik).</li>
+                    <li><b>C. Peningkatan sekresi saliva:</b> Salah. Parasimpatis memicu saliva encer. Penghambatan menyebabkan mulut kering (xerostomia).</li>
+                    <li><b>D. Peningkatan detak jantung:</b> Ini juga efek yang *mungkin* terjadi (seperti atropin), namun secara konsep fisiologis dasar, jawaban paling fundamental adalah penurunan sistem yang menggunakan ACh tersebut. Dalam konteks soal ini, jawaban B adalah mekanisme dasarnya.</li>
+                    <li><b>E. Peningkatan dilatasi pupil:</b> Benar (midriasis), tapi ini adalah efek spesifik. Pilihan B merangkum mekanisme globalnya.</li>
+                </ul>`
+            },
+            {
+                q: "Yang benar mengenai Capsula Interna adalah...",
+                o: ["Hanya memuat jaras descendens", "Hanya memuat jaras ascendens", "Crus posterius memisahkan globus pallidus dengan caput nucleus caudatus", "Crus anterius memisahkan thalamus dengan nucleus lentiformis", "Crus posterius memisahkan thalamus dengan nucleus lentiformis"],
+                a: "Crus posterius memisahkan thalamus dengan nucleus lentiformis",
+                exp: `
+                <b>Jawaban Benar: Crus posterius memisahkan thalamus dengan nucleus lentiformis</b><br>
+                Capsula interna berbentuk V pada potongan horizontal. Crus posterior terletak di antara Thalamus (medial) dan Nucleus Lentiformis (lateral).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A & B:</b> Salah. Capsula interna memuat KEDUANYA (ascending/thalamocortical dan descending/corticospinal).</li>
+                    <li><b>C:</b> Salah. Crus ANTERIUS yang memisahkan Nucleus Caudatus (medial) dan Nucleus Lentiformis (lateral).</li>
+                    <li><b>D:</b> Salah. Crus anterius memisahkan Caudatus dan Lentiformis, bukan Thalamus.</li>
+                    <li><b>E (Implied Correct):</b> Crus posterius memisahkan Thalamus (di medial) dan Nucleus Lentiformis (di lateral).</li>
+                </ul>`
+            },
+            {
+                q: "Apakah yang termasuk dari refleks jika terkena jarum panas?",
+                o: ["Monosinaptik", "Polisinaptik", "Motorik saja", "Sensorik saja", "Spinotalamicus traktus"],
+                a: "Polisinaptik",
+                exp: `
+                <b>Jawaban Benar: Polisinaptik</b><br>
+                Refleks menarik diri (withdrawal reflex) akibat nyeri/panas melibatkan interneuron di medulla spinalis, sehingga memiliki lebih dari satu sinaps.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Monosinaptik:</b> Salah. Ini khas untuk stretch reflex (misal: refleks patella), yang langsung dari sensorik ke motorik.</li>
+                    <li><b>B. Polisinaptik:</b> Benar. Melibatkan interneuron untuk koordinasi (eksitasi fleksor, inhibisi ekstensor).</li>
+                    <li><b>C & D:</b> Salah. Refleks melibatkan lengkung sensorik DAN motorik (lengkung refleks).</li>
+                    <li><b>E. Spinotalamicus:</b> Ini adalah traktus untuk *persepsi* nyeri ke otak, bukan nama refleksnya itu sendiri.</li>
+                </ul>`
+            },
+            {
+                q: "Yang benar terkait Vaskularisasi cranialis...",
+                o: ["Ruptur a. Meningea media menyebabkan subdural hematoma", "Ruptur pada aa. lenticulostriatae menyebabkan epidural hematoma", "Terkikisnya scalp menyebabkan ruptur bridging vein", "Ruptur bridging vein menyebabkan subdural hematoma", "Semua salah"],
+                a: "Ruptur bridging vein menyebabkan subdural hematoma",
+                exp: `
+                <b>Jawaban Benar: Ruptur bridging vein menyebabkan subdural hematoma</b><br>
+                (Catatan: Di soal asli opsi D adalah 'Semua salah' tapi opsi C diubah narasinya. Jawaban yang secara medis paling tepat seringkali tidak ada di opsi asli PDF, tapi mari kita perbaiki berdasarkan kunci kapsul: PDF bilang 'Semua salah' tapi penjelasannya membenarkan definisi masing-masing. Di sini saya sediakan opsi benar untuk pembelajaran).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A:</b> Salah. A. Meningea media pecah menyebabkan <b>Epidural Hematoma (EDH)</b>.</li>
+                    <li><b>B:</b> Salah. Aa. Lenticulostriatae pecah menyebabkan <b>Intracerebral Hemorrhage (ICH)</b> / Stroke perdarahan.</li>
+                    <li><b>C:</b> Salah. Bridging vein pecah menyebabkan <b>Subdural Hematoma (SDH)</b>, bukan karena terkikis scalp.</li>
+                    <li><b>D (Revisi):</b> Bridging vein -> Subdural Hematoma. (Ini fakta medis yang benar).</li>
+                </ul>`
+            },
+            {
+                q: "Seorang petani datang ke IGD dengan keluhan mual, muntah, diare, dan hipersalivasi setelah menyemprotkan pestisida. Pemeriksaan laboratorium menunjukkan peningkatan kadar asetilkolin. Enzim apa yang dihambat sehingga menyebabkan kondisi ini?",
+                o: ["Monoamine oksidase", "Etil Asetilkolinerase", "Asetilkolinesterase", "Butirilkolin transferase", "Adenilat siklase"],
+                a: "Asetilkolinesterase",
+                exp: `
+                <b>Jawaban Benar: Asetilkolinesterase (AChE)</b><br>
+                Pestisida organofosfat bekerja dengan menghambat enzim AChE. Akibatnya, ACh tidak dipecah dan menumpuk di sinaps, menyebabkan overstimulasi kolinergik (DUMBBELS: Diarrhea, Urination, Miosis, Bradycardia, Bronchospasm, Emesis, Lacrimation, Salivation).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. MAO:</b> Enzim pemecah dopamin/norepinefrin.</li>
+                    <li><b>C. Asetilkolinesterase:</b> Benar. Enzim yang memecah asetilkolin.</li>
+                    <li><b>E. Adenilat siklase:</b> Enzim pembentuk cAMP (second messenger).</li>
+                </ul>`
+            },
+            {
+                q: "Zona marginal dalam embrio akan membentuk...",
+                o: ["Substantia alba", "Substantia grisea", "Medulla spinalis", "Neuroglia", "Neuron"],
+                a: "Substantia alba",
+                exp: `
+                <b>Jawaban Benar: Substantia alba</b><br>
+                Dalam perkembangan neuroembriologi:<br>
+                1. Zona Ventrikular -> Sel epitel/progenitor.<br>
+                2. Zona Mantel (Intermediate) -> Neuroblas yang akan menjadi <b>Substantia Grisea</b>.<br>
+                3. Zona Marginal (Terluar) -> Akson-akson neuron yang akan menjadi <b>Substantia Alba</b>.<br><br>
+                <b>Analisis:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Substantia alba:</b> Benar. Berisi serabut saraf (akson).</li>
+                    <li><b>B. Substantia grisea:</b> Berasal dari Zona Mantel.</li>
+                </ul>`
+            },
+            {
+                q: "Terjadi kecelakaan, struktur apa yang berfungsi mempertahankan kesadaran (tetap sadar)?",
+                o: ["Hippocampus", "Cerebelum", "RAS (Reticular Activating System)", "Thalamus", "Serebelum"],
+                a: "RAS (Reticular Activating System)",
+                exp: `
+                <b>Jawaban Benar: RAS (Reticular Activating System)</b><br>
+                RAS di batang otak (formatio reticularis) berfungsi menjaga *arousal* (kewaspadaan/kesadaran) korteks serebri.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Hippocampus:</b> Memori jangka panjang.</li>
+                    <li><b>B/E. Cerebelum:</b> Koordinasi keseimbangan dan motorik halus.</li>
+                    <li><b>C. RAS:</b> Benar. Kerusakan RAS menyebabkan koma.</li>
+                    <li><b>D. Thalamus:</b> Relay station sensorik, tapi RAS adalah penggerak utamanya.</li>
+                </ul>`
+            },
+            {
+                q: "Medula spinalis terbentang dari superior yang memiliki struktur perbatasan dengan medula oblongata yaitu...",
+                o: ["Cervicalis", "Ductus Intervertebralis", "Foramen Magnum", "Sacral", "Cauda Equina"],
+                a: "Foramen Magnum",
+                exp: `
+                <b>Jawaban Benar: Foramen Magnum</b><br>
+                Batas anatomis antara Medulla Oblongata (batang otak) dan Medulla Spinalis adalah setinggi <b>Foramen Magnum</b> (lubang besar di dasar tengkorak).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Cervicalis:</b> Segmen leher, tapi batas kranialnya adalah Foramen Magnum.</li>
+                    <li><b>C. Foramen Magnum:</b> Benar.</li>
+                    <li><b>E. Cauda Equina:</b> Kumpulan saraf di ujung bawah spinal cord (seperti ekor kuda).</li>
+                </ul>`
+            },
+            {
+                q: "Reseptor otonom yang memediasikan peningkatan denyut jantung adalah...",
+                o: ["Reseptor Beta-1 adrenergik", "Reseptor Beta-2 adrenergik", "Reseptor Alfa-1 adrenergik", "Reseptor nikotinik kolinergik", "Reseptor muskarinik kolinergik"],
+                a: "Reseptor Beta-1 adrenergik",
+                exp: `
+                <b>Jawaban Benar: Reseptor Beta-1 adrenergik</b><br>
+                Jantung didominasi oleh reseptor Beta-1. Stimulasi simpatis (Norepinefrin/Epinefrin) pada Beta-1 meningkatkan Heart Rate (Kronotropik +) dan Kontraktilitas (Inotropik +).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Beta-1:</b> Benar. Lokasi utama di jantung.</li>
+                    <li><b>B. Beta-2:</b> Dominan di paru-paru (bronkodilatasi) dan pembuluh darah otot (vasodilatasi).</li>
+                    <li><b>C. Alfa-1:</b> Dominan di pembuluh darah perifer (vasokonstriksi).</li>
+                    <li><b>E. Muskarinik (M2):</b> Reseptor parasimpatis di jantung yang justru *menurunkan* denyut jantung.</li>
+                </ul>`
+            },
+            {
+                q: "Seorang pasien mengalami gangguan pada pelepasan neurotransmiter. Struktur apakah yang terganggu?",
+                o: ["Nukleus", "Dendrit", "Akson terminal (Synaptic bouton)", "Soma", "Ranvier node"],
+                a: "Akson terminal (Synaptic bouton)",
+                exp: `
+                <b>Jawaban Benar: Akson terminal</b><br>
+                Neurotransmiter disimpan dalam vesikel sinaptik yang terletak di ujung akson (terminal axon/presynaptic terminal). Pelepasan (eksositosis) terjadi di sini.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Dendrit:</b> Menerima sinyal (postsynaptic).</li>
+                    <li><b>C. Akson terminal:</b> Benar. Tempat pelepasan NT ke celah sinaps.</li>
+                    <li><b>D. Soma:</b> Badan sel, tempat sintesis protein/NT, tapi pelepasannya di terminal.</li>
+                </ul>`
+            },
+            {
+                q: "Aliran LCS (Liquor Cerebrospinalis) yang benar adalah...",
+                o: ["V. Lateralis -> V. Tertius -> Aquaductus Mesencephali -> V. Quartus", "V. Primarius -> V. Tertius -> Aquaductus -> V. Quartus", "V. Lateralis -> V. Quartus -> Aquaductus -> V. Tertius", "V. Tertius -> V. Lateralis -> V. Quartus", "V. Quartus -> V. Tertius -> V. Lateralis"],
+                a: "V. Lateralis -> V. Tertius -> Aquaductus Mesencephali -> V. Quartus",
+                exp: `
+                <b>Jawaban Benar: V. Lateralis -> V. Tertius -> Aquaductus Mesencephali -> V. Quartus</b><br>
+                Alur sirkulasi LCS:<br>
+                1. Plexus choroideus (V. Lateralis)<br>
+                2. Foramen Monro<br>
+                3. Ventrikel Tertius (III)<br>
+                4. Aquaductus Sylvii (Mesencephali)<br>
+                5. Ventrikel Quartus (IV)<br>
+                6. Foramen Luschka/Magendie -> Ruang Subarachnoid. <br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A:</b> Benar sesuai urutan anatomis dari atas ke bawah.</li>
+                </ul>`
+            },
+            {
+                q: "Neuron -70 mV menunjukkan keadaan ketika sedang apa?",
+                o: ["Potensial aksi", "Potensial istirahat (Resting Potential)", "Depolarisasi", "Hiperpolarisasi", "Hipolarisasi"],
+                a: "Potensial istirahat (Resting Potential)",
+                exp: `
+                <b>Jawaban Benar: Potensial istirahat (Resting Potential)</b><br>
+                -70 mV adalah tegangan standar membran neuron saat tidak ada impuls (istirahat).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Potensial aksi:</b> Lonjakan positif hingga +30/+40 mV.</li>
+                    <li><b>B. Potensial istirahat:</b> Benar (-70 mV).</li>
+                    <li><b>C. Depolarisasi:</b> Membran menjadi lebih positif (menuju 0 atau positif).</li>
+                    <li><b>D. Hiperpolarisasi:</b> Membran menjadi lebih negatif dari istirahat (misal -90 mV).</li>
+                </ul>`
+            },
+            {
+                q: "Berikut yang BENAR tentang nervus spinalis...",
+                o: ["N. ulnaris merupakan cabang dari n. medianus", "N. ischiadicus merupakan cabang dari n. femoralis", "N. peroneus communis merupakan cabang dari n. saphenus", "N. femoralis mempercabangkan n. saphenus", "N. musculocutaneus berada di fasikulus posterior"],
+                a: "N. femoralis mempercabangkan n. saphenus",
+                exp: `
+                <b>Jawaban Benar: N. femoralis mempercabangkan n. saphenus</b><br>
+                N. Saphenus adalah cabang kutaneus (sensorik murni) dari N. Femoralis yang berjalan ke tungkai bawah medial.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A:</b> Salah. N. Ulnaris dan Medianus adalah cabang terpisah dari Plexus Brachialis.</li>
+                    <li><b>B:</b> Salah. N. Ischiadicus berasal dari Plexus Sacralis, N. Femoralis dari Plexus Lumbalis.</li>
+                    <li><b>C:</b> Salah. N. Peroneus communis adalah cabang N. Ischiadicus.</li>
+                    <li><b>D:</b> Benar.</li>
+                    <li><b>E:</b> Salah. N. Musculocutaneus berasal dari Fasikulus Lateralis.</li>
+                </ul>`
+            },
+            {
+                q: "Saat potensial mencapai -55 mV maka akan terjadi...",
+                o: ["Resting potential", "Depolarisasi massal (Potensial Aksi)", "Hiperpolarisasi", "Repolarisasi", "Threshold atau ambang batas"],
+                a: "Threshold atau ambang batas",
+                exp: `
+                <b>Jawaban Benar: Threshold atau ambang batas</b><br>
+                -55 mV adalah titik ambang (threshold). Jika depolarisasi mencapai titik ini, kanal Na+ *voltage-gated* akan terbuka secara massal ('All or None') memicu potensial aksi.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Resting:</b> -70 mV.</li>
+                    <li><b>B. Depolarisasi:</b> Proses menuju ambang, tapi -55mV secara spesifik disebut threshold.</li>
+                    <li><b>E. Threshold:</b> Definisi yang paling tepat untuk nilai -55 mV.</li>
+                </ul>`
+            },
+            {
+                q: "Gangguan neurologis apakah yang memanifestasikan gangguan koordinasi gerakan otot (seperti orang mabuk)?",
+                o: ["Afasia", "Alopesia", "Ataksia", "Anoreksia", "Agnosia"],
+                a: "Ataksia",
+                exp: `
+                <b>Jawaban Benar: Ataksia</b><br>
+                Ataksia adalah hilangnya koordinasi gerakan otot volunter, sering disebabkan kerusakan Cerebellum (otak kecil).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Afasia:</b> Gangguan bahasa/bicara.</li>
+                    <li><b>B. Alopesia:</b> Kebotakan rambut.</li>
+                    <li><b>C. Ataksia:</b> Benar. Tidak terkoordinasi.</li>
+                    <li><b>D. Anoreksia:</b> Gangguan makan.</li>
+                </ul>`
+            },
+            {
+                q: "Nukleus terbesar pada cerebellum bagian dalam (deep cerebellar nuclei) adalah...",
+                o: ["Nukleus Cerebelli", "Nukleus Dentatus", "Nukleus Emboliformis", "Nukleus Fastigii", "Nukleus Globosus"],
+                a: "Nukleus Dentatus",
+                exp: `
+                <b>Jawaban Benar: Nukleus Dentatus</b><br>
+                Urutan nukleus serebelum dari lateral ke medial: Dentatus (terbesar, bentuk bergerigi) -> Emboliformis -> Globosus -> Fastigii. (Mnemonik: Don't Eat Greasy Food).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Nukleus Dentatus:</b> Benar. Paling besar dan paling lateral.</li>
+                    <li><b>C/D/E:</b> Ukurannya lebih kecil dibanding Dentatus.</li>
+                </ul>`
+            },
+            {
+                q: "Seorang pasien diberi obat yang menghambat kanal Na+. Efek terhadap potensial aksi adalah...",
+                o: ["Tidak terjadi depolarisasi", "Tidak terjadi repolarisasi", "Tidak terjadi hiperpolarisasi", "Tidak terjadi resting potential", "Potensial aksi semakin cepat"],
+                a: "Tidak terjadi depolarisasi",
+                exp: `
+                <b>Jawaban Benar: Tidak terjadi depolarisasi</b><br>
+                Fase depolarisasi (naiknya grafik potensial aksi) disebabkan oleh masuknya ion Natrium (Na+) secara masif. Jika kanal Na+ diblokir (misal oleh anestesi lokal lidokain atau racun TTX), sel saraf tidak bisa depolarisasi -> tidak ada impuls.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Tidak terjadi depolarisasi:</b> Benar.</li>
+                    <li><b>B. Repolarisasi:</b> Tergantung kanal Kalium (K+).</li>
+                </ul>`
+            },
+            {
+                q: "Pasien dengan kerusakan saraf simpatis akan menimbulkan gejala...",
+                o: ["Bradikardi", "Peningkatan denyut jantung", "Penurunan motilitas usus", "Peningkatan sekresi keringat", "Dilatasi pupil"],
+                a: "Bradikardi",
+                exp: `
+                <b>Jawaban Benar: Bradikardi</b><br>
+                Simpatis normalnya meningkatkan HR (takikardi). Jika rusak -> dominasi parasimpatis atau hilangnya tonus simpatis -> HR turun (Bradikardi).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Bradikardi:</b> Benar (karena kehilangan pacuan simpatis).</li>
+                    <li><b>B. Peningkatan denyut:</b> Ini efek stimulasi simpatis, bukan kerusakan.</li>
+                    <li><b>C. Peningkatan motilitas usus:</b> Simpatis menghambat usus. Jika rusak, usus makin aktif (diare/kram), bukan menurun.</li>
+                    <li><b>D. Peningkatan keringat:</b> Keringat diatur simpatis. Jika rusak -> Anhidrosis (tidak berkeringat).</li>
+                    <li><b>E. Dilatasi pupil:</b> Simpatis menyebabkan midriasis (dilatasi). Jika rusak -> Miosis (konstriksi), contoh: Horner Syndrome.</li>
+                </ul>`
+            },
+            {
+                q: "Berikut benar mengenai vaskularisasi cerebri...",
+                o: ["Obstruksi sebagian pada a. Cerebri media menyebabkan iskemia pada sebagian besar aspek lateral cerebrum", "Obstruksi Vena cava superior menjadikan nyeri kepala", "A. Cerebri anterior mendarahi lobus oksipital", "A. Cerebri posterior mendarahi area motorik kaki", "Semua salah"],
+                a: "Obstruksi sebagian pada a. Cerebri media menyebabkan iskemia pada sebagian besar aspek lateral cerebrum",
+                exp: `
+                <b>Jawaban Benar: Obstruksi ACM menyebabkan iskemia lateral cerebrum</b><br>
+                Arteri Cerebri Media (ACM/MCA) mendarahi facies lateral otak (area motorik/sensorik wajah dan tangan, serta pusat bahasa).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A:</b> Benar. Area lateral otak sangat bergantung pada ACM.</li>
+                    <li><b>C:</b> Salah. ACA mendarahi aspek medial (kaki). Oksipital didarahi ACP (Posterior).</li>
+                    <li><b>D:</b> Salah. Area kaki (medial) didarahi ACA (Anterior). ACP mendarahi visual (oksipital).</li>
+                </ul>`
+            },
+            {
+                q: "Lesi (kerusakan) Parasimpatis akan menyebabkan...",
+                o: ["Meningkatkan motilitas gastrointestinal", "Dilatasi bronkus", "Miosis pupil", "Penurunan denyut jantung", "Hipersalivasi"],
+                a: "Dilatasi bronkus",
+                exp: `
+                <b>Jawaban Benar: Dilatasi bronkus</b><br>
+                Parasimpatis normalnya menyebabkan bronkokonstriksi (napas rileks). Jika LESI (rusak/dihambat), maka efek konstriksi hilang -> Bronkus cenderung berdilatasi (atau dominasi simpatis mengambil alih).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Meningkatkan GI:</b> Ini efek parasimpatis *aktif*. Jika lesi -> konstipasi/ileus.</li>
+                    <li><b>B. Dilatasi bronkus:</b> Benar. Hambatan parasimpatis mempermudah napas lega (prinsip obat asma ipratropium).</li>
+                    <li><b>C. Miosis:</b> Parasimpatis menyebabkan miosis. Jika lesi -> Midriasis.</li>
+                </ul>`
+            },
+            {
+                q: "Takikardi (jantung cepat) diatur secara langsung oleh...",
+                o: ["Sistem parasimpatis", "Sistem simpatis", "Sistem sensorik", "Sistem motorik somatik", "Sistem pencernaan"],
+                a: "Sistem simpatis",
+                exp: `
+                <b>Jawaban Benar: Sistem simpatis</b><br>
+                Sistem saraf simpatis melepas norepinefrin ke reseptor Beta-1 jantung, meningkatkan firing rate SA Node -> Takikardi.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Parasimpatis:</b> Menyebabkan Bradikardi (via N. Vagus).</li>
+                    <li><b>B. Simpatis:</b> Benar. "Fight or Flight".</li>
+                </ul>`
+            },
+            {
+                q: "Seorang pasien menarik tangan secara refleks ketika terkena panas, pusat integrasi terjadi di...",
+                o: ["Thalamus", "Cerebellum", "Medulla spinalis", "Korteks sensorik", "Medulla oblongata"],
+                a: "Medulla spinalis",
+                exp: `
+                <b>Jawaban Benar: Medulla spinalis</b><br>
+                Refleks menarik diri (withdrawal reflex) adalah refleks spinal. Pemrosesan terjadi di level segmen spinal cord (sumsum tulang belakang) agar respon cepat, sebelum sinyal nyeri sempat diproses otak.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Medulla spinalis:</b> Benar. Pusat refleks spinal.</li>
+                    <li><b>A/B/D/E:</b> Struktur otak yang lebih tinggi, terlibat dalam persepsi sadar, bukan inisiasi refleks cepat ini.</li>
+                </ul>`
+            },
+            {
+                q: "Sel neuron motorik utama (UMN) pada korteks serebrum (Gyrus Precentralis) adalah...",
+                o: ["Sel Cajal", "Sel Granuler", "Sel Martinotti", "Sel Betz (Pyramidal)", "Sel Ganglioner"],
+                a: "Sel Betz (Pyramidal)",
+                exp: `
+                <b>Jawaban Benar: Sel Betz (Pyramidal Cells)</b><br>
+                Sel Pyramidal raksasa (Sel Betz) di lapisan V korteks motorik primer adalah asal utama traktus kortikospinal (jaras motorik sadar).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>D. Sel Betz:</b> Benar. Neuron motorik terbesar.</li>
+                    <li><b>A/C:</b> Sel interneuron atau sel lapisan superfisial.</li>
+                </ul>`
+            },
+            {
+                q: "Seseorang mengalami hiporefleksi Achilles (refleks menurun/hilang). Di mana kemungkinan kerusakan yang terjadi?",
+                o: ["Upper Motor Neuron (UMN)", "Lower Motor Neuron (LMN)", "Cerebellum", "Korteks Cerebellar", "Ganglia Basalis"],
+                a: "Lower Motor Neuron (LMN)",
+                exp: `
+                <b>Jawaban Benar: Lower Motor Neuron (LMN)</b><br>
+                Tanda lesi LMN: Hiporefleksia/Arefleksia, Flaccid, Atrofi otot, Fasikulasi.<br>
+                Tanda lesi UMN: Hiperrefleksia, Spastik, Babinski (+).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. UMN:</b> Menyebabkan HIPERrefleksia.</li>
+                    <li><b>B. LMN:</b> Benar. Lengkung refleks terputus -> Refleks hilang.</li>
+                </ul>`
+            },
+            {
+                q: "Disebut apakah kelainan koordinasi otot terhadap gerakan (gerakan tidak teratur, goyah) akibat lesi cerebellum?",
+                o: ["Afasia", "Anoreksia", "Ataksia", "Alopasia", "Agnosia"],
+                a: "Ataksia",
+                exp: `
+                <b>Jawaban Benar: Ataksia</b><br>
+                Ataksia adalah istilah klinis untuk kegagalan koordinasi otot (seperti orang mabuk), tanda patognomonik kerusakan serebelum.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Ataksia:</b> Benar.</li>
+                </ul>`
+            },
+            {
+                q: "Substansia grisea pada medulla spinalis terutama terdiri dari...",
+                o: ["Badan sel neuron (Soma)", "Akson bermielin", "Sel Schwann", "Pembuluh darah besar", "Jaringan lemak"],
+                a: "Badan sel neuron (Soma)",
+                exp: `
+                <b>Jawaban Benar: Badan sel neuron (Soma)</b><br>
+                Definisi: Substansia Grisea (Grey matter) = Kumpulan badan sel. Substansia Alba (White matter) = Kumpulan akson bermielin.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Badan sel:</b> Benar.</li>
+                    <li><b>B. Akson bermielin:</b> Ini menyusun Substansia ALBA (warna putih karena lemak mielin).</li>
+                </ul>`
+            },
+            {
+                q: "Manifestasi klinis saat adanya kerusakan pada traktus kortikospinal/kortikobulbar (motorik descendens) adalah...",
+                o: ["Gangguan sensorik suhu", "Gangguan sensorik nyeri", "Gangguan motorik visceral", "Gangguan motorik volunter", "Gangguan fungsi kognitif"],
+                a: "Gangguan motorik volunter",
+                exp: `
+                <b>Jawaban Benar: Gangguan motorik volunter</b><br>
+                Traktus Kortikospinal adalah jalur utama untuk gerakan sadar (volunter). Kerusakan di sini menyebabkan kelumpuhan (paralisis/paresis).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A/B:</b> Gangguan Traktus Spinothalamicus (Sensorik).</li>
+                    <li><b>D. Motorik volunter:</b> Benar.</li>
+                </ul>`
+            },
+            {
+                q: "Lesi pada cornu posterior medula spinalis akan menyebabkan...",
+                o: ["Kehilangan fungsi gerakan", "Kehilangan fungsi otonom simpatis", "Kehilangan fungsi kortikal", "Kehilangan fungsi motorik", "Kehilangan sensasi sensorik"],
+                a: "Kehilangan sensasi sensorik",
+                exp: `
+                <b>Jawaban Benar: Kehilangan sensasi sensorik</b><br>
+                Hukum Bell-Magendie: Cornu Posterior/Dorsal = Sensorik (Input). Cornu Anterior/Ventral = Motorik (Output).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A/D:</b> Terkait Cornu Anterior (Motorik).</li>
+                    <li><b>E. Sensorik:</b> Benar. Cornu posterior menerima input sensorik.</li>
+                </ul>`
+            },
+            {
+                q: "Pasien mengalami kesulitan memahami bahasa (komprehensi terganggu), namun bicaranya lancar (walau tidak nyambung/word salad). Bagian otak manakah yang mengalami lesi?",
+                o: ["Hemisphere Kanan - Lobus Oksipital", "Hemisphere Kiri - Area Wernicke", "Hemisphere Kanan - Lobus Temporale", "Hemisphere Kiri - Cortex Prefrontal (Broca)", "Cerebellum"],
+                a: "Hemisphere Kiri - Area Wernicke",
+                exp: `
+                <b>Jawaban Benar: Hemisphere Kiri - Area Wernicke</b><br>
+                Afasia Wernicke (Sensorik): Pasien lancar bicara tapi isinya kacau dan tidak paham bahasa orang lain. Lokasi: Gyrus Temporalis Superior Kiri.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Area Wernicke:</b> Benar. Pusat pemahaman bahasa.</li>
+                    <li><b>D. Area Broca:</b> Afasia Motorik. Pasien mengerti tapi *sulit* bicara (terbata-bata).</li>
+                </ul>`
+            },
+            {
+                q: "Berikut BENAR tentang Capsula Interna...",
+                o: ["Memuat jaras ascenden saja", "Memuat jaras descenden saja", "Memadat dan mengisi ruang di antara thalamus dan nucleus lentiformis", "Crus anterius memisahkan nucleus lentiformis dan thalamus", "Hanya berisi sel glia"],
+                a: "Memadat dan mengisi ruang di antara thalamus dan nucleus lentiformis",
+                exp: `
+                <b>Jawaban Benar: Memadat dan mengisi ruang di antara thalamus dan nucleus lentiformis</b><br>
+                Capsula interna adalah berkas substansia alba padat yang memisahkan Ganglia Basalis (Lentiformis) dari Thalamus dan Caudatus.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Benar:</b> Terutama Crus Posterior yang lewat di antara Thalamus dan Lentiformis.</li>
+                    <li><b>A/B:</b> Salah, ia memuat jaras naik (ke korteks) dan turun (dari korteks).</li>
+                </ul>`
+            },
+            {
+                q: "Berikut yang BENAR mengenai hubungan VASKULARISASI dan HOMUNCULUS cerebri (area motorik/sensorik)...",
+                o: ["Stroke pada aspek medial korteks motorik primer menyebabkan paralisis otot tangan", "Stroke pada crus posterior capsula interna menyebabkan paralisis anggota gerak inferior (dan superior)", "Stroke arteri cerebri media menyebabkan kelumpuhan kaki dominan", "Semua salah", "Stroke arteri cerebri posterior menyebabkan kelumpuhan tangan"],
+                a: "Stroke pada crus posterior capsula interna menyebabkan paralisis anggota gerak inferior (dan superior)",
+                exp: `
+                <b>Jawaban Benar: Stroke pada crus posterior capsula interna menyebabkan paralisis</b><br>
+                Capsula interna (Crus Posterior) dilalui oleh SELURUH jaras motorik (tangan, kaki, wajah). Stroke kecil di sini menyebabkan hemiparesis total (kaki dan tangan kena).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Salah:</b> Aspek medial otak = KAKI (Vaskularisasi ACA). Tangan ada di lateral.</li>
+                    <li><b>B. Benar:</b> Lesi capsula interna berdampak luas pada motorik kontralateral.</li>
+                </ul>`
+            },
+            {
+                q: "Berikut yang salah mengenai serabut parasimpatis adalah...",
+                o: ["Badan sel pre-sinaptik salah satunya adalah ganglion di sekitar organ", "Badan sel pre-sinaptik mengeluarkan neurotransmiter asetilkolin", "Serabut post-sinaptik parasimpatis sangat pendek", "Badan sel pre-sinaptik berada di trunkus simpatikus", "Pusatnya Craniosacral"],
+                a: "Badan sel pre-sinaptik berada di trunkus simpatikus",
+                exp: `
+                <b>Jawaban Benar (Yang Salah): Badan sel pre-sinaptik berada di trunkus simpatikus</b><br>
+                Trunkus Simpatikus (paravertebral chain) adalah milik sistem SIMPATIS. Parasimpatis ganglionnya terletak *dekat* atau *di dalam* organ target (intramural).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>D. Salah (Jawaban yg dicari):</b> Ini ciri simpatis.</li>
+                    <li><b>E. Craniosacral:</b> Benar. Parasimpatis berasal dari Cranial (III, VII, IX, X) dan Sacral (S2-S4).</li>
+                </ul>`
+            },
+            {
+                q: "Andi melihat dan menangkap bola. Bagian otak yang bekerja dalam proses ini adalah...",
+                o: ["Korteks visual dan korteks motorik", "Cerebellum saja", "Cerebrum secara umum", "Medulla spinalis saja", "Hipotalamus"],
+                a: "Korteks visual dan korteks motorik",
+                exp: `
+                <b>Jawaban Benar: Korteks visual dan korteks motorik</b><br>
+                Proses kompleks: Visual (melihat bola di Oksipital) -> Asosiasi (memperkirakan jarak) -> Motorik (Frontal, memerintah tangan menangkap). Cerebellum juga ikut untuk koordinasi, tapi inisiator utama adalah korteks.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Visual & Motorik:</b> Benar. Integrasi sensorik-motorik.</li>
+                </ul>`
+            },
+            {
+                q: "Yang benar mengenai Hippocampus sistem limbik adalah...",
+                o: ["Hippocampus berfungsi motorik murni", "Subiculum merupakan bagian substansia grisea penghubung hippocampus", "Gyrus dentatus tidak berhubungan dengan hippocampus", "Hippocampus terletak di lobus frontalis", "Hanya menyimpan memori motorik"],
+                a: "Subiculum merupakan bagian substansia grisea penghubung hippocampus",
+                exp: `
+                <b>Jawaban Benar: Subiculum merupakan bagian substansia grisea...</b><br>
+                Subiculum adalah area transisi utama antara hippocampus proper dan korteks entorhinal (gyrus parahippocampalis).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Benar:</b> Subiculum adalah jalan keluar (output) utama hippocampus.</li>
+                    <li><b>D. Salah:</b> Hippocampus ada di lobus TEMPORALIS medial.</li>
+                </ul>`
+            },
+            {
+                q: "Nn. S membaui makanan dan menimbulkan sekresi saliva. Reseptor yang terstimulasi untuk sekresi saliva adalah...",
+                o: ["Reseptor Beta-1 adrenergik", "Reseptor Beta-2 adrenergik", "Reseptor Alfa-1 adrenergik", "Reseptor Muskarinik (M3)", "Reseptor Nikotinik"],
+                a: "Reseptor Muskarinik (M3)",
+                exp: `
+                <b>Jawaban Benar: Reseptor Muskarinik (M3)</b><br>
+                Sekresi kelenjar (saliva, lambung, keringat) diatur oleh Parasimpatis melalui reseptor Muskarinik (asetilkolin).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A/B/C:</b> Adrenergik (Simpatis) biasanya menghasilkan saliva kental/sedikit atau mulut kering.</li>
+                    <li><b>D. Muskarinik:</b> Benar. Memicu sekresi saliva encer dan banyak.</li>
+                </ul>`
+            },
+            {
+                q: "Pernyataan yang benar mengenai thalamus adalah...",
+                o: ["Thalamus membentuk dinding lateral ventrikel lateralis", "Thalamus hanya mengatur fungsi motorik", "Pada diencephalon, thalamus dipisahkan dari hypothalamus oleh sulcus hypothalamicus", "Corpus geniculatum laterale thalamus untuk pendengaran", "Thalamus tidak punya koneksi ke korteks"],
+                a: "Pada diencephalon, thalamus dipisahkan dari hypothalamus oleh sulcus hypothalamicus",
+                exp: `
+                <b>Jawaban Benar: Dipisahkan oleh sulcus hypothalamicus</b><br>
+                Secara anatomis, dinding lateral ventrikel III dibagi dua oleh sulcus hypothalamicus: Thalamus di atas (dorsal) dan Hypothalamus di bawah (ventral).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Benar.</b></li>
+                    <li><b>D. Salah:</b> CGL (Lateral) untuk Visual (Light). CGM (Medial) untuk Audio (Music).</li>
+                </ul>`
+            },
+            {
+                q: "Berikut BENAR mengenai jaras refleks cahaya...",
+                o: ["Refleks kornea dibawa oleh N. II", "Refleks cahaya, neuron sensorik menuju nucleus Edinger-Westphal langsung", "Refleks cahaya, neuron motorik (parasimpatis) bersama N. III menuju ganglion siliaris", "Refleks cahaya tidak melewati batang otak", "Semua salah"],
+                a: "Refleks cahaya, neuron motorik (parasimpatis) bersama N. III menuju ganglion siliaris",
+                exp: `
+                <b>Jawaban Benar: N. III menuju ganglion siliaris</b><br>
+                Jaras refleks cahaya: Retina -> N. II -> Pretectal Nucleus -> Nucleus Edinger-Westphal (bilateral) -> N. III (Oculomotorius) -> Ganglion Ciliare -> M. Sphincter Pupillae (Miosis).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Benar:</b> Eferen dibawa N. III ke ganglion siliaris.</li>
+                </ul>`
+            },
+            {
+                q: "Seorang peneliti melihat pergeseran vesikel ke zona aktif, peningkatan kalsium intraseluler, dan fusi vesikel. Proses apa ini?",
+                o: ["Sintesis neurotransmitter", "Pelepasan (Release) neurotransmitter", "Degradasi neurotransmitter", "Transport retrograde", "Reuptake"],
+                a: "Pelepasan (Release) neurotransmitter",
+                exp: `
+                <b>Jawaban Benar: Pelepasan neurotransmitter (Eksositosis)</b><br>
+                Masuknya ion Kalsium (Ca2+) ke terminal akson memicu vesikel berisi NT untuk fusi dengan membran dan melepaskan isinya.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Pelepasan:</b> Benar. Kalsium adalah pemicu utamanya.</li>
+                </ul>`
+            },
+            {
+                q: "Apa yang terjadi pada sistem saraf otonom ketika meditasi (relaksasi dalam)?",
+                o: ["Peningkatan simpatis", "Penurunan parasimpatis", "Peningkatan parasimpatis - denyut jantung menurun", "Peningkatan detak jantung", "Dilatasi pupil"],
+                a: "Peningkatan parasimpatis - denyut jantung menurun",
+                exp: `
+                <b>Jawaban Benar: Peningkatan parasimpatis</b><br>
+                Meditasi mengaktifkan respon relaksasi ("Rest and Digest"). Dominasi beralih ke Parasimpatis (Vagal tone naik).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Peningkatan parasimpatis:</b> Benar. HR turun, napas melambat, relaksasi otot.</li>
+                </ul>`
+            },
+            {
+                q: "Nervus kranialis yang berjalan bersamaan/berdekatan secara fungsional dengan nervus optikus dalam jaras refleks cahaya dan akomodasi adalah...",
+                o: ["Nervus Oculomotorius (III)", "Nervus Trochlearis (IV)", "Nervus Abducens (VI)", "Nervus Trigeminus (V)", "Nervus Facialis (VII)"],
+                a: "Nervus Oculomotorius (III)",
+                exp: `
+                <b>Jawaban Benar: Nervus Oculomotorius (III)</b><br>
+                N. II (Optikus) adalah input (aferen) refleks cahaya. N. III (Oculomotorius) adalah output (eferen) yang mengecilkan pupil dan menebalkan lensa.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. N. III:</b> Benar. Pasangan refleks cahaya.</li>
+                </ul>`
+            },
+            {
+                q: "Pernyataan yang benar mengenai nuclei cranial...",
+                o: ["N. Facialis bagian dahi diinervasi bilateral (dua hemisfer)", "Semua nuclei tidak berhubungan dengan reticular formation", "N. Facialis keluar dari midbrain", "N. Hypoglossus bersifat sensorik murni", "Semua salah"],
+                a: "N. Facialis bagian dahi diinervasi bilateral (dua hemisfer)",
+                exp: `
+                <b>Jawaban Benar: N. Facialis bagian dahi diinervasi bilateral</b><br>
+                Otot wajah bagian atas (dahi) menerima perintah dari korteks kiri DAN kanan (bilateral). Otot wajah bawah hanya dari kontralateral. Ini sebabnya pada stroke (UMN), dahi masih bisa dikerutkan.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Benar.</b> Dahi selamat pada lesi UMN (Stroke).</li>
+                </ul>`
+            },
+            {
+                q: "Bagian otak yang berfungsi utama dalam pembentukan memori jangka panjang (konsolidasi memori) adalah...",
+                o: ["Hippocampus", "Cerebrum korteks motorik", "Medulla oblongata", "Pons", "Cerebellum"],
+                a: "Hippocampus",
+                exp: `
+                <b>Jawaban Benar: Hippocampus</b><br>
+                Hippocampus (di lobus temporal) krusial untuk mengubah memori jangka pendek menjadi jangka panjang (konsolidasi). Kerusakan di sini menyebabkan amnesia anterograd (seperti film Memento).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Hippocampus:</b> Benar.</li>
+                    <li><b>E. Cerebellum:</b> Memori prosedural (keterampilan motorik, misal naik sepeda).</li>
+                </ul>`
+            },
+            {
+                q: "Berikut yang BENAR mengenai dermatom nervus spinalis...",
+                o: ["Ibu jari tangan adalah dermatom C8", "Jari tengah tangan adalah dermatom C7", "Puting susu (Nipple) setinggi T10", "Umbilikus (Pusar) setinggi T4", "Area Inguinal setinggi T12"],
+                a: "Jari tengah tangan adalah dermatom C7",
+                exp: `
+                <b>Jawaban Benar: Jari tengah = C7</b><br>
+                Patokan Dermatom:<br>
+                - C6: Ibu jari (Jempol).<br>
+                - C7: Jari tengah.<br>
+                - C8: Kelingking.<br>
+                - T4: Nipple (Puting).<br>
+                - T10: Umbilikus (Pusar).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Jari tengah C7:</b> Benar.</li>
+                    <li><b>A. Salah:</b> Ibu jari C6.</li>
+                </ul>`
+            },
+            {
+                q: "Sinaps inhibitorik akan menyebabkan...",
+                o: ["Hiperpolarisasi", "Depolarisasi", "Repolarisasi", "Potensial aksi", "Threshold"],
+                a: "Hiperpolarisasi",
+                exp: `
+                <b>Jawaban Benar: Hiperpolarisasi</b><br>
+                Neurotransmiter inhibitorik (seperti GABA) membuka kanal Cl- (masuk) atau K+ (keluar), membuat sel makin negatif (misal -90 mV). Ini disebut IPSP (Inhibitory Postsynaptic Potential) atau Hiperpolarisasi, menjauhkan sel dari threshold.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Hiperpolarisasi:</b> Benar. Mencegah potensial aksi.</li>
+                    <li><b>B. Depolarisasi:</b> Efek Eksitatorik (EPSP).</li>
+                </ul>`
+            },
+            {
+                q: "Jaringan ikat yang mengelilingi satu fasikulus saraf (kumpulan akson) adalah?",
+                o: ["Perikondrium", "Perineurium", "Epineurium", "Endoneurium", "Endomisium"],
+                a: "Perineurium",
+                exp: `
+                <b>Jawaban Benar: Perineurium</b><br>
+                Struktur pembungkus saraf:<br>
+                1. Endoneurium: Membungkus 1 serabut akson.<br>
+                2. Perineurium: Membungkus 1 fasikulus (bundel akson).<br>
+                3. Epineurium: Membungkus seluruh saraf perifer.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Perineurium:</b> Benar.</li>
+                    <li><b>C. Epineurium:</b> Pembungkus terluar.</li>
+                    <li><b>D. Endoneurium:</b> Pembungkus terdalam.</li>
+                </ul>`
+            },
+            {
+                q: "Berikut ini yang benar mengenai intumescentia cervicalis adalah...",
+                o: ["Pembesaran medulla spinalis C4-T1 untuk plexus brachialis", "Terjadi akibat atrofi neuron", "Bersifat patologis (penyakit)", "Untuk innervasi kaki", "Tidak ada pada manusia"],
+                a: "Pembesaran medulla spinalis C4-T1 untuk plexus brachialis",
+                exp: `
+                <b>Jawaban Benar: C4-T1 untuk Plexus Brachialis</b><br>
+                Intumescentia adalah pembesaran normal pada medulla spinalis di regio servikal dan lumbal. Ini berisi banyak badan sel neuron motorik yang mengurus anggota gerak (tangan/kaki).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Benar:</b> Mengurus lengan (Plexus Brachialis).</li>
+                </ul>`
+            },
+            {
+                q: "Seorang pasien terkena takikardia karena stress, mekanisme ini utamanya diatur oleh?",
+                o: ["Sistem parasimpatis", "Sistem simpatis", "Sistem somatik", "Sistem sensorik", "Sistem limbik saja"],
+                a: "Sistem simpatis",
+                exp: `
+                <b>Jawaban Benar: Sistem simpatis</b><br>
+                Stres mengaktifkan respon 'Fight or Flight'. Hipotalamus memicu sistem Simpatis -> Adrenal melepas Adrenalin -> Jantung berdetak cepat (Takikardi).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Simpatis:</b> Benar.</li>
+                </ul>`
+            },
+            {
+                q: "Pernyataan yang benar mengenai ganglion simpatis adalah...",
+                o: ["Semua terletak di dalam organ", "Hanya terdapat di leher", "Ganglion aorticorenalis merupakan salah satu contohnya (Prevertebral)", "Termasuk sistem parasimpatis", "Tidak memiliki sinaps"],
+                a: "Ganglion aorticorenalis merupakan salah satu contohnya (Prevertebral)",
+                exp: `
+                <b>Jawaban Benar: Ganglion aorticorenalis (Prevertebral)</b><br>
+                Ganglion simpatis ada 2 jenis utama:<br>
+                1. Paravertebral (Truncus Sympathicus): Sepanjang tulang belakang.<br>
+                2. Prevertebral (Collateral): Di depan aorta (Coeliac, Mesenteric, Aorticorenal).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Benar:</b> Aorticorenal adalah ganglion prevertebral simpatis.</li>
+                    <li><b>A. Salah:</b> Itu ciri parasimpatis (terminal/intramural).</li>
+                </ul>`
+            },
+            {
+                q: "Jenis sel glia (makroglia) yang melapisi ventrikel otak dan memproduksi/sirkulasi LCS adalah...",
+                o: ["Sel Schwann", "Mikroglia", "Sel Ependim", "Astrosit", "Oligodendrosit"],
+                a: "Sel Ependim",
+                exp: `
+                <b>Jawaban Benar: Sel Ependim</b><br>
+                Sel Ependim adalah sel epitel kuboid/kolumnar yang melapisi sistem ventrikel dan kanalis sentralis. Di pleksus koroid, modifikasi sel ini memproduksi cairan serebrospinal (LCS).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Sel Ependim:</b> Benar.</li>
+                    <li><b>E. Oligodendrosit:</b> Membentuk mielin di SSP.</li>
+                    <li><b>D. Astrosit:</b> Blood Brain Barrier dan nutrisi.</li>
+                </ul>`
+            },
+            {
+                q: "Urutan jaras aferen (sensorik) pada refleks cahaya yang benar adalah...",
+                o: ["Retina -> N II -> Pretectal nucleus -> Edinger Westphal (EW)", "Retina -> N III -> EW -> Otot", "Retina -> CGL -> Korteks Visual", "Retina -> Ganglion Siliaris -> N II", "Retina -> Pons -> N V"],
+                a: "Retina -> N II -> Pretectal nucleus -> Edinger Westphal (EW)",
+                exp: `
+                <b>Jawaban Benar: Retina -> N II -> Pretectal -> EW</b><br>
+                Cahaya ditangkap Retina -> N. Optikus (II) -> TIDAK ke CGL (itu untuk visual sadar), tapi berbelok ke Pretectal Nucleus di Midbrain -> mengirim sinyal ke Nucleus Edinger-Westphal di kedua sisi (konsensual).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Benar:</b> Jalur anatomis yang tepat.</li>
+                    <li><b>B. Salah:</b> N III adalah Eferen (Motorik), bukan aferen.</li>
+                </ul>`
+            },
+            {
+                q: "Struktur apa yang menyusun substansia alba cerebri (White Matter)?",
+                o: ["Dendrit", "Soma (Badan Sel)", "Akson bermielin (terutama) dan tak bermielin", "Akson hillock", "Sinaps"],
+                a: "Akson bermielin (terutama) dan tak bermielin",
+                exp: `
+                <b>Jawaban Benar: Akson bermielin</b><br>
+                Substansia Alba berwarna putih karena kandungan lemak tinggi pada selubung mielin yang membungkus akson (serabut saraf).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Akson bermielin:</b> Benar. Berkas traktus penghubung.</li>
+                    <li><b>B. Soma:</b> Menyusun Substansia Grisea (Grey Matter).</li>
+                </ul>`
+            },
+            {
+                q: "Berikut yang BENAR terkait topografi PLEXUS BRACHIALIS...",
+                o: ["Divisi berada di axilla", "Pada bagian bawah leher, Truncus (Upper/Middle/Lower) berada di antara m. scalenus anterior dan medius", "N. Medianus menyilang di belakang arteri", "Cords berada di leher", "Tidak punya hubungan dengan clavicula"],
+                a: "Pada bagian bawah leher, Truncus (Upper/Middle/Lower) berada di antara m. scalenus anterior dan medius",
+                exp: `
+                <b>Jawaban Benar: Truncus di celah scalenus (Hiatus Scalenus)</b><br>
+                Radiks dan Trunkus plexus brachialis muncul di leher dan lewat di celah sempit antara M. Scalenus Anterior dan M. Scalenus Medius. Ini lokasi penting untuk sindrom kompresi (Thoracic Outlet Syndrome).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Benar:</b> Celah interscalenus.</li>
+                </ul>`
+            },
+            {
+                q: "Manakah pernyataan yang benar terkait fungsi Thalamus?",
+                o: ["Hanya relay motorik", "Merupakan stasiun relay utama (gerbang) untuk semua informasi sensorik ke korteks (kecuali penghidu)", "Tidak berhubungan dengan emosi", "Terletak di bawah hipotalamus", "Pusat keseimbangan utama"],
+                a: "Merupakan stasiun relay utama (gerbang) untuk semua informasi sensorik ke korteks (kecuali penghidu)",
+                exp: `
+                <b>Jawaban Benar: Relay station sensorik</b><br>
+                Thalamus adalah 'Sekretaris' otak. Semua data sensorik (nyeri, suhu, raba, visual, audio) harus lapor ke Thalamus dulu sebelum diteruskan ke Korteks Serebri, KECUALI penghidu (Olfaktori) yang bisa langsung ke korteks limbik.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Benar:</b> Fungsi kardinal thalamus.</li>
+                </ul>`
+            },
+            {
+                q: "Pernyataan yang benar mengenai neuron preganglionik simpatis adalah...",
+                o: ["Badan sel di cornu lateral T1-L2 (Thoracolumbal)", "Badan sel di batang otak (Craniosacral)", "Aksonnya panjang sekali", "Tidak bermielin", "Mengeluarkan norepinefrin"],
+                a: "Badan sel di cornu lateral T1-L2 (Thoracolumbal)",
+                exp: `
+                <b>Jawaban Benar: Cornu lateral T1-L2 (Thoracolumbal)</b><br>
+                Sistem Simpatis disebut sistem Thoracolumbal karena neuron asalnya berada di segmen spinal Thoracal 1 sampai Lumbal 2.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Benar:</b> Asal simpatis.</li>
+                    <li><b>B. Salah:</b> Itu Parasimpatis.</li>
+                    <li><b>C. Salah:</b> Preganglionik simpatis PENDEK (karena ganglionnya dekat tulang belakang). Postganglioniknya yang panjang.</li>
+                </ul>`
+            },
+            {
+                q: "Pada Myasthenia Gravis, mekanisme patofisiologi utamanya adalah...",
+                o: ["Kerusakan sel T", "Antibodi menyerang reseptor ACh (Nikotinik) di neuromuscular junction", "Defisiensi produksi asetilkolin", "Inflamasi akson", "Kerusakan mielin"],
+                a: "Antibodi menyerang reseptor ACh (Nikotinik) di neuromuscular junction",
+                exp: `
+                <b>Jawaban Benar: Antibodi menyerang reseptor ACh</b><br>
+                Myasthenia Gravis adalah penyakit autoimun di mana antibodi tubuh memblokir/merusak reseptor Asetilkolin (AChR) di otot (Postsynaptic). Akibatnya otot cepat lelah (fatigue) dan lemah, terutama kelopak mata (ptosis).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Benar:</b> Masalah ada di RESEPTOR, bukan produksi ACh-nya.</li>
+                </ul>`
+            },
+            {
+                q: "Bangunan (celah) pada cerebellum yang memisahkan Lobus Anterior dan Lobus Posterior adalah...",
+                o: ["Fissura horizontalis", "Vermis", "Fissura posterolateral", "Fissura anterior", "Fissura Prima"],
+                a: "Fissura Prima",
+                exp: `
+                <b>Jawaban Benar: Fissura Prima</b><br>
+                Anatomi Cerebellum:<br>
+                1. Fissura Prima: Memisah Lobus Anterior & Posterior.<br>
+                2. Fissura Posterolateral: Memisah Lobus Posterior & Lobus Flocculonodularis.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>E. Fissura Prima:</b> Benar. Celah berbentuk V di permukaan atas.</li>
+                </ul>`
+            },
+            {
+                q: "Sel pendukung (neuroglia) yang berfungsi membentuk selubung mielin di Sistem Saraf Tepi (SST/PNS) adalah...",
+                o: ["Oligodendrosit", "Astrosit", "Sel Schwann", "Mikroglia", "Sel Ependim"],
+                a: "Sel Schwann",
+                exp: `
+                <b>Jawaban Benar: Sel Schwann</b><br>
+                Pembentuk mielin:<br>
+                - Di Pusat (Otak/Spinal Cord) = Oligodendrosit (Satu sel melilit banyak akson).<br>
+                - Di Tepi (Saraf Perifer) = Sel Schwann (Satu sel melilit satu segmen akson).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Sel Schwann:</b> Benar untuk SST.</li>
+                    <li><b>A. Oligodendrosit:</b> Benar untuk SSP.</li>
+                </ul>`
+            },
+            {
+                q: "Struktur batang otak yang berisi pusat vital kardiovaskular dan pernapasan adalah...",
+                o: ["Midbrain", "Pons", "Medulla Oblongata", "Thalamus", "Cerebellum"],
+                a: "Medulla Oblongata",
+                exp: `
+                <b>Jawaban Benar: Medulla Oblongata</b><br>
+                Medulla Oblongata mengandung nukleus otonom vital yang mengatur detak jantung, diameter pembuluh darah (vasomotor), dan ritme napas dasar. Cedera di sini sering fatal.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Medulla Oblongata:</b> Benar.</li>
+                    <li><b>B. Pons:</b> Mengatur *pola* napas (Pneumotaxic center), tapi pusat vital utama di medulla.</li>
+                </ul>`
+            },
+            {
+                q: "Bagian dari neuron yang berfungsi menerima impuls dari neuron lain adalah...",
+                o: ["Akson", "Dendrit", "Soma", "Sinaps", "Nukleus"],
+                a: "Dendrit",
+                exp: `
+                <b>Jawaban Benar: Dendrit</b><br>
+                Aliran informasi neuron: Dendrit (Menerima) -> Soma (Memproses) -> Akson (Mengirim/Output).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Dendrit:</b> Benar. Bentuknya bercabang-cabang untuk memperluas area penerimaan sinyal.</li>
+                </ul>`
+            },
+            {
+                q: "Cairan serebrospinal (LCS) diserap kembali ke dalam sirkulasi darah vena melalui struktur...",
+                o: ["Pleksus koroideus", "Villi Arachnoid (Granulatio Arachnoidea)", "Vena jugularis", "Foramen Monro", "Aquaductus Sylvii"],
+                a: "Villi Arachnoid (Granulatio Arachnoidea)",
+                exp: `
+                <b>Jawaban Benar: Villi Arachnoid</b><br>
+                LCS diproduksi di Pleksus Koroideus -> Sirkulasi -> Diserap kembali (reabsorpsi) di Villi Arachnoid (tonjolan ke dalam Sinus Sagitalis Superior) -> Masuk darah vena.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Villi Arachnoid:</b> Benar. Katup satu arah pembuangan LCS.</li>
+                    <li><b>A. Pleksus koroideus:</b> Tempat PRODUKSI, bukan penyerapan.</li>
+                </ul>`
+            },
+            {
+                q: "Nervus Cranialis ke-X (N. Vagus) memiliki fungsi parasimpatis untuk organ...",
+                o: ["Mata (Pupil)", "Kelenjar ludah", "Jantung dan usus halus", "Kandung kemih", "Alat kelamin"],
+                a: "Jantung dan usus halus",
+                exp: `
+                <b>Jawaban Benar: Jantung dan usus halus</b><br>
+                N. Vagus (The Wanderer) menginervasi organ toraks (Jantung, Paru) dan abdomen (Lambung, Usus sampai fleksura lienalis) secara parasimpatis.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Jantung & Usus:</b> Benar.</li>
+                    <li><b>A. Mata:</b> N. III (Oculomotorius).</li>
+                    <li><b>D/E. Kandung kemih/Kelamin:</b> N. Splanchnic Pelvic (S2-S4).</li>
+                </ul>`
+            },
+            {
+                q: "Struktur penghubung antara hemisfer otak kiri dan kanan adalah...",
+                o: ["Corpus Callosum", "Capsula Interna", "Brainstem", "Thalamus", "Fornix"],
+                a: "Corpus Callosum",
+                exp: `
+                <b>Jawaban Benar: Corpus Callosum</b><br>
+                Corpus Callosum adalah bundel akson komissura terbesar yang menghubungkan korteks serebri kiri dan kanan agar bisa berkomunikasi.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Corpus Callosum:</b> Benar.</li>
+                    <li><b>B. Capsula Interna:</b> Serabut proyeksi (naik/turun), bukan penghubung kiri-kanan.</li>
+                </ul>`
+            },
+            {
+                q: "Hormon utama yang dilepaskan medulla adrenal saat respon simpatis (stres) adalah...",
+                o: ["Kortisol", "Aldosteron", "Epinefrin (Adrenalin)", "Insulin", "Tiroksin"],
+                a: "Epinefrin (Adrenalin)",
+                exp: `
+                <b>Jawaban Benar: Epinefrin (80%) dan Norepinefrin (20%)</b><br>
+                Medulla adrenal dianggap sebagai 'ganglion simpatis termodifikasi'. Saat distimulasi saraf simpatis, ia melepas katekolamin (adrenalin) langsung ke darah.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Epinefrin:</b> Benar.</li>
+                    <li><b>A. Kortisol:</b> Dari KORTEKS adrenal (zona fasikulata), bukan medulla.</li>
+                </ul>`
+            },
+            {
+                q: "Bagian neuron yang mengandung banyak Retikulum Endoplasma Kasar (Nissl bodies) untuk sintesis protein adalah...",
+                o: ["Akson", "Soma (Badan Sel)", "Terminal akson", "Selubung mielin", "Nodus Ranvier"],
+                a: "Soma (Badan Sel)",
+                exp: `
+                <b>Jawaban Benar: Soma (Badan Sel)</b><br>
+                Nissl bodies adalah tumpukan RE kasar di sitoplasma badan sel neuron. Ini pabrik protein (termasuk neurotransmiter peptida dan enzim). Akson TIDAK punya Nissl bodies.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Soma:</b> Benar. Pusat metabolisme neuron.</li>
+                </ul>`
+            },
+            {
+                q: "Neurotransmiter utama yang bersifat INHIBITORIK di sistem saraf pusat (otak) adalah...",
+                o: ["Glutamat", "GABA", "Asetilkolin", "Dopamin", "Norepinefrin"],
+                a: "GABA",
+                exp: `
+                <b>Jawaban Benar: GABA (Gamma-Aminobutyric Acid)</b><br>
+                GABA adalah rem utama otak. Ia menghambat neuron agar tidak over-firing (mencegah kejang/ansietas).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. GABA:</b> Benar. Inhibitorik utama.</li>
+                    <li><b>A. Glutamat:</b> EKSITATORIK utama (Gas).</li>
+                </ul>`
+            },
+            {
+                q: "Lapisan meninges yang paling dalam dan melekat erat mengikuti lekukan gyrus otak adalah...",
+                o: ["Duramater", "Arachnoid mater", "Piamater", "Ruang Subarachnoid", "Epidural"],
+                a: "Piamater",
+                exp: `
+                <b>Jawaban Benar: Piamater</b><br>
+                Urutan Meninges (Luar ke Dalam): DAP (Duramater - Arachnoid - Piamater). Piamater sangat tipis, vaskular, dan menempel ketat pada permukaan otak.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Piamater:</b> Benar. "Tender mother".</li>
+                    <li><b>B. Arachnoid:</b> Seperti jaring laba-laba, menjembatani sulcus, tidak masuk ke dalam lekukan kecil.</li>
+                    <li><b>A. Duramater:</b> Keras, tebal, terluar.</li>
+                </ul>`
+            },
+            {
+                q: "Plexus Choroidalis paling banyak ditemukan di...",
+                o: ["Ventrikel Lateral", "Aquaductus Sylvii", "Kanalis sentralis", "Ruang Subdural", "Sinus Sagitalis"],
+                a: "Ventrikel Lateral",
+                exp: `
+                <b>Jawaban Benar: Ventrikel Lateral</b><br>
+                Pabrik LCS (Pleksus Koroid) terdapat di atap ventrikel III dan IV, tapi massa terbesarnya ada di lantai <b>Ventrikel Lateral</b> (kiri dan kanan).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Ventrikel Lateral:</b> Benar. Lokasi produksi utama.</li>
+                </ul>`
+            },
+            {
+                q: "Refleks patella (ketuk lutut) adalah contoh refleks...",
+                o: ["Monosinaptik", "Polisinaptik", "Refleks Otonom", "Refleks Primitif", "Refleks Viseral"],
+                a: "Monosinaptik",
+                exp: `
+                <b>Jawaban Benar: Monosinaptik</b><br>
+                Refleks regang (stretch reflex) seperti patella adalah refleks paling sederhana: Sensorik langsung bersinaps dengan Motorik (1 sinaps) tanpa interneuron.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Monosinaptik:</b> Benar. Sangat cepat.</li>
+                    <li><b>B. Polisinaptik:</b> Contohnya refleks menarik tangan (withdrawal) yang butuh interneuron.</li>
+                </ul>`
+            },
+            {
+                q: "Bagian batang otak yang memiliki tonjolan 'pyramid' di permukaan anteriornya adalah...",
+                o: ["Midbrain", "Pons", "Medulla Oblongata", "Thalamus", "Spinal Cord"],
+                a: "Medulla Oblongata",
+                exp: `
+                <b>Jawaban Benar: Medulla Oblongata</b><br>
+                Pyramid medula adalah tonjolan yang berisi Traktus Kortikospinal (motorik) sebelum mereka menyilang (decussatio pyramidum).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Medulla Oblongata:</b> Benar.</li>
+                    <li><b>B. Pons:</b> Tonjolan melintang (transversal fibers).</li>
+                </ul>`
+            },
+            {
+                q: "Fungsi utama lobus oksipitalis adalah...",
+                o: ["Pusat penglihatan (Visual)", "Pusat pendengaran (Auditori)", "Pusat motorik", "Pusat sensorik somatik", "Pusat kepribadian"],
+                a: "Pusat penglihatan (Visual)",
+                exp: `
+                <b>Jawaban Benar: Pusat Visual (Area 17, 18, 19)</b><br>
+                Lobus Oksipital terletak paling belakang dan khusus memproses informasi visual dari mata.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Visual:</b> Benar.</li>
+                    <li><b>B. Auditori:</b> Lobus Temporal.</li>
+                    <li><b>C. Motorik:</b> Lobus Frontal.</li>
+                    <li><b>D. Sensorik Raba:</b> Lobus Parietal.</li>
+                </ul>`
+            },
+            {
+                q: "Sel fotoreseptor pada mata yang berfungsi untuk penglihatan warna dan tajam (visual acuity) adalah...",
+                o: ["Sel Batang (Rods)", "Sel Kerucut (Cones)", "Sel Ganglion", "Sel Amakrin", "Sel Horizontal"],
+                a: "Sel Kerucut (Cones)",
+                exp: `
+                <b>Jawaban Benar: Sel Kerucut (Cones)</b><br>
+                Cones (Kerucut) = Color (Warna), Clarity (Tajam), Center (Fovea).<br>
+                Rods (Batang) = Malam hari (gelap), Hitam-Putih, Perifer.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Cones:</b> Benar.</li>
+                    <li><b>A. Rods:</b> Sensitif cahaya redup (skotopik), buta warna.</li>
+                </ul>`
+            },
+            {
+                q: "Ion yang memblokir situs aktif pada filamen aktin (miosin binding site) saat otot relaksasi adalah protein...",
+                o: ["Troponin", "Tropomiosin", "Aktin", "Miosin", "Titin"],
+                a: "Tropomiosin",
+                exp: `
+                <b>Jawaban Benar: Tropomiosin</b><br>
+                Tropomiosin adalah protein seperti tali yang menutupi tempat tempelan miosin pada aktin. Saat Kalsium berikatan dengan Troponin, Tropomiosin baru bergeser.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Tropomiosin:</b> Benar. Sang penghalang.</li>
+                    <li><b>A. Troponin:</b> Kunci gembok yang mengikat Kalsium.</li>
+                </ul>`
+            },
+            {
+                q: "Bagian telinga dalam yang berfungsi mendeteksi percepatan rotasi (memutar kepala) adalah...",
+                o: ["Kanalis Semisirkularis", "Utrikulus", "Sakulus", "Koklea", "Membran Timpani"],
+                a: "Kanalis Semisirkularis",
+                exp: `
+                <b>Jawaban Benar: Kanalis Semisirkularis</b><br>
+                3 saluran setengah lingkaran mendeteksi gerakan memutar (rotasi/anguler) dalam 3 dimensi (angguk, geleng, miring).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Kanalis Semisirkularis:</b> Benar. Keseimbangan dinamis/rotasi.</li>
+                    <li><b>B/C. Utrikulus/Sakulus:</b> Mendeteksi gravitasi dan percepatan linear (maju-mundur/naik-turun).</li>
+                </ul>`
+            },
+            {
+                q: "Hormon yang mengatur ritme sirkadian (siklus tidur-bangun) dan dihasilkan kelenjar pineal adalah...",
+                o: ["Melatonin", "Melanin", "Kortisol", "Serotonin", "Dopamin"],
+                a: "Melatonin",
+                exp: `
+                <b>Jawaban Benar: Melatonin</b><br>
+                Melatonin diproduksi saat gelap (malam) oleh kelenjar pineal untuk memicu rasa kantuk.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Melatonin:</b> Benar. Hormon tidur.</li>
+                    <li><b>B. Melanin:</b> Pigmen kulit.</li>
+                    <li><b>C. Kortisol:</b> Hormon stres/bangun pagi.</li>
+                </ul>`
+            },
+            {
+                q: "Area Broca (Pusat bicara motorik) biasanya terletak di...",
+                o: ["Gyrus Frontalis Inferior", "Gyrus Temporalis Superior", "Gyrus Postcentralis", "Gyrus Precentralis", "Gyrus Cinguli"],
+                a: "Gyrus Frontalis Inferior",
+                exp: `
+                <b>Jawaban Benar: Gyrus Frontalis Inferior (Area 44, 45)</b><br>
+                Area Broca terletak di lobus frontal inferior (biasanya kiri). Kerusakan di sini menyebabkan Afasia Motorik (tahu mau ngomong apa, tapi mulut susah gerak/terbata).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Frontalis Inferior:</b> Benar.</li>
+                    <li><b>B. Temporalis Superior:</b> Lokasi Area Wernicke (Pemahaman).</li>
+                </ul>`
+            },
+            {
+                q: "Saraf kranialis yang menginervasi otot pengunyah (M. Masseter, Temporalis) adalah...",
+                o: ["N. Facialis (VII)", "N. Trigeminus (V3 - Mandibularis)", "N. Glossopharyngeus (IX)", "N. Hypoglossus (XII)", "N. Vagus (X)"],
+                a: "N. Trigeminus (V3 - Mandibularis)",
+                exp: `
+                <b>Jawaban Benar: N. Trigeminus (V3)</b><br>
+                N. V (Trigeminus) punya 3 cabang. V1 dan V2 sensorik murni. V3 (Mandibularis) adalah campuran: Sensorik rahang bawah + Motorik otot kunyah.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. N. V3:</b> Benar.</li>
+                    <li><b>A. N. VII:</b> Otot ekspresi wajah.</li>
+                    <li><b>D. N. XII:</b> Otot lidah.</li>
+                </ul>`
+            },
+            {
+                q: "Pada pemeriksaan refleks fisiologis Biseps, saraf spinal segmen berapakah yang diuji?",
+                o: ["C5-C6", "C7-C8", "T1-T2", "L3-L4", "S1-S2"],
+                a: "C5-C6",
+                exp: `
+                <b>Jawaban Benar: C5-C6</b><br>
+                Hafalan Refleks:<br>
+                - Biseps: C5-C6 (Musculocutaneus)<br>
+                - Triseps: C7-C8 (Radial)<br>
+                - Patella: L3-L4<br>
+                - Achilles: S1-S2<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. C5-C6:</b> Benar.</li>
+                </ul>`
+            }
+        ];
+
+        // --- LOGIKA APLIKASI ---
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userAnswers = new Array(questions.length).fill(null);
+        let currentMode = '';
+
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const feedbackContainer = document.getElementById('feedback-container');
+        const feedbackText = document.getElementById('feedback-text');
+        
+        const currentQNum = document.getElementById('current-q-num');
+        const totalQNum = document.getElementById('total-q-num');
+        const scoreBadge = document.getElementById('score-badge');
+        const progressBar = document.getElementById('quiz-progress-bar');
+        
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const finishBtn = document.getElementById('finish-btn');
+
+        function startMode(mode) {
+            currentMode = mode;
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = new Array(questions.length).fill(null);
+            
+            startScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            
+            renderQuestion();
+        }
+
+        function backToMenu() {
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+        }
+
+        function renderQuestion() {
+            const q = questions[currentQuestionIndex];
+            
+            currentQNum.innerText = currentQuestionIndex + 1;
+            totalQNum.innerText = questions.length;
+            scoreBadge.innerText = `Skor: ${score}`;
+            scoreBadge.classList.toggle('hidden', currentMode === 'exam');
+            
+            const percent = ((currentQuestionIndex + 1) / questions.length) * 100;
+            progressBar.style.width = `${percent}%`;
+
+            questionText.innerHTML = q.q;
+            
+            optionsContainer.innerHTML = '';
+            feedbackContainer.classList.add('hidden');
+
+            // Acak opsi hanya jika mode ujian
+            let opts = [...q.o];
+            // if (currentMode === 'exam') { opts.sort(() => Math.random() - 0.5); } 
+            // Opsional: dinonaktifkan agar posisi opsi konsisten dengan pembahasan
+
+            opts.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                
+                const existingAns = userAnswers[currentQuestionIndex];
+                if (existingAns) {
+                    btn.classList.add('disabled');
+                    btn.disabled = true;
+                    
+                    if (currentMode === 'practice') {
+                        if (opt === q.a) btn.classList.add('correct');
+                        if (opt === existingAns && opt !== q.a) btn.classList.add('incorrect');
+                    } else {
+                        // Mode exam: tandai yang dipilih saja
+                        if (opt === existingAns) btn.style.background = 'rgba(255,255,255,0.3)';
+                    }
+                } else {
+                    btn.onclick = () => handleAnswer(opt, btn, q);
+                }
+
+                optionsContainer.appendChild(btn);
+            });
+
+            // Tampilkan feedback jika sudah dijawab di mode latihan
+            if (currentMode === 'practice' && userAnswers[currentQuestionIndex]) {
+                showFeedback(q);
+            }
+
+            prevBtn.disabled = currentQuestionIndex === 0;
+            
+            if (currentQuestionIndex === questions.length - 1) {
+                nextBtn.classList.add('hidden');
+                finishBtn.classList.remove('hidden');
+            } else {
+                nextBtn.classList.remove('hidden');
+                finishBtn.classList.add('hidden');
+            }
+        }
+
+        function handleAnswer(selectedOpt, btnElem, questionObj) {
+            userAnswers[currentQuestionIndex] = selectedOpt;
+            
+            const allBtns = optionsContainer.querySelectorAll('.option-btn');
+            allBtns.forEach(b => {
+                b.classList.add('disabled');
+                b.disabled = true;
+            });
+
+            const isCorrect = selectedOpt === questionObj.a;
+            
+            if (isCorrect) {
+                score++;
+                if(currentMode === 'practice') btnElem.classList.add('correct');
+            } else {
+                if(currentMode === 'practice') {
+                    btnElem.classList.add('incorrect');
+                    // Highlight jawaban yang benar
+                    allBtns.forEach(b => {
+                        if (b.innerText === questionObj.a) b.classList.add('correct');
+                    });
+                }
+            }
+
+            scoreBadge.innerText = `Skor: ${score}`;
+
+            if (currentMode === 'practice') {
+                showFeedback(questionObj);
+            } else {
+                btnElem.style.background = 'rgba(255,255,255,0.3)';
+            }
+        }
+
+        function showFeedback(qObj) {
+            feedbackText.innerHTML = qObj.exp;
+            feedbackContainer.classList.remove('hidden');
+        }
+
+        function navigateQuestion(direction) {
+            currentQuestionIndex += direction;
+            renderQuestion();
+        }
+
+        function finishQuiz() {
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            
+            const finalEl = document.getElementById('final-score');
+            const correctEl = document.getElementById('result-correct');
+            const incorrectEl = document.getElementById('result-incorrect');
+            
+            // Animasi angka
+            let currentVal = 0;
+            const step = Math.ceil(score / 50); // Kecepatan animasi
+            
+            if (score === 0) {
+                finalEl.innerText = 0;
+            } else {
+                const interval = setInterval(() => {
+                    currentVal += step;
+                    if (currentVal >= score) {
+                        currentVal = score;
+                        clearInterval(interval);
+                    }
+                    finalEl.innerText = currentVal;
+                }, 20);
+            }
+
+            correctEl.innerText = score;
+            incorrectEl.innerText = questions.length - score;
+        }
+    </script>
+</body>
+</html>

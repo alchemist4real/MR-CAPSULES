@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Praktikum I: Tekanan Darah & Kesanggupan KV</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Vintage Clean Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Merriweather:ital,wght@0,300;0,700;1,300&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --paper-bg: #F4F1EA;
+            --paper-dark: #E8E4D9;
+            --ink-black: #2C2A29;
+            --ink-faded: #595552;
+            --accent-red: #A33B20;
+            --font-serif: 'Merriweather', serif;
+            --font-typewriter: 'Courier Prime', monospace;
+        }
+
+        body {
+            background-color: var(--paper-bg);
+            color: var(--ink-black);
+            font-family: var(--font-serif);
+            height: 100vh;
+            overflow: hidden;
+            display: flex; flex-direction: column;
+            user-select: none;
+            touch-action: manipulation;
+            position: relative;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+        }
+
+        /* --- HEADER --- */
+        .header {
+            z-index: 10; padding: 25px 30px; display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid var(--ink-black);
+            background-color: var(--paper-bg);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        .brand { 
+            font-family: var(--font-serif); font-weight: 700; font-size: 16px; 
+            color: var(--ink-black); letter-spacing: 0.5px; line-height: 1.4;
+            text-transform: uppercase;
+        }
+        .sub-brand {
+            font-family: var(--font-typewriter); font-size: 11px; color: var(--ink-faded);
+            text-transform: none; font-weight: 400; display: block; margin-top: 4px;
+        }
+        .counter { 
+            font-family: var(--font-typewriter); font-size: 16px; color: var(--ink-black); 
+            border: 1px solid var(--ink-black); padding: 5px 10px; border-radius: 2px;
+        }
+
+        /* --- FLASHCARD STAGE --- */
+        .stage {
+            flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 10; position: relative; padding: 20px; perspective: 1200px;
+        }
+
+        .card-container {
+            width: 100%; max-width: 600px; height: 380px; cursor: pointer; position: relative;
+        }
+
+        .card {
+            width: 100%; height: 100%; position: absolute;
+            transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .card.flipped { transform: rotateY(180deg); }
+
+        .card-face {
+            position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 40px; text-align: center; border-radius: 2px;
+            background-color: #FAFAF7;
+            border: 1px solid var(--ink-black);
+            box-shadow: 4px 4px 0px rgba(44, 42, 41, 0.1);
+        }
+
+        .card-front { z-index: 2; }
+        
+        .card-back { 
+            transform: rotateY(180deg); 
+            background-color: var(--paper-bg); 
+            border: 2px solid var(--accent-red); 
+            box-shadow: 4px 4px 0px rgba(163, 59, 32, 0.1);
+        }
+
+        .label {
+            position: absolute; top: 20px; left: 20px; font-family: var(--font-typewriter); 
+            font-size: 12px; color: var(--ink-faded); letter-spacing: 1px;
+            border-bottom: 1px solid var(--ink-faded); padding-bottom: 2px;
+        }
+        .card-back .label { color: var(--accent-red); border-bottom-color: var(--accent-red); }
+        
+        .content {
+            font-size: 22px; line-height: 1.6; color: var(--ink-black); font-weight: 300;
+        }
+        .card-back .content { 
+            color: var(--ink-black); font-weight: 700; font-size: 20px; 
+        }
+
+        .hint {
+            position: absolute; bottom: 20px; right: 20px; font-size: 12px; 
+            font-family: var(--font-typewriter); color: var(--ink-faded);
+            opacity: 0.7;
+        }
+
+        /* --- CONTROLS --- */
+        .controls {
+            z-index: 10; padding: 25px; display: flex; justify-content: center; gap: 15px;
+            background-color: var(--paper-bg); border-top: 1px solid var(--paper-dark);
+        }
+
+        .btn {
+            width: 50px; height: 50px; border-radius: 2px;
+            background: transparent; border: 1px solid var(--ink-black);
+            color: var(--ink-black); display: flex; justify-content: center; align-items: center;
+            font-size: 18px; cursor: pointer; transition: all 0.2s;
+            font-family: var(--font-typewriter);
+        }
+        .btn:hover {
+            background: var(--ink-black); color: var(--paper-bg);
+            box-shadow: 2px 2px 0px rgba(0,0,0,0.2); transform: translateY(-1px);
+        }
+        .btn:active { transform: scale(0.96); box-shadow: none; }
+
+        .btn-main {
+            width: 160px; font-size: 14px; letter-spacing: 2px; font-weight: bold;
+        }
+
+        /* --- MOBILE TWEAKS --- */
+        @media (max-width: 600px) {
+            .card-container { height: 420px; }
+            .content { font-size: 18px; }
+            .card-back .content { font-size: 17px; }
+            .header { flex-direction: column; gap: 12px; text-align: center; padding: 15px; }
+            .btn-main { width: 120px; font-size: 12px;}
+            .card-face { padding: 25px; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="brand">
+            PRAKTIKUM I <br> TEKANAN DARAH & KESANGGUPAN KARDIOVASKULAR
+            <span class="sub-brand">Modul 2.1 - Arsip Analog</span>
+        </div>
+        <div class="counter" id="counter">00 / 00</div>
+    </div>
+
+    <div class="stage">
+        <div class="card-container" onclick="app.flip()">
+            <div class="card" id="card">
+                <div class="card-face card-front">
+                    <div class="label">PERTANYAAN</div>
+                    <div class="content" id="q-text">Mempersiapkan Arsip...</div>
+                    <div class="hint">[ TAP UNTUK MEMBALIK ]</div>
+                </div>
+                <div class="card-face card-back">
+                    <div class="label">JAWABAN</div>
+                    <div class="content" id="a-text">...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn" onclick="app.prev()"><i class="fas fa-arrow-left"></i></button>
+        <button class="btn btn-main" onclick="app.shuffle()">ACAK KARTU</button>
+        <button class="btn" onclick="app.next()"><i class="fas fa-arrow-right"></i></button>
+    </div>
+
+    <script>
+        // --- VINTAGE ANALOG DATABASE (64 Cards komprehensif dari Modul & Prompt) ---
+        const DB = [
+            // 1. Faktor-faktor vaskular yang mempengaruhi tekanan darah
+            {q: "Sebutkan 4 faktor vaskular utama yang mempengaruhi tekanan darah!", a: "1. Gerakan pompa jantung\n2. Volume darah\n3. Viskositas darah\n4. Elastisitas dinding pembuluh darah."},
+            {q: "Bagaimana volume darah mempengaruhi tekanan darah secara langsung?", a: "Peningkatan volume darah pada sirkulasi sistemik akan secara langsung menaikkan tekanan darah seseorang."},
+            {q: "Apa fungsi utama dari tekanan darah dalam sistem sirkulasi?", a: "Tekanan harus cukup tinggi untuk menghasilkan gaya dorong yang cukup untuk mengalirkan darah ke seluruh tubuh."},
+            {q: "Mengapa tekanan darah arteri tidak boleh terlalu tinggi?", a: "Karena dapat menimbulkan beban kerja tambahan bagi jantung, meningkatkan risiko kerusakan pembuluh, bahkan memicu ruptur (pecah) pembuluh halus."},
+            {q: "Bagaimana gerakan pompa jantung secara elektrik mempengaruhi hemodinamik?", a: "Aktivitas sel-sel SA Node, AV Node, Bundle of His, dan serat Purkinje membuat jantung berkontraksi ritmis, menghasilkan tekanan pendorong darah."},
+
+            // 2. Faktor-faktor vaskular setiap individu berbeda-beda
+            {q: "Apakah faktor vaskular penentu tekanan darah bersifat statis dan sama pada setiap orang?", a: "Tidak, faktor-faktor vaskular pada setiap individu berbeda-beda dan dapat bervariasi."},
+            {q: "Sebutkan 6 hal yang menyebabkan variasi faktor vaskular pada setiap individu!", a: "Umur, aktivitas fisik, ras, obesitas, jenis kelamin, medikasi, dan variasi genetik."},
+            {q: "Bagaimana usia dapat menyebabkan variasi faktor vaskular?", a: "Seiring bertambahnya umur, elastisitas dinding pembuluh darah umumnya menurun, yang dapat menyebabkan tekanan darah cenderung meningkat."},
+            {q: "Apakah aktivitas fisik dapat memodifikasi faktor vaskular individu?", a: "Ya, latihan fisik secara teratur dapat meningkatkan efisiensi pompa jantung dan mengubah tahanan perifer."},
+            {q: "Bagaimana obesitas berkontribusi pada perbedaan faktor vaskular antar individu?", a: "Obesitas sering dikaitkan dengan peningkatan volume darah dan peningkatan tahanan perifer jaringan adiposa, sehingga tekanan darah dapat bervariasi/meningkat."},
+
+            // 3. CO = SV x HR & Definisinya
+            {q: "Tuliskan rumus yang menghubungkan Curah Jantung dengan isi sekuncup dan denyut jantung!", a: "CO = SV x HR\n(Diukur dalam 1 menit)"},
+            {q: "Apa definisi dari CO (Cardiac Output)?", a: "Darah yang dikeluarkan dari jantung dalam setiap menitnya (Curah Jantung)."},
+            {q: "Apa definisi dari SV (Stroke Volume)?", a: "Darah yang disemprotkan ventrikel dalam 1 kali sistol (kontraksi)."},
+            {q: "Apa definisi dari HR (Heart Rate)?", a: "Denyut jantung, biasanya dihitung dalam 1 menit."},
+            {q: "Apa definisi dari TPR (Total Peripheral Resistance)?", a: "Total gaya yang dihasilkan oleh pembuluh darah tubuh terhadap sirkulasi darah."},
+            {q: "Dalam fisiologi vaskular, apa arti dari lambang 'r' dan 'l'?", a: "r = Jari-jari pembuluh darah\nl = Panjang pembuluh darah"},
+
+            // 4. Aliran Laminar vs Turbulen & Manset
+            {q: "Dalam keadaan normal (tanpa ditekan manset), bagaimana bentuk aliran darah dalam arteri?", a: "Berbentuk aliran laminar (aliran yang mulus dan teratur)."},
+            {q: "Apa yang terjadi pada aliran darah saat manset tensimeter menekan pembuluh arteri?", a: "Akan terjadi aliran turbulensi yang menyebabkan aliran darah menabrak dinding dalam arteri."},
+            {q: "Kapan aliran turbulensi ini terjadi secara spesifik selama pengukuran tekanan darah?", a: "Saat tekanan manset berada di antara tekanan sistole dan diastole."},
+            {q: "Mengapa pemeriksa dapat mendengar denyutan arteri menggunakan stetoskop?", a: "Karena aliran darah berubah menjadi turbulensi akibat tekanan manset, menabrak dinding arteri dan menciptakan bunyi (suara Korotkoff)."},
+            {q: "Apa yang terjadi pada aliran saat tekanan manset diturunkan di bawah tekanan diastol?", a: "Aliran turbulensi menghilang dan aliran darah kembali berbentuk aliran laminar."},
+
+            // 5. Fase-fase Korotkoff
+            {q: "Mengapa tidak terdengar suara apapun saat tekanan manset dipompa melebihi tekanan sistolik?", a: "Karena A. brachialis tersumbat total oleh manset, sehingga tidak ada darah yang mengalir."},
+            {q: "Jelaskan bunyi yang terdengar pada Fase 1 Korotkoff!", a: "Bunyi pertama yang terdengar, berkarakteristik tajam dan tapping (mengetuk). Ini menandakan tekanan Sistolik."},
+            {q: "Bagaimana perubahan karakter suara pada Fase 2 Korotkoff?", a: "Suara terdengar lebih lembut atau seperti menyapu (swishing)."},
+            {q: "Apa karakteristik bunyi pada Fase 3 Korotkoff?", a: "Bunyi menjadi nyaring dan lebih keras kembali (crisp)."},
+            {q: "Jelaskan bunyi yang terdengar pada Fase 4 Korotkoff!", a: "Bunyi terdengar lembut, meredup, atau seperti teredam (blowing/muffled)."},
+            {q: "Apa yang ditandai oleh Fase 5 Korotkoff?", a: "Bunyi menghilang (silence). Sudah tidak terdapat turbulensi, aliran kembali laminar. Ini menandakan tekanan Diastolik."},
+
+            // 6. Akurasi Pengukuran Tekanan Darah
+            {q: "Berapa deviasi (Sistol/Diastol) jika pasien berbicara atau aktif mendengarkan saat pengukuran?", a: "Terdapat peningkatan 10/10 mmHg."},
+            {q: "Berapa deviasi tekanan darah yang diakibatkan oleh menahan kencing?", a: "Terdapat peningkatan 15/10 mmHg."},
+            {q: "Apa dampaknya terhadap hasil pengukuran jika manset terhalang oleh pakaian?", a: "Bisa meningkatkan Sistolik 5 hingga 50 mmHg, dan Diastolik 0 mmHg (5-50/0)."},
+            {q: "Bagaimana pengaruh ukuran manset yang terlalu kecil terhadap akurasi?", a: "Akan menyebabkan pembacaan yang lebih tinggi sebesar 10 / 2-8 mmHg."},
+            {q: "Berapa deviasi tensi jika probandus merokok dalam waktu 30 menit sebelum pengukuran?", a: "Akan terjadi peningkatan 6-20 / 0 mmHg."},
+            {q: "Berapa peningkatan tekanan darah jika punggung pasien tidak ditopang dengan baik?", a: "Meningkat sekitar 6-10 / 0 mmHg."},
+
+            // 7. Alat, Bahan, & Rumus Praktikum
+            {q: "Sebutkan dua alat utama yang digunakan dalam praktikum tekanan darah metode auskultasi!", a: "1. Sphygmomanometer (Tensimeter)\n2. Stetoskop"},
+            {q: "Bagaimana format penulisan standar untuk mencatat hasil tekanan darah (BP)?", a: "BP = SP / DP mmHg\n(Sistolik per Diastolik dalam satuan mmHg)."},
+            {q: "Tuliskan rumus untuk menghitung MAP (Mean Arterial Pressure)!", a: "MAP ≃ DP + 1/3 (SP - DP)"},
+            {q: "Apa kepanjangan dari singkatan BP dan MAP?", a: "BP = Blood Pressure (Tekanan darah)\nMAP = Mean Arterial Pressure (Tekanan arteri rata-rata)."},
+            {q: "Apa kepanjangan dari singkatan DP dan SP dalam pelaporan tensi?", a: "DP = Diastolic Pressure (Tekanan Diastolik)\nSP = Systolic Pressure (Tekanan Sistolik)."},
+
+            // 8. Klasifikasi Tekanan Darah (Image 1 - AHA)
+            {q: "Menurut klasifikasi AHA, berapa rentang tekanan darah kategori NORMAL?", a: "Sistolik < 120 mmHg DAN Diastolik < 80 mmHg."},
+            {q: "Seseorang dengan tensi 125/75 mmHg masuk dalam kategori apa menurut AHA?", a: "ELEVATED (Sistolik 120-129 mmHg DAN Diastolik < 80 mmHg)."},
+            {q: "Berapa rentang Sistolik dan Diastolik untuk kategori STAGE 1 HYPERTENSION?", a: "Sistolik 130-139 mmHg ATAU Diastolik 80-89 mmHg."},
+            {q: "Kategori apakah untuk tekanan darah 145/95 mmHg menurut AHA?", a: "STAGE 2 HYPERTENSION (Sistolik ≥ 140 mmHg ATAU Diastolik ≥ 90 mmHg)."},
+            {q: "Apa indikator angka untuk HYPERTENSIVE EMERGENCY?", a: "Sistolik > 180 mmHg DAN/ATAU Diastolik > 120 mmHg (memerlukan tindakan segera jika ada gejala)."},
+
+            // 9. Kebugaran Fisik & Jenis Tes
+            {q: "Kebugaran fisik yang terkait dengan komponen kesehatan terdiri dari apa saja? (Sebutkan 6)", a: "Daya tahan kardiorespirasi, kesanggupan kardiovaskuler, komposisi tubuh, daya tahan otot, kekuatan otot, dan fleksibilitas."},
+            {q: "Apa fungsi tes maksimal dalam mengukur kebugaran?", a: "Tes maksimal mengukur kebugaran fisik individu sampai batas lelah total (exhausted)."},
+            {q: "Mengapa metode tes submaksimal lebih banyak dikembangkan dibanding tes maksimal?", a: "Karena tes maksimal kadang tidak dapat dilakukan pada berbagai kondisi pasien/medis, sehingga lebih aman menggunakan tes submaksimal."},
+            {q: "Apa definisi dari Tes Submaksimal?", a: "Metode pengukuran kebugaran yang dibatasi oleh waktu atau jarak (tidak sampai memicu kelelahan maksimal)."},
+            {q: "Sebutkan bentuk tes submaksimal yang mengukur denyut nadi setelah naik turun bangku!", a: "Harvard Step Test (dibatasi dengan waktu)."},
+
+            // 10. Faktor Kesanggupan KV & Prosedur Harvard Step Test
+            {q: "Sebutkan 6 faktor yang mempengaruhi Kesanggupan Kardiovaskular seseorang!", a: "a. Genetik\nb. Umur\nc. Jenis kelamin\nd. Aktivitas fisik\ne. Komposisi lemak tubuh\nf. Kebiasaan merokok"},
+            {q: "Dalam prosedur Harvard Step Test Modifikasi, berapa tinggi bangku yang digunakan?", a: "Tinggi bangku Harvard Modifikasi adalah 33 cm."},
+            {q: "Pada Harvard Step test, metronom diatur dengan frekuensi berapa?", a: "Metronom diatur untuk memberikan irama 120 kali per menit (2 detikan per detik)."},
+            {q: "Kapan mulai dilakukan perhitungan denyut nadi pasca naik turun bangku?", a: "Segera setelah probandus disuruh duduk (fase pemulihan)."},
+            {q: "Berapa kali dan pada interval menit ke berapa denyut nadi dihitung pasca exercise?", a: "Dihitung 3 kali selama masing-masing 30 detik pada: 1'-1'30\", 2'-2'30\", dan 3'-3'30\"."},
+
+            // 11. Rumus & Interpretasi Indeks (Gambar 2, 3, 4)
+            {q: "Tuliskan rumus Indeks Kesanggupan Kardiovaskuler 'CARA LAMBAT'!", a: "Indeks = [Lama naik turun (detik) x 100] / [2 x jumlah ketiga harga denyut nadi tiap 30\"]."},
+            {q: "Tuliskan rumus Indeks Kesanggupan Kardiovaskuler 'CARA CEPAT'!", a: "Indeks = [Lama naik turun (detik) x 100] / [5,5 x harga denyut nadi 30\" pertama]."},
+            {q: "Pada perhitungan CARA LAMBAT, apa interpretasi jika nilai Indeks < 55?", a: "Kesanggupan Kurang."},
+            {q: "Pada perhitungan CARA LAMBAT, apa interpretasi jika nilai Indeks 65 - 79?", a: "Kesanggupan Cukup."},
+            {q: "Pada perhitungan CARA LAMBAT, interpretasi apa untuk nilai Indeks > 90?", a: "Kesanggupan Amat Baik."},
+            {q: "Pada perhitungan CARA CEPAT, apa interpretasi jika Indeks menunjukkan angka < 50?", a: "Kesanggupan Kurang."},
+
+            // 12. Mekanisme Sistolik & Diastolik
+            {q: "Jelaskan definisi fisiologis dari Tekanan Sistolik!", a: "Tekanan maksimum yang dihasilkan di dalam arteri ketika ventrikel jantung berkontraksi (sistol) menyemprotkan darah."},
+            {q: "Jelaskan definisi fisiologis dari Tekanan Diastolik!", a: "Tekanan minimum di dalam arteri yang terjadi pada akhir masa relaksasi jantung (diastol), persis sebelum kontraksi ventrikel berikutnya."},
+            {q: "Bagaimana mekanisme dasar terjadinya puncak Tekanan Sistolik?", a: "Penyemprotan volume sekuncup (SV) secara cepat ke dalam aorta memaksa dinding arteri elastis untuk meregang, menciptakan tekanan puncak."},
+            {q: "Bagaimana mekanisme di balik Tekanan Diastolik yang terjaga?", a: "Meskipun jantung beristirahat, rekoil (pantulan balik) dinding arteri yang elastis terus memberikan gaya tekan, menjaga darah tetap mengalir ke kapiler sehingga tekanan tidak jatuh ke nol."},
+            {q: "Apakah tekanan darah vena lebih tinggi dari tekanan darah arteri?", a: "Tidak, tekanan darah arteri lebih tinggi dari tekanan darah vena. Tekanan vena lebih rendah dan sangat dipengaruhi oleh gaya gravitasi."}
+        ];
+
+        const $ = (id) => document.getElementById(id);
+
+        const app = {
+            index: 0,
+            data: [],
+            isFlipped: false,
+
+            init: () => {
+                app.data = [...DB];
+                app.shuffleData();
+                app.render();
+
+                // Keyboard Nav for accessibility
+                document.addEventListener('keydown', (e) => {
+                    if (e.code === 'Space' || e.code === 'Enter') { e.preventDefault(); app.flip(); }
+                    if (e.code === 'ArrowRight') app.next();
+                    if (e.code === 'ArrowLeft') app.prev();
+                });
+            },
+
+            shuffleData: () => {
+                for (let i = app.data.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [app.data[i], app.data[j]] = [app.data[j], app.data[i]];
+                }
+            },
+
+            render: () => {
+                const item = app.data[app.index];
+                const card = $('card');
+                
+                if (app.isFlipped) {
+                    card.classList.remove('flipped');
+                    app.isFlipped = false;
+                    // Jeda untuk menunggu animasi selesai sebelum ganti teks
+                    setTimeout(() => {
+                        $('q-text').innerText = item.q;
+                        $('a-text').innerText = item.a;
+                    }, 250);
+                } else {
+                    $('q-text').innerText = item.q;
+                    $('a-text').innerText = item.a;
+                }
+
+                $('counter').innerText = `${String(app.index + 1).padStart(2, '0')} / ${app.data.length}`;
+            },
+
+            flip: () => {
+                $('card').classList.toggle('flipped');
+                app.isFlipped = !app.isFlipped;
+            },
+
+            next: () => {
+                app.index = (app.index + 1) % app.data.length;
+                app.render();
+            },
+
+            prev: () => {
+                app.index = (app.index - 1 + app.data.length) % app.data.length;
+                app.render();
+            },
+
+            shuffle: () => {
+                app.shuffleData();
+                app.index = 0;
+                app.render();
+            }
+        };
+
+        // Mulai aplikasi
+        setTimeout(() => { app.init(); }, 100);
+
+    </script>
+</body>
+</html>

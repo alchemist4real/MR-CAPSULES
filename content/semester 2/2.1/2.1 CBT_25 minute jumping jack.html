@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>25 minute jumping jack</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Phosphor Icons (Monochrome) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['"Times New Roman"', 'Times', 'serif'],
+                        sans: ['Helvetica', 'Arial', 'sans-serif'],
+                    },
+                    colors: {
+                        editorial: {
+                            black: '#111111',
+                            darkGray: '#333333',
+                            gray: '#777777',
+                            lightGray: '#E5E5E5',
+                            white: '#FFFFFF'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #F9F9F9;
+            font-family: 'Times New Roman', Times, serif;
+            color: #111111;
+            line-height: 1.6;
+        }
+
+        /* Newspaper Aesthetic Elements */
+        .nyt-header {
+            border-bottom: 4px solid #111;
+            border-top: 1px solid #111;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .nyt-title {
+            font-size: 3rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            text-align: center;
+            line-height: 1.1;
+        }
+
+        .nyt-subtitle {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #555;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #111;
+            padding-bottom: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .quiz-container {
+            background: #FFFFFF;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: 1px solid #E5E5E5;
+        }
+
+        /* Buttons Editorial Style */
+        .btn-editorial {
+            font-family: Helvetica, Arial, sans-serif;
+            background: transparent;
+            border: 1px solid #111;
+            color: #111;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .btn-editorial:hover:not(:disabled) {
+            background: #111;
+            color: #FFF;
+        }
+
+        .btn-editorial:disabled {
+            border-color: #CCC;
+            color: #CCC;
+            cursor: not-allowed;
+        }
+
+        /* Options Style */
+        .btn-option {
+            display: block;
+            width: 100%;
+            text-align: left;
+            background: #FFF;
+            border: 1px solid #CCC;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 1.1rem;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .btn-option:hover:not(:disabled) {
+            border-color: #111;
+            background-color: #FAFAFA;
+        }
+
+        /* Correct / Incorrect Monochromatic Styling */
+        .btn-option.selected {
+            border-color: #111;
+            background: #EFEFEF;
+            font-weight: bold;
+        }
+
+        .btn-option.correct {
+            border-color: #111 !important;
+            background: #F0F0F0 !important;
+            font-weight: bold;
+            color: #111;
+        }
+
+        .btn-option.incorrect {
+            border-color: #E5E5E5 !important;
+            background: #FFF !important;
+            color: #999;
+            text-decoration: line-through;
+        }
+
+        .icon-indicator {
+            position: absolute;
+            right: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.25rem;
+        }
+
+        /* Detailed Explanation Box */
+        .explanation-box {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #F9F9F9;
+            border-left: 4px solid #111;
+            font-size: 1.05rem;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .explanation-box strong {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: block;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px dotted #CCC;
+        }
+
+        .explanation-box ul {
+            list-style-type: none;
+            padding-left: 0;
+            margin-top: 1rem;
+        }
+
+        .explanation-box ul li {
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .explanation-box ul li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dropcap {
+            float: left;
+            font-size: 3.5rem;
+            line-height: 0.8;
+            padding-right: 0.5rem;
+            padding-top: 0.2rem;
+            font-weight: bold;
+        }
+
+        /* --- CSS NIGHTMARE MODE (SUDDEN DEATH) --- */
+        body { transition: background-color 0.4s ease, color 0.4s ease; }
+        .quiz-container { transition: all 0.4s ease; }
+        
+        body.sudden-death-mode {
+            background-color: #050000;
+            color: #ffcccc;
+        }
+        body.sudden-death-mode .quiz-container {
+            background-color: #110000;
+            border-color: #4d0000;
+            box-shadow: 0 0 80px rgba(180, 0, 0, 0.3);
+            color: #ffcccc;
+        }
+        body.sudden-death-mode .nyt-header,
+        body.sudden-death-mode .nyt-subtitle {
+            border-color: #660000;
+            color: #ff4d4d;
+        }
+        body.sudden-death-mode .nyt-title,
+        body.sudden-death-mode #question-text,
+        body.sudden-death-mode #score-display {
+            color: #ff1a1a;
+        }
+        body.sudden-death-mode .btn-option {
+            background-color: #0a0000;
+            border-color: #330000;
+            color: #ff9999;
+        }
+        body.sudden-death-mode .btn-option.incorrect {
+            background-color: #4d0000 !important;
+            border-color: #ff0000 !important;
+            color: #ffcccc;
+            box-shadow: inset 0 0 10px rgba(255,0,0,0.5);
+        }
+        body.sudden-death-mode .btn-option.correct {
+            background-color: #002200 !important;
+            border-color: #00ff00 !important;
+            color: #ccffcc;
+        }
+        body.sudden-death-mode .explanation-box {
+            background-color: #1a0000;
+            border-left-color: #ff0000;
+            color: #ffcccc;
+            box-shadow: 0 0 20px rgba(255,0,0,0.1);
+        }
+        body.sudden-death-mode .explanation-box strong {
+            border-bottom-color: #ff4d4d;
+            color: #ff3333;
+        }
+        body.sudden-death-mode button:not(#btn-finish):not(#btn-next) {
+            color: #ff6666;
+        }
+        
+        @keyframes violent-shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-8px) rotate(-1deg); }
+            20%, 40%, 60%, 80% { transform: translateX(8px) rotate(1deg); }
+        }
+        .animate-violent-shake {
+            animation: violent-shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="quiz-container">
+        
+        <!-- NYT HEADER -->
+        <header class="nyt-header">
+            <h1 class="nyt-title">25 minute jumping jack</h1>
+            <div class="nyt-subtitle">
+                <span>Vol. VI — Cardiovictus Edition</span>
+                <span>The Detailed Medical Assessment</span>
+                <span><span id="date-display"></span></span>
+            </div>
+        </header>
+
+        <!-- START SCREEN -->
+        <div id="start-screen" class="flex flex-col items-center py-8">
+            <p class="font-serif text-xl text-center mb-8 max-w-lg">
+                <span class="dropcap">A</span> rigorous 80-question barrage extracted from the Cardiovictus protocol. Explanations have been deeply expanded to provide clear, step-by-step physiological and anatomical mechanisms. Select your modality to commence.
+            </p>
+            
+            <div class="space-y-4 w-full max-w-sm">
+                <button onclick="startQuiz('practice')" class="btn-editorial w-full flex items-center justify-center gap-2">
+                    <i class="ph ph-article text-lg"></i>
+                    Study Mode (Detailed Feedback)
+                </button>
+                <button onclick="startQuiz('exam')" class="btn-editorial w-full flex items-center justify-center gap-2">
+                    <i class="ph ph-exam text-lg"></i>
+                    Exam Mode (Blind)
+                </button>
+                <button onclick="startQuiz('drill')" class="btn-editorial w-full flex items-center justify-center gap-2 bg-black text-red-500 border-red-700 hover:bg-red-950 hover:text-red-300 transition-colors uppercase tracking-widest group relative overflow-hidden shadow-[0_0_15px_rgba(220,38,38,0.2)] hover:shadow-[0_0_25px_rgba(220,38,38,0.6)]">
+                    <div class="absolute inset-0 bg-red-900/30 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
+                    <i class="ph ph-skull text-xl relative z-10"></i>
+                    <span class="relative z-10 font-black">All In Drill (Sudden Death)</span>
+                </button>
+            </div>
+            <p class="mt-8 font-sans text-xs text-gray-500 uppercase tracking-widest"><span id="display-q-count">80</span> Standardized Inquiries</p>
+        </div>
+
+        <!-- QUIZ SCREEN -->
+        <div id="quiz-screen" class="hidden flex-col min-h-[500px]">
+            <div class="flex justify-between items-center mb-6 border-b border-black pb-4 font-sans uppercase text-xs tracking-wider">
+                <div>
+                    Question <span id="curr-q" class="font-bold text-base">1</span> of <span id="total-q">80</span>
+                </div>
+                <div id="score-display" class="font-bold">
+                    Score: 0
+                </div>
+            </div>
+
+            <div class="flex-grow">
+                <div class="mb-8">
+                    <p id="question-text" class="text-xl md:text-2xl font-serif text-editorial-black leading-snug"></p>
+                </div>
+                <div id="options-container" class="space-y-3"></div>
+                <div id="feedback-area" class="hidden explanation-box text-editorial-darkGray leading-relaxed"></div>
+                
+                <!-- DRILL WARNING BOX -->
+                <div id="drill-warning" class="hidden w-full mt-10 p-8 border-y-4 border-red-600 bg-[#0a0000] text-center animate-violent-shake relative shadow-[0_0_60px_rgba(255,0,0,0.4)]">
+                    <div class="absolute inset-0 opacity-10 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,#ff0000_10px,#ff0000_20px)] pointer-events-none"></div>
+                    <h2 class="relative z-10 text-5xl md:text-6xl font-black uppercase tracking-[0.2em] text-red-600 mb-2 drop-shadow-[0_0_15px_rgba(255,0,0,0.8)] animate-pulse">Fatal Error</h2>
+                    <p class="relative z-10 font-serif text-xl text-red-300 mb-8 italic">Satu kesalahan mengakhiri segalanya. Pahami rasional di atas sebelum memori Anda dihapus.</p>
+                    <p class="relative z-10 font-sans text-sm uppercase tracking-widest text-red-500 mb-2 font-bold">Simulasi ditarik ke Titik Nol dalam</p>
+                    <div class="relative z-10 flex justify-center items-center gap-4 mb-8 mt-4">
+                        <span class="text-4xl text-red-900 font-light">|</span>
+                        <span id="drill-time" class="text-8xl md:text-9xl font-black font-sans text-red-500 tabular-nums leading-none tracking-tighter drop-shadow-[0_0_20px_rgba(255,0,0,0.6)]">10</span>
+                        <span class="text-4xl text-red-900 font-light">|</span>
+                    </div>
+                    <button onclick="restartDrillNow()" class="relative z-10 px-8 py-3 bg-black border border-red-600 text-red-500 hover:bg-red-700 hover:text-black font-black uppercase tracking-widest text-sm transition-all duration-300 hover:scale-105">Eksekusi Ulang</button>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center mt-10 pt-6 border-t border-black">
+                <button onclick="prevQuestion()" id="btn-prev" class="btn-editorial text-xs px-3 py-1 disabled:opacity-30">
+                    &larr; Previous
+                </button>
+                <button onclick="backToHome()" class="font-sans text-xs uppercase tracking-wider text-gray-500 hover:text-black underline-offset-4 hover:underline transition">
+                    Return to Index
+                </button>
+                <button onclick="nextQuestion()" id="btn-next" class="btn-editorial text-xs px-3 py-1">
+                    Next &rarr;
+                </button>
+                <button onclick="finishQuiz()" id="btn-finish" class="hidden bg-black text-white btn-editorial text-xs px-4 py-1">
+                    Conclude Exam
+                </button>
+            </div>
+        </div>
+
+        <!-- RESULT SCREEN -->
+        <div id="result-screen" class="hidden flex-col items-center py-10">
+            <h2 class="font-sans text-sm uppercase tracking-widest text-gray-500 mb-2">Final Assessment</h2>
+            <h1 class="font-serif text-4xl font-bold mb-10 border-b-2 border-black pb-4 text-center">Examination Concluded</h1>
+
+            <div class="flex items-center justify-center mb-10 w-48 h-48 border-4 border-black rounded-full">
+                <div class="text-7xl font-serif font-bold text-black" id="final-score">0</div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-px bg-black border border-black w-full max-w-md mb-10">
+                <div class="bg-white p-6 text-center">
+                    <div class="font-sans text-xs text-gray-500 uppercase tracking-wider mb-1">Correct</div>
+                    <div class="text-3xl font-serif font-bold text-black" id="res-correct">0</div>
+                </div>
+                <div class="bg-white p-6 text-center">
+                    <div class="font-sans text-xs text-gray-500 uppercase tracking-wider mb-1">Incorrect</div>
+                    <div class="text-3xl font-serif font-bold text-gray-400" id="res-wrong">0</div>
+                </div>
+            </div>
+            
+            <button onclick="location.reload()" class="btn-editorial w-full max-w-md">Retake Examination</button>
+        </div>
+
+    </div>
+
+    <script>
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('date-display').innerText = new Date().toLocaleDateString('en-US', options);
+
+        // KAPSUL CARDIOVICTUS 2.1 (Full 80 Questions with Detailed, Educational Explanations)
+        const questions = [
+            { q: "Kapiler yang berada di otak adalah...", o: ["kapiler kontinu", "kapiler fenestra berpori", "kapiler fenestra tidak berpori", "kapiler diskontinu", "kapiler sinusoid"], a: "kapiler kontinu", exp: "<strong>Penjelasan Detail: kapiler kontinu</strong><br><strong>Konsep Medis:</strong> Jaringan saraf pusat (otak) sangat rentan terhadap racun dan fluktuasi zat kimia dalam darah. Untuk melindunginya, otak dilengkapi dengan Sawar Darah Otak (Blood-Brain Barrier). Komponen utama struktur ini adalah *Kapiler Kontinu*. Sel-sel endotel pada kapiler jenis ini diikat sangat rapat oleh <i>Tight Junctions</i> (Fascia Occludens) yang menolak perpindahan molekul secara bebas antar sel (paraseluler).<br><ul><li><i>Opsi lain:</i> Kapiler fenestra (berpori) terdapat di organ yang butuh filtrasi/absorpsi cepat seperti ginjal dan usus. Kapiler diskontinu/sinusoid memiliki celah sangat besar hingga sel darah bisa lewat, terdapat di hati, limpa, dan sumsum tulang. Otak sama sekali tidak memiliki pori kapiler.</li></ul>" },
+            { q: "Reseptor terakhir di rantai transport elektron adalah....", o: ["O2", "CO2", "FADH2", "NADH", "sitokrom c"], a: "O2", exp: "<strong>Penjelasan Detail: O2</strong><br><strong>Konsep Medis:</strong> Pada proses Fosforilasi Oksidatif di mitokondria, elektron mengalir melalui kompleks protein (Rantai Transpor Elektron). Agar aliran elektron tidak macet, harus ada molekul yang bertindak sebagai penerima akhir (final electron acceptor). Molekul tersebut adalah Oksigen (O2). Di Kompleks IV (Sitokrom C Oksidase), O2 menangkap elektron dan berikatan dengan ion H+ bebas untuk membentuk molekul Air (H2O).<br><ul><li><i>Opsi lain:</i> NADH dan FADH2 adalah molekul *pembawa* elektron di awal rantai. CO2 adalah produk buangan dari Siklus Krebs, bukan penerima elektron. Sitokrom c adalah molekul perantara pembawa elektron antara Kompleks III dan IV.</li></ul>" },
+            { q: "Jantung membutuhkan energi yang besar terutama karena karakteristik berikut, kecuali :", o: ["Jantung berdenyut 100.000 kali perhari", "Jantung tidak memiliki fase istirahat total", "Sebagian besar energi berasal dari metabolisme anaerob", "Kardiomiosit mengandung banyak mitokondria", "Fungsi jantung tergantung produksi ATP kontinu"], a: "Sebagian besar energi berasal dari metabolisme anaerob", exp: "<strong>Penjelasan Detail: Sebagian besar energi berasal dari metabolisme anaerob</strong><br><strong>Konsep Medis:</strong> Pernyataan ini salah. Otot jantung (miokardium) sangat bergantung pada metabolisme <strong>Aerobik</strong> (menggunakan Oksigen). Jantung tidak memiliki cadangan glikogen yang cukup untuk bertahan hidup hanya dengan glikolisis anaerobik. Oleh karena itu, jika suplai oksigen jantung terhenti (iskemia/infark miokard), otot jantung akan cepat mati.<br><ul><li><i>Opsi lain:</i> Kardiomiosit memiliki sangat banyak mitokondria (mencapai 30-40% volume sel) justru karena butuh pasokan ATP yang terus-menerus melalui jalur aerobik untuk mendanai +100.000 denyutan per hari tanpa istirahat panjang.</li></ul>" },
+            { q: "Sel yg menghasilkan surfaktan...", o: ["Sel dust", "Sel pneumosit tipe I", "Sel pneumosit tipe II", "Sel goblet", "Sel brush"], a: "Sel pneumosit tipe II", exp: "<strong>Penjelasan Detail: Sel pneumosit tipe II</strong><br><strong>Konsep Medis:</strong> Pneumosit tipe II (Septal cells) adalah sel berbentuk kuboid yang membentuk sekitar 5% dari luas permukaan alveolus. Fungsi utamanya adalah mensintesis dan mensekresi *Surfaktan*, yaitu campuran fosfolipid (terutama dipalmitoylphosphatidylcholine/DPPC) dan protein. Surfaktan berfungsi menurunkan tegangan permukaan cairan di dalam alveolus, mencegah kolapsnya (atelektasis) alveolus saat menghembuskan napas.<br><ul><li><i>Opsi lain:</i> Pneumosit tipe I adalah sel pipih untuk difusi gas. Makrofag/Dust cell adalah sel imun pembersih kotoran. Sel goblet menghasilkan mukus di saluran napas atas, bukan di alveolus.</li></ul>" },
+            { q: "Respon kronik sistem kardiovaskular terhadap latihan fisik adalah", o: ["Peningkatan denyut nadi", "Peningkatan denyut nadi istirahat", "Penurunan denyut nadi", "Penurunan denyut nadi istirahat", "Peningkatan kontraktilitas miokardium"], a: "Penurunan denyut nadi istirahat", exp: "<strong>Penjelasan Detail: Penurunan denyut nadi istirahat</strong><br><strong>Konsep Medis:</strong> Latihan fisik jangka panjang (kronik), seperti pada atlet maraton, memicu adaptasi fisiologis berupa penebalan fungsional otot ventrikel (Hipertrofi Fisiologis) dan pelebaran ruang ventrikel. Hal ini membuat volume darah yang dipompa dalam satu kali denyut (Stroke Volume/Volume Sekuncup) meningkat drastis. Karena Curah Jantung (CO = HR x SV) dipertahankan, nilai Heart Rate (denyut nadi) saat istirahat akan otomatis menurun (Bradikardia atletik) untuk menghemat energi jantung.<br><ul><li><i>Opsi lain:</i> Peningkatan denyut nadi dan kontraktilitas adalah respon <strong>Akut</strong> (terjadi seketika saat sedang berolahraga), bukan adaptasi menetap kronik saat sedang beristirahat.</li></ul>" },
+            { q: "Berikut BENAR mengenai pericardium", o: ["pada mediastinum, pericardium fibrosa dapat dipisahkan dengan mudah dari diafragma", "sinus transversus cordis merupakan lokasi perikardiosintesis dari permukaan anterior thorax", "pericardium fibrosa dapat dipisahkan dengan mudah dari tunika adventisia radix cordis", "di superior pericardium fibrosa melekat erat dengan fascia cervicalis profunda lamina pretracheal", "Pada Larry's point, tertutup oleh pleura"], a: "di superior pericardium fibrosa melekat erat dengan fascia cervicalis profunda lamina pretracheal", exp: "<strong>Penjelasan Detail: di superior pericardium fibrosa melekat erat dengan fascia cervicalis profunda lamina pretracheal</strong><br><strong>Konsep Medis:</strong> Perikardium fibrosa adalah kantung pelindung luar jantung yang keras dan tidak elastis. Secara anatomis, lapisan ini berfungsi memfiksasi jantung di rongga dada. Ke arah superior (atas), ia berlanjut dan menyatu dengan *fascia cervicalis profunda* (lapisan pretracheal) dan tunika adventisia dari pembuluh darah besar (aorta, vena cava). <br><ul><li><i>Opsi lain:</i> Di arah inferior, perikardium fibrosa melekat kuat dengan sentrum tendineum diafragma (tidak mudah dipisahkan). Larry's point (sudut xiphosternal kiri) adalah area di mana perikardium *tidak tertutup* oleh pleura, sehingga aman untuk insisi perikardiosintesis tanpa memecahkan paru.</li></ul>" },
+            { q: "HbO2 -> Hb + O2 terjadi ketika", o: ["peningkatan pH", "peningkatan CO2", "penurunan H+", "penurunan suhu", "peningkatan O2"], a: "peningkatan CO2", exp: "<strong>Penjelasan Detail: peningkatan CO2</strong><br><strong>Konsep Medis:</strong> Reaksi pemecahan oksihemoglobin (melepaskan O2 ke jaringan) digambarkan dengan bergesernya kurva disosiasi Oksigen-Hemoglobin ke arah KANAN (Efek Bohr). Hal ini terjadi ketika jaringan sedang aktif bermetabolisme (seperti otot yang berolahraga). Kondisi jaringan yang aktif ditandai dengan: Peningkatan CO2 (produk sisa), Peningkatan suhu (panas metabolisme), dan Peningkatan ion H+ yang berarti penurunan pH (Asidosis dari penumpukan laktat/CO2).<br><ul><li><i>Opsi lain:</i> Peningkatan pH (alkalosis), penurunan suhu (dingin), dan penurunan CO2 akan membuat Hb semakin \"pelit\" melepaskan oksigen (kurva bergeser ke KIRI).</li></ul>" },
+            { q: "Pada saat gagal jantung akan mengakibatkan asidosis, mekanisme homeostasis tubuh yaitu dengan", o: ["Peningkatan H+", "Penurunan pH", "Penggabungan Hb dan O2", "Disosiasi HbO2", "Asosiasi HbO2"], a: "Disosiasi HbO2", exp: "<strong>Penjelasan Detail: Disosiasi HbO2</strong><br><strong>Konsep Medis:</strong> Gagal jantung menyebabkan suplai darah ke jaringan menurun (iskemia perifer). Jaringan yang kekurangan oksigen akan beralih ke metabolisme anaerob, menghasilkan tumpukan asam laktat dan CO2, yang memicu Asidosis (penurunan pH). Sebagai respon kompensasi (Efek Bohr), lingkungan yang sangat asam ini merusak afinitas ikatan Hemoglobin terhadap oksigen. Akibatnya, Hemoglobin dipaksa melepaskan/memecah ikatannya dengan oksigen (Disosiasi HbO2) agar jaringan yang mati lemas tersebut segera mendapat pasokan O2 berlimpah.<br><ul><li><i>Opsi lain:</i> Asosiasi/penggabungan Hb dan O2 adalah proses penangkapan oksigen di paru, yang tidak akan membantu jaringan yang sedang sekarat kekurangan oksigen.</li></ul>" },
+            { q: "Mengapa otot jantung tidak mengalami kontraksi tetani seperti pada otot rangka?", o: ["Terjadi depolarisasi cepat akibat masuknya ion Na+", "Otot jantung memiliki periode refrakter yang sangat panjang", "Adanya repolarisasi akibat masuknya ion Ca2+", "Penutupan prematur saluran Na pada membran sel", "Terjadi peningkatan keluar masuk ion K secara cepat"], a: "Otot jantung memiliki periode refrakter yang sangat panjang", exp: "<strong>Penjelasan Detail: Otot jantung memiliki periode refrakter yang sangat panjang</strong><br><strong>Konsep Medis:</strong> Tetani adalah kondisi di mana otot mengalami kram/kejang terus-menerus tanpa sempat relaksasi. Hal ini fatal jika terjadi pada jantung, karena jantung butuh relaksasi untuk mengisi darah (diastol). Otot jantung dilindungi dari tetani berkat adanya Fase 2 (Plateau) pada potensial aksinya, yang disebabkan oleh influks lambat ion Kalsium (Ca2+). Fase plateau ini sangat memperpanjang durasi *Periode Refrakter Absolut* (masa di mana sel tidak bisa dirangsang listrik ulang). Akibatnya, siklus listrik baru selesai hampir bersamaan dengan selesainya kontraksi mekanik, memberikan jeda aman untuk relaksasi.<br><ul><li><i>Opsi lain:</i> Ion Ca2+ masuk saat fase depolarisasi plateau, bukan repolarisasi. Otot rangka tidak punya fase plateau Ca2+, sehingga masa refrakternya sangat pendek dan mudah terkena tetani.</li></ul>" },
+            { q: "Pernyataan yang TIDAK BENAR adalah", o: ["Transport O2 terlarut dalam plasma", "Transport CO2 terlarut dalam plasma", "Transport O2 terikat Hb", "Transport CO2 terikat Hb", "Transport O2 terikat HCO3"], a: "Transport O2 terikat HCO3", exp: "<strong>Penjelasan Detail: Transport O2 terikat HCO3</strong><br><strong>Konsep Medis:</strong> Molekul Oksigen (O2) dalam darah hanya memiliki dua metode transportasi: sekitar 98.5% terikat pada zat besi di dalam molekul Hemoglobin (sebagai Oksihemoglobin), dan sebagian kecil (1.5%) larut bebas di dalam air plasma darah. Oksigen tidak memiliki sifat kimia untuk diubah menjadi ion Bikarbonat (HCO3-).<br><ul><li><i>Opsi lain:</i> Karbondioksida (CO2) adalah molekul yang dapat diangkut dalam wujud terlarut di plasma (7%), terikat pada protein rantai globin di Hb (Karbaminohemoglobin - 23%), dan utamanya dikonversi menjadi ion Bikarbonat / HCO3- (70%) oleh enzim carbonic anhydrase.</li></ul>" },
+            { q: "Seseorang mengalami perdarahan profuse akibat trauma pada palma manum. Tekanan pada arteri apa yang paling efektif menghentikan perdarahan?", o: ["a. Digitalis communis", "Arcus palmaris", "A. Brachialis", "A. Radialis", "A. Ulnaris"], a: "A. Brachialis", exp: "<strong>Penjelasan Detail: A. Brachialis</strong><br><strong>Konsep Medis:</strong> Pendarahan masif di telapak tangan (palma manum) sangat sulit dihentikan secara lokal karena area tersebut disuplai oleh jaringan anastomosis (pertemuan) pembuluh darah yang kuat: *Arcus Palmaris Superficialis dan Profundus*. Arcus ini menerima suplai darah dari dua jalur sekaligus, yaitu Arteri Radialis dan Arteri Ulnaris. Jika Anda hanya menekan Arteri Radialis, darah akan tetap mengalir bocor melalui Arteri Ulnaris. Oleh karena itu, cara paling efektif untuk mematikan aliran ke seluruh telapak tangan adalah dengan menekan pembuluh induk utamanya yang ada di lengan atas, yaitu *Arteri Brachialis*, sebelum arteri tersebut bercabang dua.<br><ul><li><i>Opsi lain:</i> Menekan arteri di bawah percabangan (radialis/ulnaris) akan gagal menghentikan pendarahan anastomosis.</li></ul>" },
+            { q: "Kapasitas difusi O2 berbanding terbalik dengan", o: ["luas permukaan", "tebal membran", "tekanan", "panjang membran", "kapasitas inspirasi"], a: "tebal membran", exp: "<strong>Penjelasan Detail: tebal membran</strong><br><strong>Konsep Medis:</strong> Kecepatan perpindahan gas melintasi dinding paru diatur oleh Hukum Fick (Fick's Law of Diffusion). Rumusnya menunjukkan bahwa laju difusi berbanding lurus dengan Luas Permukaan area difusi (A) dan Gradien Tekanan Parsial Gas (P1-P2), serta berbanding *terbalik* dengan Ketebalan Membran (d). Semakin tebal dinding alveolus-kapiler (misal pada kasus fibrosis paru atau edema paru akibat penumpukan cairan), maka perjalanan gas akan semakin jauh dan laju difusi Oksigen akan semakin lambat/menurun.<br><ul><li><i>Opsi lain:</i> Luas permukaan dan gradien tekanan justru berbanding lurus (meningkatkan kapasitas difusi jika nilainya naik).</li></ul>" },
+            { q: "Fase ventrikel relaksasi, tekanan menurun tajam tanpa berkurang volume karena semua katup tertutup. Fase ini terjadi setelah:", o: ["Pembukaan katup atrioventrikular", "Penutupan katup atrioventrikular (S1)", "Penutupan katup semilunaris (S2)", "Pembukaan katup semilunaris", "Pengisian cepat ventrikel"], a: "Penutupan katup semilunaris (S2)", exp: "<strong>Penjelasan Detail: Penutupan katup semilunaris (S2)</strong><br><strong>Konsep Medis:</strong> Fase siklus jantung yang dimaksud adalah Fase *Isovolumetrik Relaksasi*. Fase ini menandai awal dari Diastol (fase relaksasi). Fase ini terjadi tepat sesaat setelah Ventrikel selesai memompa darah ke luar (Ejeksi). Karena darah sudah disemprotkan ke Aorta, tekanan di dalam ventrikel langsung jatuh. Darah di Aorta mencoba mengalir balik ke ventrikel karena gaya gravitasi, namun arus balik ini langsung membanting dan menutup Katup Semilunaris Aorta/Pulmonal (Menciptakan Bunyi Jantung 2 / S2). Setelah katup ini tertutup, dan katup mitral belum sempat terbuka, ruang ventrikel terkunci rapat dengan volume darah sisa yang tetap (isovolumetrik), sementara ototnya terus melemas menurunkan tekanan.<br><ul><li><i>Opsi lain:</i> Penutupan katup AV (S1) mengawali fase *Isovolumetrik Kontraksi* di awal sistol.</li></ul>" },
+            { q: "Berikut yang termasuk zona konduksi pada sistem respirasi kecuali..", o: ["Pharynx", "Larynx", "Bronchus", "Trakea", "Alveolus"], a: "Alveolus", exp: "<strong>Penjelasan Detail: Alveolus</strong><br><strong>Konsep Medis:</strong> Sistem pernapasan dibagi menjadi dua zona fungsional. Zona Konduksi (Pipa Penghantar) berfungsi menyaring, menghangatkan, dan melembapkan udara tanpa adanya pertukaran gas ke dalam darah. Termasuk di dalamnya adalah Hidung, Faring, Laring, Trakea, Bronkus, hingga Bronkiolus Terminalis. Dinding struktur ini terlalu tebal (ada tulang rawan/otot) untuk difusi gas. Sebaliknya, *Alveolus* (serta bronkiolus respiratorius dan duktus alveolaris) masuk dalam Zona Respiratori. Dinding alveolus sangat tipis (satu lapis sel) yang memungkinkan terjadinya pertukaran gas O2 dan CO2 antara udara dan darah kapiler.<br><ul><li><i>Opsi lain:</i> Faring, Laring, Bronkus, dan Trakea murni hanya berfungsi sebagai pipa saluran pernapasan luar.</li></ul>" },
+            { q: "Struktur ini di lapisi kartilago elastis. fungsi dari kartilago elastis tersebut yaitu fleksibilitas, apakah struktur ini?", o: ["larynx", "bronkus", "epiglotis", "pharynx", "alveolus"], a: "epiglotis", exp: "<strong>Penjelasan Detail: epiglotis</strong><br><strong>Konsep Medis:</strong> Epiglotis adalah sebuah katup otot berbentuk daun yang menjaga pintu masuk laring. Fungsi utamanya sangat dinamis: ia harus berdiri tegak saat kita bernapas, lalu harus secara instan membungkuk melipat ke bawah menutupi jalur napas saat kita menelan makanan agar tidak tersedak ke dalam paru. Agar mampu dilipat berulang kali tanpa patah, kerangka penyokong epiglotis tersusun dari *Kartilago Elastis* yang memberikan fleksibilitas pegas (recoil) yang luar biasa tinggi.<br><ul><li><i>Opsi lain:</i> Laring bagian bawah, cincin Trakea, dan Bronkus didukung oleh Kartilago Hialin yang kuat, padat, kaku, dan cenderung mudah retak jika dibengkokkan secara ekstrem karena fungsinya murni menjaga agar pipa napas tidak kolaps (gepeng).</li></ul>" },
+            { q: "Anda merasakan denyutan di processus styloideus radi dan lateral m. Extensor pollicis longus. Denyutan arteri siapa?", o: ["A. Radialis", "A. Ulnaris", "Arteri Profunda Brachii", "Arcus palmaris superficialis", "Arcus dorsum manus"], a: "A. Radialis", exp: "<strong>Penjelasan Detail: A. Radialis</strong><br><strong>Konsep Medis:</strong> Deskripsi anatomi tersebut menunjukkan lokasi perabaan denyut nadi yang paling klasik dan umum digunakan di pergelangan tangan (wrist). Landmark presisinya terletak di sebelah ujung tulang radius (Processus styloideus radii) dan di sebelah luar (lateral) dari tendon otot ibu jari (m. flexor carpi radialis dan m. extensor pollicis longus). Arteri utama yang lewat di koridor permukaan dangkal ini menuju area 'Anatomical Snuffbox' (kotak tembakau anatomi) adalah *Arteri Radialis*.<br><ul><li><i>Opsi lain:</i> Arteri Ulnaris dapat diraba di sisi medial (sebelah dalam/kelingking) pergelangan tangan.</li></ul>" },
+            { q: "Jumlah udara yang dapat dikeluarkan dengan ekspirasi kuat pada akhir ekspirasi normal disebut...", o: ["Volume tidal", "Volume cadangan inspirasi", "Volume cadangan ekspirasi", "Kapasitas inspirasi", "Kapasitas vital"], a: "Volume cadangan ekspirasi", exp: "<strong>Penjelasan Detail: Volume cadangan ekspirasi</strong><br><strong>Konsep Medis:</strong> Pengukuran faal paru (Spirometri) membagi napas menjadi beberapa volume. *Volume Tidal* adalah jumlah udara yang masuk/keluar saat kita bernapas santai/normal (sekitar 500 ml). Namun, setelah hembusan napas santai itu selesai, otot perut dan dinding dada kita *masih bisa dipaksa mengedan/menghembus lagi* untuk mengeluarkan sisa tabungan udara yang ada di paru. Kuota paksaan ekstra untuk hembusan ini (sekitar 1100 ml) disebut *Volume Cadangan Ekspirasi (Expiratory Reserve Volume / ERV)*.<br><ul><li><i>Opsi lain:</i> Volume Cadangan Inspirasi adalah tarikan napas paksa ke dalam. Kapasitas vital adalah total seluruh udara yang bisa ditarik dan dihembuskan paksa maksimal. Volume Residu adalah udara sisa yang haram dikosongkan paru dan tidak bisa dikeluarkan dengan sekuat tenaga apapun.</li></ul>" },
+            { q: "Ketika beristirahat, arteri akan sedikit vasokonstriksi. Apa yang berperan?", o: ["Simpatis", "Parasimpatis", "Nodus SA", "Nodus AV", "Bundle of His"], a: "Simpatis", exp: "<strong>Penjelasan Detail: Simpatis</strong><br><strong>Konsep Medis:</strong> Di dalam sistem saraf otonom vaskular, persarafan *Sistem Saraf Simpatis* adalah penguasa tunggal yang mengatur diameter pembuluh darah (terutama arteriola). Anehnya, bahkan saat kita sedang tidur pulas, saraf simpatis tidak pernah sepenuhnya nonaktif. Ia terus mengirimkan sinyal tembakan konstan dalam level rendah (Vasomotor Tone) untuk membuat otot polos pembuluh darah tetap *sedikit menyempit (basal konstriksi)*. Tanpa tonus konstan dari simpatis ini, seluruh pembuluh darah akan melebar ekstrem (vasodilatasi massal), kapasitas sirkulasi anjlok, dan kita akan mati syok karena kehilangan tekanan darah.<br><ul><li><i>Opsi lain:</i> Sistem Saraf Parasimpatis hampir tidak memiliki persarafan secara anatomis ke sebagian besar otot polos arteriola perifer di tubuh (kecuali beberapa area organ vital spesifik).</li></ul>" },
+            { q: "Pada diagnosis gangguan kelistrikan Nodus AV pemeriksaan EKG terdapat pemendekan bagian tertentu, bagian apakah itu?", o: ["gelombang P", "interval PR", "segmen QRS", "segmen ST", "interval QT"], a: "interval PR", exp: "<strong>Penjelasan Detail: interval PR</strong><br><strong>Konsep Medis:</strong> Dalam pembacaan kertas rekam EKG, *Interval PR* (diukur dari awal gelombang P hingga awal kompleks QRS) merepresentasikan total waktu yang dibutuhkan oleh aliran listrik dari titik asalnya di Nodus SA (di atrium) merayap turun melintasi *Nodus AV* hingga tiba di depan pintu Ventrikel. Fungsi utama Nodus AV adalah sengaja memperlambat laju listrik (Delay). Jika Nodus AV mengalami kelainan bypass (contohnya sindrom WPW di mana ada jalur aksesori yang memotong jalan tanpa melewati rem Nodus AV), maka waktu rambat akan menjadi sangat singkat. Akibatnya, pada EKG tercetak *pemendekan Interval PR* (kurang dari 0.12 detik).<br><ul><li><i>Opsi lain:</i> Gelombang P mengukur kontraksi atrium. QRS mengukur tembakan listrik di ventrikel (setelah melewati AV).</li></ul>" },
+            { q: "Salah satu yang harus diwaspadai saat bayi prematur adalah kemungkinan gagal napas akibat belum berkembangnya surfaktan paru dengan baik. Fungsi surfaktan adalah...", o: ["Mempertahankan larynx terbuka", "Mempertahankan trakea agar tidak tersumbat", "Mempertahankan bronkus agar tidak kolaps", "Mempertahankan alveolus agar tidak kolaps", "Mempertahankan agar tidak ada hambatan ventilasi"], a: "Mempertahankan alveolus agar tidak kolaps", exp: "<strong>Penjelasan Detail: Mempertahankan alveolus agar tidak kolaps</strong><br><strong>Konsep Medis:</strong> Di dalam rongga alveolus yang sangat tipis, terdapat lapisan tipis cairan air (H2O). Molekul air memiliki daya tarik menarik yang sangat kuat satu sama lain (Tegangan Permukaan / Surface Tension). Jika dibiarkan, tegangan air ini akan menarik dinding balon alveolus ke dalam dan membuatnya mengempis/lengket (kolaps) setiap kali bayi menghembuskan napas. Surfaktan (diproduksi pneumosit tipe II) bertindak seperti sabun/deterjen biologis yang menyusup di antara molekul air, memecah tegangan permukaannya, dan menjaga *alveolus tetap mengembang dan tidak kolaps*.<br><ul><li><i>Opsi lain:</i> Laring, trakea, dan bronkus tetap terbuka keras karena memiliki kerangka cincin Tulang Rawan, sehingga tidak membutuhkan cairan surfaktan.</li></ul>" },
+            { q: "Perubahan pH dapat mempengaruhi distribusi kalium dalam cairan intrasel dan ekstrasel. Jika pH darah menurun. Maka kalium dalam plasma akan..", o: ["Menurun", "Meningkat", "Tetap", "Tidak tentu", "Tidak dapat diukur"], a: "Meningkat", exp: "<strong>Penjelasan Detail: Meningkat</strong><br><strong>Konsep Medis:</strong> Ini adalah interaksi pertukaran ion seluler (H+/K+ Exchange) yang vital. Ketika pH darah menurun tajam (Asidosis), berarti darah sedang kebanjiran ion Asam (H+). Untuk mencegah kematian, tubuh mengkompensasi dengan mengevakuasi ion H+ dari cairan plasma darah agar bersembunyi masuk ke dalam ruang intraseluler (dalam sel). Namun, hukum kelistrikan sel menuntut keseimbangan. Untuk setiap kation positif (H+) yang masuk ke sel, sel harus menendang keluar satu kation positif lain sebagai gantinya. Kation yang ditendang keluar oleh sel adalah *Kalium (K+)*. Akibatnya, Kalium akan tumpah ruah membanjiri plasma darah luar, menyebabkan *Peningkatan kadar Kalium darah (Hiperkalemia)*.<br><ul><li><i>Opsi lain:</i> Sebaliknya, jika darah terlalu basa (Alkalosis), ion H+ di dalam sel akan keluar ke darah, dan sebagai gantinya Kalium dari darah dipaksa masuk ke dalam sel (menyebabkan Hipokalemia / Kalium darah menurun).</li></ul>" },
+            { q: "Kebugaran jantung dan paru dapat diukur dengan", o: ["Angkat beban", "Jalan atau lari", "VO2 max", "A dan B", "B dan C"], a: "VO2 max", exp: "<strong>Penjelasan Detail: VO2 max</strong><br><strong>Konsep Medis:</strong> Metrik saintifik mutlak dan standar emas (Gold Standard) di kedokteran olahraga untuk mengukur kapasitas kerja tangki kardiorespirasi (Jantung dan Paru) secara presisi adalah *VO2 Max* (Volume Oksigen Maksimal). Angka ini menunjukkan batas maksimal serapan gas oksigen (dalam mL) yang mampu dihisap paru, dipompa oleh curah jantung, dan diekstraksi habis oleh mitokondria otot perifer selama 1 menit dalam intensitas latihan maksimal.<br><ul><li><i>Opsi lain:</i> Angkat beban berfokus pada ketahanan otot rangka lokal (hipertrofi anaerobik), yang tidak akan memeras dan menilai dimensi kekuatan fungsional tangki volume makro paru/jantung. Jalan atau lari adalah metode tesnya, tetapi 'VO2 max' adalah nilai ukur kapasitas absolutnya.</li></ul>" },
+            { q: "Seorang mahasiswa mendengarkan detak jantung melalui stetoskop, Terdengar suara \"lup\" dan \"dup\". Suara \"lup\" terdengar pada fase..", o: ["Fase pengisian cepat", "Fase pengisian lambat", "kontraksi isovolumetrik", "relaksasi isovolumetrik", "Ejeksi lambat"], a: "kontraksi isovolumetrik", exp: "<strong>Penjelasan Detail: kontraksi isovolumetrik</strong><br><strong>Konsep Medis:</strong> Suara jantung pertama (S1) yang terdengar seperti \"Lup\" terjadi pada awal fase Sistolik (Fase Pemompaan Ventrikel). Secara mekanis, saat otot ventrikel mulai mengejang/berkontraksi, tekanan di dalam biliknya langsung meroket menekan melampaui tekanan di Atrium. Perbedaan tekanan ini menyebabkan daun Katup Atrioventrikular (Mitral dan Trikuspid) terdorong ke atas dan dibanting menutup dengan keras untuk mencegah darah bocor kembali ke atrium. Bunyi penutupan pintu klep AV inilah yang disebut S1 (\"Lup\"), yang menandai berlakunya fase *Kontraksi Isovolumetrik* (di mana bilik terkunci tegang menaikkan tekanan sebelum klep aorta terbuka).<br><ul><li><i>Opsi lain:</i> \"Dup\" (Suara S2) terjadi di akhir sistolik akibat penutupan Katup Semilunaris Aorta/Pulmonal, menandai mulainya fase *Relaksasi Isovolumetrik* di mana ventrikel beristirahat.</li></ul>" },
+            { q: "Apa yang terjadi pada asam amino pada kondisi asam jika berperan sebagai buffer intrasel?", o: ["Mengikat H+", "Melepaskan H+", "Mengikat OH-", "Melepaskan OH-", "Melepaskan COOH-"], a: "Mengikat H+", exp: "<strong>Penjelasan Detail: Mengikat H+</strong><br><strong>Konsep Medis:</strong> Protein (yang tersusun dari rantai asam amino) di dalam plasma darah memiliki sifat kimia amfoter yang sakti—artinya ia bisa bertindak sebagai asam sekaligus sebagai basa ganda tergantung kebutuhan lingkungan. Jika lingkungan darah sedang jatuh dalam kondisi Asam (Asidosis), berarti lautan darah sedang kelebihan ion hidrogen (H+). Asam amino pada protein plasma akan merespon dengan mengorbankan gugus Amina (NH2) miliknya untuk bertindak sebagai spons penyerap (basa). Gugus Amina ini akan *Mengikat dan Menangkap* ion H+ yang berkeliaran tersebut dan mengubah strukturnya menjadi (NH3+), sehingga ion asam bebas lenyap dan pH darah terselamatkan dari kehancuran.<br><ul><li><i>Opsi lain:</i> Asam amino baru akan *Melepaskan* H+ dari gugus Karboksil (COOH) miliknya hanya jika darah sedang berada pada lingkungan yang kekurangan asam (Kondisi Basa/Alkalosis).</li></ul>" },
+            { q: "Pernyataan yang benar mengenai siklus krebs", o: ["Terdapat 6 fase", "Fase pertama adalah pembentukan maltase oleh fumerase", "Fase pertama adalah penambahan asetylcoa ke oksaloasetat menjadi sitrat", "Hasil akhirnya adalah ATP, FADH2, dan CO2", "NADH2 hasil yang digunakan untuk siklus selanjutnya"], a: "Fase pertama adalah penambahan asetylcoa ke oksaloasetat menjadi sitrat", exp: "<strong>Penjelasan Detail: Fase pertama adalah penambahan asetylcoa ke oksaloasetat menjadi sitrat</strong><br><strong>Konsep Medis:</strong> Siklus Krebs (Siklus Asam Sitrat) adalah kincir raksasa metabolisme penghasil energi di matriks mitokondria. Gerbang mula (Fase Pertama) dari siklus ini terjadi ketika molekul sisa bahan bakar berkarbon 2, *Asetil Koenzim-A (Asetil-KoA)*, bergabung dan masuk mengikat molekul ampas penerima berkarbon 4, *Oksaloasetat*. Reaksi penyatuan kedua senyawa ini dikatalisis oleh enzim *Sitrat Sintase* untuk melahirkan senyawa baru berkarbon 6 yang menginisiasi siklus: yaitu *Asam Sitrat*.<br><ul><li><i>Opsi lain:</i> Pernyataan hasil akhir ATP, FADH2, CO2 kurang lengkap dan mengabaikan produk kargo energi terbesar dari siklus Krebs yaitu 3 molekul NADH per satu putaran.</li></ul>" },
+            { q: "Jika pCO2 di kapiler 45mmHg, sedangkan di alveolus 40mmHg, apa yang akan terjadi?", o: ["CO2 berdifusi dari alveolus menuju kapiler", "Tidak terjadi difusi CO2 karena gradien tekanan kecil", "O2 berdifusi dari kapiler menuju alveolus", "CO2 akan berdifusi karena memiliki solubitilas yang tinggi", "CO2 tetap berada di dalam kapiler darah"], a: "CO2 akan berdifusi karena memiliki solubitilas yang tinggi", exp: "<strong>Penjelasan Detail: CO2 akan berdifusi karena memiliki solubitilas yang tinggi</strong><br><strong>Konsep Medis:</strong> Proses pertukaran gas digerakkan oleh perbedaan tekanan parsial (Gradien Tekanan). Untuk Oksigen (O2), tekanan pendorongnya sangat besar (dari 100 mmHg di paru memaksa masuk ke 40 mmHg di vena kapiler). Sebaliknya, untuk Karbondioksida (CO2), perbedaan pendorongnya sangat kecil dan lemah (hanya selisih 5 mmHg, dari 45 di kapiler menuju 40 di paru). Pertanyaannya: bagaimana tekanan sekecil ini mampu membuang seluruh racun CO2 tubuh per sekian detik? Jawabannya adalah faktor Kelarutan (Solubility). Molekul CO2 memiliki sifat kimia kelarutan di dalam cairan *20 hingga 24 kali lipat jauh lebih tinggi* dibandingkan gas oksigen. Dengan demikian, meski gradien pendorongnya kecil, sifat basah kelarutannya yang super memungkinkan CO2 *berdifusi menembus membran* air paru dengan sangat lancar dan cepat.<br><ul><li><i>Opsi lain:</i> Gradien tekanan kecil sama sekali tidak menghalangi CO2, sehingga difusi tetap terjadi deras.</li></ul>" },
+            { q: "Pada hasil pengukuran EKG, terlihat jeda diantara wave P dan kompleks QRS. Jeda tersebut melambangkan adanya perlambatan impuls listrik dari...", o: ["SA Node", "AV node", "Bundle of his", "Purkinje fibers", "Traktus Internodal"], a: "AV node", exp: "<strong>Penjelasan Detail: AV node</strong><br><strong>Konsep Medis:</strong> Jeda listrik antara gelombang P (depolarisasi atrium) dan QRS (depolarisasi ventrikel) disebut Interval PR. Jeda ini adalah perlindungan fisiologis anatomis (delay fisiologis sekitar 0.1 detik) yang murni diproduksi saat arus listrik merayap melewati gerbang *Nodus Atrioventrikular (AV Node)*. Nodus AV sengaja didesain memiliki konduktivitas seluler yang lebih sempit/lambat agar setrum tidak langsung menyambar ke ventrikel. Tujuannya mutlak: Memberikan waktu yang cukup bagi ruang Atrium di atas untuk menyelesaikan mekanika memeras sisa darah (Atrial Systole) hingga habis masuk ke dalam Ventrikel, *sebelum* Ventrikel akhirnya bereaksi mengejang tegang akibat sengatan QRS.<br><ul><li><i>Opsi lain:</i> Bundle of His dan Purkinje Fibers adalah kabel cepat yang dirancang untuk mempercepat, bukan memperlambat rambatan impuls.</li></ul>" },
+            { q: "Saat kondisi berdiri, tekanan darah diatur oleh..", o: ["Simpatis", "Parasimpatis", "Hormon", "Autoregulasi", "Saraf Somatik"], a: "Simpatis", exp: "<strong>Penjelasan Detail: Simpatis</strong><br><strong>Konsep Medis:</strong> Perubahan postur seketika, seperti dari tidur menjadi tiba-tiba berdiri tegak (Orthostatic), menyebabkan gaya gravitasi menarik sekitar 500-700 ml volume darah jatuh menggenang di pembuluh vena tungkai kaki. Hal ini menyebabkan aliran balik darah ke jantung (Venous Return) terputus tiba-tiba, membuat curah jantung anjlok, dan pasokan darah ke otak kosong mendadak. Reseptor tekanan (Baroreseptor) di leher yang mendeteksi kehampaan ini langsung panik dan memicu *Refleks Simpatis* (Adrenergik akut). Saraf simpatis ini akan mengirimkan petir impuls dalam hitungan detik untuk menyempitkan kembali pembuluh vena di kaki (vasokonstriksi) dan memacu detak takikardia, mengembalikan tekanan semprotan darah ke otak agar kita terhindar dari mati pingsan mendadak (Syncope).<br><ul><li><i>Opsi lain:</i> Respon hormon endokrin membutuhkan waktu berjam-jam untuk bereaksi dan merangkai penahan cairan ginjal, sehingga tidak berguna untuk kompensasi instan per sekian detik saat kita kaget berdiri.</li></ul>" },
+            { q: "(soal cerita). Apa fungsi dari kontraksi atrium?", o: ["meningkatkan preload", "meningkatkan afterload", "meningkatkan ESV", "menurunkan preload", "menurunkan afterload"], a: "meningkatkan preload", exp: "<strong>Penjelasan Detail: meningkatkan preload</strong><br><strong>Konsep Medis:</strong> Sebagian besar (70-80%) pengisian darah ke dalam dasar Ventrikel murni terjadi secara gravitasi pasif (Passive Filling) saat katup AV terbuka di masa diastol awal. Namun, untuk mengisi genangan 20-30% terakhir dari sisa darah, serambi Atrium harus menendang dan mengejan secara aktif memeras peluru darahnya masuk (Atrial Kick/Kontraksi Atrium) di akhir diastol. Dorongan ekstra air darah ini akan makin meregangkan dinding miokardium Ventrikel. Regangan total serabut dinding Ventrikel akibat akumulasi air/darah tepat sesaat sebelum jantung berkontraksi inilah yang disebut dengan *Peningkatan nilai Preload*.<br><ul><li><i>Opsi lain:</i> Afterload adalah nilai tahanan tekanan di dalam selang Aorta yang harus dilawan ventrikel saat menyemprot, sama sekali tidak ada kaitannya dengan pengisian asal dari rongga atrium di atasnya.</li></ul>" },
+            { q: "Seorang mahasiswa kedokteran membaca kurva volume ventrikel kiri, jika jantung sedang kontraksi isovolumetrik apa yang terjadi?", o: ["Tekanan naik, volume tetap", "Tekanan turun, volume tetap", "Tekanan naik, volume naik", "Tekanan turun, volume turun", "Tekanan tetap, volume turun"], a: "Tekanan naik, volume tetap", exp: "<strong>Penjelasan Detail: Tekanan naik, volume tetap</strong><br><strong>Konsep Medis:</strong> Makna medis dari frasa \"Kontraksi ISO-volumetrik\" (Iso = Tetap, Volume = Takaran Air). Pada permulaan siklus pemompaan sistolik ini, otot tebing ventrikel yang dipenuhi darah mulai mengejang mengencang keras (Kontraksi). Namun, katup keluar (Aorta/Semilunaris) belum cukup tekanan untuk terbuka, dan katup masuk (Mitral) sudah dibanting tertutup. Akibatnya, darah terjebak mati di dalam rongga kaku (Volume mutlak Tetap tanpa ada yang tumpah atau masuk). Namun, jepitan otot dari dinding rongga yang terus mengejan membuat jarum *Tekanan* di dalamnya melonjak mendaki ke langit dengan ekstrem (Tekanan naik meroket), bersiap menabung godam dorong untuk menjebol pintu katup Aorta di detik berikutnya.<br><ul><li><i>Opsi lain:</i> Jika pintu membuang (katup semilunaris) akhirnya jebol, barulah tekanan akan memuncak diikuti oleh Volume darah yang menukik tumpah turun drastis (yang merupakan transisi menuju fase Ejeksi).</li></ul>" },
+            { q: "Irama jantung pada kondisi normal mengikuti irama dari?", o: ["Nodus SA", "Internodal", "Nodus AV", "Sel kontraktil", "Sel otoritmik"], a: "Nodus SA", exp: "<strong>Penjelasan Detail: Nodus SA</strong><br><strong>Konsep Medis:</strong> Otot jantung punya anomali sakti: mereka bisa memproduksi listrik otomatis sendiri (Otoritmik). Namun di antara semua sel otoritmik tersebut, kelenjar *Sinoatrial Node (Nodus SA)* yang bertengger di atap Atrium Kanan merupakan panglima tertinggi (Primary Pacemaker). Kenapa? Karena selang kebocoran ion (Funny Current Natrium) di sel SA ini bocor paling cepat, menyebabkannya mampu meledakkan pacuan listrik dengan frekuensi tertinggi (60-100 kali per menit). Kedisiplinan tembakan SA yang ngebut ini akan melumpuhkan dan menekan paksa (Overdrive Suppression) seluruh stasiun penembak bawahan yang lebih lambat seperti Nodus AV (40-60x) maupun Purkinje (20-40x) agar bertekuk lutut patuh pada satu komando ritme Nodus SA saja.<br><ul><li><i>Opsi lain:</i> Nodus AV hanyalah komandan pelapis cadangan yang akan turun tangan memimpin ritme (Escape Rhythm lamban) murni HANYA jika Nodus SA di atasnya mengalami kerusakan, iskemia, atau mati total akibat penyakit.</li></ul>" },
+            { q: "Respon akut sistem kardiovaskuler terhadap latihan fisik...", o: ["Peningkatan denyut nadi", "Peningkatan denyut nadi saat istirahat", "Penurunan denyut nadi", "Penurunan denyut nadi saat istirahat", "Peningkatan kontraktilitas miokardium pamit"], a: "Peningkatan denyut nadi", exp: "<strong>Penjelasan Detail: Peningkatan denyut nadi</strong><br><strong>Konsep Medis:</strong> Respon kardiovaskular dibedakan menjadi dua: Akut (terjadi seketika di menit awal olahraga) dan Kronik (adaptasi menetap setelah berbulan-bulan latihan). Begitu kita memulai lari (kondisi Akut), sel otot kaki akan langsung menjerit kehabisan oksigen (hipoksia lokal). Sistem saraf simpatis merespon darurat dengan menembakkan hormon adrenergik (Epinefrin) yang seketika menyengat reseptor Nodus SA. Sengatan ini menginjak tuas gas putaran jantung, memanifestasikan letupan lonjakan *Denyut Nadi / Heart Rate* (Takikardia seketika) yang memburu demi mencukupi tuntutan aliran darah ke otot perifer tersebut.<br><ul><li><i>Opsi lain:</i> Penurunan detak nadi saat santai (Bradikardia istirahat) serta membesarnya volume otot ventrikel raksasa (Hipertrofi) adalah hasil akhir investasi latihan siksaan Kronik, bukan panik sesaat.</li></ul>" },
+            { q: "Yang membuat kurva disosiasi bergeser ke kanan adalah?", o: ["Penurunan 2,3 DPG", "Peningkatan PH", "Peningkatan O2", "Hipotensi", "Peningkatan CO2"], a: "Peningkatan CO2", exp: "<strong>Penjelasan Detail: Peningkatan CO2</strong><br><strong>Konsep Medis:</strong> Pergeseran kurva Disosiasi Oksihemoglobin ke arah Kanan menggambarkan fenomena di mana daya ikat (afinitas) Hemoglobin melemah. Hemoglobin yang mendeteksi jaringan sekarat menjadi lebih dermawan dan mudah melepaskan oksigen ikatannya. Kondisi lingkungan yang merusak afinitas ini (Efek Bohr) adalah medan pertempuran metabolisme yang berat: *Peningkatan PCO2* (asap limbah buangan sel yang menumpuk), Penurunan pH (suasana lautan Asam akibat laktat/H+), Peningkatan Suhu (otot kepanasan), dan tingginya kadar enzim 2,3-DPG di eritrosit.<br><ul><li><i>Opsi lain:</i> Suasana yang sejuk (suhu turun), pH basa (alkalosis/Peningkatan pH), dan penurunan CO2 mutlak akan merantai ikatan tersebut bergeser ke Kiri, membuat Hb mematung pelit memegang oksigen erat-erat tanpa mau melepasnya ke sel.</li></ul>" },
+            { q: "Seseorang didiagnosis hipoksia akibat gangguan ventilasi. Pada kondisi tersebut, sel tetap harus mendapatkan ATP dengan metabolisme secara anaerob. Mekanisme metabolisme yang tetap dapat berlangsung adalah...", o: ["Rantai transpor elektron", "Siklus asam sitrat", "Dekarboksilasi oksidatif", "Glikolisis", "Fosforilasi oksidatif"], a: "Glikolisis", exp: "<strong>Penjelasan Detail: Glikolisis</strong><br><strong>Konsep Medis:</strong> Sel memiliki dapur energi di Sitoplasma dan di dalam Mitokondria. Pabrik energi di dalam Mitokondria (Siklus Krebs, Transpor Elektron, Fosforilasi Oksidatif) semuanya adalah jalur eksklusif aerob obligat. Artinya, jika pasokan napas Oksigen putus total (hipoksia/anaerobik), mesin mitokondria akan macet total. Sebagai mekanisme sintas darurat, sel memeras energi hanya mengandalkan jalur primitif pemecahan glukosa yang terletak murni di cairan Sitosol luar tanpa butuh oksigen sedot, yaitu *Glikolisis*. Namun, jalur anaerob glikolisis ini sangat boros dan hanya memanen hasil kotor 2 molekul ATP murni, disertai produk sampingan limbah asam laktat yang merusak.<br><ul><li><i>Opsi lain:</i> Siklus sitrat, transport elektron, dan proses reduksi oksidatif mensyaratkan nafas Oksigen murni sebagai akseptor buang di gerbang ujungnya.</li></ul>" },
+            { q: "Struktur apakah yang ikut berperan dalam membentuk membran respirasi?", o: ["epitel alveolar tipe I", "epitel alveolar tipe II", "sel goblet", "sel brush", "sel granula"], a: "epitel alveolar tipe I", exp: "<strong>Penjelasan Detail: epitel alveolar tipe I</strong><br><strong>Konsep Medis:</strong> Membran Respirasi adalah jembatan dinding setipis kertas (< 0.5 mikrometer) tempat bertemunya udara paru dan cairan darah untuk bertukar gas (difusi). Barikade fusi pembentuk sekat penyeberangan tipis ini hanya dibangun oleh 3 komponen tipis: Dinding sel *Epitel Alveolar Tipe I* (Sel Skuamosa Pipih yang menutupi 97% karpet paru), lapisan tengah perantara Lamina Basalis yang melebur, dan di seberangnya selapis tipis sel Endotel Kapiler pembuluh darah. Bentuk gepeng sel Tipe 1 inilah yang mengizinkan gas tembus tanpa hambatan patologis berarti.<br><ul><li><i>Opsi lain:</i> Pneumosit Tipe II berwujud kubus tebal sehingga dilarang menempati jalur difusi, tugasnya hanya sebagai pabrik penyemprot cairan surfaktan. Sel goblet adalah kantong pembuat dahak lendir.</li></ul>" },
+            { q: "seseorang yang mengalami sesak nafas dapat dilihat dari nafas cuping hidung yg positif dari pemeriksaan, yg terlibat?", o: ["vestibularis nasi", "radi nasalis", "ala nasi", "dorsum nasalis", "cavum nasi"], a: "ala nasi", exp: "<strong>Penjelasan Detail: ala nasi</strong><br><strong>Konsep Medis:</strong> Ketika seorang pasien (terutama anak/bayi) tercekik kelaparan udara karena asma atau pneumonia yang hebat (sesak napas), tubuh secara refleks akan mengerahkan otot-otot napas bantuan aksesori. Salah satu yang paling kasat mata adalah kontraksi instan otot Dilator Naris Anterior. Tarikan otot pendarurat ini akan merobek/melebarkan paksa batas tulang rawan cuping sayap hidung luar lateral yang berdaging empuk—secara anatomis disebut *Ala Nasi*—setiap kali ia menarik napas masuk. Kepanikan kembang kempis ini bertujuan murni untuk membuka luas gerbang pipa nasalis agar dapat menyedot lebih banyak tabungan kapasitas oksigen atmosfer.<br><ul><li><i>Opsi lain:</i> Dorsum nasi (punggung hidung) disokong oleh pilar rangka tulang keras kaku yang mati, sehingga mustahil bisa melipat bergerak-gerak saat seseorang tersedak sesak napas.</li></ul>" },
+            { q: "Untuk pengisian ventrikel optimal, maka impuls dari SA node ditahan terlebih dahulu sebelum dilanjutkan ke Bundle of His. Dimana terjadinya?", o: ["SA node", "Bundle of His", "AV node", "Branch fiber", "Purkinje fibers"], a: "AV node", exp: "<strong>Penjelasan Detail: AV node</strong><br><strong>Konsep Medis:</strong> Kabel konduksi di serambi atrium menghantarkan sengatan listrik dari pabrik SA Node menuju pintu tol utama batas bilik bawah. Sebelum listrik ini menyeberangi jembatan isolator, ia ditangkap oleh stasiun *Atrioventricular (AV) Node*. Nodus AV ini sengaja didesain oleh alam dengan sel transmisi berdiameter sempit yang miskin celah penghubung, menciptakan kemacetan perlambatan maut (delay konduksi AV sekitar 0.1 - 0.13 detik). Jeda statis tak ternilai ini memberi kelonggaran durasi waktu bagi dinding otot serambi (Atrium) untuk selesai memeras sisa darah pengisian akhir masuk ke dalam ruang dasar Ventrikel. Jika tak ada jeda delay AV ini, ventrikel akan kejang prematur bersamaan dengan atrium, dan jantung gagal memompa muatan penuh peluru darah curahnya.<br><ul><li><i>Opsi lain:</i> Bundle of His dan serabut terminal Purkinje merupakan tol jalan mulus kabel kilat yang justru didesain ngebut menghantarkan peluru kejang ke penjuru apeks jantung tanpa hambatan murni.</li></ul>" },
+            { q: "Yang membuat berkurangnya afinitas O2", o: ["Kenaikan co2", "Penurunan 2,3 dpg", "Kenaikan pH", "Kenaikan O2", "Penurunan Suhu"], a: "Kenaikan co2", exp: "<strong>Penjelasan Detail: Kenaikan co2</strong><br><strong>Konsep Medis:</strong> Afinitas (kemampuan ikatan cinta egois Hemoglobin untuk mengunci Oksigen) harus dirusak sengaja saat sel-sel perifer otot butuh suplai napas. Fenomena melonggarnya sabuk Hb pelepasan oksigen ke sel ini dinamai Efek Bohr. Suasana beracun khas daerah otot yang lelah berlari (yang memprovokasi Hb agar muntah melepas O2) mencakup: Meroketnya tumpukan limbah buang awan pekat *Kenaikan CO2*, memuncaknya Asam H+ (mengakibatkan Penurunan drastis nilai pH / Asidosis), peningkatan suhu kepanasan berolahraga, dan kenaikan hasil metabolit 2,3-DPG di eritrosit.<br><ul><li><i>Opsi lain:</i> Pendinginan suhu (hipotermia) dan naiknya pH menjadi lebih basa (Alkalosis) justru merantai mati, mengeratkan kuncian afinitas O2 merapat lengket ke kurva Kiri, sehingga Hb amat pelit membagi pasokan ke sel tubuh yang membutuhkan fasik absolut.</li></ul>" },
+            { q: "Rongga larynx dari aditus laryngis ke bawah cartilago cricoidea yang menyambung ke trakea dibag menjadi 3 ruangan. Struktur pada rongga paling atas disebut...", o: ["Vestibulum laryngis", "Plica vocalis", "Ligamentum vocale", "Rima glottidis", "Ligamentum vestibulare"], a: "Vestibulum laryngis", exp: "<strong>Penjelasan Detail: Vestibulum laryngis</strong><br><strong>Konsep Medis:</strong> Tabung laringeal di leher merupakan kompartemen memanjang yang terbelah ke dalam tiga tingkat topografis. Bagian yang menduduki takhta tertinggi atap koridor pembuka masuk Larynx dinamakan kompartemen luas *Vestibulum Laryngis* (Beranda Laring). Ruang superior kosong tak berdawai ini ditarik membentang dari pintu gerbang tepi atas liang aditus laryngis yang terbuka, lalu merosot jatuh ke bawah hingga membentur sekat pemisah lipatan pita suara palsu (Plica Vestibularis).<br><ul><li><i>Opsi lain:</i> Plica vocalis (pita suara sejati pencetak vokal) menyelinap membelah bersarang di tingkat lorong jepit tengah (Ventriculus Laryngis) di bawah vestibulum. Sedangkan ruang sisa tabung yang berada di bawah pita suara sejati menuju trakea disebut Cavitas Infraglottica fasik murni.</li></ul>" },
+            { q: "Suara yang dihasilkan dari vibrasi plica vocalis yang diinervasi oleh saraf", o: ["n.pharyngea anterior", "n.vagus", "n.laryngea superior", "n.facialis", "n.laryngea anterior"], a: "n.vagus", exp: "<strong>Penjelasan Detail: n.vagus</strong><br><strong>Konsep Medis:</strong> Instrumen kotak suara (Larynx) memproduksi rentang frekuensi nada suara tinggi rendah mengandalkan pelintiran regangan tegang kaku tarikan otot-otot laring intrinsik yang mengontrol engsel Plica Vocalis (Pita Suara Sejati). Hampir seluruh otot mikro perakit pita suara ini secara mutlak dikomandoi, disetrum dan ditarik oleh kabel sakral Nervus Laryngeus Recurrent (Saraf laringeal rekuren). Akar persarafan ini murni merupakan anak cabang serabut terminal perpanjangan belahan sirkuit langsung dari batang besar saraf kranial *Nervus Vagus (Saraf Kranial X)*.<br><ul><li><i>Opsi lain:</i> Saraf fasialis (Nervus VII) hanya bertugas menyapu kontrol otot ekspresi wajah senyum bibir dan dahi eksterior. Saraf Vagus adalah raja absolut pengatur organ otonom viseral dada memanjang ke laringeal pita suara mutlak.</li></ul>" },
+            { q: "Sekresi hormon tersebut yang berperan dalam peningkatan tekanan darah kecuali :", o: ["Adrenalin", "Aldosteron", "ADH", "ANP", "Kortisol"], a: "ANP", exp: "<strong>Penjelasan Detail: ANP</strong><br><strong>Konsep Medis:</strong> Atrial Natriuretic Peptide (ANP) diproduksi sebagai keluhan menjerit oleh sel otot Atrium (serambi jantung) ketika mendeteksi distensi peregangan parah akibat kebanjiran overhidrasi volume air darah hipervolume. Misi tunggal hormon ini murni menentang arus hipertensi: Ia meluncur menabrak memblokir fungsi ginjal untuk menginstruksikan pembuangan radikal menguras masif garam (Natriuresis) dan kencing cairan (Diuresis). Pembuangan volume basah tubuh ini dengan sakti akan MENURUNKAN dan menjatuhkan tekanan darah. <br><ul><li><i>Opsi lain:</i> Komplotan beracun RAAS Aldosteron penjebak penahan ginjal, ADH si penahan air absolut kencing, serta letupan Epinefrin/Kortisol pemicu ketegangan stres pembuluh darah, semuanya adalah agen radikal pemompa pengerek tegangan tekanan arteri darah ke langit (Hipertensif mematikan) mutlak.</li></ul>" },
+            { q: "Struktur tersebut yang memiliki fungsi analog seperti vasa vasorum yaitu:", o: ["Arteri koroner", "Katub", "Lamina basal", "Diaprhagma endothel", "Arteriol"], a: "Arteri koroner", exp: "<strong>Penjelasan Detail: Arteri koroner</strong><br><strong>Konsep Medis:</strong> Makna kata 'Vasa Vasorum' adalah pembuluh darah milik pembuluh darah. Aorta raksasa memiliki lapisan dinding otot pipa tunika media terlampau super tebal. Oksigen dari aliran deras di liang lumen sentralnya tidak sanggup merembes melarut masuk menyusup memberinya makan, sehingga Aorta menumbuhkan pembuluh mikro kecil di kulit luar adventisianya sendiri (vasa vasorum) untuk minum darahnya murni. Kondisi 'analogis' setara terjadi pada Jantung. Otot bilik miokardium ventrikel tidak dapat meminum oksigen darah yang ditampung dalam biliknya sendiri. Sebagai analogi sakti suplai penolong, jantung menciptakan selang eksklusif *Arteri Koronaria* yang merayap memeluk dari luar koridor memotong menembus menyuplai tebing daging epikardium mutlak. Keduanya murni \"menyiram pilar selang raksasa pendorongnya dari bagian luar\" secara radikal.<br><ul><li><i>Opsi lain:</i> Arteriol sekadar pipa pengurang tekanan tepi sebelum kapiler, dan tak memegang konsep merawat membungkus suplai dasar organ penampung utuh radikal murni.</li></ul>" },
+            { q: "Perubahan tiap tiap denyut jantung akan semakin baik. Hal tersebut dipengaruhi oleh aktifitas konduksi jantung yaitu", o: ["Saraf parasimpatis", "saraf simpatis", "saraf otonom", "aldosteron", "ANP"], a: "Saraf parasimpatis", exp: "<strong>Penjelasan Detail: Saraf parasimpatis</strong><br><strong>Konsep Medis:</strong> Di dalam disiplin kardiologi prediktif, ada ukuran keluwesan dinamis interval waktu detak jantung mili-sekon ke detik berikutnya yang disebut Heart Rate Variability (HRV). Memiliki nilai HRV yang lentur bervariasi tinggi mengindikasikan jantung yang sehat adaptif santai merespon ritme. Keluwesan instan fluktuasi rehat detak jeda jantung istirahat ini sepenuhnya ditumpangkan mendikte patuh di bawah pijakan tuas rem luwes (Vagal Tone) yang disuntikkan secara persisten oleh saklar serabut kendur kendali otonom *Sistem Saraf Parasimpatis (Nervus Vagus)*.<br><ul><li><i>Opsi lain:</i> Ketika dominasi pecutan tegang Adrenergik Saraf Simpatis membajak menyambar saat lari atau panik sakit keras, denyut jantung akan mematung berpacu tinggi konstan sangat kaku mengunci monoton lurus (Nilai HRV hancur menurun tajam, tanda klinis letal fatal).</li></ul>" },
+            { q: "Pernyataan berikut yang sesuai dengan ciri khas trakea adalah...", o: ["Kartilago hialin seperti huruf C", "Kartilago elastik seperti huruf C", "Dominan otot polos", "Terdiri dari epitel kolumner simpleks", "Terdiri dari kartilago yang terputus-putus"], a: "Kartilago hialin seperti huruf C", exp: "<strong>Penjelasan Detail: Kartilago hialin seperti huruf C</strong><br><strong>Konsep Medis:</strong> Pipa jalan napas utama Trakea difungsikan untuk membuka koridor rongga hampa menyedot angin paru tanpa pernah menciut roboh (kolaps) ditekan pernapasan. Struktur kokoh ini mutlak disokong oleh tumpukan formasi paralel 16 hingga 20 kerangka ring balok tulang baja bening yaitu *Kartilago Hialin*, yang dipahat dengan arsitektur berbentuk setengah melingkar huruf C terbuka ke punggung (C-Shaped). Celah absen ruang cincin terbuka di belakang (posterior) sengaja ditambal otot membran lemas Trachealis untuk membiarkan koridor selang menelan Esophagus di punggungnya leluasa memelarkan gerusan makanan bola besar menginvasi tanpa terhimpit membentur tembok kaku radikal.<br><ul><li><i>Opsi lain:</i> Epitel trakea bukanlah selapis simpel, melainkan epitel bersilia pseudostratified (bertingkat semu tebal). Tulang pelat rawan yang pecah hancur berkeping terputus menjadi pulau plakat-plakat adalah reinkarnasi mutasi saat trakea sudah menyusup membelah berubah wujud menjelma menamai Bronkus fasik absolut.</li></ul>" },
+            { q: "Struktur manakah yang BUKAN pembentuk tulang rawan hidung", o: ["Cartilago nasi lateralis", "Cartilago septi nasi", "Cartilago nasi medialis", "Cartilago alaris major", "Cartilago alaris accesoria"], a: "Cartilago nasi medialis", exp: "<strong>Penjelasan Detail: Cartilago nasi medialis</strong><br><strong>Konsep Medis:</strong> Anatomi kerangka penyokong sepertiga bawah piramida hidung diselimuti oleh beberapa plakat lempeng utama kartilago hialin lunak. Bangunan dasar hidung asli ini dirangkai murni oleh lempeng tiang palang pintu tengah poros pembelah (Cartilago septi nasi), tebing sayap atas lempeng hidung samping (Cartilago nasi lateralis), dan gerbang lipatan cincin lengkung U rawan cuping lubang hidung bawah (Cartilago alaris major, minor & accesoria). Secara medis mutlak nomenklatur nama fiktif *Cartilago Nasi Medialis* adalah jebakan kosong hampa yang tidak ada wujud strukturnya di buku teks topografi paten fasik manapun.<br><ul><li><i>Opsi lain:</i> Keempat penampang pilar lateral, alaris, dan septal memegang fungsi mutlak menyokong hidung kembang kempis tak jatuh kolaps radikal murni.</li></ul>" },
+            { q: "Ion berikut terlibat dalam kelistrikan dan kontraksi otot jantung", o: ["Kalium", "Natrium", "Kalsium", "Magnesium", "Cesium"], a: "Kalsium", exp: "<strong>Penjelasan Detail: Kalsium</strong><br><strong>Konsep Medis:</strong> Di kancah miokardium kardiak, Kalsium (Ca2+) bertakhta absolut sebagai utusan ganda memegang dua peranan sakti yang tak tergantikan fungsi organel lain. Pertama: Di bidang konduksi kelistrikan EKG serabut, rembesan lamban Kalsium yang masuk (influks) berfungsi mutlak merangkai mengukir jeda perlindungan fase panjang kelistrikan Plateau (Fase 2) agar jantung kebal dari letupan tetani kram berulang mati. Kedua: Di panggung mesin putar, aliran masuknya persentase secuil Kalsium dari ekstraseluler memicu banjir pelepasan lumbung kalsium raksasa SR (Calcium-induced Calcium Release), yang murni digunakan menabrak mengunci menembus lubang gembok tuas *Troponin-C*. Ikatan inilah yang memutar tuas saklar menarik benang otot aktin-miosin sliding filament bergesek meremas kaku kontraksi memeras jantung memuntahkan curah radikal.<br><ul><li><i>Opsi lain:</i> Natrium (Na+) mendobrak membuka gerbang murni depolarisasi hantaran tegangan listrik cepat menanjak fase 0, namun ia lumpuh impoten murni tidak memiliki tuas fisik andil sama sekali dalam menyalakan mesin perasan gesekan tali tarikan kontraksi sarkomer otot fasik mutlak.</li></ul>" },
+            { q: "Penurunan volume tidal termasuk respon apa?", o: ["respon akut kardio", "respon kronik kardio", "respon akut respi", "respon kronik respi", "adaptasi tubuh terhadap aktivitas fisik"], a: "respon kronik respi", exp: "<strong>Penjelasan Detail: respon kronik respi</strong><br><strong>Konsep Medis:</strong> Olahragawan kelas pelari ketahanan atau atlet renang yang dipaparkan siksaan latihan renang bertahun-tahun akan memaksa otot pernapasannya (otot Interkostal Iga dan tuas Diafragma dada) mekar menebal dan hipertrofi radikal mutlak. Akibat adaptasi latihan jangka panjang berbulan-bulan (Respon Kronik), engsel tarikan tarikan murni dada atlet perenang ini bermutasi fungsional menjadi sangat-sangat sakti efisien. Untuk menghirup cadangan pemenuhan Oksigen rehat santai di saat tak berlari (Istirahat tidur pulas santai), cukup dengan kontraksi dangkal rileks maka paru akan langsung terisi efisien tanpa repot. Efisiensi efektivitas mekanis otot tarikan napas dada tinggi ini menyebabkan *Volume Tidal hembusan bernapas dasar istirahat atlet menjadi turun anjlok rileks* (penurunan frekuensi laju tarikan napas konstan fasik).<br><ul><li><i>Opsi lain:</i> Kalau napas tersengal menganga terengah gila di jam pertama berlari panik, itu dinamakan tarikan respons darurat seketika *Akut* Respirasi, bukan ukiran adaptasi bertahun otot dada murni.</li></ul>" },
+            { q: "Saat seharian puasa tubuh mengalami penurunan volume cairan tubuh, mekanisme yang dilakukan agar tubuh homeostasis adalah", o: ["aktivitas saraf simpatik", "sekresi ADH", "sekresi kortisol", "sekresi ANP", "aktivasi eritropoetin"], a: "sekresi ADH", exp: "<strong>Penjelasan Detail: sekresi ADH</strong><br><strong>Konsep Medis:</strong> Menderita menahan lapar dan tak meneguk minum saat puasa panjang menyiksa membuat volume pelarut sungai air pembuluh darah merosot mendidih anjlok jatuh hampa dehidrasi, mengental menjadikan osmolaritas protein darah meroket tebal (hiperosmotik hipertonik letal). Osmoreseptor panik di dinding dasar otak Hypothalamus seketika melepaskan menyemprotkan perisai darurat hormon Anti-Diuretik Hormon (ADH / Vasopresin) dari pos pituitari posterior radikal. Sabda mutlak ADH meluncur memerintahkan pilar tubulus duktus koligentes ginjal menancapkan lubang aquaporin murni guna menyedot menguras habis cairan urin sisa, dikunci agar tidak ada tetes air lagi kencing terbuang pipis fasik, memulangkan plasma ke volume nyawa absolut.<br><ul><li><i>Opsi lain:</i> Atrial Natriuretic Peptide (ANP) justru merupakan peluncur pemicu diuresis pembuang kencing saat pasien terendam membusuk hiperhidrasi over-cairan, menyemprotkan air mutlak. Mensuntikkan membuang air di saat dehidrasi puasa sama dengan kematian radikal.</li></ul>" },
+            { q: "Struktur rambut kasar di saluran napas bagian atas yang berfungsi menyaring debu adalah", o: ["goblet", "brush", "granula kecil", "clara", "vibrissae"], a: "vibrissae", exp: "<strong>Penjelasan Detail: vibrissae</strong><br><strong>Konsep Medis:</strong> Garda pertahanan barikade fisik paling radikal awal dari sistem penyaringan kotoran eksterior alam adalah *Vibrissae*. Struktur ini merupakan rimbunan hutan bulu sikat rambut kasar tebal memanjang pelindung yang ditumbuhkan khusus memancar memblokir liang teras pintu depan rongga hidung bagian cuping pinggir paling luar (Vestibulum Nasi). Fungsinya mutlak sakti mematahkan menjebak lalat, serangga, hingga serpihan badai partikel kasar tebal debu jauh terpelanting jatuh kotor sebelum puing-puing itu berkesempatan menyelinap merusak karpet lapisan empuk basah mukosa terdalam sistem jalan paru napas murni fasik.<br><ul><li><i>Opsi lain:</i> Epitel Silia (rambut bergetar getar) dan pemuntah dahak basah kantong Piala (Sel Goblet) menempati relung licin konduksi mukosa dalam, bertugas memerangkap mengusap mikro-kuman yang nekat lolos radikal absolut dari pagar luar vibrissae.</li></ul>" },
+            { q: "Bagaimana cara perpindahan O2 dari alveolus ke kapiler", o: ["Transport aktif dengan atp", "k+/ca2+ gate", "Tekanan osmotik", "Gradien tekanan parsial dari tinggi ke rendah", "Aliran filtrasi limfatik radikal"], a: "Gradien tekanan parsial dari tinggi ke rendah", exp: "<strong>Penjelasan Detail: Gradien tekanan parsial dari tinggi ke rendah</strong><br><strong>Konsep Medis:</strong> Mekanika menyeberangnya partikel molekul gas kehidupan pernapasan mutlak murni ditarik dikomandoi hukum pasif hukum alam fisika kimia (Difusi Pasif Gas). Oksigen akan otomatis meluncur jatuh bergulung-gulung bebas mendaki melintasi menembus rintangan dinding sel dari kolam cekungan wadah kompartemen yang memiliki gaya tekan pendorong paling raksasa *Tekanan Parsial Tinggi* (Reservoir paru Alveolus: PO2 100 mmHg mutlak tinggi kencang) tumpah longsor mengalir pasrah menuju lembah hisap genangan *Tekanan Parsial Rendah* (Sungai pembuluh balik kapiler Vena: PO2 loyo 40 mmHg hampa) tanpa harus membuang mencabut sekeping pun tagihan biaya peluru tunai bensin ATP transport radikal fasik.<br><ul><li><i>Opsi lain:</i> Pompa Kalsium pintu gerbang ion Natrium/Kalium atau memompa peluru tunai enzim Transport Aktif ATP merupakan kerja kuras mesin organel padat ginjal/otot saraf pencerna kimia, bukan hukum sakti angin menembus pertukaran membran sel pasif murni alveolus.</li></ul>" },
+            { q: "Tekanan ventrikel kiri meningkat membuka katup semilunaris. Terus tekanan ventrikel menurun katup apa yang tertutup", o: ["Katup trikuspid", "Katup mitral", "Katup semilunaris pulmonalis", "Katup semilunaris aorta", "Katup atrioventrikular"], a: "Katup semilunaris aorta", exp: "<strong>Penjelasan Detail: Katup semilunaris aorta</strong><br><strong>Konsep Medis:</strong> Ini adalah urutan fase mekanik Relaksasi Isovolumetrik. Setelah bilik ksatria godam Ventrikel Kiri memuntahkan habis gelombang ejeksi memeras curah peluru sistoliknya yang disemprot masuk ke dalam selang batang Aorta, tegangan kaku dinding otot ventrikel mendadak melemas jatuh merosot ke dasar pijakan loyo hampa radikal (Fase masuk Diastolik relaksasi). Kehilangan mesin tekanan pompa ini memicu banjir pilar genangan massa darah di selang tinggi Aorta (yang masih membawa daya pantul ejeksi tekanan 120 mutlak) tertarik gaya gravitasi turun mencoba berputar tumpah balik menjebol bocor menuruni menginvasi corong asal dasar ventrikel. Hempasan mundur darah balik gila ini yang memukul keras membanting mutlak menampar perisai daun pintu gembok pelindung keluar Aorta *Tertutup Keras mengunci* (Menciptakan Dentuman gelombang nadir Suara Jantung 2 - bunyi S2 radikal mutlak fasik).<br><ul><li><i>Opsi lain:</i> Pintu penyekat atas masuk serambi (Katup Atrioventrikuler Mitral murni) belum dibukakan baut kuncinya sesaat setelah gedoran aorta jatuh. Mitral baru mau menganga jatuh membiarkan tumpahan darah atrium mengisi kembali hanya jika tekanan otot dasar ruang ventrikel makin hampa drastis kempes jatuh jauh di bawah batas sisa loyo Atrium mutlak.</li></ul>" },
+            { q: "Budi mengukur tekanan darah yang berubah ubah dari pagi, siang, sore, malam. Faktor apa yang terkait?", o: ["Perubahan aldosteron", "Perubahan testosteron", "Perubahan kortisol", "Perubahan progesteron", "Perubahan kalsitriol"], a: "Perubahan kortisol", exp: "<strong>Penjelasan Detail: Perubahan kortisol</strong><br><strong>Konsep Medis:</strong> Irama rutinitas detak jam biologis sirkuit sirkadian 24 jam yang menaikkan menurunkan ayunan pasang surut fluktuasi tegangan laju detak tensi tekanan darah manusia dibajak ditunggangi dikontrol diatur murni patuh mutlak oleh hormon alarm letup kewaspadaan bangun stres: *Glukokortikoid (Hormon Kortisol)*. Siklus sekresi letupan bangun hormon Kortisol ini meniti grafik harian, ia merangkak mendaki radikal perlahan, memeras menyuntik membuncah menembus puncaknya pada fajar buta subuh pagi murni. Badai kortisol subuh ini mendoktrin mempersiapkan pompa sirkulasi jantung menyemprot selang, memecut ujung tegang reseptor tegangan pembuluh darah untuk bersiaga menyambut transisi bangun bangkit tegak tantangan hari mutlak.<br><ul><li><i>Opsi lain:</i> Progesteron siklus ovarium ovulasi, kalsitriol ginjal pengikat kalsium tulang hampa murni, dan hormon penimbun sisa penyedot aldosteron tidak bergelombang fluktuasi pasang irama jam mengatur gedoran dentum sirkadian detak tensi tegangan fasik absolut.</li></ul>" },
+            { q: "Detak jantung yang normal tidak selalu konstan, tetapi dapat sedikit bervariasi dari waktu ke waktu. Sistem yang berperan besar dalam menimbulkan variasi denyut jantung tersebut adalah ....", o: ["Sistem saraf parasimpatis", "Sistem saraf simpatis", "Sistem saraf somatis", "Sistem saraf pusat", "Sistem saraf perifer"], a: "Sistem saraf parasimpatis", exp: "<strong>Penjelasan Detail: Sistem saraf parasimpatis</strong><br><strong>Konsep Medis:</strong> Di layar pantauan alat bedah pacu medis kardiovaskular, elastisitas kebebasan durasi tunda keluwesan ritmik interval fluktuasi detak jeda milidetik per ketukan detak santai (Heart Rate Variability / HRV) dicetak sebagai angka emas kesuburan pompa kehidupan pasien. Nilai variabilitas gelombang ritmik dinamika R-to-R elastis yang sehat dan kenyal sangat lentur ini murni adalah bayangan pantulan dari intervensi campur tangan tarikan tuas rem luwes dinamis (Vagal Tone) yang dengan sakti meredam SA Node oleh agen santai kendali kabel otonom *Sistem Saraf Parasimpatis (Nervus Vagus)*. Ini meredam kekauan dan membiarkan ayunan interval detak bernapas berirama fasik absolut radikal murni.<br><ul><li><i>Opsi lain:</i> Begitu tembakan syok badai petir adrenergik panik Saraf Simpatis mengambil alih kendali membajak membakar pompa SA Node lari saat kaget stres latihan, interval nadi akan mematung berpacu memburu monoton kaku mengunci garis lurus maut tinggi konstan (Nilai HRV seketika anjlok hancur merosot mutlak tajam, sinyal ancaman patologi tegang letal fasik).</li></ul>" },
+            { q: "Sumber energi utama yang digunakan oleh jantung dalam kondisi aerob adalah...", o: ["Glukosa", "Asam lemak bebas", "Badan keton", "Laktat", "Asam amino"], a: "Asam lemak bebas", exp: "<strong>Penjelasan Detail: Asam lemak bebas</strong><br><strong>Konsep Medis:</strong> Kardiomiosit (sel otot miokardium) dikutuk tidak bisa berhenti mengejang seumur hidup, sehingga ia dibekali dengan tangki pabrik pembakar super mitokondria beringas menyerap luas 30-40% koridor sel total absolut. Karena beban berat gila-gilaan berdenyut tanpa ampun, miokardium menolak dan memandang remeh bahan bakar miskin kalori gula glukosa sitosol. Dalam kondisi cuaca napas darah Oksigen yang berlimpah segar lapang (Metabolisme Aerob), tungku pembakaran jantung ini secara radikal memanen menyedot menghisap memanggang *60-70% dominasi bensin kargo energi ledakan murninya* dari peluruhan kalori ekstrem oksidasi beta *Asam Lemak Bebas (Free Fatty Acids / FFA)* mutlak fasik.<br><ul><li><i>Opsi lain:</i> Molekul gula glukosa murni hanyalah porsi makanan camilan sambilan darurat pendukung energi karbohidrat pelengkap 30% yang disisakan. Laktat akan diangkut membakar jika otot rangka sekitarnya muntah buang tumpah latihan, tapi takhta sumber tetap milik FFA absolut.</li></ul>" },
+            { q: "Takikardi 180x/menit menyebabkan?", o: ["Waktu EDV menurun", "Waktu ESV menurun", "Waktu EDV meningkat", "Stroke volume meningkat", "Tekanan curah mutlak meroket"], a: "Waktu EDV menurun", exp: "<strong>Penjelasan Detail: Waktu EDV menurun</strong><br><strong>Konsep Medis:</strong> Jantung butuh istirahat untuk bisa memompa. Waktu pengisian (Diastolic Filling Time) adalah sakral. Saat Nodus SA lepas kendali mengamuk meluncurkan badai cambuk takikardia ekstrem (>180 ketukan per menit), rotasi pompa bergulir gila ngebut hingga *memotong paksa dan mencekik habis mencuri jeda durasi relaksasi istirahat hisap sedot diastolik*. Akibat tragisnya, katup bilik hanya terbuka sekilas, tak ada waktu leluasa menelan genangan bendungan guyuran hujan air darah murni. Karena pengisiannya loyo dan tekor gagal menampung tumpahan pasokan, volume air di titik dasar nadir tepat sebelum pintu ventrikel mengunci alias *End-Diastolic Volume (EDV) ambruk merosot anjlok hancur (Menurun) radikal mutlak*.<br><ul><li><i>Opsi lain:</i> Peningkatan Volume Sekuncup (Stroke Volume tembak godam) menjadi tak masuk akal hampa mustahil, mengingat laras pompa tangki telah memuntahkan tembakan paksa mendadak sementara selongsong pipanya murni kosong angin tak sempat menyedot teguk peluru baru fasik.</li></ul>" },
+            { q: "Seorang pasien mengalami takikardia, denyut jantungnya 180x/menit, perubahan yang paling dominan adalah", o: ["Peningkatan tekanan diastol", "Penurunan tekanan sistol", "Penurunan tekanan diastol", "Peningkatan stroke volume", "Peningkatan elastisitas"], a: "Penurunan tekanan sistol", exp: "<strong>Penjelasan Detail: Penurunan tekanan sistol</strong><br><strong>Konsep Medis:</strong> Menyambung logika mematikan dari jebakan Takikardia ganas (denyut gila panik 180x/menit), pilar waktu lemas hisap ventrikel pengisian relaksasi (Diastol) dipotong habis lenyap ditiadakan. Piston bilik dipaksa menendang letup godam mengejang padahal isian tangki pelurunya kopong hampa air tekor regang mutlak hancur (End-Diastolic Volume anjlok loyo absolut). Kekosongan pendorong ini secara radikal memukul melumpuhkan daya ledakan pompa, membuat curah semprot darah melempem lemah loyo tumpah (menukik jatuh drastis ke jurang *Penurunan Tekanan Sistolik godam arteri* murni fasik).<br><ul><li><i>Opsi lain:</i> Peningkatan daya pukul Stroke Volume mustahil karena kantung jantung menyemprot meledak kosong isian sebelum tumpahan aliran balik atrium Vena Return mengisi kolam ventrikel utuh radikal.</li></ul>" },
+            { q: "Seorang atlet berhasil mendaki gunung dengan ketinggian 5000 meter diatas laut. apa yang terjadi pada PCO2 dan PHnya?", o: ["PCO2 dan PHnya dibawah normal", "PHnya meningkat, PCO2 menurun", "PCO2 dan PHnya meningkat", "PHnya menurun, PCO2 meningkat", "PH dan PCO2 nya normal"], a: "PHnya meningkat, PCO2 menurun", exp: "<strong>Penjelasan Detail: PHnya meningkat, PCO2 menurun</strong><br><strong>Konsep Medis:</strong> Terkuras tercekik atmosfer pendakian gunung hampa yang miskin tipis akan tekanan hisap pOksigen menampar sensor Kemoreseptor Perifer mendeteksi bahaya krisis syok asfiksia hipoksia letal mutlak. Otak kalap kompensasi panik menyemprot perintah badai pernapasan hiperaktif menyedot nafas tersengal memburu ekstrem kencang (Hiperventilasi gas lari). Badai nafas menyapu buang hembusan gas ini memeras mencuci luruh menguras tabungan pampat racun Karbondioksida (*pCO2 turun drastis merosot terbang hampa*). Karena CO2 merupakan wujud bapak pemicu penentu lautan asam H+ di pembuluh, rontok dan menguapnya gas pelindung asam ini seketika menyengat melecut melonjakkan nilai rentang tuas angka pH neraca darah mencuat memanjat ke *derajat Basa mutlak (pH Meningkat - Alkalosis Respiratorik)* fasik radikal murni.<br><ul><li><i>Opsi lain:</i> Tersumbatnya atau tersedaknya rute tahanan nafas Hipoventilasi paru sesak asma yang memendam pCO2 di dada paru akan membuat darah keracunan mendidih laktat (pH jatuh asam maut asidosis fasik mutlak).</li></ul>" },
+            { q: "Seorang pria berusia 56 tahun datang dengan keluhan bengkak di kaki. Struktur apa yang paling mungkin mengalami kelainan (gambar kaki dengan varises)", o: ["Vena dalam", "Vena superficial", "Aliran limfatik", "Arteri", "Arteri kecil"], a: "Vena superficial", exp: "<strong>Penjelasan Detail: Vena superficial</strong><br><strong>Konsep Medis:</strong> Cacing biru menonjol berkelok-kelok, memar, menonjol membengkak bergelombang memanjang menempel kosmetik kulit kendor di sepanjang tungkai tapak kaki bagian bawah kulit (Varises ekstremitas perifer) merupakan stempel sakti kelumpuhan murni hancur matinya palang penahan gerbang katup perisai satu arah pencegah bocor milik koridor dinding *Sistem Vena Superfisial dangkal luas luar (contohnya Vena Saphena Magna / Parva)*. Robek rusaknya cincin klep pasif gembok ini merelakan kubangan gravitasi hidrostatis menelan menarik membiarkan aliran genang membusuk statis air darah longsor tumpah menukik ke dasar fasik radikal.<br><ul><li><i>Opsi lain:</i> Vena Profunda koridor relung dalam (Deep Veins sentral) dilindungi dipagari dipeluk dicor dilapisi dinding barikade kaku daging betis pilar yang mengekang memerasnya keras kebal melar radikal murni mustahil menjadi varises bengkak balon mutlak. Arteri memompa elastis tinggi anti kolaps.</li></ul>" },
+            { q: "Pada kurva tekanan-volume, penurunan kontraktilitas akan menyebabkan...", o: ["Penurunan end-systolic volume", "Penurunan preload", "Peningkatan afterload", "Peningkatan SV", "Peningkatan end-diastolic volume"], a: "Peningkatan end-diastolic volume", exp: "<strong>Penjelasan Detail: Peningkatan end-diastolic volume</strong><br><strong>Konsep Medis:</strong> Ketika miokardium ventrikel menderita payah layu dan pukulannya melunak menjadi pengecut loyo tak bertenaga hampa (Penurunan keganasan tegangan Kontraktilitas/Inotropik negatif), maka godam semprotan jantung gagal membuang memeras menguras tuntas membersihkan peluru darahnya ke koridor pipa luar buang Aorta mutlak. Konsekuensi maut: Volume ampas kotoran darah mati yang masih tersisa mengendap menggenang bersisa di palung dasar ruang pada akhir memompa (End-Systolic Volume / ESV) membesar radikal murni. Tandon sisa kotoran tumpukan ini di putaran pengisian berikutnya akan dikawinkan ditimbun dengan guyuran aliran jatuh air vena masuk kembali yang baru, sehingga total tumpukan genangan mendidih meregang merobek melarkan dinding tangki penampungan ksatria menjadi membesar bengkak mutlak (*Peningkatan paksa muatan End-Diastolic Volume fasik radikal murni*).<br><ul><li><i>Opsi lain:</i> Otot ventrikel yang lemah perasan otomatis murni pasti gagal memacu buang ledak curahan mutlak memutus menenggelamkan menukik Stroke Volume Ejeksi ke jurang kematian hampa anjlok drastis (bukan peningkatan SV).</li></ul>" },
+            { q: "Seorang dokter memeriksa pasien yang memiliki penyakit efusi pleura. Pada rontgen dada thorax, diketahui terdapat akumulasi cairan pada struktur sudut pleura. Struktur ruangan apa yang menjadi penumpukan cairan tersebut?", o: ["Recessus Costomediastenalis", "Hillum pulmonis", "Cavitas Pleura", "Recessus Costodiaphragmaticus", "Sinus Obliquus"], a: "Recessus Costodiaphragmaticus", exp: "<strong>Penjelasan Detail: Recessus Costodiaphragmaticus</strong><br><strong>Konsep Medis:</strong> Bentukan siluet tapal batas anatomi sudut ujung paru pleura rongga kavitas mutlak merespon keras hukum tarikan bumi gravitasi manakala pasien penderita nanah paru bernapas tegak berdiri duduk. Setiap tumpahan genangan tiris rembesan patologis benda cair air nanah letal murni (Efusi Pleura radikal) akan selalu meluncur merosot terjun ditarik membasuh menyapu bergelimang jatuh longsor tenggelam mengisi sudut tajam selokan parit buntu relung paling terdalam di sudut inferior dada (titik pojok tempel terdasar iga luar Kosta pinggir melipir menduduki bersandar mencium lantai tepi tapal batas otot Diafragma). Jurang paling lancip dasar patologis penyimpan sedot radikal maut parit kubangan ini secara anatomis absolut diakui berjuluk murni *Recessus Costodiaphragmaticus* fasik mutlak.<br><ul><li><i>Opsi lain:</i> Kantong dangkal sudut Costomediastinalis murni adalah lekuk relung celah menyusup bersandar menempel saku batas tepi bantal depan kantung parasternum dinding sentral depan memeluk pelindung Jantung fasik. Hilum adalah pintu gapura menara penyeberang tinggi masuk radang Oksigen di atas paru utuh.</li></ul>" },
+            { q: "Pasien menderita penyakit bronkitis akut. Ciri-ciri dari struktur tersebut (bronkus) adalah?", o: ["Mukosa Tidak bergelombang", "Kartilago elastis", "Epitel kolumner simpleks bersilia", "Ada jaringan lymphoid di lapisan adventisia", "Termasuk zona respiratoria"], a: "Ada jaringan lymphoid di lapisan adventisia", exp: "<strong>Penjelasan Detail: Ada jaringan lymphoid di lapisan adventisia</strong><br><strong>Konsep Medis:</strong> Di ujung percabangan setelah udara selamat menembus lolos lurus gerbang kaku tabung atas panjang (Trakea), struktur lapisan benteng mukosa percabangan jalan belah menembus menamai diri berwujud (Bronkus) secara radikal mempersiapkan perisai senjata imun paten tebal untuk menangkap menghisap menyergap kuman kotor pelarian penyusup radikal. Karakteristik marka anatomis mutlak penyusup penyemat yang hanya ditempel bersemayam di tebing dinding batas luar sela rawan bawah perbatasan koridor jaringan pembungkus *adventisia* milik pilar rongga Bronkus ini adalah sarang tembak pos tentara folikel pabrik antibodi nodul limfosit penjaga radikal bernama infiltrasi pertahanan murni *BALT (Bronchus-Associated Lymphoid Tissue)* mutlak fasik.<br><ul><li><i>Opsi lain:</i> Bronkus belum menginjak menyentuh sama sekali menduduki kasta tertinggi perbatasan rongga hampa gas pendarahan difusi (hanya Zone pipa murni Konduksi pelindung, BUKAN tempat difusi gas Zone Respiratoria radikal absolut). Struktur cincin rawan pipanya juga mulai hancur menjadi lempeng tulang plakat-plakat tidak utuh lagi membentuk huruf C padat murni hialin fasik.</li></ul>" },
+            { q: "Tekanan CO2 paling tinggi 45mmhg ada dimana", o: ["Vena sistemik", "Vena pulmonalis", "Arteri sistemik", "Aorta", "Atriol"], a: "Vena sistemik", exp: "<strong>Penjelasan Detail: Vena sistemik</strong><br><strong>Konsep Medis:</strong> Selang pembuluh kotor pembawa arus sisa peredaran genangan tubuh *Vena Sistemik perifer* secara murni difungsikan sebagai tong sampah penampung pengeruk racun bilas pendorong gas kotor radikal. Ia baru saja tuntas memuati bak menelan menghisap mengeduk sisa genangan keringat asap bakaran Karbondioksida tumpah dari tebing otot tungku pabrik jaringan sel-sel keletihan perifer. Di relung gelap kotor pekat oksida vena inilah, muatan tumpukan gas asid racun (pCO2) murni melonjak meroket memaku membentur *titik puncak ketinggian puncaknya mencapai batas konsentrasi mutlak ekstrem 45 hingga 46 mmHg* radikal absolut, sesaat sebelum pendorong limbah kotor ini dibawa dicuci dibilas dijatuhkan menguap pecah di alveolus paru fasik.<br><ul><li><i>Opsi lain:</i> Pipa Vena Pulmonalis justru bertentangan murni membawa darah kehidupan kembali menempel terbasuh dioksigenasi menyentuh paru-paru dengan memuat mutlak oksigen merah suci segar (mengangkut genangan pO2 raksasa Oksigen tinggi kaya radikal mutlak dan pCO2 miskin sangat loyo bersih fasik murni).</li></ul>" },
+            { q: "Kurva disasosiasi oksihemoglobin kalo CO2 tinggi?", o: ["Kurva bergeser ke kiri dan afinitas hemoglobin terhadap O2 meningkat", "Kurva bergeser ke kanan dan afinitas hemoglobin terhadap O2 meningkat", "Kurva bergeser ke kiri dan afinitas hemoglobin terhadap O2 menurun", "Kurva bergeser ke kanan dan afinitas hemoglobin terhadap O2 menurun", "Kurva tidak mengalami perubahan"], a: "Kurva bergeser ke kanan dan afinitas hemoglobin terhadap O2 menurun", exp: "<strong>Penjelasan Detail: Kurva bergeser ke kanan dan afinitas hemoglobin terhadap O2 menurun</strong><br><strong>Konsep Medis:</strong> Kepungan badai tebal kabut asap tumpukan pembuangan gas racun (Peningkatan awan pCO2 jaringan menumpuk kental) di perairan sel yang terbakar olahraga berat murni bertindak sebagai agen racun perusak yang mendobrak menghancurkan gembok rantai belenggu afinitas ikatan cinta egois Hemoglobin (Hb) terhadap pasangan pundi oksigen murninya. Lingkungan asidosis busuk ini membunuh daya cengkeram Hb, memaksa protein merah tersebut merespon pasrah menjadi dermawan melempar merelakan tergelincir bergeser mundur menciut tajam menjatuhkan rute muatan oksigennya murni menukik geser *ke arah sisi rel KANAN (Shift to the Right)* mutlak. Gencatan afinitas Hemoglobin yang *Menurun* murni ini demi menyelamatkan berkorban menyumbangkan guyuran napas curah O2 panik ke sel medan mati jaringan letih fasik radikal.<br><ul><li><i>Opsi lain:</i> Menurunnya CO2 hampa atau membekunya iklim pH Basa mutlak akan mendinginkan memahat memaku grafik menyatu geser membeku *ke arah Kiri*, membuat gembok magnet afinitas kuat memegang oksigen erat egois merantai kaku mati-matian tanpa mau menyusup melepas Oksigen ke sel fasik.</li></ul>" },
+            { q: "Daerah yang mengalami perfusi tidak adekuat membuat vaskular merespon dengan cara?", o: ["Vasodilatasi", "Vasokonstriksi", "Vasospasme", "Penurunan aliran darah", "Peningkatan resistensi vaskular"], a: "Vasodilatasi", exp: "<strong>Penjelasan Detail: Vasodilatasi</strong><br><strong>Konsep Medis:</strong> Mekanisme keselamatan sakti pertahanan perlindungan lokal otomatis (Autoregulasi Hemodinamika Jaringan Intrinsik Perifer) mutlak dikendalikan organ. Bila sel-sel tebing jaringan organ dibiarkan sekarat meregang nyawa murni menderita tercekik mati cekik kehausan tak ada pasokan penyegar aliran Oksigen (Perfusi O2 tak adekuat hipoksik iskemik mati) dan terendam lumpur letih racun buang gas penumpukan produk Asid asam radikal CO2, ion H+, laktat mendidih, maka cairan limbah ini menjadi pelatuk alarm darurat. Respon memutus cekik saklar maut kimia ini akan menyuntik kendur membius perlawanan murni otot melingkar sfingter pembuluh darah prekapiler. Dinding cincin seketika melepas relaks kendur mekar melebarkan koridor membuka menganga bebas (*Vasodilatasi intrinsik melebarkan pipa radikal*) meraup mengemis mutlak membanjiri selokan dengan semprotan debit penyedot banjir luapan pembilas curah masuk air pembawa darah baru fasik.<br><ul><li><i>Opsi lain:</i> Mencengkeram otot memeras menjepit mengkerutkan mengecilkan liang menghentikan pipa hampa aliran air (Vasokonstriksi radikal penyempitan murni mematikan resisten) sama persis dengan metode jagal hukuman mati bunuh diri cekik melumpuhkan memutuskan selang peredaran di saat sel menjerit haus Oksigen fasik mutlak.</li></ul>" },
+            { q: "Hal apakah yang membuat sistem kardiorespirasi bekerja sinergis?", o: ["letak anatomi berada berdekatan", "Sistem kardiorespirasi bergantung pada kemoreseptor", "Sistem kardiorespirasi bergantung pada baroreseptor", "a dan b", "a dan c"], a: "a dan b", exp: "<strong>Penjelasan Detail: a dan b</strong><br><strong>Konsep Medis:</strong> Orkestrasi harmoni paduan murni menakjubkan ikatan padu kontrol kembar sakral jantung gedoran tembak peredaran darah murni dan pernapasan tabung paru paru peras absolut mutlak dikawinkan karena membagi dua poros pondasi kembar letak dan kabel komando mutlak pemicu. Pertama (A): Secara topografi neurologi tugu otak, pabrik sumur pusat pemicu komando jantung (Pusat Kardiovaskuler dan Vasomotor otak pemacu takikardia murni) bertetangga melekat menumpuk saling menduduki menyatu himpit menjalar rimbun merayap berdampingan erat dengan generator pusat peniup hirup napas perut radikal (Pusat Respiratori Kontrol Ritmik Dasar paru VRG DRG utuh) dalam balok kavitas berhimpitan murni di lorong *Medulla Oblongata dan Pons batang otak bawah absolut*. Kedua (B): Keduanya bersujud tunduk patuh dipandu dipecut merespon serempak patuh terhadap pelatuk pantauan penjaga gawang alarm letak pengawas murni komposisi bahaya kimia pelarut Oksigen CO2 pH yakni sensor pelacak radikal detektor darah *Kemoreseptor Perifer (Carotid glomus dan Aortic body) fasik murni mutlak*.<br><ul><li><i>Opsi lain:</i> Sensor gedoran raba regang pembuluh tensi hampa Baroreseptor semata memonitor khusus melebarnya paku lonjakan merespon tembak regang pipa tekanan darah mutlak mekanis, tak memegang komando primer mengontrol cambuk gedor pusat kontrol bernapas buang membuang gas asid CO2 murni fasik.</li></ul>" },
+            { q: "Berikut yang BENAR tentang difusi...", o: ["Berdasarkan kelarutannya, O2 lebih mudah berdifusi daripada CO2", "Berdasarkan kelarutannya, CO2 lebih lambat berdifusi daripada O2", "Berdasarkan berat molekul, O2 Lebih mudah berdifusi daripada CO2", "Berdasarkan berat molekul, CO2 lebih mudah berdifusi daripada O2", "Tidak ada pengaruh"], a: "Berdasarkan berat molekul, O2 Lebih mudah berdifusi daripada CO2", exp: "<strong>Penjelasan Detail: Berdasarkan berat molekul, O2 Lebih mudah berdifusi daripada CO2</strong><br><strong>Konsep Medis:</strong> Hukum matematika Graham yang mengatur laju kecepatan terjun dorong merembes partikel gas pasif murni dalam balok pernapasan secara mutlak bersandar dikte pada besaran parameter bobot radikal atomik gempal gas peluncur tersebut (Berat Molekul / Molecular Weight / MW). Jika ditelanjangi buta ditimbang menimbang ditinjau SECARA MURNI TERISOLASI hanya dari neraca Berat Molekul absolut fisikanya saja murni, cincin kargo beban *Oksigen (O2 berbobot ringan mutlak 32)* jauh lebih enteng lincah melenting menembus merembes membran menyusup jatuh dibanding beban karung gempal muatan gendut *Karbondioksida (CO2 radikal bobot gempal 44)*. Jadi secara teoritis murni berat O2 berdifusi tembus radikal membelah sedikit sepersekian kecepatan lebih ngebut meluncur fasik.<br><ul><li><i>Opsi lain:</i> NAMUN kenyataan realita alamiah air paru dipecundangi mutlak fasik: Bila neraca ditinjau perbandingan dihela dinilai berpedoman pada hukum pendorong cairan Kelarutan gila mutlak (Solubility), maka justru CO2 lah penguasa absolut mutlak memecah melarut menyusup di cairan alveolus 24x berlipat ganda lebih sakti membunuh super cepat cair menembus radikal disbanding miskinnya miskin larut air gas Oksigen mutlak fasik murni utuh. (Pertanyaan di atas mengecoh secara eksplisit meminta perbandingan murni dipisahkan \"Berdasarkan berat molekul\").</li></ul>" },
+            { q: "Seorang pasien mengalami trauma pada a. tibialis posterior. Bagian manakah dikhawatirkan mengalami perdarahan?", o: ["arteri femoralis posterior", "a. tibialis posterior", "a. tibialis anterior", "arteri telapak kaki", "a. tibialis posterior dan telapak kaki"], a: "a. tibialis posterior dan telapak kaki", exp: "<strong>Penjelasan Detail: a. tibialis posterior dan telapak kaki</strong><br><strong>Konsep Medis:</strong> Batang utama pembuluh penyokong curah letup tekanan hidup kompartemen pilar raksasa betis belakang murni dalam mutlak tulang (Arteri Tibialis Posterior) memiliki rute navigasi jatuh meluncur merosot terjun tegak ke bawah. Selang koridor raksasa tungkai curahan darah a. Tibialis Posterior murni ini akan merayap menyelusup masuk terhimpit lewat lekukan selokan kelokan tulang belikat sendi malleolus medialis (mata kaki dalam absolut), menyelinap menjalar menembus menyeberang menabrak merombak cabang dirinya berganti membelah bereinkarnasi menjelma berakhir memasok membanjiri selang muara ganda rute arteri Plantaris lateral dan medial di dataran luas hamparan bawah landasan *bantal kulit telapak alas tapak kaki radikal (Plantar)* fasik murni. Pemutusan penebasan hulu ini mutlak merantai iskemik perdarahan mati menyusur aliran jatuh terbasuh menenggelamkan tumpah di tapak kaki mutlak.<br><ul><li><i>Opsi lain:</i> Femoralis letaknya memanjat menduduki atap takhta trigonum batas koridor paha tinggi mutlak, sementara selang rute punggung Dorsum pedis murni dikuasai disuplai dilayani dihidupi secara absolut difasik murni curahan dari rute Tibialis Anterior depan mutlak.</li></ul>" },
+            { q: "Kasus tentang apklin penumpukkan plak di arteri (orang sakit 60 Tahun, kolesterol, LDL gak ada yg normal), itu kemungkinan besar karena apa?", o: ["Aterosklerosis", "Vasokonstriksi murni", "Aneurisma pembuluh", "Varises vena dalam", "Trombosis limfatik"], a: "Aterosklerosis", exp: "<strong>Penjelasan Detail: Aterosklerosis</strong><br><strong>Konsep Medis:</strong> Di kala dinding pembuluh arteri koroner tersiksa oleh paparan serangan badai tembakan timbunan deposit limbah kolesterol jahat radikal murni (kolesterol LDL tinggi teroksidasi gila-gilaan berlipat di pembuluh darah orang lansia), maka endapan lemak jahat tersebut perlahan mutlak merusak merobek menyusup menyelinap menembus pertahanan dinding tipis selapis Tunika Intima endotel dasar murni. Tumpukan masuk ini mengundang pengerahan amukan pasukan patroli sel makrofag putih yang kalap menyedot lemak membusuk hingga menjejal bunuh diri menjadi Foam Cells (Sel Busa). Lemak busuk mati bangkai makrofag radikal ini mengendap mengkristal mengerak berkarat kapur menebal keras membengkak kaku menyempit mengurung menutup mampet menimbun koridor liang pembuluh membentuk gundukan batu tumor sumbatan (Plak patologis mematikan). Stempel absolut vonis nama klinis murni patologi peradangan lemak robek kaku jepit darah arteri radikal ini mutlak disebut penyakit *Aterosklerosis (Atherosclerosis)* fasik murni.<br><ul><li><i>Opsi lain:</i> Aneurisma adalah melebarnya membengkaknya melembung jebol pecah pelebaran tipis otot dinding pembuluh lemah murni tanpa adanya sumbat karat lemak. Kelumpuhan otot balik jepit letal pintu genang varises mutlak hanya milik vena aliran lambat hampa tanpa gedor tekanan radikal kolesterol plak murni fasik.</li></ul>" },
+            { q: "Coarctatio aorta distal 1 cm a. Subclavia sinister, dinding anterior abdomen dapat vaskularisasi dari..", o: ["A. Subclavia dexter", "A. Spinalis", "A. Thoracic interna", "Truncus thyrocervical", "A. Carotid externa"], a: "A. Thoracic interna", exp: "<strong>Penjelasan Detail: A. Thoracic interna</strong><br><strong>Konsep Medis:</strong> Koarktasio Aorta adalah kelainan cacat lahir di mana selang besar Aorta menyempit kaku tercekik tergencet menyumbat macet mati aliran di bagian lengkung desenden, biasanya tepat setelah cabang memecah pilar A. Subclavia Sinistra (kiri). Darah mutlak terblokir jatuh menyiram perut dada ke rongga bawah abdomen. Untuk menghindari kematian panggul membusuk radikal iskemik, tubuh membongkar memotong rekayasa mengarahkan paksa rute banjir jalur tikus rahasia (Anastomosis kolateral memutar mutlak). Darah tinggi godam dari Aorta mengalihkan paksa tumpahan hantaran airnya berbelok murni menyebrang lewat jalan gerbang *Arteri Subclavia*, merosot jatuh lewat anak cabangnya menerjunkan suplai memutar turun merayapi mengitari selang rusuk sangkar sisi dalam dinding dada (*A. Thoracica Interna / Mammaria Interna murni*), yang kelak memotong membongkar suplai membuang menumpahkan cabang daruratnya menerjunkan darah curah di arteri epigastrika superior (menyuplai membasuh perut dinding anterior panggul abdomen bawah) fasik radikal murni absolut.<br><ul><li><i>Opsi lain:</i> Truncus Tiroid maupun pilar lurus tinggi naik selang Carotis Karotis mutlak bertugas mengunci mensuplai pasokan atas wajah belikat tiroid otak leher memotong meninggi jauh naik, sama sekali tak memiliki urusan rute mutlak terjun membongkar melata turun menebus dasar perut abdomen mutlak fasik murni.</li></ul>" },
+            { q: "Berikut yang benar mengenai emfisema paru adalah:", o: ["Luas permukaan alveolus meningkat sehingga pertukaran gas meningkat", "Terjadi penyempitan bronkus akibat kontraksi otot polos", "Luas permukaan alveolus menurun sehingga pertukaran gas berkurang", "Produksi surfaktan meningkat", "Elastisitas paru meningkat"], a: "Luas permukaan alveolus menurun sehingga pertukaran gas berkurang", exp: "<strong>Penjelasan Detail: Luas permukaan alveolus menurun sehingga pertukaran gas berkurang</strong><br><strong>Konsep Medis:</strong> Emfisema paru (salah satu wujud maut penyakit Asap PPOK radikal) merupakan amukan destruksi kerusakan pembantaian enzim protease patologis peradangan yang mencabik-cabik menghancurkan meledakkan mengikis melelehkan menyatukan jaring dinding-dinding antar-sekat partisi gelembung mikro Alveolus tipis murni. Hancurnya sekat pemisah kantung ini menggabungkan meleburkan banyak kantung paru kecil murni dipaksa rontok menjadi satu kubangan balon udara rongga kistik hampa besar (Blebs / Bullae) tunggal radikal melar fasik. Konsekuensinya secara matematis mutlak mematikan: hilangnya lipatan-lipatan sekat antar ruang ini secara otomatis menukikkan membuat anjlok merosot terjun payung menjatuhkan hancurnya hamparan luasan *permukaan bidang arena membran lahan difusi tempat Oksigen bertukar (Luas permukaan alveolus mutlak menurun drastis)* sehingga efisiensi mesin pernapasan serapan sedot gas pOksigen pertukaran O2 seketika berkurang remuk hampa radikal murni fasik mutlak.<br><ul><li><i>Opsi lain:</i> Paru-paru penderita ini justru menggembung bengkak mati (Hiperinflasi dadanya mengembang barrel chest murni) justru karena paru secara radikal mutlak kehilangan hancur musnah ditarik putus daya memegas melenting karet (Elastisitas paru hilang musnah anjlok) yang semestinya mendorong menarik buangan membuang hembusan pasif udara ekspirasi tertahan radikal.</li></ul>" },
+            { q: "Fase dimana volume tetap dan tekanan turun. Fase ini terjadi setelah", o: ["Kontraksi atrium", "S1", "S2", "Fase R EKG", "S4"], a: "S2", exp: "<strong>Penjelasan Detail: S2</strong><br><strong>Konsep Medis:</strong> Peristiwa jeda mutlak mati di dalam siklus mekanika godam otot jantung yang mana Volume Darah terkunci gembok di dalam bilik murni Tetap statis konstan diam tak berubah sama sekali (Isovolumetric), namun di saat bersamaan paku daya godam Tekanannya merosot jatuh terjun payung ambruk ke dasar curam ke bawah secara radikal adalah gambaran medis definitif fase *Relaksasi Isovolumetrik* (Isovolumetric Relaxation diastol awal murni). Sekuens kejadian jatuh relaks ini dimulai secara mutlak radikal TEPAT SESAAT sesudah godam ejeksi selesai menembak curah sistol menghempas aorta. Tekanan bilik yang melemas tak mampu menahan gaya tarik bumi Aorta mendorong cairan darah luar jatuh berbalik mundur mencoba membanting menabrak menutup jeblak membunyikan menampar pintu *Katup Semilunaris Aorta dan Pulmonal (Membunyikan Gema Nada S2 - Dentuman murni Dup)* fasik mutlak. Segera di mili sekon pasca pintu S2 ini tertutup kaku, ruang bilik terkunci diam merosot loyo melemas membuang sisa tekanan hampa di tengah ruangan buntu mutlak fasik.<br><ul><li><i>Opsi lain:</i> Fase tak bergerak volume diam saat tekanan otot melonjak meroket mengejang ke langit tegak tanpa ada yang tumpah cairan masuk disebut kontraksi isovolumetrik, dan mutlak terjadi tepat setelah pukulan daun tutup pintu S1 gedoran (katup Mitral menutup) murni radikal.</li></ul>" },
+            { q: "Mahasiswa belajar tentang bagaimana darah dari tubuh disalurkan kembali ke jantung. Hal apa yang paling berpengaruh terhadap aliran darah balik ke atrium dextrum.", o: ["katup semilunar", "katup atrioventrokular", "elastisitas vena", "kontraksi otot rangka", "gravitasi sentral"], a: "kontraksi otot rangka", exp: "<strong>Penjelasan Detail: kontraksi otot rangka</strong><br><strong>Konsep Medis:</strong> Sistem pembuluh genangan Vena (terutama di dataran tinggi kaki tungkai memanjang) terkapar loyo hampa miskin otot polos tekanan mati. Ia menampung genangan berat dan mutlak sama sekali tak bertenaga dilintasi cipratan sisa tekanan semprot godam pemompa pompa tekanan jantung (hanya bersisa sekitar 10 mmHg). Arus balik darah vena memutar mudik mendaki lurus lari menanjak kuat melawan tekanan musuh tarik bumi Gravitasi radikal agar kembali sampai ke Atrium Dextrum (Venous Return) murni menyembah mutlak bergantung secara sakral memohon pijatan himpitan eksternal dorongan paksa memeras dari engsel jepitan tuas kontraksi dinamis *Pompa Otot Rangka/Lurik murni (Skeletal Muscle Pump)* di betis dan paha saat melangkah kaki radikal fasik. Pijatan daging otot betis yang menebal menggelembung saat kaki digerakkan akan mengekang meremas mendorong paksa cairan genang vena selangkah demi selangkah ke atas murni fasik mutlak.<br><ul><li><i>Opsi lain:</i> Perisai daun klep katup lipat vena pasif hanya sebatas satpam anti jatuh yang menahan mencegah cairan darah agar tak longsor merosot tumpah amblas berbalik turun mundur gravitasi radikal, tapi bukan penendang pompa dorong aktif ke jantung. Katup Semilunaris di aorta murni memegang urusan memompa menghalau buang dorong menahan balik ejeksi darah merah suci bersih semprot absolut.</li></ul>" },
+            { q: "Kondisi koarktasio aorta 1cm distal a.subclavia sinistra. Jalur alternatif darah kontralateral disalurkan ke aorta abdomen distal dari..", o: ["truncus brachiocephalicus", "a. spialis", "a. subsclavia dextra", "a. mammaria interna", "truncus thyrocervical"], a: "a. mammaria interna", exp: "<strong>Penjelasan Detail: a. mammaria interna</strong><br><strong>Konsep Medis:</strong> Dalam musibah patologi blokade mati jepit himpit mematikan di lengkung batang Aorta koridor lorong dada thorax (Koarktasio menyempit radikal mematikan suplai murni aliran godam bawah), aliran darah O2 tubuh secara panik cerdas dan sakti mutlak akan dipecah membuka melarikan jalur evakuasi penyelamat bypass sakral (Anastomosis memutar koridor murni). Tumpahan godam darurat ini menyebrang lewat belahan utuh *arteri Subclavia* (sebelum blokade himpit aorta), yang mengular bercabang meluncur menjatuhkan memutar rute anak sungai suplai darurat sakti murni ke bawah dengan menuruni tebing tepi dada tulang dalam iga iga (*A. Thoracica Interna mutlak nama lainnya Arteri Mammaria Interna*). Selang iga murni ini terus merosot turun mendaki menginvasi merembes membongkar aliran suplainya bersatu menyiram terjun menghidupi arteri epigastrik pembasah lempeng organ dinding rongga panggul perut abdomen inferior fasik radikal bawah utuh memintas penyumbatan di belakang dada murni.<br><ul><li><i>Opsi lain:</i> Truncus raksasa pilar otak menyemprot naik ke leher pembuluh otak memusat tiroid murni menukik menjauh tegang di udara arah koridor rongga wajah kepala atas radikal, tidak memutar melempar melintasi tembus akar dada rongga panggul abdomen perut dinding bawah radikal absolut sama sekali mutlak.</li></ul>" },
+            { q: "Pasien dengan penyakit jantung kongentif menunjukkan bunyi jantung tambahan di awal diastol. Bunyi ini adalah...", o: ["S1", "S2", "S3", "S4", "Murmur sistol"], a: "S3", exp: "<strong>Penjelasan Detail: S3</strong><br><strong>Konsep Medis:</strong> Gema dentuman nada ketukan ekstra irama derap lari patologis bunyi ketiga mutlak (S3 / Ventricular Gallop ritmik) mengaum radikal terdengar terekam persis sesaat setelah jatuhnya pukulan klep S2. Posisi fase kemunculannya di awal masuk masa santai relaksasi Diastol (fase isian membanjir cepat awal pengisian fasik). Suara dengung deru tumpahan gemuruh maut tambahan air ini diciptakan murni karena derasnya hantaman tumpahan air hujan darah sedot pasif yang jatuh menabrak membentur empas menghantam merobek paksa pilar dinding serabut ventrikel yang sudah dalam kondisi memble robek berpenyakit, terlalu lemah kendor, kehilangan tuas elastis lentur tonus meregang kaku bengkak sangat melebar (over-compliant dilasi mutlak) patologis yang terjadi pada penderita gagal jantung penumpuk air syok *Congestive Heart Failure (Gagal Jantung Kongestif)* mutlak fasik.<br><ul><li><i>Opsi lain:</i> Getar suara ekstra menabrak S4 berbunyi berdengung memeras pelan tepat murni jatuh telat di akhir ujung masa diastol akibat dorongan kejang paksa ampas muntahan sisa darah mengejan serambi kekakuan kontraksi atrium (Atrial Kick) yang dipaksa mencoba menerobos menjejal mengisi tebing otot ventrikel penderita tebal kaku mematung hipertrofi tak patuh hipertensi fasik absolut radikal murni. S1 S2 bunyi murni klep normal dasar menutup.</li></ul>" },
+            { q: "Latihan fisik aerobik yang dilakukan secara rutin dapat menyebabkan adaptasi pada sistem respirasi. Dampak utama latihan tersebut terhadap sistem respirasi adalah:", o: ["Peningkatan jumlah alveolus paru", "Peningkatan efisiensi dan kekuatan otot respirasi", "Peningkatan volume tidal secara permanen saat istirahat", "Penurunan kapasitas vital paru", "Penurunan ventilasi paru"], a: "Peningkatan efisiensi dan kekuatan otot respirasi", exp: "<strong>Penjelasan Detail: Peningkatan efisiensi dan kekuatan otot respirasi</strong><br><strong>Konsep Medis:</strong> Adaptasi kronik (jangka panjang) terhadap siksaan latihan daya tahan ketahanan aerobik berulang memicu mutasi anatomi sel fungsional pada otot-otot pernapasan (otot-otot Interkostal di sela rongga iga pelindung dada dan hamparan membran tebal tuas Diafragma perut). Otot pilar peras baja ini digenjot membesar robek berevolusi menebal hipertrofi radikal secara fungsional. Otot yang kekar besar ksatria memutar mesin engsel membesar tarikan hisap paru secara mutlak meningkatkan daya tahan tangki kelelahan, dan *Meningkatkan Daya Efisiensi hisapan Kekuatan Otot Pernapasan*. Hanya dengan sedotan tarikan lemas santai rileks kedut kecil pelan, dada meraup menelan tarikan sedot udara yang jauh lebih luas efisien raksasa pampat fasik, sehingga si pelari murni tidak mudah didera letih ngos-ngosan terengah sesak kehabisan napas (Penurunan menukik kerja hampa frekuensi bernapas rileks istirahat jatuh efisien fasik murni).<br><ul><li><i>Opsi lain:</i> Kantong gelembung mutlak jumlah miliaran buah Alveolus paru murni mentok paku permanen tak bisa berlipat ganda membelah kloning melahirkan jumlah angka wadah rongga kantung gas organ baru absolut (Jumlah jaringan paru paku tetap mutlak bawaan lahir cetakan embriologi usia perkembangan utuh fasik). Volume tidal rehat turun efisien bukan permanen menetap meningkat ngos ngosan radikal.</li></ul>" },
+            { q: "Resistensi aliran darah dalam pembuluh dipengaruhi oleh beberapa faktor. Faktor yang memiliki hubungan berbanding terbalik dengan derajat empat terhadap resistensi aliran darah adalah:", o: ["Radius pembuluh darah", "Stroke volume", "Cardiac output", "Resistensi vaskuler", "Panjang pembuluh darah"], a: "Radius pembuluh darah", exp: "<strong>Penjelasan Detail: Radius pembuluh darah</strong><br><strong>Konsep Medis:</strong> Menuruti jeratan rantai hukum mutlak dinamika murni aliran hidrolika cairan murni Poiseuille (Hukum Poiseuille tentang hemodinamika vaskular): Tahanan Resistensi (R) pergesekan darah yang memblok aliran mutlak dihitung diputuskan oleh rumus = 8ηL / πr^4. Faktor η adalah lambang viskositas kekentalan cairan, L panjang pipa, dan r mutlak merujuk pada Radius atau Jari-jari lingkaran lubang pipa. Dari dalil rumus sakti ini, Radius selang pembuluh berdiri tunggal menduduki peran sentral sebagai satu-satunya parameter pengendali pemicu yang posisinya duduk di dasar perbandingan (denominator). Ini bermakna mutlak jika liang lorong diameter pipa membesar mekar (Radius bertambah sedikit saja kendur mekar pelebaran vasodilatasi), maka daya cengkeram hambat menahan gesekannya (Resistensi R) bakal meluruh tumbang runtuh hancur berlipat-lipat ganda secara magis dihitung *Berbanding Terbalik* absolut sebesar hitungan kuasa Pangkat Empat radikal (R ∝ 1 / r^4) fasik murni.<br><ul><li><i>Opsi lain:</i> Viskositas sifat kental selang darah beku (η) dan jarak tarikan rentang panjang lorong jalan selang mutlak (L) justru berdiri mendongkrak berbanding melurus selaras menaikkan membenturkan tahanan resistensi semakin kaku mati menyumbat tegang mutlak memuncak.</li></ul>" },
+            { q: "Urutan sistem konduksi listrik pada jantung yang menghantarkan impuls dari nodus atrioventrikular (AV) menuju miokardium ventrikel adalah...", o: ["Nodus AV→ serabut Purkinje → bundle His → cabang berkas", "Nodus AV → bundle His → cabang berkas kanan dan kiri → serabut Purkinje", "Nodus AV→ cabang berkas → bundle His → serabut Purkinje", "Nodus AV→ serabut Purkinje → cabang berkas → bundle His", "Nodus AV→ miokardium ventrikel → bundle His → serabut Purkinje"], a: "Nodus AV → bundle His → cabang berkas kanan dan kiri → serabut Purkinje", exp: "<strong>Penjelasan Detail: Nodus AV → bundle His → cabang berkas kanan dan kiri → serabut Purkinje</strong><br><strong>Konsep Medis:</strong> Setelah lepas dari palang perbatasan Atrium, tembakan letupan kelistrikan meluncur merayapi stasiun lintasan mutlak listrik Searah. Jalur kabel tol penyalur setrum yang membelah tebing otot batas pemisah jantung tersebut tak bisa diputar balik, mengunci rute radikal: Impuls yang lepas meloloskan diri bebas merangkak dari jebakan stasiun delay perlambatan pintu *Nodus AV*, sinyal kabel merayap menjebol meluncur lurus melintasi menembus beton tebing jembatan sekat batas interventrikular atas yakni *Berkas His (Bundle of His / AV Bundle murni)*. Ia lalu membelah arus pecah sungai terjun menukik mendaki menyusur mengapit di kedua sisi tembok vertikal tebing septum dalam rute kiri kanan *Cabang Berkas (Left & Right Bundle Branches)*, dan puncaknya berakar lebat mencakar memancangkan kabel terminal tembakan serabut konduksi ujung menyebar membakar mengejutkan meledak melata mengejangkan serat *Serabut Purkinje* memecut puncak apeks dinding dasar ventrikel murni serempak maut radikal fasik serentak.<br><ul><li><i>Opsi lain:</i> Purkinje adalah kawat tembak saklar rel kereta kabel terminal akhir beringas tercepat di bagian stasiun gerbang stasiun ujung akar mutlak pembagi tebing ventrikel dan tak bisa mustahil secara topografi letak logis ditempatkan ditaruh melompati bertengger memimpin di awal transmisi kelistrikan dasar fasik.</li></ul>" },
+            { q: "Seorang pasien datang dengan tekanan darah 170/100 mmHg. Meskipun tekanan darah sistemik meningkat, aliran darah ke otak tetap relatif stabil karena adanya mekanisme autoregulasi serebral. Mekanisme apakah yang terjadi pada pembuluh darah otak untuk mempertahankan aliran darah tersebut?", o: ["Vasodilatasi arteri serebral", "Vasokonstriksi arteri serebral", "Penurunan metabolisme neuron", "Peningkatan permeabilitas kapiler otak", "Peningkatan tekanan intrakranial"], a: "Vasokonstriksi arteri serebral", exp: "<strong>Penjelasan Detail: Vasokonstriksi arteri serebral</strong><br><strong>Konsep Medis:</strong> Jaringan spons lunak otak (Cerebral) dilindungi dalam batok kaku tertutup mati (Sawar Darah Kranium kaku) dan murni mutlak haram terendam kebanjiran siraman pukulan godam volume semprot syok darah yang terlampau memuncak (Hipertensi 170/100 maut gila berlebih tekanan radikal). Mata kail saklar kecerdasan pertahanan *Autoregulasi Miogenik lokal* pembuluh sel otak sama sekali tak bisa dibohongi letupan palsu. Saat sensor regang terkejut disiram dipukul dikagetkan kencang pukulan dorong terjangan ombak semburan banjir tensi tekanan godam syok sistemik hipertensi masif tersebut, otot polos melingkar sfingter pembuluh kapiler serebri bereaksi merespon spontan seketika memeras mengekang tegang *mengerutkan dinding murni menyempit (Vasokonstriksi lokal miogenik)*. Penyempitan sakti perisai palang ini didirikan memblok pintu lorong air masuk murni agar serabut empuk otak tak basah terendam digenangi tumpah membanjiri selang meleleh hancur pecah tembus fasik mutlak, sehingga arus perfusi dipelihara pelan netral ajek stabil damai aman sentosa.<br><ul><li><i>Opsi lain:</i> Mengendurkan membuka longgar keran selang membesar (Vasodilatasi pipa radikal) justru akan membuka jebol lebar membiarkan keran membunuh memuntahkan badai arus maut semprot membanjiri relung sel kranial otak hingga tenggelam mendidih pembuluh kapiler meledak pecah pendarahan perdarahan stroke hemoragik murni absolut letal fasik.</li></ul>" },
+            { q: "Plica vestibularis terletak pada bagian laring yang disebut", o: ["Epiglottis", "Vestibulum laryngis", "Ventriculus laryngis", "Cavitas infraglottica", "Rima glottidis"], a: "Vestibulum laryngis", exp: "<strong>Penjelasan Detail: Vestibulum laryngis</strong><br><strong>Konsep Medis:</strong> Berdasarkan rancang bangun arsitektur mutlak tata ruang rongga kompartemen tabung napas Laringeal atas, koridor ruangan ini diiris dibagi menjadi sekatan-sekat level tingkat. *Plica Vestibularis* (pasangan dua lipatan selaput tebal pita suara palsu palsu / false vocal cords) murni difungsikan berdiri sebagai pos palang pelindung pita sejati. Pita palsu kaku ini diposisikan menetap menumpang mensekati sekat membentangkan menyekat mengunci perbatasan atap dasar lantai menutupi dasar bawah dari hamparan lorong pelataran ruang kosong serambi muka masuk di singgasana puncak superior rongga paling atas jalan gerbang buka mutlak *(Vestibulum Laryngis / Beranda Laring)* sebelum masuk turun ke bilik pita suara mutlak fasik radikal.<br><ul><li><i>Opsi lain:</i> Celah bolong pita penggetar sejati ruang napas (Rima glottidis) murni diapit dipeluk mutlak tebing tepi sekat maut dawai Plica Vocalis sejati murni. Bilik Ventriculus ruang jepit laryngis justru menyusup bersembunyi terhimpit tepat bersarang menduduki koridor celah sempit di rongga letak perbatasan bawah dasar celah di bawah kantong pita vestibularis lipatan palsu mutlak absolut.</li></ul>" }
+        ];
+
+        // --- GAME LOGIC ---
+        let currentIdx = 0;
+        let score = 0;
+        let mode = '';
+        let userAnswers = [];
+        let drillInterval = null;
+
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const qText = document.getElementById('question-text');
+        const optContainer = document.getElementById('options-container');
+        const feedbackArea = document.getElementById('feedback-area');
+        const btnNext = document.getElementById('btn-next');
+        const btnPrev = document.getElementById('btn-prev');
+        const btnFinish = document.getElementById('btn-finish');
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById('total-q').innerText = questions.length;
+            document.getElementById('display-q-count').innerText = questions.length;
+        });
+
+        function startQuiz(selectedMode) {
+            mode = selectedMode;
+            currentIdx = 0;
+            score = 0;
+            userAnswers = new Array(questions.length).fill(null);
+            
+            // Normalize theme
+            document.body.classList.remove('sudden-death-mode');
+            
+            if (drillInterval) clearInterval(drillInterval);
+            
+            startScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            resultScreen.classList.remove('flex');
+            
+            quizScreen.classList.remove('hidden');
+            quizScreen.classList.add('flex');
+            
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = questions[currentIdx];
+            
+            document.getElementById('curr-q').innerText = currentIdx + 1;
+            
+            if(mode === 'exam') {
+                document.getElementById('score-display').innerText = `EXAM IN PROGRESS`;
+            } else if (mode === 'drill') {
+                document.getElementById('score-display').innerText = `DRILL MODE | SCORE: ${score}`;
+            } else {
+                document.getElementById('score-display').innerText = `SCORE: ${score}`;
+            }
+
+            qText.innerHTML = q.q;
+            feedbackArea.classList.add('hidden');
+            document.getElementById('drill-warning').classList.add('hidden');
+            optContainer.innerHTML = '';
+
+            let optionsToRender = [...q.o];
+            
+            optionsToRender.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-option';
+                btn.innerHTML = `<span>${opt}</span>`;
+                
+                if (userAnswers[currentIdx]) {
+                    btn.disabled = true;
+                    if (opt === q.a && mode === 'practice') {
+                        btn.classList.add('correct');
+                        btn.innerHTML += '<i class="ph-bold ph-check icon-indicator"></i>';
+                    } else if (opt === userAnswers[currentIdx]) {
+                        if (mode === 'practice' && opt !== q.a) {
+                            btn.classList.add('incorrect');
+                            btn.innerHTML += '<i class="ph-bold ph-x icon-indicator"></i>';
+                        } else {
+                            btn.classList.add('selected');
+                        }
+                    }
+                } else {
+                    btn.onclick = () => selectAnswer(opt, q, btn);
+                }
+                
+                optContainer.appendChild(btn);
+            });
+
+            if (userAnswers[currentIdx] && mode === 'practice') {
+                feedbackArea.innerHTML = q.exp;
+                feedbackArea.classList.remove('hidden');
+            }
+
+            btnPrev.disabled = currentIdx === 0;
+            if (currentIdx === questions.length - 1) {
+                btnNext.classList.add('hidden');
+                btnFinish.classList.remove('hidden');
+            } else {
+                btnNext.classList.remove('hidden');
+                btnFinish.classList.add('hidden');
+            }
+        }
+
+        function selectAnswer(ans, q, btnElem) {
+            userAnswers[currentIdx] = ans;
+            const allBtns = optContainer.querySelectorAll('button');
+            allBtns.forEach(b => b.disabled = true);
+
+            if (ans === q.a) {
+                score++;
+                if (mode === 'practice' || mode === 'drill') {
+                    btnElem.classList.add('correct');
+                    btnElem.innerHTML += '<i class="ph-bold ph-check icon-indicator"></i>';
+                }
+            } else {
+                if (mode === 'practice' || mode === 'drill') {
+                    btnElem.classList.add('incorrect');
+                    btnElem.innerHTML += '<i class="ph-bold ph-x icon-indicator"></i>';
+                    
+                    allBtns.forEach(b => {
+                        if (b.innerText === q.a) {
+                            b.classList.add('correct');
+                            b.innerHTML += '<i class="ph-bold ph-check icon-indicator"></i>';
+                        }
+                    });
+                } else {
+                    btnElem.classList.add('selected');
+                }
+            }
+
+            if(mode !== 'exam') {
+                document.getElementById('score-display').innerText = (mode === 'drill' ? 'DRILL MODE | ' : '') + `SCORE: ${score}`;
+            }
+
+            if (mode === 'practice' || mode === 'drill') {
+                feedbackArea.innerHTML = q.exp;
+                feedbackArea.classList.remove('hidden');
+            }
+
+            // --- LOGIC KHUSUS DRILL (SUDDEN DEATH) ---
+            if (mode === 'drill' && ans !== q.a) {
+                // Trigger Nightmare Theme
+                document.body.classList.add('sudden-death-mode');
+                
+                // Sembunyikan tombol next/finish agar tidak bisa lanjut
+                btnNext.classList.add('hidden');
+                btnFinish.classList.add('hidden');
+                btnPrev.disabled = true; // Kunci tombol prev juga
+                
+                const warningBox = document.getElementById('drill-warning');
+                const timeSpan = document.getElementById('drill-time');
+                warningBox.classList.remove('hidden');
+                
+                // Scroll to focus on explanation and the warning
+                setTimeout(() => {
+                    warningBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 150);
+
+                let timeLeft = 10; // Waktu 10 detik untuk membaca rasional
+                timeSpan.innerText = timeLeft;
+                
+                if (drillInterval) clearInterval(drillInterval);
+                drillInterval = setInterval(() => {
+                    timeLeft--;
+                    timeSpan.innerText = timeLeft;
+                    if (timeLeft <= 0) {
+                        clearInterval(drillInterval);
+                        restartDrillNow(); // Auto restart
+                    }
+                }, 1000);
+            }
+        }
+
+        function nextQuestion() {
+            if (currentIdx < questions.length - 1) {
+                currentIdx++;
+                loadQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentIdx > 0) {
+                currentIdx--;
+                loadQuestion();
+            }
+        }
+
+        function finishQuiz() {
+            quizScreen.classList.add('hidden');
+            quizScreen.classList.remove('flex');
+            
+            resultScreen.classList.remove('hidden');
+            resultScreen.classList.add('flex');
+            
+            const finalScoreEl = document.getElementById('final-score');
+            let tempScore = 0;
+            const finalGrade = Math.round((score / questions.length) * 100);
+            
+            const interval = setInterval(() => {
+                if (tempScore >= finalGrade) {
+                    finalScoreEl.innerText = finalGrade;
+                    clearInterval(interval);
+                } else {
+                    tempScore++;
+                    finalScoreEl.innerText = tempScore;
+                }
+            }, 20);
+
+            document.getElementById('res-correct').innerText = score;
+            document.getElementById('res-wrong').innerText = questions.length - score;
+        }
+
+        function backToHome() {
+            if (drillInterval) clearInterval(drillInterval);
+            document.body.classList.remove('sudden-death-mode');
+            
+            quizScreen.classList.add('hidden');
+            quizScreen.classList.remove('flex');
+            resultScreen.classList.add('hidden');
+            resultScreen.classList.remove('flex');
+            
+            startScreen.classList.remove('hidden');
+        }
+
+        // Fungsi restart instan saat mode Drill
+        function restartDrillNow() {
+            if (drillInterval) clearInterval(drillInterval);
+            document.body.classList.remove('sudden-death-mode');
+            startQuiz('drill');
+        }
+    </script>
+</body>
+</html>

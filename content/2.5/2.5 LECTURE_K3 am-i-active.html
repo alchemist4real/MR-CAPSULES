@@ -1,0 +1,1861 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Am I Active? — Quiz Blok 2.5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f8f8f5;--bg2:#f1f1ed;--bg3:#e7e7e2;--bg4:#dcdcd6;
+  --border:rgba(40,55,110,.10);--border2:rgba(40,55,110,.20);
+  --text:#161b2e;--text2:#384068;--text3:#7c85a8;
+  --green:#1f7a4a;--greenbg:rgba(31,122,74,.09);--greenb:rgba(31,122,74,.25);
+  --gold:#7a6010;--goldbg:rgba(122,96,16,.09);--goldb:rgba(122,96,16,.28);
+  --red:#b03030;--redbg:rgba(176,48,48,.08);--redb:rgba(176,48,48,.25);
+  --blue:#1a4faa;--bluebg:rgba(26,79,170,.09);--blueb:rgba(26,79,170,.28);
+  --purp:#4433a0;--purpbg:rgba(68,51,160,.08);--purpb:rgba(68,51,160,.25);
+  --teal:#136ba8;--tealbg:rgba(19,107,168,.08);--tealb:rgba(19,107,168,.25);
+  --r:10px;--rl:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.6;min-height:100vh}
+.app{max-width:900px;margin:0 auto;padding:0 16px 60px}
+header{padding:40px 0 28px;text-align:center}
+.eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--text3);text-transform:uppercase;margin-bottom:10px}
+h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(30px,6vw,54px);letter-spacing:-.03em;line-height:1;margin-bottom:10px}
+h1 span{color:var(--red)}
+.sub{font-size:13px;color:var(--text2);max-width:500px;margin:0 auto}
+.main-tabs{display:flex;gap:3px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:24px}
+.main-tab{flex:1;padding:9px 6px;border-radius:9px;border:none;background:transparent;color:var(--text3);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .18s}
+.main-tab:hover{color:var(--text)}
+.main-tab.active{background:var(--blue);color:#fff;font-weight:600}
+.main-panel{display:none}
+.main-panel.active{display:block;animation:fi .2s ease}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.sub-tabs{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:4px;margin-bottom:20px}
+.sub-tab{padding:8px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text3);font-family:'DM Mono',monospace;font-size:10.5px;cursor:pointer;transition:all .18s;text-align:center;line-height:1.4}
+.sub-tab:hover{background:var(--bg3);color:var(--text2);border-color:var(--border2)}
+.sub-tab.active{background:var(--blue);color:#fff;border-color:var(--text);font-weight:600}
+.sub-panel{display:none}
+.sub-panel.active{display:block;animation:fi .18s ease}
+.sec-h{font-family:'Syne',sans-serif;font-weight:700;font-size:14.5px;color:var(--text);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.divider{height:1px;background:var(--border);margin:20px 0}
+.note{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:0 var(--r) var(--r) 0;padding:10px 14px;font-size:12.5px;color:var(--text2);line-height:1.65;margin-bottom:10px}
+.note strong{color:var(--text)}
+.note.blue{border-left-color:var(--blue)}
+.note.green{border-left-color:var(--green)}
+.note.red{border-left-color:var(--red)}
+.note.purp{border-left-color:var(--purp)}
+.note.teal{border-left-color:var(--teal)}
+.dtable-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:14px}
+.dtable-wrap table{width:100%;border-collapse:collapse;font-size:12px}
+.dtable-wrap thead tr{background:var(--bg3)}
+.dtable-wrap th{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.05em;color:var(--text3);font-weight:600;padding:8px 12px;text-align:left;border-bottom:1px solid var(--border)}
+.dtable-wrap td{padding:7px 12px;border-bottom:1px solid var(--border);font-family:'DM Mono',monospace;font-size:11px;color:var(--text2)}
+.dtable-wrap td:first-child{color:var(--text);font-weight:600}
+.dtable-wrap tr:last-child td{border-bottom:none}
+.dtable-wrap tr:nth-child(even){background:rgba(40,55,110,.02)}
+.formula{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;font-family:'DM Mono',monospace;font-size:12px;color:var(--text);margin:8px 0;line-height:1.8}
+.formula .fkey{color:var(--text3);margin-right:6px}
+.ind-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:4px}
+.ind-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;position:relative;overflow:hidden}
+.ind-card .stripe{position:absolute;top:0;left:0;width:3px;height:100%}
+.ind-card .ind-name{font-family:'Syne',sans-serif;font-size:12.5px;font-weight:700;margin-bottom:6px}
+.ind-card .ind-desc{font-size:12px;color:var(--text2);margin-bottom:8px;line-height:1.6}
+.ind-table{width:100%;border-collapse:collapse}
+.ind-table td{font-family:'DM Mono',monospace;font-size:10.5px;padding:3px 0;border-bottom:1px solid var(--border)}
+.ind-table tr:last-child td{border-bottom:none}
+.ind-table td:first-child{color:var(--text3);width:120px}
+.ind-table td:last-child{font-weight:600;color:var(--text)}
+/* QUIZ */
+.qconfig{text-align:center;padding:28px 0}
+.qconfig-title{font-family:'Syne',sans-serif;font-weight:700;font-size:18px;margin-bottom:6px}
+.qconfig-sub{font-size:13px;color:var(--text2);margin-bottom:22px}
+.cfg-grid{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:26px}
+.cfg-btn{padding:8px 16px;border-radius:20px;border:2px solid var(--border2);background:var(--bg2);color:var(--text3);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;transition:all .18s}
+.cfg-btn:hover{color:var(--text2)}
+.cfg-btn.sel{background:var(--blue);color:#fff;border-color:var(--text);font-weight:600}
+.start-btn{padding:12px 34px;border-radius:var(--r);border:none;background:var(--blue);color:var(--bg);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.02em;transition:all .18s}
+.start-btn:hover{background:var(--text)}
+.qheader{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.qnum-display{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);white-space:nowrap}
+.qnum-display strong{color:var(--text);font-size:15px}
+.qscore-display{margin-left:auto;font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);white-space:nowrap}
+.qscore-display strong{color:var(--green);font-size:15px}
+.qtype-pill{display:inline-block;padding:3px 10px;border-radius:10px;font-family:'DM Mono',monospace;font-size:10px;font-weight:600}
+.qcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:20px 22px;margin-bottom:12px}
+.qscen{font-size:13px;color:var(--text2);margin-bottom:10px;line-height:1.65}
+.qdata{font-family:'DM Mono',monospace;font-size:12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:12px;line-height:2}
+.qdata .dv{font-weight:700;color:var(--text)}
+.qdata .da{font-size:10.5px;color:var(--text3);margin-left:4px}
+.qtext{font-size:14px;font-weight:600;color:var(--text);line-height:1.55}
+.opts{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.opt{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-radius:var(--r);border:1.5px solid var(--border2);background:var(--bg);color:var(--text);text-align:left;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.5;transition:all .15s;width:100%}
+.opt:hover:not(:disabled){background:var(--bg3);border-color:rgba(40,55,110,.3)}
+.opt:disabled{cursor:default}
+.opt-key{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;min-width:22px;height:22px;border-radius:6px;background:var(--bg3);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;color:var(--text3);transition:all .15s}
+.opt.correct{background:var(--bluebg);border-color:var(--blueb)}
+.opt.correct .opt-key{background:var(--blue);color:#fff;border-color:var(--blue)}
+.opt.wrong{background:var(--redbg);border-color:var(--redb)}
+.opt.wrong .opt-key{background:var(--red);color:#fff;border-color:var(--red)}
+.opt.reveal{background:var(--bluebg);border-color:var(--blueb);opacity:.75}
+.opt.reveal .opt-key{background:var(--blue);color:#fff;border-color:var(--blue)}
+.expbox{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:12px;font-size:12.5px;color:var(--text2);line-height:1.72;display:none}
+.expbox.show{display:block;animation:fi .2s ease}
+.expbox strong{color:var(--text)}
+.actrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.next-btn{padding:10px 24px;border-radius:var(--r);border:none;background:var(--text);color:var(--bg);font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .18s;display:none}
+.next-btn:hover{background:var(--red)}
+.end-btn{padding:10px 18px;border-radius:var(--r);border:1px solid var(--redb);background:transparent;color:var(--red);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;transition:all .18s;margin-left:auto}
+.end-btn:hover{background:var(--redbg)}
+.results-wrap{text-align:center;padding:28px 12px}
+.res-big{font-family:'Syne',sans-serif;font-size:64px;font-weight:800;color:var(--text);line-height:1;margin-bottom:4px}
+.res-sub{font-family:'DM Mono',monospace;font-size:13px;color:var(--text3);margin-bottom:18px}
+.res-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:20px;text-align:left}
+.res-stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:11px 14px}
+.res-stat .rv{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--text);margin-bottom:2px}
+.res-stat .rl{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)}
+.retry-btn{padding:12px 32px;border-radius:var(--r);border:none;background:var(--text);color:var(--bg);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .18s;margin-bottom:20px}
+.retry-btn:hover{background:var(--red)}
+footer{text-align:center;padding-top:36px;font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="eyebrow">Aktivitas & Latihan Fisik · Blok 2.5 · FK Unsoed</div>
+  <h1>Am I <span style="color:var(--blue)">Active?</span></h1>
+  <p class="sub">Quiz aktivitas fisik — METs, FITT, energy pathways, rekomendasi latihan & pengukuran intensitas.</p>
+</header>
+
+<div class="main-tabs">
+  <button class="main-tab active" onclick="switchMain('materi',this)">📋 Materi</button>
+  <button class="main-tab" onclick="switchMain('quiz',this)">🎯 Quiz</button>
+</div>
+
+<!-- MATERI -->
+<div class="main-panel active" id="mp-materi">
+<div class="sub-tabs">
+<button class="sub-tab active" onclick="switchSub('tab-pengantarfisiologi',this)">Pengantar & Fisiologi</button>
+<button class="sub-tab " onclick="switchSub('tab-fittintensitas',this)">FITT & Intensitas</button>
+<button class="sub-tab " onclick="switchSub('tab-pengukuranprogram',this)">Pengukuran & Program</button>
+</div>
+
+<div class="sub-panel active" id="tab-pengantarfisiologi">
+<div class="sec-h">Aktivitas Fisik</div>
+<div class="note blue">
+<strong>Disusun oleh:</strong> Susiana Candrawati
+</div>
+
+<div class="divider"></div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Tujuan Pembelajaran</div>
+<ul>
+    <li>Mahasiswa mampu menjelaskan definisi aktivitas fisik</li>
+    <li>Mahasiswa mampu menjelaskan klasifikasi aktivitas fisik</li>
+    <li>Mahasiswa mampu menjelaskan metabolisme energi yang terjadi pada tubuh manusia selama aktivitas fisik</li>
+    <li>Mahasiswa mampu mengukur tingkat aktivitas fisik</li>
+    <li>Mahasiswa mampu menjelaskan resiko dan manfaat dari aktivitas fisik</li>
+    <li>Mahasiswa mampu menjelaskan rekomendasi aktivitas fisik bagi anak dan dewasa</li>
+    <li>Mahasiswa mampu menjelaskan definisi latihan fisik</li>
+    <li>Mahasiswa mampu menjelaskan fisiologi latihan fisik (respon akut & kronis)</li>
+    <li>Mahasiswa mampu menjelaskan komponen latihan fisik (frekuensi, intensitas, durasi, dan jenis) beserta aplikasinya</li>
+</ul>
+
+<div class="divider"></div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Definisi Aktivitas Fisik</div>
+<p>Aktivitas fisik adalah pergerakan tubuh karena adanya kontraksi otot rangka yang berakibat pada peningkatan pengeluaran energi (Caspersen, Powell and Christenson, 1985).</p>
+<p>Aktivitas fisik meliputi:</p>
+<ul>
+    <li>Aktivitas fisik sehari-hari (<em>lifestyle physical activity</em>)</li>
+    <li>Latihan fisik &rarr; <em>Exercise</em> &rarr; <em>Sports</em></li>
+</ul>
+
+<div class="divider"></div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Manfaat Aktivitas Fisik</div>
+<div class="ind-grid">
+    <div class="ind-card">
+        <strong>Menurunkan resiko:</strong>
+        <ul>
+            <li>Kematian dini</li>
+            <li>Penyakit jantung</li>
+            <li>Diabetes mellitus</li>
+            <li>Hipertensi</li>
+            <li>Keganasan (Ca colon)</li>
+        </ul>
+    </div>
+    <div class="ind-card">
+        <strong>Penurunan dari:</strong>
+        <ul>
+            <li>Tekanan darah pd penderita hipertensi</li>
+            <li>Depresi dan kecemasan</li>
+        </ul>
+    </div>
+    <div class="ind-card">
+        <strong>Membantu:</strong>
+        <ul>
+            <li>Mengontrol berat badan</li>
+            <li>Mempertahankan kesehatan muskuloskeletal</li>
+            <li>Meningkatkan kekuatan dan kelincahan pada lansia (preventif falls)</li>
+            <li>Meningkatkan kebahagiaan secara psikologi</li>
+        </ul>
+    </div>
+</div>
+<div class="note">Sumber: (Heyward, 1991)</div>
+
+<div class="divider"></div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Aktivitas Fisik Meningkatkan Kebugaran Fisik</div>
+<ul>
+    <li>Hubungan Tingkat Aktivitas Fisik dengan Indeks Massa tubuh dan Lingkar Pinggang Mahasiswa PPDU FK UI (Candrawati, 2011)</li>
+    <li>Senam Aerobik Meningkatkan Daya Tahan Jantung Paru dan Fleksibilitas (Candrawati et al., 2016)</li>
+    <li>12-Weeks Programmed Aerobics Dance Reduced Body Mass Index and Waist Circumference of Young Women (Sulistyoningrum and Candrawati, 2016)</li>
+    <li>Pliometrik Training Memperbaiki Kelincahan dan Kecepatan Lari Sprint pada Laki laki Muda (Mustofa and Candrawati, 2019)</li>
+</ul>
+
+<div class="divider"></div>
+
+<div class="sec-h">Perubahan Fisiologi Akibat Aktivitas Fisik</div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Sistem Muskuloskeletal</div>
+<p>Latihan fisik memicu adaptasi muskuloskeletal yang terbagi menjadi respons akut dan kronis. Secara akut, kontraksi otot rangka menghasilkan panas yang secara signifikan meningkatkan suhu tubuh inti. Hal ini memicu mekanisme termoregulasi melalui hipotalamus, yang menginduksi vasodilatasi perifer dan pengeluaran keringat untuk disipasi panas. Adaptasi kronis yang paling menonjol dari latihan resistensi adalah hipertrofi otot, yaitu peningkatan luas penampang serat otot akibat peningkatan sintesis protein miofibrilar (aktin dan miosin) melalui aktivasi jalur <em>mammalian target of rapamycin</em> (mTOR) (Kenney, Wilmore and Costill, 2015). Selain itu, stres mekanik (<em>mechanical loading</em>) pada tulang yang dihasilkan selama aktivitas <em>weight-bearing</em> merangsang aktivitas osteoblas melalui jalur mekanotransduksi, yang pada akhirnya meningkatkan <em>Bone Mineral Density</em> (BMD) dan mencegah osteoporosis (ACSM, 2018). Peningkatan pasokan darah kronis ke jaringan ikat juga mengoptimalkan produksi cairan sinovial, sehingga meningkatkan stabilitas dan fleksibilitas persendian.</p>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Sistem Kardiovaskuler</div>
+<p>Secara akut, peningkatan kebutuhan metabolik otot rangka merangsang pusat kardiovaskuler di medula oblongata, memicu dominasi saraf simpatis dan pelepasan katekolamin. Hal ini menghasilkan efek kronotropik dan inotropik positif, meningkatkan frekuensi denyut jantung (<em>Heart Rate</em>) dan volume sekuncup (<em>Stroke Volume</em>). Selain itu, terjadi redistribusi aliran darah (<em>shunting</em>): autoregulasi lokal (peningkatan CO<sub>2</sub>, laktat, dan penurunan pH) menyebabkan vasodilatasi kapiler pada otot yang aktif, sementara peningkatan aktivitas simpatis memicu vasokonstriksi splanknikus pada organ pencernaan dan ginjal (Kenney, Wilmore and Costill, 2015).<br>Secara kronis, latihan aerobik rutin menginduksi hipertrofi ventrikel kiri fisiologis (<em>eccentric hypertrophy</em>), yang secara signifikan meningkatkan <em>end-diastolic volume</em> dan isi sekuncup istirahat. Peningkatan efisiensi pompa jantung ini bermanifestasi secara klinis sebagai bradikardia relatif saat istirahat (<em>resting bradycardia</em>). Adaptasi vaskular kronis juga mencakup peningkatan fungsi endotel, pelepasan <em>nitric oxide</em> (NO), dan penurunan agregasi trombosit, yang secara kolektif menurunkan resistensi perifer dan memitigasi risiko aterosklerosis (Haskell et al., 2007).</p>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Sistem Respirasi</div>
+<p>Respons ventilasi akut terhadap olahraga mencakup peningkatan volume tidal secara eksponensial di awal latihan, diikuti oleh peningkatan frekuensi napas untuk memenuhi peningkatan konsumsi oksigen (VO<sub>2</sub>) dan membuang karbon dioksida. Peningkatan aktivitas motorik merangsang pusat pernapasan. Adaptasi kronis paru meliputi penguatan mekanik otot-otot respirasi, seperti diafragma dan interkostalis eksternal, yang berujung pada peningkatan ventilasi maksimal (<em>Maximal Voluntary Ventilation</em>) dan penurunan beban kerja napas saat istirahat. Hal ini juga meningkatkan efisiensi difusi kapiler-alveolus (Kenney, Wilmore and Costill, 2015).</p>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Sistem Saraf</div>
+<p>Secara neurologis, aktivitas fisik menstimulasi plastisitas sinaptik dan neurogenesis, terutama di <em>hippocampus</em> dan <em>basal ganglia</em>. Ekspresi <em>Brain-Derived Neurotrophic Factor</em> (BDNF) yang diinduksi oleh kontraksi otot memainkan peran krusial dalam pertahanan terhadap degenerasi saraf (Cotman and Berchtold, 2002). Latihan teratur dengan intensitas moderat-tinggi terbukti dapat memitigasi progresivitas penyakit Parkinson, memelihara fungsi dopaminergik, dan meningkatkan kelangsungan hidup neuron (Zigmond et al., 2009). Di sisi afektif, latihan fisik kronis mengurangi risiko dan tingkat keparahan depresi melalui regulasi reseptor serotonin, pelepasan endorfin endogen, dan stabilisasi sekresi katekolamin sistemik (Duman and Monteggia, 2006).</p>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Metabolisme Glukosa dan Lemak</div>
+<p>Latihan fisik menggeser homeostasis metabolik. Secara akut, sekresi glukagon dan epinefrin menginisiasi kaskade fosforilasi yang memecah glikogen hepatik (glikogenolisis) dan mensintesis glukosa de novo (glukoneogenesis) untuk mempertahankan euglikemia. Kontraksi otot juga memicu translokasi transporter glukosa GLUT-4 ke membran sarkolema via jalur aktivasi AMPK (<em>AMP-activated protein kinase</em>), yang tidak bergantung pada insulin. Secara kronis, adaptasi ini menyebabkan peningkatan luar biasa pada sensitivitas insulin perifer, yang menjadi landasan terapi non-farmakologis Diabetes Mellitus Tipe 2 (Colberg et al., 2010). Di sisi metabolisme lipid, hormon lipolitik (epinefrin, kortisol, hormon pertumbuhan) mengaktivasi <em>hormone-sensitive lipase</em> (HSL), meningkatkan mobilisasi asam lemak bebas (FFA) dari adiposit untuk oksidasi beta di mitokondria. Secara kronis, <em>exercise</em> menggeser profil lipid serum menuju anti-aterogenik: meningkatkan sintesis <em>High-Density Lipoprotein</em> (HDL) serta mereduksi proporsi dan ukuran partikel <em>Low-Density Lipoprotein</em> (LDL) dan trigliserida (Kenney, Wilmore and Costill, 2015).</p>
+<div class="divider"></div>
+</div>
+<div class="sub-panel " id="tab-fittintensitas">
+<div class="sec-h">Komponen Latihan Fisik</div>
+<div class="note">Komponen Latihan Fisik adalah <strong>F I T T</strong> (Frekuensi, Intensitas, Time, Type)</div>
+<ol>
+    <li><strong>Frekuensi</strong>: Frekuensi latihan fisik adalah jumlah latihan fisik dalam seminggu &rarr; disesuaikan dengan tujuan latihan.</li>
+    <li><strong>Intensitas</strong>: Intensitas latihan fisik adalah ukuran seberapa berat latihan fisik dilakukan &rarr; Semakin berat latihan fisik yang dilakukan maka semakin tinggi intensitasnya.</li>
+    <li><strong>Time</strong>: Waktu adalah lamanya waktu untuk melakukan latihan fisik per sesi latihan &rarr; mencapai target latihan dalam seminggu.</li>
+    <li><strong>Type</strong>: Type adalah jenis latihan fisik.</li>
+</ol>
+
+<div class="divider"></div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Klasifikasi Intensitas Aktivitas Fisik</div>
+<div class="note">Sumber: (Haskell et al., 2007)</div>
+<div class="dtable-wrap">
+<div class="dtable-wrap"><table>
+    <tr>
+        <th>RENDAH &lt;3,0 METs</th>
+        <th>SEDANG 3,0-6,0 METs</th>
+        <th>TINGGI &gt;6,0 METs</th>
+    </tr>
+    <tr>
+        <td>
+            <strong>BERJALAN</strong><br>
+            Berjalan biasa, &lt; 3 mil/jam<br>
+            Berjalan di rumah/halaman<br>
+            Melihat-lihat di pertokoan<br>
+            Berjalan tanpa tujuan<br><br>
+            <strong>BERSEPEDA</strong><br>
+            Bersepeda &lt; 5 mil / jam
+        </td>
+        <td>
+            <strong>BERJALAN</strong><br>
+            Berjalan langkah sedang atau cepat, 3-4 mil /jam<br>
+            Berjalan ke kampus/tempat kerja<br>
+            Berjalan dengan anjing<br>
+            Berjalan saat istirahat kerja<br>
+            Berjalan turun tangga<br>
+            Gerak jalan<br>
+            Bersepatu roda<br><br>
+            <strong>BERSEPEDA</strong><br>
+            Bersepeda 5-9 mil/jam<br>
+            Bersepeda dengan sedikit mendaki
+        </td>
+        <td>
+            <strong>BERJALAN, JOGGING, LARI</strong><br>
+            Jogging atau lari<br>
+            Skipping<br>
+            Mendaki bukit<br>
+            Mendaki gunung<br>
+            Panjat tebing<br><br>
+            <strong>BERSEPEDA</strong><br>
+            Bersepeda &gt; 10 mil/jam<br>
+            Bersepeda pada ketinggian curam
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <strong>AKTIVITAS DI RUMAH &amp; TEMPAT KERJA</strong><br>
+            Mencuci piring<br>
+            Merapikan tempat tidur<br>
+            Menyiapkan makanan<br>
+            Berkebun<br>
+            Memangkas dahan<br>
+            Menyiangi rumput sambil duduk<br>
+            Menabur benih<br>
+            Duduk bermain videogame<br>
+            Duduk sambil membaca, menulis, dll<br>
+            Duduk menggunakan komputer
+        </td>
+        <td>
+            <strong>AKTIVITAS DI RUMAH &amp; TEMPAT KERJA</strong><br>
+            Mencuci motor, mobil<br>
+            Membersihkan garasi, kaca<br>
+            Menyapu lantai<br>
+            Menggali tanah<br>
+            Menyiangi rumput sambil berdiri atau membungkuk<br>
+            Menanam pohon<br>
+            Memangkas ranting, pohon, dll<br>
+            Mengangkut ranting atau kayu
+        </td>
+        <td>
+            <strong>AKTIVITAS DI RUMAH &amp; TEMPAT KERJA</strong><br>
+            Menyekop sesuatu yang berat<br>
+            Menggali selokan<br>
+            Mengangkut sesuatu yang berat
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <strong>AKTIVITAS WAKTU LUANG &amp; OLAHRAGA</strong><br>
+            Latihan peregangan dengan pemanasan ringan<br>
+            Bermain tenis meja untuk rekreasi<br>
+            Bermain lempar tangkap bola<br>
+            Berenang mengambang<br>
+            Duduk memancing
+        </td>
+        <td>
+            <strong>AKTIVITAS WAKTU LUANG &amp; OLAHRAGA</strong><br>
+            Yoga, senam aerobik<br>
+            Bermain tenis meja untuk pertandingan<br>
+            Bulutangkis, bowling, memukul bola kriket<br>
+            Berenang untuk rekreasi<br>
+            Bermain voli untuk rekreasi
+        </td>
+        <td>
+            <strong>AKTIVITAS WAKTU LUANG &amp; OLAHRAGA</strong><br>
+            Push up, pull up<br>
+            Bermain bola tangan secara tim<br>
+            Bertanding futsal, sepak bola<br>
+            Berenang dengan putaran teratur<br>
+            Bermain tennis tunggal
+        </td>
+    </tr>
+</table></div>
+</div>
+
+<div class="divider"></div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Intensitas Latihan Aerobik</div>
+<div class="dtable-wrap">
+<div class="dtable-wrap"><table>
+    <tr>
+        <th>INTENSITAS</th>
+        <th>% DENYUT NADI MAKSIMAL</th>
+        <th>TALK TEST</th>
+    </tr>
+    <tr>
+        <td>Ringan</td>
+        <td>&lt; 64 %</td>
+        <td>Masih dapat berbicara dan bernyanyi</td>
+    </tr>
+    <tr>
+        <td>Sedang</td>
+        <td>64 - 76 %</td>
+        <td>Masih dapat berbicara tapi tidak dapat bernyanyi</td>
+    </tr>
+    <tr>
+        <td>Berat</td>
+        <td>&gt; 76 %</td>
+        <td>Sulit berbicara</td>
+    </tr>
+</table></div>
+</div>
+
+<div class="divider"></div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Rating of Perceived Exertion (RPE) (Borg, 1982)</div>
+<div class="dtable-wrap">
+<div class="dtable-wrap"><table>
+    <tr>
+        <th>Modified Scale</th>
+        <th>Ordinal Scale</th>
+        <th>Percent Effort</th>
+        <th>Perceived Work Load</th>
+        <th>Talk Test</th>
+        <th>Intensity Level</th>
+    </tr>
+    <tr>
+        <td>-</td>
+        <td>6</td>
+        <td>20%</td>
+        <td rowspan="2">Very, very light</td>
+        <td rowspan="2">At Rest</td>
+        <td rowspan="2">Very Light Intensity (1-2)</td>
+    </tr>
+    <tr>
+        <td>-</td>
+        <td>7</td>
+        <td>30%</td>
+    </tr>
+    <tr>
+        <td>-</td>
+        <td>8</td>
+        <td>40%</td>
+        <td rowspan="2">Very light</td>
+        <td rowspan="2">Gentle walking or "strolling"</td>
+        <td rowspan="2">Light Intensity (3-4)</td>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>9</td>
+        <td>50%</td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>10</td>
+        <td>55%</td>
+        <td rowspan="2">Fairly light</td>
+        <td rowspan="2">Steady pace, not breathless</td>
+        <td rowspan="2">Moderate Intensity (5-6)</td>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td>11</td>
+        <td>60%</td>
+    </tr>
+    <tr>
+        <td>-</td>
+        <td>12</td>
+        <td>65%</td>
+        <td rowspan="2">Moderately hard</td>
+        <td rowspan="2">Brisk walking, able to carry on a conversation</td>
+        <td rowspan="2">Vigorous Intensity (7-8)</td>
+    </tr>
+    <tr>
+        <td>4</td>
+        <td>13</td>
+        <td>70%</td>
+    </tr>
+    <tr>
+        <td>-</td>
+        <td>14</td>
+        <td>75%</td>
+        <td rowspan="3">Hard</td>
+        <td rowspan="3">Very brisk walking, must take a breath between 4-5 words</td>
+        <td rowspan="3">Maximum Intensity (9-10)</td>
+    </tr>
+    <tr>
+        <td>5</td>
+        <td>15</td>
+        <td>80%</td>
+    </tr>
+    <tr>
+        <td>6</td>
+        <td>16</td>
+        <td>85%</td>
+    </tr>
+    <tr>
+        <td>7</td>
+        <td>17</td>
+        <td>90%</td>
+        <td rowspan="2">Very hard</td>
+        <td rowspan="4">Unable to talk and keep pace</td>
+        <td rowspan="4">Maximum Intensity (9-10)</td>
+    </tr>
+    <tr>
+        <td>8</td>
+        <td>18</td>
+        <td>95%</td>
+    </tr>
+    <tr>
+        <td>9</td>
+        <td>19</td>
+        <td>100%</td>
+        <td rowspan="2">Very, very hard / Exhaustion</td>
+    </tr>
+    <tr>
+        <td>10</td>
+        <td>20</td>
+        <td>-</td>
+    </tr>
+</table></div>
+</div>
+
+<div class="divider"></div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Intensitas Pada Latihan Beban</div>
+<div class="note blue">
+    <strong>Repetition Maximum (RM)</strong> (Schoenfeld et al., 2017)<br>
+    adalah beban maksimal yang dapat diangkat pada 1 repetisi &rarr; intensitas pada latihan beban.
+    <ul>
+        <li>Ringan: 30-49%</li>
+        <li>Sedang: 50-69%</li>
+        <li>Berat: 70-84%</li>
+    </ul>
+</div>
+<div class="note green">
+    <strong>Repetition in Reserve (RIR)</strong> (Zourdos et al., 2016)<br>
+    mengindikasikan jumlah repetisi yang masih mampu dilakukan sebelum mencapai kegagalan (<em>failure</em>).
+    <ul>
+        <li>Ringan: repetisi &ge; 5</li>
+        <li>Sedang: repetisi 3-4</li>
+        <li>Berat: repetisi 1-2</li>
+    </ul>
+</div>
+
+<div class="divider"></div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Type</div>
+<ul>
+    <li><strong>Aerobik</strong></li>
+    <li><strong>Beban</strong> (Free weight, bodyweight)</li>
+    <li><strong>Fleksibilitas</strong> (Statis, Dinamis)</li>
+</ul>
+
+<div class="dtable-wrap">
+<div class="dtable-wrap"><table>
+    <tr>
+        <th>TIPE</th>
+        <th>DESKRIPSI</th>
+        <th>REKOMENDASI</th>
+        <th>CONTOH</th>
+    </tr>
+    <tr>
+        <td>A</td>
+        <td>Aktivitas aerobik yang membutuhkan keterampilan minimal atau kebugaran jasmani</td>
+        <td>Semua orang dewasa</td>
+        <td>Berjalan kaki, bersepeda santai, aqua-aerobik, menari dengan gerak lambat</td>
+    </tr>
+    <tr>
+        <td>B</td>
+        <td>Aktivitas aerobik intensitas tinggi yang membutuhkan keterampilan minimal</td>
+        <td>Orang dewasa yang sudah biasa melakukan aktivitas fisik dan/atau minimal memiliki tingkat kebugaran fisik cukup</td>
+        <td>Jogging, berlari, mendayung, latihan aerobik, step aerobik, menari dengan gerak yang cepat</td>
+    </tr>
+    <tr>
+        <td>C</td>
+        <td>Aktivitas aerobik yang membutuhkan keterampilan</td>
+        <td>Orang dewasa yang sudah memiliki keterampilan dan/atau minimal memiliki tingkat kebugaran fisik cukup</td>
+        <td>Berenang</td>
+    </tr>
+    <tr>
+        <td>D</td>
+        <td>Olahraga rekreasi</td>
+        <td>Orang dewasa yang sudah melakukan program latihan fisik teratur dan memiliki tingkat kebugaran fisik cukup</td>
+        <td>Olahraga raket, bola basket, sepak bola</td>
+    </tr>
+</table></div>
+</div>
+
+<div class="divider"></div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Dominant Energy Pathways for Exercise of Differing Durations</div>
+<?xml version="1.0" encoding="utf-8"?>
+<p><div style="background:#fff;padding:10px;border-radius:8px;margin:10px 0;text-align:center;border:1px solid var(--border);overflow-x:auto;"><svg style="max-width:100%; height:auto;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" data-d2-version="v0.7.1" preserveAspectRatio="xMinYMin meet" viewBox="0 0 640 662"><svg class="d2-52739728 d2-svg" width="640" height="662" viewBox="-101 -101 640 662"><rect x="-101.000000" y="-101.000000" width="640.000000" height="662.000000" rx="0.000000" fill="#FFFFFF" class=" fill-N7" stroke-width="0" /><style type="text/css"><![CDATA[
+.d2-52739728 .text-bold {
+	font-family: "d2-52739728-font-bold";
+}
+@font-face {
+	font-family: d2-52739728-font-bold;
+	src: url("data:application/font-woff;base64,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");
+}
+.d2-52739728 .text-italic {
+	font-family: "d2-52739728-font-italic";
+}
+@font-face {
+	font-family: d2-52739728-font-italic;
+	src: url("data:application/font-woff;base64,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");
+}]]></style><style type="text/css"><![CDATA[.shape {
+  shape-rendering: geometricPrecision;
+  stroke-linejoin: round;
+}
+.connection {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.blend {
+  mix-blend-mode: multiply;
+  opacity: 0.5;
+}
+
+		.d2-52739728 .fill-N1{fill:#0A0F25;}
+		.d2-52739728 .fill-N2{fill:#676C7E;}
+		.d2-52739728 .fill-N3{fill:#9499AB;}
+		.d2-52739728 .fill-N4{fill:#CFD2DD;}
+		.d2-52739728 .fill-N5{fill:#DEE1EB;}
+		.d2-52739728 .fill-N6{fill:#EEF1F8;}
+		.d2-52739728 .fill-N7{fill:#FFFFFF;}
+		.d2-52739728 .fill-B1{fill:#0D32B2;}
+		.d2-52739728 .fill-B2{fill:#0D32B2;}
+		.d2-52739728 .fill-B3{fill:#E3E9FD;}
+		.d2-52739728 .fill-B4{fill:#E3E9FD;}
+		.d2-52739728 .fill-B5{fill:#EDF0FD;}
+		.d2-52739728 .fill-B6{fill:#F7F8FE;}
+		.d2-52739728 .fill-AA2{fill:#4A6FF3;}
+		.d2-52739728 .fill-AA4{fill:#EDF0FD;}
+		.d2-52739728 .fill-AA5{fill:#F7F8FE;}
+		.d2-52739728 .fill-AB4{fill:#EDF0FD;}
+		.d2-52739728 .fill-AB5{fill:#F7F8FE;}
+		.d2-52739728 .stroke-N1{stroke:#0A0F25;}
+		.d2-52739728 .stroke-N2{stroke:#676C7E;}
+		.d2-52739728 .stroke-N3{stroke:#9499AB;}
+		.d2-52739728 .stroke-N4{stroke:#CFD2DD;}
+		.d2-52739728 .stroke-N5{stroke:#DEE1EB;}
+		.d2-52739728 .stroke-N6{stroke:#EEF1F8;}
+		.d2-52739728 .stroke-N7{stroke:#FFFFFF;}
+		.d2-52739728 .stroke-B1{stroke:#0D32B2;}
+		.d2-52739728 .stroke-B2{stroke:#0D32B2;}
+		.d2-52739728 .stroke-B3{stroke:#E3E9FD;}
+		.d2-52739728 .stroke-B4{stroke:#E3E9FD;}
+		.d2-52739728 .stroke-B5{stroke:#EDF0FD;}
+		.d2-52739728 .stroke-B6{stroke:#F7F8FE;}
+		.d2-52739728 .stroke-AA2{stroke:#4A6FF3;}
+		.d2-52739728 .stroke-AA4{stroke:#EDF0FD;}
+		.d2-52739728 .stroke-AA5{stroke:#F7F8FE;}
+		.d2-52739728 .stroke-AB4{stroke:#EDF0FD;}
+		.d2-52739728 .stroke-AB5{stroke:#F7F8FE;}
+		.d2-52739728 .background-color-N1{background-color:#0A0F25;}
+		.d2-52739728 .background-color-N2{background-color:#676C7E;}
+		.d2-52739728 .background-color-N3{background-color:#9499AB;}
+		.d2-52739728 .background-color-N4{background-color:#CFD2DD;}
+		.d2-52739728 .background-color-N5{background-color:#DEE1EB;}
+		.d2-52739728 .background-color-N6{background-color:#EEF1F8;}
+		.d2-52739728 .background-color-N7{background-color:#FFFFFF;}
+		.d2-52739728 .background-color-B1{background-color:#0D32B2;}
+		.d2-52739728 .background-color-B2{background-color:#0D32B2;}
+		.d2-52739728 .background-color-B3{background-color:#E3E9FD;}
+		.d2-52739728 .background-color-B4{background-color:#E3E9FD;}
+		.d2-52739728 .background-color-B5{background-color:#EDF0FD;}
+		.d2-52739728 .background-color-B6{background-color:#F7F8FE;}
+		.d2-52739728 .background-color-AA2{background-color:#4A6FF3;}
+		.d2-52739728 .background-color-AA4{background-color:#EDF0FD;}
+		.d2-52739728 .background-color-AA5{background-color:#F7F8FE;}
+		.d2-52739728 .background-color-AB4{background-color:#EDF0FD;}
+		.d2-52739728 .background-color-AB5{background-color:#F7F8FE;}
+		.d2-52739728 .color-N1{color:#0A0F25;}
+		.d2-52739728 .color-N2{color:#676C7E;}
+		.d2-52739728 .color-N3{color:#9499AB;}
+		.d2-52739728 .color-N4{color:#CFD2DD;}
+		.d2-52739728 .color-N5{color:#DEE1EB;}
+		.d2-52739728 .color-N6{color:#EEF1F8;}
+		.d2-52739728 .color-N7{color:#FFFFFF;}
+		.d2-52739728 .color-B1{color:#0D32B2;}
+		.d2-52739728 .color-B2{color:#0D32B2;}
+		.d2-52739728 .color-B3{color:#E3E9FD;}
+		.d2-52739728 .color-B4{color:#E3E9FD;}
+		.d2-52739728 .color-B5{color:#EDF0FD;}
+		.d2-52739728 .color-B6{color:#F7F8FE;}
+		.d2-52739728 .color-AA2{color:#4A6FF3;}
+		.d2-52739728 .color-AA4{color:#EDF0FD;}
+		.d2-52739728 .color-AA5{color:#F7F8FE;}
+		.d2-52739728 .color-AB4{color:#EDF0FD;}
+		.d2-52739728 .color-AB5{color:#F7F8FE;}.appendix text.text{fill:#0A0F25}.md{--color-fg-default:#0A0F25;--color-fg-muted:#676C7E;--color-fg-subtle:#9499AB;--color-canvas-default:#FFFFFF;--color-canvas-subtle:#EEF1F8;--color-border-default:#0D32B2;--color-border-muted:#0D32B2;--color-neutral-muted:#EEF1F8;--color-accent-fg:#0D32B2;--color-accent-emphasis:#0D32B2;--color-attention-subtle:#676C7E;--color-danger-fg:red;}.sketch-overlay-B1{fill:url(#streaks-darker-d2-52739728);mix-blend-mode:lighten}.sketch-overlay-B2{fill:url(#streaks-darker-d2-52739728);mix-blend-mode:lighten}.sketch-overlay-B3{fill:url(#streaks-bright-d2-52739728);mix-blend-mode:darken}.sketch-overlay-B4{fill:url(#streaks-bright-d2-52739728);mix-blend-mode:darken}.sketch-overlay-B5{fill:url(#streaks-bright-d2-52739728);mix-blend-mode:darken}.sketch-overlay-B6{fill:url(#streaks-bright-d2-52739728);mix-blend-mode:darken}.sketch-overlay-AA2{fill:url(#streaks-dark-d2-52739728);mix-blend-mode:overlay}.sketch-overlay-AA4{fill:url(#streaks-bright-d2-52739728);mix-blend-mode:darken}.sketch-overlay-AA5{fill:url(#streaks-bright-d2-52739728);mix-blend-mode:darken}.sketch-overlay-AB4{fill:url(#streaks-bright-d2-52739728);mix-blend-mode:darken}.sketch-overlay-AB5{fill:url(#streaks-bright-d2-52739728);mix-blend-mode:darken}.sketch-overlay-N1{fill:url(#streaks-darker-d2-52739728);mix-blend-mode:lighten}.sketch-overlay-N2{fill:url(#streaks-dark-d2-52739728);mix-blend-mode:overlay}.sketch-overlay-N3{fill:url(#streaks-normal-d2-52739728);mix-blend-mode:color-burn}.sketch-overlay-N4{fill:url(#streaks-normal-d2-52739728);mix-blend-mode:color-burn}.sketch-overlay-N5{fill:url(#streaks-bright-d2-52739728);mix-blend-mode:darken}.sketch-overlay-N6{fill:url(#streaks-bright-d2-52739728);mix-blend-mode:darken}.sketch-overlay-N7{fill:url(#streaks-bright-d2-52739728);mix-blend-mode:darken}.light-code{display: block}.dark-code{display: none}]]></style><g class="RW5lcmd5"><g class="shape" ><path d="M 343 191 C 343 167 386 167 391 167 C 395 167 438 167 438 191 V 261 C 438 285 395 285 391 285 C 386 285 343 285 343 261 V 191 Z" stroke="#0D32B2" fill="#EDF0FD" class=" stroke-B1 fill-AA4" style="stroke-width:2;" /><path d="M 343 191 C 343 215 386 215 391 215 C 395 215 438 215 438 191" stroke="#0D32B2" fill="#EDF0FD" class=" stroke-B1 fill-AA4" style="stroke-width:2;" /></g><text x="390.500000" y="243.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">Energy</text></g><g class="QVRQ"><g class="shape" ><rect x="59.000000" y="0.000000" width="74.000000" height="66.000000" stroke="#0D32B2" fill="#F7F8FE" class=" stroke-B1 fill-B6" style="stroke-width:2;" /></g><text x="96.000000" y="38.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">ATP</text></g><g class="Q3JlYXRpbmUgUGhvc3BoYXRl"><g class="shape" ><rect x="4.000000" y="126.000000" width="185.000000" height="66.000000" stroke="#0D32B2" fill="#F7F8FE" class=" stroke-B1 fill-B6" style="stroke-width:2;" /></g><text x="96.500000" y="164.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">Creatine Phosphate</text></g><g class="JiMzNDtBbmFlcm9iaWMgR2x5Y29seXNpc1xuKExhY3RpYyBhY2lkKSYjMzQ7"><g class="shape" ><rect x="0.000000" y="252.000000" width="192.000000" height="82.000000" stroke="#0D32B2" fill="#F7F8FE" class=" stroke-B1 fill-B6" style="stroke-width:2;" /></g><text x="96.000000" y="290.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="96.000000" dy="0.000000">Anaerobic Glycolysis</tspan><tspan x="96.000000" dy="18.500000">(Lactic acid)</tspan></text></g><g class="QWVyb2JpYyBHbHljb2x5c2lz"><g class="shape" ><rect x="9.000000" y="394.000000" width="174.000000" height="66.000000" stroke="#0D32B2" fill="#F7F8FE" class=" stroke-B1 fill-B6" style="stroke-width:2;" /></g><text x="96.000000" y="432.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">Aerobic Glycolysis</text></g><g class="KEFUUCAtJmd0OyBFbmVyZ3kpWzBd"><marker id="mk-d2-52739728-3488378134" markerWidth="10.000000" markerHeight="12.000000" refX="7.000000" refY="6.000000" viewBox="0.000000 0.000000 10.000000 12.000000" orient="auto" markerUnits="userSpaceOnUse"> <polygon points="0.000000,0.000000 10.000000,6.000000 0.000000,12.000000" fill="#0D32B2" class="connection fill-B1" stroke-width="2" /> </marker><path d="M 134.500000 33.000000 C 240.500000 33.000000 285.200012 61.000000 353.862666 169.618905" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-52739728-3488378134)" mask="url(#d2-52739728)" /><text x="273.000000" y="59.000000" fill="#676C7E" class="text-italic fill-N2" style="text-anchor:middle;font-size:16px">2 sec</text></g><g class="KENyZWF0aW5lIFBob3NwaGF0ZSAtJmd0OyBFbmVyZ3kpWzBd"><path d="M 191.500000 159.000000 C 251.899994 159.000000 282.600006 167.199997 339.484865 198.091119" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-52739728-3488378134)" mask="url(#d2-52739728)" /><text x="270.000000" y="169.000000" fill="#676C7E" class="text-italic fill-N2" style="text-anchor:middle;font-size:16px">10 sec</text></g><g class="KCYjMzQ7QW5hZXJvYmljIEdseWNvbHlzaXNcbihMYWN0aWMgYWNpZCkmIzM0OyAtJmd0OyBFbmVyZ3kpWzBd"><path d="M 193.500000 293.000000 C 252.300003 293.000000 282.600006 284.799988 339.484865 253.908881" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-52739728-3488378134)" mask="url(#d2-52739728)" /><text x="271.000000" y="293.000000" fill="#676C7E" class="text-italic fill-N2" style="text-anchor:middle;font-size:16px">90 sec</text></g><g class="KEFlcm9iaWMgR2x5Y29seXNpcyAtJmd0OyBFbmVyZ3kpWzBd"><path d="M 184.500000 427.000000 C 250.500000 427.000000 285.600006 397.600006 355.902964 283.406236" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-52739728-3488378134)" mask="url(#d2-52739728)" /><text x="291.500000" y="393.000000" fill="#676C7E" class="text-italic fill-N2" style="text-anchor:middle;font-size:16px">&gt; 90 sec</text></g><mask id="d2-52739728" maskUnits="userSpaceOnUse" x="-101" y="-101" width="640" height="662">
+<rect x="-101" y="-101" width="640" height="662" fill="white"></rect>
+<rect x="254.000000" y="43.000000" width="38" height="21" fill="black"></rect>
+<rect x="248.000000" y="153.000000" width="44" height="21" fill="black"></rect>
+<rect x="249.000000" y="277.000000" width="44" height="21" fill="black"></rect>
+<rect x="264.000000" y="377.000000" width="55" height="21" fill="black"></rect>
+</mask></svg></div></svg></p>
+<div class="note">
+<strong>Penjelasan Jalur Energi (Energy Pathways)</strong><br>
+Sistem metabolisme tubuh menggunakan tiga jalur utama untuk menghasilkan ATP selama aktivitas fisik, yang pemakaiannya tumpang tindih bergantung pada durasi dan intensitas latihan (Kenney, Wilmore and Costill, 2015):
+<ul>
+    <li><strong>Sistem ATP-PCr (Fosfagen):</strong> Mendominasi pada 10-15 detik pertama latihan intensitas sangat tinggi (sprint, angkat beban). Kreatin fosfat (CP) mendonasikan gugus fosfatnya ke ADP untuk membentuk ATP dengan sangat cepat tanpa memerlukan oksigen. Kapasitasnya sangat terbatas.</li>
+    <li><strong>Sistem Glikolisis Anaerobik:</strong> Mendominasi dari detik ke-15 hingga sekitar 2-3 menit. Memecah glukosa atau glikogen otot menjadi piruvat, lalu diubah menjadi asam laktat tanpa kehadiran oksigen yang memadai. Jalur ini memproduksi ATP lebih lambat dari sistem ATP-PCr namun kapasitasnya lebih besar. Akumulasi ion hidrogen (H+) menyertai laktat dapat menyebabkan kelelahan otot akut.</li>
+    <li><strong>Sistem Aerobik (Oksidatif):</strong> Mulai mendominasi setelah 2-3 menit aktivitas ketika sistem kardiovaskuler sudah cukup mensuplai oksigen ke otot. Proses ini (Siklus Krebs dan Rantai Transpor Elektron) terjadi di mitokondria, memanfaatkan glukosa maupun asam lemak bebas. Jalur ini memiliki laju produksi ATP yang paling lambat namun kapasitasnya tak terbatas, ideal untuk aktivitas daya tahan (<em>endurance</em>).</li>
+</ul>
+</div>
+
+<div class="divider"></div>
+</div>
+<div class="sub-panel " id="tab-pengukuranprogram">
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Rekomendasi Aktivitas Fisik</div>
+<ul>
+    <li><strong>F</strong>: Aktivitas fisik <em>moderate</em> dilakukan sekurang-kurangnya 30 menit dalam 5 hari per minggu.</li>
+    <li><strong>I</strong>: Aktivitas fisik <em>vigorous</em> dilakukan sekurang-kurangnya 20 menit dalam 3 hari per minggu.</li>
+    <li><strong>T &amp; T</strong>: Aktivitas aerobik &rarr; kardiovaskuler. <em>Resistance exercise</em> &rarr; tulang &amp; otot.</li>
+</ul>
+<div class="note">Sumber: Physical activity and public health: updated recommendation for adults from Haskell et al., 2007</div>
+
+<div class="dtable-wrap">
+<div class="dtable-wrap"><table>
+    <tr>
+        <th>Tingkat aktivitas fisik</th>
+        <th>Keterangan</th>
+        <th>Manfaat kesehatan yang diperoleh</th>
+    </tr>
+    <tr>
+        <td>Rendah</td>
+        <td>Aktivitas fisik dasar<br>+<br>Aktivitas fisik intensitas sedang selama &lt; 150 menit/minggu<br>ATAU<br>Aktivitas fisik intensitas berat selama &lt; 75 menit/minggu</td>
+        <td>Hanya beberapa manfaat yang diperoleh</td>
+    </tr>
+    <tr>
+        <td>Sedang</td>
+        <td>Aktivitas fisik dasar<br>+<br>Aktivitas fisik intensitas sedang selama 150-300 menit/minggu<br>ATAU<br>Aktivitas fisik intensitas berat selama 75-150 menit/minggu</td>
+        <td>Sebagian besar manfaat diperoleh</td>
+    </tr>
+    <tr>
+        <td>Tinggi</td>
+        <td>Aktivitas fisik dasar<br>+<br>Aktivitas fisik intensitas sedang selama &gt; 300 menit/minggu<br>ATAU<br>Aktivitas fisik intensitas berat selama &gt; 150 menit/minggu</td>
+        <td>Banyak manfaat diperoleh</td>
+    </tr>
+</table></div>
+</div>
+
+<div class="divider"></div>
+
+<div class="sec-h">Metode Pengukuran Tingkat Aktivitas Fisik</div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Metode Subyektif</div>
+<p>Metode subyektif bergantung pada daya ingat dan persepsi pasien. Umumnya digunakan untuk penapisan skala besar dan studi epidemiologi karena biayanya yang rendah.</p>
+<ul>
+    <li><strong>International Physical Activity Questionnaire (IPAQ):</strong> Mengukur durasi dan frekuensi aktivitas (ringan, sedang, berat) dalam 7 hari terakhir. Kelebihannya adalah dapat membandingkan data lintas negara secara standar, namun kekurangannya sering terjadi <em>over-reporting</em> durasi. Hasil dapat dihitung ke dalam satuan MET-menit/minggu.</li>
+    <li><strong>Physical Activity Recall (PAR):</strong> Umumnya meminta partisipan mengingat aktivitas 24 jam atau 7 hari ke belakang. Berguna untuk menangkap variasi aktivitas sehari-hari, namun rentan terhadap <em>recall bias</em>.</li>
+    <li><strong>Habitual Activity Questionnaire (HAQ):</strong> Mengukur kebiasaan jangka panjang dan pola hidup <em>sedentary</em>.</li>
+    <li><strong>Physical Activity Scale for Elderly (PASE):</strong> Instrumen yang didesain khusus untuk populasi lansia, mencakup aktivitas rekreasi, rumah tangga, dan pekerjaan yang relevan bagi usia lanjut.</li>
+    <li><strong>Diari aktivitas fisik (Bouchard):</strong> Mencatat aktivitas setiap 15 menit selama 3 hari berturut-turut. Hasilnya dikonversi menjadi pengeluaran energi harian total.</li>
+</ul>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Metode Obyektif</div>
+<p>Metode obyektif meniadakan <em>recall bias</em> dengan mengukur parameter fisiologis atau mekanis (Strath et al., 2013).</p>
+<ul>
+    <li><strong>Pengukuran Pengeluaran Energi:</strong> Memanfaatkan kalorimetri (langsung/tidak langsung) atau <em>doubly labeled water</em> (DLW). Mengukur konsumsi O<sub>2</sub> dan produksi CO<sub>2</sub> untuk menghitung <em>Metabolic Equivalent of Task</em> (METs) secara presisi. 1 MET setara dengan laju metabolisme basal (3,5 ml O<sub>2</sub>/kg/menit). <em>Activity Energy Expenditure</em> (AEE) dapat dikalkulasi dengan mengalikan METs dengan durasi dan berat badan. Ini adalah <em>gold standard</em> namun mahal dan rumit.</li>
+    <li><strong>Pemantauan Denyut Jantung (Heart Rate Monitor):</strong> Mengukur <em>net heart rate</em> dan memprediksi konsumsi oksigen berdasarkan kurva hubungan linier antara denyut jantung dan VO<sub>2</sub>. Valid untuk aktivitas aerobik, namun kurang akurat pada intensitas sangat rendah atau resistensi statis.</li>
+    <li><strong>Akselerometer dan Pedometer:</strong> Sensor gerak yang mendeteksi percepatan tubuh. <em>Pedometer</em> sederhana hanya menghitung jumlah langkah (Tudor-Locke et al., 2011). Akselerometer modern dapat mengukur intensitas gerakan di 3 aksis dan membedakan antara waktu aktif dan <em>sedentary</em>.</li>
+</ul>
+
+<div class="dtable-wrap">
+<div class="dtable-wrap"><table>
+    <tr>
+        <th>Tingkat aktivitas fisik</th>
+        <th>Jumlah langkah / hari (Pedometer) (Tudor-Locke et al., 2011)</th>
+    </tr>
+    <tr>
+        <td>Tidak aktif (<em>sedentary</em>)</td>
+        <td>&lt; 5.000</td>
+    </tr>
+    <tr>
+        <td>Aktivitas rendah</td>
+        <td>5.000 &ndash; 7.499</td>
+    </tr>
+    <tr>
+        <td>Aktivitas sedang</td>
+        <td>7.500 &ndash; 9.999</td>
+    </tr>
+    <tr>
+        <td>Aktif</td>
+        <td>10.000 &ndash; 12.499</td>
+    </tr>
+    <tr>
+        <td>Sangat aktif</td>
+        <td>&ge; 12.500</td>
+    </tr>
+</table></div>
+</div>
+<div class="divider"></div>
+
+<div class="sec-h">Exercise to Develop Physical Fitness</div>
+<ul>
+    <li><em>Lifestyle physical activity</em> meningkatkan kesehatan dan profil metabolik dasar, namun belum tentu memicu adaptasi sentral maupun perifer yang cukup untuk secara signifikan meningkatkan tingkat kebugaran (kapasitas kardiorespirasi maksimal/VO<sub>2</sub>max).</li>
+    <li>Sebuah program latihan fisik terstruktur yang mengaplikasikan prinsip <em>progressive overload</em> secara konsisten akan meningkatkan kebugaran jasmani dan memberikan manfaat kesehatan dan proteksi kardiometabolik yang jauh lebih besar.</li>
+</ul>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Reversibility (Prinsip Dekondisioning)</div>
+<ul>
+    <li>Keuntungan fisiologis dari latihan bersifat transien. Prinsip <em>reversibility</em> menyatakan bahwa adaptasi tubuh akan menurun tajam ketika stimulus/latihan dihentikan (<em>use it or lose it</em>).</li>
+    <li>Proses patofisiologis dari <em>deconditioning</em> ini melibatkan atrofi serat otot, reduksi volume plasma darah, penurunan densitas kapiler, serta hilangnya sensitivitas insulin dan efisiensi mitokondria. <strong>Jika latihan dihentikan total, hingga 50% dari peningkatan kebugaran yang telah dicapai akan hilang dalam 2 bulan (Kenney, Wilmore and Costill, 2015).</strong></li>
+</ul>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Designing Your Own Exercise Program</div>
+<ul>
+    <li>Medical clearance</li>
+    <li>Fitness assessment</li>
+    <li>Setting goals (SMART):
+        <ul>
+            <li><strong>S</strong>pecific</li>
+            <li><strong>M</strong>easurable</li>
+            <li><strong>A</strong>ttainable</li>
+            <li><strong>R</strong>ealistic</li>
+            <li><strong>T</strong>ime frame specific</li>
+        </ul>
+    </li>
+    <li>Memilih aktivitas untuk program yang seimbang (Sertakan aktivitas untuk mengembangkan komponen kebugaran fisik yang berhubungan dengan kesehatan)</li>
+</ul>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">PAR-Q (Anamnesis) (Canadian Society for Exercise Physiology, 2002)</div>
+<div class="dtable-wrap">
+<div class="dtable-wrap"><table>
+    <tr>
+        <th>NO</th>
+        <th>ANAMNESIS</th>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>Apakah anda pernah dinyatakan dokter mengidap penyakit jantung dan membatasi aktivitas fisik kecuali atas rekomendasi dokter?</td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>Pernahkah anda merasakan nyeri dada pada saat tidak melakukan aktivitas fisik?</td>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td>Pernahkah anda merasakan nyeri dada pada saat tidak melakukan aktivitas fisik dalam 1 bulan terakhir?</td>
+    </tr>
+    <tr>
+        <td>4</td>
+        <td>Pernahkah anda merasa kehilangan keseimbangan karena pusing atau anda kehilangan kesadaran/pingsan?</td>
+    </tr>
+    <tr>
+        <td>5</td>
+        <td>Apakah anda mempunyai masalah tulang atau persendian yang menjadi lebih parah jika anda melakukan aktivitas fisik?</td>
+    </tr>
+    <tr>
+        <td>6</td>
+        <td>Apakah anda saat ini sedang dalam pengobatan/minum obat untuk hipertensi atau penyakit jantung?</td>
+    </tr>
+    <tr>
+        <td>7</td>
+        <td>Selain yang telah disebutkan di atas apakah ada alasan/kondisi lain sehingga anda tidak boleh atau harus membatasi aktivitas fisik?</td>
+    </tr>
+</table></div>
+</div>
+
+<div class="divider"></div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Physical Activity Pyramid</div>
+<p><div style="background:#fff;padding:10px;border-radius:8px;margin:10px 0;text-align:center;border:1px solid var(--border);overflow-x:auto;"><svg style="max-width:100%; height:auto;" id="container" width="472.59375" xmlns="http://www.w3.org/2000/svg" class="flowchart" height="526" viewBox="0 0 472.59375 526" role="graphics-document document" aria-roledescription="flowchart-v2"><style>#container{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#container .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#container .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#container .error-icon{fill:#552222;}#container .error-text{fill:#552222;stroke:#552222;}#container .edge-thickness-normal{stroke-width:1px;}#container .edge-thickness-thick{stroke-width:3.5px;}#container .edge-pattern-solid{stroke-dasharray:0;}#container .edge-thickness-invisible{stroke-width:0;fill:none;}#container .edge-pattern-dashed{stroke-dasharray:3;}#container .edge-pattern-dotted{stroke-dasharray:2;}#container .marker{fill:#333333;stroke:#333333;}#container .marker.cross{stroke:#333333;}#container svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#container p{margin:0;}#container .label{font-family:"trebuchet ms",verdana,arial,sans-serif;color:#333;}#container .cluster-label text{fill:#333;}#container .cluster-label span{color:#333;}#container .cluster-label span p{background-color:transparent;}#container .label text,#container span{fill:#333;color:#333;}#container .node rect,#container .node circle,#container .node ellipse,#container .node polygon,#container .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#container .rough-node .label text,#container .node .label text,#container .image-shape .label,#container .icon-shape .label{text-anchor:middle;}#container .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#container .rough-node .label,#container .node .label,#container .image-shape .label,#container .icon-shape .label{text-align:center;}#container .node.clickable{cursor:pointer;}#container .root .anchor path{fill:#333333!important;stroke-width:0;stroke:#333333;}#container .arrowheadPath{fill:#333333;}#container .edgePath .path{stroke:#333333;stroke-width:1px;}#container .flowchart-link{stroke:#333333;fill:none;}#container .edgeLabel{background-color:rgba(232,232,232, 0.8);text-align:center;}#container .edgeLabel p{background-color:rgba(232,232,232, 0.8);}#container .edgeLabel rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#container .labelBkg{background-color:rgba(232, 232, 232, 0.5);}#container .cluster rect{fill:#ffffde;stroke:#aaaa33;stroke-width:1px;}#container .cluster text{fill:#333;}#container .cluster span{color:#333;}#container div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:12px;background:hsl(80, 100%, 96.2745098039%);border:1px solid #aaaa33;border-radius:2px;pointer-events:none;z-index:100;}#container .flowchartTitleText{text-anchor:middle;font-size:18px;fill:#333;}#container rect.text{fill:none;stroke-width:0;}#container .icon-shape,#container .image-shape{background-color:rgba(232,232,232, 0.8);text-align:center;}#container .icon-shape p,#container .image-shape p{background-color:rgba(232,232,232, 0.8);padding:2px;}#container .icon-shape .label rect,#container .image-shape .label rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#container .label-icon{display:inline-block;height:1em;overflow:visible;vertical-align:-0.125em;}#container .node .label-icon path{fill:currentColor;stroke:revert;stroke-width:revert;}#container .node .neo-node{stroke:#9370DB;}#container [data-look="neo"].node rect,#container [data-look="neo"].cluster rect,#container [data-look="neo"].node polygon{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node path{stroke:#9370DB;stroke-width:1px;}#container [data-look="neo"].node .outer-path{filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node .neo-line path{stroke:#9370DB;filter:none;}#container [data-look="neo"].node circle{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node circle .state-start{fill:#000000;}#container [data-look="neo"].icon-shape .icon{fill:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].icon-shape .icon-neo path{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g><marker id="container_flowchart-v2-pointEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="4.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 5 L 10 10 L 10 0 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointEnd-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="11.5" refY="7" markerUnits="userSpaceOnUse" markerWidth="10.5" markerHeight="14" orient="auto"><path d="M 0 0 L 11.5 7 L 0 14 z" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointStart-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="1" refY="7" markerUnits="userSpaceOnUse" markerWidth="11.5" markerHeight="14" orient="auto"><polygon points="0,7 11.5,14 11.5,0" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></polygon></marker><marker id="container_flowchart-v2-circleEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="11" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-1" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleEnd-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refY="5" refX="12.25" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleStart-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-2" refY="5" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-crossEnd" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="12" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-crossStart" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="-1" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-crossEnd-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="17.7" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5;"></path></marker><marker id="container_flowchart-v2-crossStart-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="-3.5" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5; stroke-dasharray: 1, 0;"></path></marker><g class="root"><g class="clusters"></g><g class="edgePaths"><path d="M149.581,86L141.336,90.167C133.091,94.333,116.6,102.667,108.355,111C100.109,119.333,100.109,127.667,100.109,131.833L100.109,136" id="container-L_A_B_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_A_B_0" data-points="W3sieCI6MTQ5LjU4MTQyMDg5ODQzNzUsInkiOjg2fSx7IngiOjEwMC4xMDkzNzUsInkiOjExMX0seyJ4IjoxMDAuMTA5Mzc1LCJ5IjoxMzZ9XQ==" data-look="classic"></path><path d="M303.934,86L312.18,90.167C320.425,94.333,336.916,102.667,345.161,111C353.406,119.333,353.406,127.667,353.406,131.833L353.406,136" id="container-L_A_C_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_A_C_0" data-points="W3sieCI6MzAzLjkzNDIwNDEwMTU2MjUsInkiOjg2fSx7IngiOjM1My40MDYyNSwieSI6MTExfSx7IngiOjM1My40MDYyNSwieSI6MTM2fV0=" data-look="classic"></path><path d="M100.109,214L100.109,218.167C100.109,222.333,100.109,230.667,107.053,239C113.996,247.333,127.883,255.667,134.827,259.833L141.77,264" id="container-L_B_D_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_B_D_0" data-points="W3sieCI6MTAwLjEwOTM3NSwieSI6MjE0fSx7IngiOjEwMC4xMDkzNzUsInkiOjIzOX0seyJ4IjoxNDEuNzcwMDQ1MjMwMjYzMTgsInkiOjI2NH1d" data-look="classic"></path><path d="M353.406,214L353.406,218.167C353.406,222.333,353.406,230.667,346.463,239C339.519,247.333,325.632,255.667,318.689,259.833L311.746,264" id="container-L_C_D_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_C_D_0" data-points="W3sieCI6MzUzLjQwNjI1LCJ5IjoyMTR9LHsieCI6MzUzLjQwNjI1LCJ5IjoyMzl9LHsieCI6MzExLjc0NTU3OTc2OTczNjgsInkiOjI2NH1d" data-look="classic"></path><path d="M226.758,366L226.758,370.167C226.758,374.333,226.758,382.667,226.758,391C226.758,399.333,226.758,407.667,226.758,411.833L226.758,416" id="container-L_D_E_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_D_E_0" data-points="W3sieCI6MjI2Ljc1NzgxMjUsInkiOjM2Nn0seyJ4IjoyMjYuNzU3ODEyNSwieSI6MzkxfSx7IngiOjIyNi43NTc4MTI1LCJ5Ijo0MTZ9XQ==" data-look="classic"></path></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" data-id="L_A_B_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_A_C_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_B_D_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_C_D_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_D_E_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g></g><g class="nodes"><g class="node default" id="container-flowchart-A-0" data-look="classic" transform="translate(226.7578125, 47)"><rect class="basic label-container" style="fill:#f9f !important;stroke:#333 !important;stroke-width:2px !important" x="-101.8671875" y="-39" width="203.734375" height="78"></rect><g class="label" style="" transform="translate(-71.8671875, -24)"><rect></rect><foreignObject width="143.734375" height="48"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Sedentary Activities<br/>(Do infrequently)</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-B-1" data-look="classic" transform="translate(100.109375, 175)"><rect class="basic label-container" style="fill:#bbf !important;stroke:#333 !important;stroke-width:2px !important" x="-92.109375" y="-39" width="184.21875" height="78"></rect><g class="label" style="" transform="translate(-62.109375, -24)"><rect></rect><foreignObject width="124.21875" height="48"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Strength Training<br/>(2-3 days/week)</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-C-2" data-look="classic" transform="translate(353.40625, 175)"><rect class="basic label-container" style="fill:#bbf !important;stroke:#333 !important;stroke-width:2px !important" x="-111.1875" y="-39" width="222.375" height="78"></rect><g class="label" style="" transform="translate(-81.1875, -24)"><rect></rect><foreignObject width="162.375" height="48"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Flexibility Training<br/>(2 or more days/week)</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-D-3" data-look="classic" transform="translate(226.7578125, 315)"><rect class="basic label-container" style="fill:#bfb !important;stroke:#333 !important;stroke-width:2px !important" x="-130" y="-51" width="260" height="102"></rect><g class="label" style="" transform="translate(-100, -36)"><rect></rect><foreignObject width="200" height="72"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table; white-space: break-spaces; line-height: 1.5; max-width: 200px; text-align: center; width: 200px;"><span class="nodeLabel"><p>Cardiorespiratory Endurance<br/>(3-5 days/week)</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-E-4" data-look="classic" transform="translate(226.7578125, 467)"><rect class="basic label-container" style="fill:#fbb !important;stroke:#333 !important;stroke-width:2px !important" x="-130" y="-51" width="260" height="102"></rect><g class="label" style="" transform="translate(-100, -36)"><rect></rect><foreignObject width="200" height="72"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table; white-space: break-spaces; line-height: 1.5; max-width: 200px; text-align: center; width: 200px;"><span class="nodeLabel"><p>Moderate-Intensity Physical Activity<br/>(Most days)</p></span></div></foreignObject></g></g></g></g></g><defs><filter id="container-drop-shadow" height="130%" width="130%"><feDropShadow dx="4" dy="4" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs><defs><filter id="container-drop-shadow-small" height="150%" width="150%"><feDropShadow dx="2" dy="2" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs></svg></div></p>
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Progression of an Exercise Program: Get in Shape Gradually</div>
+<p><div style="background:#fff;padding:10px;border-radius:8px;margin:10px 0;text-align:center;border:1px solid var(--border);overflow-x:auto;"><svg style="max-width:100%; height:auto;" id="container" width="1184.609375" xmlns="http://www.w3.org/2000/svg" class="flowchart" height="231.20001220703125" viewBox="0 0 1184.609375 231.20001220703125" role="graphics-document document" aria-roledescription="flowchart-v2"><style>#container{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#container .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#container .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#container .error-icon{fill:#552222;}#container .error-text{fill:#552222;stroke:#552222;}#container .edge-thickness-normal{stroke-width:1px;}#container .edge-thickness-thick{stroke-width:3.5px;}#container .edge-pattern-solid{stroke-dasharray:0;}#container .edge-thickness-invisible{stroke-width:0;fill:none;}#container .edge-pattern-dashed{stroke-dasharray:3;}#container .edge-pattern-dotted{stroke-dasharray:2;}#container .marker{fill:#333333;stroke:#333333;}#container .marker.cross{stroke:#333333;}#container svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#container p{margin:0;}#container .label{font-family:"trebuchet ms",verdana,arial,sans-serif;color:#333;}#container .cluster-label text{fill:#333;}#container .cluster-label span{color:#333;}#container .cluster-label span p{background-color:transparent;}#container .label text,#container span{fill:#333;color:#333;}#container .node rect,#container .node circle,#container .node ellipse,#container .node polygon,#container .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#container .rough-node .label text,#container .node .label text,#container .image-shape .label,#container .icon-shape .label{text-anchor:middle;}#container .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#container .rough-node .label,#container .node .label,#container .image-shape .label,#container .icon-shape .label{text-align:center;}#container .node.clickable{cursor:pointer;}#container .root .anchor path{fill:#333333!important;stroke-width:0;stroke:#333333;}#container .arrowheadPath{fill:#333333;}#container .edgePath .path{stroke:#333333;stroke-width:1px;}#container .flowchart-link{stroke:#333333;fill:none;}#container .edgeLabel{background-color:rgba(232,232,232, 0.8);text-align:center;}#container .edgeLabel p{background-color:rgba(232,232,232, 0.8);}#container .edgeLabel rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#container .labelBkg{background-color:rgba(232, 232, 232, 0.5);}#container .cluster rect{fill:#ffffde;stroke:#aaaa33;stroke-width:1px;}#container .cluster text{fill:#333;}#container .cluster span{color:#333;}#container div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:12px;background:hsl(80, 100%, 96.2745098039%);border:1px solid #aaaa33;border-radius:2px;pointer-events:none;z-index:100;}#container .flowchartTitleText{text-anchor:middle;font-size:18px;fill:#333;}#container rect.text{fill:none;stroke-width:0;}#container .icon-shape,#container .image-shape{background-color:rgba(232,232,232, 0.8);text-align:center;}#container .icon-shape p,#container .image-shape p{background-color:rgba(232,232,232, 0.8);padding:2px;}#container .icon-shape .label rect,#container .image-shape .label rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#container .label-icon{display:inline-block;height:1em;overflow:visible;vertical-align:-0.125em;}#container .node .label-icon path{fill:currentColor;stroke:revert;stroke-width:revert;}#container .node .neo-node{stroke:#9370DB;}#container [data-look="neo"].node rect,#container [data-look="neo"].cluster rect,#container [data-look="neo"].node polygon{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node path{stroke:#9370DB;stroke-width:1px;}#container [data-look="neo"].node .outer-path{filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node .neo-line path{stroke:#9370DB;filter:none;}#container [data-look="neo"].node circle{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node circle .state-start{fill:#000000;}#container [data-look="neo"].icon-shape .icon{fill:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].icon-shape .icon-neo path{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g><marker id="container_flowchart-v2-pointEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="4.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 5 L 10 10 L 10 0 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointEnd-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="11.5" refY="7" markerUnits="userSpaceOnUse" markerWidth="10.5" markerHeight="14" orient="auto"><path d="M 0 0 L 11.5 7 L 0 14 z" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointStart-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="1" refY="7" markerUnits="userSpaceOnUse" markerWidth="11.5" markerHeight="14" orient="auto"><polygon points="0,7 11.5,14 11.5,0" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></polygon></marker><marker id="container_flowchart-v2-circleEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="11" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-1" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleEnd-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refY="5" refX="12.25" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleStart-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-2" refY="5" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-crossEnd" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="12" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-crossStart" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="-1" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-crossEnd-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="17.7" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5;"></path></marker><marker id="container_flowchart-v2-crossStart-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="-3.5" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5; stroke-dasharray: 1, 0;"></path></marker><g class="root"><g class="clusters"></g><g class="edgePaths"><path d="M134.024,164.625L146.554,155.704C159.084,146.783,184.144,128.942,200.173,120.021C216.203,111.1,223.203,111.1,226.703,111.1L230.203,111.1" id="container-L_A_B_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_A_B_0" data-points="W3sieCI6MTM0LjAyNDQ3MDc1ODEyOTQ0LCJ5IjoxNjQuNjI1MDAwMDAxODYyNjV9LHsieCI6MjA5LjIwMzEyNSwieSI6MTExLjEwMDAwMDAwMTQ5MDEyfSx7IngiOjIzNC4yMDMxMjUsInkiOjExMS4xMDAwMDAwMDE0OTAxMn1d" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M412.218,84.1L431.588,76.338C450.958,68.575,489.698,53.05,520.56,45.288C551.422,37.525,574.406,37.525,585.898,37.525L597.391,37.525" id="container-L_B_C_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_B_C_0" data-points="W3sieCI6NDEyLjIxNzYwMzIwOTk4NTgsInkiOjg0LjEwMDAwMDAwMTQ5MDEyfSx7IngiOjUyOC40Mzc1LCJ5IjozNy41MjUwMDAwMDAzNzI1M30seyJ4Ijo2MDEuMzkwNjI1LCJ5IjozNy41MjUwMDAwMDAzNzI1M31d" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M184.203,188.918L188.37,188.79C192.536,188.662,200.87,188.406,227.635,188.278C254.4,188.15,299.597,188.15,322.195,188.15L344.794,188.15" id="container-A-cyclic-special-1" class="edge-thickness-normal edge-pattern-dotted edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="A-cyclic-special-1" data-points="W3sieCI6MTg0LjIwMzEyNSwieSI6MTg4LjkxODExNDk0MzA5MzYzfSx7IngiOjIwOS4yMDMxMjUsInkiOjE4OC4xNTAwMDAwMDIyMzUxN30seyJ4IjozNDQuNzkzNzQ5OTk5MjU0OTQsInkiOjE4OC4xNTAwMDAwMDIyMzUxN31d" data-look="classic"></path><path d="M344.894,188.15L375.484,188.15C406.075,188.15,467.256,188.15,525.786,191.649C584.317,195.148,640.196,202.146,668.135,205.645L696.075,209.144" id="container-A-cyclic-special-mid" class="edge-thickness-normal edge-pattern-dotted edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="A-cyclic-special-mid" data-points="W3sieCI6MzQ0Ljg5Mzc1MDAwMDc0NTA2LCJ5IjoxODguMTUwMDAwMDAyMjM1MTd9LHsieCI6NTI4LjQzNzUsInkiOjE4OC4xNTAwMDAwMDIyMzUxN30seyJ4Ijo2OTYuMDc0OTk5OTk5MjU0OSwieSI6MjA5LjE0MzczODM1NDczMjI1fV0=" data-look="classic"></path><path d="M696.075,209.154L668.135,211.495C640.196,213.836,584.317,218.518,525.778,220.859C467.24,223.2,406.042,223.2,352.836,223.2C299.63,223.2,254.417,223.2,228.285,222.216C202.154,221.232,195.105,219.264,191.58,218.28L188.056,217.296" id="container-A-cyclic-special-2" class="edge-thickness-normal edge-pattern-dotted edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="A-cyclic-special-2" data-points="W3sieCI6Njk2LjA3NDk5OTk5OTI1NDksInkiOjIwOS4xNTQxODkzNDI1ODg1NX0seyJ4Ijo1MjguNDM3NSwieSI6MjIzLjIwMDAwMDAwMjk4MDIzfSx7IngiOjM0NC44NDM3NSwieSI6MjIzLjIwMDAwMDAwMjk4MDIzfSx7IngiOjIwOS4yMDMxMjUsInkiOjIyMy4yMDAwMDAwMDI5ODAyM30seyJ4IjoxODQuMjAzMTI1LCJ5IjoyMTYuMjIwNjUzNDUzMDMzNjZ9XQ==" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M455.484,113.194L467.643,113.424C479.802,113.654,504.12,114.115,544.218,114.345C584.317,114.575,640.196,114.575,668.135,114.575L696.075,114.575" id="container-B-cyclic-special-1" class="edge-thickness-normal edge-pattern-dotted edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="B-cyclic-special-1" data-points="W3sieCI6NDU1LjQ4NDM3NSwieSI6MTEzLjE5NDE2ODA4NjM3Mn0seyJ4Ijo1MjguNDM3NSwieSI6MTE0LjU3NTAwMDAwMTExNzU5fSx7IngiOjY5Ni4wNzQ5OTk5OTkyNTQ5LCJ5IjoxMTQuNTc1MDAwMDAxMTE3NTl9XQ==" data-look="classic"></path><path d="M696.175,114.575L727.935,114.575C759.695,114.575,823.215,114.575,870.954,115.154C918.693,115.733,950.651,116.89,966.63,117.469L982.609,118.048" id="container-B-cyclic-special-mid" class="edge-thickness-normal edge-pattern-dotted edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="B-cyclic-special-mid" data-points="W3sieCI6Njk2LjE3NTAwMDAwMDc0NTEsInkiOjExNC41NzUwMDAwMDExMTc1OX0seyJ4Ijo4ODYuNzM0Mzc1LCJ5IjoxMTQuNTc1MDAwMDAxMTE3NTl9LHsieCI6OTgyLjYwOTM3NSwieSI6MTE4LjA0ODE4ODY4OTc5ODI4fV0=" data-look="classic"></path><path d="M982.609,118.066L966.63,123.326C950.651,128.586,918.693,139.105,870.945,144.365C823.198,149.625,759.661,149.625,699.945,149.625C640.229,149.625,584.333,149.625,544.879,147.211C505.425,144.796,482.412,139.967,470.906,137.553L459.399,135.138" id="container-B-cyclic-special-2" class="edge-thickness-normal edge-pattern-dotted edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="B-cyclic-special-2" data-points="W3sieCI6OTgyLjYwOTM3NSwieSI6MTE4LjA2NjQ1ODE3MTQzNjQyfSx7IngiOjg4Ni43MzQzNzUsInkiOjE0OS42MjUwMDAwMDE4NjI2NX0seyJ4Ijo2OTYuMTI1LCJ5IjoxNDkuNjI1MDAwMDAxODYyNjV9LHsieCI6NTI4LjQzNzUsInkiOjE0OS42MjUwMDAwMDE4NjI2NX0seyJ4Ijo0NTUuNDg0Mzc1LCJ5IjoxMzQuMzE2NjQwNDI3MjQ2NTR9XQ==" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M790.859,28.815L806.839,27.346C822.818,25.877,854.776,22.938,886.734,21.469C918.693,20,950.651,20,966.63,20L982.609,20" id="container-C-cyclic-special-1" class="edge-thickness-normal edge-pattern-dotted edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="C-cyclic-special-1" data-points="W3sieCI6NzkwLjg1OTM3NSwieSI6MjguODE0OTM1NjUwNjUwNTMzfSx7IngiOjg4Ni43MzQzNzUsInkiOjIwfSx7IngiOjk4Mi42MDkzNzUsInkiOjIwfV0=" data-look="classic"></path><path d="M982.709,20L998.855,20C1015.001,20,1047.293,20,1079.584,22.919C1111.876,25.839,1144.168,31.677,1160.314,34.597L1176.459,37.516" id="container-C-cyclic-special-mid" class="edge-thickness-normal edge-pattern-dotted edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="C-cyclic-special-mid" data-points="W3sieCI6OTgyLjcwOTM3NTAwMTQ5MDEsInkiOjIwfSx7IngiOjEwNzkuNTg0Mzc1MDAxNDkwMSwieSI6MjB9LHsieCI6MTE3Ni40NTkzNzUwMDE0OTAxLCJ5IjozNy41MTU5NTk1MDUwMDk0Mn1d" data-look="classic"></path><path d="M1176.459,37.536L1160.314,41.034C1144.168,44.532,1111.876,51.529,1079.576,55.027C1047.276,58.525,1014.968,58.525,982.826,58.525C950.684,58.525,918.709,58.525,887.405,56.838C856.101,55.15,825.468,51.775,810.152,50.088L794.835,48.4" id="container-C-cyclic-special-2" class="edge-thickness-normal edge-pattern-dotted edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="C-cyclic-special-2" data-points="W3sieCI6MTE3Ni40NTkzNzUwMDE0OTAxLCJ5IjozNy41MzU4MzMxMTg5MjQzOH0seyJ4IjoxMDc5LjU4NDM3NTAwMTQ5MDEsInkiOjU4LjUyNTAwMDAwMDM3MjUzfSx7IngiOjk4Mi42NTkzNzUwMDA3NDUxLCJ5Ijo1OC41MjUwMDAwMDAzNzI1M30seyJ4Ijo4ODYuNzM0Mzc1LCJ5Ijo1OC41MjUwMDAwMDAzNzI1M30seyJ4Ijo3OTAuODU5Mzc1LCJ5Ijo0Ny45NjIxNjY5ODEyNzI2fV0=" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" data-id="L_A_B_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_B_C_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="A-cyclic-special-1" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(528.4375, 188.15000000223517)"><g class="label" data-id="A-cyclic-special-mid" transform="translate(-47.953125, -12)"><foreignObject width="95.90625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"><p>Low Intensity</p></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="A-cyclic-special-2" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="B-cyclic-special-1" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(886.734375, 114.57500000111759)"><g class="label" data-id="B-cyclic-special-mid" transform="translate(-70.875, -12)"><foreignObject width="141.75" height="24"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"><p>Increasing Intensity</p></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="B-cyclic-special-2" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="C-cyclic-special-1" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(1079.5843750014901, 20)"><g class="label" data-id="C-cyclic-special-mid" transform="translate(-71.875, -12)"><foreignObject width="143.75" height="24"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"><p>Consistent Intensity</p></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="C-cyclic-special-2" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g></g><g class="nodes"><g class="node default" id="container-flowchart-A-0" data-look="classic" transform="translate(96.1015625, 191.62500000186265)"><rect class="basic label-container" style="" x="-88.1015625" y="-27" width="176.203125" height="54"></rect><g class="label" style="" transform="translate(-58.1015625, -12)"><rect></rect><foreignObject width="116.203125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Beginning Stage</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-B-1" data-look="classic" transform="translate(344.84375, 111.10000000149012)"><rect class="basic label-container" style="" x="-110.640625" y="-27" width="221.28125" height="54"></rect><g class="label" style="" transform="translate(-80.640625, -12)"><rect></rect><foreignObject width="161.28125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Making Progress Stage</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-C-3" data-look="classic" transform="translate(696.125, 37.52500000037253)"><rect class="basic label-container" style="" x="-94.734375" y="-27" width="189.46875" height="54"></rect><g class="label" style="" transform="translate(-64.734375, -12)"><rect></rect><foreignObject width="129.46875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Maintaining Stage</p></span></div></foreignObject></g></g><g class="label edgeLabel" id="A---A---1" transform="translate(344.84375, 188.15000000223517)"><rect width="0.1" height="0.1"></rect><g class="label" style="" transform="translate(0, 0)"><rect></rect><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 10px; text-align: center;"><span class="nodeLabel"></span></div></foreignObject></g></g><g class="label edgeLabel" id="A---A---2" transform="translate(696.125, 209.15000000223517)"><rect width="0.1" height="0.1"></rect><g class="label" style="" transform="translate(0, 0)"><rect></rect><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 10px; text-align: center;"><span class="nodeLabel"></span></div></foreignObject></g></g><g class="label edgeLabel" id="B---B---1" transform="translate(696.125, 114.57500000111759)"><rect width="0.1" height="0.1"></rect><g class="label" style="" transform="translate(0, 0)"><rect></rect><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 10px; text-align: center;"><span class="nodeLabel"></span></div></foreignObject></g></g><g class="label edgeLabel" id="B---B---2" transform="translate(982.6593750007451, 118.05000000074506)"><rect width="0.1" height="0.1"></rect><g class="label" style="" transform="translate(0, 0)"><rect></rect><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 10px; text-align: center;"><span class="nodeLabel"></span></div></foreignObject></g></g><g class="label edgeLabel" id="C---C---1" transform="translate(982.6593750007451, 20)"><rect width="0.1" height="0.1"></rect><g class="label" style="" transform="translate(0, 0)"><rect></rect><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 10px; text-align: center;"><span class="nodeLabel"></span></div></foreignObject></g></g><g class="label edgeLabel" id="C---C---2" transform="translate(1176.5093750022352, 37.52500000037253)"><rect width="0.1" height="0.1"></rect><g class="label" style="" transform="translate(0, 0)"><rect></rect><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 10px; text-align: center;"><span class="nodeLabel"></span></div></foreignObject></g></g></g></g></g><defs><filter id="container-drop-shadow" height="130%" width="130%"><feDropShadow dx="4" dy="4" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs><defs><filter id="container-drop-shadow-small" height="150%" width="150%"><feDropShadow dx="2" dy="2" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs></svg></div></p>
+<div class="divider"></div>
+
+<div class="sec-h">Daftar Pustaka</div>
+<ul>
+    <li>ACSM (2018) <em>ACSM's Guidelines for Exercise Testing and Prescription</em>. 10th edn. Philadelphia: Wolters Kluwer.</li>
+    <li>Borg, G.A.V. (1982) 'Psychophysical bases of perceived exertion', <em>Medicine & Science in Sports & Exercise</em>, 14(5), pp. 377-381.</li>
+    <li>Canadian Society for Exercise Physiology (2002) <em>Physical Activity Readiness Questionnaire - PAR-Q</em>. Health Canada.</li>
+    <li>Candrawati, S. (2011) 'Hubungan Tingkat Aktivitas Fisik dengan Indeks Massa Tubuh dan Lingkar Pinggang Mahasiswa PPDU FK UI', <em>Jurnal Kedokteran Universitas Indonesia</em>.</li>
+    <li>Candrawati, S. et al. (2016) 'Senam Aerobik Meningkatkan Daya Tahan Jantung Paru dan Fleksibilitas', <em>Jurnal Biomedik</em>.</li>
+    <li>Caspersen, C.J., Powell, K.E. and Christenson, G.M. (1985) 'Physical activity, exercise, and physical fitness: definitions and distinctions for health-related research', <em>Public Health Reports</em>, 100(2), pp. 126-131.</li>
+    <li>Colberg, S.R. et al. (2010) 'Exercise and type 2 diabetes: the American College of Sports Medicine and the American Diabetes Association: joint position statement', <em>Diabetes Care</em>, 33(12), pp. e147-e167.</li>
+    <li>Cotman, C.W. and Berchtold, N.C. (2002) 'Exercise: a behavioral intervention to enhance brain health and plasticity', <em>Trends in Neurosciences</em>, 25(6), pp. 295-301.</li>
+    <li>Duman, R.S. and Monteggia, L.M. (2006) 'A neurotrophic model for stress-related mood disorders', <em>Biological Psychiatry</em>, 59(12), pp. 1116-1127.</li>
+    <li>Haskell, W.L. et al. (2007) 'Physical activity and public health: updated recommendation for adults from the American College of Sports Medicine and the American Heart Association', <em>Circulation</em>, 116(9), p. 1081.</li>
+    <li>Heyward, V. (1991) <em>Advanced Fitness Assessment and Exercise Prescription</em>. Champaign, IL: Human Kinetics.</li>
+    <li>Kenney, W.L., Wilmore, J.H. and Costill, D.L. (2015) <em>Physiology of Sport and Exercise</em>. 6th edn. Champaign, IL: Human Kinetics.</li>
+    <li>Mustofa, M. and Candrawati, S. (2019) 'Pliometrik Training Memperbaiki Kelincahan dan Kecepatan Lari Sprint pada Laki-laki Muda', <em>Jurnal Kedokteran dan Kesehatan</em>.</li>
+    <li>Schoenfeld, B.J. et al. (2017) 'Dose-response relationship between weekly resistance training volume and increases in muscle mass: A systematic review and meta-analysis', <em>Journal of Sports Sciences</em>, 35(11), pp. 1073-1082.</li>
+    <li>Strath, S.J. et al. (2013) 'Guide to the assessment of physical activity: Clinical and research applications', <em>Circulation</em>, 128(20), pp. 2259-2279.</li>
+    <li>Sulistyoningrum, D. and Candrawati, S. (2016) '12-Weeks Programmed Aerobics Dance Reduced Body Mass Index and Waist Circumference of Young Women', <em>Journal of Physical Education and Sport Science</em>.</li>
+    <li>Tudor-Locke, C. et al. (2011) 'How many steps/day are enough? for adults', <em>International Journal of Behavioral Nutrition and Physical Activity</em>, 8(1), p. 79.</li>
+    <li>Zigmond, M.J. et al. (2009) 'Triggering endogenous neuroprotective processes through exercise in models of dopamine deficiency', <em>Parkinsonism & Related Disorders</em>, 15(3), pp. S42-S45.</li>
+    <li>Zourdos, M.C. et al. (2016) 'Novel Resistance Training-Specific Rating of Perceived Exertion Scale Measuring Repetitions in Reserve', <em>Journal of Strength and Conditioning Research</em>, 30(1), pp. 267-275.</li>
+</ul>
+</div>
+
+</div>
+
+<!-- QUIZ -->
+<div class="main-panel" id="mp-quiz">
+  <div id="qconfig" class="qconfig">
+    <div class="qconfig-title">Mulai Sesi Quiz</div>
+    <div class="qconfig-sub">Pilih topik (multi-pilih)</div>
+    <div class="cfg-grid" id="cfg-grid">
+<button class="cfg-btn sel" data-type="pool_definisi">Definisi</button>
+<button class="cfg-btn sel" data-type="pool_muskuloskeletal">Muskuloskeletal</button>
+<button class="cfg-btn sel" data-type="pool_kardiovaskuler">Kardiovaskuler</button>
+<button class="cfg-btn sel" data-type="pool_respirasi_saraf">Respirasi Saraf</button>
+<button class="cfg-btn sel" data-type="pool_metabolik">Metabolik</button>
+<button class="cfg-btn sel" data-type="pool_fitt_klasifikasi">Fitt Klasifikasi</button>
+<button class="cfg-btn sel" data-type="pool_pengukuran_intensitas">Pengukuran Intensitas</button>
+<button class="cfg-btn sel" data-type="pool_sistem_energi">Sistem Energi</button>
+<button class="cfg-btn sel" data-type="pool_rekomendasi_metode">Rekomendasi Metode</button>
+<button class="cfg-btn sel" data-type="pool_clinical_cases">Clinical Cases</button>
+
+</div>
+    <button class="start-btn" onclick="startSession()">Mulai →</button>
+  </div>
+  <div id="qactive" style="display:none">
+    <div class="qheader">
+      <div class="qnum-display">Soal ke-<strong id="qnum">1</strong></div>
+      <div id="qpill" class="qtype-pill"></div>
+      <div class="qscore-display"><strong id="qscore">0</strong> benar</div>
+    </div>
+    <div class="qcard">
+      <div id="qscen" class="qscen" style="display:none"></div>
+      <div id="qdata" class="qdata" style="display:none"></div>
+      <div id="qtext" class="qtext"></div>
+    </div>
+    <div class="opts" id="opts"></div>
+    <div class="expbox" id="expbox"></div>
+    <div class="actrow">
+      <button class="next-btn" id="nextbtn" onclick="nextQ()">Soal Berikutnya →</button>
+      <button class="end-btn" onclick="endSession()">Akhiri Sesi</button>
+    </div>
+  </div>
+  <div id="qresults" style="display:none">
+    <div class="results-wrap">
+      <div class="res-big" id="res-pct">—</div>
+      <div class="res-sub" id="res-sub">—</div>
+      <div class="res-grid" id="res-grid"></div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:20px">
+        <button class="retry-btn" style="margin-bottom:0" onclick="restartQuiz()">Coba Lagi</button>
+        <button class="retry-btn" style="margin-bottom:0;background:var(--green)" onclick="downloadCert()">⬇ Unduh Sertifikat</button>
+      </div>
+      <div class="dtable-wrap" style="margin-bottom:14px"><table><thead><tr><th>Topik</th><th>Soal</th><th>Benar</th></tr></thead><tbody id="res-bytype"></tbody></table></div>
+      <div class="dtable-wrap"><table><thead><tr><th>#</th><th>Soal (ringkas)</th><th>Jawaban Benar</th><th>Hasil</th></tr></thead><tbody id="res-tbody"></tbody></table></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div>am i active? · Blok 2.5 · FK Unsoed</div>
+  <div style="margin-top:5px">crafted by alchemist4real · <a href="https://174-three.vercel.app" target="_blank" style="color:var(--text3);text-decoration:none;border-bottom:1px dashed var(--text3);transition:color .18s" onmouseover="this.style.color='var(--blue)'" onmouseout="this.style.color='var(--text3)'">check other quizzes → 174 archive ↗</a></div>
+</footer>
+</div>
+
+<script>
+// ═══ TAB ═══
+window.switchMain=function(id,b){document.querySelectorAll('.main-panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.main-tab').forEach(x=>x.classList.remove('active'));document.getElementById('mp-'+id).classList.add('active');b.classList.add('active');};
+window.switchSub=function(id,b){document.querySelectorAll('.sub-panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.sub-tab').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');b.classList.add('active');};
+window.startSession=startSession;window.nextQ=nextQ;window.endSession=endSession;window.restartQuiz=restartQuiz;
+
+// ═══ CONFIG ═══
+const activeTypes=new Set(['pool_definisi','pool_muskuloskeletal','pool_kardiovaskuler','pool_respirasi_saraf','pool_metabolik','pool_fitt_klasifikasi','pool_pengukuran_intensitas','pool_sistem_energi','pool_rekomendasi_metode','pool_clinical_cases']);
+document.querySelectorAll('.cfg-btn').forEach(b=>{b.addEventListener('click',()=>{const t=b.dataset.type;if(activeTypes.has(t)){if(activeTypes.size===1)return;activeTypes.delete(t);b.classList.remove('sel');}else{activeTypes.add(t);b.classList.add('sel');}});});
+
+// ═══ UTILS ═══
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const shuf=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]];}return b;};
+const KEYS='ABCDE'.split('');
+function stripHtml(s){return s.replace(/<[^>]*>/g,'');}
+// Pool-based sequential picker (no repeat until exhausted)
+function makePicker(pool){let idx=[];return function(){if(idx.length>=pool.length)idx=[];const av=pool.map((_,i)=>i).filter(i=>!idx.includes(i));const si=rnd(av);idx.push(si);return pool[si];};}
+
+// ═══════════════════════════════════════
+// BANKS
+// ═══════════════════════════════════════
+const pool_definisi = [
+        {
+            q: "Seorang pasien bertanya kepada dokter mengenai perbedaan aktivitas fisik dan latihan fisik. Manakah pernyataan yang paling tepat menjelaskan definisi aktivitas fisik menurut Caspersen et al. (1985)?",
+            a: "Pergerakan tubuh karena kontraksi otot rangka yang berakibat peningkatan pengeluaran energi",
+            opt: ["Serangkaian gerak terencana dan terstruktur untuk meningkatkan kebugaran jasmani", "Pergerakan tubuh karena kontraksi otot rangka yang berakibat peningkatan pengeluaran energi", "Aktivitas yang wajib dilakukan selama minimal 30 menit setiap hari untuk membakar kalori", "Gerakan tubuh yang hanya berfokus pada pembentukan hipertrofi otot", "Pergerakan sendi secara aktif tanpa adanya pembebanan eksternal"],
+            hint: "Caspersen mendefinisikan secara luas mencakup segala pergerakan karena otot rangka."
+        },
+        {
+            q: "Seorang pria 65 tahun datang dengan keluhan sering hampir jatuh di kamar mandi. Dokter menganjurkan ia untuk mulai melakukan aktivitas fisik. Apa manfaat spesifik aktivitas fisik bagi pasien ini?",
+            a: "Meningkatkan kekuatan dan kelincahan untuk pencegahan jatuh (preventive falls)",
+            opt: ["Menurunkan resiko keganasan seperti kanker prostat", "Meningkatkan hipertrofi otot ventrikel kiri secara akut", "Meningkatkan kekuatan dan kelincahan untuk pencegahan jatuh (preventive falls)", "Mempercepat penurunan indeks massa tubuh secara instan", "Meningkatkan pengeluaran asam laktat untuk kekuatan sendi"],
+            hint: "Pada lansia, kelincahan sangat krusial untuk preventif falls."
+        },
+        {
+            q: "Aktivitas fisik terbukti menurunkan risiko terhadap beberapa penyakit kronis. Penyakit keganasan apa yang secara spesifik disebutkan dapat diturunkan risikonya melalui aktivitas fisik rutin?",
+            a: "Kanker kolon",
+            opt: ["Kanker paru", "Kanker hati", "Kanker kolon", "Kanker prostat", "Kanker tiroid"],
+            hint: "Ca Colon disebutkan spesifik pada materi manfaat aktivitas fisik."
+        },
+        {
+            q: "Seorang mahasiswi berusia 20 tahun mengalami kecemasan dan depresi ringan akibat beban tugas kuliah. Ia kemudian rutin mengikuti kelas aerobik. Manfaat psikologis apa yang utamanya ia dapatkan dari aktivitas ini?",
+            a: "Penurunan depresi dan kecemasan serta meningkatkan kebahagiaan psikologi",
+            opt: ["Meningkatkan ketajaman penglihatan akibat aliran darah retina", "Penurunan depresi dan kecemasan serta meningkatkan kebahagiaan psikologi", "Menghilangkan seluruh sumber stres akademik", "Menurunkan denyut jantung maksimal secara signifikan", "Mencegah osteoporosis dini"],
+            hint: "Aktivitas fisik dapat menurunkan kecemasan, depresi, dan meningkatkan kebahagiaan psikologis."
+        },
+        {
+            q: "Dari penelitian-penelitian tentang aktivitas fisik, dilaporkan bahwa Pliometrik Training pada laki-laki muda memiliki manfaat spesifik berupa:",
+            a: "Memperbaiki kelincahan dan kecepatan lari sprint",
+            opt: ["Menurunkan Body Mass Index secara masif", "Meningkatkan kelenturan dan fleksibilitas tulang belakang", "Memperbaiki kelincahan dan kecepatan lari sprint", "Mencegah kanker kolon", "Menurunkan resting heart rate menjadi di bawah 40 bpm"],
+            hint: "Menurut Mustofa & Candrawati (2019), Pliometrik memperbaiki kelincahan dan kecepatan lari sprint."
+        },
+        {
+            q: "Sebuah program aerobik dance selama 12 minggu pada wanita muda dilaporkan membawa dampak positif secara antropometri berupa:",
+            a: "Menurunkan Body Mass Index dan lingkar pinggang",
+            opt: ["Menurunkan Body Mass Index dan lingkar pinggang", "Meningkatkan massa otot rangka secara signifikan", "Menurunkan risiko jatuh", "Meningkatkan daya tahan paru tanpa efek ke antropometri", "Menurunkan lingkar kepala"],
+            hint: "Penelitian Sulistyoningrum & Candrawati (2016) menunjukkan penurunan BMI dan waist circumference."
+        },
+        {
+            q: "Pasien dengan hipertensi rutin direkomendasikan melakukan aktivitas fisik. Apa manfaat utama aktivitas fisik pada pasien dengan diagnosis hipertensi?",
+            a: "Penurunan tekanan darah pada penderita hipertensi",
+            opt: ["Peningkatan tekanan diastolik sekunder", "Penurunan tekanan darah pada penderita hipertensi", "Pelebaran ruang atrium secara eksentrik", "Meningkatkan viskositas darah", "Menurunkan heart rate maksimal sebesar 20 bpm"],
+            hint: "Aktivitas fisik menurunkan tekanan darah pada penderita hipertensi."
+        },
+        {
+            q: "Aktivitas fisik sehari-hari (lifestyle physical activity) berbeda dengan latihan fisik (exercise) dalam hal:",
+            a: "Latihan fisik adalah bentuk aktivitas fisik yang lebih terstruktur dan direncanakan untuk kebugaran",
+            opt: ["Latihan fisik tidak memicu peningkatan pengeluaran energi", "Aktivitas fisik sehari-hari selalu memiliki intensitas tinggi", "Latihan fisik adalah bentuk aktivitas fisik yang lebih terstruktur dan direncanakan untuk kebugaran", "Aktivitas fisik sehari-hari sama sekali tidak memberikan manfaat kardiometabolik", "Latihan fisik hanya dikhususkan bagi atlet profesional"],
+            hint: "Exercise adalah sub-kategori dari physical activity yang terstruktur."
+        }
+    ];
+const pick_pool_definisi = makePicker(pool_definisi);
+const pool_muskuloskeletal = [
+        {
+            q: "Seorang pemuda rutin melakukan latihan resistensi (angkat beban) selama 6 bulan. Ia menyadari otot lengannya membesar. Mekanisme biomolekuler utama yang mendasari hipertrofi otot ini adalah?",
+            a: "Peningkatan sintesis protein miofibrilar melalui aktivasi jalur mTOR",
+            opt: ["Peningkatan sintesis glikogen melalui aktivasi HSL", "Pembelahan sel otot (hiperplasia) secara mitosis berlebihan", "Peningkatan sintesis protein miofibrilar melalui aktivasi jalur mTOR", "Penurunan kadar cairan sinovial di persendian", "Aktivasi osteoblas melalui jalur mekanotransduksi"],
+            hint: "Hipertrofi diatur oleh jalur mammalian target of rapamycin (mTOR) yang meningkatkan aktin dan miosin."
+        },
+        {
+            q: "Seorang wanita pascamenopause disarankan untuk melakukan olahraga weight-bearing seperti berjalan cepat. Bagaimana olahraga ini mencegah osteoporosis pada pasien tersebut?",
+            a: "Stres mekanik merangsang aktivitas osteoblas melalui jalur mekanotransduksi",
+            opt: ["Stres mekanik merangsang aktivitas osteoklas untuk meresorpsi tulang", "Meningkatkan deposisi kalsium di aliran darah secara akut", "Menurunkan sekresi hormon paratiroid secara drastis", "Stres mekanik merangsang aktivitas osteoblas melalui jalur mekanotransduksi", "Meningkatkan sintesis protein miofibrilar pada matriks tulang"],
+            hint: "Weight bearing menyebabkan mechanical loading yang memicu osteoblas via mekanotransduksi."
+        },
+        {
+            q: "Saat mulai berlari, suhu inti tubuh seorang atlet meningkat tajam akibat kontraksi otot. Respon termoregulasi akut yang akan terjadi adalah?",
+            a: "Hipotalamus menginduksi vasodilatasi perifer dan pengeluaran keringat",
+            opt: ["Medula oblongata menginduksi vasokonstriksi perifer untuk menyimpan panas", "Hipotalamus menginduksi vasodilatasi perifer dan pengeluaran keringat", "Kelenjar tiroid menurunkan sekresi T3 untuk mengurangi panas", "Hipotalamus memicu shivering (menggigil) pada otot antagonis", "Hipofisis mensekresi vasopresin dalam jumlah masif untuk menghentikan keringat"],
+            hint: "Termoregulasi berpusat di hipotalamus, memicu vasodilatasi perifer dan keringat untuk disipasi panas."
+        },
+        {
+            q: "Peningkatan aliran darah kronis ke jaringan ikat akibat aktivitas fisik yang rutin memiliki manfaat spesifik pada persendian, yaitu:",
+            a: "Mengoptimalkan produksi cairan sinovial sehingga stabilitas dan fleksibilitas persendian meningkat",
+            opt: ["Menurunkan kepadatan kolagen pada ligamen", "Memicu osifikasi rawan sendi secara prematur", "Mengoptimalkan produksi cairan sinovial sehingga stabilitas dan fleksibilitas persendian meningkat", "Mengurangi produksi asam hialuronat secara signifikan", "Menyebabkan kelelahan pada bursa sinovial"],
+            hint: "Adaptasi kronis vaskular ke jaringan ikat mengoptimalkan produksi cairan sinovial."
+        },
+        {
+            q: "Pada biopsi otot atlet angkat besi, ditemukan peningkatan luas penampang serat otot. Peningkatan ini terutama disebabkan oleh akumulasi protein apa?",
+            a: "Aktin dan Miosin",
+            opt: ["Kolagen dan Elastin", "Aktin dan Miosin", "Hemoglobin dan Mioglobin", "Glukagon dan Insulin", "Troponin dan Tropomiosin saja"],
+            hint: "Hipertrofi berarti peningkatan sintesis protein miofibrilar (aktin dan miosin)."
+        },
+        {
+            q: "Respon fisiologis sistem muskuloskeletal terbagi atas respon akut dan kronis. Manakah di bawah ini yang merupakan respon adaptasi muskuloskeletal kronis terhadap aktivitas fisik rutin?",
+            a: "Peningkatan Bone Mineral Density (BMD)",
+            opt: ["Peningkatan suhu inti tubuh", "Vasodilatasi kapiler secara transien", "Keringat profus", "Peningkatan Bone Mineral Density (BMD)", "Pelepasan katekolamin dari medula adrenal"],
+            hint: "Peningkatan BMD (kepadatan tulang) adalah adaptasi kronis."
+        }
+    ];
+const pick_pool_muskuloskeletal = makePicker(pool_muskuloskeletal);
+const pool_kardiovaskuler = [
+        {
+            q: "Seorang pelari sprint 100m berada di garis start. Sesaat setelah berlari, terjadi redistribusi aliran darah di tubuhnya. Mekanisme lokal apa yang memicu vasodilatasi kapiler pada otot yang aktif?",
+            a: "Peningkatan CO2, asam laktat, dan penurunan pH",
+            opt: ["Penurunan CO2 dan peningkatan oksigen lokal", "Peningkatan aktivitas saraf parasimpatis", "Peningkatan CO2, asam laktat, dan penurunan pH", "Vasokonstriksi pembuluh splanknikus sekunder", "Penurunan suhu lokal di jaringan otot"],
+            hint: "Autoregulasi lokal di otot yang aktif ditandai dengan peningkatan metabolit (CO2, laktat) dan asidosis (pH turun)."
+        },
+        {
+            q: "Pada kondisi akut saat berolahraga, aktivitas simpatis akan meningkat. Dampaknya terhadap organ viseral seperti saluran pencernaan dan ginjal adalah:",
+            a: "Vasokonstriksi pembuluh darah splanknikus",
+            opt: ["Vasodilatasi splanknikus maksimal", "Peningkatan filtrasi glomerulus secara tajam", "Vasokonstriksi pembuluh darah splanknikus", "Peningkatan motilitas lambung", "Penurunan sekresi renin secara akut"],
+            hint: "Shunting aliran darah menyebabkan darah dijauhkan dari pencernaan dan ginjal melalui vasokonstriksi."
+        },
+        {
+            q: "Seorang atlet maraton profesional menjalani pemeriksaan ekokardiografi. Dokter menemukan hipertrofi fisiologis pada ventrikel kiri. Jenis adaptasi hipertrofi apakah yang khas pada olahraga aerobik kronis ini?",
+            a: "Eccentric hypertrophy",
+            opt: ["Concentric hypertrophy", "Eccentric hypertrophy", "Hypertrophic cardiomyopathy", "Right ventricular cor pulmonale", "Atrial fibrillation"],
+            hint: "Latihan aerobik rutin memicu eccentric hypertrophy (hipertrofi ventrikel kiri fisiologis)."
+        },
+        {
+            q: "Atlet dayan ketahanan sering menunjukkan denyut jantung istirahat 45 kali/menit (resting bradycardia). Apa adaptasi fisiologis utama yang memungkinkan hal ini terjadi untuk mempertahankan cardiac output?",
+            a: "Peningkatan volume sekuncup (stroke volume) istirahat sekunder akibat peningkatan end-diastolic volume",
+            opt: ["Peningkatan frekuensi pernapasan basal", "Peningkatan volume sekuncup (stroke volume) istirahat sekunder akibat peningkatan end-diastolic volume", "Penurunan total venous return saat istirahat", "Hipertrofi konsentrik yang kaku pada septum interventrikular", "Peningkatan dominasi saraf simpatis saat istirahat"],
+            hint: "Eccentric hypertrophy menaikkan end-diastolic volume, sehingga stroke volume (isi sekuncup) naik. Hal ini menurukan kebutuhan heart rate saat istirahat."
+        },
+        {
+            q: "Sebagai bentuk proteksi kardiometabolik kronis, aktivitas fisik menyebabkan peningkatan fungsi endotel yang memitigasi risiko aterosklerosis. Substansi apa yang pelepasannya meningkat dari endotel akibat adaptasi ini?",
+            a: "Nitric Oxide (NO)",
+            opt: ["Endotelin-1", "Nitric Oxide (NO)", "Angiotensin II", "Tromboksan A2", "Asam Laktat"],
+            hint: "Adaptasi vaskular mencakup peningkatan fungsi endotel dan pelepasan nitric oxide (NO) yang melebarkan pembuluh darah."
+        },
+        {
+            q: "Pada detik-detik awal saat berolahraga, stimulasi pusat kardiovaskuler di medula oblongata memicu pelepasan katekolamin. Efek langsung dari hal ini pada otot jantung adalah?",
+            a: "Efek kronotropik dan inotropik positif",
+            opt: ["Efek kronotropik negatif dan inotropik positif", "Efek dromotropik negatif", "Efek kronotropik dan inotropik positif", "Inhibisi SA node", "Aktivasi tonus vagal dominan"],
+            hint: "Pelepasan katekolamin memberi efek kronotropik (heart rate naik) dan inotropik (kontraktilitas naik) positif."
+        },
+        {
+            q: "Selain fungsi vasodilatasi, adaptasi vaskular kronis dari latihan aerobik juga berkontribusi pada pencegahan serangan jantung akut dengan cara:",
+            a: "Menurunkan agregasi trombosit",
+            opt: ["Meningkatkan viskositas plasma secara ekstrem", "Meningkatkan kadar kolesterol LDL", "Menurunkan agregasi trombosit", "Meningkatkan pelepasan faktor pembekuan darah", "Menekan sintesis albumin hepar"],
+            hint: "Aktivitas fisik kronis menurunkan agregasi trombosit, memitigasi risiko trombosis/aterosklerosis."
+        }
+    ];
+const pick_pool_kardiovaskuler = makePicker(pool_kardiovaskuler);
+const pool_respirasi_saraf = [
+        {
+            q: "Seorang pasien bertanya mengapa ia napasnya langsung dalam di saat mulai jogging, belum terlalu cepat. Penjelasan fisiologis respons ventilasi akut di awal olahraga yang tepat adalah:",
+            a: "Peningkatan volume tidal terjadi secara eksponensial di awal latihan, baru kemudian diikuti peningkatan frekuensi napas",
+            opt: ["Frekuensi napas meningkat eksponensial di awal, diikuti volume tidal", "Kapasitas vital paru menurun sementara untuk kompensasi oksigen", "Peningkatan volume tidal terjadi secara eksponensial di awal latihan, baru kemudian diikuti peningkatan frekuensi napas", "Volume residu paru dikeluarkan sepenuhnya pada hembusan pertama", "Ventilasi semenit tidak berubah pada 5 menit pertama"],
+            hint: "Respons ventilasi akut: volume tidal naik eksponensial di awal, lalu diikuti peningkatan RR (frekuensi napas)."
+        },
+        {
+            q: "Berenang bertahun-tahun membuat mekanik otot pernapasan perenang sangat kuat. Otot manakah yang secara khusus mengalami penguatan dan berdampak pada peningkatan Maximal Voluntary Ventilation (MVV)?",
+            a: "Diafragma dan otot interkostalis eksternal",
+            opt: ["Otot sternokleidomastoideus dan platysma", "Diafragma dan otot interkostalis eksternal", "Otot pektoralis minor dan rectus abdominis", "Otot scalenus dan trapezius", "Otot interkostalis internal dan otot seratus anterior"],
+            hint: "Adaptasi kronis paru meliputi penguatan otot diafragma dan interkostalis eksternal."
+        },
+        {
+            q: "Secara kronis, latihan fisik sangat bermanfaat bagi pasien Penyakit Parkinson. Mekanisme utama yang mendasari efek neuroprotektif aktivitas fisik pada penyakit ini adalah:",
+            a: "Memelihara fungsi dopaminergik dan kelangsungan hidup neuron melalui pelepasan BDNF",
+            opt: ["Meningkatkan sekresi kortisol secara permanen", "Memicu demielinasi selektif saraf motorik hiperaktif", "Memelihara fungsi dopaminergik dan kelangsungan hidup neuron melalui pelepasan BDNF", "Menurunkan plastisitas sinaptik agar neuron dapat beristirahat", "Mengurangi produksi endorfin di basal ganglia"],
+            hint: "Ekspresi BDNF dan preservasi dopaminergik memitigasi progresivitas Parkinson."
+        },
+        {
+            q: "Latihan fisik merangsang neurogenesis dan plastisitas sinaptik. Area otak manakah yang secara spesifik sangat dipengaruhi oleh proses ini akibat olahraga?",
+            a: "Hippocampus dan Basal Ganglia",
+            opt: ["Cerebellum dan Medula spinalis", "Korteks visual dan Lobus oksipital", "Hippocampus dan Basal Ganglia", "Hipotalamus posterior dan kelenjar pineal", "Amigdala dan korteks olfaktorius"],
+            hint: "Aktivitas fisik menstimulasi neurogenesis terutama di hippocampus dan basal ganglia."
+        },
+        {
+            q: "Seorang pasien depresi major merasa gejala depresinya membaik secara signifikan setelah rutin bersepeda selama 3 bulan. Efek afektif latihan fisik kronis ini diregulasi melalui mekanisme:",
+            a: "Regulasi reseptor serotonin, pelepasan endorfin endogen, dan stabilisasi katekolamin",
+            opt: ["Supresi total kelenjar tiroid dan kortisol", "Regulasi reseptor serotonin, pelepasan endorfin endogen, dan stabilisasi katekolamin", "Penurunan sintesis Brain-Derived Neurotrophic Factor (BDNF)", "Peningkatan reseptor GABA-A di medula oblongata", "Inhibisi pelepasan dopamin sistemik"],
+            hint: "Sisi afektif dikontrol oleh regulasi serotonin, endorfin endogen, dan katekolamin."
+        },
+        {
+            q: "Manakah penyesuaian adaptif kronis paru terhadap beban kerja istirahat (resting work of breathing) setelah menjalani program aerobik?",
+            a: "Penurunan beban kerja napas saat istirahat akibat efisiensi mekanik dan difusi paru",
+            opt: ["Peningkatan drastis beban kerja napas karena paru lebih besar", "Penurunan beban kerja napas saat istirahat akibat efisiensi mekanik dan difusi paru", "Tidak ada perubahan sama sekali pada beban kerja istirahat", "Peningkatan frekuensi napas istirahat di atas 20x/menit", "Penurunan volume tidal basal secara patologis"],
+            hint: "Adaptasi kronis berujung pada penurunan beban kerja napas (WOB) saat istirahat."
+        }
+    ];
+const pick_pool_respirasi_saraf = makePicker(pool_respirasi_saraf);
+const pool_metabolik = [
+        {
+            q: "Pasien Diabetes Melitus tipe 2 sedang berolahraga lari. Agar glukosa darah dapat masuk ke sel otot meskipun tanpa mediasi insulin, jalur apa yang teraktivasi oleh kontraksi otot?",
+            a: "Translokasi transporter glukosa GLUT-4 ke membran sarkolema via jalur aktivasi AMPK",
+            opt: ["Translokasi transporter glukosa GLUT-2 ke membran inti via mTOR", "Aktivasi reseptor GLUT-1 di otak yang mengirim sinyal otonom", "Translokasi transporter glukosa GLUT-4 ke membran sarkolema via jalur aktivasi AMPK", "Peningkatan sekresi glukagon di pankreas secara independen", "Fosforilasi langsung insulin-receptor substrate (IRS) oleh ATP"],
+            hint: "Kontraksi otot memicu translokasi GLUT-4 via AMPK (AMP-activated protein kinase) tanpa insulin."
+        },
+        {
+            q: "Seorang pria puasa berlari pagi. Untuk mempertahankan euglikemia, terjadi glikogenolisis dan glukoneogenesis di hepar. Hormon apa yang di sekresi secara akut untuk menginisiasi kaskade tersebut saat olahraga?",
+            a: "Glukagon dan Epinefrin",
+            opt: ["Insulin dan Somatostatin", "Glukagon dan Epinefrin", "Kortisol dan Aldosteron", "Tiroksin dan Parathormon", "Melatonin dan Vasopresin"],
+            hint: "Secara akut, sekresi glukagon dan epinefrin menginisiasi pemecahan glikogen hepatik."
+        },
+        {
+            q: "Olahraga endurans memicu metabolisme lipid untuk membakar lemak tubuh. Enzim apa di sel adiposit yang diaktivasi oleh hormon lipolitik (seperti epinefrin, kortisol) untuk memobilisasi asam lemak bebas (FFA)?",
+            a: "Hormone-sensitive lipase (HSL)",
+            opt: ["Lipoprotein lipase (LPL)", "Hormone-sensitive lipase (HSL)", "Pancreatic lipase", "Hexokinase", "Phosphofructokinase (PFK)"],
+            hint: "Hormon lipolitik mengaktivasi HSL untuk memecah trigliserida menjadi FFA."
+        },
+        {
+            q: "Sebagai bentuk terapi non-farmakologis untuk pasien DM Tipe 2, olahraga rutin dianjurkan karena efek kronisnya pada sistem metabolik berupa:",
+            a: "Peningkatan sensitivitas insulin perifer secara luar biasa",
+            opt: ["Peningkatan produksi sel beta pankreas secara de novo", "Peningkatan drastis resistensi perifer sementara", "Penghambatan total proses glukoneogenesis di ginjal", "Peningkatan sensitivitas insulin perifer secara luar biasa", "Penurunan ambang batas ekskresi glukosa renal"],
+            hint: "Secara kronis, aktivitas memicu peningkatan luar biasa sensitivitas insulin perifer."
+        },
+        {
+            q: "Pemeriksaan profil lipid serum seorang pelari jarak jauh secara teoritis diharapkan akan menunjukkan gambaran anti-aterogenik yaitu:",
+            a: "Peningkatan sintesis HDL, reduksi proporsi dan ukuran partikel LDL, serta penurunan trigliserida",
+            opt: ["Peningkatan kolesterol total dan peningkatan ukuran LDL", "Penurunan sintesis HDL dan peningkatan trigliserida", "Peningkatan sintesis HDL, reduksi proporsi dan ukuran partikel LDL, serta penurunan trigliserida", "Peningkatan VLDL, penurunan HDL, dan peningkatan LDL berukuran besar", "Penurunan ukuran HDL dan peningkatan ukuran chylomicron"],
+            hint: "Exercise menggeser profil ke arah HDL tinggi, serta proporsi, ukuran partikel LDL dan TG yang turun."
+        },
+        {
+            q: "Setelah dimobilisasi dari adiposit, asam lemak bebas (FFA) dibawa ke jaringan otot. Proses apa yang terjadi pada FFA di dalam mitokondria sel otot untuk menghasilkan ATP?",
+            a: "Oksidasi beta",
+            opt: ["Glikolisis anaerobik", "Siklus Cori", "Oksidasi beta", "Siklus urea", "Jalur pentosa fosfat"],
+            hint: "FFA mengalami oksidasi beta di mitokondria."
+        }
+    ];
+const pick_pool_metabolik = makePicker(pool_metabolik);
+const pool_fitt_klasifikasi = [
+        {
+            q: "Dalam komponen FITT, jumlah latihan fisik yang dilakukan pasien dalam seminggu mencerminkan komponen:",
+            a: "Frekuensi",
+            opt: ["Frekuensi", "Intensitas", "Time", "Type", "Threshold"],
+            hint: "Frekuensi adalah jumlah latihan fisik dalam seminggu."
+        },
+        {
+            q: "Berdasarkan klasifikasi intensitas aktivitas fisik (Haskell et al, 2007), menyapu lantai, membersihkan garasi, dan berjalan dengan kecepatan 3-4 mil/jam tergolong dalam intensitas:",
+            a: "Sedang (3.0 - 6.0 METs)",
+            opt: ["Sangat Rendah (<1.0 METs)", "Rendah (<3.0 METs)", "Sedang (3.0 - 6.0 METs)", "Tinggi (>6.0 METs)", "Sangat Tinggi (>9.0 METs)"],
+            hint: "Jalan 3-4 mil/jam dan aktivitas domestik seperti menyapu masuk kategori Sedang."
+        },
+        {
+            q: "Seorang bapak berkebun sambil duduk, mencuci piring, dan membaca sambil duduk menggunakan komputer. Termasuk dalam klasifikasi intensitas apa aktivitas-aktivitas ini?",
+            a: "Rendah (<3.0 METs)",
+            opt: ["Rendah (<3.0 METs)", "Sedang (3.0 - 6.0 METs)", "Tinggi (>6.0 METs)", "Vigorous (>9.0 METs)", "Tidak terukur (0 METs)"],
+            hint: "Aktivitas mencuci piring, menyiangi rumput duduk, main komputer masuk Rendah <3.0 METs."
+        },
+        {
+            q: "Seorang pemuda mengikuti pertandingan futsal yang kompetitif setiap akhir pekan. Jika merujuk pada tabel klasifikasi METs, pertandingan futsal tergolong ke dalam intensitas:",
+            a: "Tinggi (>6.0 METs)",
+            opt: ["Sangat rendah", "Rendah (<3.0 METs)", "Sedang (3.0 - 6.0 METs)", "Tinggi (>6.0 METs)", "Kategori tidak diketahui"],
+            hint: "Bertanding futsal, sepak bola, renang putaran teratur masuk Tinggi (>6.0 METs)."
+        },
+        {
+            q: "Seorang lansia dianjurkan melakukan aktivitas aerobik yang membutuhkan keterampilan minimal, seperti aqua-aerobik atau berjalan kaki. Aktivitas ini termasuk dalam tipe apa berdasarkan rekomendasi tipe aktivitas fisik?",
+            a: "Tipe A",
+            opt: ["Tipe A", "Tipe B", "Tipe C", "Tipe D", "Tipe E"],
+            hint: "Tipe A: keterampilan minimal, untuk semua orang dewasa (Aqua-aerobik, jalan kaki)."
+        },
+        {
+            q: "Olahraga rekreasi seperti bermain olahraga raket, bola basket, dan sepak bola, direkomendasikan untuk orang dewasa yang sudah teratur latihan dan bugar. Aktivitas ini diklasifikasikan sebagai:",
+            a: "Tipe D",
+            opt: ["Tipe A", "Tipe B", "Tipe C", "Tipe D", "Tipe E"],
+            hint: "Tipe D adalah olahraga rekreasi (raket, basket, sepak bola)."
+        },
+        {
+            q: "Jogging dan berlari adalah aktivitas aerobik intensitas tinggi yang membutuhkan keterampilan minimal, ditujukan bagi orang yang sudah biasa olahraga. Aktivitas ini tergolong tipe:",
+            a: "Tipe B",
+            opt: ["Tipe A", "Tipe B", "Tipe C", "Tipe D", "Tipe Bebas"],
+            hint: "Tipe B: intensitas tinggi, keterampilan minimal (jogging, lari, step aerobik)."
+        }
+    ];
+const pick_pool_fitt_klasifikasi = makePicker(pool_fitt_klasifikasi);
+const pool_pengukuran_intensitas = [
+        {
+            q: "Seorang pasien 40 tahun melakukan jogging santai di taman. Jika denyut nadi mencapai 70% dari denyut nadi maksimalnya, apa tingkat intensitas latihannya?",
+            a: "Sedang",
+            opt: ["Sangat Ringan", "Ringan", "Sedang", "Berat", "Vigorous"],
+            hint: "Intensitas Sedang: 64 - 76% dari Denyut Nadi Maksimal."
+        },
+        {
+            q: "Seorang wanita berlari di treadmill sambil bernyanyi mendengarkan musik di earphonenya tanpa kesulitan. Berdasarkan Talk Test, intensitas latihannya tergolong?",
+            a: "Ringan",
+            opt: ["Sangat rendah", "Ringan", "Sedang", "Berat", "Sangat Berat"],
+            hint: "Talk test: Masih dapat bicara dan bernyanyi = intensitas ringan (<64%)."
+        },
+        {
+            q: "Dalam tes lari 2.4 km, seorang siswa melaporkan perasaannya di angka 15 pada skala ordinal RPE Borg. Hal ini mengindikasikan bahwa persepsinya terhadap beban kerja berada pada tingkatan:",
+            a: "Hard",
+            opt: ["Very light", "Fairly light", "Moderately hard", "Hard", "Very, very hard"],
+            hint: "Skala Borg 15 adalah Hard (Must take breath between 4-5 words) = Maksimum 9-10."
+        },
+        {
+            q: "Pasien di klinik rehabilitasi berjalan di treadmill dengan pace yang ajek dan melaporkan dirinya 'not breathless' (tidak ngos-ngosan). Skala Borg (Ordinal 6-20) yang paling tepat merefleksikan 'Fairly light' (Intensitas Moderat) adalah:",
+            a: "10 - 11",
+            opt: ["7 - 8", "10 - 11", "12 - 13", "14 - 15", "18 - 19"],
+            hint: "Fairly light (Moderate Intensity 5-6) adalah skala 10-11 pada Borg."
+        },
+        {
+            q: "Dalam peresepan program beban (resistance training), klien mampu melakukan latihan di zona 80% dari beban maksimal yang bisa diangkat 1 kali. Ini setara dengan Repetition Maximum (RM) kategori:",
+            a: "Berat",
+            opt: ["Sangat ringan", "Ringan", "Sedang", "Berat", "Maksimal letal"],
+            hint: "RM: 30-49% ringan, 50-69% sedang, 70-84% berat. 80% = berat."
+        },
+        {
+            q: "Metode Repetition in Reserve (RIR) mengukur seberapa jauh seseorang dari titik kegagalan (failure) saat mengangkat beban. Jika seorang lifter menghentikan set-nya padahal ia masih sanggup melakukan 4 repetisi lagi, ia berlatih pada intensitas:",
+            a: "Sedang",
+            opt: ["Sangat Ringan", "Ringan", "Sedang", "Berat", "Sangat Berat"],
+            hint: "RIR Sedang = repetisi 3-4 sisa sebelum failure."
+        },
+        {
+            q: "Seorang binaragawan mengangkat beban hingga ia hanya menyisakan energi untuk 1 kali repetisi sebelum ototnya sama sekali tak bisa mengangkat (failure). Berdasarkan RIR (Zourdos et al, 2016), intensitas latihannya adalah:",
+            a: "Berat",
+            opt: ["Ringan", "Menengah bawah", "Sedang", "Berat", "Berlebihan"],
+            hint: "RIR Berat = repetisi 1-2 sebelum failure."
+        },
+        {
+            q: "Talk test digunakan untuk estimasi praktis intensitas latihan di lapangan. Jika seseorang sedang berolahraga dan 'sulit berbicara', intensitasnya adalah:",
+            a: "Berat (>76% Denyut Nadi Maksimal)",
+            opt: ["Ringan (<50%)", "Ringan (<64%)", "Sedang (64-76%)", "Berat (>76% Denyut Nadi Maksimal)", "Anaerobic letal (>100%)"],
+            hint: "Sulit bicara menandakan intensitas berat (>76% denyut nadi maksimal)."
+        }
+    ];
+const pick_pool_pengukuran_intensitas = makePicker(pool_pengukuran_intensitas);
+const pool_sistem_energi = [
+        {
+            q: "Seorang lifter olimpiade melakukan gerakan 'Clean and Jerk' yang diselesaikan dalam waktu kurang dari 5 detik. Jalur metabolisme energi manakah yang paling dominan digunakan dalam aksi ini?",
+            a: "Sistem ATP-PCr (Fosfagen)",
+            opt: ["Glikolisis aerobik", "Siklus Krebs di mitokondria", "Sistem glikolisis anaerobik laktat", "Sistem ATP-PCr (Fosfagen)", "Beta-oksidasi asam lemak bebas"],
+            hint: "ATP-PCr mendominasi 10-15 detik pertama latihan intensitas sangat tinggi."
+        },
+        {
+            q: "Seorang atlet lari jarak menengah (400 meter) menuntaskan lombanya dalam 50 detik. Saat mendekati garis finish, ia merasakan tungkainya sangat berat dan kelelahan (fatigue akut). Sistem energi apa yang dominan mensuplai ATP pada rentang waktu ini?",
+            a: "Sistem glikolisis anaerobik (Asam laktat)",
+            opt: ["Sistem ATP-PCr", "Sistem glikolisis anaerobik (Asam laktat)", "Sistem aerobik (Oksidatif)", "Fosforilasi oksidatif Rantai Transpor Elektron", "Metabolisme protein otot"],
+            hint: "Glikolisis anaerobik mendominasi detik 15 hingga 2-3 menit. Asam laktat dan H+ menumpuk memicu fatigue."
+        },
+        {
+            q: "Apa penyebab utama kelelahan otot (fatigue akut) pada saat penggunaan sistem glikolisis anaerobik secara masif berdurasi 2 menit?",
+            a: "Akumulasi ion hidrogen (H+) yang menyertai produksi laktat",
+            opt: ["Deplesi total cadangan glukosa di hepar", "Akumulasi ion hidrogen (H+) yang menyertai produksi laktat", "Kehabisan kadar ATP intramuskular secara instan", "Keracunan oksigen di dalam mitokondria", "Kerusakan struktur miofibril secara masif seketika"],
+            hint: "Akumulasi H+ menyebabkan asidosis dan menghambat interaksi aktin miosin -> lelah."
+        },
+        {
+            q: "Sistem metabolik aerobik (oksidatif) mulai mendominasi produksi ATP setelah durasi aktivitas melampaui...",
+            a: "2-3 menit",
+            opt: ["10-15 detik", "30-45 detik", "60-90 detik", "2-3 menit", "20-30 menit"],
+            hint: "Sistem aerobik mulai mendominasi setelah 2-3 menit saat sistem kardiovaskuler cukup mensuplai oksigen."
+        },
+        {
+            q: "Dalam sistem ATP-PCr, substansi apa yang berfungsi mendonasikan gugus fosfatnya ke ADP untuk membentuk ATP dengan sangat cepat?",
+            a: "Kreatin Fosfat (CP)",
+            opt: ["Asam Laktat", "Glukosa-6-Fosfat", "Kreatin Fosfat (CP)", "Piruvat", "Asam Lemak Bebas"],
+            hint: "Kreatin fosfat mendonasikan P ke ADP -> ATP secara instan tanpa oksigen."
+        },
+        {
+            q: "Jalur energi yang memproduksi ATP paling lambat namun memiliki kapasitas bahan bakar (energi) yang secara teoritis tidak terbatas, cocok untuk olahraga daya tahan adalah:",
+            a: "Sistem Aerobik (Oksidatif)",
+            opt: ["Sistem ATP-PCr", "Sistem Glikolisis Anaerobik", "Sistem Fosfagen", "Sistem Aerobik (Oksidatif)", "Sistem Siklus Cori Murni"],
+            hint: "Sistem aerobik paling lambat produksi ATP namun durasinya tak terbatas."
+        }
+    ];
+const pick_pool_sistem_energi = makePicker(pool_sistem_energi);
+const pool_rekomendasi_metode = [
+        {
+            q: "Menurut pedoman dari Haskell et al. (2007) terkait Physical activity and public health, berapa lama rekomendasi aktivitas fisik intensitas sedang (moderate) yang sebaiknya dilakukan setiap pekannya?",
+            a: "Sekurang-kurangnya 30 menit dalam 5 hari per minggu (150 menit)",
+            opt: ["Sekurang-kurangnya 15 menit dalam 3 hari per minggu", "Sekurang-kurangnya 60 menit setiap hari tanpa jeda", "Sekurang-kurangnya 20 menit dalam 3 hari per minggu", "Sekurang-kurangnya 30 menit dalam 5 hari per minggu (150 menit)", "Sekurang-kurangnya 100 menit per hari"],
+            hint: "Moderate PA: 30 menit, 5x seminggu. Vigorous: 20 menit, 3x seminggu."
+        },
+        {
+            q: "Seseorang yang hanya melakukan aktivitas fisik intensitas sedang selama kurang dari 150 menit/minggu, atau intensitas berat kurang dari 75 menit/minggu, dimasukkan dalam kategori tingkat aktivitas fisik apa?",
+            a: "Rendah",
+            opt: ["Sangat rendah", "Rendah", "Sedang", "Tinggi", "Atletik"],
+            hint: "Tabel: Rendah = sedang <150mnt atau berat <75mnt. Sedang = 150-300 / 75-150. Tinggi = >300 / >150."
+        },
+        {
+            q: "Dalam studi epidemiologi kesehatan masyarakat yang mencakup ribuan partisipan lintas negara, metode subyektif mana yang sering digunakan meskipun memiliki kekurangan berupa kecenderungan over-reporting dari responden?",
+            a: "International Physical Activity Questionnaire (IPAQ)",
+            opt: ["Physical Activity Recall (PAR)", "Habitual Activity Questionnaire (HAQ)", "International Physical Activity Questionnaire (IPAQ)", "Physical Activity Scale for Elderly (PASE)", "Diari Bouchard"],
+            hint: "IPAQ menstandarkan data lintas negara, dihitung MET-menit/minggu, tapi rentan over-reporting."
+        },
+        {
+            q: "Seorang peneliti menargetkan penelitian tingkat aktivitas pada populasi panti jompo. Instrumen subyektif yang didesain secara spesifik mencakup rekreasi, rumah tangga, dan pekerjaan relevan lansia adalah:",
+            a: "Physical Activity Scale for Elderly (PASE)",
+            opt: ["IPAQ", "PAR", "PASE (Physical Activity Scale for Elderly)", "Diari aktivitas 15-menit (Bouchard)", "Doubly labeled water (DLW)"],
+            hint: "PASE didesain khusus lansia."
+        },
+        {
+            q: "Sebuah riset klinis ingin mengukur Activity Energy Expenditure (AEE) dengan presisi sangat tinggi tanpa recall bias. Metode gold standard obyektif apa yang memanfaatkan perhitungan konsumsi O2 dan CO2?",
+            a: "Pengukuran Pengeluaran Energi dengan Kalorimetri atau Doubly Labeled Water (DLW)",
+            opt: ["Akselerometer 3 aksis", "Pedometer sederhana", "Pengukuran Pengeluaran Energi dengan Kalorimetri atau Doubly Labeled Water (DLW)", "Heart Rate Monitor 24 jam", "Bouchard Diary"],
+            hint: "Kalorimetri/DLW adalah gold standard untuk menghitung METs presisi tinggi."
+        },
+        {
+            q: "Seorang pasien memakai pedometer dan mencatatkan total 8.500 langkah per hari. Menurut Tudor-Locke et al. (2011), orang ini tergolong ke dalam kategori:",
+            a: "Aktivitas sedang",
+            opt: ["Tidak aktif (sedentary)", "Aktivitas rendah", "Aktivitas sedang", "Aktif", "Sangat aktif"],
+            hint: "Langkah: <5000 sedentary, 5000-7499 rendah, 7500-9999 sedang, 10k-12.5k aktif, >12.5k sangat aktif."
+        },
+        {
+            q: "Untuk keluar dari gaya hidup sedentary (tidak aktif) berdasarkan jumlah langkah (Tudor-Locke et al., 2011), batas maksimal langkah orang sedentary adalah di bawah...",
+            a: "5.000 langkah",
+            opt: ["1.000 langkah", "3.000 langkah", "5.000 langkah", "7.500 langkah", "10.000 langkah"],
+            hint: "Sedentary = < 5.000 langkah."
+        },
+        {
+            q: "Seorang penderita cedera lutut berhenti total dari olahraga selama 2 bulan. Ia kehilangan kebugaran dan mudah lelah. Prinsip apa yang menjelaskan patofisiologi deconditioning ini (atrofi otot, volume plasma turun)?",
+            a: "Reversibility (Prinsip Dekondisioning)",
+            opt: ["Progressive overload", "Specificity of training", "Reversibility (Prinsip Dekondisioning)", "Overtraining syndrome", "Individuality principle"],
+            hint: "Reversibility (use it or lose it). Adaptasi hilang, hingga 50% loss dalam 2 bulan."
+        },
+        {
+            q: "Seorang personal trainer sedang mendesain program olahraga bagi klien baru. Langkah krusial yang bersifat screening anamnesis menggunakan 7 pertanyaan standar (termasuk nyeri dada dan pusing pingsan) dinamakan:",
+            a: "PAR-Q (Physical Activity Readiness Questionnaire)",
+            opt: ["IPAQ", "PAR-Q (Physical Activity Readiness Questionnaire)", "PASE", "Borg Scale Assessment", "1-RM Test"],
+            hint: "PAR-Q dari Canadian Society for Exercise Physiology (2002) menanyakan risiko kardiovaskuler."
+        },
+        {
+            q: "Dalam anamnesis PAR-Q (Canadian Society for Exercise Physiology, 2002), manakah dari kondisi berikut yang ditanyakan untuk mendeteksi risiko olahraga?",
+            a: "Nyeri dada saat tidak melakukan aktivitas fisik dan riwayat pingsan/hilang keseimbangan",
+            opt: ["Nyeri otot setelah berolahraga beban", "Riwayat asma sewaktu kecil", "Nyeri dada saat tidak melakukan aktivitas fisik dan riwayat pingsan/hilang keseimbangan", "Kenaikan berat badan dalam 1 bulan terakhir", "Kemampuan mengangkat beban di atas 50 kg"],
+            hint: "PAR-Q screening fokus ke jantung (nyeri dada), keseimbangan (pingsan), sendi memburuk, dll."
+        }
+    ];
+const pick_pool_rekomendasi_metode = makePicker(pool_rekomendasi_metode);
+const pool_clinical_cases = [
+        {
+            q: "Seorang pria 72 tahun dengan riwayat hipertensi ingin memulai olahraga. Berdasarkan panduan PAR-Q, gejala klinis manakah di bawah ini yang mewajibkannya mendapat evaluasi medis sebelum memulai?",
+            a: "Riwayat sering kehilangan keseimbangan akibat pusing atau pernah pingsan",
+            opt: ["Kelelahan ringan setelah berkebun 30 menit", "Nyeri otot tumpul (DOMS) 1-2 hari setelah mencoba push-up", "Riwayat sering kehilangan keseimbangan akibat pusing atau pernah pingsan", "Denyut nadi istirahat sekitar 78 kali per menit", "Penambahan berat badan 2 kg dalam setahun terakhir"],
+            hint: "Kehilangan keseimbangan atau pingsan adalah red-flag dalam PAR-Q."
+        },
+        {
+            q: "Seorang pasien post-bed rest 2 bulan akibat fraktur femur mengeluhkan napas yang sangat ngos-ngosan meski hanya berjalan ke kamar mandi. Dokter menjelaskan fenomena 'deconditioning'. Mekanisme patofisiologis apa yang terjadi pada sistem kardiovaskular pasien tersebut selama bed rest?",
+            a: "Reduksi volume plasma darah dan penurunan densitas kapiler perifer",
+            opt: ["Hipertrofi eksentrik ventrikel kiri secara reaktif", "Reduksi volume plasma darah dan penurunan densitas kapiler perifer", "Peningkatan drastis sintesis cairan sinovial di sendi yang tidak bergerak", "Peningkatan ekspresi gen mTOR di sel miokard", "Akumulasi mioglobin berlebih di otot lurik"],
+            hint: "Deconditioning menyebabkan atrofi serat otot, reduksi volume plasma, dan penurunan densitas kapiler."
+        },
+        {
+            q: "Seorang wanita 50 tahun (BMI 32 kg/m2) mengeluhkan nyeri lutut ringan. Dokter menyarankan aktivitas di gym seperti bersepeda stasioner lambat (<5 mph) atau renang mengambang. Berdasarkan klasifikasi intensitas aktivitas fisik (Haskell 2007), jenis olahraga ini memiliki ekuivalen metabolik sebesar?",
+            a: "Rendah (<3,0 METs)",
+            opt: ["Sangat rendah (<1,0 METs)", "Rendah (<3,0 METs)", "Sedang (3,0 - 6,0 METs)", "Tinggi (>6,0 METs)", "Vigorous (>9,0 METs)"],
+            hint: "Bersepeda <5 mil/jam atau berenang mengambang termasuk intensitas Rendah (<3,0 METs)."
+        },
+        {
+            q: "Seorang atlet renang menahan napas terlalu lama saat berenang putaran kompetitif (intensitas tinggi). Energi otot dominan dipasok tanpa oksigen memadai. Apa senyawa sisa metabolisme yang menyebabkan rasa terbakar akut di otot perut dan kakinya?",
+            a: "Asam laktat beserta pelepasan ion hidrogen (H+)",
+            opt: ["Kreatin fosfat residu", "Karbondioksida terlarut", "Asam laktat beserta pelepasan ion hidrogen (H+)", "Asam asetoasetat bebas", "Urea mitokondrial"],
+            hint: "Glikolisis anaerobik menghasilkan laktat dan akumulasi H+ yang menyebabkan fatigue."
+        },
+        {
+            q: "Seorang penderita DM Tipe 2 dengan resistensi insulin parah menolak suntik insulin dan memilih merutinkan jalan cepat tiap hari. Tiga bulan kemudian, HbA1c turun dari 9% ke 6.5%. Bagaimana otot skeletal pasien beradaptasi secara akut dan kronis untuk menyerap glukosa darah ini?",
+            a: "Meningkatkan sensitivitas insulin perifer dan memicu translokasi GLUT-4 via jalur AMPK tanpa perlu insulin",
+            opt: ["Menghentikan glukoneogenesis hepar secara permanen melalui kortisol", "Mengubah glukosa darah menjadi asam amino bebas di jaringan ikat", "Meningkatkan sintesis insulin di pankreas dua kali lipat saat olahraga", "Meningkatkan sensitivitas insulin perifer dan memicu translokasi GLUT-4 via jalur AMPK tanpa perlu insulin", "Menurunkan reseptor insulin di permukaan hepatosit"],
+            hint: "Olahraga menginduksi GLUT-4 via AMPK (independen insulin) dan secara kronis menaikkan sensitivitas insulin perifer."
+        },
+        {
+            q: "Seorang pemuda usia 22 tahun mengikuti program lari jarak jauh. Di pertengahan rute lari, hormon epinefrin dan hormon pertumbuhan meningkat pesat di darah. Hal ini memicu lipolisis. Enzim spesifik apa di sel lemak yang kinerjanya ditingkatkan oleh hormon-hormon tersebut?",
+            a: "Hormone-sensitive lipase (HSL)",
+            opt: ["Fosfofruktokinase (PFK)", "Hormone-sensitive lipase (HSL)", "Karnitin palmitoiltransferase", "Siklooksigenase-2 (COX-2)", "Glukosa-6-fosfatase"],
+            hint: "HSL diaktivasi oleh hormon lipolitik untuk memecah simpanan lemak."
+        },
+        {
+            q: "Bapak A (60 thn) menderita Parkinson dengan tremor ringan. Ia diminta berolahraga moderat teratur oleh spesialis sarafnya. Zat neurotrofik apa yang ekspresinya meningkat di otak untuk memelihara fungsi dopaminergik pasien ini?",
+            a: "Brain-Derived Neurotrophic Factor (BDNF)",
+            opt: ["Endorfin beta", "Brain-Derived Neurotrophic Factor (BDNF)", "GABA transaminase", "Asetilkolinesterase", "Monoamin oksidase"],
+            hint: "BDNF dipicu oleh kontraksi otot untuk pertahanan terhadap degenerasi saraf (terutama memelihara dopaminergik Parkinson)."
+        },
+        {
+            q: "Remaja laki-laki usia 16 tahun merasa denyut jantungnya berdebar sangat kencang dan keras pada 10 detik pertama mulai berlari sprint. Efek inotropik positif ini ditimbulkan secara primer akibat?",
+            a: "Aktivasi saraf simpatis dan pelepasan katekolamin dari medula oblongata",
+            opt: ["Vasokonstriksi lokal pada kapiler tungkai", "Hambatan kompetitif pada SA node di jantung", "Aktivasi saraf simpatis dan pelepasan katekolamin dari medula oblongata", "Dominasi saraf parasimpatis pada serabut purkinje", "Kenaikan viskositas darah secara masif"],
+            hint: "Stimulasi pusat kardiovaskuler di medula oblongata memicu simpatis dan pelepasan katekolamin."
+        },
+        {
+            q: "Kakek B baru sembuh dari depresi major dan direkomendasikan rutin aktivitas rekreasi (berjalan dengan teman). Secara patofisiologi psikiatri, bagaimana olahraga kronis dapat menstabilkan mood kakek ini?",
+            a: "Dengan meregulasi reseptor serotonin dan meningkatkan pelepasan endorfin endogen",
+            opt: ["Dengan menekan aktivitas basal ganglia sepenuhnya", "Dengan memicu hipersekresi adrenalin sepanjang hari", "Dengan meregulasi reseptor serotonin dan meningkatkan pelepasan endorfin endogen", "Dengan menghambat neurogenesis di hippocampus agar pikiran lebih tenang", "Dengan menurunkan kadar glukosa cairan serebrospinal"],
+            hint: "Efek afektif latihan fisik melibatkan regulasi serotonin, pelepasan endorfin, dan stabilisasi sekresi katekolamin."
+        },
+        {
+            q: "Seorang pasien datang paska-tes fitness dengan nilai VO2max yang berada di kategori rendah. Ia rutin berjalan-jalan melihat pertokoan setiap hari (lifestyle physical activity). Mengapa aktivitasnya itu belum mampu menaikkan VO2max-nya?",
+            a: "Karena aktivitas gaya hidup ringan tersebut belum cukup memberikan stimulus overload progresif untuk memicu adaptasi sentral maupun perifer kardiorespirasi",
+            opt: ["Karena berjalan di pertokoan justru menurunkan volume sekuncup", "Karena ia belum mengonsumsi suplemen kreatin fosfat", "Karena aktivitas gaya hidup ringan tersebut belum cukup memberikan stimulus overload progresif untuk memicu adaptasi sentral maupun perifer kardiorespirasi", "Karena aktivitas tersebut tergolong Tipe C yang butuh skill tinggi", "Karena tidak dilakukan di bawah sinar matahari langsung"],
+            hint: "Lifestyle PA dasar seringkali belum cukup untuk memicu adaptasi VO2max secara signifikan bila tidak ada progressive overload."
+        },
+        {
+            q: "Dalam sesi rehabilitasi kardiak, pasien diminta memakai pedometer. Pasien tersebut menargetkan agar bisa lepas dari kategori 'tidak aktif (sedentary)' menurut panduan Tudor-Locke (2011). Target minimal langkah per hari yang harus ia lampaui adalah:",
+            a: "5.000 langkah",
+            opt: ["2.000 langkah", "5.000 langkah", "7.500 langkah", "10.000 langkah", "12.500 langkah"],
+            hint: "Sedentary = < 5.000 langkah."
+        },
+        {
+            q: "Seorang olahragawan memakai smart-watch (akselerometer modern) yang melacak intensitas gerakan. Kelebihan utama metode ini dibandingkan pengukuran kuesioner IPAQ subjektif adalah?",
+            a: "Meniadakan recall bias serta mampu mendeteksi secara presisi intensitas gerakan 3 aksis serta pemisahan waktu aktif dan sedentary",
+            opt: ["Dapat mengukur langsung jumlah molekul ATP yang dikonsumsi secara real-time", "Meniadakan recall bias serta mampu mendeteksi secara presisi intensitas gerakan 3 aksis serta pemisahan waktu aktif dan sedentary", "Mampu mengetahui jenis aktivitas spesifik (misal: membedakan renang dan bersepeda tanpa input manual)", "Merupakan gold standard untuk mengukur pengeluaran CO2", "Sensor mampu menangkap perubahan suhu inti tubuh"],
+            hint: "Akselerometer objektif: bebas recall bias, bisa deteksi intensitas 3 aksis, bedakan sedentary/aktif."
+        },
+        {
+            q: "Klien di klinik sport medicine berlatih dengan beban 40 kg pada bench press. Beban maksimalnya (1-RM) adalah 100 kg. Jika dihitung, intensitas beban 40% ini masuk dalam kategori RM apa?",
+            a: "Ringan",
+            opt: ["Sangat Ringan", "Ringan", "Sedang", "Berat", "Vigorous"],
+            hint: "Intensitas ringan pada RM adalah 30-49%."
+        },
+        {
+            q: "Dokter memberikan edukasi kepada kelompok remaja bahwa olahraga beban dapat membuat persendian mereka lebih stabil dan tidak kaku. Dasar mekanisme kronisnya adalah?",
+            a: "Peningkatan vaskularisasi kronis pada jaringan ikat memicu produksi cairan sinovial yang lebih optimal",
+            opt: ["Terjadi kalsifikasi parsial di bursa sinovial yang membuat sendi menjadi kuat", "Kartilago hialin berubah menjadi tulang rawan fibrosa", "Peningkatan vaskularisasi kronis pada jaringan ikat memicu produksi cairan sinovial yang lebih optimal", "Terjadi hipertrofi masif pada cairan tulang belakang", "Penyusutan panjang ligamen intra-artikular agar makin rapat"],
+            hint: "Pasokan darah kronis ke jaringan ikat mengoptimalkan produksi cairan sinovial."
+        },
+        {
+            q: "Seorang ibu 40 tahun mendaki bukit perlahan (intensitas sedang-tinggi). Ia melaporkan bahwa ia harus menarik napas dalam setelah merangkai 4-5 kata saat berbicara dengan temannya. Kondisi ini mencerminkan apa pada metode Talk Test / RPE?",
+            a: "Intensitas maksimal/hard (skala RPE ~14-16) karena sulit bicara",
+            opt: ["Intensitas ringan (RPE ~9) karena masih sadar", "Intensitas maksimal/hard (skala RPE ~14-16) karena sulit bicara", "Intensitas moderat (RPE ~11) karena masih bisa bernapas", "Intensitas letal (RPE 20) di mana ia akan segera pingsan", "Intensitas aerobik dasar dengan 40% HR max"],
+            hint: "Must take breath between 4-5 words (Hard, RPE 14-16, Maksimal intensitas)."
+        },
+        {
+            q: "Pasien osteoporosis post-menopause ditugaskan mengangkat dumbell ringan (Tipe A activity). Adaptasi yang paling bermanfaat yang terjadi pada tulangnya diakibatkan oleh:",
+            a: "Stres mekanik / mechanical loading",
+            opt: ["Radiasi panas dari otot lurik", "Translokasi cairan sinovial", "Stres mekanik / mechanical loading", "Peningkatan laktat dehidrogenase", "Penurunan pH lokal"],
+            hint: "Weight-bearing merangsang stres mekanik yang krusial untuk mencegah osteoporosis."
+        },
+        {
+            q: "Ketika seseorang berlari dengan intensitas tinggi selama 5 menit berturut-turut, maka pada menit kelima, jalur metabolisme apa yang paling banyak menghasilkan ATP untuk otot kakinya?",
+            a: "Glikolisis Aerobik (Oksidatif) di Mitokondria",
+            opt: ["Fosforilasi langsung Kreatin Fosfat", "Siklus pemecahan asam laktat", "Glikolisis Aerobik (Oksidatif) di Mitokondria", "Siklus Cori absolut", "Fermentasi piruvat menjadi etanol"],
+            hint: "Setelah 2-3 menit, jalur Aerobik (Oksidatif) mulai mendominasi penuh."
+        },
+        {
+            q: "Pada kondisi klinis profil lipid memburuk, dokter meresepkan aktivitas aerobik tingkat sedang. Salah satu parameter profil lipid (komponen aterogenik) yang diharapkan menurun tajam proporsi dan ukuran partikelnya adalah:",
+            a: "Low-Density Lipoprotein (LDL)",
+            opt: ["High-Density Lipoprotein (HDL)", "Apolipoprotein A-1", "Low-Density Lipoprotein (LDL)", "Asam Lemak Esensial Omega-3", "Enzim Lipase Lipoprotein"],
+            hint: "Exercise secara kronis mereduksi proporsi dan ukuran partikel LDL (komponen aterogenik)."
+        },
+        {
+            q: "Seorang pekerja bangunan mencampur semen dan mengangkut pasir seharian. Aktivitas ini dikategorikan tinggi (>6.0 METs). Energi expenditure yang tinggi ini sebetulnya merupakan turunan langsung dari...",
+            a: "Peningkatan volume oksigen yang dikonsumsi (VO2) tubuh",
+            opt: ["Peningkatan kadar gula darah istirahat", "Peningkatan volume oksigen yang dikonsumsi (VO2) tubuh", "Penurunan denyut nadi maksimal akibat kelelahan", "Hambatan pelepasan katekolamin", "Aktivitas dominan sel glia otak"],
+            hint: "Metabolic Equivalent of Task (MET) adalah turunan dari konsumsi oksigen (3.5 ml O2/kg/min = 1 MET)."
+        },
+        {
+            q: "Seorang perenang rekreasi hanya sanggup melakukan gaya dada selama 15 menit dan kemudian berhenti kelelahan. Apa prinsip latihan utama yang belum ia miliki dan harus dilatih untuk meningkatkan waktunya menjadi 45 menit?",
+            a: "Prinsip Progressive Overload pada frekuensi atau durasi secara bertahap",
+            opt: ["Prinsip Spesifisitas untuk olahraga basket", "Prinsip Progressive Overload pada frekuensi atau durasi secara bertahap", "Prinsip Reversibility agar ia semakin bugar", "Prinsip Deconditioning secara sistematis", "Penggunaan beban 1-RM pada saat berenang"],
+            hint: "Untuk meningkatkan physical fitness perlu aplikasi prinsip progressive overload."
+        },
+        {
+            q: "Dalam sesi pengukuran obyektif pengeluaran energi pasien malnutrisi dengan alat presisi tinggi yang mahal (gold standard), dokter spesialis menggunakan metode?",
+            a: "Doubly Labeled Water (DLW) atau Kalorimetri",
+            opt: ["Physical Activity Recall 7 hari", "International Physical Activity Questionnaire", "Pedometer saku", "Borg Scale of Perceived Exertion", "Doubly Labeled Water (DLW) atau Kalorimetri"],
+            hint: "Gold standard untuk mengukur AEE adalah kalorimetri dan Doubly Labeled Water."
+        },
+        {
+            q: "Seorang pasien dengan takikardia istirahat (RR 100 bpm) disarankan mengikuti program aerobik 6 bulan. Ia bingung mengapa dokter menjanjikan denyut nadinya akan melambat. Mekanisme bradikardia istirahat ini terjadi karena:",
+            a: "Hipertrofi ventrikel eksentrik meningkatkan volume sekuncup (stroke volume), sehingga jantung tak perlu memompa secepat dulu saat istirahat",
+            opt: ["Otot jantung melemah dan tak mampu berdetak cepat", "Saraf parasimpatis mengalami kerusakan", "Saraf simpatis mengalami dominasi permanen saat istirahat", "Peningkatan laktat kronis mematikan sel pacu jantung", "Hipertrofi ventrikel eksentrik meningkatkan volume sekuncup (stroke volume), sehingga jantung tak perlu memompa secepat dulu saat istirahat"],
+            hint: "Resting bradycardia terjadi sekunder akibat efisiensi isi sekuncup ventrikel kiri (eccentric hypertrophy)."
+        },
+        {
+            q: "Remaja laki-laki hobi bermain sepak bola rekreasi dengan temannya di hari Minggu. Ia meminta surat keterangan sehat. Jenis olahraga Tipe D (olahraga rekreasi) direkomendasikan bagi individu dengan prasyarat:",
+            a: "Orang dewasa yang sudah teratur latihan dan memiliki tingkat kebugaran cukup",
+            opt: ["Orang tua dengan masalah persendian", "Orang dengan cedera medula spinalis akut", "Orang dewasa yang sudah teratur latihan dan memiliki tingkat kebugaran cukup", "Anak usia balita", "Pasien yang sedang mengalami infark miokard akut"],
+            hint: "Tipe D (olahraga rekreasi dan kompetitif seperti basket/sepak bola) ditujukan untuk yang sudah bugar dan biasa latihan."
+        },
+        {
+            q: "Dalam penyusunan target program latihan untuk pasien obesitas, dokter menggunakan rumus SMART. Huruf 'R' dalam SMART merujuk pada:",
+            a: "Realistic (Target bisa dicapai dengan nalar/logis sesuai kemampuan)",
+            opt: ["Radical (Membuat perubahan drastis)", "Routine (Rutinitas ketat setiap jam)", "Realistic (Target bisa dicapai dengan nalar/logis sesuai kemampuan)", "Reversible (Target yang bisa dibalik arahnya)", "Reactionary (Berdasarkan reaksi otot seketika)"],
+            hint: "SMART = Specific, Measurable, Attainable, Realistic, Time frame specific."
+        },
+        {
+            q: "Klien 45 tahun merekam denyut jantung latihannya (Net Heart Rate) memakai jam tangan pintar. Estimasi prediksi konsumsi Oksigen (VO2) dari jam ini dapat akurat karena di dasari atas prinsip bahwa:",
+            a: "Terdapat hubungan linier antara peningkatan denyut jantung dengan konsumsi oksigen (VO2) pada intensitas sub-maksimal aerobik",
+            opt: ["Denyut jantung hanya naik saat glikolisis anaerobik aktif", "Terdapat hubungan eksponensial invers antara oksigen dan denyut nadi", "Terdapat hubungan linier antara peningkatan denyut jantung dengan konsumsi oksigen (VO2) pada intensitas sub-maksimal aerobik", "Jam pintar mampu menembus kulit untuk mengukur O2 arteri langsung", "Akselerometer di jam tangan menghitung aliran darah lengan murni"],
+            hint: "Pemantauan HR valid untuk estimasi VO2 berdasarkan kurva linear antara HR dan VO2 saat aerobik."
+        },
+        {
+            q: "Siswa sekolah berlomba panjat tebing (Tinggi / >6.0 METs). Otot lengan mereka sangat aktif berkontraksi isometrik dan isotonik dengan berat badan sendiri. Pada detik ke 10 pertama, enzim apakah yang bekerja dominan memecah Kreatin Fosfat untuk sintesis ATP secara instan?",
+            a: "Kreatin Kinase (CK)",
+            opt: ["Hormone-sensitive lipase (HSL)", "Kreatin Kinase (CK)", "ATP Sintase Mitokondrial", "Sitokrom C Oksidase", "Laktat dehidrogenase (LDH)"],
+            hint: "ATP-PCr mengandalkan pelepasan fosfat dari Kreatin Fosfat secara cepat, meskipun enzimnya spesifik CK."
+        },
+        {
+            q: "Untuk melatih kekuatan tulang, seorang perawat lansia merekomendasikan kliennya menaiki tangga. Dari intensitasnya, berjalan turun tangga tergolong intensitas:",
+            a: "Sedang (3.0 - 6.0 METs)",
+            opt: ["Rendah (<3.0 METs)", "Sedang (3.0 - 6.0 METs)", "Tinggi (>6.0 METs)", "Aktivitas Sedentary", "Tidak dapat diestimasi"],
+            hint: "Berjalan turun tangga tergolong Sedang (3-6 METs)."
+        },
+        {
+            q: "Seorang ibu mencuci piring dan menyiapkan makanan, ia memakai kalori yang sangat sedikit per menit. Secara teoritis, 1 MET setara dengan laju metabolisme basal yaitu konsumsi oksigen sebesar...",
+            a: "3,5 ml O2 / kg / menit",
+            opt: ["10 ml O2 / kg / menit", "100 ml O2 / kg / menit", "3,5 ml O2 / kg / menit", "1 liter O2 / menit", "500 ml O2 / menit"],
+            hint: "1 MET = 3.5 ml O2/kg/menit (laju metabolisme basal)."
+        },
+        {
+            q: "Pasien gagal jantung fase stabil disarankan dokter beraktivitas tipe 'Bersepeda santai (< 5 mil/jam)'. Menurut tabel aktivitas, tingkat METs olahraga ini adalah:",
+            a: "Rendah (<3.0 METs)",
+            opt: ["Sangat tinggi", "Tinggi (>6.0 METs)", "Sedang (3.0 - 6.0 METs)", "Rendah (<3.0 METs)", "Hanya buang waktu (0 METs)"],
+            hint: "Bersepeda < 5 mil/jam masuk kategori Rendah."
+        },
+        {
+            q: "Saat mempraktekkan program aktivitas berat (Vigorous), rekomendasi frekuensi minimal per minggu sesuai Haskell et al. (2007) bagi orang dewasa adalah:",
+            a: "Sekurang-kurangnya 3 hari per minggu (minimal 20 menit/hari)",
+            opt: ["Sekurang-kurangnya 5 hari per minggu (minimal 30 menit/hari)", "Sekurang-kurangnya 1 hari di akhir pekan", "Sekurang-kurangnya 7 hari berturut-turut", "Sekurang-kurangnya 3 hari per minggu (minimal 20 menit/hari)", "Tidak disarankan sama sekali kecuali atlet"],
+            hint: "Vigorous PA minimal 20 menit dalam 3 hari per minggu."
+        }
+    ];
+const pick_pool_clinical_cases = makePicker(pool_clinical_cases);
+
+
+// ═══ DISPATCHER ═══
+function makeQ(type){
+    
+        if(type === 'pool_definisi') {
+            const item = pick_pool_definisi();
+            if(!item) return null; // Safety check
+            return {
+                type: 'pool_definisi',
+                typeName: 'Definisi',
+                tpColor: 'var(--blue)',
+                tpBg: 'var(--bluebg)',
+                scenario: null,
+                rawData: null,
+                q: item.q || item.question || 'No Question',
+                opts: shuf(item.opt || item.options || [item.a || item.ans]),
+                ans: item.a || item.answer || item.ans || 'No Answer',
+                exp: item.exc || item.explanation || item.exp || ''
+            };
+        }
+        
+        if(type === 'pool_muskuloskeletal') {
+            const item = pick_pool_muskuloskeletal();
+            if(!item) return null; // Safety check
+            return {
+                type: 'pool_muskuloskeletal',
+                typeName: 'Muskuloskeletal',
+                tpColor: 'var(--blue)',
+                tpBg: 'var(--bluebg)',
+                scenario: null,
+                rawData: null,
+                q: item.q || item.question || 'No Question',
+                opts: shuf(item.opt || item.options || [item.a || item.ans]),
+                ans: item.a || item.answer || item.ans || 'No Answer',
+                exp: item.exc || item.explanation || item.exp || ''
+            };
+        }
+        
+        if(type === 'pool_kardiovaskuler') {
+            const item = pick_pool_kardiovaskuler();
+            if(!item) return null; // Safety check
+            return {
+                type: 'pool_kardiovaskuler',
+                typeName: 'Kardiovaskuler',
+                tpColor: 'var(--blue)',
+                tpBg: 'var(--bluebg)',
+                scenario: null,
+                rawData: null,
+                q: item.q || item.question || 'No Question',
+                opts: shuf(item.opt || item.options || [item.a || item.ans]),
+                ans: item.a || item.answer || item.ans || 'No Answer',
+                exp: item.exc || item.explanation || item.exp || ''
+            };
+        }
+        
+        if(type === 'pool_respirasi_saraf') {
+            const item = pick_pool_respirasi_saraf();
+            if(!item) return null; // Safety check
+            return {
+                type: 'pool_respirasi_saraf',
+                typeName: 'Respirasi Saraf',
+                tpColor: 'var(--blue)',
+                tpBg: 'var(--bluebg)',
+                scenario: null,
+                rawData: null,
+                q: item.q || item.question || 'No Question',
+                opts: shuf(item.opt || item.options || [item.a || item.ans]),
+                ans: item.a || item.answer || item.ans || 'No Answer',
+                exp: item.exc || item.explanation || item.exp || ''
+            };
+        }
+        
+        if(type === 'pool_metabolik') {
+            const item = pick_pool_metabolik();
+            if(!item) return null; // Safety check
+            return {
+                type: 'pool_metabolik',
+                typeName: 'Metabolik',
+                tpColor: 'var(--blue)',
+                tpBg: 'var(--bluebg)',
+                scenario: null,
+                rawData: null,
+                q: item.q || item.question || 'No Question',
+                opts: shuf(item.opt || item.options || [item.a || item.ans]),
+                ans: item.a || item.answer || item.ans || 'No Answer',
+                exp: item.exc || item.explanation || item.exp || ''
+            };
+        }
+        
+        if(type === 'pool_fitt_klasifikasi') {
+            const item = pick_pool_fitt_klasifikasi();
+            if(!item) return null; // Safety check
+            return {
+                type: 'pool_fitt_klasifikasi',
+                typeName: 'Fitt Klasifikasi',
+                tpColor: 'var(--blue)',
+                tpBg: 'var(--bluebg)',
+                scenario: null,
+                rawData: null,
+                q: item.q || item.question || 'No Question',
+                opts: shuf(item.opt || item.options || [item.a || item.ans]),
+                ans: item.a || item.answer || item.ans || 'No Answer',
+                exp: item.exc || item.explanation || item.exp || ''
+            };
+        }
+        
+        if(type === 'pool_pengukuran_intensitas') {
+            const item = pick_pool_pengukuran_intensitas();
+            if(!item) return null; // Safety check
+            return {
+                type: 'pool_pengukuran_intensitas',
+                typeName: 'Pengukuran Intensitas',
+                tpColor: 'var(--blue)',
+                tpBg: 'var(--bluebg)',
+                scenario: null,
+                rawData: null,
+                q: item.q || item.question || 'No Question',
+                opts: shuf(item.opt || item.options || [item.a || item.ans]),
+                ans: item.a || item.answer || item.ans || 'No Answer',
+                exp: item.exc || item.explanation || item.exp || ''
+            };
+        }
+        
+        if(type === 'pool_sistem_energi') {
+            const item = pick_pool_sistem_energi();
+            if(!item) return null; // Safety check
+            return {
+                type: 'pool_sistem_energi',
+                typeName: 'Sistem Energi',
+                tpColor: 'var(--blue)',
+                tpBg: 'var(--bluebg)',
+                scenario: null,
+                rawData: null,
+                q: item.q || item.question || 'No Question',
+                opts: shuf(item.opt || item.options || [item.a || item.ans]),
+                ans: item.a || item.answer || item.ans || 'No Answer',
+                exp: item.exc || item.explanation || item.exp || ''
+            };
+        }
+        
+        if(type === 'pool_rekomendasi_metode') {
+            const item = pick_pool_rekomendasi_metode();
+            if(!item) return null; // Safety check
+            return {
+                type: 'pool_rekomendasi_metode',
+                typeName: 'Rekomendasi Metode',
+                tpColor: 'var(--blue)',
+                tpBg: 'var(--bluebg)',
+                scenario: null,
+                rawData: null,
+                q: item.q || item.question || 'No Question',
+                opts: shuf(item.opt || item.options || [item.a || item.ans]),
+                ans: item.a || item.answer || item.ans || 'No Answer',
+                exp: item.exc || item.explanation || item.exp || ''
+            };
+        }
+        
+        if(type === 'pool_clinical_cases') {
+            const item = pick_pool_clinical_cases();
+            if(!item) return null; // Safety check
+            return {
+                type: 'pool_clinical_cases',
+                typeName: 'Clinical Cases',
+                tpColor: 'var(--blue)',
+                tpBg: 'var(--bluebg)',
+                scenario: null,
+                rawData: null,
+                q: item.q || item.question || 'No Question',
+                opts: shuf(item.opt || item.options || [item.a || item.ans]),
+                ans: item.a || item.answer || item.ans || 'No Answer',
+                exp: item.exc || item.explanation || item.exp || ''
+            };
+        }
+        
+    return {type:'dummy', typeName:'End of Pool', tpColor:'gray', tpBg:'lightgray', q:'No more questions', opts:['A'], ans:'A', exp:''};
+}
+
+// ═══ SESSION ═══
+let typeQueue=[],sessIdx=0,sessScore=0,sessLog=[],currentQ=null;
+function nextType(){if(!typeQueue.length){const t=[...activeTypes];for(let i=t.length-1;i>0;i--){const j=0|Math.random()*(i+1);[t[i],t[j]]=[t[j],t[i]];}typeQueue=[...t];}return typeQueue.shift();}
+function startSession(){
+  sessIdx=0;sessScore=0;sessLog=[];typeQueue=[];
+  document.getElementById('qconfig').style.display='none';
+  document.getElementById('qresults').style.display='none';
+  document.getElementById('qactive').style.display='block';
+  renderQ();
+}
+function renderQ(){
+  const q=makeQ(nextType());currentQ=q;
+  document.getElementById('qnum').textContent=sessIdx+1;
+  document.getElementById('qscore').textContent=sessScore;
+  const pill=document.getElementById('qpill');
+  pill.textContent=q.typeName;pill.style.background=q.tpBg;pill.style.color=q.tpColor;pill.style.border=`1px solid ${q.tpColor}44`;
+  const scen=document.getElementById('qscen');
+  if(q.scenario){scen.innerHTML=`<strong>Kasus:</strong> ${q.scenario}`;scen.style.display='block';}else scen.style.display='none';
+  const db=document.getElementById('qdata');
+  if(q.rawData){db.innerHTML=q.rawData;db.style.display='block';}else db.style.display='none';
+  document.getElementById('qtext').innerHTML=q.q;
+  const og=document.getElementById('opts');og.innerHTML='';
+  q.opts.forEach((opt,i)=>{
+    const btn=document.createElement('button');btn.className='opt';
+    btn.innerHTML=`<span class="opt-key">${KEYS[i]}</span><span>${opt}</span>`;
+    btn.onclick=()=>selectAns(opt,q,btn);og.appendChild(btn);
+  });
+  const ebox=document.getElementById('expbox');ebox.classList.remove('show');ebox.style.display='none';
+  document.getElementById('nextbtn').style.display='none';
+}
+function selectAns(chosen,q,clickedBtn){
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  const correct=stripHtml(chosen)===stripHtml(q.ans);
+  if(correct)sessScore++;
+  document.querySelectorAll('.opt').forEach(b=>{
+    const label=b.querySelector('span:last-child').innerHTML;
+    if(stripHtml(label)===stripHtml(q.ans)){
+      if(b===clickedBtn&&correct)b.classList.add('correct');
+      else if(b!==clickedBtn)b.classList.add('reveal');
+      else b.classList.add('correct');
+    }
+    if(b===clickedBtn&&!correct)b.classList.add('wrong');
+  });
+  const ebox=document.getElementById('expbox');
+  ebox.innerHTML=`<div style="margin-bottom:7px;font-weight:700;color:${correct?'var(--blue)':'var(--red)'}">${correct?'✅ Benar!':'❌ Kurang tepat.'} Jawaban: <strong>${q.ans}</strong></div>${q.exp}`;
+  ebox.style.display='block';setTimeout(()=>ebox.classList.add('show'),10);
+  sessLog.push({idx:sessIdx+1,type:q.typeName,q:q.q.replace(/<[^>]+>/g,'').slice(0,55)+'…',ans:q.ans,correct});
+  document.getElementById('qscore').textContent=sessScore;
+  document.getElementById('nextbtn').style.display='inline-block';
+}
+function nextQ(){sessIdx++;document.getElementById('expbox').style.display='none';document.getElementById('expbox').classList.remove('show');renderQ();}
+function endSession(){
+  document.getElementById('qactive').style.display='none';document.getElementById('qresults').style.display='block';
+  const total=sessLog.length;if(!total){restartQuiz();return;}
+  const pct=Math.round((sessScore/total)*100);
+  document.getElementById('res-pct').textContent=pct+'%';
+  document.getElementById('res-sub').textContent=`${sessScore} / ${total} soal benar`;
+  const byType={};
+  sessLog.forEach(l=>{if(!byType[l.type])byType[l.type]={total:0,correct:0};byType[l.type].total++;if(l.correct)byType[l.type].correct++;});
+  const rg=document.getElementById('res-grid');rg.innerHTML='';
+  const medal=pct>=80?'🏆':pct>=60?'👍':'📚';
+  [{v:medal,l:'Nilai'},{v:pct+'%',l:'Persentase'},{v:sessScore+'',l:'Benar'},{v:(total-sessScore)+'',l:'Salah'},{v:total+'',l:'Total'}].forEach(s=>{
+    const d=document.createElement('div');d.className='res-stat';
+    d.innerHTML=`<div class="rv">${s.v}</div><div class="rl">${s.l}</div>`;rg.appendChild(d);
+  });
+  document.getElementById('res-bytype').innerHTML=Object.entries(byType).map(([t,v])=>{
+    const p=Math.round((v.correct/v.total)*100);const c=p>=80?'var(--blue)':p>=60?'var(--gold)':'var(--red)';
+    return`<tr><td>${t}</td><td>${v.total}</td><td style="color:${c};font-weight:700">${v.correct} (${p}%)</td></tr>`;
+  }).join('');
+  document.getElementById('res-tbody').innerHTML=sessLog.map(l=>`<tr><td>${l.idx}</td><td>${l.q}</td><td>${l.ans}</td><td style="color:${l.correct?'var(--green)':'var(--red)'}">${l.correct?'✅':'❌'}</td></tr>`).join('');
+}
+function restartQuiz(){typeQueue=[];document.getElementById('qresults').style.display='none';document.getElementById('qconfig').style.display='block';}
+
+function downloadCert(){
+  const total=sessLog.length;
+  const pct=Math.round((sessScore/total)*100);
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+  const medal=pct>=80?'LULUS':pct>=60?'CUKUP':'PERLU BELAJAR LAGI';
+  const medalColor=pct>=80?'#1f7a4a':pct>=60?'#7a6010':'#b03030';
+  const byType={};
+  sessLog.forEach(l=>{if(!byType[l.type])byType[l.type]={total:0,correct:0};byType[l.type].total++;if(l.correct)byType[l.type].correct++;});
+  const rows=Object.entries(byType).map(([t,v])=>{
+    const p=Math.round(v.correct/v.total*100);
+    const bar=Math.round(p*1.4);
+    const bc=p>=80?'#1f7a4a':p>=60?'#7a6010':'#b03030';
+    return`<tr><td style="padding:5px 8px;font-size:11px;color:#384068;width:200px">${t}</td><td style="padding:5px 8px"><div style="background:#e7e7e2;border-radius:4px;height:10px;width:140px"><div style="background:${bc};width:${bar}px;height:10px;border-radius:4px"></div></div></td><td style="padding:5px 8px;font-size:11px;font-weight:700;color:${bc}">${v.correct}/${v.total} (${p}%)</td></tr>`;
+  }).join('');
+
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="680" height="520" font-family="Georgia,serif">
+  <defs>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <path d="M 28 0 L 0 0 0 28" fill="none" stroke="#e0ddd5" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+  <rect width="680" height="520" fill="#fdfdf9"/>
+  <rect width="680" height="520" fill="url(#grid)"/>
+  <rect x="20" y="20" width="640" height="480" rx="12" fill="none" stroke="#b03030" stroke-width="2"/>
+  <rect x="26" y="26" width="628" height="468" rx="9" fill="none" stroke="#b03030" stroke-width="0.5" opacity="0.4"/>
+
+  <text x="340" y="66" text-anchor="middle" font-size="11" letter-spacing="4" fill="#7c85a8" font-family="Georgia,serif">SERTIFIKAT PENYELESAIAN KUIS</text>
+  <line x1="120" y1="74" x2="260" y2="74" stroke="#b03030" stroke-width="0.8"/>
+  <circle cx="340" cy="74" r="3" fill="#b03030"/>
+  <line x1="420" y1="74" x2="560" y2="74" stroke="#b03030" stroke-width="0.8"/>
+
+  <text x="340" y="116" text-anchor="middle" font-size="34" font-weight="bold" fill="#161b2e" font-family="Georgia,serif">Am I Fertile?</text>
+  <text x="340" y="138" text-anchor="middle" font-size="11" fill="#7c85a8" letter-spacing="2" font-family="Georgia,serif">ANALISIS SEMEN · PK BLOK 2.3 · FK UNSOED</text>
+
+  <line x1="100" y1="152" x2="580" y2="152" stroke="#e0ddd5" stroke-width="1"/>
+
+  <text x="340" y="185" text-anchor="middle" font-size="13" fill="#384068" font-family="Georgia,serif">Telah menyelesaikan sesi quiz dengan hasil</text>
+
+  <rect x="230" y="196" width="220" height="80" rx="8" fill="none" stroke="${medalColor}" stroke-width="1.5"/>
+  <text x="340" y="245" text-anchor="middle" font-size="52" font-weight="bold" fill="${medalColor}" font-family="Georgia,serif">${pct}%</text>
+  <text x="340" y="265" text-anchor="middle" font-size="10" fill="${medalColor}" letter-spacing="3" font-family="Georgia,serif">${medal}</text>
+
+  <text x="340" y="300" text-anchor="middle" font-size="12" fill="#384068" font-family="Georgia,serif">${sessScore} soal benar dari ${total} soal · ${dateStr}</text>
+
+  <line x1="100" y1="314" x2="580" y2="314" stroke="#e0ddd5" stroke-width="1"/>
+  <text x="340" y="332" text-anchor="middle" font-size="10" fill="#7c85a8" letter-spacing="2" font-family="Georgia,serif">DISTRIBUSI SKOR PER TOPIK</text>
+
+  <foreignObject x="80" y="340" width="520" height="120">
+    <div xmlns="http://www.w3.org/1999/xhtml">
+      <table style="width:100%;border-collapse:collapse">${rows}</table>
+    </div>
+  </foreignObject>
+
+  <line x1="100" y1="472" x2="580" y2="472" stroke="#e0ddd5" stroke-width="1"/>
+  <text x="340" y="490" text-anchor="middle" font-size="10" fill="#7c85a8" font-family="Georgia,serif">174 Archive · 174-three.vercel.app · WHO 6th Ed. 2021</text>
+</svg>`;
+
+  const blob=new Blob([svg],{type:'image/svg+xml'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`am-i-fertile-${pct}pct.svg`;
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+window.downloadCert=downloadCert;
+</script>
+</body>
+</html>

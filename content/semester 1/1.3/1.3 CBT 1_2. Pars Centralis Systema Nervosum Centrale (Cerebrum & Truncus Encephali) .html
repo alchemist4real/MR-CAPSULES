@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis SSP: Serebrum & Batang Otak - 35 Soal</title>
+    <!-- Impor Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Impor Google Font (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* CSS Kustom - Tema Biru Profesional (Harmony) */
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Palet warna biru tua yang harmonis */
+            background: linear-gradient(135deg, #1d3557 0%, #1f4068 100%);
+            color: #ffffff;
+            user-select: none;
+            padding: 1rem;
+            transition: all 0.2s;
+            overflow-y: auto;
+        }
+
+        /* Kontainer utama bergaya "glass" - lebih halus */
+        .quiz-container {
+            background: rgba(255, 255, 255, 0.05); /* Lebih transparan */
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.15); /* Border lebih jelas */
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
+            padding: 1.5rem 2rem;
+            width: 90%;
+            max-width: 800px;
+        }
+
+        /* Styling Teks Umum */
+        h1, .text-3xl, .text-4xl {
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        p, .text-lg, span { color: #f1faee; } /* Teks sedikit lebih cerah */
+        
+        #progress-text, #score-text, #final-score-text, #flashcard-progress {
+            color: #ffffff;
+            font-weight: 500; /* Sedikit lebih tipis */
+        }
+
+        /* Tombol aksi (Mulai/Ulangi/Menu) - Aksen Teal/Biru Cerah */
+        .action-btn {
+            font-family: 'Inter', sans-serif;
+            text-transform: uppercase;
+            background-color: #48cae4; /* Aksen biru cerah */
+            border: none;
+            padding: 0.9rem 1.5rem;
+            box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            color: #03045e; /* Teks biru tua agar kontras */
+            font-weight: 700;
+            font-size: 1rem; /* Ukuran font lebih standar */
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.75rem;
+        }
+        .action-btn:hover {
+            background-color: #90e0ef; /* Hover lebih cerah */
+            color: #03045e;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.15);
+        }
+        .action-btn:active {
+            box-shadow: none;
+            transform: translateY(0px);
+        }
+        .action-btn:disabled {
+            background-color: #888;
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* Tombol kembali ke menu - Biru Navy Tua */
+        .back-to-menu-btn {
+            background-color: #03045e; /* Biru navy */
+            color: #ffffff;
+            font-size: 0.9rem;
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+        }
+        .back-to-menu-btn:hover { background-color: #023e8a; }
+
+        /* Tombol Opsi Jawaban (Frosted Glass) */
+        .option-btn {
+            font-family: 'Inter', sans-serif;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: block;
+            width: 100%;
+            margin-bottom: 1rem;
+            text-align: left;
+            padding: 1.25rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-radius: 0.75rem;
+        }
+        .option-btn:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Style untuk jawaban yg dipilih di Mode Ujian */
+        .option-btn.selected {
+            background: rgba(72, 202, 228, 0.6); /* Biru aksen transparan */
+            border-color: #48cae4;
+        }
+        
+        /* Status Jawaban (Solid - Hijau/Merah yang harmonis) */
+        .option-btn.correct {
+            background-color: #2a9d8f; /* Hijau Teal */
+            color: #ffffff;
+            border: none;
+        }
+        .option-btn.incorrect {
+            background-color: #e76f51; /* Merah Bata lembut */
+            color: #ffffff;
+            border: none;
+        }
+        .option-btn.disabled { pointer-events: none; }
+        
+        /* Teks Pertanyaan */
+        #question-text {
+            font-size: 1.125rem;
+            line-height: 1.75;
+            min-height: 100px;
+            margin-bottom: 2rem;
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        /* --- Style untuk Flashcard & Penjelasan Latihan --- */
+        #flashcard {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-height: 300px;
+            padding: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.1);
+            border-radius: 1rem;
+        }
+        
+        #flashcard-front, #flashcard-back {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #ffffff;
+        }
+        
+        .card-label {
+            font-size: 0.75rem;
+            color: #caf0f8; /* Label lebih cerah */
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        
+        /* Kontainer untuk penjelasan */
+        #flashcard-answer-list, #explanation-container, .review-explanations {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .flashcard-option-detailed {
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .flashcard-option-detailed strong {
+            display: block;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 0.25rem;
+        }
+        .flashcard-option-detailed span {
+            font-size: 0.85rem;
+            color: #f1faee;
+            line-height: 1.5;
+        }
+        .flashcard-option-detailed.correct {
+            background: rgba(42, 157, 143, 0.8); /* Hijau Teal transparan */
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        .flashcard-option-detailed.correct span { color: #ffffff; }
+        .flashcard-option-detailed.incorrect {
+            background: rgba(231, 111, 81, 0.7); /* Merah Bata transparan */
+            border-color: rgba(255, 255, 255, 0.2);
+            opacity: 0.9;
+        }
+        
+        /* Style untuk Layar Review */
+        .review-card {
+            background: rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .review-question {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .review-options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        @media (min-width: 768px) {
+            .review-options-grid { grid-template-columns: 1fr 1fr; }
+        }
+        .review-option {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            border: 1px solid transparent;
+        }
+        .review-option.neutral {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+            opacity: 0.7;
+        }
+        .review-option.correct {
+            background: #2a9d8f; /* Hijau Teal */
+            border-color: #2a9d8f;
+            font-weight: 600;
+        }
+        .review-option.chosen-wrong {
+            background: #e76f51; /* Merah Bata */
+            border-color: #e76f51;
+            font-weight: 600;
+            text-decoration: line-through;
+        }
+        .review-explanations { margin-top: 1.5rem; }
+        
+        .hidden { display: none; }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+
+    <!-- 1. Layar Mulai (Pilih Mode) -->
+    <div id="start-screen" class="quiz-container text-center">
+        <h1 class="text-3xl md:text-4xl mb-6">KUIS SSP: SEREBRUM & BATANG OTAK</h1>
+        <p class="mb-10 text-lg">Pars Centralis - 35 SOAL</p>
+        <div class="flex flex-col">
+            <button id="start-flashcard-btn" class="action-btn">Mode Flashcard</button>
+            <button id="start-practice-btn" class="action-btn">Mode Latihan</button>
+            <button id="start-exam-btn" class="action-btn">Mode Ujian</button>
+        </div>
+    </div>
+
+    <!-- 2. Layar Kuis (Latihan & Ujian) (Tersembunyi) -->
+    <div id="quiz-screen" class="quiz-container hidden w-full max-w-4xl">
+        <!-- Info Progress & Skor -->
+        <div class="flex justify-between items-center mb-6">
+            <span id="progress-text">Soal 1 / 35</span>
+            <span id="score-text">Skor: 0</span>
+        </div>
+        
+        <!-- Area Soal -->
+        <div id="question-text">
+            Memuat pertanyaan...
+        </div>
+
+        <!-- Area Opsi Jawaban -->
+        <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Opsi akan ditambahkan oleh JavaScript -->
+        </div>
+        
+        <!-- Area Penjelasan (Hanya Mode Latihan) -->
+        <div id="explanation-container" class="mt-6">
+            <!-- Penjelasan akan muncul di sini -->
+        </div>
+        
+        <!-- Tombol Lanjut (Hanya Mode Latihan) -->
+        <div class="text-center mt-8">
+            <button id="next-question-btn" class="action-btn text-lg hidden">
+                Lanjut
+            </button>
+            <button class="back-to-menu-btn action-btn">Kembali ke Menu</button>
+        </div>
+    </div>
+    
+    <!-- 3. Layar Flashcard (Tersembunyi) -->
+    <div id="flashcard-screen" class="quiz-container hidden w-full max-w-2xl">
+        <!-- Progress Flashcard -->
+        <span id="flashcard-progress" class="block text-center mb-6">1 / 35</span>
+        
+        <!-- Flashcard -->
+        <div id="flashcard">
+            <div id="flashcard-front">
+                <span class="card-label">Istilah / Pertanyaan</span>
+                <p>Memuat...</p>
+            </div>
+            <div id="flashcard-back" class="hidden">
+                <span class="card-label">Penjelasan</span>
+                <div id="flashcard-answer-list">
+                    <!-- Konten diisi secara sinkron -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navigasi Flashcard -->
+        <div class="flex justify-between mt-6">
+            <button id="flashcard-prev" class="action-btn text-lg">&lt; Prev</button>
+            <button id="flashcard-flip" class="action-btn text-lg">Balik</button>
+            <button id="flashcard-next" class="action-btn text-lg">Next &gt;</button>
+        </div>
+        
+        <div class="text-center mt-6">
+            <button class="back-to-menu-btn action-btn">Kembali ke Menu</button>
+        </div>
+    </div>
+
+
+    <!-- 4. Layar Hasil (Tersembunyi) -->
+    <div id="result-screen" class="quiz-container text-center hidden">
+        <h1 class="text-3xl mb-6">KUIS SELESAI!</h1>
+        <p id="final-score-text" class="text-4xl my-10">SKOR ANDA: 0 / 35</p>
+        <!-- Tombol Review BARU -->
+        <div class="flex flex-col md:flex-row justify-center gap-4">
+            <button id="review-button" class="action-btn text-xl hidden">Review Kuis</button>
+            <button id="restart-button" class="action-btn text-xl">Ulangi Kuis</button>
+        </div>
+        <button class="back-to-menu-btn action-btn mt-6">Kembali ke Menu</button>
+    </div>
+    
+    <!-- 5. Layar Review BARU (Tersembunyi) -->
+    <div id="review-screen" class="quiz-container hidden w-full max-w-4xl">
+        <h1 class="text-3xl mb-6 text-center">Review Kuis Anda</h1>
+        
+        <!-- Kontainer untuk semua soal review -->
+        <div id="review-container" class="flex flex-col gap-6 max-h-[70vh] overflow-y-auto pr-2">
+            <!-- Soal review akan di-generate di sini -->
+        </div>
+        
+        <div class="text-center mt-8 flex flex-col md:flex-row justify-center gap-4">
+             <button id="restart-from-review" class="action-btn text-xl">Ulangi Kuis</button>
+             <button class="back-to-menu-btn action-btn">Kembali ke Menu</button>
+        </div>
+    </div>
+
+    <script>
+        // --- Data Soal (BAGIAN 2: Pars Centralis/ Systema Nervosum Centrale) ---
+        const questions = [
+            { // 1
+                question: "Lapisan SCALP manakah yang disebut 'area berbahaya' (dangerous area) karena merupakan tempat potensial penyebaran infeksi?",
+                options: ["Skin (Kulit)", "Connective Tissue (Jaringan Ikat)", "Aponeurosis (Galea Aponeurotica)", "Loose Areolar Tissue (Jaringan Ikat Areolar Longgar)", "Pericranium (Periosteum)"],
+                correct: "Loose Areolar Tissue (Jaringan Ikat Areolar Longgar)",
+                explanations: {
+                    "Skin (Kulit)": "SALAH. Ini adalah lapisan terluar, infeksi di sini biasanya terlokalisir (misal: folikulitis).",
+                    "Connective Tissue (Jaringan Ikat)": "SALAH. Jaringan ikat padat ini berisi banyak pembuluh darah, tetapi bukan 'area berbahaya' utama untuk penyebaran.",
+                    "Aponeurosis (Galea Aponeurotica)": "SALAH. Ini adalah lembaran tendinosa yang kuat.",
+                    "Loose Areolar Tissue (Jaringan Ikat Areolar Longgar)": "BENAR. Lapisan ini (spatium subaponeuroticum) memungkinkan pergerakan dan berisi vena emisaria yang terhubung ke sinus vena dural, sehingga infeksi di sini dapat menyebar ke intrakranial.",
+                    "Pericranium (Periosteum)": "SALAH. Ini menempel erat pada tulang tengkorak dan membatasi penyebaran infeksi."
+                }
+            },
+            { // 2
+                question: "Lipatan duramater yang memisahkan kedua hemisfer serebri di fissura longitudinalis adalah...",
+                options: ["Tentorium Cerebelli", "Falx Cerebri", "Falx Cerebelli", "Diafragma Sellae", "Sinus Sagittalis Superior"],
+                correct: "Falx Cerebri",
+                explanations: {
+                    "Tentorium Cerebelli": "SALAH. Ini adalah lipatan horizontal yang memisahkan serebrum dari serebelum.",
+                    "Falx Cerebri": "BENAR. 'Falx' berarti sabit; ini adalah lipatan duramater berbentuk sabit yang memisahkan kedua hemisfer serebri.",
+                    "Falx Cerebelli": "SALAH. Ini adalah lipatan vertikal kecil yang memisahkan hemisfer serebeli.",
+                    "Diafragma Sellae": "SALAH. Ini menutupi kelenjar hipofisis di sella turcica.",
+                    "Sinus Sagittalis Superior": "SALAH. Ini adalah sinus vena yang berjalan di dalam tepi atas falx cerebri, bukan lipatan itu sendiri."
+                }
+            },
+            { // 3
+                question: "Gambaran klasik pada CT scan untuk Perdarahan Epidural (EDH) adalah lesi berbentuk...",
+                options: ["Bulan sabit (konkaf)", "Bikonveks (lensa cembung)", "Menyebar di sulcus", "Bulan purnama", "Cincin"],
+                correct: "Bikonveks (lensa cembung)",
+                explanations: {
+                    "Bulan sabit (konkaf)": "SALAH. Ini adalah gambaran klasik untuk Perdarahan Subdural (SDH), di mana darah vena menyebar di ruang subdural.",
+                    "Bikonveks (lensa cembung)": "BENAR. EDH disebabkan oleh perdarahan arteri (biasanya a. meningea media) yang kuat dan mengumpul di ruang epidural, mendesak duramater yang melekat erat pada tulang, menciptakan bentuk cembung-cembung.",
+                    "Menyebar di sulcus": "SALAH. Ini adalah gambaran khas untuk Perdarahan Subarachnoid (SAH), di mana darah menyebar di ruang yang berisi LCS.",
+                    "Bulan purnama": "SALAH. Istilah ini tidak digunakan dalam deskripsi radiologis hematoma.",
+                    "Cincin": "SALAH. Ini lebih mengarah pada gambaran abses atau tumor dengan nekrosis sentral."
+                }
+            },
+            { // 4
+                question: "Robeknya 'bridging veins' (vena jembatan) paling sering menyebabkan jenis perdarahan intrakranial...",
+                options: ["Epidural Hematoma (EDH)", "Subdural Hematoma (SDH)", "Subarachnoid Hemorrhage (SAH)", "Intracerebral Hemorrhage (ICH)", "Intraventricular Hemorrhage (IVH)"],
+                correct: "Subdural Hematoma (SDH)",
+                explanations: {
+                    "Epidural Hematoma (EDH)": "SALAH. EDH biasanya disebabkan oleh robeknya arteri meningea media.",
+                    "Subdural Hematoma (SDH)": "BENAR. 'Bridging veins' adalah vena yang menyilang dari korteks (di bawah arachnoidea) ke sinus vena duramatris. Gerakan akselerasi-deselerasi (seperti pada orang tua jatuh) dapat merobek vena ini, menyebabkan perdarahan vena yang lambat di ruang subdural.",
+                    "Subarachnoid Hemorrhage (SAH)": "SALAH. SAH paling sering disebabkan oleh pecahnya aneurisma arteri di sirkulus Willisi.",
+                    "Intracerebral Hemorrhage (ICH)": "SALAH. ICH adalah perdarahan di dalam parenkim otak itu sendiri, sering terkait hipertensi.",
+                    "Intraventricular Hemorrhage (IVH)": "SALAH. Ini adalah perdarahan di dalam sistem ventrikel."
+                }
+            },
+            { // 5
+                question: "Ruang intrakranial yang secara NORMAL berisi Liquor Cerebrospinalis (LCS) adalah...",
+                options: ["Ruang Epidural", "Ruang Subdural", "Ruang Subarachnoid", "Ruang Intracerebral", "Ruang Subaponeuroticum"],
+                correct: "Ruang Subarachnoid",
+                explanations: {
+                    "Ruang Epidural": "SALAH. Ini adalah ruang potensial antara tulang dan duramater.",
+                    "Ruang Subdural": "SALAH. Ini adalah ruang potensial antara duramater dan arachnoidea.",
+                    "Ruang Subarachnoid": "BENAR. Ruang ini terletak di antara arachnoidea mater dan piamater, dan secara normal berisi LCS serta pembuluh darah besar otak.",
+                    "Ruang Intracerebral": "SALAH. Ini adalah di dalam jaringan otak itu sendiri.",
+                    "Ruang Subaponeuroticum": "SALAH. Ini adalah bagian dari SCALP, bukan ruang intrakranial."
+                }
+            },
+            { // 6
+                question: "Sulcus Centralis (Rolandi) adalah batas anatomis penting yang memisahkan...",
+                options: ["Lobus Frontalis dari Lobus Temporalis", "Lobus Frontalis dari Lobus Parietalis", "Lobus Parietalis dari Lobus Occipitalis", "Lobus Temporalis dari Lobus Occipitalis", "Hemisfer Kanan dari Hemisfer Kiri"],
+                correct: "Lobus Frontalis dari Lobus Parietalis",
+                explanations: {
+                    "Lobus Frontalis dari Lobus Temporalis": "SALAH. Batas ini dibentuk oleh Sulcus Lateralis (Sylvius).",
+                    "Lobus Frontalis dari Lobus Parietalis": "BENAR. Sulcus Centralis berjalan secara vertikal, memisahkan Gyrus Precentralis (di frontal) dari Gyrus Postcentralis (di parietal).",
+                    "Lobus Parietalis dari Lobus Occipitalis": "SALAH. Batas ini dibentuk oleh Sulcus Parieto-occipitalis.",
+                    "Lobus Temporalis dari Lobus Occipitalis": "SALAH. Batas ini kurang jelas secara eksternal.",
+                    "Hemisfer Kanan dari Hemisfer Kiri": "SALAH. Batas ini adalah Fissura Longitudinalis."
+                }
+            },
+            { // 7
+                question: "Area Motorik Primer (Primary Motor Cortex) terletak di...",
+                options: ["Gyrus Postcentralis", "Lobus Occipitalis", "Gyrus Precentralis", "Lobus Temporalis", "Lobus Insulae"],
+                correct: "Gyrus Precentralis",
+                explanations: {
+                    "Gyrus Postcentralis": "SALAH. Ini adalah lokasi Area Somatosensorik Primer.",
+                    "Lobus Occipitalis": "SALAH. Ini adalah pusat visual.",
+                    "Gyrus Precentralis": "BENAR. Gyrus ini terletak di Lobus Frontalis, tepat di depan Sulcus Centralis, dan bertanggung jawab untuk eksekusi gerakan volunter.",
+                    "Lobus Temporalis": "SALAH. Ini adalah pusat auditorik.",
+                    "Lobus Insulae": "SALAH. Ini mengintegrasikan sensasi viseral."
+                }
+            },
+            { // 8
+                question: "Area Somatosensorik Primer (Primary Somatosensory Cortex) terletak di...",
+                options: ["Gyrus Postcentralis", "Gyrus Precentralis", "Lobus Frontalis", "Lobus Occipitalis", "Corpus Callosum"],
+                correct: "Gyrus Postcentralis",
+                explanations: {
+                    "Gyrus Postcentralis": "BENAR. Gyrus ini terletak di Lobus Parietalis, tepat di belakang Sulcus Centralis, dan menerima sensasi somatik (sentuhan, nyeri, suhu).",
+                    "Gyrus Precentralis": "SALAH. Ini adalah lokasi Area Motorik Primer.",
+                    "Lobus Frontalis": "SALAH. Ini primarily motorik dan perencanaan.",
+                    "Lobus Occipitalis": "SALAH. Ini adalah pusat visual.",
+                    "Corpus Callosum": "SALAH. Ini adalah substansia alba, bukan korteks fungsional."
+                }
+            },
+            { // 9
+                question: "Konsep 'Homunculus Sensorik' menunjukkan bahwa area tubuh dengan sensitivitas tinggi, seperti bibir dan tangan, memiliki representasi yang...",
+                options: ["Sangat kecil di korteks", "Sangat besar di korteks", "Terletak di batang otak", "Terletak di serebelum", "Sama dengan area tubuh lainnya"],
+                correct: "Sangat besar di korteks",
+                explanations: {
+                    "Sangat kecil di korteks": "SALAH. Representasi kortikal proporsional dengan jumlah reseptor, bukan ukuran fisik.",
+                    "Sangat besar di korteks": "BENAR. Homunculus adalah peta topografi yang 'terdistorsi', di mana area dengan densitas reseptor sensorik tertinggi (seperti bibir, jari) memakan area kortikal yang jauh lebih besar di gyrus postcentralis.",
+                    "Terletak di batang otak": "SALAH. Homunculus adalah representasi di korteks serebri.",
+                    "Terletak di serebelum": "SALAH. Serebelum memiliki peta topografinya sendiri, tetapi 'homunculus' klasik merujuk pada korteks.",
+                    "Sama dengan area tubuh lainnya": "SALAH. Representasi kortikal tidak proporsional dengan ukuran fisik area tubuh."
+                }
+            },
+            { // 10
+                question: "Berkas serabut substansia alba terbesar yang menghubungkan hemisfer serebri kanan dan kiri adalah...",
+                options: ["Capsula Interna", "Serabut Asosiasi", "Corpus Callosum", "Fasciculus Longitudinalis", "Pedunculus Cerebri"],
+                correct: "Corpus Callosum",
+                explanations: {
+                    "Capsula Interna": "SALAH. Ini adalah serabut proyeksi, yang menghubungkan korteks ke struktur yang lebih rendah (turun), bukan antar hemisfer.",
+                    "Serabut Asosiasi": "SALAH. Ini menghubungkan area-area di dalam SATU hemisfer yang sama.",
+                    "Corpus Callosum": "BENAR. Ini adalah berkas serabut komisura (penghubung antar hemisfer) terbesar.",
+                    "Fasciculus Longitudinalis": "SALAH. Ini adalah contoh serabut asosiasi (dalam satu hemisfer).",
+                    "Pedunculus Cerebri": "SALAH. Ini adalah bagian dari batang otak (mesencephalon) yang berisi serabut proyeksi."
+                }
+            },
+            { // 11
+                question: "Struktur Diencephalon yang berfungsi sebagai stasiun pemancar (relay) utama untuk hampir semua informasi sensorik (kecuali penciuman) yang menuju ke korteks adalah...",
+                options: ["Hypothalamus", "Thalamus", "Epithalamus", "Nucleus Caudatus", "Substantia Nigra"],
+                correct: "Thalamus",
+                explanations: {
+                    "Hypothalamus": "SALAH. Hypothalamus adalah pusat otonom, hormonal, dan suhu.",
+                    "Thalamus": "BENAR. Thalamus bertindak sebagai 'pintu gerbang' ke korteks, memproses dan menyortir hampir semua input sensorik sebelum meneruskannya ke area kortikal yang sesuai.",
+                    "Epithalamus": "SALAH. Ini berisi kelenjar pineal (terlibat dalam siklus tidur).",
+                    "Nucleus Caudatus": "SALAH. Ini adalah bagian dari nuclei basalis (kontrol motorik).",
+                    "Substantia Nigra": "SALAH. Ini adalah bagian dari mesencephalon (kontrol motorik)."
+                }
+            },
+            { // 12
+                question: "Pusat integrasi utama untuk sistem saraf otonom, suhu tubuh, dan produksi hormon (melalui hipofisis) adalah...",
+                options: ["Thalamus", "Hypothalamus", "Cerebellum", "Medulla Oblongata", "Amygdala"],
+                correct: "Hypothalamus",
+                explanations: {
+                    "Thalamus": "SALAH. Thalamus adalah relay sensorik.",
+                    "Hypothalamus": "BENAR. 'Hypo' berarti di bawah talamus; struktur ini adalah pengatur utama homeostasis tubuh, mengontrol sistem otonom, endokrin (via hipofisis), dan fungsi dasar seperti lapar, haus, dan suhu.",
+                    "Cerebellum": "SALAH. Ini untuk koordinasi motorik.",
+                    "Medulla Oblongata": "SALAH. Medulla berisi pusat vital (jantung, napas), tetapi hypothalamus adalah 'pengatur' tingkat yang lebih tinggi.",
+                    "Amygdala": "SALAH. Ini adalah bagian dari sistem limbik (emosi), meskipun terhubung erat dengan hypothalamus."
+                }
+            },
+            { // 13
+                question: "Nuclei Basalis (Ganglia Basalis), seperti Nucleus Caudatus dan Putamen, terlibat dalam fungsi...",
+                options: ["Pemrosesan visual primer", "Pembentukan memori baru", "Kontrol motorik bawah sadar dan tonus otot", "Menerima sensasi nyeri dan suhu", "Mengatur siklus tidur-bangun"],
+                correct: "Kontrol motorik bawah sadar dan tonus otot",
+                explanations: {
+                    "Pemrosesan visual primer": "SALAH. Ini adalah fungsi lobus occipitalis.",
+                    "Pembentukan memori baru": "SALAH. Ini adalah fungsi utama hippocampus (sistem limbik).",
+                    "Kontrol motorik bawah sadar dan tonus otot": "BENAR. Nuclei basalis membantu menghaluskan dan mengkoordinasikan gerakan yang telah dipelajari (misal: berjalan) dan mengatur tonus otot, bekerja sama dengan korteks motorik.",
+                    "Menerima sensasi nyeri dan suhu": "SALAH. Ini adalah fungsi gyrus postcentralis.",
+                    "Mengatur siklus tidur-bangun": "SALAH. Ini melibatkan epithalamus dan formatio reticularis."
+                }
+            },
+            { // 14
+                question: "Liquor Cerebrospinalis (LCS) diproduksi oleh struktur vaskular yang ditemukan di dalam ventrikel, yang disebut...",
+                options: ["Granulationes Arachnoidea", "Sinus Vena Duramatris", "Plexus Choroideus", "Sirkulus Willisi", "Area Postrema"],
+                correct: "Plexus Choroideus",
+                explanations: {
+                    "Granulationes Arachnoidea": "SALAH. Struktur ini berfungsi untuk mengabsorpsi (menyerap kembali) LCS, bukan memproduksinya.",
+                    "Sinus Vena Duramatris": "SALAH. Ini adalah saluran vena yang menerima darah dan LCS.",
+                    "Plexus Choroideus": "BENAR. Ini adalah jaringan kapiler dan sel ependim khusus di dalam keempat ventrikel yang secara aktif memproduksi LCS.",
+                    "Sirkulus Willisi": "SALAH. Ini adalah sistem arteri di dasar otak.",
+                    "Area Postrema": "SALAH. Ini adalah area di batang otak untuk mendeteksi racun (pusat muntah)."
+                }
+            },
+            { // 15
+                question: "Urutan aliran LCS yang benar setelah diproduksi di Ventrikel Lateral adalah...",
+                options: ["Vent. Lateral -> Aquaductus -> Vent. Tertius -> Vent. Quartus -> R. Subarachnoid", "Vent. Lateral -> For. Monroe -> Vent. Tertius -> Aquaductus -> Vent. Quartus -> R. Subarachnoid", "Vent. Lateral -> For. Magendi -> Vent. Tertius -> For. Luschka -> Vent. Quartus -> R. Subarachnoid", "Vent. Lateral -> Aquaductus -> Vent. Quartus -> For. Monroe -> Vent. Tertius -> R. Subarachnoid", "Vent. Lateral -> For. Monroe -> Vent. Tertius -> Vent. Quartus -> Aquaductus -> R. Subarachnoid"],
+                correct: "Vent. Lateral -> For. Monroe -> Vent. Tertius -> Aquaductus -> Vent. Quartus -> R. Subarachnoid",
+                explanations: {
+                    "Vent. Lateral -> Aquaductus -> Vent. Tertius -> Vent. Quartus -> R. Subarachnoid": "SALAH. Aquaductus menghubungkan Ventrikel Tertius dan Quartus.",
+                    "Vent. Lateral -> For. Monroe -> Vent. Tertius -> Aquaductus -> Vent. Quartus -> R. Subarachnoid": "BENAR. Lateral (via For. Monroe) -> Tertius (via Aquaductus Sylvius) -> Quartus (via For. Luschka & Magendi) -> Ruang Subarachnoid.",
+                    "Vent. Lateral -> For. Magendi -> Vent. Tertius -> For. Luschka -> Vent. Quartus -> R. Subarachnoid": "SALAH. Foramen Luschka & Magendi adalah jalan KELUAR dari Ventrikel Quartus.",
+                    "Vent. Lateral -> Aquaductus -> Vent. Quartus -> For. Monroe -> Vent. Tertius -> R. Subarachnoid": "SALAH. Urutannya terbalik.",
+                    "Vent. Lateral -> For. Monroe -> Vent. Tertius -> Vent. Quartus -> Aquaductus -> R. Subarachnoid": "SALAH. Aquaductus berada SEBELUM Ventrikel Quartus."
+                }
+            },
+            { // 16
+                question: "LCS dikembalikan ke sirkulasi darah vena (terutama Sinus Sagittalis Superior) melalui struktur...",
+                options: ["Plexus Choroideus", "Foramen Luschka & Magendi", "Granulationes Arachnoidea", "Sirkulus Willisi", "Bridging Veins"],
+                correct: "Granulationes Arachnoidea",
+                explanations: {
+                    "Plexus Choroideus": "SALAH. Ini memproduksi LCS.",
+                    "Foramen Luschka & Magendi": "SALAH. Ini adalah lubang yang memungkinkan LCS keluar dari ventrikel ke ruang subarachnoid.",
+                    "Granulationes Arachnoidea": "BENAR. Ini adalah tonjolan-tonjolan dari arachnoidea mater yang menembus duramater ke dalam sinus vena, bertindak sebagai katup satu arah untuk mengalirkan LCS kembali ke darah.",
+                    "Sirkulus Willisi": "SALAH. Ini adalah sistem arteri.",
+                    "Bridging Veins": "SALAH. Ini adalah vena yang mengalirkan darah dari korteks, bukan LCS."
+                }
+            },
+            { // 17
+                question: "Hydrocephalus non-komunikan (obstruktif) paling sering disebabkan oleh penyumbatan pada bagian tersempit dari sistem ventrikel, yaitu...",
+                options: ["Foramen Interventricularis (Monroe)", "Ventriculus Lateral", "Aquaductus Mesencephali (Sylvius)", "Ventriculus Quartus", "Foramen Magendi"],
+                correct: "Aquaductus Mesencephali (Sylvius)",
+                explanations: {
+                    "Foramen Interventricularis (Monroe)": "SALAH. Penyumbatan di sini hanya akan melebarkan satu ventrikel lateral.",
+                    "Ventriculus Lateral": "SALAH. Ini adalah rongga yang besar.",
+                    "Aquaductus Mesencephali (Sylvius)": "BENAR. Ini adalah saluran yang sangat sempit di mesencephalon yang menghubungkan ventrikel tertius dan quartus, sehingga rentan tersumbat (misal: oleh tumor, perdarahan, atau cacat bawaan), menyebabkan pelebaran ventrikel lateral dan tertius.",
+                    "Ventriculus Quartus": "SALAH. Ini adalah rongga yang relatif besar.",
+                    "Foramen Magendi": "SALAH. Penyumbatan di sini (atau Luschka) akan melebarkan semua ventrikel."
+                }
+            },
+            { // 18
+                question: "Struktur di Mesencephalon yang berfungsi sebagai pusat refleks visual (misal: melacak objek) adalah...",
+                options: ["Colliculus Inferior", "Colliculus Superior", "Substantia Nigra", "Nukleus Ruber", "Pedunculus Cerebri"],
+                correct: "Colliculus Superior",
+                explanations: {
+                    "Colliculus Inferior": "SALAH. Ini adalah bagian dari Tectum, tetapi untuk refleks auditorik (pendengaran).",
+                    "Colliculus Superior": "BENAR. Ini adalah bagian dari Tectum (Corpora Quadrigemina) yang mengontrol gerakan mata dan kepala sebagai respons terhadap stimulus visual.",
+                    "Substantia Nigra": "SALAH. Ini adalah bagian dari Tegmentum, terlibat dalam kontrol motorik (terkait Parkinson).",
+                    "Nukleus Ruber": "SALAH. Ini terlibat dalam koordinasi motorik.",
+                    "Pedunculus Cerebri": "SALAH. Ini adalah berkas serabut motorik."
+                }
+            },
+            { // 19
+                question: "Struktur di Mesencephalon yang berfungsi sebagai pusat refleks auditorik (misal: terkejut oleh suara) adalah...",
+                options: ["Colliculus Inferior", "Colliculus Superior", "Substantia Nigra", "Nukleus Ruber", "Tegmentum"],
+                correct: "Colliculus Inferior",
+                explanations: {
+                    "Colliculus Inferior": "BENAR. Ini adalah bagian dari Tectum (Corpora Quadrigemina) yang merupakan stasiun relay penting untuk jalur pendengaran dan pusat refleks auditorik.",
+                    "Colliculus Superior": "SALAH. Ini untuk refleks visual.",
+                    "Substantia Nigra": "SALAH. Ini terlibat dalam kontrol motorik.",
+                    "Nukleus Ruber": "SALAH. Ini terlibat dalam koordinasi motorik.",
+                    "Tegmentum": "SALAH. Ini adalah lantai mesencephalon, tempat Substantia Nigra dan Nukleus Ruber berada, tetapi Colliculus adalah pusat refleksnya."
+                }
+            },
+            { // 20
+                question: "Kerusakan pada Substantia Nigra di Mesencephalon sangat terkait dengan penyakit...",
+                options: ["Alzheimer", "Stroke", "Parkinson", "Hydrocephalus", "Multiple Sclerosis"],
+                correct: "Parkinson",
+                explanations: {
+                    "Alzheimer": "SALAH. Ini terkait dengan atrofi kortikal, plak amiloid, dan tau (terutama di hippocampus).",
+                    "Stroke": "SALAH. Stroke adalah kematian jaringan akibat iskemia/perdarahan, bisa di mana saja.",
+                    "Parkinson": "BENAR. Penyakit Parkinson ditandai dengan hilangnya neuron dopaminergik di Substantia Nigra, yang menyebabkan gejala motorik seperti tremor, rigiditas, dan bradikinesia.",
+                    "Hydrocephalus": "SALAH. Ini adalah masalah aliran LCS.",
+                    "Multiple Sclerosis": "SALAH. Ini adalah penyakit autoimun demielinisasi."
+                }
+            },
+            { // 21
+                question: "Bagian batang otak yang berfungsi sebagai 'jembatan' (sesuai namanya) yang menghubungkan serebrum dan serebelum adalah...",
+                options: ["Mesencephalon", "Pons", "Medulla Oblongata", "Diencephalon", "Corpus Callosum"],
+                correct: "Pons",
+                explanations: {
+                    "Mesencephalon": "SALAH. Ini adalah otak tengah, menghubungkan diencephalon ke pons.",
+                    "Pons": "BENAR. 'Pons' berarti jembatan. Ini berisi serabut masif (Pedunculus Cerebellaris Medius) yang mentransmisikan informasi dari korteks motorik ke serebelum.",
+                    "Medulla Oblongata": "SALAH. Ini menghubungkan pons ke medula spinalis.",
+                    "Diencephalon": "SALAH. Ini adalah struktur di atas batang otak.",
+                    "Corpus Callosum": "SALAH. Ini menghubungkan dua hemisfer serebri."
+                }
+            },
+            { // 22
+                question: "Pusat vital untuk kardiovaskular (detak jantung) dan respirasi (ritme napas dasar) terletak di...",
+                options: ["Hypothalamus", "Thalamus", "Mesencephalon", "Pons", "Medulla Oblongata"],
+                correct: "Medulla Oblongata",
+                explanations: {
+                    "Hypothalamus": "SALAH. Hypothalamus adalah pengatur otonom tingkat tinggi, tetapi pusat refleks vitalnya ada di medula.",
+                    "Thalamus": "SALAH. Ini adalah relay sensorik.",
+                    "Mesencephalon": "SALAH. Ini berisi refleks visual/auditorik.",
+                    "Pons": "SALAH. Pons memiliki pusat pernapasan (pneumotaxic/apneustic) yang memodifikasi ritme, tetapi ritme dasarnya di medula.",
+                    "Medulla Oblongata": "BENAR. Struktur ini berisi nukleus-nukleus otonom yang sangat penting untuk fungsi dasar kehidupan (jantung dan napas), sehingga kerusakan di sini bersifat fatal."
+                }
+            },
+            { // 23
+                question: "Struktur 'Pyramis' (Piramida) di Medulla Oblongata adalah tempat terjadinya...",
+                options: ["Relay sensorik", "Refleks visual", "Decussatio Pyramidalis (penyilangan jaras motorik)", "Produksi LCS", "Pusat muntah"],
+                correct: "Decussatio Pyramidalis (penyilangan jaras motorik)",
+                explanations: {
+                    "Relay sensorik": "SALAH. Ini fungsi thalamus atau nukleus di medula (misal: grasilis/kuneatus).",
+                    "Refleks visual": "SALAH. Ini fungsi colliculus superior.",
+                    "Decussatio Pyramidalis (penyilangan jaras motorik)": "BENAR. Piramida berisi traktus kortikospinal (jaras motorik utama). Di bagian bawah medula, sekitar 85% serabut ini menyilang (decussatio) ke sisi berlawanan, menjelaskan mengapa otak kiri mengontrol tubuh kanan.",
+                    "Produksi LCS": "SALAH. Ini fungsi plexus choroideus.",
+                    "Pusat muntah": "SALAH. Ini fungsi Area Postrema."
+                }
+            },
+            { // 24
+                question: "Saraf kranial manakah yang TIDAK memiliki nukleusnya di Medulla Oblongata?",
+                options: ["N. Glossopharyngeus (IX)", "N. Vagus (X)", "N. Hypoglossus (XII)", "N. Facialis (VII)", "N. Vestibulocochlearis (VIII)"],
+                correct: "N. Facialis (VII)",
+                explanations: {
+                    "N. Glossopharyngeus (IX)": "SALAH. Nukleusnya ada di medula.",
+                    "N. Vagus (X)": "SALAH. Nukleusnya ada di medula.",
+                    "N. Hypoglossus (XII)": "SALAH. Nukleusnya ada di medula.",
+                    "N. Facialis (VII)": "BENAR. Nukleus N. Facialis (motorik) terletak di Pons.",
+                    "N. Vestibulocochlearis (VIII)": "SALAH. Nukleus vestibular dan koklear sebagian besar terletak di sambungan ponto-medullary dan medula."
+                }
+            },
+            { // 25
+                question: "Area di dasar ventrikel keempat yang tidak memiliki sawar darah otak sehingga dapat mendeteksi racun dan memicu muntah adalah...",
+                options: ["Area Postrema", "Oliva", "Pyramis", "Substantia Nigra", "Angulus Cerebellopontinus (CPA)"],
+                correct: "Area Postrema",
+                explanations: {
+                    "Area Postrema": "BENAR. Ini adalah 'chemoreceptor trigger zone' (CTZ). Karena sawar darah otaknya 'bocor', ia dapat memonitor darah secara langsung untuk zat-zat emetik (penyebab muntah) dan menginisiasi refleks muntah.",
+                    "Oliva": "SALAH. Ini terlibat dalam koordinasi motorik.",
+                    "Pyramis": "SALAH. Ini adalah jaras motorik.",
+                    "Substantia Nigra": "SALAH. Ini di mesencephalon, terlibat dalam motorik.",
+                    "Angulus Cerebellopontinus (CPA)": "SALAH. Ini adalah lokasi anatomis, bukan area fungsional spesifik."
+                }
+            },
+            { // 26
+                question: "Sistem Limbik (Visceral Brain) terutama terlibat dalam fungsi...",
+                options: ["Kontrol motorik halus", "Koordinasi dan keseimbangan", "Emosi, perilaku, dan pembentukan memori", "Penglihatan dan pendengaran", "Pernapasan dan detak jantung"],
+                correct: "Emosi, perilaku, dan pembentukan memori",
+                explanations: {
+                    "Kontrol motorik halus": "SALAH. Ini fungsi korteks motorik dan nuclei basalis.",
+                    "Koordinasi dan keseimbangan": "SALAH. Ini fungsi utama serebelum.",
+                    "Emosi, perilaku, dan pembentukan memori": "BENAR. Sistem limbik (termasuk Amygdala untuk emosi/takut dan Hippocampus untuk memori) adalah pusat 'emosional' otak.",
+                    "Penglihatan dan pendengaran": "SALAH. Ini fungsi lobus occipital dan temporal.",
+                    "Pernapasan dan detak jantung": "SALAH. Ini fungsi vital di medulla oblongata."
+                }
+            },
+            { // 27
+                question: "Struktur sistem limbik yang sangat penting untuk pembentukan memori baru (konsolidasi dari jangka pendek ke jangka panjang) adalah...",
+                options: ["Amygdala", "Hypothalamus", "Gyrus Cinguli", "Hippocampus", "Formatio Reticularis"],
+                correct: "Hippocampus",
+                explanations: {
+                    "Amygdala": "SALAH. Amygdala lebih dominan untuk emosi, terutama rasa takut, dan 'memori emosional'.",
+                    "Hypothalamus": "SALAH. Ini adalah output otonom dari sistem limbik.",
+                    "Gyrus Cinguli": "SALAH. Ini adalah korteks yang terlibat dalam pemrosesan emosi dan perilaku.",
+                    "Hippocampus": "BENAR. Struktur ini krusial untuk mengubah pengalaman jangka pendek menjadi memori jangka panjang (memori episodik). Kerusakan bilateral di sini menyebabkan amnesia anterograd parah (tidak bisa membentuk memori baru).",
+                    "Formatio Reticularis": "SALAH. Ini untuk kesadaran/kewaspadaan."
+                }
+            },
+            { // 28
+                question: "Struktur sistem limbik yang menjadi pusat pemrosesan utama untuk rasa takut, agresi, dan 'memori emosional' adalah...",
+                options: ["Amygdala", "Hypothalamus", "Gyrus Cinguli", "Hippocampus", "Thalamus"],
+                correct: "Amygdala",
+                explanations: {
+                    "Amygdala": "BENAR. Amygdala menilai signifikansi emosional dari stimulus (terutama ancaman) dan menginisiasi respons takut atau agresi.",
+                    "Hypothalamus": "SALAH. Ini mengekspresikan respons otonom (misal: detak jantung cepat) yang dipicu oleh amygdala, tetapi amygdala adalah pusat emosinya.",
+                    "Gyrus Cinguli": "SALAH. Ini adalah korteks yang terlibat dalam pemrosesan emosi.",
+                    "Hippocampus": "SALAH. Ini untuk memori episodik/faktual, sedangkan amygdala untuk 'rasa' dari memori tersebut.",
+                    "Thalamus": "SALAH. Ini adalah relay sensorik."
+                }
+            },
+            { // 29
+                question: "ARAS (Ascending Reticular Activating System) yang berasal dari Formatio Reticularis di batang otak, sangat penting untuk...",
+                options: ["Menjaga kesadaran dan kewaspadaan (wakefulness)", "Mengontrol pernapasan", "Mengkoordinasi gerakan", "Membentuk memori baru", "Memproses rasa lapar dan haus"],
+                correct: "Menjaga kesadaran dan kewaspadaan (wakefulness)",
+                explanations: {
+                    "Menjaga kesadaran dan kewaspadaan (wakefulness)": "BENAR. ARAS bertindak sebagai filter yang mengirimkan 'sinyal aktivasi' umum ke seluruh korteks, menjaga kita tetap sadar dan waspada. Kerusakan pada ARAS dapat menyebabkan koma.",
+                    "Mengontrol pernapasan": "SALAH. Meskipun formatio reticularis berisi pusat napas di medula, fungsi 'ARAS' spesifik merujuk pada kesadaran.",
+                    "Mengkoordinasi gerakan": "SALAH. Ini fungsi serebelum dan nuclei basalis.",
+                    "Membentuk memori baru": "SALAH. Ini fungsi hippocampus.",
+                    "Memproses rasa lapar dan haus": "SALAH. Ini fungsi hypothalamus."
+                }
+            },
+            { // 30
+                question: "Truncus Encephali (Batang Otak) secara kolektif terdiri dari tiga struktur berikut:",
+                options: ["Cerebrum, Cerebellum, Medulla Spinalis", "Thalamus, Hypothalamus, Epithalamus", "Mesencephalon, Pons, Medulla Oblongata", "Pons, Cerebellum, Medulla Oblongata", "Mesencephalon, Thalamus, Pons"],
+                correct: "Mesencephalon, Pons, Medulla Oblongata",
+                explanations: {
+                    "Cerebrum, Cerebellum, Medulla Spinalis": "SALAH. Ini adalah bagian-bagian utama otak, bukan hanya batang otak.",
+                    "Thalamus, Hypothalamus, Epithalamus": "SALAH. Ini adalah komponen Diencephalon.",
+                    "Mesencephalon, Pons, Medulla Oblongata": "BENAR. Batang otak (dari kranial ke kaudal) terdiri dari Mesencephalon (otak tengah), Pons, dan Medulla Oblongata.",
+                    "Pons, Cerebellum, Medulla Oblongata": "SALAH. Cerebellum (otak kecil) adalah struktur terpisah, bukan bagian dari batang otak, meskipun terhubung erat dengannya.",
+                    "Mesencephalon, Thalamus, Pons": "SALAH. Thalamus (Diencephalon) berada di atas batang otak."
+                }
+            },
+            { // 31
+                question: "Sirkulus Arteriosus Willisi adalah anastomosis arteri di dasar otak yang dibentuk oleh dua sistem utama, yaitu...",
+                options: ["A. Carotis Interna dan A. Carotis Externa", "A. Carotis Interna dan A. Vertebralis (via A. Basilaris)", "A. Cerebri Anterior dan A. Cerebri Media", "V. Jugularis Interna dan V. Jugularis Externa", "Sinus Sagittalis dan Sinus Transversus"],
+                correct: "A. Carotis Interna dan A. Vertebralis (via A. Basilaris)",
+                explanations: {
+                    "A. Carotis Interna dan A. Carotis Externa": "SALAH. A. Carotis Externa mensuplai wajah dan kulit kepala, bukan otak.",
+                    "A. Carotis Interna dan A. Vertebralis (via A. Basilaris)": "BENAR. Sirkulus ini menghubungkan sistem anterior (dari A. Carotis Interna) dengan sistem posterior (dari A. Vertebralis yang menyatu menjadi A. Basilaris).",
+                    "A. Cerebri Anterior dan A. Cerebri Media": "SALAH. Ini adalah cabang-cabang dari sistem anterior, bukan dua sistem utamanya.",
+                    "V. Jugularis Interna dan V. Jugularis Externa": "SALAH. Ini adalah vena (drainase), bukan arteri (suplai).",
+                    "Sinus Sagittalis dan Sinus Transversus": "SALAH. Ini adalah sinus vena duramatris."
+                }
+            },
+            { // 32
+                question: "Arteri yang menghubungkan sistem sirkulasi anterior (A. Cerebri Anterior kanan dan kiri) adalah...",
+                options: ["A. Communicans Posterior", "A. Communicans Anterior", "A. Basilaris", "A. Cerebri Media", "A. Vertebralis"],
+                correct: "A. Communicans Anterior",
+                explanations: {
+                    "A. Communicans Posterior": "SALAH. Ini menghubungkan sistem anterior (Carotis Interna) ke sistem posterior (A. Cerebri Posterior).",
+                    "A. Communicans Anterior": "BENAR. Arteri kecil ini menghubungkan A. Cerebri Anterior (ACA) kanan dan kiri, melengkapi sirkulus di bagian depan.",
+                    "A. Basilaris": "SALAH. Ini adalah bagian dari sistem posterior.",
+                    "A. Cerebri Media": "SALAH. Ini adalah cabang terminal besar, bukan penghubung.",
+                    "A. Vertebralis": "SALAH. Ini adalah asal dari sistem posterior."
+                }
+            },
+            { // 33
+                question: "Arteri yang menghubungkan sistem sirkulasi anterior (dari A. Carotis Interna) dengan sistem sirkulasi posterior (A. Cerebri Posterior) adalah...",
+                options: ["A. Communicans Posterior", "A. Communicans Anterior", "A. Basilaris", "A. Cerebri Media", "A. Vertebralis"],
+                correct: "A. Communicans Posterior",
+                explanations: {
+                    "A. Communicans Posterior": "BENAR. Arteri ini berjalan dari A. Carotis Interna (atau cabangnya) ke A. Cerebri Posterior, menghubungkan suplai darah depan dan belakang.",
+                    "A. Communicans Anterior": "SALAH. Ini menghubungkan ACA kanan dan kiri.",
+                    "A. Basilaris": "SALAH. Ini adalah arteri utama sistem posterior.",
+                    "A. Cerebri Media": "SALAH. Ini adalah cabang terminal.",
+                    "A. Vertebralis": "SALAH. Ini adalah arteri asal sistem posterior."
+                }
+            },
+            { // 34
+                question: "A. Cerebri Anterior (ACA) dan A. Cerebri Media (ACM) adalah cabang-cabang terminal dari...",
+                options: ["A. Basilaris", "A. Vertebralis", "A. Carotis Interna", "A. Carotis Externa", "A. Communicans Posterior"],
+                correct: "A. Carotis Interna",
+                explanations: {
+                    "A. Basilaris": "SALAH. A. Basilaris bercabang menjadi A. Cerebri Posterior (ACP).",
+                    "A. Vertebralis": "SALAH. A. Vertebralis menyatu membentuk A. Basilaris.",
+                    "A. Carotis Interna": "BENAR. Setelah masuk ke tengkorak, A. Carotis Interna bercabang menjadi dua arteri utamanya, yaitu ACA dan ACM, yang mensuplai sebagian besar hemisfer serebri.",
+                    "A. Carotis Externa": "SALAH. Ini mensuplai wajah.",
+                    "A. Communicans Posterior": "SALAH. Ini adalah arteri penghubung."
+                }
+            },
+            { // 35
+                question: "Darah vena dari sinus-sinus vena duramatris (seperti Sinus Sagittalis Superior dan Sinus Sigmoideus) pada akhirnya akan bermuara ke...",
+                options: ["A. Carotis Interna", "V. Jugularis Interna", "A. Vertebralis", "V. Jugularis Externa", "Sirkulus Willisi"],
+                correct: "V. Jugularis Interna",
+                explanations: {
+                    "A. Carotis Interna": "SALAH. Ini adalah arteri yang membawa darah KE otak.",
+                    "V. Jugularis Interna": "BENAR. Sinus Sigmoideus (yang menerima darah dari sinus transversus) mengalir langsung ke V. Jugularis Interna di foramen jugularis, menjadikannya jalur drainase vena utama dari otak.",
+                    "A. Vertebralis": "SALAH. Ini adalah arteri.",
+                    "V. Jugularis Externa": "SALAH. Ini mengalirkan darah terutama dari wajah dan kulit kepala, bukan dari dalam otak.",
+                    "Sirkulus Willisi": "SALAH. Ini adalah sistem arteri."
+                }
+            }
+        ];
+
+
+        // --- Variabel Status Kuis ---
+        let currentQuestionIndex = 0;
+        let score = 0;
+        const totalQuestions = questions.length;
+        let currentMode = 'exam'; // 'exam', 'practice', 'flashcard'
+        let currentFlashcardIndex = 0; // Untuk mode flashcard
+        let userAnswers = []; // BARU: Untuk menyimpan jawaban mode ujian
+
+        // --- Referensi Elemen DOM ---
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const flashcardScreen = document.getElementById('flashcard-screen');
+        const reviewScreen = document.getElementById('review-screen'); // BARU
+        
+        // Tombol Menu Utama
+        const startFlashcardBtn = document.getElementById('start-flashcard-btn');
+        const startPracticeBtn = document.getElementById('start-practice-btn');
+        const startExamBtn = document.getElementById('start-exam-btn');
+        
+        // Tombol Hasil
+        const restartButton = document.getElementById('restart-button');
+        const reviewButton = document.getElementById('review-button'); // BARU
+        
+        // Elemen Kuis
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const progressText = document.getElementById('progress-text');
+        const scoreText = document.getElementById('score-text');
+        const finalScoreText = document.getElementById('final-score-text');
+        const nextQuestionButton = document.getElementById('next-question-btn');
+        const explanationContainer = document.getElementById('explanation-container');
+        
+        // Elemen Flashcard
+        const flashcard = document.getElementById('flashcard');
+        const flashcardFront = document.getElementById('flashcard-front');
+        const flashcardBack = document.getElementById('flashcard-back');
+        const flashcardAnswerList = document.getElementById('flashcard-answer-list');
+        const flashcardProgress = document.getElementById('flashcard-progress');
+        const flashcardPrev = document.getElementById('flashcard-prev');
+        const flashcardFlip = document.getElementById('flashcard-flip');
+        const flashcardNext = document.getElementById('flashcard-next');
+        
+        // Elemen Review BARU
+        const reviewContainer = document.getElementById('review-container');
+        const restartFromReviewBtn = document.getElementById('restart-from-review');
+        
+        // Tombol Kembali ke Menu
+        const backToMenuButtons = document.querySelectorAll('.back-to-menu-btn');
+        
+        // --- Fungsi Navigasi Utama ---
+
+        function showMainMenu() {
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            flashcardScreen.classList.add('hidden');
+            reviewScreen.classList.add('hidden'); // BARU
+            startScreen.classList.remove('hidden');
+            document.body.classList.add('items-center');
+            document.body.classList.remove('pt-10');
+        }
+
+        function setBodyActive() {
+            document.body.classList.remove('items-center');
+            document.body.classList.add('pt-10');
+        }
+
+        // --- Logika Mode Flashcard ---
+
+        function startFlashcardMode() {
+            currentFlashcardIndex = 0;
+            startScreen.classList.add('hidden');
+            flashcardScreen.classList.remove('hidden');
+            setBodyActive();
+            showFlashcard();
+        }
+
+        function showFlashcard() {
+            const question = questions[currentFlashcardIndex];
+            flashcardFront.querySelector('p').innerText = question.question;
+            flashcardAnswerList.innerHTML = ''; 
+            flashcardFront.classList.remove('hidden');
+            flashcardBack.classList.add('hidden');
+            flashcardProgress.innerText = `${currentFlashcardIndex + 1} / ${totalQuestions}`;
+            flashcardPrev.disabled = currentFlashcardIndex === 0;
+            flashcardNext.disabled = currentFlashcardIndex === totalQuestions - 1;
+        }
+
+        function flipFlashcard() {
+            const isFlippingToBack = flashcardBack.classList.contains('hidden');
+            if (isFlippingToBack) {
+                const q = questions[currentFlashcardIndex];
+                renderFlashcardExplanations(q.explanations, q.correct);
+            }
+            flashcardFront.classList.toggle('hidden');
+            flashcardBack.classList.toggle('hidden');
+        }
+        
+        function renderFlashcardExplanations(explanationsObj, correctTerm) {
+            flashcardAnswerList.innerHTML = ''; 
+            const sortedTerms = Object.keys(explanationsObj).sort((a, b) => (a === correctTerm ? -1 : b === correctTerm ? 1 : 0));
+            sortedTerms.forEach(term => {
+                const explanation = explanationsObj[term];
+                const isCorrect = (term === correctTerm);
+                renderSingleExplanation(term, explanation, isCorrect, flashcardAnswerList);
+            });
+        }
+        
+        function prevFlashcard() {
+            if (currentFlashcardIndex > 0) {
+                currentFlashcardIndex--;
+                showFlashcard();
+            }
+        }
+
+        function nextFlashcard() {
+            if (currentFlashcardIndex < totalQuestions - 1) {
+                currentFlashcardIndex++;
+                showFlashcard();
+            }
+        }
+
+        // --- Logika Mode Kuis (Latihan & Ujian) ---
+
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = []; // BARU: Kosongkan riwayat jawaban
+            
+            startScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            reviewScreen.classList.add('hidden'); // BARU
+            quizScreen.classList.remove('hidden');
+            nextQuestionButton.classList.add('hidden');
+            
+            setBodyActive();
+            showQuestion();
+        }
+        
+        function startPracticeMode() {
+            currentMode = 'practice';
+            startQuiz();
+        }
+        
+        function startExamMode() {
+            currentMode = 'exam';
+            startQuiz();
+        }
+
+        function showQuestion() {
+            optionsContainer.innerHTML = '';
+            explanationContainer.innerHTML = ''; 
+            nextQuestionButton.classList.add('hidden');
+            
+            const question = questions[currentQuestionIndex];
+            questionText.innerText = question.question;
+            progressText.innerText = `Soal ${currentQuestionIndex + 1} / ${totalQuestions}`;
+            
+            // Mode Latihan menunjukkan skor real-time, Mode Ujian tidak
+            if (currentMode === 'practice') {
+                 scoreText.innerText = `Skor: ${score}`;
+            } else {
+                 scoreText.innerText = `Skor: -`;
+            }
+            
+            // Opsi tidak di-shuffle agar konsisten dengan penjelasan (opsional, tapi lebih mudah di-debug)
+            // const shuffledOptions = [...question.options].sort(() => Math.random() - 0.5);
+            const options = question.options;
+
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.innerText = option;
+                button.classList.add('option-btn');
+                button.addEventListener('click', () => selectAnswer(option, button));
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function selectAnswer(selectedOption, buttonEl) {
+            const correctAnwer = questions[currentQuestionIndex].correct;
+
+            // Nonaktifkan semua tombol opsi
+            const optionButtons = optionsContainer.querySelectorAll('.option-btn');
+            optionButtons.forEach(btn => btn.classList.add('disabled'));
+            
+            // Simpan jawaban (untuk kedua mode)
+            userAnswers[currentQuestionIndex] = {
+                chosen: selectedOption,
+                correct: correctAnwer,
+                isCorrect: selectedOption === correctAnwer
+            };
+
+            // Logika lanjut berdasarkan mode
+            if (currentMode === 'practice') {
+                // --- MODE LATIHAN ---
+                if (selectedOption === correctAnwer) {
+                    score++;
+                    buttonEl.classList.add('correct');
+                } else {
+                    buttonEl.classList.add('incorrect');
+                    optionButtons.forEach(btn => {
+                        if (btn.innerText === correctAnwer) {
+                            btn.classList.add('correct');
+                        }
+                    });
+                }
+                scoreText.innerText = `Skor: ${score}`;
+                nextQuestionButton.classList.remove('hidden');
+                renderPracticeExplanation(selectedOption, correctAnwer);
+                
+            } else {
+                // --- MODE UJIAN (LOGIKA BARU) ---
+                // 1. Hanya sorot jawaban yang dipilih
+                buttonEl.classList.add('selected');
+                
+                // 2. Tidak ada feedback benar/salah
+                
+                // 3. Auto-lanjut setelah delay singkat
+                setTimeout(goToNextQuestion, 500); 
+            }
+        }
+        
+        function renderPracticeExplanation(chosenOption, correctOption) {
+            explanationContainer.innerHTML = ''; 
+            const explanations = questions[currentQuestionIndex].explanations;
+            const correctExplanation = explanations[correctOption];
+            
+            // Tampilkan penjelasan untuk semua opsi, tandai yang benar dan yang dipilih salah
+            Object.keys(explanations).forEach(term => {
+                const explanation = explanations[term];
+                const isCorrect = (term === correctOption);
+                const isChosen = (term === chosenOption);
+                
+                // Hanya tampilkan yang benar dan yang salah dipilih (jika beda)
+                if(isCorrect || (isChosen && !isCorrect)) {
+                     renderSingleExplanation(term, explanation, isCorrect, explanationContainer);
+                }
+            });
+        }
+        
+        // Fungsi render yang dibagikan
+        function renderSingleExplanation(term, explanation, isCorrect, targetElement) {
+            const optionEl = document.createElement('div');
+            optionEl.classList.add('flashcard-option-detailed');
+            
+            if (isCorrect) {
+                optionEl.classList.add('correct');
+            } else {
+                optionEl.classList.add('incorrect');
+            }
+            
+            optionEl.innerHTML = `
+                <strong>${term}</strong>
+                <span>${explanation}</span>
+            `;
+            targetElement.appendChild(optionEl);
+        }
+        
+        function goToNextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < totalQuestions) {
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            
+            let finalScore = 0;
+            
+            if (currentMode === 'exam') {
+                // Hitung skor dari array userAnswers
+                finalScore = userAnswers.filter(answer => answer.isCorrect).length;
+                reviewButton.classList.remove('hidden'); // Tampilkan tombol review
+            } else {
+                // Ambil skor real-time dari mode latihan
+                finalScore = score;
+                reviewButton.classList.add('hidden'); // Sembunyikan tombol review
+            }
+            
+            finalScoreText.innerText = `SKOR ANDA: ${finalScore} / ${totalQuestions}`;
+            document.body.classList.add('items-center');
+            document.body.classList.remove('pt-10');
+        }
+        
+        // --- FUNGSI REVIEW BARU ---
+        
+        function showReviewScreen() {
+            resultScreen.classList.add('hidden');
+            reviewScreen.classList.remove('hidden');
+            reviewContainer.innerHTML = ''; // Kosongkan review sebelumnya
+            setBodyActive(); // Agar tidak terpusat
+            
+            questions.forEach((question, index) => {
+                const userAnswer = userAnswers[index] || { chosen: null }; // Tangani jika soal tidak terjawab
+                
+                // Buat kartu review
+                const reviewCard = document.createElement('div');
+                reviewCard.classList.add('review-card');
+                
+                // Buat HTML untuk opsi
+                let optionsHTML = '';
+                question.options.forEach(option => {
+                    let optionClass = 'review-option neutral';
+                    if (option === question.correct) {
+                        optionClass = 'review-option correct';
+                    } else if (option === userAnswer.chosen) {
+                        optionClass = 'review-option chosen-wrong';
+                    }
+                    
+                    optionsHTML += `<div class="${optionClass}">${option}</div>`;
+                });
+                
+                // Buat HTML untuk penjelasan
+                let explanationsHTML = '';
+                const explanations = question.explanations;
+                const correctTerm = question.correct;
+                
+                // Urutkan penjelasan agar yang benar selalu di atas, diikuti yang salah (jika dipilih)
+                const sortedTerms = Object.keys(explanations).sort((a, b) => {
+                    if (a === correctTerm) return -1;
+                    if (b === correctTerm) return 1;
+                    if (a === userAnswer.chosen) return -1;
+                    if (b === userAnswer.chosen) return 1;
+                    return 0;
+                });
+                
+                sortedTerms.forEach(term => {
+                    const explanation = explanations[term];
+                    const isCorrect = (term === correctTerm);
+                    
+                    let explanationClass = 'flashcard-option-detailed';
+                    if (isCorrect) {
+                        explanationClass += ' correct';
+                    } else {
+                        explanationClass += ' incorrect';
+                    }
+                    
+                    explanationsHTML += `
+                        <div class="${explanationClass}">
+                            <strong>${term}</strong>
+                            <span>${explanation}</span>
+                        </div>
+                    `;
+                });
+                
+
+                // Gabungkan semuanya
+                reviewCard.innerHTML = `
+                    <div class="review-question">Soal ${index + 1}: ${question.question}</div>
+                    <div class="review-options-grid">${optionsHTML}</div>
+                    <div class="review-explanations">${explanationsHTML}</div>
+                `;
+                
+                reviewContainer.appendChild(reviewCard);
+            });
+        }
+
+        // --- Event Listeners ---
+        
+        // Menu Utama
+        startFlashcardBtn.addEventListener('click', startFlashcardMode);
+        startPracticeBtn.addEventListener('click', startPracticeMode);
+        startExamBtn.addEventListener('click', startExamMode);
+        
+        // Layar Hasil
+        restartButton.addEventListener('click', startQuiz); // Mengulangi mode terakhir
+        reviewButton.addEventListener('click', showReviewScreen); // BARU
+        
+        // Layar Review BARU
+        restartFromReviewBtn.addEventListener('click', startQuiz);
+        
+        // Layar Kuis
+        nextQuestionButton.addEventListener('click', goToNextQuestion);
+        
+        // Layar Flashcard
+        flashcard.addEventListener('click', flipFlashcard);
+        flashcardFlip.addEventListener('click', flipFlashcard);
+        flashcardPrev.addEventListener('click', prevFlashcard);
+        flashcardNext.addEventListener('click', nextFlashcard);
+        
+        // Tombol Kembali ke Menu (Global)
+        backToMenuButtons.forEach(button => {
+            button.addEventListener('click', showMainMenu);
+        });
+
+    </script>
+</body>
+</html>

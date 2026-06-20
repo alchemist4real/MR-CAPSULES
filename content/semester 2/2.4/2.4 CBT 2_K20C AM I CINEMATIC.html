@@ -1,0 +1,899 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Am I Cinematic? â€” Quiz Standar Broadcast K20C</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f8f8f5;--bg2:#f1f1ed;--bg3:#e7e7e2;--bg4:#dcdcd6;
+  --border:rgba(40,55,110,.10);--border2:rgba(40,55,110,.20);
+  --text:#161b2e;--text2:#384068;--text3:#7c85a8;
+  --green:#1f7a4a;--greenbg:rgba(31,122,74,.09);--greenb:rgba(31,122,74,.25);
+  --gold:#7a6010;--goldbg:rgba(122,96,16,.09);--goldb:rgba(122,96,16,.28);
+  --red:#b03030;--redbg:rgba(176,48,48,.08);--redb:rgba(176,48,48,.25);
+  --blue:#1a4faa;--bluebg:rgba(26,79,170,.09);--blueb:rgba(26,79,170,.28);
+  --purp:#4433a0;--purpbg:rgba(68,51,160,.08);--purpb:rgba(68,51,160,.25);
+  --teal:#136ba8;--tealbg:rgba(19,107,168,.08);--tealb:rgba(19,107,168,.25);
+  --r:10px;--rl:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.6;min-height:100vh}
+.app{max-width:900px;margin:0 auto;padding:0 16px 60px}
+header{padding:40px 0 28px;text-align:center}
+.eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--text3);text-transform:uppercase;margin-bottom:10px}
+h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(30px,6vw,54px);letter-spacing:-.03em;line-height:1;margin-bottom:10px}
+h1 span{color:var(--red)}
+.sub{font-size:13px;color:var(--text2);max-width:500px;margin:0 auto}
+.main-tabs{display:flex;gap:3px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:24px}
+.main-tab{flex:1;padding:9px 6px;border-radius:9px;border:none;background:transparent;color:var(--text3);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .18s}
+.main-tab:hover{color:var(--text)}
+.main-tab.active{background:var(--text);color:#fff;font-weight:600}
+.main-panel{display:none}
+.main-panel.active{display:block;animation:fi .2s ease}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.sub-tabs{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:4px;margin-bottom:20px}
+.sub-tab{padding:8px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text3);font-family:'DM Mono',monospace;font-size:10.5px;cursor:pointer;transition:all .18s;text-align:center;line-height:1.4}
+.sub-tab:hover{background:var(--bg3);color:var(--text2);border-color:var(--border2)}
+.sub-tab.active{background:var(--text);color:#fff;border-color:var(--text);font-weight:600}
+.sub-panel{display:none}
+.sub-panel.active{display:block;animation:fi .18s ease}
+.sec-h{font-family:'Syne',sans-serif;font-weight:700;font-size:14.5px;color:var(--text);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.divider{height:1px;background:var(--border);margin:20px 0}
+.note{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:0 var(--r) var(--r) 0;padding:10px 14px;font-size:12.5px;color:var(--text2);line-height:1.65;margin-bottom:10px}
+.note strong{color:var(--text)}
+.note.blue{border-left-color:var(--blue)}
+.note.green{border-left-color:var(--green)}
+.note.red{border-left-color:var(--red)}
+.note.purp{border-left-color:var(--purp)}
+.note.teal{border-left-color:var(--teal)}
+.dtable-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:14px}
+.dtable-wrap table{width:100%;border-collapse:collapse;font-size:12px}
+.dtable-wrap thead tr{background:var(--bg3)}
+.dtable-wrap th{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.05em;color:var(--text3);font-weight:600;padding:8px 12px;text-align:left;border-bottom:1px solid var(--border)}
+.dtable-wrap td{padding:7px 12px;border-bottom:1px solid var(--border);font-family:'DM Mono',monospace;font-size:11px;color:var(--text2)}
+.dtable-wrap td:first-child{color:var(--text);font-weight:600}
+.dtable-wrap tr:last-child td{border-bottom:none}
+.dtable-wrap tr:nth-child(even){background:rgba(40,55,110,.02)}
+.formula{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;font-family:'DM Mono',monospace;font-size:12px;color:var(--text);margin:8px 0;line-height:1.8}
+.formula .fkey{color:var(--text3);margin-right:6px}
+.ind-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:4px}
+.ind-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;position:relative;overflow:hidden}
+.ind-card .stripe{position:absolute;top:0;left:0;width:3px;height:100%}
+.ind-card .ind-name{font-family:'Syne',sans-serif;font-size:12.5px;font-weight:700;margin-bottom:6px}
+.ind-card .ind-desc{font-size:12px;color:var(--text2);margin-bottom:8px;line-height:1.6}
+.ind-table{width:100%;border-collapse:collapse}
+.ind-table td{font-family:'DM Mono',monospace;font-size:10.5px;padding:3px 0;border-bottom:1px solid var(--border)}
+.ind-table tr:last-child td{border-bottom:none}
+.ind-table td:first-child{color:var(--text3);width:120px}
+.ind-table td:last-child{font-weight:600;color:var(--text)}
+/* QUIZ */
+.qconfig{text-align:center;padding:28px 0}
+.qconfig-title{font-family:'Syne',sans-serif;font-weight:700;font-size:18px;margin-bottom:6px}
+.qconfig-sub{font-size:13px;color:var(--text2);margin-bottom:22px}
+.cfg-grid{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:26px}
+.cfg-btn{padding:8px 16px;border-radius:20px;border:2px solid var(--border2);background:var(--bg2);color:var(--text3);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;transition:all .18s}
+.cfg-btn:hover{color:var(--text2)}
+.cfg-btn.sel{background:var(--text);color:#fff;border-color:var(--text);font-weight:600}
+.start-btn{padding:12px 34px;border-radius:var(--r);border:none;background:var(--text);color:var(--bg);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.02em;transition:all .18s}
+.start-btn:hover{background:var(--red)}
+.qheader{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.qnum-display{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);white-space:nowrap}
+.qnum-display strong{color:var(--text);font-size:15px}
+.qscore-display{margin-left:auto;font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);white-space:nowrap}
+.qscore-display strong{color:var(--green);font-size:15px}
+.qtype-pill{display:inline-block;padding:3px 10px;border-radius:10px;font-family:'DM Mono',monospace;font-size:10px;font-weight:600}
+.qcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:20px 22px;margin-bottom:12px}
+.qscen{font-size:13px;color:var(--text2);margin-bottom:10px;line-height:1.65}
+.qdata{font-family:'DM Mono',monospace;font-size:12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:12px;line-height:2}
+.qdata .dv{font-weight:700;color:var(--text)}
+.qdata .da{font-size:10.5px;color:var(--text3);margin-left:4px}
+.qtext{font-size:14px;font-weight:600;color:var(--text);line-height:1.55}
+.opts{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.opt{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-radius:var(--r);border:1.5px solid var(--border2);background:var(--bg);color:var(--text);text-align:left;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.5;transition:all .15s;width:100%}
+.opt:hover:not(:disabled){background:var(--bg3);border-color:rgba(40,55,110,.3)}
+.opt:disabled{cursor:default}
+.opt-key{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;min-width:22px;height:22px;border-radius:6px;background:var(--bg3);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;color:var(--text3);transition:all .15s}
+.opt.correct{background:var(--bluebg);border-color:var(--blueb)}
+.opt.correct .opt-key{background:var(--blue);color:#fff;border-color:var(--blue)}
+.opt.wrong{background:var(--redbg);border-color:var(--redb)}
+.opt.wrong .opt-key{background:var(--red);color:#fff;border-color:var(--red)}
+.opt.reveal{background:var(--bluebg);border-color:var(--blueb);opacity:.75}
+.opt.reveal .opt-key{background:var(--blue);color:#fff;border-color:var(--blue)}
+.expbox{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:12px;font-size:12.5px;color:var(--text2);line-height:1.72;display:none}
+.expbox.show{display:block;animation:fi .2s ease}
+.expbox strong{color:var(--text)}
+.actrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.next-btn{padding:10px 24px;border-radius:var(--r);border:none;background:var(--text);color:var(--bg);font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .18s;display:none}
+.next-btn:hover{background:var(--red)}
+.end-btn{padding:10px 18px;border-radius:var(--r);border:1px solid var(--redb);background:transparent;color:var(--red);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;transition:all .18s;margin-left:auto}
+.end-btn:hover{background:var(--redbg)}
+.results-wrap{text-align:center;padding:28px 12px}
+.res-big{font-family:'Syne',sans-serif;font-size:64px;font-weight:800;color:var(--text);line-height:1;margin-bottom:4px}
+.res-sub{font-family:'DM Mono',monospace;font-size:13px;color:var(--text3);margin-bottom:18px}
+.res-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:20px;text-align:left}
+.res-stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:11px 14px}
+.res-stat .rv{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--text);margin-bottom:2px}
+.res-stat .rl{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)}
+.retry-btn{padding:12px 32px;border-radius:var(--r);border:none;background:var(--text);color:var(--bg);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .18s;margin-bottom:20px}
+.retry-btn:hover{background:var(--red)}
+footer{text-align:center;padding-top:36px;font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="eyebrow">Standar Broadcast &amp; Teknik Kamera Â· K20C Â· Blok 2.4</div>
+  <h1>Am I <span>Cinematic?</span></h1>
+  <p class="sub">Quiz khusus teknik pengambilan gambar, angle kamera, pergerakan, dan standar broadcast.</p>
+</header>
+
+<div class="main-tabs">
+  <button class="main-tab active" onclick="switchMain('materi',this)">📋 Materi</button>
+  <button class="main-tab" onclick="switchMain('quiz',this)">🎯 Quiz</button>
+</div>
+
+<!-- MATERI -->
+<div class="main-panel active" id="mp-materi">
+    <div class="sec-h">1. Prinsip Utama Standar Broadcast</div>
+  <ul style="margin-bottom:14px; margin-left:20px; font-size:13.5px; color:var(--text2)">
+    <li><strong>Kualitas Visual Konsisten</strong>: Gambar harus jelas, menarik, serta memenuhi standar ekspektasi teknis dan estetika penonton modern.</li>
+    <li><strong>Tujuan</strong>: Menciptakan narasi visual yang komunikatif melalui komposisi yang tepat.</li>
+    <li><strong>Elemen Kunci</strong>:
+      <ul style="margin-left:20px; margin-top:4px;">
+        <li>Konsistensi visual pada setiap <em>shot</em>.</li>
+        <li>Komposisi yang kuat dan terarah.</li>
+        <li>Penguasaan penuh teknik kamera.</li>
+        <li>Pencahayaan dan audio yang memenuhi standar <em>broadcast</em>.</li>
+      </ul>
+    </li>
+  </ul>
+
+  <div class="divider"></div>
+
+  <div class="sec-h">2. Jarak Pengambilan Gambar (Shot Types)</div>
+
+  <div class="sec-h" style="font-size:13px;border:none;margin-top:14px">A. Jarak Jauh (Wide / Long Shots)</div>
+  <div class="note blue">Fungsi utama: Menetapkan konteks visual, memperlihatkan skala lingkungan, dan sebagai <em>establishing shot</em>.</div>
+  <div class="ind-grid">
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--blue)"></div>
+      <div class="ind-name" style="color:var(--blue)">Extreme Long Shot (ELS)</div>
+      <div class="ind-desc">Memperlihatkan skala lingkungan sangat luas, subjek terlihat sangat kecil (untuk <em>establishing scene</em>, transisi, memperlihatkan isolasi/skala, membangun <em>mood</em>).</div>
+    </div>
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--blue)"></div>
+      <div class="ind-name" style="color:var(--blue)">Long Shot (LS)</div>
+      <div class="ind-desc">Subjek terlihat utuh dari kepala hingga kaki. Menggambarkan hubungan karakter dengan lingkungan.</div>
+    </div>
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--blue)"></div>
+      <div class="ind-name" style="color:var(--blue)">Full Shot (FS)</div>
+      <div class="ind-desc">Menampilkan subjek penuh dari atas kepala hingga ujung kaki dengan sedikit sisa ruang di atas dan bawah.</div>
+    </div>
+  </div>
+
+  <div class="sec-h" style="font-size:13px;border:none;margin-top:14px">B. Jarak Menengah (Medium Shots)</div>
+  <div class="note green">Fungsi utama: Keseimbangan antara subjek dan latar belakang (sering dipakai dalam wawancara/dialog).</div>
+  <div class="ind-grid">
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--green)"></div>
+      <div class="ind-name" style="color:var(--green)">Medium Full Shot (MFS)</div>
+      <div class="ind-desc">Batas <em>framing</em> dari lutut ke atas. Ruang lebih besar untuk memperlihatkan bahasa tubuh dan aksi.</div>
+    </div>
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--green)"></div>
+      <div class="ind-name" style="color:var(--green)">Medium Shot (MS)</div>
+      <div class="ind-desc">Batas pinggang ke atas. Fleksibel, standar untuk adegan dialog/wawancara.</div>
+    </div>
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--green)"></div>
+      <div class="ind-name" style="color:var(--green)">Medium Close Up (MCU)</div>
+      <div class="ind-desc">Batas dada ke atas. Ekspresi wajah dan gestur tangan mulai terlihat jelas.</div>
+    </div>
+  </div>
+
+  <div class="sec-h" style="font-size:13px;border:none;margin-top:14px">C. Jarak Dekat (Close-Up Shots)</div>
+  <div class="note red">Fungsi utama: Menangkap detail, emosi, dan ekspresi.</div>
+  <div class="ind-grid">
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--red)"></div>
+      <div class="ind-name" style="color:var(--red)">Close Up (CU)</div>
+      <div class="ind-desc">Fokus pada wajah, tangan, atau objek penting. Menciptakan kedekatan emosional dan intensitas pada momen krusial/dramatis.</div>
+    </div>
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--red)"></div>
+      <div class="ind-name" style="color:var(--red)">Extreme Close Up (ECU)</div>
+      <div class="ind-desc">Detail sangat spesifik (misal: mata, bibir, detail objek kecil). Untuk adegan <em>thriller/horor</em>, ketegangan, atau reaksi ekstrem.</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="sec-h">3. Sudut Pengambilan Gambar (Camera Angles)</div>
+  <div class="ind-grid">
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--gold)"></div>
+      <div class="ind-name" style="color:var(--gold)">Eye Level Shot</div>
+      <div class="ind-desc">Sejajar dengan mata subjek. Memberikan kesan natural, netral, objektif, dan kedekatan setara (ideal untuk berita dan <em>talk show</em>).</div>
+    </div>
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--teal)"></div>
+      <div class="ind-name" style="color:var(--teal)">High Angle Shot</div>
+      <div class="ind-desc">Kamera berada di atas subjek. Memberikan efek psikologis subjek terlihat kecil, lemah, rentan, atau terpojok.</div>
+    </div>
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--purp)"></div>
+      <div class="ind-name" style="color:var(--purp)">Low Angle Shot</div>
+      <div class="ind-desc">Kamera di bawah subjek. Kebalikan dari <em>high angle</em>; subjek terlihat kuat, dominan, heroik, megah, atau mengancam (antagonis).</div>
+    </div>
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--blue)"></div>
+      <div class="ind-name" style="color:var(--blue)">Over the Shoulder Shot (OTS)</div>
+      <div class="ind-desc">Diambil dari belakang bahu satu karakter yang berinteraksi dengan karakter lain. Membangun perspektif intim dan konteks ruang dalam adegan percakapan.</div>
+    </div>
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--red)"></div>
+      <div class="ind-name" style="color:var(--red)">Dutch Angle Shot (Canted Angle)</div>
+      <div class="ind-desc">Kamera dimiringkan secara horizontal. Menciptakan rasa ketegangan, ketidakseimbangan, kebingungan, dan kondisi psikologis tidak stabil (<em>thriller/horor</em>).</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="sec-h">4. Komposisi dan Pergerakan Kamera (Camera Movements)</div>
+  <ul style="margin-bottom:14px; margin-left:20px; font-size:13.5px; color:var(--text2)">
+    <li><strong>Lead Room</strong>: Ruang kosong yang disisakan di arah depan subjek yang sedang bergerak atau memandang. Menghindari komposisi sesak dan menjaga <em>visual continuity</em>.</li>
+    <li><strong>Panning</strong>: Menggerakkan kamera secara horizontal (kiri/kanan) pada porosnya.
+      <ul style="margin-left:20px; margin-top:4px;">
+        <li><em>Tips</em>: Gunakan <em>fluid head tripod</em> agar mulus, sesuaikan kecepatan dengan subjek, awali dan akhiri dengan posisi statis. Hindari <em>swish pan</em> (panning terlalu cepat).</li>
+      </ul>
+    </li>
+    <li><strong>Tilting</strong>: Memutar kamera secara vertikal pada porosnya.
+      <ul style="margin-left:20px; margin-top:4px;">
+        <li><strong>Tilt Up</strong> (Bawah ke Atas): Menciptakan kesan megah/agung (contoh: gedung).</li>
+        <li><strong>Tilt Down</strong> (Atas ke Bawah): Memperkenalkan detail elemen bawah.</li>
+      </ul>
+    </li>
+    <li><strong>Zooming</strong>: Memperbesar/memperkecil optik.
+      <ul style="margin-left:20px; margin-top:4px;">
+        <li><strong>Zoom In</strong>: Mendekatkan fokus penonton pada detail tanpa memindahkan kamera secara fisik.</li>
+        <li><strong>Zoom Out</strong>: Memperluas <em>framing</em> untuk <em>reveal</em> dramatis/konteks lokasi.</li>
+      </ul>
+    </li>
+    <li><strong>Rack Focus</strong>: Mengalihkan fokus tajam (<em>focus pull</em>) dari satu objek ke objek lain dalam satu <em>frame</em> yang sama (narasi sinematik kuat).</li>
+  </ul>
+
+  <div class="divider"></div>
+
+  <div class="sec-h">5. Gerakan Kamera Tingkat Lanjut</div>
+  <div class="ind-grid">
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--gold)"></div>
+      <div class="ind-name" style="color:var(--gold)">Dolly Shot</div>
+      <div class="ind-desc">Kamera bergerak maju/mundur mendekati/menjauhi subjek secara fisik (biasanya menggunakan rel/dolly). Memberikan efek kedalaman <em>depth</em> yang lebih sinematik daripada <em>zoom</em>.</div>
+    </div>
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--green)"></div>
+      <div class="ind-name" style="color:var(--green)">Handheld Shot</div>
+      <div class="ind-desc">Kamera dipegang langsung dengan tangan. Memberikan gerakan yang terasa organik, <em>raw</em>, nyata, dan intens (dokumenter/film aksi).</div>
+    </div>
+    <div class="ind-card">
+      <div class="stripe" style="background:var(--blue)"></div>
+      <div class="ind-name" style="color:var(--blue)">Aerial / Drone Shot</div>
+      <div class="ind-desc">Diambil dari udara. Memberi perspektif sangat luas, dramatis, sinematik, dan cocok untuk panorama atau <em>establishing shot</em>.</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="sec-h">6. Pilar Produksi Gambar Berkualitas</div>
+  <ol style="margin-left:20px; font-size:13.5px; color:var(--text2)">
+    <li><strong>Pemahaman Teknik Shot &amp; Angle</strong>: Setiap pengambilan gambar harus didasarkan pada tujuan naratif yang tepat.</li>
+    <li><strong>Fondasi Produksi</strong>: Membutuhkan perlengkapan yang mumpuni, teknik pencahayaan yang pas, dan standar audio <em>broadcast</em>.</li>
+    <li><strong>Latihan &amp; Evaluasi</strong>: Kuasai setiap <em>frame</em> secara presisi dan konsisten. Evaluasi terus (rekam, tonton, perbaiki) demi mempertahankan tingkat profesionalitas standar <em>broadcast</em>.</li>
+  </ol>
+</div>
+
+<!-- QUIZ -->
+<div class="main-panel" id="mp-quiz">
+  <div id="qconfig" class="qconfig">
+    <div class="qconfig-title">Mulai Sesi Quiz</div>
+    <div class="qconfig-sub">Pilih topik (multi-pilih)</div>
+    <div class="cfg-grid" id="cfg-grid">
+      <button class="cfg-btn sel" data-type="broadcast_teori">Teori Dasar Broadcast</button><button class="cfg-btn sel" data-type="broadcast_dinamis">Analisis Kasus &amp; Skenario</button>
+    </div>
+    <button class="start-btn" onclick="startSession()">Mulai →</button>
+  </div>
+  <div id="qactive" style="display:none">
+    <div class="qheader">
+      <div class="qnum-display">Soal ke-<strong id="qnum">1</strong></div>
+      <div id="qpill" class="qtype-pill"></div>
+      <div class="qscore-display"><strong id="qscore">0</strong> benar</div>
+    </div>
+    <div class="qcard">
+      <div id="qscen" class="qscen" style="display:none"></div>
+      <div id="qdata" class="qdata" style="display:none"></div>
+      <div id="qtext" class="qtext"></div>
+    </div>
+    <div class="opts" id="opts"></div>
+    <div class="expbox" id="expbox"></div>
+    <div class="actrow">
+      <button class="next-btn" id="nextbtn" onclick="nextQ()">Soal Berikutnya →</button>
+      <button class="end-btn" onclick="endSession()">Akhiri Sesi</button>
+    </div>
+  </div>
+  <div id="qresults" style="display:none">
+    <div class="results-wrap">
+      <div class="res-big" id="res-pct">—</div>
+      <div class="res-sub" id="res-sub">—</div>
+      <div class="res-grid" id="res-grid"></div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:20px">
+        <button class="retry-btn" style="margin-bottom:0" onclick="restartQuiz()">Coba Lagi</button>
+        <button class="retry-btn" style="margin-bottom:0;background:var(--green)" onclick="downloadCert()">⬇ Unduh Sertifikat</button>
+      </div>
+      <div class="dtable-wrap" style="margin-bottom:14px"><table><thead><tr><th>Topik</th><th>Soal</th><th>Benar</th></tr></thead><tbody id="res-bytype"></tbody></table></div>
+      <div class="dtable-wrap"><table><thead><tr><th>#</th><th>Soal (ringkas)</th><th>Jawaban Benar</th><th>Hasil</th></tr></thead><tbody id="res-tbody"></tbody></table></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div>am i fertile? · Analisis Semen · PK Blok 2.3 · FK Unsoed · WHO 6th Ed. 2021</div>
+  <div style="margin-top:5px">crafted by alchemist4real · <a href="https://174-three.vercel.app" target="_blank" style="color:var(--text3);text-decoration:none;border-bottom:1px dashed var(--text3);transition:color .18s" onmouseover="this.style.color='var(--blue)'" onmouseout="this.style.color='var(--text3)'">check other quizzes → 174 archive ↗</a></div>
+</footer>
+</div>
+
+<script>
+// ═══ TAB ═══
+window.switchMain=function(id,b){document.querySelectorAll('.main-panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.main-tab').forEach(x=>x.classList.remove('active'));document.getElementById('mp-'+id).classList.add('active');b.classList.add('active');};
+window.switchSub=function(id,b){document.querySelectorAll('.sub-panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.sub-tab').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');b.classList.add('active');};
+window.startSession=startSession;window.nextQ=nextQ;window.endSession=endSession;window.restartQuiz=restartQuiz;
+
+// ═══ CONFIG ═══
+const activeTypes=new Set(['broadcast_teori','broadcast_dinamis']);
+document.querySelectorAll('.cfg-btn').forEach(b=>{b.addEventListener('click',()=>{const t=b.dataset.type;if(activeTypes.has(t)){if(activeTypes.size===1)return;activeTypes.delete(t);b.classList.remove('sel');}else{activeTypes.add(t);b.classList.add('sel');}});});
+
+// ═══ UTILS ═══
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const shuf=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]];}return b;};
+const KEYS='ABCDE'.split('');
+function stripHtml(s){return s.replace(/<[^>]*>/g,'');}
+// Pool-based sequential picker (no repeat until exhausted)
+function makePicker(pool){let idx=[];return function(){if(idx.length>=pool.length)idx=[];const av=pool.map((_,i)=>i).filter(i=>!idx.includes(i));const si=rnd(av);idx.push(si);return pool[si];};}
+
+// ═══════════════════════════════════════
+// BANKS
+// ═══════════════════════════════════════
+
+// 1. PERSIAPAN
+const PERSIAPAN_POOL=[
+  {q:'Berapa lama abstinensia yang direkomendasikan sebelum pengambilan semen?',opts:['Min 1 hari, maks 3 hari','Min 2 hari, maks 7 hari','Min 3 hari, maks 5 hari','Min 5 hari, maks 10 hari'],ans:'Min 2 hari, maks 7 hari',exp:'Abstinensia <strong>min 2 hari, maks 7 hari</strong>. Terlalu pendek → PR ↑. Terlalu lama → warna kekuningan, volume ↑.'},
+  {q:'Cara pengambilan sampel semen yang direkomendasikan adalah...',opts:['Koitus interuptus','Kondom khusus non-lateks','Masturbasi','Aspirasi epididimis'],ans:'Masturbasi',exp:'<strong>Masturbasi</strong> adalah cara yang direkomendasikan. Koitus interuptus dan kondom tidak — risiko kehilangan fraksi pertama (konsentrasi sperma tertinggi).'},
+  {q:'Batas maksimal waktu pengiriman sampel semen ke laboratorium sejak dikeluarkan adalah...',opts:['15 menit','30 menit','50 menit','60 menit'],ans:'50 menit',exp:'Batas pengiriman = <strong>50 menit</strong>. Berbeda dari batas pemeriksaan = <strong>60 menit</strong>. Idealnya dikirim dalam 30 menit.'},
+  {q:'Suhu pengiriman dan penyimpanan sampel semen yang benar adalah...',opts:['4–10°C','20–37°C','37–40°C','Suhu beku −20°C'],ans:'20–37°C',exp:'Sampel harus dijaga pada suhu <strong>20–37°C</strong>. Terlalu dingin atau panas merusak spermatozoa.'},
+  {q:'Batas waktu pemeriksaan semen sejak ejakulasi adalah...',opts:['15 menit','30 menit','60 menit','90 menit'],ans:'60 menit',exp:'Pemeriksaan harus dalam <strong>60 menit</strong> setelah ejakulasi (idealnya 30 menit).'},
+  {q:'Yang WAJIB dicantumkan dalam labeling sampel semen adalah...',opts:['Golongan darah penderita','Lamanya abstinensia','Suhu ruangan saat pengambilan','Hasil pemeriksaan fisik sebelumnya'],ans:'Lamanya abstinensia',exp:'Labeling wajib meliputi nama, tgl lahir, no. identitas, <strong>lama abstinensia</strong>, tgl & jam ejakulasi, volume ejakulat.'},
+  {q:'Sampel semen harus ditampung dalam...',opts:['Kantong plastik ziplock','Botol kaca bermulut lebar atau plastik non-toksik','Kondom lateks biasa','Tabung EDTA standar'],ans:'Botol kaca bermulut lebar atau plastik non-toksik',exp:'Wadah: <strong>botol/gelas kaca bermulut lebar atau plastik non-toksik terhadap spermatozoa</strong>. Kondom lateks mengandung spermisida.'},
+  {q:'Apa yang wajib dilaporkan penderita terkait spesimen?',opts:['Tidak perlu melaporkan apapun','Dilaporkan jika ada yang tumpah/terbuang','Hanya jika volume &lt;1 mL','Hanya jika warna tidak normal'],ans:'Dilaporkan jika ada yang tumpah/terbuang',exp:'Penderita <strong>wajib melaporkan jika ada yang tumpah/terbuang</strong> — fraksi pertama ejakulat mengandung konsentrasi sperma tertinggi.'},
+  {q:'Abstinensia terlalu lama menyebabkan...',opts:['Warna semen kemerahan','Volume semen kurang','Warna semen sedikit kekuningan','pH semen menurun'],ans:'Warna semen sedikit kekuningan',exp:'Abstinensia terlalu lama → <strong>warna sedikit kekuningan</strong> dan volume ↑ (hipervolemia).'},
+  {q:'Jika pemeriksaan kultur sperma dilakukan, penampung harus...',opts:['Dilapisi spermisida','Steril','Mengandung formaldehid','Didinginkan sebelumnya'],ans:'Steril',exp:'Untuk <strong>kultur sperma</strong>, penampung harus <strong>steril</strong> agar tidak ada kontaminasi bakteri eksogen.'},
+];
+const pickPersiapan=makePicker(PERSIAPAN_POOL);
+
+// 2. MAKRO VOLUME & WARNA
+// Algoritmis: volume
+function genVolumeQ(){
+  const zona=rnd(['rendah','normal','tinggi']);
+  let vol;
+  if(zona==='rendah') vol=+(0.3+Math.random()*1.0).toFixed(1);
+  else if(zona==='normal') vol=+(1.5+Math.random()*3.0).toFixed(1);
+  else vol=+(5.0+Math.random()*4.0).toFixed(1);
+  const ans=zona==='rendah'?'Hipovolemia':zona==='normal'?'Normal':'Hipervolemia';
+  const exp={
+    Hipovolemia:`Volume <strong>${vol} mL &lt; 1,4 mL = Hipovolemia</strong>. Penyebab: spesimen tidak tepat, abstinensia pendek, obstruksi ductus ejakulatorius.`,
+    Normal:`Volume <strong>${vol} mL ≥ 1,4 mL = Normal</strong>.`,
+    Hipervolemia:`Volume <strong>${vol} mL — ke arah Hipervolemia</strong> (jauh di atas normal). Penyebab: abstinensia lama, vesikulitis seminalis, prostatitis.`,
+  };
+  return{type:'makro_volume',typeName:'Volume Semen',tpColor:'var(--blue)',tpBg:'rgba(26,79,170,.09)',
+    scenario:null,rawData:`<div>Volume semen: <span class="dv">${vol} mL</span></div>`,
+    q:`Volume semen terukur <strong>${vol} mL</strong>. Interpretasinya adalah...`,
+    opts:shuf(['Hipovolemia','Normal','Hipervolemia','Tidak dapat dinilai']),ans,exp:exp[ans]};
+}
+
+// Statis: warna & bau
+const WARNA_POOL=[
+  {q:'Warna semen normal adalah...',opts:['Jernih transparan','Kuning pekat','Putih kelabu homogen seperti jeli','Merah kecoklatan'],ans:'Putih kelabu homogen seperti jeli',exp:'Semen normal: <strong>putih kelabu homogen, butiran seperti jeli</strong>.'},
+  {q:'Warna semen jernih/transparan mengindikasikan...',opts:['Semen normal','Jumlah sperma sangat sedikit','Infeksi saluran genital','Abstinensia terlalu lama'],ans:'Jumlah sperma sangat sedikit',exp:'Warna jernih → <strong>jumlah sperma sangat sedikit</strong>. Warna putih berasal dari kepadatan spermatozoa.'},
+  {q:'Semen berwarna sedikit kekuningan menandakan...',opts:['Infeksi','Abstinensia terlalu lama','Hematospermia','Azoospermia'],ans:'Abstinensia terlalu lama',exp:'Kekuningan ringan → <strong>abstinensia terlalu lama</strong>. Kuning pekat beda penyebab (ikterus/vitamin).'},
+  {q:'Semen berwarna kuning pekat pada pasien dengan sklera ikterik. Kemungkinan penyebab...',opts:['Abses prostat','Penderita ikterus atau konsumsi vitamin','Abstinensia terlalu lama','Hematospermia'],ans:'Penderita ikterus atau konsumsi vitamin',exp:'Kuning pekat → <strong>penderita ikterus atau konsumsi vitamin</strong> (terutama riboflavin/B2).'},
+  {q:'Semen berwarna merah kecoklatan menandakan...',opts:['Azoospermia','Adanya sel darah merah (hematospermia)','Infeksi bakteri','Abstinensia sangat pendek'],ans:'Adanya sel darah merah (hematospermia)',exp:'Merah kecoklatan → <strong>sel darah merah (hematospermia)</strong>. Perlu evaluasi sumber perdarahan.'},
+  {q:'Bau normal semen adalah...',opts:['Tidak berbau','Bau amis seperti ikan','Bau khas seperti bunga akasia','Bau belerang'],ans:'Bau khas seperti bunga akasia',exp:'Semen normal: <strong>bau khas seperti bunga akasia</strong>. Bau busuk → infeksi.'},
+];
+const pickWarna=makePicker(WARNA_POOL);
+function makeMakroVolumeQ(){
+  return Math.random()<0.5?genVolumeQ():{
+    ...pickWarna(),type:'makro_volume',typeName:'Warna & Bau Semen',
+    tpColor:'var(--blue)',tpBg:'rgba(26,79,170,.09)',scenario:null,rawData:null
+  };
+}
+
+// 3. LIKUEFAKSI & VISKOSITAS
+// Algoritmis: likuefaksi
+function genLikuefaksiQ(){
+  const menit=rnd([5,8,10,12,15,18,20,22,25,28,30,35,40,45,50,55,60,70,80]);
+  const normal=menit<=30;
+  const ans=normal?'Normal (mencair ≤ 30 menit)':'Abnormal (perlu tindak lanjut)';
+  const exp=normal
+    ?`Likuefaksi <strong>${menit} menit ≤ 30 menit = Normal</strong>.`
+    :`Likuefaksi <strong>${menit} menit &gt; 30 menit = Abnormal</strong>, harus dilaporkan. Tindak lanjut: letakkan di 37°C 30 mnt; jika &gt;60 mnt total → tambah NaCl fisiologis.`;
+  return{type:'makro_likuefaksi',typeName:'Likuefaksi Semen',tpColor:'var(--purp)',tpBg:'rgba(68,51,160,.09)',
+    scenario:null,rawData:`<div>Waktu likuefaksi: <span class="dv">${menit} menit</span><span class="da">(suhu kamar)</span></div>`,
+    q:`Semen mencair dalam <strong>${menit} menit</strong> pada suhu kamar. Interpretasinya...`,
+    opts:shuf(['Normal (mencair ≤ 30 menit)','Abnormal (perlu tindak lanjut)','Azoospermia','Hiperviskositas']),ans,exp};
+}
+// Algoritmis: viskositas
+function genViskositasQ(){
+  const cm=+(0.3+Math.random()*8.5).toFixed(1);
+  let ans;
+  if(cm<2) ans='Normal';
+  else if(cm<=4) ans='Hiperviskositas ringan';
+  else if(cm<=6) ans='Hiperviskositas sedang/moderat';
+  else ans='Hiperviskositas berat';
+  const expMap={
+    'Normal':`Benang <strong>${cm} cm &lt; 2 cm = Normal</strong>.`,
+    'Hiperviskositas ringan':`Benang <strong>${cm} cm (2–4 cm) = Hiperviskositas ringan</strong>.`,
+    'Hiperviskositas sedang/moderat':`Benang <strong>${cm} cm (4–6 cm) = Hiperviskositas sedang/moderat</strong>.`,
+    'Hiperviskositas berat':`Benang <strong>${cm} cm (&gt;6 cm) = Hiperviskositas berat</strong>.`,
+  };
+  return{type:'makro_likuefaksi',typeName:'Viskositas Semen',tpColor:'var(--purp)',tpBg:'rgba(68,51,160,.09)',
+    scenario:null,rawData:`<div>Panjang benang: <span class="dv">${cm} cm</span></div>`,
+    q:`Panjang benang semen dari pipet = <strong>${cm} cm</strong>. Klasifikasinya adalah...`,
+    opts:shuf(['Normal','Hiperviskositas ringan','Hiperviskositas sedang/moderat','Hiperviskositas berat']),ans,exp:expMap[ans]};
+}
+// Statis: konsep likuefaksi
+const LIK_KONSEP=[
+  {q:'Tindakan jika semen belum mencair dalam 30 menit adalah...',opts:['Langsung tambah NaCl fisiologis','Letakkan di 37°C dan biarkan 30 menit','Buang dan minta sampel baru','Tambah aquadest lalu aduk'],ans:'Letakkan di 37°C dan biarkan 30 menit',exp:'Belum cair 30 mnt → <strong>37°C, 30 menit</strong>. Belum cair total 60 mnt → baru tambah NaCl fisiologis.'},
+  {q:'Tindakan jika semen masih belum mencair setelah total 60 menit adalah...',opts:['Minta sampel baru','Tambahkan NaCl fisiologis','Naikkan suhu ke 42°C','Catat sebagai azoospermia'],ans:'Tambahkan NaCl fisiologis',exp:'Total 60 mnt belum cair → <strong>tambahkan NaCl fisiologis</strong> untuk keperluan pemeriksaan selanjutnya.'},
+  {q:'Likuefaksi WAJIB dilaporkan jika...',opts:['&lt;15 menit','&gt;30 menit','&gt;60 menit','&gt;15 menit'],ans:'&gt;30 menit',exp:'Dilaporkan jika likuefaksi <strong>&gt;30 menit</strong>. Ini batas normal atas.'},
+  {q:'Cara pemeriksaan viskositas semen adalah...',opts:['Viskometer standar laboratorium','Membiarkan menetes dari pipet plastik dan amati benang','Menimbang berat semen','Menghitung waktu alir dalam pipet kapiler'],ans:'Membiarkan menetes dari pipet plastik dan amati benang',exp:'Viskositas dinilai dari <strong>panjang benang saat menetes dari pipet plastik non-toksik</strong>.'},
+];
+const pickLikKonsep=makePicker(LIK_KONSEP);
+function makeLikuefaksiQ(){
+  const r=Math.random();
+  if(r<0.4) return genLikuefaksiQ();
+  if(r<0.7) return genViskositasQ();
+  return{...pickLikKonsep(),type:'makro_likuefaksi',typeName:'Likuefaksi & Viskositas',tpColor:'var(--purp)',tpBg:'rgba(68,51,160,.09)',scenario:null,rawData:null};
+}
+
+// 4. pH SEMEN
+// Algoritmis
+function genPHQ(){
+  const ph=+(5.8+Math.random()*3.6).toFixed(1);
+  let ans,exp;
+  if(ph<7){ans='Azoospermia';exp=`pH <strong>${ph} &lt; 7 → mengarah azoospermia</strong>. Kemungkinan disgenesis vas deferens, vesika seminalis, atau epididimis.`;}
+  else if(ph<7.2){ans='Di bawah normal';exp=`pH <strong>${ph} &lt; 7,2 = di bawah batas bawah normal</strong> (7,2–7,8).`;}
+  else if(ph<=7.8){ans='Normal';exp=`pH <strong>${ph} = Normal</strong> (rentang 7,2–7,8).`;}
+  else{ans='Infeksi / Disfungsi glandula asesori';exp=`pH <strong>${ph} &gt; 7,8 → infeksi</strong> atau disfungsi glandula asesori.`;}
+  return{type:'makro_ph',typeName:'pH Semen',tpColor:'var(--red)',tpBg:'rgba(176,48,48,.09)',
+    scenario:null,rawData:`<div>pH semen: <span class="dv">${ph}</span></div>`,
+    q:`pH semen terukur <strong>${ph}</strong>. Interpretasinya adalah...`,
+    opts:shuf(['Normal','Azoospermia','Infeksi / Disfungsi glandula asesori','Di bawah normal']),ans,exp};
+}
+// Statis
+const PH_KONSEP=[
+  {q:'pH semen normal adalah...',opts:['6,5–7,2','7,0–7,5','7,2–7,8','7,5–8,0'],ans:'7,2–7,8',exp:'pH normal: <strong>7,2–7,8</strong>. &lt;7 → azoospermia; &gt;7,8 → infeksi.'},
+  {q:'pH semen &lt; 7 menandakan...',opts:['Normozoospermia','Infeksi berat','Azoospermia','Oligozoospermia'],ans:'Azoospermia',exp:'pH &lt;7 → <strong>azoospermia</strong>. Kemungkinan disgenesis vas deferens, vesika seminalis, epididimis.'},
+  {q:'pH semen &gt; 7,8 mengindikasikan...',opts:['Volume terlalu sedikit','Infeksi atau disfungsi glandula asesori','Abstinensia pendek','Nekrozoospermia'],ans:'Infeksi atau disfungsi glandula asesori',exp:'pH &gt;7,8 → <strong>infeksi</strong> atau disfungsi glandula asesori.'},
+  {q:'Pemeriksaan pH semen dilakukan...',opts:['Segera setelah sampel diterima','Setelah sampel mengalami likuefaksi (~30 menit)','Setelah 60 menit dari ejakulasi','Bersamaan dengan pengukuran volume'],ans:'Setelah sampel mengalami likuefaksi (~30 menit)',exp:'pH diperiksa <strong>setelah likuefaksi (~30 menit)</strong>, dibaca dalam &lt;30 detik.'},
+  {q:'Cara membaca hasil pH semen adalah...',opts:['Setelah 5 menit agar warna stabil','Dalam &lt;30 detik dibandingkan kertas standar','Dengan spektrofotometer','Setelah inkubasi 37°C'],ans:'Dalam &lt;30 detik dibandingkan kertas standar',exp:'Hasil pH dibaca <strong>dalam &lt;30 detik</strong> dengan membandingkan terhadap kertas standar warna.'},
+];
+const pickPHKonsep=makePicker(PH_KONSEP);
+function makePHQ(){
+  return Math.random()<0.5?genPHQ():{...pickPHKonsep(),type:'makro_ph',typeName:'pH Semen',tpColor:'var(--red)',tpBg:'rgba(176,48,48,.09)',scenario:null,rawData:null};
+}
+
+// 5. MOTILITAS — PR, NP, IM dipisah, disajikan terpisah
+// Generate distribusi PR / NP / IM yang realistis (total=100%)
+function genMotDist(){
+  // PR: 10–60%, NP: 1–20%, IM: sisanya
+  const pr=Math.round(10+Math.random()*50);
+  const np=Math.round(1+Math.random()*18);
+  const im=100-pr-np;
+  if(im<0)return genMotDist();
+  return{pr,np,im};
+}
+// Soal tipe 1: apakah PR+NP normal?
+function genMotNormalQ(){
+  const d=genMotDist();
+  const total=d.pr+d.np;
+  const prNormal=d.pr>=32;
+  const totalNormal=total>=42;
+  const normal=prNormal&&totalNormal;
+  const ans=normal?'Motilitas Normal':'Motilitas Abnormal';
+  let exp=`PR ${d.pr}% + NP ${d.np}% = total <strong>${total}%</strong>. `;
+  exp+=total>=42?`Total ≥42% ✓. `:`Total &lt;42% ✗. `;
+  exp+=d.pr>=32?`PR ≥32% ✓. `:`PR &lt;32% ✗. `;
+  exp+=`→ <strong>${ans}</strong>.`;
+  return{type:'motilitas',typeName:'Motilitas — Interpretasi',tpColor:'var(--gold)',tpBg:'rgba(122,96,16,.09)',
+    scenario:'Analisis semen rutin',
+    rawData:`<div>PR (Progresif): <span class="dv">${d.pr}%</span></div><div>NP (Nonprogresif): <span class="dv">${d.np}%</span></div><div>IM (Tidak motil): <span class="dv">${d.im}%</span></div>`,
+    q:`Berdasarkan nilai motilitas di atas, interpretasinya adalah...`,
+    opts:shuf(['Motilitas Normal','Motilitas Abnormal','Tidak dapat ditentukan','Normozoospermia']),ans,exp};
+}
+// Soal tipe 2: identifikasi kategori gerakan dari deskripsi
+const MOT_KATEGORI=[
+  {q:'Sperma bergerak aktif, lurus, kecepatan <strong>≥ 25 µm/detik</strong>. Kategorinya adalah...',opts:['PR Cepat','PR Lambat','Nonprogresif (NP)','Tidak Motil (IM)'],ans:'PR Cepat',exp:'<strong>PR Cepat</strong> = aktif, lurus/lingkaran besar, kecepatan <strong>≥25 µm/detik</strong>.'},
+  {q:'Sperma bergerak aktif dalam lingkaran besar, kecepatan <strong>5–25 µm/detik</strong>. Kategorinya adalah...',opts:['PR Cepat','PR Lambat','Nonprogresif (NP)','Tidak Motil (IM)'],ans:'PR Lambat',exp:'<strong>PR Lambat</strong> = aktif, lurus/lingkaran besar, kecepatan <strong>5–25 µm/detik</strong>.'},
+  {q:'Sperma bergerak dalam lingkaran kecil, gerakan di tempat, kecepatan <strong>&lt; 5 µm/detik</strong>. Kategorinya adalah...',opts:['PR Cepat','PR Lambat','Nonprogresif (NP)','Tidak Motil (IM)'],ans:'Nonprogresif (NP)',exp:'<strong>NP (Nonprogresif)</strong> = gerak lingkaran kecil, di tempat, gerakan ekor, kecepatan <strong>&lt;5 µm/detik</strong>.'},
+  {q:'Sperma tidak menunjukkan pergerakan apapun. Kategorinya adalah...',opts:['PR Cepat','PR Lambat','Nonprogresif (NP)','Tidak Motil (IM)'],ans:'Tidak Motil (IM)',exp:'<strong>IM (Immotile)</strong> = tidak ada pergerakan sama sekali.'},
+  {q:'Kecepatan gerak sperma normal (adekuat) adalah...',opts:['&lt;5 µm/detik','5–25 µm/detik','≥25 µm/detik','50–100 µm/detik'],ans:'≥25 µm/detik',exp:'Kecepatan adekuat = <strong>≥25 µm/detik</strong> = 5× panjang kepala = ½× panjang ekor.'},
+  {q:'Nilai normal PR solo (progresif saja) adalah...',opts:['≥20%','≥25%','≥32%','≥42%'],ans:'≥32%',exp:'PR solo normal = <strong>≥32%</strong>. PR+NP gabungan normal = ≥42%.'},
+  {q:'Kapan pemeriksaan vitalitas dilakukan?',opts:['Selalu dilakukan rutin','Hanya jika motilitas &lt;40%','Hanya jika morfologi &lt;4%','Hanya jika pH &lt;7'],ans:'Hanya jika motilitas &lt;40%',exp:'Vitalitas dilakukan <strong>hanya jika motilitas &lt;40%</strong> untuk memvalidasi apakah sperma yang tidak bergerak masih hidup.'},
+  {q:'Pemeriksaan motilitas dilakukan pada berapa sperma, di berapa lapang pandang?',opts:['100 sperma, 2–3 LP','200 sperma, 4–6 LP','300 sperma, 5–7 LP','400 sperma, 8–10 LP'],ans:'200 sperma, 4–6 LP',exp:'Motilitas diperiksa pada <strong>200 sperma dalam 4–6 lapang pandang</strong>, suhu 18–24°C.'},
+  {q:'Suhu kamar untuk pemeriksaan motilitas sperma adalah...',opts:['15–20°C','18–24°C','25–30°C','32–37°C'],ans:'18–24°C',exp:'Suhu kamar untuk motilitas: <strong>18–24°C</strong>.'},
+];
+// Soal tipe 3: tentukan apakah ada astenozoospermia dari data lengkap PR/NP/IM + jumlah
+function genMotKlasifQ(){
+  const jml=rnd([10,14,16,18,20,22,25,28,30]);
+  const d=genMotDist();
+  const total=d.pr+d.np;
+  const abnormalMot=total<42||d.pr<32;
+  const abnormalJml=jml<16;
+  let ans,exp;
+  if(!abnormalJml&&abnormalMot){ans='Astenozoospermia';exp=`Jumlah ${jml} ≥16 ✓ | Motilitas ${total}% &lt;42% atau PR ${d.pr}% &lt;32% ✗ → <strong>Astenozoospermia</strong>.`;}
+  else if(!abnormalJml&&!abnormalMot){ans='Normozoospermia (perlu cek morfologi)';exp=`Jumlah ${jml} ≥16 ✓ | Motilitas ${total}% ≥42% ✓ | PR ${d.pr}% ≥32% ✓ → Motilitas dan jumlah normal. Masih perlu cek morfologi.`;}
+  else if(abnormalJml&&!abnormalMot){ans='Oligozoospermia (motilitas normal)';exp=`Jumlah ${jml} &lt;16 ✗ | Motilitas ${total}% ≥42% ✓ | PR ${d.pr}% ≥32% ✓ → Jumlah kurang, motilitas normal.`;}
+  else{ans='Oligoastenozoospermia';exp=`Jumlah ${jml} &lt;16 ✗ | Motilitas ${total}% &lt;42% ✗ → <strong>Oligoastenozoospermia</strong>.`;}
+  return{type:'motilitas',typeName:'Motilitas — Klasifikasi',tpColor:'var(--gold)',tpBg:'rgba(122,96,16,.09)',
+    scenario:'Analisis semen, morfologi belum diperiksa',
+    rawData:`<div>Jumlah: <span class="dv">${jml} jt/mL</span></div><div>PR: <span class="dv">${d.pr}%</span></div><div>NP: <span class="dv">${d.np}%</span></div><div>IM: <span class="dv">${d.im}%</span></div>`,
+    q:`Berdasarkan jumlah dan motilitas (morfologi belum dinilai), yang paling sesuai adalah...`,
+    opts:shuf([ans,'Astenozoospermia','Oligozoospermia (motilitas normal)','Normozoospermia (perlu cek morfologi)','Oligoastenozoospermia'].filter((v,i,a)=>a.indexOf(v)===i).slice(0,4)),ans,exp};
+}
+const pickMotKategori=makePicker(MOT_KATEGORI);
+function makeMotilitasQ(){
+  const r=Math.random();
+  if(r<0.35) return genMotNormalQ();
+  if(r<0.6) return genMotKlasifQ();
+  return{...pickMotKategori(),type:'motilitas',typeName:'Motilitas Sperma',tpColor:'var(--gold)',tpBg:'rgba(122,96,16,.09)',scenario:null,rawData:null};
+}
+
+// 6. VITALITAS
+// Algoritmis: % hidup/mati
+function genVitalitasQ(){
+  const mati=Math.round(15+Math.random()*70);
+  const hidup=100-mati;
+  const normal=hidup>54;
+  const ans=normal?'Vitalitas Normal':'Vitalitas Abnormal';
+  const exp=normal
+    ?`Sperma hidup <strong>${hidup}% &gt; 54% = Vitalitas Normal</strong>. Sel mati ${mati}%.`
+    :`Sperma hidup <strong>${hidup}% ≤ 54% = Vitalitas Abnormal</strong>. Sel mati ${mati}%. Ke arah nekrozoospermia.`;
+  return{type:'vitalitas',typeName:'Vitalitas Sperma',tpColor:'var(--teal)',tpBg:'rgba(19,107,168,.09)',
+    scenario:'Motilitas &lt;40%, dilanjutkan pemeriksaan vitalitas',
+    rawData:`<div>Sperma mati (terwarnai eosin): <span class="dv">${mati}%</span></div><div>Sperma hidup (tidak terwarnai): <span class="dv">${hidup}%</span></div>`,
+    q:`Persentase sperma hidup <strong>${hidup}%</strong>. Interpretasi vitalitas adalah...`,
+    opts:shuf(['Vitalitas Normal','Vitalitas Abnormal','Normal (motilitas cukup)','Nekrozoospermia pasti']),ans,exp};
+}
+const VIT_KONSEP=[
+  {q:'Reagen untuk pemeriksaan vitalitas sperma adalah...',opts:['Giemsa','Methylene blue','Eosin 0,5%','Crystal violet'],ans:'Eosin 0,5%',exp:'<strong>Eosin 0,5%</strong>. Sperma mati menyerap eosin (merah), sperma hidup tidak terwarnai.'},
+  {q:'Sperma yang terwarnai eosin menandakan...',opts:['Sperma hidup','Sperma mati','Sperma nonprogresif','Morfologi normal'],ans:'Sperma mati',exp:'Terwarnai eosin = <strong>sperma mati</strong>. Membran rusak → eosin masuk. Hidup = tidak terwarnai.'},
+  {q:'Nilai normal vitalitas sperma adalah...',opts:['&gt;42% hidup','&gt;54% hidup','&gt;60% hidup','≥32% hidup'],ans:'&gt;54% hidup',exp:'Normal: <strong>&gt;54% sperma hidup</strong>. Pretest menyebut &lt;58% sel mati.'},
+  {q:'Setelah mencampur eosin + sampel, berapa lama dibiarkan sebelum apusan?',opts:['5 detik','15 detik','30 detik','60 detik'],ans:'30 detik',exp:'Dibiarkan <strong>30 detik</strong> sebelum dibuat apusan.'},
+  {q:'Tujuan pemeriksaan vitalitas adalah...',opts:['Menggantikan pemeriksaan motilitas','Memvalidasi/mengecek pemeriksaan motilitas','Menilai morfologi','Menilai jumlah total sperma'],ans:'Memvalidasi/mengecek pemeriksaan motilitas',exp:'Vitalitas digunakan untuk <strong>memvalidasi pemeriksaan motilitas</strong>.'},
+];
+const pickVitKonsep=makePicker(VIT_KONSEP);
+function makeVitalitasQ(){
+  return Math.random()<0.55?genVitalitasQ():{...pickVitKonsep(),type:'vitalitas',typeName:'Vitalitas Sperma',tpColor:'var(--teal)',tpBg:'rgba(19,107,168,.09)',scenario:null,rawData:null};
+}
+
+// 7. MORFOLOGI & LEUKOSIT
+// Algoritmis: % morfologi normal
+function genMorfoQ(){
+  const persen=Math.round(1+Math.random()*18);
+  const normal=persen>=4;
+  const ans=normal?'Normal (≥4%)':'Teratozoospermia (&lt;4%)';
+  const exp=normal
+    ?`Morfologi <strong>${persen}% ≥ 4% = Normal</strong>.`
+    :`Morfologi <strong>${persen}% &lt; 4% = Abnormal → Teratozoospermia</strong> (jika jumlah ≥16 dan motilitas ≥42%).`;
+  return{type:'morfologi',typeName:'Morfologi Sperma',tpColor:'var(--green)',tpBg:'rgba(31,122,74,.09)',
+    scenario:'Pemeriksaan morfologi 200 sperma',
+    rawData:`<div>Morfologi normal: <span class="dv">${persen}%</span><span class="da">dari 200 sperma</span></div>`,
+    q:`Persentase morfologi normal sperma = <strong>${persen}%</strong>. Interpretasinya adalah...`,
+    opts:shuf(['Normal (≥4%)','Teratozoospermia (&lt;4%)','Oligozoospermia','Astenozoospermia']),ans,exp};
+}
+// Algoritmis: lekositospermia (C = N*S/100)
+function genLeukositQ(){
+  const jml=rnd([5,8,10,12,15,16,18,20,22,25,28,30]);
+  const nPer100=rnd([1,2,3,4,5,6,7,8,9,10,12,15,20]);
+  const c=+(nPer100*jml/100).toFixed(2);
+  const ans=c>1?'Lekositospermia':'Normal';
+  const exp=`C = (N × S)/100 = (${nPer100} × ${jml})/100 = <strong>${c} jt/mL</strong>. ${c>1?'&gt;1 jt/mL → <strong>Lekositospermia</strong>.':'≤1 jt/mL → Normal.'}`;
+  // Distractor options
+  const w1=+((nPer100*jml/100)*2).toFixed(2);
+  const w2=+((nPer100*jml/100)/2).toFixed(2);
+  return{type:'morfologi',typeName:'Elemen Bukan Sperma',tpColor:'var(--green)',tpBg:'rgba(31,122,74,.09)',
+    scenario:'Hitung elemen bukan sperma',
+    rawData:`<div>N (sel per 100 sperma): <span class="dv">${nPer100}</span></div><div>S (jumlah sperma): <span class="dv">${jml} jt/mL</span></div>`,
+    q:`Berapa konsentrasi leukosit dan apakah terjadi lekositospermia?`,
+    opts:shuf([`${c} jt/mL — ${ans}`,`${w1} jt/mL — ${w1>1?'Lekositospermia':'Normal'}`,`${w2} jt/mL — ${w2>1?'Lekositospermia':'Normal'}`,`${nPer100} jt/mL — ${nPer100>1?'Lekositospermia':'Normal'}`]),
+    ans:`${c} jt/mL — ${ans}`,exp};
+}
+const MORFO_KONSEP=[
+  {q:'Nilai normal morfologi sperma adalah...',opts:['≥1%','≥4%','≥14%','≥30%'],ans:'≥4%',exp:'Morfologi normal: <strong>≥4%</strong> dari 200 sperma.'},
+  {q:'Pemeriksaan morfologi menghitung berapa sperma?',opts:['50','100','200','400'],ans:'200',exp:'Morfologi diperiksa pada <strong>200 sperma</strong> (kepala, leher, ekor).'},
+  {q:'Reagen fiksasi untuk morfologi sperma adalah...',opts:['Formalin 10%','Metanol 96% selama 15 menit','Etanol 70% selama 10 menit','NaCl fisiologis'],ans:'Metanol 96% selama 15 menit',exp:'Fiksasi: <strong>metanol 96% selama 15 menit</strong>. Lalu cat May Grunwald Giemsa 30 menit.'},
+  {q:'Cat untuk morfologi sperma adalah...',opts:['Eosin-Nigrosin','Giemsa saja','May Grunwald Giemsa','Wright stain'],ans:'May Grunwald Giemsa',exp:'Cat morfologi: <strong>May Grunwald Giemsa</strong> selama 30 menit.'},
+  {q:'Lekositospermia didefinisikan sebagai leukosit...',opts:['&gt;0,5 jt/mL','&gt;1 jt/mL','&gt;5 jt/mL','&gt;10 jt/mL'],ans:'&gt;1 jt/mL',exp:'<strong>Lekositospermia</strong> = leukosit <strong>&gt;1 juta/mL</strong> semen.'},
+  {q:'Elemen bukan sperma dihitung per berapa sperma?',opts:['50','100','200','1 lapang pandang'],ans:'100',exp:'Dihitung per <strong>100 sperma</strong>. Konversi: C = (N × S)/100.'},
+  {q:'Formula konsentrasi leukosit dalam semen adalah...',opts:['C = N + S','C = (N × S) / 100','C = N / S × 100','C = N × S × 10'],ans:'C = (N × S) / 100',exp:'<strong>C = (N × S) / 100</strong>. C = konsentrasi (jt/mL), N = sel per 100 sperma, S = jumlah sperma (jt/mL).'},
+];
+const pickMorfoKonsep=makePicker(MORFO_KONSEP);
+function makeMorfoQ(){
+  const r=Math.random();
+  if(r<0.3) return genMorfoQ();
+  if(r<0.55) return genLeukositQ();
+  return{...pickMorfoKonsep(),type:'morfologi',typeName:'Morfologi & Leukosit',tpColor:'var(--green)',tpBg:'rgba(31,122,74,.09)',scenario:null,rawData:null};
+}
+
+// 8. HITUNG JUMLAH SPERMA
+const FK_TABLE={'1:2':{5:20,10:40,25:100},'1:5':{5:8,10:16,25:40},'1:10':{5:4,10:8,25:20},'1:20':{5:2,10:4,25:10},'1:50':{5:0.8,10:1.6,25:4}};
+const DILUSI=['1:2','1:5','1:10','1:20','1:50'];
+const KOTAK=[5,10,25];
+// Algoritmis tipe A: hitung jumlah sperma dari rata-rata
+function genHitungQ(){
+  const d=rnd(DILUSI),k=rnd(KOTAK),fk=FK_TABLE[d][k];
+  const rata=Math.round(4+Math.random()*96);
+  const hasil=+(rata/fk).toFixed(2);
+  const w1=+(rata/fk*2).toFixed(2);
+  const w2=+(rata/fk/2).toFixed(2);
+  const w3=+(rata*fk).toFixed(2);
+  const ans=`${hasil} jt/mL`;
+  return{type:'hitung',typeName:'Hitung Jumlah Sperma',tpColor:'var(--purp)',tpBg:'rgba(68,51,160,.09)',
+    scenario:'Bilik hitung Neubauer Improved',
+    rawData:`<div>Rata-rata sperma: <span class="dv">${rata}</span></div><div>Kotak dihitung: <span class="dv">${k} kotak sedang</span></div><div>Pengenceran: <span class="dv">${d}</span></div><div>Faktor koreksi: <span class="dv">${fk}</span></div>`,
+    q:`Hitung jumlah sperma! Rata-rata <strong>${rata}</strong>, <strong>${k} kotak</strong>, pengenceran <strong>${d}</strong> (FK=${fk}). Hasilnya adalah...`,
+    opts:shuf([ans,`${w1} jt/mL`,`${w2} jt/mL`,`${w3} jt/mL`].filter((v,i,a)=>a.indexOf(v)===i).slice(0,4)),ans,
+    exp:`Jumlah = ${rata} ÷ ${fk} × 10⁶ = <strong>${hasil} jt/mL</strong>. ${hasil>=16?'Normal (≥16 jt/mL).':'Oligozoospermia (&lt;16 jt/mL).'}`};
+}
+// Algoritmis tipe B: identifikasi faktor koreksi
+function genFKQ(){
+  const d=rnd(DILUSI),k=rnd(KOTAK),fk=FK_TABLE[d][k];
+  const ans=String(fk);
+  const lain=DILUSI.filter(x=>x!==d).slice(0,3).map(x=>String(FK_TABLE[x][k]));
+  return{type:'hitung',typeName:'Faktor Koreksi NI',tpColor:'var(--purp)',tpBg:'rgba(68,51,160,.09)',
+    scenario:'Tabel Faktor Koreksi Neubauer Improved',
+    rawData:`<div>Pengenceran: <span class="dv">${d}</span></div><div>Jumlah kotak: <span class="dv">${k} kotak sedang</span></div>`,
+    q:`Pengenceran <strong>${d}</strong>, dihitung dalam <strong>${k} kotak sedang</strong>. Faktor koreksinya adalah...`,
+    opts:shuf([ans,...lain].filter((v,i,a)=>a.indexOf(v)===i).slice(0,4)),ans,
+    exp:`Dilution <strong>${d}</strong> + <strong>${k} kotak</strong> → FK = <strong>${fk}</strong>.`};
+}
+// Algoritmis tipe C: berapa kotak yang harus dihitung?
+function genKotakQ(){
+  const perKotak=rnd([2,5,7,9,11,15,20,25,30,35,41,50,60,75,90]);
+  let ans;
+  if(perKotak<10) ans='25 kotak';
+  else if(perKotak<=40) ans='10 kotak';
+  else ans='5 kotak';
+  return{type:'hitung',typeName:'Jumlah Kotak NI',tpColor:'var(--purp)',tpBg:'rgba(68,51,160,.09)',
+    scenario:'Bilik hitung NI',
+    rawData:`<div>Sperma per kotak sedang: <span class="dv">${perKotak}</span></div>`,
+    q:`Ditemukan rata-rata <strong>${perKotak} sperma per kotak sedang</strong>. Berapa kotak sedang yang harus dihitung?`,
+    opts:shuf(['5 kotak','10 kotak','25 kotak','Semua 400 kotak kecil']),ans,
+    exp:`${perKotak<10?'&lt;10':perKotak<=40?'10–40':'&gt;40'} per kotak sedang → ${ans}. (&lt;10=25 kotak; 10–40=10 kotak; &gt;40=5 kotak).`};
+}
+const HITUNG_KONSEP=[
+  {q:'Pada prosedur standar, hisap semen sampai angka... lalu hisap NaCl sampai angka...',opts:['0,5 lalu 11 → 1:20','1,0 lalu 11 → 1:10','0,5 lalu 10 → 1:19','0,5 lalu 6 → 1:11'],ans:'0,5 lalu 11 → 1:20',exp:'Standar: hisap semen → <strong>0,5</strong>, NaCl → <strong>11</strong> → pengenceran <strong>1:20</strong>.'},
+  {q:'Nilai normal hitung jumlah sperma (WHO 6th Ed. 2021) adalah...',opts:['≥10 jt/mL','≥15 jt/mL','≥16 jt/mL','≥20 jt/mL'],ans:'≥16 jt/mL',exp:'Normal: <strong>≥16 jt/mL</strong> sesuai WHO 6th Ed. 2021.'},
+  {q:'Bilik hitung Neubauer Improved kotak tengah terdiri dari...',opts:['16 kotak sedang × 25 kecil','25 kotak sedang × 16 kecil','10 kotak sedang × 10 kecil','20 kotak sedang × 10 kecil'],ans:'25 kotak sedang × 16 kecil',exp:'Kotak tengah NI: <strong>25 kotak sedang</strong>, masing-masing <strong>16 kotak kecil</strong>.'},
+];
+const pickHitungKonsep=makePicker(HITUNG_KONSEP);
+function makeHitungQ(){
+  const r=Math.random();
+  if(r<0.35) return genHitungQ();
+  if(r<0.6) return genFKQ();
+  if(r<0.8) return genKotakQ();
+  return{...pickHitungKonsep(),type:'hitung',typeName:'Hitung Jumlah Sperma',tpColor:'var(--purp)',tpBg:'rgba(68,51,160,.09)',scenario:null,rawData:null};
+}
+
+// 9. INTERPRETASI HASIL
+function catInterp(jml,mot,mor){
+  if(jml>=250&&mot>=42&&mor>=4) return'Polizoospermia';
+  if(jml>=16&&mot>=42&&mor>=4) return'Normozoospermia';
+  if(jml<5&&mot>=42&&mor>=4) return'Ekstrim Oligozoospermia';
+  if(jml<16&&mot<42&&mor<4) return'Oligoastenoteratozoospermia';
+  if(jml<16&&mot<42&&mor>=4) return'Oligoastenozoospermia';
+  if(jml<16&&mot>=42&&mor<4) return'Oligoteratozoospermia';
+  if(jml<16&&mot>=42&&mor>=4) return'Oligozoospermia';
+  if(jml>=16&&mot<42&&mor<4) return'Astenoteratozoospermia';
+  if(jml>=16&&mot<42&&mor>=4) return'Astenozoospermia';
+  if(jml>=16&&mot>=42&&mor<4) return'Teratozoospermia';
+  return'Normozoospermia';
+}
+const ALL_INTERPS=['Normozoospermia','Ekstrim Oligozoospermia','Oligozoospermia','Astenozoospermia','Teratozoospermia','Oligoastenozoospermia','Oligoteratozoospermia','Astenoteratozoospermia','Oligoastenoteratozoospermia','Polizoospermia'];
+// Templates agar distribusi beragam
+const INTERP_TMPL=[
+  ()=>({jml:rnd([16,18,20,22,25,30,35]),mot:rnd([42,45,50,55,60]),mor:rnd([4,5,6,8])}),
+  ()=>({jml:rnd([1,2,3,4]),mot:rnd([42,45,50]),mor:rnd([4,5,6])}),
+  ()=>({jml:rnd([16,20,25,30]),mot:rnd([15,20,25,30,35]),mor:rnd([4,5,6])}),
+  ()=>({jml:rnd([16,20,25,30]),mot:rnd([42,45,50]),mor:rnd([1,2,3])}),
+  ()=>({jml:rnd([5,6,8,10,12,14]),mot:rnd([42,45,50]),mor:rnd([4,5,6])}),
+  ()=>({jml:rnd([5,6,8,10,12]),mot:rnd([15,20,25,30]),mor:rnd([1,2,3])}),
+  ()=>({jml:rnd([5,8,10,12]),mot:rnd([15,20,25,30]),mor:rnd([4,5,6])}),
+  ()=>({jml:rnd([5,8,10,12]),mot:rnd([42,45,50]),mor:rnd([1,2,3])}),
+  ()=>({jml:rnd([16,20,25,30]),mot:rnd([15,20,25,30]),mor:rnd([1,2,3])}),
+  ()=>({jml:rnd([250,280,300,350]),mot:rnd([42,45,50]),mor:rnd([4,5,6])}),
+];
+const pickInterpTmpl=makePicker(INTERP_TMPL);
+function makeInterpQ(){
+  const d=pickInterpTmpl()();
+  const ans=catInterp(d.jml,d.mot,d.mor);
+  const wrong=shuf(ALL_INTERPS.filter(x=>x!==ans)).slice(0,3);
+  const jS=d.jml>=16?`Jumlah ✓ (${d.jml})`:`Jumlah ✗ (${d.jml})`;
+  const mS=d.mot>=42?`Motilitas ✓ (${d.mot}%)`:`Motilitas ✗ (${d.mot}%)`;
+  const oS=d.mor>=4?`Morfologi ✓ (${d.mor}%)`:`Morfologi ✗ (${d.mor}%)`;
+  const exp=`${jS} | ${mS} | ${oS} → <strong>${ans}</strong>.`;
+  return{type:'interp',typeName:'Interpretasi Hasil',tpColor:'var(--red)',tpBg:'rgba(176,48,48,.09)',
+    scenario:'Pasien pria dengan keluhan infertilitas',
+    rawData:`<div>Jumlah sperma: <span class="dv">${d.jml} jt/mL</span></div><div>Motilitas PR+NP: <span class="dv">${d.mot}%</span></div><div>Morfologi normal: <span class="dv">${d.mor}%</span></div>`,
+    q:`Berdasarkan ketiga parameter, interpretasi analisis semen adalah...`,
+    opts:shuf([ans,...wrong]),ans,exp};
+}
+
+// ═══ DISPATCHER ═══
+function makeQ(type){
+  if(type==='persiapan'){const c=pickPersiapan();return{...c,type:'persiapan',typeName:'Persiapan & Penanganan',tpColor:'var(--green)',tpBg:'rgba(31,122,74,.09)',scenario:null,rawData:null};}
+  if(type==='makro_volume') return makeMakroVolumeQ();
+  if(type==='makro_likuefaksi') return makeLikuefaksiQ();
+  if(type==='makro_ph') return makePHQ();
+  if(type==='motilitas') return makeMotilitasQ();
+  if(type==='vitalitas') return makeVitalitasQ();
+  if(type==='morfologi') return makeMorfoQ();
+  if(type==='hitung') return makeHitungQ();
+  if(type==='interp') return makeInterpQ();
+}
+
+// ═══ SESSION ═══
+let typeQueue=[],sessIdx=0,sessScore=0,sessLog=[],currentQ=null;
+function nextType(){if(!typeQueue.length){const t=[...activeTypes];for(let i=t.length-1;i>0;i--){const j=0|Math.random()*(i+1);[t[i],t[j]]=[t[j],t[i]];}typeQueue=[...t];}return typeQueue.shift();}
+function startSession(){
+  sessIdx=0;sessScore=0;sessLog=[];typeQueue=[];
+  document.getElementById('qconfig').style.display='none';
+  document.getElementById('qresults').style.display='none';
+  document.getElementById('qactive').style.display='block';
+  renderQ();
+}
+function renderQ(){
+  const q=makeQ(nextType());currentQ=q;
+  document.getElementById('qnum').textContent=sessIdx+1;
+  document.getElementById('qscore').textContent=sessScore;
+  const pill=document.getElementById('qpill');
+  pill.textContent=q.typeName;pill.style.background=q.tpBg;pill.style.color=q.tpColor;pill.style.border=`1px solid ${q.tpColor}44`;
+  const scen=document.getElementById('qscen');
+  if(q.scenario){scen.innerHTML=`<strong>Kasus:</strong> ${q.scenario}`;scen.style.display='block';}else scen.style.display='none';
+  const db=document.getElementById('qdata');
+  if(q.rawData){db.innerHTML=q.rawData;db.style.display='block';}else db.style.display='none';
+  document.getElementById('qtext').innerHTML=q.q;
+  const og=document.getElementById('opts');og.innerHTML='';
+  q.opts.forEach((opt,i)=>{
+    const btn=document.createElement('button');btn.className='opt';
+    btn.innerHTML=`<span class="opt-key">${KEYS[i]}</span><span>${opt}</span>`;
+    btn.onclick=()=>selectAns(opt,q,btn);og.appendChild(btn);
+  });
+  const ebox=document.getElementById('expbox');ebox.classList.remove('show');ebox.style.display='none';
+  document.getElementById('nextbtn').style.display='none';
+}
+function selectAns(chosen,q,clickedBtn){
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  const correct=stripHtml(chosen)===stripHtml(q.ans);
+  if(correct)sessScore++;
+  document.querySelectorAll('.opt').forEach(b=>{
+    const label=b.querySelector('span:last-child').innerHTML;
+    if(stripHtml(label)===stripHtml(q.ans)){
+      if(b===clickedBtn&&correct)b.classList.add('correct');
+      else if(b!==clickedBtn)b.classList.add('reveal');
+      else b.classList.add('correct');
+    }
+    if(b===clickedBtn&&!correct)b.classList.add('wrong');
+  });
+  const ebox=document.getElementById('expbox');
+  ebox.innerHTML=`<div style="margin-bottom:7px;font-weight:700;color:${correct?'var(--blue)':'var(--red)'}">${correct?'✅ Benar!':'❌ Kurang tepat.'} Jawaban: <strong>${q.ans}</strong></div>${q.exp}`;
+  ebox.style.display='block';setTimeout(()=>ebox.classList.add('show'),10);
+  sessLog.push({idx:sessIdx+1,type:q.typeName,q:q.q.replace(/<[^>]+>/g,'').slice(0,55)+'…',ans:q.ans,correct});
+  document.getElementById('qscore').textContent=sessScore;
+  document.getElementById('nextbtn').style.display='inline-block';
+}
+function nextQ(){sessIdx++;document.getElementById('expbox').style.display='none';document.getElementById('expbox').classList.remove('show');renderQ();}
+function endSession(){
+  document.getElementById('qactive').style.display='none';document.getElementById('qresults').style.display='block';
+  const total=sessLog.length;if(!total){restartQuiz();return;}
+  const pct=Math.round((sessScore/total)*100);
+  document.getElementById('res-pct').textContent=pct+'%';
+  document.getElementById('res-sub').textContent=`${sessScore} / ${total} soal benar`;
+  const byType={};
+  sessLog.forEach(l=>{if(!byType[l.type])byType[l.type]={total:0,correct:0};byType[l.type].total++;if(l.correct)byType[l.type].correct++;});
+  const rg=document.getElementById('res-grid');rg.innerHTML='';
+  const medal=pct>=80?'🏆':pct>=60?'👍':'📚';
+  [{v:medal,l:'Nilai'},{v:pct+'%',l:'Persentase'},{v:sessScore+'',l:'Benar'},{v:(total-sessScore)+'',l:'Salah'},{v:total+'',l:'Total'}].forEach(s=>{
+    const d=document.createElement('div');d.className='res-stat';
+    d.innerHTML=`<div class="rv">${s.v}</div><div class="rl">${s.l}</div>`;rg.appendChild(d);
+  });
+  document.getElementById('res-bytype').innerHTML=Object.entries(byType).map(([t,v])=>{
+    const p=Math.round((v.correct/v.total)*100);const c=p>=80?'var(--blue)':p>=60?'var(--gold)':'var(--red)';
+    return`<tr><td>${t}</td><td>${v.total}</td><td style="color:${c};font-weight:700">${v.correct} (${p}%)</td></tr>`;
+  }).join('');
+  document.getElementById('res-tbody').innerHTML=sessLog.map(l=>`<tr><td>${l.idx}</td><td>${l.q}</td><td>${l.ans}</td><td style="color:${l.correct?'var(--green)':'var(--red)'}">${l.correct?'✅':'❌'}</td></tr>`).join('');
+}
+function restartQuiz(){typeQueue=[];document.getElementById('qresults').style.display='none';document.getElementById('qconfig').style.display='block';}
+
+function downloadCert(){
+  const total=sessLog.length;
+  const pct=Math.round((sessScore/total)*100);
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+  const medal=pct>=80?'LULUS':pct>=60?'CUKUP':'PERLU BELAJAR LAGI';
+  const medalColor=pct>=80?'#1f7a4a':pct>=60?'#7a6010':'#b03030';
+  const byType={};
+  sessLog.forEach(l=>{if(!byType[l.type])byType[l.type]={total:0,correct:0};byType[l.type].total++;if(l.correct)byType[l.type].correct++;});
+  const rows=Object.entries(byType).map(([t,v])=>{
+    const p=Math.round(v.correct/v.total*100);
+    const bar=Math.round(p*1.4);
+    const bc=p>=80?'#1f7a4a':p>=60?'#7a6010':'#b03030';
+    return`<tr><td style="padding:5px 8px;font-size:11px;color:#384068;width:200px">${t}</td><td style="padding:5px 8px"><div style="background:#e7e7e2;border-radius:4px;height:10px;width:140px"><div style="background:${bc};width:${bar}px;height:10px;border-radius:4px"></div></div></td><td style="padding:5px 8px;font-size:11px;font-weight:700;color:${bc}">${v.correct}/${v.total} (${p}%)</td></tr>`;
+  }).join('');
+
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="680" height="520" font-family="Georgia,serif">
+  <defs>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <path d="M 28 0 L 0 0 0 28" fill="none" stroke="#e0ddd5" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+  <rect width="680" height="520" fill="#fdfdf9"/>
+  <rect width="680" height="520" fill="url(#grid)"/>
+  <rect x="20" y="20" width="640" height="480" rx="12" fill="none" stroke="#b03030" stroke-width="2"/>
+  <rect x="26" y="26" width="628" height="468" rx="9" fill="none" stroke="#b03030" stroke-width="0.5" opacity="0.4"/>
+
+  <text x="340" y="66" text-anchor="middle" font-size="11" letter-spacing="4" fill="#7c85a8" font-family="Georgia,serif">SERTIFIKAT PENYELESAIAN KUIS</text>
+  <line x1="120" y1="74" x2="260" y2="74" stroke="#b03030" stroke-width="0.8"/>
+  <circle cx="340" cy="74" r="3" fill="#b03030"/>
+  <line x1="420" y1="74" x2="560" y2="74" stroke="#b03030" stroke-width="0.8"/>
+
+  <text x="340" y="116" text-anchor="middle" font-size="34" font-weight="bold" fill="#161b2e" font-family="Georgia,serif">Am I Fertile?</text>
+  <text x="340" y="138" text-anchor="middle" font-size="11" fill="#7c85a8" letter-spacing="2" font-family="Georgia,serif">ANALISIS SEMEN · PK BLOK 2.3 · FK UNSOED</text>
+
+  <line x1="100" y1="152" x2="580" y2="152" stroke="#e0ddd5" stroke-width="1"/>
+
+  <text x="340" y="185" text-anchor="middle" font-size="13" fill="#384068" font-family="Georgia,serif">Telah menyelesaikan sesi quiz dengan hasil</text>
+
+  <rect x="230" y="196" width="220" height="80" rx="8" fill="none" stroke="${medalColor}" stroke-width="1.5"/>
+  <text x="340" y="245" text-anchor="middle" font-size="52" font-weight="bold" fill="${medalColor}" font-family="Georgia,serif">${pct}%</text>
+  <text x="340" y="265" text-anchor="middle" font-size="10" fill="${medalColor}" letter-spacing="3" font-family="Georgia,serif">${medal}</text>
+
+  <text x="340" y="300" text-anchor="middle" font-size="12" fill="#384068" font-family="Georgia,serif">${sessScore} soal benar dari ${total} soal · ${dateStr}</text>
+
+  <line x1="100" y1="314" x2="580" y2="314" stroke="#e0ddd5" stroke-width="1"/>
+  <text x="340" y="332" text-anchor="middle" font-size="10" fill="#7c85a8" letter-spacing="2" font-family="Georgia,serif">DISTRIBUSI SKOR PER TOPIK</text>
+
+  <foreignObject x="80" y="340" width="520" height="120">
+    <div xmlns="http://www.w3.org/1999/xhtml">
+      <table style="width:100%;border-collapse:collapse">${rows}</table>
+    </div>
+  </foreignObject>
+
+  <line x1="100" y1="472" x2="580" y2="472" stroke="#e0ddd5" stroke-width="1"/>
+  <text x="340" y="490" text-anchor="middle" font-size="10" fill="#7c85a8" font-family="Georgia,serif">174 Archive · 174-three.vercel.app · WHO 6th Ed. 2021</text>
+</svg>`;
+
+  const blob=new Blob([svg],{type:'image/svg+xml'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`am-i-fertile-${pct}pct.svg`;
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+window.downloadCert=downloadCert;
+</script>
+</body>
+</html>

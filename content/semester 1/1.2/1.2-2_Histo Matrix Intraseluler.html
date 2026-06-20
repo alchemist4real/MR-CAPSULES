@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulasi CBT: Matriks Ekstraseluler</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a192f; /* Navy Dark */
+            color: #ccd6f6; /* Lightest Slate */
+        }
+        .title-font {
+            font-family: 'Playfair Display', serif;
+        }
+        .bg-navy { background-color: #0a192f; }
+        .bg-light-navy { background-color: #112240; }
+        .bg-lightest-navy { background-color: #233554; }
+        .text-gold { color: #FFD700; }
+        .border-gold { border-color: #FFD700; }
+        .btn {
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .btn-primary {
+            background-color: #FFD700;
+            color: #0a192f;
+            font-weight: bold;
+        }
+        .btn-primary:hover {
+            background-color: #f0c400;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(255, 215, 0, 0.2);
+        }
+        .btn-secondary {
+            background-color: transparent;
+            border: 1px solid #FFD700;
+            color: #FFD700;
+        }
+        .btn-secondary:hover {
+            background-color: rgba(255, 215, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        .nav-item {
+            border: 1px solid #233554;
+            transition: all 0.2s ease;
+        }
+        .nav-item:hover {
+            border-color: #FFD700;
+            background-color: #112240;
+        }
+        .nav-item.active {
+            background-color: #FFD700;
+            border-color: #FFD700;
+            color: #0a192f;
+            font-weight: bold;
+        }
+        .nav-item.answered {
+            background-color: #233554;
+        }
+        .nav-item.flagged {
+            position: relative;
+        }
+        .nav-item.flagged::after {
+            content: '';
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 8px;
+            height: 8px;
+            background-color: #FFD700;
+            border-radius: 50%;
+        }
+        .option.selected {
+            background-color: rgba(255, 215, 0, 0.2);
+            border-color: #FFD700;
+        }
+        .option.correct {
+            background-color: rgba(34, 197, 94, 0.2);
+            border-color: #22c55e;
+        }
+        .option.incorrect {
+            background-color: rgba(239, 68, 68, 0.2);
+            border-color: #ef4444;
+        }
+        /* Custom Checkbox */
+        .custom-checkbox input { display: none; }
+        .custom-checkbox span {
+            height: 20px;
+            width: 20px;
+            border: 1px solid #FFD700;
+            display: inline-block;
+            position: relative;
+            background-color: transparent;
+            border-radius: 3px;
+        }
+        .custom-checkbox input:checked + span::after {
+            content: '✔';
+            font-size: 14px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #FFD700;
+        }
+        /* Flashcard Styles */
+        .card-container {
+            perspective: 1000px;
+        }
+        .card {
+            width: 100%;
+            height: 300px;
+            position: relative;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .card.is-flipped {
+            transform: rotateY(180deg);
+        }
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border-radius: 0.5rem;
+            border: 1px solid #FFD700;
+            background-color: #112240;
+        }
+        .card-back {
+            transform: rotateY(180deg);
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div id="main-container" class="max-w-7xl mx-auto">
+        <!-- Start Screen -->
+        <div id="start-screen" class="bg-light-navy rounded-lg p-8 text-center shadow-2xl">
+            <h1 class="text-5xl title-font text-gold mb-4">Ujian Matriks Ekstraseluler</h1>
+            <p class="text-lg mb-8 max-w-3xl mx-auto text-slate-300">Selamat datang di sesi eksklusif ini. Uji pemahaman Anda mengenai arsitektur dasar jaringan tubuh. Pilih mode Anda untuk memulai.</p>
+            <div class="flex flex-col md:flex-row justify-center gap-4">
+                <button id="start-flashcard-btn" class="btn btn-primary text-lg font-bold py-3 px-8 rounded-lg">Mode Flashcard</button>
+                <button id="start-latihan-btn" class="btn btn-primary text-lg font-bold py-3 px-8 rounded-lg">Mode Latihan</button>
+                <button id="start-ujian-btn" class="btn btn-secondary text-lg font-bold py-3 px-8 rounded-lg">Mode Ujian</button>
+            </div>
+            <p class="mt-8 text-sm text-slate-400">
+                <b>Mode Flashcard:</b> Hafalkan istilah-istilah kunci.<br>
+                <b>Mode Latihan:</b> Dapatkan umpan balik instan setelah menjawab setiap soal.<br>
+                <b>Mode Ujian:</b> Jawab semua soal, hasil akan ditampilkan di akhir sesi.
+            </p>
+        </div>
+
+        <!-- CBT Interface -->
+        <div id="cbt-screen" class="hidden">
+            <header class="bg-light-navy p-4 rounded-t-lg flex justify-between items-center shadow-lg">
+                <h2 class="text-2xl title-font text-gold">Matriks Ekstraseluler</h2>
+                <div class="bg-navy px-4 py-2 rounded text-xl font-bold border border-lightest-navy">
+                    <span id="timer">60:00</span>
+                </div>
+            </header>
+            <div class="flex flex-col md:flex-row gap-4 mt-4">
+                <!-- Question Panel -->
+                <div id="question-panel" class="bg-light-navy p-6 rounded-b-lg md:rounded-bl-lg md:rounded-br-none flex-grow shadow-lg">
+                    <p class="mb-2 text-sm text-slate-400">Pertanyaan <span id="question-number">1</span> dari 20</p>
+                    <div id="question-text" class="text-lg leading-relaxed mb-6"></div>
+                    <div id="options-container" class="space-y-3"></div>
+                    <div id="feedback-container" class="mt-4 p-3 rounded-md text-sm hidden"></div>
+                </div>
+
+                <!-- Navigation Panel -->
+                <div class="bg-light-navy p-4 rounded-b-lg md:rounded-r-lg md:rounded-bl-none w-full md:w-80 shadow-lg">
+                    <h3 class="font-bold mb-4 text-center">Navigasi Soal</h3>
+                    <div id="nav-grid" class="grid grid-cols-5 gap-2 mb-4"></div>
+                    <div class="flex items-center justify-start space-x-4 mb-4">
+                         <label class="custom-checkbox flex items-center cursor-pointer">
+                            <input type="checkbox" id="flag-checkbox">
+                            <span class="mr-2"></span>
+                            Ragu-ragu
+                        </label>
+                    </div>
+                    <div class="flex justify-between mb-4">
+                        <button id="prev-btn" class="btn btn-secondary px-4 py-2 rounded-md">&lt; Sebelumnya</button>
+                        <button id="next-btn" class="btn btn-secondary px-4 py-2 rounded-md">Selanjutnya &gt;</button>
+                    </div>
+                    <button id="submit-btn" class="btn btn-primary w-full py-3 rounded-md">Kumpulkan Jawaban</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Result Screen -->
+        <div id="result-screen" class="hidden bg-light-navy rounded-lg p-8 text-center shadow-2xl">
+             <h1 class="text-5xl title-font text-gold mb-4">Analisis Sesi Selesai</h1>
+             <p class="text-2xl mb-2 text-slate-300">Skor Akhir Anda:</p>
+             <p id="final-score" class="text-7xl font-bold mb-6"></p>
+             <div class="text-lg mb-8">
+                 <span id="correct-count" class="text-green-400"></span> Jawaban Benar &nbsp;&nbsp;&nbsp;
+                 <span id="incorrect-count" class="text-red-400"></span> Jawaban Salah
+             </div>
+             <button id="review-btn" class="btn btn-primary text-lg font-bold py-3 px-8 rounded-lg mb-4">Tinjau Jawaban</button>
+             <button id="restart-btn" class="btn btn-secondary text-lg font-bold py-3 px-8 rounded-lg">Ulangi Sesi</button>
+        </div>
+        
+         <!-- Review Screen -->
+        <div id="review-screen" class="hidden">
+             <button id="back-to-result-btn" class="btn btn-primary text-lg font-bold py-3 px-8 rounded-lg mt-8 mx-auto block">Kembali ke Hasil</button>
+        </div>
+        
+        <!-- Flashcard Screen -->
+        <div id="flashcard-screen" class="hidden bg-light-navy rounded-lg p-8 shadow-2xl">
+            <h1 class="text-4xl title-font text-gold mb-6 text-center">Mode Flashcard</h1>
+            <div id="flashcard-container" class="card-container cursor-pointer mb-6">
+                <div id="flashcard" class="card">
+                    <div class="card-face card-front text-3xl font-bold"></div>
+                    <div class="card-face card-back"></div>
+                </div>
+            </div>
+            <div class="flex justify-between items-center">
+                <button id="prev-card-btn" class="btn btn-secondary px-6 py-2 rounded-md">&lt; Sebelumnya</button>
+                <p id="card-counter" class="font-semibold"></p>
+                <button id="next-card-btn" class="btn btn-secondary px-6 py-2 rounded-md">Selanjutnya &gt;</button>
+            </div>
+             <button id="back-to-menu-btn" class="btn btn-primary w-full py-3 rounded-md font-bold mt-8">Kembali ke Menu Utama</button>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            { question: "Manakah protein yang paling melimpah dalam matriks ekstraseluler dan bertanggung jawab utama untuk kekuatan tarik (tensile strength)?", options: ["Elastin", "Fibronektin", "Kolagen", "Laminin", "Proteoglikan"], answer: "Kolagen", explanation: "Kolagen adalah protein struktural utama di ECM, menyusun sekitar 25% dari total protein tubuh dan memberikan kekuatan tarik yang luar biasa pada jaringan seperti kulit dan tendon." },
+            { question: "Substansi dasar (ground substance) ECM memiliki konsistensi seperti gel yang tahan terhadap tekanan kompresi. Sifat ini sebagian besar disebabkan oleh...", options: ["Serat elastin yang padat", "Jaringan kolagen tipe IV", "Muatan negatif GAGs yang menarik air", "Ikatan kuat fibronektin", "Kalsifikasi matriks"], answer: "Muatan negatif GAGs yang menarik air", explanation: "Glikosaminoglikan (GAGs) memiliki muatan sangat negatif yang menarik banyak molekul air, menciptakan tekanan turgor yang membuat matriks mampu menahan tekanan tekan." },
+            { question: "Seorang pasien didiagnosis menderita Skorbut (Scurvy). Kekurangan Vitamin C pada kondisi ini secara langsung mengganggu sintesis molekul ECM yang mana?", options: ["Elastin", "Asam hialuronat", "Fibronektin", "Kolagen", "Laminin"], answer: "Kolagen", explanation: "Vitamin C adalah kofaktor esensial untuk enzim yang memodifikasi prolin dan lisin, langkah krusial dalam pembentukan molekul kolagen yang stabil." },
+            { question: "Struktur ECM yang berfungsi sebagai 'jembatan', menghubungkan reseptor integrin pada sel dengan komponen matriks lain seperti kolagen adalah...", options: ["Proteoglikan", "Laminin", "Kolagen Tipe IV", "Fibronektin", "Asam hialuronat"], answer: "Fibronektin", explanation: "Fibronektin memiliki banyak domain pengikatan yang memungkinkannya untuk menautkan sel (melalui integrin) ke berbagai komponen ECM, berfungsi sebagai perekat molekuler." },
+            { question: "Di ginjal, membran basal glomerulus berfungsi sebagai filter molekuler yang sangat selektif. Komponen utama yang membentuk struktur seperti jaring pada membran ini adalah...", options: ["Kolagen Tipe I", "Elastin", "Kolagen Tipe IV", "Fibronektin", "Aggrecan"], answer: "Kolagen Tipe IV", explanation: "Berbeda dari kolagen tipe I yang membentuk serat, kolagen tipe IV membentuk struktur seperti jaring dua dimensi yang merupakan kerangka utama dari semua membran basal." },
+            { question: "Jaringan seperti aorta dan paru-paru harus dapat meregang dan kembali ke bentuk semula. Kemampuan ini diberikan oleh serat protein yang disebut...", options: ["Kolagen", "Elastin", "Laminin", "Fibronektin", "Keratin"], answer: "Elastin", explanation: "Elastin adalah protein yang memberikan sifat elastisitas dan ketahanan, memungkinkan jaringan untuk meregang secara signifikan tanpa mengalami kerusakan." },
+            { question: "Kematian sel terprogram yang terjadi ketika sel yang seharusnya menempel menjadi terlepas dari matriks ekstraseluler disebut...", options: ["Apoptosis", "Nekrosis", "Senescence", "Anoikis", "Autofagi"], answer: "Anoikis", explanation: "Anoikis adalah jenis spesifik dari apoptosis yang dipicu oleh hilangnya adhesi sel ke matriks, mencegah sel untuk bertahan hidup dan tumbuh di lokasi yang tidak semestinya." },
+            { question: "Enzim yang bertanggung jawab untuk mendegradasi dan merombak komponen matriks ekstraseluler selama proses seperti penyembuhan luka atau metastasis kanker adalah...", options: ["Kinase", "Caspase", "Telomerase", "Matrix Metalloproteinases (MMPs)", "Polimerase"], answer: "Matrix Metalloproteinases (MMPs)", explanation: "MMPs adalah keluarga enzim utama yang dapat memecah berbagai protein ECM, memainkan peran sentral dalam perombakan (remodeling) jaringan." },
+            { question: "Pada penyakit Fibrosis, terjadi penumpukan berlebihan dari komponen ECM, terutama...", options: ["Elastin", "Asam hialuronat", "Kolagen", "Laminin", "Proteoglikan"], answer: "Kolagen", explanation: "Fibrosis ditandai dengan deposisi berlebihan dari matriks kaya kolagen, yang mengarah pada pembentukan jaringan parut dan kerusakan fungsi organ." },
+            { question: "Struktur 'sikat botol' raksasa di tulang rawan yang terdiri dari protein inti dan banyak rantai GAGs, seperti Aggrecan, memberikan sifat...", options: ["Kekuatan tarik tinggi", "Transparansi optik", "Elastisitas ekstrim", "Daya tahan terhadap kompresi", "Konduktivitas listrik"], answer: "Daya tahan terhadap kompresi", explanation: "Agregat proteoglikan seperti Aggrecan menyerap sejumlah besar air, menciptakan gel yang sangat tahan terhadap tekanan tekan, yang krusial untuk fungsi tulang rawan sebagai bantalan sendi." },
+            { question: "Sindrom Ehlers-Danlos adalah kelainan genetik yang menyebabkan kulit sangat elastis dan sendi yang longgar akibat cacat pada produksi...", options: ["Elastin", "Kolagen", "Laminin", "Fibronektin", "Proteoglikan"], answer: "Kolagen", explanation: "Meskipun kulitnya tampak 'elastis', masalah utamanya adalah kurangnya kekuatan tarik akibat kolagen yang rusak, bukan kelebihan elastin." },
+            { question: "Reseptor permukaan sel utama yang menengahi komunikasi dua arah antara sel dan matriks ekstraseluler adalah...", options: ["Reseptor G-protein", "Reseptor Tirosin Kinase", "Integrin", "Kanal Ion", "Reseptor Kematian"], answer: "Integrin", explanation: "Integrin adalah reseptor transmembran yang secara fisik menghubungkan sitoskeleton di dalam sel dengan ECM di luar sel, memungkinkan sinyal dikirim ke kedua arah." },
+            { question: "Manakah dari berikut ini yang BUKAN merupakan fungsi utama dari membran basal?", options: ["Dukungan struktural untuk epitel", "Menyimpan energi dalam bentuk ATP", "Filtrasi selektif di ginjal", "Menentukan polaritas sel", "Menjadi jalur migrasi sel"], answer: "Menyimpan energi dalam bentuk ATP", explanation: "Membran basal memiliki banyak fungsi penting terkait struktur dan pensinyalan, tetapi tidak terlibat dalam penyimpanan energi metabolik seperti ATP." },
+            { question: "Glikoprotein adhesif berbentuk salib yang merupakan komponen utama lain dari membran basal selain Kolagen Tipe IV adalah...", options: ["Fibronektin", "Elastin", "Aggrecan", "Laminin", "Integrin"], answer: "Laminin", explanation: "Laminin adalah glikoprotein multi-domain yang krusial untuk organisasi membran basal dan adhesi sel ke membran tersebut." },
+            { question: "Asam Hialuronat (Hyaluronan) unik di antara GAGs lainnya karena...", options: ["Memiliki muatan positif", "Tidak berikatan dengan protein inti untuk membentuk proteoglikan", "Tidak menarik molekul air", "Hanya ditemukan di tulang", "Terbuat dari protein, bukan polisakarida"], answer: "Tidak berikatan dengan protein inti untuk membentuk proteoglikan", explanation: "Berbeda dengan GAGs lain yang terikat pada protein inti, asam hialuronat ada sebagai rantai polisakarida yang sangat panjang dan bebas, seringkali berfungsi sebagai 'tulang punggung' untuk agregat proteoglikan." },
+            { question: "Membran basal secara keseluruhan tersusun atas dua lapisan. Lapisan yang disekresikan oleh sel epitel di atasnya dan kaya akan laminin serta kolagen tipe IV disebut...", options: ["Lamina reticular", "Lamina basal", "Lamina propia", "Zona pelusida", "Membran plasma"], answer: "Lamina basal", explanation: "Lamina basal adalah lapisan yang diproduksi oleh sel epitel itu sendiri dan berfungsi sebagai fondasi langsung tempat sel menempel. Komponen utamanya adalah laminin dan kolagen tipe IV." },
+            { question: "Lapisan di bawah lamina basal yang disekresikan oleh sel jaringan ikat (fibroblas) dan kaya akan kolagen tipe III (serat retikuler) adalah...", options: ["Lamina basal", "Epitelium", "Endotelium", "Lamina reticular", "Submukosa"], answer: "Lamina reticular", explanation: "Lamina reticular berfungsi untuk menambatkan lamina basal ke jaringan ikat di bawahnya, memberikan dukungan struktural tambahan. Komponen utamanya adalah kolagen tipe III." },
+            { question: "Fungsi utama dari reseptor Integrin adalah...", options: ["Mensekresikan kolagen ke luar sel", "Menghancurkan ECM untuk perbaikan jaringan", "Menghubungkan sitoskeleton intraseluler ke ECM ekstraseluler", "Memberikan elastisitas pada kulit", "Memproduksi energi untuk sel"], answer: "Menghubungkan sitoskeleton intraseluler ke ECM ekstraseluler", explanation: "Integrin bertindak sebagai penghubung fisik dan pensinyalan, memungkinkan sel untuk 'merasakan' dan merespons lingkungannya, serta menempel kuat pada matriks." },
+            { question: "Manakah pernyataan yang paling akurat dalam mendeskripsikan Membran Basal?", options: ["Hanya terdiri dari Kolagen Tipe I", "Merupakan lapisan tunggal yang disebut lamina reticular", "Adalah gabungan dari lamina basal dan lamina reticular", "Sepenuhnya dibuat oleh sel jaringan ikat", "Tidak ditemukan di sekitar sel otot"], answer: "Adalah gabungan dari lamina basal dan lamina reticular", explanation: "Istilah 'membran basal' (terlihat di mikroskop cahaya) merujuk pada struktur gabungan dari lamina basal (dari epitel) dan lamina reticular (dari jaringan ikat) di bawahnya." },
+            { question: "Protein Laminin sangat krusial untuk...", options: ["Memberikan kekuatan tarik pada tendon", "Memberikan elastisitas pada aorta", "Mengorganisir struktur membran basal dan adhesi sel", "Menarik air untuk menahan kompresi di tulang rawan", "Mendegradasi matriks saat invasi sel kanker"], answer: "Mengorganisir struktur membran basal dan adhesi sel", explanation: "Laminin adalah 'arsitek' utama membran basal, membentuk perancah tempat komponen lain (seperti kolagen IV) berkumpul dan tempat sel menempel melalui integrin." }
+        ];
+
+        const flashcardData = [
+            { term: "Kolagen", definition: "Protein fibrosa utama di ECM yang memberikan kekuatan tarik. Paling melimpah di tubuh hewan." },
+            { term: "Elastin", definition: "Protein yang memberikan elastisitas dan kemampuan meregang pada jaringan seperti arteri dan paru-paru." },
+            { term: "Glikosaminoglikan (GAGs)", definition: "Rantai polisakarida bermuatan negatif yang menarik air, memberikan ketahanan terhadap kompresi." },
+            { term: "Proteoglikan", definition: "Molekul besar terdiri dari protein inti yang terikat pada rantai GAGs, membentuk substansi dasar seperti gel." },
+            { term: "Fibronektin", definition: "Glikoprotein adhesif yang berfungsi sebagai 'jembatan' antara sel (melalui integrin) dan komponen ECM lainnya." },
+            { term: "Laminin", definition: "Glikoprotein berbentuk salib, komponen utama lamina basal yang mengikat integrin dan komponen matriks lainnya." },
+            { term: "Membran Basal", definition: "Lapisan ECM di bawah epitel, terdiri dari lamina basal dan lamina reticular, berfungsi sebagai fondasi dan filter." },
+            { term: "Integrin", definition: "Reseptor transmembran yang menghubungkan sitoskeleton di dalam sel dengan ECM di luar sel, penting untuk adhesi dan pensinyalan sel." },
+            { term: "MMPs", definition: "Matrix Metalloproteinases, keluarga enzim yang mendegradasi dan merombak komponen ECM." },
+            { term: "Anoikis", definition: "Jenis apoptosis yang dipicu ketika sel terlepas dari ECM, mencegah pertumbuhan di tempat yang salah." },
+            { term: "Fibrosis", definition: "Penumpukan patologis dari jaringan parut yang kaya akan kolagen di suatu organ." },
+            { term: "Skorbut (Scurvy)", definition: "Penyakit akibat kekurangan Vitamin C yang menyebabkan sintesis kolagen terganggu." },
+            { term: "Lamina Basal", definition: "Bagian dari membran basal yang disekresikan oleh sel epitel, kaya akan laminin dan kolagen tipe IV." },
+            { term: "Lamina Reticular", definition: "Bagian dari membran basal yang disekresikan oleh sel jaringan ikat, kaya akan kolagen tipe III (serat retikuler)." },
+            { term: "Kolagen Tipe IV", definition: "Jenis kolagen yang tidak membentuk serat, melainkan jaring dua dimensi yang menjadi kerangka lamina basal." },
+            { term: "Kolagen Tipe III", definition: "Jenis kolagen yang membentuk serat tipis (serat retikuler), komponen utama dari lamina reticular." },
+            { term: "Adhesi Sel", definition: "Proses di mana sel berinteraksi dan menempel pada sel lain atau pada matriks ekstraseluler, sering dimediasi oleh integrin." }
+        ];
+
+        let currentQuestionIndex = 0;
+        let userAnswers = new Array(quizData.length).fill(null);
+        let flaggedQuestions = new Array(quizData.length).fill(false);
+        let testMode = 'ujian'; 
+        let timerInterval;
+        let currentCardIndex = 0;
+
+        // Element Selectors
+        const startScreen = document.getElementById('start-screen');
+        const cbtScreen = document.getElementById('cbt-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const reviewScreen = document.getElementById('review-screen');
+        const flashcardScreen = document.getElementById('flashcard-screen');
+        
+        // CBT Functions
+        function initTest(mode) {
+            testMode = mode;
+            currentQuestionIndex = 0;
+            userAnswers.fill(null);
+            flaggedQuestions.fill(false);
+            
+            startScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            reviewScreen.classList.add('hidden');
+            flashcardScreen.classList.add('hidden');
+            cbtScreen.classList.remove('hidden');
+
+            renderNavGrid();
+            renderQuestion();
+            startTimer(59, 59);
+        }
+
+        function renderQuestion() {
+            const qData = quizData[currentQuestionIndex];
+            document.getElementById('question-number').textContent = `${currentQuestionIndex + 1} dari ${quizData.length}`;
+            document.getElementById('question-text').textContent = qData.question;
+            
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            qData.options.forEach(optionText => {
+                const optionEl = document.createElement('div');
+                optionEl.textContent = optionText;
+                optionEl.classList.add('option', 'p-3', 'border', 'border-lightest-navy', 'rounded-md', 'cursor-pointer', 'hover:border-gold');
+                optionEl.addEventListener('click', () => selectAnswer(optionText));
+                if (userAnswers[currentQuestionIndex] === optionText) {
+                    optionEl.classList.add('selected');
+                }
+                optionsContainer.appendChild(optionEl);
+            });
+
+            document.getElementById('flag-checkbox').checked = flaggedQuestions[currentQuestionIndex];
+            updateNavButtons();
+            updateActiveNavItem();
+            
+            document.getElementById('feedback-container').classList.add('hidden');
+            if (testMode === 'latihan' && userAnswers[currentQuestionIndex] !== null) {
+                showImmediateFeedback();
+            }
+        }
+
+        function selectAnswer(selectedOption) {
+            if(testMode === 'latihan' && userAnswers[currentQuestionIndex] !== null) return;
+            userAnswers[currentQuestionIndex] = selectedOption;
+            updateNavGridItem(currentQuestionIndex);
+            if(testMode === 'latihan') {
+                showImmediateFeedback();
+            } else {
+                 renderQuestion();
+            }
+        }
+        
+        function showImmediateFeedback() {
+            const qData = quizData[currentQuestionIndex];
+            const userAnswer = userAnswers[currentQuestionIndex];
+            const isCorrect = userAnswer === qData.answer;
+            const feedbackContainer = document.getElementById('feedback-container');
+            
+            feedbackContainer.innerHTML = `<b>${isCorrect ? 'Benar!' : 'Salah.'}</b> ${qData.explanation}`;
+            feedbackContainer.classList.remove('hidden', 'bg-green-900', 'bg-red-900');
+            feedbackContainer.classList.add(isCorrect ? 'bg-green-900/50' : 'bg-red-900/50');
+
+            document.querySelectorAll('.option').forEach(optEl => {
+                optEl.style.pointerEvents = 'none'; // Disable further clicks
+                if (optEl.textContent === qData.answer) {
+                    optEl.classList.add('correct');
+                } else if (optEl.textContent === userAnswer) {
+                    optEl.classList.add('incorrect');
+                }
+            });
+        }
+
+        function renderNavGrid() {
+            const navGrid = document.getElementById('nav-grid');
+            navGrid.innerHTML = '';
+            for (let i = 0; i < quizData.length; i++) {
+                const item = document.createElement('div');
+                item.textContent = i + 1;
+                item.classList.add('nav-item', 'w-12', 'h-12', 'flex', 'items-center', 'justify-center', 'cursor-pointer', 'rounded-md');
+                item.addEventListener('click', () => goToQuestion(i));
+                navGrid.appendChild(item);
+            }
+        }
+        
+        function updateNavGridItem(index) {
+            const navItem = document.getElementById('nav-grid').children[index];
+            navItem.classList.remove('answered', 'flagged');
+            if (userAnswers[index] !== null) {
+                navItem.classList.add('answered');
+            }
+            if (flaggedQuestions[index]) {
+                navItem.classList.add('flagged');
+            }
+        }
+
+        function updateActiveNavItem() {
+            document.querySelectorAll('.nav-item').forEach((item, index) => {
+                item.classList.toggle('active', index === currentQuestionIndex);
+            });
+        }
+        
+        function updateNavButtons() {
+            document.getElementById('prev-btn').disabled = currentQuestionIndex === 0;
+            document.getElementById('next-btn').disabled = currentQuestionIndex === quizData.length - 1;
+        }
+
+        function goToQuestion(index) {
+            currentQuestionIndex = index;
+            renderQuestion();
+        }
+
+        function startTimer(minutes, seconds) {
+            const timerEl = document.getElementById('timer');
+            let totalSeconds = minutes * 60 + seconds;
+            timerInterval = setInterval(() => {
+                if (totalSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    submitTest();
+                }
+                const min = Math.floor(totalSeconds / 60);
+                const sec = totalSeconds % 60;
+                timerEl.textContent = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+                totalSeconds--;
+            }, 1000);
+        }
+        
+        function submitTest() {
+            clearInterval(timerInterval);
+            let score = 0;
+            userAnswers.forEach((answer, index) => {
+                if (answer === quizData[index].answer) {
+                    score++;
+                }
+            });
+            
+            const totalScore = Math.round((score / quizData.length) * 100);
+            document.getElementById('final-score').textContent = totalScore;
+            document.getElementById('correct-count').textContent = score;
+            document.getElementById('incorrect-count').textContent = quizData.length - score;
+            
+            cbtScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+        }
+        
+        function renderReview() {
+            resultScreen.classList.add('hidden');
+            reviewScreen.innerHTML = ''; 
+            reviewScreen.classList.remove('hidden');
+            
+            quizData.forEach((qData, index) => {
+                const userAnswer = userAnswers[index] || "Tidak Dijawab";
+                const reviewBlock = document.createElement('div');
+                reviewBlock.classList.add('bg-light-navy', 'p-6', 'rounded-lg', 'mb-4', 'shadow-lg');
+                reviewBlock.innerHTML = `<p class="mb-2 text-sm text-slate-400">Pertanyaan ${index + 1}</p><p class="text-lg leading-relaxed mb-4">${qData.question}</p><div class="space-y-2">${qData.options.map(opt => `<div class="p-3 border rounded-md ${opt === qData.answer ? 'bg-green-900/50 border-green-700' : (opt === userAnswer ? 'bg-red-900/50 border-red-700' : 'border-lightest-navy')}">${opt}</div>`).join('')}</div><div class="mt-4 p-3 rounded-md text-sm bg-navy"><b>Jawaban Anda:</b> ${userAnswer} <br><b>Kunci Jawaban:</b> ${qData.answer} <br><b>Penjelasan:</b> ${qData.explanation}</div>`;
+                reviewScreen.appendChild(reviewBlock);
+            });
+             const backBtnClone = document.getElementById('back-to-result-btn').cloneNode(true);
+             reviewScreen.appendChild(backBtnClone);
+             backBtnClone.addEventListener('click', () => {
+                reviewScreen.classList.add('hidden');
+                resultScreen.classList.remove('hidden');
+            });
+        }
+
+        // Flashcard Functions
+        function initFlashcards() {
+            currentCardIndex = 0;
+            startScreen.classList.add('hidden');
+            cbtScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            flashcardScreen.classList.remove('hidden');
+            renderFlashcard();
+        }
+
+        function renderFlashcard() {
+            const card = document.getElementById('flashcard');
+            const cardFront = card.querySelector('.card-front');
+            const cardBack = card.querySelector('.card-back');
+            const cardCounter = document.getElementById('card-counter');
+
+            card.classList.remove('is-flipped');
+            
+            setTimeout(() => {
+                const currentCard = flashcardData[currentCardIndex];
+                cardFront.textContent = currentCard.term;
+                cardBack.textContent = currentCard.definition;
+                cardCounter.textContent = `Kartu ${currentCardIndex + 1} dari ${flashcardData.length}`;
+            }, 150);
+            
+            document.getElementById('prev-card-btn').disabled = currentCardIndex === 0;
+            document.getElementById('next-card-btn').disabled = currentCardIndex === flashcardData.length - 1;
+        }
+
+        // Event Listeners
+        document.getElementById('start-flashcard-btn').addEventListener('click', initFlashcards);
+        document.getElementById('start-latihan-btn').addEventListener('click', () => initTest('latihan'));
+        document.getElementById('start-ujian-btn').addEventListener('click', () => initTest('ujian'));
+        
+        document.getElementById('next-btn').addEventListener('click', () => { if(currentQuestionIndex < quizData.length - 1) goToQuestion(currentQuestionIndex + 1); });
+        document.getElementById('prev-btn').addEventListener('click', () => { if(currentQuestionIndex > 0) goToQuestion(currentQuestionIndex - 1); });
+        
+        document.getElementById('flag-checkbox').addEventListener('change', (e) => {
+            flaggedQuestions[currentQuestionIndex] = e.target.checked;
+            updateNavGridItem(currentQuestionIndex);
+        });
+        document.getElementById('submit-btn').addEventListener('click', () => {
+            if (confirm('Apakah Anda yakin ingin mengumpulkan jawaban Anda?')) {
+                submitTest();
+            }
+        });
+        document.getElementById('restart-btn').addEventListener('click', () => {
+             resultScreen.classList.add('hidden');
+             startScreen.classList.remove('hidden');
+        });
+        document.getElementById('review-btn').addEventListener('click', renderReview);
+        document.getElementById('back-to-result-btn').addEventListener('click', () => {
+            reviewScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+        });
+
+        // Flashcard Event Listeners
+        document.getElementById('flashcard-container').addEventListener('click', () => {
+            document.getElementById('flashcard').classList.toggle('is-flipped');
+        });
+        document.getElementById('next-card-btn').addEventListener('click', () => {
+            if (currentCardIndex < flashcardData.length - 1) {
+                currentCardIndex++;
+                renderFlashcard();
+            }
+        });
+        document.getElementById('prev-card-btn').addEventListener('click', () => {
+            if (currentCardIndex > 0) {
+                currentCardIndex--;
+                renderFlashcard();
+            }
+        });
+        document.getElementById('back-to-menu-btn').addEventListener('click', () => {
+             flashcardScreen.classList.add('hidden');
+             startScreen.classList.remove('hidden');
+        });
+        
+    </script>
+</body>
+</html>
+

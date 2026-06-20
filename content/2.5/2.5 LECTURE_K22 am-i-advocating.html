@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Am I Advocating? — Quiz Blok 2.5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f8f8f5;--bg2:#f1f1ed;--bg3:#e7e7e2;--bg4:#dcdcd6;
+  --border:rgba(40,55,110,.10);--border2:rgba(40,55,110,.20);
+  --text:#161b2e;--text2:#384068;--text3:#7c85a8;
+  --green:#1f7a4a;--greenbg:rgba(31,122,74,.09);--greenb:rgba(31,122,74,.25);
+  --gold:#7a6010;--goldbg:rgba(122,96,16,.09);--goldb:rgba(122,96,16,.28);
+  --red:#b03030;--redbg:rgba(176,48,48,.08);--redb:rgba(176,48,48,.25);
+  --blue:#1a4faa;--bluebg:rgba(26,79,170,.09);--blueb:rgba(26,79,170,.28);
+  --purp:#4433a0;--purpbg:rgba(68,51,160,.08);--purpb:rgba(68,51,160,.25);
+  --teal:#136ba8;--tealbg:rgba(19,107,168,.08);--tealb:rgba(19,107,168,.25);
+  --r:10px;--rl:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.6;min-height:100vh}
+.app{max-width:900px;margin:0 auto;padding:0 16px 60px}
+header{padding:40px 0 28px;text-align:center}
+.eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--text3);text-transform:uppercase;margin-bottom:10px}
+h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(30px,6vw,54px);letter-spacing:-.03em;line-height:1;margin-bottom:10px}
+h1 span{color:var(--red)}
+.sub{font-size:13px;color:var(--text2);max-width:500px;margin:0 auto}
+.main-tabs{display:flex;gap:3px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:24px}
+.main-tab{flex:1;padding:9px 6px;border-radius:9px;border:none;background:transparent;color:var(--text3);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .18s}
+.main-tab:hover{color:var(--text)}
+.main-tab.active{background:var(--purp);color:#fff;font-weight:600}
+.main-panel{display:none}
+.main-panel.active{display:block;animation:fi .2s ease}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.sub-tabs{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:4px;margin-bottom:20px}
+.sub-tab{padding:8px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text3);font-family:'DM Mono',monospace;font-size:10.5px;cursor:pointer;transition:all .18s;text-align:center;line-height:1.4}
+.sub-tab:hover{background:var(--bg3);color:var(--text2);border-color:var(--border2)}
+.sub-tab.active{background:var(--purp);color:#fff;border-color:var(--text);font-weight:600}
+.sub-panel{display:none}
+.sub-panel.active{display:block;animation:fi .18s ease}
+.sec-h{font-family:'Syne',sans-serif;font-weight:700;font-size:14.5px;color:var(--text);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.divider{height:1px;background:var(--border);margin:20px 0}
+.note{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:0 var(--r) var(--r) 0;padding:10px 14px;font-size:12.5px;color:var(--text2);line-height:1.65;margin-bottom:10px}
+.note strong{color:var(--text)}
+.note.blue{border-left-color:var(--blue)}
+.note.green{border-left-color:var(--green)}
+.note.red{border-left-color:var(--red)}
+.note.purp{border-left-color:var(--purp)}
+.note.teal{border-left-color:var(--teal)}
+.dtable-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:14px}
+.dtable-wrap table{width:100%;border-collapse:collapse;font-size:12px}
+.dtable-wrap thead tr{background:var(--bg3)}
+.dtable-wrap th{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.05em;color:var(--text3);font-weight:600;padding:8px 12px;text-align:left;border-bottom:1px solid var(--border)}
+.dtable-wrap td{padding:7px 12px;border-bottom:1px solid var(--border);font-family:'DM Mono',monospace;font-size:11px;color:var(--text2)}
+.dtable-wrap td:first-child{color:var(--text);font-weight:600}
+.dtable-wrap tr:last-child td{border-bottom:none}
+.dtable-wrap tr:nth-child(even){background:rgba(40,55,110,.02)}
+.formula{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;font-family:'DM Mono',monospace;font-size:12px;color:var(--text);margin:8px 0;line-height:1.8}
+.formula .fkey{color:var(--text3);margin-right:6px}
+.ind-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:4px}
+.ind-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;position:relative;overflow:hidden}
+.ind-card .stripe{position:absolute;top:0;left:0;width:3px;height:100%}
+.ind-card .ind-name{font-family:'Syne',sans-serif;font-size:12.5px;font-weight:700;margin-bottom:6px}
+.ind-card .ind-desc{font-size:12px;color:var(--text2);margin-bottom:8px;line-height:1.6}
+.ind-table{width:100%;border-collapse:collapse}
+.ind-table td{font-family:'DM Mono',monospace;font-size:10.5px;padding:3px 0;border-bottom:1px solid var(--border)}
+.ind-table tr:last-child td{border-bottom:none}
+.ind-table td:first-child{color:var(--text3);width:120px}
+.ind-table td:last-child{font-weight:600;color:var(--text)}
+/* QUIZ */
+.qconfig{text-align:center;padding:28px 0}
+.qconfig-title{font-family:'Syne',sans-serif;font-weight:700;font-size:18px;margin-bottom:6px}
+.qconfig-sub{font-size:13px;color:var(--text2);margin-bottom:22px}
+.cfg-grid{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:26px}
+.cfg-btn{padding:8px 16px;border-radius:20px;border:2px solid var(--border2);background:var(--bg2);color:var(--text3);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;transition:all .18s}
+.cfg-btn:hover{color:var(--text2)}
+.cfg-btn.sel{background:var(--purp);color:#fff;border-color:var(--text);font-weight:600}
+.start-btn{padding:12px 34px;border-radius:var(--r);border:none;background:var(--purp);color:var(--bg);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.02em;transition:all .18s}
+.start-btn:hover{background:var(--text)}
+.qheader{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.qnum-display{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);white-space:nowrap}
+.qnum-display strong{color:var(--text);font-size:15px}
+.qscore-display{margin-left:auto;font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);white-space:nowrap}
+.qscore-display strong{color:var(--green);font-size:15px}
+.qtype-pill{display:inline-block;padding:3px 10px;border-radius:10px;font-family:'DM Mono',monospace;font-size:10px;font-weight:600}
+.qcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:20px 22px;margin-bottom:12px}
+.qscen{font-size:13px;color:var(--text2);margin-bottom:10px;line-height:1.65}
+.qdata{font-family:'DM Mono',monospace;font-size:12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:12px;line-height:2}
+.qdata .dv{font-weight:700;color:var(--text)}
+.qdata .da{font-size:10.5px;color:var(--text3);margin-left:4px}
+.qtext{font-size:14px;font-weight:600;color:var(--text);line-height:1.55}
+.opts{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.opt{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-radius:var(--r);border:1.5px solid var(--border2);background:var(--bg);color:var(--text);text-align:left;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.5;transition:all .15s;width:100%}
+.opt:hover:not(:disabled){background:var(--bg3);border-color:rgba(40,55,110,.3)}
+.opt:disabled{cursor:default}
+.opt-key{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;min-width:22px;height:22px;border-radius:6px;background:var(--bg3);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;color:var(--text3);transition:all .15s}
+.opt.correct{background:var(--bluebg);border-color:var(--blueb)}
+.opt.correct .opt-key{background:var(--blue);color:#fff;border-color:var(--blue)}
+.opt.wrong{background:var(--redbg);border-color:var(--redb)}
+.opt.wrong .opt-key{background:var(--red);color:#fff;border-color:var(--red)}
+.opt.reveal{background:var(--bluebg);border-color:var(--blueb);opacity:.75}
+.opt.reveal .opt-key{background:var(--blue);color:#fff;border-color:var(--blue)}
+.expbox{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:12px;font-size:12.5px;color:var(--text2);line-height:1.72;display:none}
+.expbox.show{display:block;animation:fi .2s ease}
+.expbox strong{color:var(--text)}
+.actrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.next-btn{padding:10px 24px;border-radius:var(--r);border:none;background:var(--text);color:var(--bg);font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .18s;display:none}
+.next-btn:hover{background:var(--red)}
+.end-btn{padding:10px 18px;border-radius:var(--r);border:1px solid var(--redb);background:transparent;color:var(--red);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;transition:all .18s;margin-left:auto}
+.end-btn:hover{background:var(--redbg)}
+.results-wrap{text-align:center;padding:28px 12px}
+.res-big{font-family:'Syne',sans-serif;font-size:64px;font-weight:800;color:var(--text);line-height:1;margin-bottom:4px}
+.res-sub{font-family:'DM Mono',monospace;font-size:13px;color:var(--text3);margin-bottom:18px}
+.res-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:20px;text-align:left}
+.res-stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:11px 14px}
+.res-stat .rv{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--text);margin-bottom:2px}
+.res-stat .rl{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)}
+.retry-btn{padding:12px 32px;border-radius:var(--r);border:none;background:var(--text);color:var(--bg);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .18s;margin-bottom:20px}
+.retry-btn:hover{background:var(--red)}
+footer{text-align:center;padding-top:36px;font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="eyebrow">Promosi Kesehatan · Blok 2.5 · FK Unsoed</div>
+  <h1>Am I <span style="color:var(--purp)">Advocating?</span></h1>
+  <p class="sub">Quiz strategi promosi kesehatan, advokasi, Teori Lawrence Green, dan Kerucut Edgar Dale.</p>
+</header>
+
+<div class="main-tabs">
+  <button class="main-tab active" onclick="switchMain('materi',this)">📋 Materi</button>
+  <button class="main-tab" onclick="switchMain('quiz',this)">🎯 Quiz</button>
+</div>
+
+<!-- MATERI -->
+<div class="main-panel active" id="mp-materi">
+<div class="sub-tabs">
+<button class="sub-tab active" onclick="switchSub('tab-strategipromkes',this)">Strategi Promkes</button>
+</div>
+
+<div class="sub-panel active" id="tab-strategipromkes">
+<div class="sec-h">Promosi Kesehatan</div>
+
+<p>Materi disampaikan oleh: <b>dr. Yenni Apriana, MPH</b></p>
+<div class="divider"></div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Promkes dalam Kesmas</div>
+
+<p><b>A. Kesehatan</b>
+Kesehatan menurut UU Kesehatan No. 36 Tahun 2009<sup>[4]</sup> meliputi 4 aspek utama:</p>
+<ol>
+<li>
+<p>Fisik (badan)</p>
+</li>
+<li>
+<p>Mental (jiwa)</p>
+</li>
+<li>
+<p>Sosial</p>
+</li>
+<li>
+<p>Ekonomi</p>
+</li>
+</ol>
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">B. Upaya Kesehatan</div>
+
+<p>Upaya kesehatan terdiri dari dua aspek penting:</p>
+<ol>
+<li>
+<p><b>Pemeliharaan Kesehatan:</b> Bersifat kuratif dan rehabilitatif.</p>
+</li>
+<li>
+<p><b>Peningkatan Kesehatan:</b> Bersifat preventif dan promotif.</p>
+</li>
+</ol>
+<div class="note blue">
+<b>Health Service mencakup:</b>
+
+1. Primary care
+
+2. Secondary care
+
+3. Tertiary care
+</div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">C. Promkes dan Kesmas</div>
+
+<div class="dtable-wrap">
+<div class="dtable-wrap"><table>
+  <thead>
+    <tr>
+      <th>Kategori</th>
+      <th>Karakteristik &amp; Tujuan</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Kesehatan Individu</strong></td>
+      <td>
+        <ul>
+          <li>Sasaran individu</li>
+          <li>Fokus pada kuratif dan rehabilitatif</li>
+          <li>Tujuan: Sembuh, bebas dari penyakit, dan tidak cacat</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Kesehatan Masyarakat</strong></td>
+      <td>
+        <ul>
+          <li>Sasaran masyarakat secara luas</li>
+          <li>Fokus pada preventif dan promotif</li>
+          <li>Tujuan: Meningkatkan kesejahteraan masyarakat, menurunnya angka kematian dan kesakitan</li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table></div>
+</div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">D. Peran Promkes dalam Kesmas</div>
+
+<p>Menurut H.L. Blum (1974)<sup>[3]</sup>, faktor-faktor yang mempengaruhi derajat kesehatan masyarakat meliputi:</p>
+<ol>
+<li>
+<p>Lingkungan</p>
+</li>
+<li>
+<p><b>Perilaku</b> — Area intervensi utama dari Promosi Kesehatan (Promkes)</p>
+</li>
+<li>
+<p>Pelayanan Kesehatan</p>
+</li>
+<li>
+<p>Keturunan (Genetik)</p>
+</li>
+</ol>
+<div class="divider"></div>
+
+<div class="sec-h">Konsep Promosi Kesehatan</div>
+
+<p><b>A. Pendidikan dan Promosi Kesehatan</b>
+Berdasarkan WHO (1984), Pendidikan Kesehatan telah berkembang menjadi Promosi Kesehatan.</p>
+<div class="note">
+<b>Definisi Promkes:</b>
+
+1. Promkes merupakan bagian dari 5 langkah pencegahan penyakit (Level and Clark)<sup>[6]</sup>:
+
+   - *Health Promotion* (Promosi Kesehatan)
+
+   - *Specific Protection* (Perlindungan Spesifik)
+
+   - *Early Diagnosis &amp; Prompt Treatment* (Diagnosis Dini dan Pengobatan Segera)
+
+   - *Disability Limitation* (Pembatasan Kecacatan)
+
+   - *Rehabilitation* (Rehabilitasi)
+
+2. Memasarkan, menjual, dan memperkenalkan pesan-pesan kesehatan sehingga masyarakat menerima dan "membeli" pesan kesehatan tersebut, dan akhirnya berperilaku hidup sehat.
+</div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Pengertian Promosi Kesehatan</div>
+
+<p><b>Lawrence Green (1984)</b><sup>[1]</sup><br>
+Adalah segala bentuk kombinasi pendidikan kesehatan, dan intervensi yang terkait dengan ekonomi, politik, dan organisasi yang dirancang untuk memudahkan perubahan perilaku dan lingkungan yang kondusif bagi kesehatan.</p>
+<p><b>Piagam Ottawa (1986)</b><sup>[2]</sup><br>
+Adalah upaya yang dilakukan terhadap masyarakat agar mereka mau dan mampu untuk memelihara dan meningkatkan kesehatan mereka sendiri.</p>
+<div class="note green">
+<strong>Highlight:</strong> Promosi kesehatan merupakan program yang dirancang untuk memberikan perubahan terhadap manusia, organisasi, masyarakat, dan lingkungan.
+</div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">B. Promkes dan Perilaku</div>
+
+<p>Masalah kesehatan masyarakat dan penyakit sangat ditentukan oleh dua hal:</p>
+<ol>
+<li>
+<p>Perilaku</p>
+</li>
+<li>
+<p>Non-perilaku</p>
+</li>
+</ol>
+<p>Intervensi terhadap perilaku dapat dilakukan dengan:</p>
+<ul>
+<li>
+<p><b>Pendidikan:</b> Menghasilkan perubahan yang bertahan lama (<em>long lasting</em>).</p>
+</li>
+<li>
+<p><b>Paksaan:</b> Menghasilkan perubahan yang tidak langgeng.</p>
+</li>
+</ul>
+<div class="divider"></div>
+
+<div class="sec-h">Faktor Perilaku Menurut Lawrence Green</div>
+
+<p>Menurut teori Precede-Proceed dari Lawrence Green, perilaku kesehatan dipengaruhi oleh tiga faktor utama:</p>
+<ol>
+<li>
+<p><b>Predisposing Factor (Faktor Predisposisi)</b></p>
+</li>
+<li>
+<p>Merupakan faktor utama atau terpenting dalam berperilaku kesehatan.</p>
+</li>
+<li>
+<p>Mempermudah terjadinya perilaku seseorang atau masyarakat.</p>
+</li>
+<li>
+<p>Mencakup pengetahuan, sikap, tradisi, dan kepercayaan masyarakat terhadap hal-hal yang berkaitan dengan kesehatan.</p>
+</li>
+<li>
+<p><b>Enabling Factor (Faktor Pemungkin)</b></p>
+</li>
+<li>
+<p>Fasilitas dan sarana prasarana.</p>
+</li>
+<li>
+<p>Faktor pendukung dalam berperilaku kesehatan.</p>
+</li>
+<li>
+<p>Misalnya: sarana air bersih, tempat buang sampah, tempat cuci tangan, ketersediaan masker, dll.</p>
+</li>
+<li>
+<p><b>Reinforcing Factor (Faktor Penguat)</b></p>
+</li>
+<li>
+<p>Sikap dan perilaku dari tokoh masyarakat, petugas kesehatan, tokoh agama, dll.</p>
+</li>
+<li>
+<p><em>Public figure</em> yang menjadi panutan bagi masyarakat.</p>
+</li>
+</ol>
+<div class="note">
+<b>Ilustrasi Konsep Precede-Proceed (Lawrence Green)</b><br><br>
+<div style="background:#fff;padding:10px;border-radius:8px;margin:10px 0;text-align:center;border:1px solid var(--border);overflow-x:auto;"><svg style="max-width:100%; height:auto;" id="container" width="690.1875" xmlns="http://www.w3.org/2000/svg" class="flowchart" height="278" viewBox="0 0 690.1875 278" role="graphics-document document" aria-roledescription="flowchart-v2"><style>#container{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#container .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#container .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#container .error-icon{fill:#552222;}#container .error-text{fill:#552222;stroke:#552222;}#container .edge-thickness-normal{stroke-width:1px;}#container .edge-thickness-thick{stroke-width:3.5px;}#container .edge-pattern-solid{stroke-dasharray:0;}#container .edge-thickness-invisible{stroke-width:0;fill:none;}#container .edge-pattern-dashed{stroke-dasharray:3;}#container .edge-pattern-dotted{stroke-dasharray:2;}#container .marker{fill:#333333;stroke:#333333;}#container .marker.cross{stroke:#333333;}#container svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#container p{margin:0;}#container .label{font-family:"trebuchet ms",verdana,arial,sans-serif;color:#333;}#container .cluster-label text{fill:#333;}#container .cluster-label span{color:#333;}#container .cluster-label span p{background-color:transparent;}#container .label text,#container span{fill:#333;color:#333;}#container .node rect,#container .node circle,#container .node ellipse,#container .node polygon,#container .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#container .rough-node .label text,#container .node .label text,#container .image-shape .label,#container .icon-shape .label{text-anchor:middle;}#container .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#container .rough-node .label,#container .node .label,#container .image-shape .label,#container .icon-shape .label{text-align:center;}#container .node.clickable{cursor:pointer;}#container .root .anchor path{fill:#333333!important;stroke-width:0;stroke:#333333;}#container .arrowheadPath{fill:#333333;}#container .edgePath .path{stroke:#333333;stroke-width:1px;}#container .flowchart-link{stroke:#333333;fill:none;}#container .edgeLabel{background-color:rgba(232,232,232, 0.8);text-align:center;}#container .edgeLabel p{background-color:rgba(232,232,232, 0.8);}#container .edgeLabel rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#container .labelBkg{background-color:rgba(232, 232, 232, 0.5);}#container .cluster rect{fill:#ffffde;stroke:#aaaa33;stroke-width:1px;}#container .cluster text{fill:#333;}#container .cluster span{color:#333;}#container div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:12px;background:hsl(80, 100%, 96.2745098039%);border:1px solid #aaaa33;border-radius:2px;pointer-events:none;z-index:100;}#container .flowchartTitleText{text-anchor:middle;font-size:18px;fill:#333;}#container rect.text{fill:none;stroke-width:0;}#container .icon-shape,#container .image-shape{background-color:rgba(232,232,232, 0.8);text-align:center;}#container .icon-shape p,#container .image-shape p{background-color:rgba(232,232,232, 0.8);padding:2px;}#container .icon-shape .label rect,#container .image-shape .label rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#container .label-icon{display:inline-block;height:1em;overflow:visible;vertical-align:-0.125em;}#container .node .label-icon path{fill:currentColor;stroke:revert;stroke-width:revert;}#container .node .neo-node{stroke:#9370DB;}#container [data-look="neo"].node rect,#container [data-look="neo"].cluster rect,#container [data-look="neo"].node polygon{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node path{stroke:#9370DB;stroke-width:1px;}#container [data-look="neo"].node .outer-path{filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node .neo-line path{stroke:#9370DB;filter:none;}#container [data-look="neo"].node circle{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node circle .state-start{fill:#000000;}#container [data-look="neo"].icon-shape .icon{fill:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].icon-shape .icon-neo path{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}#container .default&gt;*{fill:rgb(249, 249, 249)!important;stroke:rgb(51, 51, 51)!important;stroke-width:2px!important;}#container .default span{fill:rgb(249, 249, 249)!important;stroke:rgb(51, 51, 51)!important;stroke-width:2px!important;}</style><g><marker id="container_flowchart-v2-pointEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="4.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 5 L 10 10 L 10 0 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointEnd-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="11.5" refY="7" markerUnits="userSpaceOnUse" markerWidth="10.5" markerHeight="14" orient="auto"><path d="M 0 0 L 11.5 7 L 0 14 z" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointStart-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="1" refY="7" markerUnits="userSpaceOnUse" markerWidth="11.5" markerHeight="14" orient="auto"><polygon points="0,7 11.5,14 11.5,0" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></polygon></marker><marker id="container_flowchart-v2-circleEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="11" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-1" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleEnd-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refY="5" refX="12.25" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleStart-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-2" refY="5" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-crossEnd" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="12" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-crossStart" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="-1" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-crossEnd-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="17.7" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5;"></path></marker><marker id="container_flowchart-v2-crossStart-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="-3.5" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5; stroke-dasharray: 1, 0;"></path></marker><g class="root"><g class="clusters"></g><g class="edgePaths"><path d="M133.327,112L148.054,99.167C162.781,86.333,192.234,60.667,210.461,47.833C228.688,35,235.688,35,239.188,35L242.688,35" id="container-L_HP_PF_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_HP_PF_0" data-points="W3sieCI6MTMzLjMyNzIyMzU1NzY5MjMyLCJ5IjoxMTJ9LHsieCI6MjIxLjY4NzUsInkiOjM1fSx7IngiOjI0Ni42ODc1LCJ5IjozNX1d" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M196.688,139L200.854,139C205.021,139,213.354,139,223.57,139C233.786,139,245.885,139,251.935,139L257.984,139" id="container-L_HP_EF_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_HP_EF_0" data-points="W3sieCI6MTk2LjY4NzUsInkiOjEzOX0seyJ4IjoyMjEuNjg3NSwieSI6MTM5fSx7IngiOjI2MS45ODQzNzUsInkiOjEzOX1d" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M133.327,166L148.054,178.833C162.781,191.667,192.234,217.333,211.405,230.167C230.576,243,239.464,243,243.908,243L248.352,243" id="container-L_HP_RF_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_HP_RF_0" data-points="W3sieCI6MTMzLjMyNzIyMzU1NzY5MjMyLCJ5IjoxNjZ9LHsieCI6MjIxLjY4NzUsInkiOjI0M30seyJ4IjoyNTIuMzUxNTYyNSwieSI6MjQzfV0=" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M446.828,35L450.995,35C455.161,35,463.495,35,481.683,47.392C499.872,59.784,527.915,84.567,541.937,96.959L555.959,109.351" id="container-L_PF_HB_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_PF_HB_0" data-points="W3sieCI6NDQ2LjgyODEyNSwieSI6MzV9LHsieCI6NDcxLjgyODEyNSwieSI6MzV9LHsieCI6NTU4Ljk1NjM1NTE2ODI2OTMsInkiOjExMn1d" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M431.531,139L438.247,139C444.964,139,458.396,139,468.612,139C478.828,139,485.828,139,489.328,139L492.828,139" id="container-L_EF_HB_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_EF_HB_0" data-points="W3sieCI6NDMxLjUzMTI1LCJ5IjoxMzl9LHsieCI6NDcxLjgyODEyNSwieSI6MTM5fSx7IngiOjQ5Ni44MjgxMjUsInkiOjEzOX1d" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path><path d="M441.164,243L446.275,243C451.385,243,461.607,243,480.739,230.608C499.872,218.216,527.915,193.433,541.937,181.041L555.959,168.649" id="container-L_RF_HB_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_RF_HB_0" data-points="W3sieCI6NDQxLjE2NDA2MjUsInkiOjI0M30seyJ4Ijo0NzEuODI4MTI1LCJ5IjoyNDN9LHsieCI6NTU4Ljk1NjM1NTE2ODI2OTMsInkiOjE2Nn1d" data-look="classic" marker-end="url(#container_flowchart-v2-pointEnd)"></path></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" data-id="L_HP_PF_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_HP_EF_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_HP_RF_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_PF_HB_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_EF_HB_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_RF_HB_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g></g><g class="nodes"><g class="node default" id="container-flowchart-HP-0" data-look="classic" transform="translate(102.34375, 139)"><rect class="basic label-container" style="fill:#f9f9f9 !important;stroke:#333 !important;stroke-width:2px !important" x="-94.34375" y="-27" width="188.6875" height="54"></rect><g class="label" style="" transform="translate(-64.34375, -12)"><rect></rect><foreignObject width="128.6875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Health promotion</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-PF-1" data-look="classic" transform="translate(346.7578125, 35)"><rect class="basic label-container" style="fill:#f9f9f9 !important;stroke:#333 !important;stroke-width:2px !important" x="-100.0703125" y="-27" width="200.140625" height="54"></rect><g class="label" style="" transform="translate(-70.0703125, -12)"><rect></rect><foreignObject width="140.140625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Predisposing factor</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-EF-3" data-look="classic" transform="translate(346.7578125, 139)"><rect class="basic label-container" style="fill:#f9f9f9 !important;stroke:#333 !important;stroke-width:2px !important" x="-84.7734375" y="-27" width="169.546875" height="54"></rect><g class="label" style="" transform="translate(-54.7734375, -12)"><rect></rect><foreignObject width="109.546875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Enabling factor</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-RF-5" data-look="classic" transform="translate(346.7578125, 243)"><rect class="basic label-container" style="fill:#f9f9f9 !important;stroke:#333 !important;stroke-width:2px !important" x="-94.40625" y="-27" width="188.8125" height="54"></rect><g class="label" style="" transform="translate(-64.40625, -12)"><rect></rect><foreignObject width="128.8125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Reinforcing factor</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-HB-7" data-look="classic" transform="translate(589.5078125, 139)"><rect class="basic label-container" style="fill:#f9f9f9 !important;stroke:#333 !important;stroke-width:2px !important" x="-92.6796875" y="-27" width="185.359375" height="54"></rect><g class="label" style="" transform="translate(-62.6796875, -12)"><rect></rect><foreignObject width="125.359375" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Health behaviour</p></span></div></foreignObject></g></g></g></g></g><defs><filter id="container-drop-shadow" height="130%" width="130%"><feDropShadow dx="4" dy="4" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs><defs><filter id="container-drop-shadow-small" height="150%" width="150%"><feDropShadow dx="2" dy="2" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs></svg></div>
+</div>
+
+<div class="divider"></div>
+
+<div class="sec-h">Visi dan Misi Promkes</div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Visi Promosi Kesehatan</div>
+
+<p>Berdasarkan UU Kesehatan RI No 36 Tahun 2009<sup>[4]</sup>: Meningkatkan kesadaran, kemauan, dan kemampuan hidup sehat bagi setiap orang agar terwujud derajat kesehatan yang setinggi-tingginya, sebagai investasi bagi pembangunan sumber daya manusia yang produktif secara sosial dan ekonomi.</p>
+<p><b>4 Kata Kunci Visi:</b></p>
+<ol>
+<li>
+<p><b>MAU</b> (<em>willingness</em>) untuk memelihara dan meningkatkan kesehatan.</p>
+</li>
+<li>
+<p><b>MAMPU</b> (<em>ability</em>) untuk memelihara dan meningkatkan kesehatan.</p>
+</li>
+<li>
+<p>Memelihara kesehatan, yang berarti mau dan mampu mencegah penyakit, melindungi diri dari gangguan kesehatan, serta mencari pengobatan.</p>
+</li>
+<li>
+<p>Meningkatkan kesehatan.</p>
+</li>
+</ol>
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Misi Promosi Kesehatan</div>
+
+<ol>
+<li>
+<p><b>Advocate (Advokasi):</b> Dilakukan terhadap para pengambil keputusan.</p>
+</li>
+<li>
+<p><b>Mediate (Menjembatani):</b> Menjembatani antara sektor kesehatan dengan sektor lain sebagai mitra kerja.</p>
+</li>
+<li>
+<p><b>Enable (Memampukan):</b> Masyarakat mau dan mampu meningkatkan kesehatannya.</p>
+</li>
+</ol>
+<div class="divider"></div>
+
+<div class="sec-h">Strategi dan Ruang Lingkup Promkes</div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">D. Strategi Promkes</div>
+
+<ol>
+<li>
+<p><b>Advokasi:</b> Pendekatan kepada para pembuat kebijakan.</p>
+</li>
+<li>
+<p><b>Dukungan Sosial:</b> Melibatkan tokoh masyarakat formal maupun informal, serta melakukan sosialisasi program kesehatan sehingga masyarakat mau berpartisipasi terhadap program kesehatan tersebut.</p>
+</li>
+<li>
+<p><b>Pemberdayaan Masyarakat:</b> Mewujudkan kemampuan masyarakat dalam memelihara dan meningkatkan kesehatan mereka sendiri.</p>
+</li>
+</ol>
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">E. Ruang Lingkup Promkes</div>
+
+<p><b>1. Ruang Lingkup Berdasarkan Aspek Pelayanan Kesehatan</b></p>
+<ul>
+<li>
+<p><b>Promkes pada Tingkat Promotif:</b> Difokuskan pada kelompok orang sehat, supaya mereka mampu meningkatkan kesehatannya.</p>
+</li>
+<li>
+<p><b>Promkes pada Tingkat Preventif:</b> Difokuskan pada kelompok <em>high risk</em> (berisiko tinggi) sebagai <em>primary prevention</em>.</p>
+</li>
+<li>
+<p><b>Promkes pada Tingkat Kuratif:</b> Difokuskan pada kelompok penderita penyakit untuk mencegah supaya penyakit tidak menjadi lebih parah (<em>secondary prevention</em>).</p>
+</li>
+<li>
+<p><b>Promkes pada Tingkat Rehabilitatif:</b> Difokuskan pada kelompok pasien yang baru sembuh dari penyakit untuk pemulihan dan menghindari kecacatan (<em>tertiary prevention</em>).</p>
+</li>
+</ul>
+<p><b>2. Ruang Lingkup Promkes Berdasarkan Tatanan (Tempat Pelaksanaan)</b></p>
+<ul>
+<li>
+<p>Keluarga</p>
+</li>
+<li>
+<p>Sekolah</p>
+</li>
+<li>
+<p>Tempat Kerja</p>
+</li>
+<li>
+<p>Tempat Umum</p>
+</li>
+<li>
+<p>Institusi Pelayanan Kesehatan</p>
+</li>
+</ul>
+<div class="divider"></div>
+
+<div class="sec-h">Metode dan Media Promosi Kesehatan</div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Metode Promkes</div>
+
+<ul>
+<li>
+<p><b>Metode Individual:</b> Membina seseorang yang mulai tertarik terhadap perubahan perilaku kesehatan (Contoh: Bimbingan penyuluhan, <em>interview</em>/wawancara konseling).</p>
+</li>
+<li>
+<p><b>Metode Kelompok:</b></p>
+</li>
+<li>
+<p><em>Kelompok Besar:</em> Ceramah, seminar, lokakarya.</p>
+</li>
+<li>
+<p><em>Kelompok Kecil:</em> Diskusi, curah pendapat (<em>brainstorming</em>), bola salju (<em>snow balling</em>), <em>role play</em>, simulasi.</p>
+</li>
+<li>
+<p><b>Metode Massa:</b> Ceramah umum, pidato, publikasi tulisan di koran atau majalah.</p>
+</li>
+</ul>
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Media Promkes</div>
+
+<div class="note blue">
+<b>Tujuan Penggunaan Media Promkes:</b>
+
+- Mempermudah penyampaian informasi.
+
+- Menghindari kesalahan persepsi.
+
+- Memperjelas informasi dan mempermudah pengertian.
+
+- Mengurangi komunikasi yang bersifat verbalistik (hanya sebatas kata-kata).
+
+- Bisa menampilkan objek yang tidak bisa ditangkap langsung dengan mata.
+
+- Memperlancar komunikasi.
+</div>
+
+<p><b>Alat Bantu Media / Peraga:</b>
+Berfungsi untuk membantu dan memeragakan sesuatu di dalam proses pendidikan. Macam-macam alat bantu terdiri dari <em>visual aids</em> (alat bantu lihat), <em>audio aids</em> (alat bantu dengar), dan <em>audio-visual aids</em> (alat bantu dengar-lihat). Contoh alat peraga tiruan: Model susunan tata surya, model struktur gigi (phantom gigi).</p>
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Kerucut Pengalaman Edgar Dale (Cone of Experience)</div>
+
+<p>Menurut Edgar Dale<sup>[5]</sup>, tingkat penyerapan informasi sangat dipengaruhi oleh metode atau alat peraga yang digunakan:</p>
+<div class="note">
+<b>Hierarki Edgar Dale (Dari Abstrak ke Konkret)</b><br><br>
+<div style="background:#fff;padding:10px;border-radius:8px;margin:10px 0;text-align:center;border:1px solid var(--border);overflow-x:auto;"><svg style="max-width:100%; height:auto;" id="container" width="188.4375" xmlns="http://www.w3.org/2000/svg" class="flowchart" height="1006" viewBox="0 0 188.4375 1006" role="graphics-document document" aria-roledescription="flowchart-v2"><style>#container{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#container .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#container .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#container .error-icon{fill:#552222;}#container .error-text{fill:#552222;stroke:#552222;}#container .edge-thickness-normal{stroke-width:1px;}#container .edge-thickness-thick{stroke-width:3.5px;}#container .edge-pattern-solid{stroke-dasharray:0;}#container .edge-thickness-invisible{stroke-width:0;fill:none;}#container .edge-pattern-dashed{stroke-dasharray:3;}#container .edge-pattern-dotted{stroke-dasharray:2;}#container .marker{fill:#333333;stroke:#333333;}#container .marker.cross{stroke:#333333;}#container svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#container p{margin:0;}#container .label{font-family:"trebuchet ms",verdana,arial,sans-serif;color:#333;}#container .cluster-label text{fill:#333;}#container .cluster-label span{color:#333;}#container .cluster-label span p{background-color:transparent;}#container .label text,#container span{fill:#333;color:#333;}#container .node rect,#container .node circle,#container .node ellipse,#container .node polygon,#container .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#container .rough-node .label text,#container .node .label text,#container .image-shape .label,#container .icon-shape .label{text-anchor:middle;}#container .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#container .rough-node .label,#container .node .label,#container .image-shape .label,#container .icon-shape .label{text-align:center;}#container .node.clickable{cursor:pointer;}#container .root .anchor path{fill:#333333!important;stroke-width:0;stroke:#333333;}#container .arrowheadPath{fill:#333333;}#container .edgePath .path{stroke:#333333;stroke-width:1px;}#container .flowchart-link{stroke:#333333;fill:none;}#container .edgeLabel{background-color:rgba(232,232,232, 0.8);text-align:center;}#container .edgeLabel p{background-color:rgba(232,232,232, 0.8);}#container .edgeLabel rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#container .labelBkg{background-color:rgba(232, 232, 232, 0.5);}#container .cluster rect{fill:#ffffde;stroke:#aaaa33;stroke-width:1px;}#container .cluster text{fill:#333;}#container .cluster span{color:#333;}#container div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:12px;background:hsl(80, 100%, 96.2745098039%);border:1px solid #aaaa33;border-radius:2px;pointer-events:none;z-index:100;}#container .flowchartTitleText{text-anchor:middle;font-size:18px;fill:#333;}#container rect.text{fill:none;stroke-width:0;}#container .icon-shape,#container .image-shape{background-color:rgba(232,232,232, 0.8);text-align:center;}#container .icon-shape p,#container .image-shape p{background-color:rgba(232,232,232, 0.8);padding:2px;}#container .icon-shape .label rect,#container .image-shape .label rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#container .label-icon{display:inline-block;height:1em;overflow:visible;vertical-align:-0.125em;}#container .node .label-icon path{fill:currentColor;stroke:revert;stroke-width:revert;}#container .node .neo-node{stroke:#9370DB;}#container [data-look="neo"].node rect,#container [data-look="neo"].cluster rect,#container [data-look="neo"].node polygon{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node path{stroke:#9370DB;stroke-width:1px;}#container [data-look="neo"].node .outer-path{filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node .neo-line path{stroke:#9370DB;filter:none;}#container [data-look="neo"].node circle{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].node circle .state-start{fill:#000000;}#container [data-look="neo"].icon-shape .icon{fill:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container [data-look="neo"].icon-shape .icon-neo path{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#container :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g><marker id="container_flowchart-v2-pointEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="4.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 5 L 10 10 L 10 0 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointEnd-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="11.5" refY="7" markerUnits="userSpaceOnUse" markerWidth="10.5" markerHeight="14" orient="auto"><path d="M 0 0 L 11.5 7 L 0 14 z" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-pointStart-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="1" refY="7" markerUnits="userSpaceOnUse" markerWidth="11.5" markerHeight="14" orient="auto"><polygon points="0,7 11.5,14 11.5,0" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></polygon></marker><marker id="container_flowchart-v2-circleEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="11" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-1" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleEnd-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refY="5" refX="12.25" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-circleStart-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-2" refY="5" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker id="container_flowchart-v2-crossEnd" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="12" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-crossStart" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="-1" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="container_flowchart-v2-crossEnd-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="17.7" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5;"></path></marker><marker id="container_flowchart-v2-crossStart-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="-3.5" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5; stroke-dasharray: 1, 0;"></path></marker><g class="root"><g class="clusters"></g><g class="edgePaths"><path d="M94.219,62L94.219,66.167C94.219,70.333,94.219,78.667,94.219,87C94.219,95.333,94.219,103.667,94.219,107.833L94.219,112" id="container-L_A_B_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_A_B_0" data-points="W3sieCI6OTQuMjE4NzUsInkiOjYyfSx7IngiOjk0LjIxODc1LCJ5Ijo4N30seyJ4Ijo5NC4yMTg3NSwieSI6MTEyfV0=" data-look="classic"></path><path d="M94.219,166L94.219,170.167C94.219,174.333,94.219,182.667,94.219,191C94.219,199.333,94.219,207.667,94.219,211.833L94.219,216" id="container-L_B_C_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_B_C_0" data-points="W3sieCI6OTQuMjE4NzUsInkiOjE2Nn0seyJ4Ijo5NC4yMTg3NSwieSI6MTkxfSx7IngiOjk0LjIxODc1LCJ5IjoyMTZ9XQ==" data-look="classic"></path><path d="M94.219,270L94.219,274.167C94.219,278.333,94.219,286.667,94.219,295C94.219,303.333,94.219,311.667,94.219,315.833L94.219,320" id="container-L_C_D_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_C_D_0" data-points="W3sieCI6OTQuMjE4NzUsInkiOjI3MH0seyJ4Ijo5NC4yMTg3NSwieSI6Mjk1fSx7IngiOjk0LjIxODc1LCJ5IjozMjB9XQ==" data-look="classic"></path><path d="M94.219,374L94.219,378.167C94.219,382.333,94.219,390.667,94.219,399C94.219,407.333,94.219,415.667,94.219,419.833L94.219,424" id="container-L_D_E_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_D_E_0" data-points="W3sieCI6OTQuMjE4NzUsInkiOjM3NH0seyJ4Ijo5NC4yMTg3NSwieSI6Mzk5fSx7IngiOjk0LjIxODc1LCJ5Ijo0MjR9XQ==" data-look="classic"></path><path d="M94.219,478L94.219,482.167C94.219,486.333,94.219,494.667,94.219,503C94.219,511.333,94.219,519.667,94.219,523.833L94.219,528" id="container-L_E_F_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_E_F_0" data-points="W3sieCI6OTQuMjE4NzUsInkiOjQ3OH0seyJ4Ijo5NC4yMTg3NSwieSI6NTAzfSx7IngiOjk0LjIxODc1LCJ5Ijo1Mjh9XQ==" data-look="classic"></path><path d="M94.219,582L94.219,586.167C94.219,590.333,94.219,598.667,94.219,607C94.219,615.333,94.219,623.667,94.219,627.833L94.219,632" id="container-L_F_G_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_F_G_0" data-points="W3sieCI6OTQuMjE4NzUsInkiOjU4Mn0seyJ4Ijo5NC4yMTg3NSwieSI6NjA3fSx7IngiOjk0LjIxODc1LCJ5Ijo2MzJ9XQ==" data-look="classic"></path><path d="M94.219,686L94.219,690.167C94.219,694.333,94.219,702.667,94.219,711C94.219,719.333,94.219,727.667,94.219,731.833L94.219,736" id="container-L_G_H_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_G_H_0" data-points="W3sieCI6OTQuMjE4NzUsInkiOjY4Nn0seyJ4Ijo5NC4yMTg3NSwieSI6NzExfSx7IngiOjk0LjIxODc1LCJ5Ijo3MzZ9XQ==" data-look="classic"></path><path d="M94.219,790L94.219,794.167C94.219,798.333,94.219,806.667,94.219,815C94.219,823.333,94.219,831.667,94.219,835.833L94.219,840" id="container-L_H_I_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_H_I_0" data-points="W3sieCI6OTQuMjE4NzUsInkiOjc5MH0seyJ4Ijo5NC4yMTg3NSwieSI6ODE1fSx7IngiOjk0LjIxODc1LCJ5Ijo4NDB9XQ==" data-look="classic"></path><path d="M94.219,894L94.219,898.167C94.219,902.333,94.219,910.667,94.219,919C94.219,927.333,94.219,935.667,94.219,939.833L94.219,944" id="container-L_I_J_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_I_J_0" data-points="W3sieCI6OTQuMjE4NzUsInkiOjg5NH0seyJ4Ijo5NC4yMTg3NSwieSI6OTE5fSx7IngiOjk0LjIxODc1LCJ5Ijo5NDR9XQ==" data-look="classic"></path></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" data-id="L_A_B_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_B_C_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_C_D_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_D_E_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_E_F_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_F_G_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_G_H_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_H_I_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_I_J_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g></g><g class="nodes"><g class="node default" id="container-flowchart-A-0" data-look="classic" transform="translate(94.21875, 35)"><rect class="basic label-container" style="" x="-63.828125" y="-27" width="127.65625" height="54"></rect><g class="label" style="" transform="translate(-33.828125, -12)"><rect></rect><foreignObject width="67.65625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Kata kata</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-B-1" data-look="classic" transform="translate(94.21875, 139)"><rect class="basic label-container" style="" x="-55.7734375" y="-27" width="111.546875" height="54"></rect><g class="label" style="" transform="translate(-25.7734375, -12)"><rect></rect><foreignObject width="51.546875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Tulisan</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-C-3" data-look="classic" transform="translate(94.21875, 243)"><rect class="basic label-container" style="" x="-86.21875" y="-27" width="172.4375" height="54"></rect><g class="label" style="" transform="translate(-56.21875, -12)"><rect></rect><foreignObject width="112.4375" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Rekaman, radio</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-D-5" data-look="classic" transform="translate(94.21875, 347)"><rect class="basic label-container" style="" x="-45.109375" y="-27" width="90.21875" height="54"></rect><g class="label" style="" transform="translate(-15.109375, -12)"><rect></rect><foreignObject width="30.21875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Film</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-E-7" data-look="classic" transform="translate(94.21875, 451)"><rect class="basic label-container" style="" x="-56.875" y="-27" width="113.75" height="54"></rect><g class="label" style="" transform="translate(-26.875, -12)"><rect></rect><foreignObject width="53.75" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Televisi</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-F-9" data-look="classic" transform="translate(94.21875, 555)"><rect class="basic label-container" style="" x="-62.4609375" y="-27" width="124.921875" height="54"></rect><g class="label" style="" transform="translate(-32.4609375, -12)"><rect></rect><foreignObject width="64.921875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Field trip</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-G-11" data-look="classic" transform="translate(94.21875, 659)"><rect class="basic label-container" style="" x="-75.4296875" y="-27" width="150.859375" height="54"></rect><g class="label" style="" transform="translate(-45.4296875, -12)"><rect></rect><foreignObject width="90.859375" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Demonstrasi</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-H-13" data-look="classic" transform="translate(94.21875, 763)"><rect class="basic label-container" style="" x="-67.59375" y="-27" width="135.1875" height="54"></rect><g class="label" style="" transform="translate(-37.59375, -12)"><rect></rect><foreignObject width="75.1875" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Sandiwara</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-I-15" data-look="classic" transform="translate(94.21875, 867)"><rect class="basic label-container" style="" x="-77.1015625" y="-27" width="154.203125" height="54"></rect><g class="label" style="" transform="translate(-47.1015625, -12)"><rect></rect><foreignObject width="94.203125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Benda tiruan</p></span></div></foreignObject></g></g><g class="node default" id="container-flowchart-J-17" data-look="classic" transform="translate(94.21875, 971)"><rect class="basic label-container" style="" x="-67.78125" y="-27" width="135.5625" height="54"></rect><g class="label" style="" transform="translate(-37.78125, -12)"><rect></rect><foreignObject width="75.5625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Benda asli</p></span></div></foreignObject></g></g></g></g></g><defs><filter id="container-drop-shadow" height="130%" width="130%"><feDropShadow dx="4" dy="4" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs><defs><filter id="container-drop-shadow-small" height="150%" width="150%"><feDropShadow dx="2" dy="2" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs></svg></div>
+</div>
+
+<div class="divider"></div>
+
+<div class="sec-h">Perencanaan dan Evaluasi Promkes</div>
+
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Perencanaan Promkes</div>
+
+<ol>
+<li>
+<p><b>Menentukan Kebutuhan:</b></p>
+</li>
+<li>
+<p>Melakukan diagnosis masalah.</p>
+</li>
+<li>
+<p>Menetapkan prioritas masalah.</p>
+</li>
+<li>
+<p><b>Mengembangkan Komponen Promkes:</b></p>
+</li>
+<li>
+<p>Menentukan tujuan promosi kesehatan.</p>
+</li>
+<li>
+<p>Menentukan sasaran promkes.</p>
+</li>
+<li>
+<p>Menentukan isi promkes.</p>
+</li>
+<li>
+<p>Menentukan metode yang digunakan.</p>
+</li>
+<li>
+<p>Menentukan media penyampaian.</p>
+</li>
+<li>
+<p>Menentukan rencana evaluasi.</p>
+</li>
+<li>
+<p>Menentukan jadwal pelaksanaan.</p>
+</li>
+</ol>
+<div class="sec-h" style="font-size:13px;border:none;margin-top:14px">Evaluasi Promkes</div>
+
+<p>Tahapan dalam evaluasi meliputi:</p>
+<ul>
+<li>
+<p>Perencanaan (<em>Planning</em>)</p>
+</li>
+<li>
+<p>Implementasi (<em>Implementation</em>)</p>
+</li>
+<li>
+<p>Evaluasi (<em>Evaluation</em>)</p>
+</li>
+</ul>
+<div class="divider"></div>
+
+<div class="sec-h">Daftar Pustaka</div>
+
+<ol>
+<li>
+<p>Green LW, Kreuter MW. <em>Health Promotion Planning: An Educational and Environmental Approach</em>. 1st ed. Palo Alto, CA: Mayfield Publishing Company; 1991.</p>
+</li>
+<li>
+<p>World Health Organization. <em>Ottawa Charter for Health Promotion</em>. Geneva: WHO; 1986.</p>
+</li>
+<li>
+<p>Blum HL. <em>Planning for Health: Development and Application of Social Change Theory</em>. New York: Human Sciences Press; 1974.</p>
+</li>
+<li>
+<p>Republik Indonesia. <em>Undang-Undang Republik Indonesia Nomor 36 Tahun 2009 tentang Kesehatan</em>. Jakarta: Sekretariat Negara; 2009.</p>
+</li>
+<li>
+<p>Dale E. <em>Audio-Visual Methods in Teaching</em>. 3rd ed. New York: Holt, Rinehart &amp; Winston; 1969.</p>
+</li>
+<li>
+<p>Leavell HR, Clark EG. <em>Preventive Medicine for the Doctor in His Community</em>. 3rd ed. New York: McGraw-Hill; 1965.</p>
+</li>
+</ol>
+</div>
+
+</div>
+
+<!-- QUIZ -->
+<div class="main-panel" id="mp-quiz">
+  <div id="qconfig" class="qconfig">
+    <div class="qconfig-title">Mulai Sesi Quiz</div>
+    <div class="qconfig-sub">Pilih topik (multi-pilih)</div>
+    <div class="cfg-grid" id="cfg-grid">
+<button class="cfg-btn sel" data-type="pool_dasar_kesmas">Dasar Kesmas</button>
+<button class="cfg-btn sel" data-type="pool_konsep_promkes">Konsep Promkes</button>
+<button class="cfg-btn sel" data-type="pool">Pool</button>
+<button class="cfg-btn sel" data-type="pool_edgar_dale">Edgar Dale</button>
+<button class="cfg-btn sel" data-type="soalArr">Soalarr</button>
+<button class="cfg-btn sel" data-type="kasusPool">Kasuspool</button>
+
+</div>
+    <button class="start-btn" onclick="startSession()">Mulai →</button>
+  </div>
+  <div id="qactive" style="display:none">
+    <div class="qheader">
+      <div class="qnum-display">Soal ke-<strong id="qnum">1</strong></div>
+      <div id="qpill" class="qtype-pill"></div>
+      <div class="qscore-display"><strong id="qscore">0</strong> benar</div>
+    </div>
+    <div class="qcard">
+      <div id="qscen" class="qscen" style="display:none"></div>
+      <div id="qdata" class="qdata" style="display:none"></div>
+      <div id="qtext" class="qtext"></div>
+    </div>
+    <div class="opts" id="opts"></div>
+    <div class="expbox" id="expbox"></div>
+    <div class="actrow">
+      <button class="next-btn" id="nextbtn" onclick="nextQ()">Soal Berikutnya →</button>
+      <button class="end-btn" onclick="endSession()">Akhiri Sesi</button>
+    </div>
+  </div>
+  <div id="qresults" style="display:none">
+    <div class="results-wrap">
+      <div class="res-big" id="res-pct">—</div>
+      <div class="res-sub" id="res-sub">—</div>
+      <div class="res-grid" id="res-grid"></div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:20px">
+        <button class="retry-btn" style="margin-bottom:0" onclick="restartQuiz()">Coba Lagi</button>
+        <button class="retry-btn" style="margin-bottom:0;background:var(--green)" onclick="downloadCert()">⬇ Unduh Sertifikat</button>
+      </div>
+      <div class="dtable-wrap" style="margin-bottom:14px"><table><thead><tr><th>Topik</th><th>Soal</th><th>Benar</th></tr></thead><tbody id="res-bytype"></tbody></table></div>
+      <div class="dtable-wrap"><table><thead><tr><th>#</th><th>Soal (ringkas)</th><th>Jawaban Benar</th><th>Hasil</th></tr></thead><tbody id="res-tbody"></tbody></table></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div>am i advocating? · Blok 2.5 · FK Unsoed</div>
+  <div style="margin-top:5px">crafted by alchemist4real · <a href="https://174-three.vercel.app" target="_blank" style="color:var(--text3);text-decoration:none;border-bottom:1px dashed var(--text3);transition:color .18s" onmouseover="this.style.color='var(--blue)'" onmouseout="this.style.color='var(--text3)'">check other quizzes → 174 archive ↗</a></div>
+</footer>
+</div>
+
+<script>
+// ═══ TAB ═══
+window.switchMain=function(id,b){document.querySelectorAll('.main-panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.main-tab').forEach(x=>x.classList.remove('active'));document.getElementById('mp-'+id).classList.add('active');b.classList.add('active');};
+window.switchSub=function(id,b){document.querySelectorAll('.sub-panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.sub-tab').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');b.classList.add('active');};
+window.startSession=startSession;window.nextQ=nextQ;window.endSession=endSession;window.restartQuiz=restartQuiz;
+
+// ═══ CONFIG ═══
+const activeTypes=new Set(['pool_dasar_kesmas','pool_konsep_promkes','pool','pool_edgar_dale','soalArr','kasusPool']);
+document.querySelectorAll('.cfg-btn').forEach(b=>{b.addEventListener('click',()=>{const t=b.dataset.type;if(activeTypes.has(t)){if(activeTypes.size===1)return;activeTypes.delete(t);b.classList.remove('sel');}else{activeTypes.add(t);b.classList.add('sel');}});});
+
+// ═══ UTILS ═══
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const shuf=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]];}return b;};
+const KEYS='ABCDE'.split('');
+function stripHtml(s){return s.replace(/<[^>]*>/g,'');}
+// Pool-based sequential picker (no repeat until exhausted)
+function makePicker(pool){let idx=[];return function(){if(idx.length>=pool.length)idx=[];const av=pool.map((_,i)=>i).filter(i=>!idx.includes(i));const si=rnd(av);idx.push(si);return pool[si];};}
+
+// ═══════════════════════════════════════
+// BANKS
+// ═══════════════════════════════════════
+const pool_dasar_kesmas = [
+        {
+            type: 'k22_dasar', typeName: 'Dasar Promkes', tpColor: 'var(--blue)', tpBg: 'rgba(48,120,176,0.09)',
+            q: "Berdasarkan UU Kesehatan No. 36 Tahun 2009, aspek kesehatan manakah yang difokuskan agar seseorang dapat produktif?",
+            opts: shuf(["Aspek Ekonomi", "Aspek Fisik", "Aspek Mental", "Aspek Sosial", "Aspek Budaya"]),
+            ans: "Aspek Ekonomi",
+            exp: "UU No. 36 Tahun 2009 menyebutkan kesehatan meliputi aspek fisik, mental, sosial, dan ekonomi, yang keseluruhannya bertujuan agar setiap orang dapat produktif secara sosial dan ekonomi."
+        },
+        {
+            type: 'k22_dasar', typeName: 'Dasar Promkes', tpColor: 'var(--blue)', tpBg: 'rgba(48,120,176,0.09)',
+            q: "Upaya kesehatan yang bersifat promotif dan preventif lebih ditekankan pada...",
+            opts: shuf(["Kesehatan Masyarakat", "Kesehatan Individu", "Health Service Tertiary", "Perlindungan Spesifik", "Pembatasan Kecacatan"]),
+            ans: "Kesehatan Masyarakat",
+            exp: "Kesehatan masyarakat (Public Health) memiliki sasaran masyarakat secara luas dan berfokus pada upaya preventif dan promotif, berbeda dengan kesehatan individu yang berfokus pada kuratif dan rehabilitatif."
+        },
+        {
+            type: 'k22_dasar', typeName: 'Dasar Promkes', tpColor: 'var(--blue)', tpBg: 'rgba(48,120,176,0.09)',
+            q: "Tujuan utama dari pelayanan kesehatan individu adalah...",
+            opts: shuf([
+                "Sembuh, bebas dari penyakit, dan tidak cacat", 
+                "Meningkatkan kesejahteraan masyarakat", 
+                "Menurunnya angka kematian secara luas", 
+                "Melakukan pemberdayaan masyarakat", 
+                "Mencapai target primary health care"
+            ]),
+            ans: "Sembuh, bebas dari penyakit, dan tidak cacat",
+            exp: "Tujuan kesehatan individu adalah kesembuhan, bebas dari penyakit, dan tidak cacat. Sementara itu, tujuan kesmas adalah kesejahteraan masyarakat dan penurunan mortalitas/morbiditas luas."
+        },
+        {
+            type: 'k22_dasar', typeName: 'Dasar Promkes', tpColor: 'var(--blue)', tpBg: 'rgba(48,120,176,0.09)',
+            q: "Menurut teori H.L. Blum (1974), manakah dari faktor berikut yang merupakan area intervensi UTAMA dari Promosi Kesehatan?",
+            opts: shuf(["Perilaku", "Lingkungan", "Pelayanan Kesehatan", "Keturunan (Genetik)", "Ekonomi Masyarakat"]),
+            ans: "Perilaku",
+            exp: "H.L. Blum menyebutkan 4 faktor yang mempengaruhi derajat kesehatan: Lingkungan, Perilaku, Yankes, dan Genetik. Area intervensi UTAMA promkes adalah <strong>Perilaku</strong>."
+        },
+        {
+            type: 'k22_dasar', typeName: 'Dasar Promkes', tpColor: 'var(--blue)', tpBg: 'rgba(48,120,176,0.09)',
+            q: "Berdasarkan tingkatannya, 'Health Service' yang mencakup layanan rujukan spesialis atau subspesialis termasuk dalam kategori...",
+            opts: shuf(["Tertiary care", "Primary care", "Secondary care", "Preventive care", "Promotive care"]),
+            ans: "Tertiary care",
+            exp: "Health Service mencakup Primary, Secondary, dan Tertiary care. Layanan rujukan tingkat lanjut termasuk Tertiary care."
+        }
+    ];
+const pick_pool_dasar_kesmas = makePicker(pool_dasar_kesmas);
+const pool_konsep_promkes = [
+        {
+            type: 'k22_konsep', typeName: 'Konsep Promkes', tpColor: 'var(--green)', tpBg: 'rgba(48,176,120,0.09)',
+            q: "Siapakah tokoh yang mendefinisikan Promosi Kesehatan sebagai kombinasi pendidikan kesehatan dan intervensi ekonomi, politik, serta organisasi?",
+            opts: shuf(["Lawrence Green (1984)", "H.L. Blum (1974)", "Leavell & Clark (1965)", "Edgar Dale", "Piagam Ottawa (1986)"]),
+            ans: "Lawrence Green (1984)",
+            exp: "Lawrence Green (1984) mendefinisikan promkes sebagai kombinasi pendidikan kesehatan dan intervensi yang terkait dengan ekonomi, politik, dan organisasi yang dirancang untuk memudahkan perubahan perilaku dan lingkungan."
+        },
+        {
+            type: 'k22_konsep', typeName: 'Konsep Promkes', tpColor: 'var(--green)', tpBg: 'rgba(48,176,120,0.09)',
+            q: "Dokumen penting yang melahirkan definisi bahwa Promkes adalah upaya memberdayakan masyarakat agar mereka 'mau dan mampu' memelihara kesehatan sendiri adalah...",
+            opts: shuf(["Piagam Ottawa (1986)", "Deklarasi Alma Ata (1978)", "Piagam Jakarta (1997)", "Teori Precede-Proceed", "Lima Tingkat Pencegahan Leavell & Clark"]),
+            ans: "Piagam Ottawa (1986)",
+            exp: "Piagam Ottawa (Ottawa Charter, 1986) mendefinisikan promkes sebagai proses memampukan orang untuk meningkatkan kendali atas, dan memperbaiki kesehatan mereka."
+        },
+        {
+            type: 'k22_konsep', typeName: 'Konsep Promkes', tpColor: 'var(--green)', tpBg: 'rgba(48,176,120,0.09)',
+            q: "Perubahan perilaku yang dihasilkan melalui paksaan (coercion) biasanya...",
+            opts: shuf([
+                "Tidak langgeng (bertahan lama)", 
+                "Menjadi perubahan yang long lasting", 
+                "Meningkatkan kesadaran sejati masyarakat", 
+                "Merupakan tujuan utama Piagam Ottawa", 
+                "Didukung penuh oleh Lawrence Green"
+            ]),
+            ans: "Tidak langgeng (bertahan lama)",
+            exp: "Intervensi perilaku melalui pendidikan menghasilkan perubahan yang long lasting (bertahan lama), sedangkan melalui paksaan akan menghasilkan perubahan yang tidak langgeng."
+        }
+    ];
+const pick_pool_konsep_promkes = makePicker(pool_konsep_promkes);
+const pool = [
+            {
+                type: 'k22_misi', typeName: 'Misi & Strategi Promkes', tpColor: 'var(--pink)', tpBg: 'rgba(233,30,99,0.09)',
+                scenario: "<p>Dinas Kesehatan mendekati Bupati dan anggota DPRD agar merumuskan Peraturan Daerah (Perda) tentang Kawasan Tanpa Rokok (KTR).</p>",
+                q: "Strategi dan Misi Promkes yang diterapkan pada skenario ini adalah...",
+                opts: shuf(["Advocate (Advokasi)", "Mediate (Menjembatani)", "Enable (Memampukan)", "Sosialisasi (Dukungan Sosial)", "Empowerment (Pemberdayaan Masyarakat)"]),
+                ans: "Advocate (Advokasi)",
+                exp: "Advokasi (Advocate) adalah upaya pendekatan/persuasi kepada para pengambil keputusan/pembuat kebijakan (seperti Bupati/DPRD) agar mengeluarkan kebijakan yang mendukung kesehatan."
+            },
+            {
+                type: 'k22_misi', typeName: 'Misi & Strategi Promkes', tpColor: 'var(--pink)', tpBg: 'rgba(233,30,99,0.09)',
+                scenario: "<p>Tenaga Promkes mengajak pemuka agama, ketua adat, dan tokoh pemuda setempat untuk bersama-sama mensosialisasikan pentingnya jamban sehat kepada warganya.</p>",
+                q: "Strategi Promkes yang paling tepat menggambarkan skenario ini adalah...",
+                opts: shuf(["Dukungan Sosial (Social Support)", "Advokasi (Advocacy)", "Pemberdayaan Masyarakat (Empowerment)", "Mediate (Menjembatani)", "Metode Individual"]),
+                ans: "Dukungan Sosial (Social Support)",
+                exp: "Dukungan sosial merupakan strategi melobi dan melibatkan tokoh masyarakat (formal/informal) agar mereka mendukung dan mensosialisasikan program kesehatan kepada masyarakat."
+            },
+            {
+                type: 'k22_misi', typeName: 'Misi & Strategi Promkes', tpColor: 'var(--pink)', tpBg: 'rgba(233,30,99,0.09)',
+                scenario: "<p>Masyarakat desa secara swadaya dan gotong royong mengumpulkan iuran untuk membangun sarana air bersih setelah mendapat pelatihan sanitasi.</p>",
+                q: "Tindakan masyarakat yang mau dan mampu memelihara kesehatan mereka sendiri ini sejalan dengan strategi/misi...",
+                opts: shuf(["Enable / Pemberdayaan Masyarakat", "Advocate / Advokasi", "Mediate / Menjembatani", "Dukungan Sosial / Social Support", "Tingkat Kuratif"]),
+                ans: "Enable / Pemberdayaan Masyarakat",
+                exp: "Pemberdayaan (Empowerment/Enable) adalah strategi agar masyarakat mandiri, mau dan mampu memelihara serta meningkatkan kesehatannya sendiri."
+            },
+            {
+                type: 'k22_misi', typeName: 'Misi & Strategi Promkes', tpColor: 'var(--pink)', tpBg: 'rgba(233,30,99,0.09)',
+                q: "Empat kata kunci visi Promosi Kesehatan menurut UU No 36 Tahun 2009 adalah...",
+                opts: shuf([
+                    "Mau, Mampu, Memelihara, Meningkatkan",
+                    "Tahu, Mau, Mampu, Mengamalkan",
+                    "Preventif, Promotif, Kuratif, Rehabilitatif",
+                    "Fisik, Mental, Sosial, Ekonomi",
+                    "Advocate, Mediate, Enable, Empower"
+                ]),
+                ans: "Mau, Mampu, Memelihara, Meningkatkan",
+                exp: "Visi Promkes berakar pada kata kunci: <strong>MAU</strong> dan <strong>MAMPU</strong> untuk <strong>MEMELIHARA</strong> dan <strong>MENINGKATKAN</strong> kesehatannya."
+            }
+        ];
+const pick_pool = makePicker(pool);
+const pool_edgar_dale = [
+        {
+            type: 'k22_media', typeName: 'Media Promkes', tpColor: 'var(--cyan)', tpBg: 'rgba(0,188,212,0.09)',
+            q: "Menurut kerucut pengalaman Edgar Dale (Cone of Experience), metode penyampaian yang tingkat penyerapannya paling ABSTRAK adalah...",
+            opts: shuf(["Kata-kata (Verbal)", "Tulisan", "Demonstrasi", "Film", "Televisi"]),
+            ans: "Kata-kata (Verbal)",
+            exp: "Dalam kerucut pengalaman Edgar Dale, tingkat teratas yang paling abstrak adalah Kata-kata, diikuti Tulisan, Rekaman/radio, Film, TV, hingga yang paling konkret."
+        },
+        {
+            type: 'k22_media', typeName: 'Media Promkes', tpColor: 'var(--cyan)', tpBg: 'rgba(0,188,212,0.09)',
+            q: "Berikut ini adalah fungsi dan tujuan penggunaan media peraga dalam promosi kesehatan, KECUALI...",
+            opts: shuf([
+                "Meningkatkan komunikasi yang bersifat verbalistik", 
+                "Mempermudah penyampaian informasi", 
+                "Menghindari kesalahan persepsi", 
+                "Menampilkan objek yang tidak bisa ditangkap langsung dengan mata", 
+                "Memperjelas informasi"
+            ]),
+            ans: "Meningkatkan komunikasi yang bersifat verbalistik",
+            exp: "Justru tujuan penggunaan media adalah <strong>Mengurangi</strong> komunikasi yang hanya bersifat verbalistik (hanya sebatas kata-kata)."
+        },
+        {
+            type: 'k22_media', typeName: 'Media Promkes', tpColor: 'var(--cyan)', tpBg: 'rgba(0,188,212,0.09)',
+            q: "Berdasarkan hierarki Edgar Dale, metode manakah di bawah ini yang paling KONKRET dibandingkan yang lain?",
+            opts: shuf(["Demonstrasi", "Kata-kata", "Tulisan", "Rekaman/Radio", "Film"]),
+            ans: "Demonstrasi",
+            exp: "Demonstrasi lebih konkret dibandingkan film, rekaman, tulisan, maupun kata-kata karena melibatkan peragaan langsung dari suatu konsep."
+        },
+        {
+            type: 'k22_media', typeName: 'Media Promkes', tpColor: 'var(--cyan)', tpBg: 'rgba(0,188,212,0.09)',
+            q: "Penggunaan Phantom gigi dalam penyuluhan sikat gigi anak sekolah merupakan contoh dari penggunaan alat peraga berbentuk...",
+            opts: shuf(["Alat bantu lihat (Visual aids) berupa model tiruan", "Audio-visual aids", "Audio aids", "Media massa cetak", "Rekaman suara"]),
+            ans: "Alat bantu lihat (Visual aids) berupa model tiruan",
+            exp: "Phantom (model anatomi) merupakan visual aids berupa benda tiruan yang memperjelas materi penyuluhan."
+        }
+    ];
+const pick_pool_edgar_dale = makePicker(pool_edgar_dale);
+const soalArr = [
+            {
+                q: "Langkah PERTAMA yang harus dilakukan dalam menyusun perencanaan program promosi kesehatan adalah...",
+                opts: ["Menentukan kebutuhan (diagnosis dan menetapkan prioritas masalah)", "Menentukan metode promkes", "Menentukan media penyampaian", "Menentukan rencana evaluasi", "Menentukan tujuan promosi kesehatan"],
+                ans: "Menentukan kebutuhan (diagnosis dan menetapkan prioritas masalah)",
+                exp: "Sebelum merancang komponen program, langkah pertama adalah menentukan kebutuhan dengan melakukan diagnosis masalah dan menetapkan prioritasnya."
+            },
+            {
+                q: "Setelah menentukan kebutuhan masyarakat, tahap berikutnya adalah Mengembangkan Komponen Promkes. Berikut ini yang TIDAK termasuk dalam pengembangan komponen adalah...",
+                opts: ["Melakukan pengobatan klinis kuratif", "Menentukan tujuan", "Menentukan sasaran", "Menentukan isi, metode, dan media", "Menentukan rencana evaluasi dan jadwal"],
+                ans: "Melakukan pengobatan klinis kuratif",
+                exp: "Pengobatan kuratif bukan bagian dari perencanaan pengembangan komponen program promosi kesehatan."
+            },
+            {
+                q: "Tahapan dasar dalam keseluruhan siklus evaluasi program promosi kesehatan secara umum terdiri dari...",
+                opts: ["Planning - Implementation - Evaluation", "Plan - Do - Check - Action", "Predisposing - Enabling - Reinforcing", "Advocate - Mediate - Enable", "Promotif - Preventif - Kuratif"],
+                ans: "Planning - Implementation - Evaluation",
+                exp: "Tahapan dalam siklus evaluasi secara umum meliputi Perencanaan (Planning), Pelaksanaan (Implementation), dan Penilaian (Evaluation)."
+            }
+        ];
+const pick_soalArr = makePicker(soalArr);
+const kasusPool = [
+            {
+                scen: `Di ${desa}, banyak warga menderita diare. Kepala Puskesmas melakukan pendekatan kepada Kepala Desa dan tokoh agama setempat agar mereka mengajak masyarakat rutin merebus air sebelum diminum.`,
+                q: "Apa strategi promosi kesehatan yang dilakukan oleh Kepala Puskesmas tersebut?",
+                ans: "Dukungan Sosial (Social Support)",
+                opts: ["Dukungan Sosial (Social Support)", "Advokasi (Advocacy)", "Pemberdayaan (Empowerment)", "Specific Protection", "Secondary Prevention"],
+                exp: "Pendekatan ke tokoh masyarakat/agama agar mereka menggerakkan warga adalah strategi <strong>Dukungan Sosial (Social Support)</strong>."
+            },
+            {
+                scen: `Seorang kader Promkes menemui Bupati untuk mendiskusikan anggaran penyediaan bak sampah terpadu di ${desa} karena maraknya penyakit DBD akibat tumpukan sampah.`,
+                q: "Fokus dari langkah promkes ini ditujukan untuk menciptakan...",
+                ans: "Enabling Factor melalui strategi Advokasi",
+                opts: ["Enabling Factor melalui strategi Advokasi", "Predisposing Factor melalui strategi Pemberdayaan", "Reinforcing Factor melalui strategi Dukungan Sosial", "Faktor Genetik melalui strategi Advokasi", "Faktor Keturunan melalui strategi Pemberdayaan"],
+                exp: "Mendekati Bupati (pengambil kebijakan) adalah <strong>Advokasi</strong>. Penyediaan fasilitas (bak sampah) bertujuan membentuk <strong>Enabling Factor</strong> (Faktor Pemungkin)."
+            },
+            {
+                scen: `Seorang ${kelamin} berusia ${usia} tahun terdiagnosis hipertensi tahap 1. Ia diberikan edukasi secara empat mata oleh perawat mengenai diet rendah garam DASH.`,
+                q: "Metode edukasi dan tingkatan pencegahan manakah yang sedang dilakukan perawat tersebut?",
+                ans: "Metode Individual dan Early Diagnosis & Prompt Treatment (Secondary Prevention)",
+                opts: [
+                    "Metode Individual dan Early Diagnosis & Prompt Treatment (Secondary Prevention)",
+                    "Metode Kelompok Kecil dan Specific Protection",
+                    "Metode Massa dan Health Promotion",
+                    "Metode Individual dan Disability Limitation",
+                    "Metode Kelompok Besar dan Rehabilitation"
+                ],
+                exp: "Dilakukan secara empat mata = <strong>Metode Individual</strong>. Pasien sudah sakit (terdiagnosis HT tahap 1) dan mendapat edukasi diet spesifik untuk menurunkan tensi = pengobatan segera / <strong>Early Diagnosis & Prompt Treatment</strong>."
+            }
+        ];
+const pick_kasusPool = makePicker(kasusPool);
+
+
+// ═══ DISPATCHER ═══
+function makeQ(type){
+    
+        if(type === 'pool_dasar_kesmas') {
+            const item = pick_pool_dasar_kesmas();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'pool_dasar_kesmas',
+                typeName: 'Dasar Kesmas',
+                tpColor: 'var(--purp)',
+                tpBg: 'var(--purpbg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+        if(type === 'pool_konsep_promkes') {
+            const item = pick_pool_konsep_promkes();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'pool_konsep_promkes',
+                typeName: 'Konsep Promkes',
+                tpColor: 'var(--purp)',
+                tpBg: 'var(--purpbg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+        if(type === 'pool') {
+            const item = pick_pool();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'pool',
+                typeName: 'Pool',
+                tpColor: 'var(--purp)',
+                tpBg: 'var(--purpbg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+        if(type === 'pool_edgar_dale') {
+            const item = pick_pool_edgar_dale();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'pool_edgar_dale',
+                typeName: 'Edgar Dale',
+                tpColor: 'var(--purp)',
+                tpBg: 'var(--purpbg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+        if(type === 'soalArr') {
+            const item = pick_soalArr();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'soalArr',
+                typeName: 'Soalarr',
+                tpColor: 'var(--purp)',
+                tpBg: 'var(--purpbg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+        if(type === 'kasusPool') {
+            const item = pick_kasusPool();
+            if(!item) return null;
+            
+            let qText = item.q || item.question || item.pertanyaan || item.soal || item.text || 'No Question';
+            let optsArr = [];
+            let correctAns = '';
+            
+            if (item.b !== undefined) {
+                optsArr = [item.a, item.b, item.c, item.d, item.e].filter(x => x !== undefined);
+                const kKey = (item.k || '').toLowerCase();
+                correctAns = item[kKey] || 'No Answer';
+            } else {
+                let rawOpts = item.opt ?? item.options ?? item.pilihan ?? item.choices ?? item.opts ?? item.o;
+                let ansField = item.a ?? item.ans ?? item.answer ?? item.jawaban;
+                
+                if (rawOpts && typeof rawOpts === 'object' && !Array.isArray(rawOpts)) {
+                    correctAns = rawOpts[ansField] ?? ansField;
+                    optsArr = Object.values(rawOpts);
+                } else {
+                    if (rawOpts) optsArr = [...rawOpts];
+                    if (ansField === undefined && item.correctIndex !== undefined) {
+                        correctAns = optsArr[item.correctIndex];
+                    } else if (typeof ansField === 'number') {
+                        correctAns = optsArr[ansField];
+                    } else if (typeof ansField === 'string' && ansField.length === 1 && /^[A-E]$/i.test(ansField)) {
+                        let idx = ansField.toUpperCase().charCodeAt(0) - 65;
+                        correctAns = optsArr[idx] || ansField;
+                    } else {
+                        correctAns = ansField ?? 'No Answer';
+                    }
+                }
+            }
+            
+            if (optsArr.length > 0 && !optsArr.includes(correctAns) && correctAns !== 'No Answer') {
+                optsArr.push(correctAns);
+            }
+            
+            if (optsArr.length === 0) {
+                optsArr = [correctAns];
+            }
+            
+            const explanation = item.exc || item.explanation || item.exp || item.pembahasan || item.penjelasan || item.reason || item.hint || item.p || '';
+            
+            return {
+                type: 'kasusPool',
+                typeName: 'Kasuspool',
+                tpColor: 'var(--purp)',
+                tpBg: 'var(--purpbg)',
+                scenario: null,
+                rawData: null,
+                q: qText,
+                opts: shuf(optsArr),
+                ans: correctAns,
+                exp: explanation
+            };
+        }
+        
+    return {type:'dummy', typeName:'End of Pool', tpColor:'gray', tpBg:'lightgray', q:'No more questions', opts:['A'], ans:'A', exp:''};
+}
+
+// ═══ SESSION ═══
+let typeQueue=[],sessIdx=0,sessScore=0,sessLog=[],currentQ=null;
+function nextType(){if(!typeQueue.length){const t=[...activeTypes];for(let i=t.length-1;i>0;i--){const j=0|Math.random()*(i+1);[t[i],t[j]]=[t[j],t[i]];}typeQueue=[...t];}return typeQueue.shift();}
+function startSession(){
+  sessIdx=0;sessScore=0;sessLog=[];typeQueue=[];
+  document.getElementById('qconfig').style.display='none';
+  document.getElementById('qresults').style.display='none';
+  document.getElementById('qactive').style.display='block';
+  renderQ();
+}
+function renderQ(){
+  const q=makeQ(nextType());currentQ=q;
+  document.getElementById('qnum').textContent=sessIdx+1;
+  document.getElementById('qscore').textContent=sessScore;
+  const pill=document.getElementById('qpill');
+  pill.textContent=q.typeName;pill.style.background=q.tpBg;pill.style.color=q.tpColor;pill.style.border=`1px solid ${q.tpColor}44`;
+  const scen=document.getElementById('qscen');
+  if(q.scenario){scen.innerHTML=`<strong>Kasus:</strong> ${q.scenario}`;scen.style.display='block';}else scen.style.display='none';
+  const db=document.getElementById('qdata');
+  if(q.rawData){db.innerHTML=q.rawData;db.style.display='block';}else db.style.display='none';
+  document.getElementById('qtext').innerHTML=q.q;
+  const og=document.getElementById('opts');og.innerHTML='';
+  q.opts.forEach((opt,i)=>{
+    const btn=document.createElement('button');btn.className='opt';
+    btn.innerHTML=`<span class="opt-key">${KEYS[i]}</span><span>${opt}</span>`;
+    btn.onclick=()=>selectAns(opt,q,btn);og.appendChild(btn);
+  });
+  const ebox=document.getElementById('expbox');ebox.classList.remove('show');ebox.style.display='none';
+  document.getElementById('nextbtn').style.display='none';
+}
+function selectAns(chosen,q,clickedBtn){
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  const correct=stripHtml(chosen)===stripHtml(q.ans);
+  if(correct)sessScore++;
+  document.querySelectorAll('.opt').forEach(b=>{
+    const label=b.querySelector('span:last-child').innerHTML;
+    if(stripHtml(label)===stripHtml(q.ans)){
+      if(b===clickedBtn&&correct)b.classList.add('correct');
+      else if(b!==clickedBtn)b.classList.add('reveal');
+      else b.classList.add('correct');
+    }
+    if(b===clickedBtn&&!correct)b.classList.add('wrong');
+  });
+  const ebox=document.getElementById('expbox');
+  ebox.innerHTML=`<div style="margin-bottom:7px;font-weight:700;color:${correct?'var(--blue)':'var(--red)'}">${correct?'✅ Benar!':'❌ Kurang tepat.'} Jawaban: <strong>${q.ans}</strong></div>${q.exp}`;
+  ebox.style.display='block';setTimeout(()=>ebox.classList.add('show'),10);
+  sessLog.push({idx:sessIdx+1,type:q.typeName,q:q.q.replace(/<[^>]+>/g,'').slice(0,55)+'…',ans:q.ans,correct});
+  document.getElementById('qscore').textContent=sessScore;
+  document.getElementById('nextbtn').style.display='inline-block';
+}
+function nextQ(){sessIdx++;document.getElementById('expbox').style.display='none';document.getElementById('expbox').classList.remove('show');renderQ();}
+function endSession(){
+  document.getElementById('qactive').style.display='none';document.getElementById('qresults').style.display='block';
+  const total=sessLog.length;if(!total){restartQuiz();return;}
+  const pct=Math.round((sessScore/total)*100);
+  document.getElementById('res-pct').textContent=pct+'%';
+  document.getElementById('res-sub').textContent=`${sessScore} / ${total} soal benar`;
+  const byType={};
+  sessLog.forEach(l=>{if(!byType[l.type])byType[l.type]={total:0,correct:0};byType[l.type].total++;if(l.correct)byType[l.type].correct++;});
+  const rg=document.getElementById('res-grid');rg.innerHTML='';
+  const medal=pct>=80?'🏆':pct>=60?'👍':'📚';
+  [{v:medal,l:'Nilai'},{v:pct+'%',l:'Persentase'},{v:sessScore+'',l:'Benar'},{v:(total-sessScore)+'',l:'Salah'},{v:total+'',l:'Total'}].forEach(s=>{
+    const d=document.createElement('div');d.className='res-stat';
+    d.innerHTML=`<div class="rv">${s.v}</div><div class="rl">${s.l}</div>`;rg.appendChild(d);
+  });
+  document.getElementById('res-bytype').innerHTML=Object.entries(byType).map(([t,v])=>{
+    const p=Math.round((v.correct/v.total)*100);const c=p>=80?'var(--blue)':p>=60?'var(--gold)':'var(--red)';
+    return`<tr><td>${t}</td><td>${v.total}</td><td style="color:${c};font-weight:700">${v.correct} (${p}%)</td></tr>`;
+  }).join('');
+  document.getElementById('res-tbody').innerHTML=sessLog.map(l=>`<tr><td>${l.idx}</td><td>${l.q}</td><td>${l.ans}</td><td style="color:${l.correct?'var(--green)':'var(--red)'}">${l.correct?'✅':'❌'}</td></tr>`).join('');
+}
+function restartQuiz(){typeQueue=[];document.getElementById('qresults').style.display='none';document.getElementById('qconfig').style.display='block';}
+
+function downloadCert(){
+  const total=sessLog.length;
+  const pct=Math.round((sessScore/total)*100);
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+  const medal=pct>=80?'LULUS':pct>=60?'CUKUP':'PERLU BELAJAR LAGI';
+  const medalColor=pct>=80?'#1f7a4a':pct>=60?'#7a6010':'#b03030';
+  const byType={};
+  sessLog.forEach(l=>{if(!byType[l.type])byType[l.type]={total:0,correct:0};byType[l.type].total++;if(l.correct)byType[l.type].correct++;});
+  const rows=Object.entries(byType).map(([t,v])=>{
+    const p=Math.round(v.correct/v.total*100);
+    const bar=Math.round(p*1.4);
+    const bc=p>=80?'#1f7a4a':p>=60?'#7a6010':'#b03030';
+    return`<tr><td style="padding:5px 8px;font-size:11px;color:#384068;width:200px">${t}</td><td style="padding:5px 8px"><div style="background:#e7e7e2;border-radius:4px;height:10px;width:140px"><div style="background:${bc};width:${bar}px;height:10px;border-radius:4px"></div></div></td><td style="padding:5px 8px;font-size:11px;font-weight:700;color:${bc}">${v.correct}/${v.total} (${p}%)</td></tr>`;
+  }).join('');
+
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="680" height="520" font-family="Georgia,serif">
+  <defs>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <path d="M 28 0 L 0 0 0 28" fill="none" stroke="#e0ddd5" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+  <rect width="680" height="520" fill="#fdfdf9"/>
+  <rect width="680" height="520" fill="url(#grid)"/>
+  <rect x="20" y="20" width="640" height="480" rx="12" fill="none" stroke="#b03030" stroke-width="2"/>
+  <rect x="26" y="26" width="628" height="468" rx="9" fill="none" stroke="#b03030" stroke-width="0.5" opacity="0.4"/>
+
+  <text x="340" y="66" text-anchor="middle" font-size="11" letter-spacing="4" fill="#7c85a8" font-family="Georgia,serif">SERTIFIKAT PENYELESAIAN KUIS</text>
+  <line x1="120" y1="74" x2="260" y2="74" stroke="#b03030" stroke-width="0.8"/>
+  <circle cx="340" cy="74" r="3" fill="#b03030"/>
+  <line x1="420" y1="74" x2="560" y2="74" stroke="#b03030" stroke-width="0.8"/>
+
+  <text x="340" y="116" text-anchor="middle" font-size="34" font-weight="bold" fill="#161b2e" font-family="Georgia,serif">Am I Advocating?</text>
+  <text x="340" y="138" text-anchor="middle" font-size="11" fill="#7c85a8" letter-spacing="2" font-family="Georgia,serif">PROMOSI KESEHATAN · BLOK 2.5 · FK UNSOED</text>
+
+  <line x1="100" y1="152" x2="580" y2="152" stroke="#e0ddd5" stroke-width="1"/>
+
+  <text x="340" y="185" text-anchor="middle" font-size="13" fill="#384068" font-family="Georgia,serif">Telah menyelesaikan sesi quiz dengan hasil</text>
+
+  <rect x="230" y="196" width="220" height="80" rx="8" fill="none" stroke="${medalColor}" stroke-width="1.5"/>
+  <text x="340" y="245" text-anchor="middle" font-size="52" font-weight="bold" fill="${medalColor}" font-family="Georgia,serif">${pct}%</text>
+  <text x="340" y="265" text-anchor="middle" font-size="10" fill="${medalColor}" letter-spacing="3" font-family="Georgia,serif">${medal}</text>
+
+  <text x="340" y="300" text-anchor="middle" font-size="12" fill="#384068" font-family="Georgia,serif">${sessScore} soal benar dari ${total} soal · ${dateStr}</text>
+
+  <line x1="100" y1="314" x2="580" y2="314" stroke="#e0ddd5" stroke-width="1"/>
+  <text x="340" y="332" text-anchor="middle" font-size="10" fill="#7c85a8" letter-spacing="2" font-family="Georgia,serif">DISTRIBUSI SKOR PER TOPIK</text>
+
+  <foreignObject x="80" y="340" width="520" height="120">
+    <div xmlns="http://www.w3.org/1999/xhtml">
+      <table style="width:100%;border-collapse:collapse">${rows}</table>
+    </div>
+  </foreignObject>
+
+  <line x1="100" y1="472" x2="580" y2="472" stroke="#e0ddd5" stroke-width="1"/>
+  <text x="340" y="490" text-anchor="middle" font-size="10" fill="#7c85a8" font-family="Georgia,serif">Am I Advocating? · Blok 2.5 · FK Unsoed</text>
+</svg>`;
+
+  const blob=new Blob([svg],{type:'image/svg+xml'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`am-i-advocating-${pct}pct.svg`;
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+window.downloadCert=downloadCert;
+</script>
+</body>
+</html>

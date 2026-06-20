@@ -1,0 +1,1672 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PUSH UP 2 - Blok 1.3 (105 Soal)</title>
+    <!-- Impor Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Impor Google Font (Inter & Poppins) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@500;700&display=swap" rel="stylesheet">
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        /* CSS Kustom - Tema Crimson Red Glassmorphism */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #991b1b 0%, #dc2626 100%); /* Red Dark to Red Light */
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-primary: #ffffff;
+            --text-secondary: #fecaca;
+            --btn-primary: #b91c1c;
+            --btn-primary-hover: #7f1d1d;
+            --correct: #10b981; /* Emerald 500 */
+            --incorrect: #f87171; /* Red 400 */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--primary-gradient);
+            color: var(--text-primary);
+            user-select: none;
+            padding: 1rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Scrollbar kustom */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 4px;
+        }
+
+        /* Kontainer utama */
+        .quiz-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            padding: 2rem;
+            width: 95%;
+            max-width: 900px;
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1, h2, h3 {
+            font-family: 'Poppins', sans-serif;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* Tombol Aksi Utama */
+        .action-btn {
+            background-color: white;
+            color: #991b1b; /* Red dark */
+            border: none;
+            padding: 1rem 1.5rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border-radius: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            background-color: #fee2e2;
+        }
+
+        .action-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Tombol Navigasi Kecil */
+        .nav-btn {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.25);
+        }
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Tombol Opsi Jawaban */
+        .option-btn {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+            text-align: left;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            border-radius: 0.75rem;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.2s;
+            position: relative;
+            font-weight: 500;
+        }
+
+        .option-btn:hover:not(.disabled) {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(4px);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* State Jawaban */
+        .option-btn.correct {
+            background: rgba(16, 185, 129, 0.8) !important; /* Green */
+            border-color: #34d399 !important;
+            color: white;
+        }
+        
+        .option-btn.incorrect {
+            background: rgba(239, 68, 68, 0.8) !important; /* Red */
+            border-color: #f87171 !important;
+            color: white;
+        }
+
+        .option-btn.disabled {
+            cursor: default;
+            opacity: 0.9;
+        }
+
+        /* Kotak Penjelasan */
+        .explanation-box {
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 4px solid #fca5a5; /* Red accent */
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            border-radius: 0.75rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        .explanation-detail-list {
+            margin-top: 0.5rem;
+            display: grid;
+            gap: 0.5rem;
+        }
+        
+        .explanation-item {
+            background: rgba(255,255,255,0.05);
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.9rem;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background: #fca5a5;
+            width: 0%;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(252, 165, 165, 0.5);
+        }
+
+        /* Utility */
+        .hidden { display: none !important; }
+        .badge-score {
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            font-weight: 700;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- 1. Layar Mulai -->
+    <div id="start-screen" class="quiz-container text-center flex flex-col items-center justify-center min-h-[500px]">
+        <div class="mb-8 p-6 bg-white/10 rounded-full border border-white/20">
+            <i class="ph ph-fire text-7xl text-white"></i>
+        </div>
+        <h1 class="text-4xl md:text-6xl font-bold mb-2 tracking-tight">PUSH UP 2</h1>
+        <h2 class="text-xl text-red-100 mb-8 font-medium">Cardiovictus Blok 1.3 (Edisi Kapsul 2)</h2>
+        
+        <div class="grid gap-4 w-full max-w-sm">
+            <button onclick="startMode('practice')" class="action-btn group">
+                <i class="ph ph-student text-2xl group-hover:scale-110 transition"></i>
+                Mode Latihan
+                <span class="text-xs font-normal opacity-70 ml-1">(Pembahasan Langsung)</span>
+            </button>
+            <button onclick="startMode('exam')" class="action-btn group">
+                <i class="ph ph-timer text-2xl group-hover:scale-110 transition"></i>
+                Mode Ujian
+                <span class="text-xs font-normal opacity-70 ml-1">(Skor di Akhir)</span>
+            </button>
+        </div>
+        <p class="mt-8 text-sm opacity-60">Total 105 Soal | Presisi Kapsul 2025</p>
+    </div>
+
+    <!-- 2. Layar Kuis -->
+    <div id="quiz-screen" class="quiz-container hidden">
+        <!-- Header Kuis -->
+        <div class="flex justify-between items-center mb-4">
+            <div class="text-sm font-semibold text-red-100">Soal <span id="current-q-num">1</span> / <span id="total-q-num">105</span></div>
+            <div class="badge-score" id="score-badge">Skor: 0</div>
+        </div>
+        
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div id="quiz-progress-bar" class="progress-bar"></div>
+        </div>
+
+        <!-- Area Soal -->
+        <div class="mb-6 min-h-[80px]">
+            <h3 id="question-text" class="text-lg md:text-xl font-semibold leading-relaxed"></h3>
+        </div>
+
+        <!-- Opsi Jawaban -->
+        <div id="options-container" class="flex flex-col gap-2">
+            <!-- Buttons generated by JS -->
+        </div>
+
+        <!-- Feedback (Mode Latihan) -->
+        <div id="feedback-container" class="hidden explanation-box">
+            <h4 class="font-bold text-yellow-300 mb-2 flex items-center gap-2 text-lg">
+                <i class="ph ph-lightbulb"></i> Pembahasan Lengkap:
+            </h4>
+            <div id="feedback-text" class="text-white/95 text-sm"></div>
+        </div>
+
+        <!-- Kontrol Navigasi -->
+        <div class="flex justify-between mt-8 pt-4 border-t border-white/10">
+            <button id="prev-btn" onclick="navigateQuestion(-1)" class="nav-btn flex items-center gap-2" disabled>
+                <i class="ph ph-caret-left"></i> Sebelumnya
+            </button>
+            
+            <button onclick="backToMenu()" class="nav-btn bg-white/20 border-white/40 hover:bg-white/30">
+                Menu
+            </button>
+
+            <button id="next-btn" onclick="navigateQuestion(1)" class="nav-btn flex items-center gap-2 bg-red-800/30 border-red-400/50 hover:bg-red-800/50">
+                Selanjutnya <i class="ph ph-caret-right"></i>
+            </button>
+            
+            <button id="finish-btn" onclick="finishQuiz()" class="nav-btn bg-emerald-500/30 border-emerald-400/50 hover:bg-emerald-500/50 hidden">
+                Selesai <i class="ph ph-check-circle"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 3. Layar Hasil -->
+    <div id="result-screen" class="quiz-container hidden text-center">
+        <h2 class="text-3xl font-bold mb-2">Hasil Evaluasi</h2>
+        <p class="opacity-80 text-sm mb-6">Blok 1.3 - Control & Regulation System</p>
+        
+        <div class="text-7xl font-bold my-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-red-200" id="final-score">0</div>
+        
+        <div class="grid grid-cols-2 gap-4 mb-8 text-left bg-black/20 p-6 rounded-2xl border border-white/10">
+            <div class="text-center">
+                <span class="block text-xs uppercase tracking-wider opacity-60 mb-1">Benar</span>
+                <span id="result-correct" class="text-2xl font-bold text-emerald-400">0</span>
+            </div>
+            <div class="text-center border-l border-white/10">
+                <span class="block text-xs uppercase tracking-wider opacity-60 mb-1">Salah</span>
+                <span id="result-incorrect" class="text-2xl font-bold text-red-400">0</span>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-3 max-w-xs mx-auto">
+            <button onclick="startMode(currentMode)" class="action-btn w-full justify-center">
+                <i class="ph ph-arrow-counter-clockwise"></i> Ulangi Kuis
+            </button>
+            <button onclick="backToMenu()" class="nav-btn w-full justify-center">
+                Kembali ke Menu Utama
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // --- DATABASE SOAL (105 SOAL KAPSUL 2 BLOK 1.3) ---
+        const questions = [
+            {
+                q: "Ketika suhu perifer tubuh lebih rendah daripada suhu inti, respon tubuh yang terjadi adalah...",
+                o: ["Vasodilatasi", "Berkeringat", "Aktivitas otot rangka (menggigil)", "A dan B", "B dan C"],
+                a: "Aktivitas otot rangka (menggigil)",
+                exp: `
+                <b>Jawaban Benar: Aktivitas otot rangka</b><br>
+                Saat suhu kulit (perifer) dingin namun suhu inti masih dipertahankan, tubuh akan melakukan konservasi panas (vasokonstriksi) dan produksi panas (termogenesis). Aktivitas otot rangka (menggigil) adalah mekanisme termogenesis utama.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Vasodilatasi:</b> Terjadi saat kepanasan untuk membuang panas.</li>
+                    <li><b>B. Berkeringat:</b> Mekanisme pendinginan (evaporasi).</li>
+                    <li><b>C. Aktivitas otot:</b> Benar. Menghasilkan panas metabolik.</li>
+                </ul>`
+            },
+            {
+                q: "Seorang mahasiswa kedokteran sedang mempelajari mekanisme pengaturan siklus tidur dan bangun. Ia menemukan bahwa proses tersebut dipengaruhi hormon melatonin dari kelenjar epifisis (pineal). Sel khusus apakah yang berperan dalam menghasilkan hormon tersebut?",
+                o: ["Pinealosit", "Oksifil", "Pituisit", "Kromofil", "Kromofob"],
+                a: "Pinealosit",
+                exp: `
+                <b>Jawaban Benar: Pinealosit</b><br>
+                Pinealosit adalah sel utama parenkim kelenjar pineal yang menyekresikan melatonin.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Pinealosit:</b> Benar.</li>
+                    <li><b>B. Oksifil:</b> Ada di Paratiroid.</li>
+                    <li><b>C. Pituisit:</b> Sel glia di Neurohipofisis.</li>
+                    <li><b>D/E. Kromofil/Kromofob:</b> Sel di Adenohipofisis.</li>
+                </ul>`
+            },
+            {
+                q: "Androgen adrenal terutama berperan dalam...",
+                o: ["Regulasi glukosa darah", "Pertahanan terhadap infeksi", "Pembentukan memori", "Pertumbuhan rambut pubis dan aksila (ketiak)", "Mengatur tekanan darah"],
+                a: "Pertumbuhan rambut pubis dan aksila (ketiak)",
+                exp: `
+                <b>Jawaban Benar: Pertumbuhan rambut pubis dan aksila</b><br>
+                Androgen adrenal (DHEA, Androstenedion) berperan dalam inisiasi pubertas (adrenarke), menyebabkan tumbuhnya rambut kemaluan dan ketiak.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Glukosa:</b> Kortisol (Glukokortikoid).</li>
+                    <li><b>E. Tekanan darah:</b> Aldosteron (Mineralokortikoid) & Katekolamin.</li>
+                </ul>`
+            },
+            {
+                q: "Langkah awal pemicu sekresi insulin oleh sel Beta pankreas adalah...",
+                o: ["Penutupan kanal Na+", "Pembukaan kanal Ca2+", "Glukosa masuk melalui GLUT-2 lalu mengalami metabolisme", "Aktivasi reseptor insulin", "Terbentuk badan keton"],
+                a: "Glukosa masuk melalui GLUT-2 lalu mengalami metabolisme",
+                exp: `
+                <b>Jawaban Benar: Glukosa masuk melalui GLUT-2</b><br>
+                Urutan sekresi: Glukosa masuk (GLUT-2) -> Glikolisis -> ATP naik -> Kanal K-ATP menutup -> Depolarisasi -> Kanal Ca terbuka -> Ca masuk -> Eksositosis Insulin.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Benar:</b> Langkah inisiasi pertama.</li>
+                    <li><b>B. Pembukaan Ca2+:</b> Terjadi di tahap akhir setelah depolarisasi.</li>
+                </ul>`
+            },
+            {
+                q: "Prostaglandin bersifat parakrin. Apa maksud dari pernyataan tersebut?",
+                o: ["Bekerja jauh melalui aliran darah", "Bekerja pada penghasil hormon itu sendiri (Autokrin)", "Tidak memiliki reseptor", "Bekerja secara lokal ke jaringan terdekat", "Disimpan dalam vesikel"],
+                a: "Bekerja secara lokal ke jaringan terdekat",
+                exp: `
+                <b>Jawaban Benar: Bekerja secara lokal ke jaringan terdekat</b><br>
+                Parakrin = Hormon bekerja pada sel tetangga di jaringan yang sama (lokal).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Jauh:</b> Endokrin.</li>
+                    <li><b>B. Diri sendiri:</b> Autokrin.</li>
+                    <li><b>D. Lokal:</b> Benar.</li>
+                </ul>`
+            },
+            {
+                q: "Stereosilia pada sel rambut vestibularis tertanam pada?",
+                o: ["Membran tektoria", "Membran otolitik (dan Kupula)", "Endosteum", "Membran timpani", "Tuba auditiva"],
+                a: "Membran otolitik (dan Kupula)",
+                exp: `
+                <b>Jawaban Benar: Membran otolitik</b><br>
+                Pada makula (utrikulus/sakulus), stereosilia tertanam di membran otolitik (berisi otoconia). Pada krista ampularis, tertanam di kupula.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Membran tektoria:</b> Tempat menempel stereosilia Organ Corti (Koklea).</li>
+                    <li><b>B. Benar:</b> Struktur gelatinosa di vestibulum.</li>
+                </ul>`
+            },
+            {
+                q: "Struktur yang menghasilkan endolimfe di duktus koklearis adalah...",
+                o: ["Ganglion spiral", "Limbus spiralis", "Stria vaskularis", "Membran basilaris", "Sel rambut"],
+                a: "Stria vaskularis",
+                exp: `
+                <b>Jawaban Benar: Stria vaskularis</b><br>
+                Stria vaskularis pada dinding lateral duktus koklearis kaya akan pembuluh darah dan pompa ion untuk memproduksi endolimfe (tinggi Kalium).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Stria vaskularis:</b> Benar.</li>
+                </ul>`
+            },
+            {
+                q: "Ada orang yang punya gangguan otot mata yang bekerja ketika mata melihat jauh, pupil mata kirinya jadi lebih kecil (miosis), mata kanannya normal. Kemungkinan kelainannya adalah...",
+                o: ["Meningkatnya fungsi kontraksi otot ciliaris (Spasme Akomodasi)", "Menurunnya fungsi kontraksi otot sfingter", "Meningkatnya fungsi kontraksi otot levator", "Meningkatkan fungsi relaksasi otot ciliaris", "Menurunnya fungsi chiasma optikum"],
+                a: "Meningkatnya fungsi kontraksi otot ciliaris (Spasme Akomodasi)",
+                exp: `
+                <b>Jawaban Benar: Meningkatnya fungsi kontraksi otot ciliaris</b><br>
+                Melihat jauh seharusnya otot siliaris relaksasi. Jika terjadi kontraksi persisten (spasme akomodasi), mata terkunci pada fokus dekat (rabun jauh palsu/pseudomyopia) dan pupil ikut mengecil (miosis, bagian dari near reflex).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Benar:</b> Menjelaskan miosis saat melihat jauh (abnormal).</li>
+                    <li><b>B. Menurun sfingter:</b> Akan menyebabkan Midriasis (pupil besar).</li>
+                </ul>`
+            },
+            {
+                q: "Hormon utama yang berperan pada sistem reproduksi pria adalah...",
+                o: ["Estrogen", "Progesteron", "Testosteron", "Prolaktin", "Aldosteron"],
+                a: "Testosteron",
+                exp: `
+                <b>Jawaban Benar: Testosteron</b><br>
+                Hormon androgen utama dari sel Leydig testis.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Testosteron:</b> Benar.</li>
+                </ul>`
+            },
+            {
+                q: "Pasien datang dengan keluhan defisiensi vitamin A yang membuat memiliki penglihatan gelap yang sangat buruk (rabun senja). Mekanisme apa yang paling terganggu?",
+                o: ["Regenerasi 11-cis Retinal pada Rhodopsin", "Pembentukan iodopsin", "Transmisi sinyal di CGL", "Refleks pupil", "Gerakan bola mata"],
+                a: "Regenerasi 11-cis Retinal pada Rhodopsin",
+                exp: `
+                <b>Jawaban Benar: Regenerasi 11-cis Retinal</b><br>
+                Vitamin A adalah bahan baku Retinal. Retinal berikatan dengan Opsin membentuk Rhodopsin (pigmen sel batang untuk penglihatan malam). Defisiensi Vit A = Gagal regenerasi Rhodopsin.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Benar:</b> Kunci siklus visual scotopic.</li>
+                </ul>`
+            },
+            {
+                q: "Alur air mata (lakrimasi) dari glandula lakrimal yang benar adalah...",
+                o: ["Glandula -> Punctum -> Kanalikuli -> Saccus -> Ductus Nasolakrimal -> Meatus Nasi Inferior", "Glandula -> Ductus -> Saccus -> Punctum", "Glandula -> Saccus -> Kanalikuli -> Meatus Media", "Glandula -> Punctum -> Saccus -> Meatus Superior", "Glandula -> Kanalikuli -> Ductus -> Punctum"],
+                a: "Glandula -> Punctum -> Kanalikuli -> Saccus -> Ductus Nasolakrimal -> Meatus Nasi Inferior",
+                exp: `
+                <b>Jawaban Benar: Glandula -> Punctum -> Kanalikuli -> Saccus -> Ductus -> Meatus Inf</b><br>
+                Air mata diproduksi glandula, membasahi mata, masuk ke punctum (lubang kecil di kelopak), lewat kanalikuli ke saccus lakrimalis, turun lewat ductus nasolakrimalis, keluar di meatus nasi inferior (hidung).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Benar:</b> Urutan anatomis yang tepat.</li>
+                </ul>`
+            },
+            {
+                q: "Otot ekstraokular yang dipersarafi N. III (Oculomotorius) adalah...",
+                o: ["Rectus superior, medial, inferior + Obliquus inferior (+ Levator Palpebrae)", "Rectus lateral, superior, inferior + Obliquus inferior", "Rectus superior, lateral, inferior + Obliquus superior", "Semua otot mata", "Hanya Rectus superior dan inferior"],
+                a: "Rectus superior, medial, inferior + Obliquus inferior (+ Levator Palpebrae)",
+                exp: `
+                <b>Jawaban Benar: Rectus sup, med, inf + Obliquus inf</b><br>
+                Rumus inervasi mata: LR6 (Lateral Rectus - N.VI), SO4 (Superior Oblique - N.IV), sisanya N.3 (termasuk levator palpebrae).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Benar:</b> Sisanya N.3.</li>
+                </ul>`
+            },
+            {
+                q: "Seorang remaja dengan diabetes tipe 1 mengalami hiperglikemia tanpa insulin. Tanpa keberadaan insulin, apa kemungkinan proses biokimia yang terjadi di sel target?",
+                o: ["Penurunan GLUT-4 di membran sel", "Peningkatan penggunaan jalur PI3K", "Peningkatan GLUT-4 di membran sel", "Peningkatan penggunaan glukosa di perifer", "Aktivasi cAMP"],
+                a: "Penurunan GLUT-4 di membran sel",
+                exp: `
+                <b>Jawaban Benar: Penurunan GLUT-4 di membran sel</b><br>
+                Insulin bekerja dengan mentranslokasi vesikel GLUT-4 ke permukaan membran sel otot dan lemak. Tanpa insulin, GLUT-4 tetap di dalam sitoplasma -> Glukosa tidak bisa masuk sel -> Hiperglikemia.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Benar:</b> GLUT-4 absen di membran.</li>
+                    <li><b>C. Peningkatan GLUT-4:</b> Ini efek insulin (yang tidak ada).</li>
+                </ul>`
+            },
+            {
+                q: "Cavum orbita memiliki basis, apex, paries, dan margo. Bagian manakah yang paling tipis dan rentan terhadap 'blow out fracture' saat trauma tumpul?",
+                o: ["Margo lateralis", "Apertura orbita", "Paries medialis dan Inferior (Dasar orbita)", "Paries Lateralis", "Foramen opticum"],
+                a: "Paries medialis dan Inferior (Dasar orbita)",
+                exp: `
+                <b>Jawaban Benar: Dasar orbita (Paries Inferior) dan Medial</b><br>
+                Dasar orbita (tulang maksila) sangat tipis. Tekanan tinggi mendadak (pukulan bola) sering mematahkan dasar ini (blow-out fracture), menyebabkan isi orbita herniasi ke sinus maksilaris.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Benar:</b> Dinding terlemah.</li>
+                    <li><b>A/D:</b> Dinding lateral dan margo orbita relatif kuat (tulang zigomatik/frontal).</li>
+                </ul>`
+            },
+            {
+                q: "Bagian telinga yang memiliki jalur saraf sensorik sama seperti gigi (cabang N. V) adalah...",
+                o: ["Auricula", "Membran timpani", "Tuba auditiva", "Cochlea", "Canalis Semicircularis"],
+                a: "Membran timpani",
+                exp: `
+                <b>Jawaban Benar: Membran timpani</b><br>
+                Membran timpani sisi luar dipersarafi oleh N. Auriculotemporalis (cabang N. Mandibularis V3). Ini menjelaskan nyeri alih (referred pain) dari sakit gigi ke telinga.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Benar:</b> N. V3 menginervasi gigi bawah dan membran timpani.</li>
+                </ul>`
+            },
+            {
+                q: "Seorang wanita 37 tahun mengeluh pupil kanannya lebih kecil (miosis), tangan kanan atrofi, dan ada gangguan truncus simpatis cervical (Horner Syndrome). Mekanisme yang menjelaskan konstriksi pupil kanan adalah...",
+                o: ["Peningkatan ketegangan zonula zinii", "Kelumpuhan otot siliaris", "Kelumpuhan otot dilatator pupil", "Kontraksi tonik otot siliaris", "Kontraksi tonik otot sfingter pupil"],
+                a: "Kelumpuhan otot dilatator pupil",
+                exp: `
+                <b>Jawaban Benar: Kelumpuhan otot dilatator pupil</b><br>
+                Horner Syndrome = Lesi saraf simpatis. Saraf simpatis menginervasi M. Dilatator Pupillae. Jika lumpuh, pupil tidak bisa dilatasi -> pupil menjadi kecil (miosis) karena dominasi parasimpatis (sfingter).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Benar:</b> Hilangnya fungsi dilator.</li>
+                </ul>`
+            },
+            {
+                q: "Di telinga dalam terdapat struktur yang mendeteksi akselerasi vertikal linear (naik turun lift). Struktur apa itu?",
+                o: ["Ganglion spiralis", "Krista ampularis", "Makula sakulus", "Makula utrikulus", "Stria vaskularis"],
+                a: "Makula sakulus",
+                exp: `
+                <b>Jawaban Benar: Makula sakulus</b><br>
+                Makula Sakulus berorientasi vertikal -> deteksi gerakan vertikal (gravitasi/lift).<br>
+                Makula Utrikulus berorientasi horizontal -> deteksi gerakan horizontal (mobil maju).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Sakulus:</b> Benar (Vertikal).</li>
+                    <li><b>D. Utrikulus:</b> Horizontal.</li>
+                    <li><b>B. Krista:</b> Rotasi.</li>
+                </ul>`
+            },
+            {
+                q: "Fungsi somatostatin pankreas (Sel Delta) adalah...",
+                o: ["Meningkatkan sekresi insulin", "Menghambat sekresi insulin dan glukagon", "Memecah glikogen", "Meningkatkan lipogenesis", "Menurunkan absorbsi glukosa"],
+                a: "Menghambat sekresi insulin dan glukagon",
+                exp: `
+                <b>Jawaban Benar: Menghambat sekresi insulin dan glukagon</b><br>
+                Somatostatin adalah hormon penghambat universal ("The Inhibitor"). Di pankreas, ia menekan pelepasan kedua hormon utama (Insulin & Glukagon) secara parakrin.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Benar:</b> Efek parakrin sel delta.</li>
+                </ul>`
+            },
+            {
+                q: "Proses pembentukan suara (fonasi) melibatkan getaran pada...",
+                o: ["Plica vocalis (Pita suara)", "Epiglottis", "Uvula", "Lidah", "Palatum"],
+                a: "Plica vocalis (Pita suara)",
+                exp: `
+                <b>Jawaban Benar: Plica vocalis</b><br>
+                Udara dari paru-paru menggetarkan plica vocalis di laring, menghasilkan bunyi dasar (phonation) yang kemudian diartikulasi oleh mulut.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Benar:</b> Sumber getaran utama.</li>
+                </ul>`
+            },
+            {
+                q: "Aksis hipothalamus - hipofisis terkait sistem reproduksi adalah...",
+                o: ["GHRH-FSH", "GHIH-LH", "GnRH -> FSH & LH", "GHRH-GH", "GnRH-GH"],
+                a: "GnRH -> FSH & LH",
+                exp: `
+                <b>Jawaban Benar: GnRH -> FSH & LH</b><br>
+                GnRH (Gonadotropin Releasing Hormone) dari hipotalamus memicu sekresi Gonadotropin (FSH dan LH) dari hipofisis anterior.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. GnRH -> LH/FSH:</b> Benar.</li>
+                </ul>`
+            },
+            {
+                q: "Yang termasuk hormon peptida (protein) adalah...",
+                o: ["Melatonin", "Oksitosin", "Serotonin", "Kalsitriol", "Dopamin"],
+                a: "Oksitosin",
+                exp: `
+                <b>Jawaban Benar: Oksitosin</b><br>
+                Oksitosin adalah hormon peptida (9 asam amino).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Oksitosin:</b> Benar. Peptida.</li>
+                    <li><b>A/C/E. Melatonin/Serotonin/Dopamin:</b> Amina (turunan asam amino tunggal).</li>
+                    <li><b>D. Kalsitriol:</b> Steroid (turunan kolesterol).</li>
+                </ul>`
+            },
+            {
+                q: "Nervus yang berfungsi sebagai reseptor suhu, nyeri, tekanan (sensasi umum/somatik), pada 2/3 anterior linguae (lidah) adalah...",
+                o: ["Nervus lingualis (Cabang N. V3)", "Nervus vagus (N. X)", "Nervus facialis (N. VII)", "Nervus glossopharyngeus (N. IX)", "Nervus hypoglossus (N. XII)"],
+                a: "Nervus lingualis (Cabang N. V3)",
+                exp: `
+                <b>Jawaban Benar: Nervus lingualis (V3)</b><br>
+                Lidah 2/3 depan memiliki inervasi ganda:<br>
+                - Sensasi Umum (Raba/Nyeri): N. Lingualis (V3).<br>
+                - Sensasi Khusus (Pengecap): Chorda Tympani (VII).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. N. Lingualis:</b> Benar untuk sensasi umum.</li>
+                    <li><b>C. N. Facialis:</b> Untuk pengecapan.</li>
+                </ul>`
+            },
+            {
+                q: "Obstruksi pada ductus nasolacrimal paling mungkin menyebabkan...",
+                o: ["Pupil sulit menerima cahaya", "Bola mata sulit gerak", "Epifora (air mata berlebih/tumpah)", "Akomodasi menurun", "Tidak bisa berkedip"],
+                a: "Epifora (air mata berlebih/tumpah)",
+                exp: `
+                <b>Jawaban Benar: Epifora</b><br>
+                Jika saluran pembuangan air mata (ductus nasolacrimal) tersumbat, air mata tidak bisa mengalir ke hidung dan akan meluap membasahi pipi (Epifora).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Epifora:</b> Benar.</li>
+                </ul>`
+            },
+            {
+                q: "GLUT-2 pada sel Beta pankreas berperan dalam mekanisme sekresi insulin. Pernyataan yang benar adalah...",
+                o: ["Mengangkut glukosa masuk ke sel Beta menggunakan energi ATP", "Mengangkut glukosa secara difusi terfasilitasi mengikuti gradien konsentrasi (tanpa energi)", "Meningkatkan konsentrasi glukosa intrasel untuk disimpan", "Menutup kanal K+ langsung", "Membuka kanal Ca2+ langsung"],
+                a: "Mengangkut glukosa secara difusi terfasilitasi mengikuti gradien konsentrasi (tanpa energi)",
+                exp: `
+                <b>Jawaban Benar: Difusi terfasilitasi</b><br>
+                GLUT (Glucose Transporter) bekerja secara pasif (difusi terfasilitasi), mengalirkan glukosa dari darah (tinggi) ke dalam sel (rendah) agar bisa dideteksi oleh sel beta.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Benar:</b> Sifat GLUT.</li>
+                    <li><b>A. Salah:</b> Itu transport aktif (SGLT).</li>
+                </ul>`
+            },
+            {
+                q: "Seorang wanita 23 tahun pemakai lensa kontak mengeluh nyeri hebat dan fotofobia. Diagnosis: Erosi kornea rekuren. Separasi/pemisahan antar struktur manakah yang mendasari kondisi ini?",
+                o: ["Membrana bowman dan stroma", "Epitel kornea dan membrana bowman", "Stroma dan descemet", "Descemet dan endotel", "Sel epitel sekitarnya"],
+                a: "Epitel kornea dan membrana bowman",
+                exp: `
+                <b>Jawaban Benar: Epitel kornea dan membrana bowman</b><br>
+                Erosi kornea rekuren terjadi karena kegagalan hemidesmosom epitel basal untuk melekat kuat pada Membrana Bowman di bawahnya. Akibatnya epitel mudah terkelupas.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Benar:</b> Lokasi kelemahan adhesi.</li>
+                </ul>`
+            },
+            {
+                q: "Pada sakulus dan utrikulus terdapat beberapa jenis epitel. Epitel sel rambut yang ujungnya berbentuk botol (flask-shaped) dan dikelilingi cawan saraf (nerve chalice) aferen adalah...",
+                o: ["Hair cell tipe I", "Hair cell tipe II", "Marginal cell", "Light cell", "Dark cell"],
+                a: "Hair cell tipe I",
+                exp: `
+                <b>Jawaban Benar: Hair cell tipe I</b><br>
+                Tipe I: Bentuk botol, dikelilingi *nerve chalice* (calyx).<br>
+                Tipe II: Bentuk silinder, sinaps saraf biasa (bouton).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Tipe I:</b> Benar. Flask-shaped.</li>
+                </ul>`
+            },
+            {
+                q: "Manakah yang di bawah ini termasuk mekanisme termolisis (pelepasan panas)?",
+                o: ["Aktivitas otot rangka", "Radiasi", "Konveksi", "A & B", "B & C"],
+                a: "B & C",
+                exp: `
+                <b>Jawaban Benar: Radiasi dan Konveksi</b><br>
+                Termolisis = Membuang panas. Contoh: Radiasi (pancaran), Konveksi (aliran udara), Evaporasi (keringat).<br>
+                Termogenesis = Membuat panas. Contoh: Aktivitas otot.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>E. B & C:</b> Benar. Keduanya mekanisme fisik buang panas.</li>
+                </ul>`
+            },
+            {
+                q: "Cara pengukuran suhu tubuh inti (core temperature) yang paling akurat secara klinis adalah...",
+                o: ["Perrektal (Anus)", "Peraksilar (Ketiak)", "Peroral (Mulut)", "Dahi", "Kulit"],
+                a: "Perrektal (Anus)",
+                exp: `
+                <b>Jawaban Benar: Perrektal</b><br>
+                Suhu rektal dianggap representasi suhu inti terbaik dalam praktik klinis rutin dibandingkan aksila (terlalu rendah) atau oral (variabel).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Perrektal:</b> Benar. Gold standard klinis.</li>
+                </ul>`
+            },
+            {
+                q: "Manakah yang termasuk termogenesis (pembentukan panas)?",
+                o: ["Aktivitas otot rangka", "Konduksi", "Radiasi", "Evaporasi", "Vasodilatasi"],
+                a: "Aktivitas otot rangka",
+                exp: `
+                <b>Jawaban Benar: Aktivitas otot rangka</b><br>
+                Kontraksi otot (termasuk menggigil) menghasilkan panas sebagai produk sampingan metabolisme.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Aktivitas otot:</b> Benar.</li>
+                    <li><b>B/C/D:</b> Mekanisme transfer panas (bisa buang atau terima).</li>
+                </ul>`
+            },
+            {
+                q: "Pasien pasca odontektomi M2 mengalami lidah kanan kebas (mati rasa) dan kaku (neuropraksi). Kerusakan terjadi pada struktur...",
+                o: ["Mikrovili", "Sel penyokong", "Sel sensorik", "Sel basal", "Saraf (Nerve/Axon)"],
+                a: "Saraf (Nerve/Axon)",
+                exp: `
+                <b>Jawaban Benar: Saraf (Nerve)</b><br>
+                Neuropraksi adalah cedera ringan pada akson saraf perifer (N. Lingualis) tanpa putusnya kontinuitas saraf, menyebabkan gangguan konduksi sementara.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>E. Saraf:</b> Benar. N. Lingualis sering cedera saat cabut gigi geraham.</li>
+                </ul>`
+            },
+            {
+                q: "Apakah nama sel epitel sakulus dan utrikulus yang berperan dalam absorpsi endolimfe dan kontrol komposisi ion?",
+                o: ["Light cell", "Dark cell", "Hair cell", "Basal cell", "Intermediate cell"],
+                a: "Dark cell",
+                exp: `
+                <b>Jawaban Benar: Dark cell</b><br>
+                Dark cells (sel gelap) di regio non-reseptor vestibulum kaya akan vesikel dan mitokondria, berfungsi mengatur komposisi endolimfe.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Dark cell:</b> Benar.</li>
+                </ul>`
+            },
+            {
+                q: "Kelenjar adrenal bagian medulla mensekresi apa?",
+                o: ["Mineralokortikoid", "Glukokortikoid", "Epinefrin & Norepinefrin", "Somatostatin", "Androgen"],
+                a: "Epinefrin & Norepinefrin",
+                exp: `
+                <b>Jawaban Benar: Epinefrin & Norepinefrin (Katekolamin)</b><br>
+                Medulla = Bagian tengah = Saraf simpatis = Adrenalin.<br>
+                Korteks = Bagian luar = Steroid (Gula, Garam, Seks).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Benar:</b> Produk sel kromafin medulla.</li>
+                </ul>`
+            },
+            {
+                q: "Tunika fibrosa mata yang transparan dan berperan sebagai media refrakta utama adalah?",
+                o: ["Iris", "Humor aquous", "Sklera", "Kornea", "Koroid"],
+                a: "Kornea",
+                exp: `
+                <b>Jawaban Benar: Kornea</b><br>
+                Tunika fibrosa terdiri dari Sklera (putih, tidak tembus) dan Kornea (bening, tembus cahaya). Kornea melakukan 2/3 pembiasan cahaya.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>D. Kornea:</b> Benar.</li>
+                </ul>`
+            },
+            {
+                q: "Pada pemeriksaan fisik, pupil terlihat berwarna putih (Leukokoria). Kelainan kemungkinan besar pada bagian...",
+                o: ["Kornea", "Lensa", "Retina", "Iris", "Sklera"],
+                a: "Lensa",
+                exp: `
+                <b>Jawaban Benar: Lensa</b><br>
+                Warna putih di pupil biasanya menandakan kekeruhan lensa (Katarak) atau massa di belakang lensa (Retinoblastoma). Dalam konteks umum refrakta, lensa katarak adalah penyebab tersering.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Lensa:</b> Benar. Katarak matang berwarna putih.</li>
+                </ul>`
+            },
+            {
+                q: "Mana pernyataan yang benar terkait Skala Media (Duktus Koklearis)?",
+                o: ["Mengandung organ Corti dan berisi Endolimfe", "Terisi oleh perilimfe", "Dipisahkan oleh membran basilaris dengan skala vestibuli", "Tidak memiliki stria vaskularis", "Berhubungan langsung dengan oval window"],
+                a: "Mengandung organ Corti dan berisi Endolimfe",
+                exp: `
+                <b>Jawaban Benar: Mengandung organ Corti & Endolimfe</b><br>
+                Skala media adalah ruang tengah yang berisi endolimfe (tinggi K+) dan rumah bagi organ pendengaran (Organ Corti).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Benar.</b></li>
+                    <li><b>B. Salah:</b> Perilimfe ada di Skala Vestibuli & Timpani.</li>
+                </ul>`
+            },
+            {
+                q: "Bagian pada hypothalamus yang menghasilkan hormon ADH (Vasopresin) adalah...",
+                o: ["Nukleus Supraoptikus", "Nukleus Paraventrikularis", "Nukleus Arkuata", "Nukleus Suprachiasmatic", "Mammillary body"],
+                a: "Nukleus Supraoptikus",
+                exp: `
+                <b>Jawaban Benar: Nukleus Supraoptikus</b><br>
+                Supraoptikus -> ADH (Vasopresin).<br>
+                Paraventrikularis -> Oksitosin.<br>
+                (Mnemonik: SO-V, PV-O).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Supraoptikus:</b> Benar.</li>
+                </ul>`
+            },
+            {
+                q: "Fungsi kelenjar olfaktori (Glandula Bowman) pada sistem olfaktori adalah...",
+                o: ["Menghasilkan mukus untuk melarutkan molekul odorant", "Menghasilkan sel reseptor baru", "Menghasilkan pigmen warna", "Menghantar impuls saraf", "Mencegah masuknya udara"],
+                a: "Menghasilkan mukus untuk melarutkan molekul odorant",
+                exp: `
+                <b>Jawaban Benar: Menghasilkan mukus (pelarut)</b><br>
+                Glandula Bowman memproduksi lendir/mukus yang berfungsi melarutkan zat kimia bau (odoran) agar bisa berikatan dengan reseptor pada silia olfaktori.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Benar:</b> Media pelarut wajib.</li>
+                </ul>`
+            },
+            {
+                q: "Seseorang mengalami hiperglikemia (gula darah tinggi). Hormon apa yang disekresikan tubuh untuk mengatasi kondisi tersebut?",
+                o: ["Kortisol", "Insulin", "Glukagon", "Kortison", "Aldosteron"],
+                a: "Insulin",
+                exp: `
+                <b>Jawaban Benar: Insulin</b><br>
+                Insulin adalah satu-satunya hormon yang menurunkan kadar gula darah (hipoglikemik agent) dengan memasukkannya ke dalam sel.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Insulin:</b> Benar.</li>
+                    <li><b>C. Glukagon:</b> Meningkatkan gula darah.</li>
+                </ul>`
+            },
+            {
+                q: "Pria 68 tahun, penurunan penglihatan, TIO meningkat, cuping optik (+). Diagnosis: Glaukoma sudut terbuka. Mekanisme yang berkaitan adalah...",
+                o: ["Abrasi kornea", "Degenerasi Koroid", "Degenerasi Sklera", "Iskemia retina", "Peningkatan resistensi aliran keluar humor aqueous"],
+                a: "Peningkatan resistensi aliran keluar humor aqueous",
+                exp: `
+                <b>Jawaban Benar: Peningkatan resistensi aliran keluar</b><br>
+                Glaukoma sudut terbuka terjadi karena 'selokan' mata (Trabecular Meshwork/Canal of Schlemm) mampet/resisten, sehingga cairan menumpuk dan tekanan naik.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>E. Benar:</b> Masalah drainase.</li>
+                </ul>`
+            },
+            {
+                q: "Yang BUKAN merupakan hormon yang berperan dalam pertumbuhan (growth) adalah...",
+                o: ["Growth Hormone (GH)", "Hormon Tiroid", "Insulin", "Androgen/Estrogen", "Aldosteron"],
+                a: "Aldosteron",
+                exp: `
+                <b>Jawaban Benar: Aldosteron</b><br>
+                Hormon pertumbuhan utama: GH, Tiroid, Insulin, Sex Steroid. Aldosteron hanya mengatur garam/air, tidak berefek langsung pada pertumbuhan fisik.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>E. Aldosteron:</b> Benar. Fungsi mineralokortikoid murni.</li>
+                </ul>`
+            },
+            {
+                q: "Hormon yang diproduksi oleh hipofisis anterior (Adenohipofisis) antara lain...",
+                o: ["CRH, TRH", "Somatostatin, Dopamin", "ACTH, TSH, FSH, LH, GH, Prolaktin", "ADH, Oksitosin", "Melatonin"],
+                a: "ACTH, TSH, FSH, LH, GH, Prolaktin",
+                exp: `
+                <b>Jawaban Benar: ACTH, TSH, FSH, LH, GH, Prolaktin</b><br>
+                Hipofisis anterior memproduksi 6 hormon utama (FLAT PiG).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Benar:</b> Hormon tropik dan langsung.</li>
+                    <li><b>D. ADH/Oksitosin:</b> Hipofisis Posterior.</li>
+                </ul>`
+            },
+            {
+                q: "Mekanisme utama sekresi insulin dimulai oleh adanya...",
+                o: ["Penurunan glukosa darah", "Peningkatan glukosa darah", "Hipoventilasi", "Penurunan kadar asam amino", "Aktivitas parasimpatis yang menurun"],
+                a: "Peningkatan glukosa darah",
+                exp: `
+                <b>Jawaban Benar: Peningkatan glukosa darah</b><br>
+                Hiperglikemia adalah stimulus paling kuat (fisiologis) untuk sel Beta melepaskan insulin.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Benar:</b> Gula masuk sel -> Insulin keluar.</li>
+                </ul>`
+            },
+            {
+                q: "Yang mengedarkan darah ke pars distalis hipofisis dan membentuk sistem porta adalah...",
+                o: ["Arteri hipofisialis inferior", "Arteri hipofisialis superior", "A. Carotis Externa", "A. Vertebralis", "A. Basilaris"],
+                a: "Arteri hipofisialis superior",
+                exp: `
+                <b>Jawaban Benar: Arteri hipofisialis superior</b><br>
+                A. Hipofisialis Superior mendarahi hipotalamus dan membentuk pleksus kapiler primer -> Vena Porta -> Pleksus sekunder di Pars Distalis (Anterior).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Benar:</b> Sumber sistem porta hipofisis.</li>
+                    <li><b>A. Inferior:</b> Mendarahi Neurohipofisis (Posterior).</li>
+                </ul>`
+            },
+            {
+                q: "Seorang pasien mengalami kerusakan pada korteks visual primer (V1) akibat stroke. Ia mampu mendeteksi adanya cahaya tetapi tidak mampu mengenali objek tersebut (Visual Agnosia). Apa yang terjadi?",
+                o: ["Sel fotoreseptor rusak", "Jalur ke CGL terputus", "Pengolahan/interpretasi visual di korteks terganggu", "Lensa keruh", "Retina lepas"],
+                a: "Pengolahan/interpretasi visual di korteks terganggu",
+                exp: `
+                <b>Jawaban Benar: Pengolahan visual terganggu</b><br>
+                Mata dan jalur saraf (N.II -> CGL) sehat (bisa lihat cahaya), tapi otak (V1/V2) rusak sehingga tidak bisa memproses 'data mentah' menjadi 'gambar yang dikenali'.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Benar:</b> Masalah di persepsi kortikal.</li>
+                </ul>`
+            },
+            {
+                q: "Bagaimana proses inaktivasi hormon hidrofilik (Peptida)?",
+                o: ["Konjugasi di hepar", "Diionisasi", "Hidroksilasi", "Degradasi oleh enzim proteinase/peptidase di darah/jaringan", "Disimpan di lemak"],
+                a: "Degradasi oleh enzim proteinase/peptidase di darah/jaringan",
+                exp: `
+                <b>Jawaban Benar: Degradasi oleh proteinase</b><br>
+                Hormon peptida (hidrofilik) larut darah dan paruh waktunya pendek karena cepat dipecah oleh enzim protease dalam sirkulasi atau di organ target.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>E. Degradasi proteinase:</b> Benar.</li>
+                    <li><b>A. Konjugasi:</b> Cara hormon steroid/tiroid (lipofilik).</li>
+                </ul>`
+            },
+            {
+                q: "Hormon adrenal (Epinefrin) memengaruhi sistem pernapasan dengan cara...",
+                o: ["Bronkokonstriksi", "Penyempitan laring", "Bronkodilatasi", "Sekresi mukus berlebih", "Penurunan frekuensi napas"],
+                a: "Bronkodilatasi",
+                exp: `
+                <b>Jawaban Benar: Bronkodilatasi</b><br>
+                Epinefrin berikatan dengan reseptor Beta-2 di otot polos bronkus -> Relaksasi -> Napas lega (Bronkodilatasi). Ini dasar penggunaan EpiPen saat anafilaksis.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Bronkodilatasi:</b> Benar.</li>
+                </ul>`
+            },
+            {
+                q: "Anak 10 tahun minum air panas, lidah kebas dan merah tapi tidak melepuh/rusak parah (Luka bakar derajat 1). Bagian mana yang terpengaruh?",
+                o: ["Hanya lapisan epitelial lidah", "Submukosa", "Otot lidah", "Tulang hyoid", "Saraf pusat"],
+                a: "Hanya lapisan epitelial lidah",
+                exp: `
+                <b>Jawaban Benar: Lapisan epitelial lidah</b><br>
+                Jika hanya merah dan kebas tanpa bulla (lepuh) atau ulserasi, kerusakan terbatas pada epidermis/epitel permukaan.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Epitelial:</b> Benar. Superfisial.</li>
+                </ul>`
+            },
+            {
+                q: "Mengalami hilang penglihatan temporal bilateral (Hemianopia Bitemporal/Tunnel Vision). Struktur yang mengalami kerusakan adalah...",
+                o: ["Retina bagian nasal", "Retina bagian temporal", "Kiasma optikum", "Traktus optikus", "Korteks visual"],
+                a: "Kiasma optikum",
+                exp: `
+                <b>Jawaban Benar: Kiasma optikum</b><br>
+                Di Kiasma Optikum, serabut dari retina NASAL (yang melihat lapang pandang TEMPORAL) menyilang. Penekanan di sini (misal tumor hipofisis) memutus jalur silang -> Buta sisi samping kiri-kanan (Bitemporal).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Kiasma optikum:</b> Benar.</li>
+                </ul>`
+            },
+            {
+                q: "Transduksi sinyal organ Corti dimulai dengan...",
+                o: ["Gerakan stereosilia akibat getaran membran basilaris", "Masuknya ion Na+", "Keluarnya ion K+", "Gerakan membran timpani saja", "Cahaya masuk kornea"],
+                a: "Gerakan stereosilia akibat getaran membran basilaris",
+                exp: `
+                <b>Jawaban Benar: Gerakan stereosilia</b><br>
+                Gelombang suara menggetarkan membran basilaris -> Sel rambut naik turun -> Stereosilia tertekuk melawan membran tektorial -> Kanal ion terbuka.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Benar:</b> Momen mekanik kunci.</li>
+                </ul>`
+            },
+            {
+                q: "Pada Dazzle blink reflex (berkedip saat cahaya silau mendadak), pusat integrasi utamanya adalah...",
+                o: ["Medulla oblongata", "Area Pretektal & Colliculus Superior (Midbrain)", "Chiasma", "Cerebellum", "Korteks Frontal"],
+                a: "Area Pretektal & Colliculus Superior (Midbrain)",
+                exp: `
+                <b>Jawaban Benar: Area Pretektal (Midbrain)</b><br>
+                Refleks visual (cahaya/kedip) diproses di tingkat batang otak (Midbrain) sebelum sadar. Pretektal nucleus menghubungkan aferen optik ke eferen facialis (orbicularis oculi).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Area Pretektal:</b> Benar.</li>
+                </ul>`
+            },
+            {
+                q: "Pernyataan yang benar mengenai anatomi dan histologi Scala Media...",
+                o: ["Berisi perilimfe", "Berisi endolimfe (tinggi K+) dan dibatasi membran Reissner & Basilaris", "Tidak memiliki organ Corti", "Terletak di telinga tengah", "Sama dengan skala timpani"],
+                a: "Berisi endolimfe (tinggi K+) dan dibatasi membran Reissner & Basilaris",
+                exp: `
+                <b>Jawaban Benar: Berisi endolimfe & dibatasi membran</b><br>
+                Skala Media (Duktus Koklearis) adalah segitiga di tengah koklea. Atap: Membran Reissner. Lantai: Membran Basilaris. Isi: Endolimfe.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Benar:</b> Deskripsi akurat.</li>
+                </ul>`
+            },
+            {
+                q: "Pernyataan berikut yang benar mengenai canalis semisirkularis adalah...",
+                o: ["Berisi perilimfe saja", "Ampulla merupakan pelebaran di ujung kanalis yang berisi crista ampullaris (reseptor rotasi)", "Mendeteksi gravitasi", "Tidak berhubungan dengan utrikulus", "Reseptor pendengaran"],
+                a: "Ampulla merupakan pelebaran di ujung kanalis yang berisi crista ampullaris (reseptor rotasi)",
+                exp: `
+                <b>Jawaban Benar: Ampulla berisi crista ampullaris</b><br>
+                Setiap kanalis semisirkularis memiliki gembungan di pangkalnya (Ampulla). Di dalamnya ada Krista Ampullaris yang memiliki Kupula untuk deteksi putaran kepala.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Benar:</b> Reseptor rotasi.</li>
+                </ul>`
+            },
+            {
+                q: "Laki-laki 62 th, luka kaki busuk, GDS 450 mg/dL (Diabetes). Hormon yang terganggu (Insulin) termasuk kelompok struktur kimiawi...",
+                o: ["Derivat asam lemak", "Derivat steroid", "Derivat asam amino (Tirosin)", "Derivat polipeptida/protein", "Derivat kolesterol"],
+                a: "Derivat polipeptida/protein",
+                exp: `
+                <b>Jawaban Benar: Derivat polipeptida/protein</b><br>
+                Insulin adalah hormon protein (51 asam amino, 2 rantai).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>D. Polipeptida:</b> Benar.</li>
+                    <li><b>B/E. Steroid:</b> Kortisol/Seks.</li>
+                </ul>`
+            },
+            {
+                q: "Struktur yang menghasilkan humor aqueous adalah...",
+                o: ["Epitel pigmen prosesus siliaris", "Epitel non-pigmen prosesus siliaris", "Limbus", "Endotel kornea", "Lensa"],
+                a: "Epitel non-pigmen prosesus siliaris",
+                exp: `
+                <b>Jawaban Benar: Epitel non-pigmen prosesus siliaris</b><br>
+                Prosesus siliaris memiliki 2 lapis epitel. Lapisan dalam (non-pigmented) yang aktif memompa ion dan air untuk membentuk humor aqueous.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Non-pigmen:</b> Benar. Pabrik aqueous.</li>
+                </ul>`
+            },
+            {
+                q: "Saraf yang berperan dalam sistem sekretomotor (parasimpatis) kelenjar air mata (Glandula Lakrimalis) adalah...",
+                o: ["N. canalis pterygoidea (Vidian nerve) -> Ganglion Pterygopalatina", "Plexus caroticus", "N. petrosus profundus", "Plexus cervicalis", "N. Opticus"],
+                a: "N. canalis pterygoidea (Vidian nerve) -> Ganglion Pterygopalatina",
+                exp: `
+                <b>Jawaban Benar: N. Vidian -> Ganglion Pterygopalatina</b><br>
+                Jaras lakrimasi: N. VII (Facialis) -> N. Petrosus Major -> N. Vidian -> Gg. Pterygopalatina -> N. Lakrimalis (V1).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Benar:</b> Jalur utama parasimpatis ke mata.</li>
+                </ul>`
+            },
+            {
+                q: "Batas superior hipotalamus adalah...",
+                o: ["Sulcus hypothalamicus", "Chiasma opticum", "Corpus mamillare", "Lamina terminalis", "Tegmentum"],
+                a: "Sulcus hypothalamicus",
+                exp: `
+                <b>Jawaban Benar: Sulcus hypothalamicus</b><br>
+                Sulcus hypothalamicus di dinding ventrikel III memisahkan Talamus (di atas) dan Hipotalamus (di bawah).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Sulcus hypothalamicus:</b> Benar.</li>
+                </ul>`
+            },
+            {
+                q: "Gangguan produksi hormon hipofisis anterior (FSH, LH, TSH, GH) disebabkan lesi pada zona hipotalamus yang mengirim faktor releasing ke sistem porta. Zona manakah itu?",
+                o: ["Zona Lateralis", "Zona Medialis", "Zona Periventricular / Area Tuberal", "Area Preoptica", "Corpus Mammilare"],
+                a: "Zona Periventricular / Area Tuberal",
+                exp: `
+                <b>Jawaban Benar: Zona Periventricular / Tuberal</b><br>
+                Nukleus di area tuberal (seperti Arkuata) dan periventrikular mengirim akson pendek ke Eminensia Mediana untuk melepas Releasing Hormones ke sistem porta hipofisis.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Periventricular:</b> Benar. Regulator neuroendokrin utama.</li>
+                </ul>`
+            },
+            {
+                q: "Reseptor rasa pada lidah terletak pada struktur berbentuk tonjolan-tonjolan mukosa yang disebut...",
+                o: ["Taste Pore", "Papilla Lingualis", "Silia", "Lamina Kribrosa", "Olfactory Hair"],
+                a: "Papilla Lingualis",
+                exp: `
+                <b>Jawaban Benar: Papilla Lingualis</b><br>
+                Papila adalah tonjolan kasar di lidah. Taste buds (kuncup rasa) terletak di dinding papila tersebut (kecuali filiformis).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Papilla:</b> Benar. Rumah taste buds.</li>
+                </ul>`
+            },
+            {
+                q: "Yang termasuk struktur telinga bagian tengah (Auris Media) adalah...",
+                o: ["Pinna", "Meatus acusticus externus", "Tulang pendengaran (Malleus, Incus, Stapes) & Cavum Timpani", "Koklea", "Kanalis semisirkularis"],
+                a: "Tulang pendengaran (Malleus, Incus, Stapes) & Cavum Timpani",
+                exp: `
+                <b>Jawaban Benar: Ossicula & Cavum Timpani</b><br>
+                Telinga Tengah = Kotak berisi udara di balik gendang telinga, berisi 3 tulang kecil.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Ossicula:</b> Benar.</li>
+                    <li><b>A/B:</b> Telinga Luar.</li>
+                    <li><b>D/E:</b> Telinga Dalam.</li>
+                </ul>`
+            },
+            {
+                q: "Manakah pernyataan di bawah ini yang TIDAK benar mengenai endokrin?",
+                o: ["Satu hormon mempengaruhi satu sel target saja", "Satu kelenjar bisa sekresi banyak hormon", "Satu sel target bisa dipengaruhi banyak hormon", "Kelenjar endokrin bekerja via darah", "Hormon butuh reseptor"],
+                a: "Satu hormon mempengaruhi satu sel target saja",
+                exp: `
+                <b>Jawaban Salah (Yang dicari): Satu hormon mempengaruhi satu sel target saja</b><br>
+                Faktanya, satu hormon (misal Insulin) mempengaruhi BANYAK jenis sel (otot, hati, lemak). Efeknya sistemik.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Salah:</b> Hormon bersifat pleiotropik (banyak target).</li>
+                </ul>`
+            },
+            {
+                q: "Hormon Releasing (Pelepas) yang diproduksi hipotalamus untuk menstimulasi tiroid adalah...",
+                o: ["CRH", "TRH (Thyrotropin Releasing Hormone)", "Somatostatin", "GnRH", "Dopamin"],
+                a: "TRH (Thyrotropin Releasing Hormone)",
+                exp: `
+                <b>Jawaban Benar: TRH</b><br>
+                TRH -> TSH -> T3/T4.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. TRH:</b> Benar.</li>
+                </ul>`
+            },
+            {
+                q: "Bila hormon Aldosteron meningkat, efek yang terjadi pada ginjal adalah...",
+                o: ["Hiperkalemia", "Hiponatremia", "Peningkatan ekskresi natrium", "Retensi natrium dan air (Meningkatkan tekanan darah)", "Asidosis metabolik"],
+                a: "Retensi natrium dan air (Meningkatkan tekanan darah)",
+                exp: `
+                <b>Jawaban Benar: Retensi Natrium & Air</b><br>
+                Aldosteron = Hormon Hemat Garam. Ia menarik Na+ kembali ke darah (reabsorpsi) dan membuang K+ ke urin.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>D. Retensi Na:</b> Benar. Volume darah naik -> Tensi naik.</li>
+                    <li><b>A/B/C:</b> Aldosteron menyebabkan Hipokalemia, Hipernatremia, dan penurunan ekskresi Na.</li>
+                </ul>`
+            },
+            {
+                q: "Perubahan bentuk lensa menjadi lebih cembung untuk memfokuskan objek dekat disebut...",
+                o: ["Adaptasi", "Akomodasi", "Refraksi", "Dilatasi", "Konvergensi"],
+                a: "Akomodasi",
+                exp: `
+                <b>Jawaban Benar: Akomodasi</b><br>
+                Akomodasi adalah kemampuan lensa mata menebal (mencembung) akibat kontraksi otot siliaris agar bisa melihat benda dekat dengan jelas.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Akomodasi:</b> Benar.</li>
+                </ul>`
+            },
+            {
+                q: "Perbedaan utama peran endolimfe dan perilimfe terhadap transduksi sensorik telinga adalah...",
+                o: ["Perilimfe kaya K+ untuk depolarisasi", "Endolimfe kaya K+ memungkinkan depolarisasi sel rambut, perilimfe untuk hantar getaran", "Sama saja komposisinya", "Endolimfe di skala timpani", "Perilimfe diproduksi stria vaskularis"],
+                a: "Endolimfe kaya K+ memungkinkan depolarisasi sel rambut, perilimfe untuk hantar getaran",
+                exp: `
+                <b>Jawaban Benar: Endolimfe kaya K+ untuk depolarisasi</b><br>
+                Endolimfe (di Skala Media) unik karena tinggi Kalium (+80mV). Saat kanal terbuka, K+ masuk ke sel rambut menyebabkan depolarisasi. Perilimfe (di Skala Vestibuli/Timpani) mirip cairan ekstraseluler biasa.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Benar:</b> Perbedaan ionik krusial untuk baterai koklea.</li>
+                </ul>`
+            },
+            {
+                q: "Pasien mengalami hipokalsemia (Kalsium rendah), sehingga PTH meningkat. Efek PTH terhadap tulang adalah...",
+                o: ["Meningkatkan mineralisasi", "Menghambat Osteoblas", "Meningkatkan aktivitas Osteoklas (Resorpsi tulang)", "Memperkuat tulang", "Tidak ada efek"],
+                a: "Meningkatkan aktivitas Osteoklas (Resorpsi tulang)",
+                exp: `
+                <b>Jawaban Benar: Meningkatkan Osteoklas (Resorpsi)</b><br>
+                Jika kalsium darah rendah, PTH memerintahkan 'pembongkaran' gudang kalsium (tulang) oleh Osteoklas agar kalsium masuk ke darah.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Osteoklas:</b> Benar. Sel pemakan tulang aktif.</li>
+                </ul>`
+            },
+            {
+                q: "Sel bipolar epitel olfaktorius menjulurkan aksonnya menembus tulang apa untuk mencapai bulbus olfaktorius?",
+                o: ["Lamina Cribrosa (Os Ethmoidale)", "Sella Tursica", "Palatum Durum", "Foramen Magnum", "Os Nasale"],
+                a: "Lamina Cribrosa (Os Ethmoidale)",
+                exp: `
+                <b>Jawaban Benar: Lamina Cribrosa</b><br>
+                Lamina cribrosa adalah lempeng tulang berlubang-lubang seperti saringan di atap hidung, tempat lewatnya serabut saraf pembau (N. I).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Lamina Cribrosa:</b> Benar.</li>
+                </ul>`
+            },
+            {
+                q: "Diberikan gambar mikroskopis junction antara kornea dan sklera (Limbus). Struktur apa yang ditunjuk panah (biasanya saluran)?",
+                o: ["Kanalis Schlemm", "Trabecular Meshwork", "Kornea", "Iris", "Lensa"],
+                a: "Kanalis Schlemm",
+                exp: `
+                <b>Jawaban Benar: Kanalis Schlemm</b><br>
+                Di pertemuan kornea-sklera (limbus), terdapat saluran drainase humor aqueous yaitu Kanalis Schlemm (Sinus Venosus Sclerae).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Kanalis Schlemm:</b> Benar. Saluran keluar cairan mata.</li>
+                </ul>`
+            },
+            {
+                q: "Proses artikulasi suara dalam pembentukan bunyi bahasa diatur terutama oleh...",
+                o: ["Pita suara saja", "Kekuatan diafragma", "Frekuensi getaran", "Lidah, bibir, dan gigi (Artikulator)", "Tekanan udara"],
+                a: "Lidah, bibir, dan gigi (Artikulator)",
+                exp: `
+                <b>Jawaban Benar: Lidah, bibir, gigi</b><br>
+                Pita suara menghasilkan bunyi dasar (buzz), tapi lidah/bibir/gigi memotong-motong bunyi itu menjadi kata-kata (huruf vokal/konsonan).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>D. Artikulator:</b> Benar. Membentuk fonem.</li>
+                </ul>`
+            },
+            {
+                q: "Sel reseptor pendengaran (Hair Cells) pada telinga berada di struktur...",
+                o: ["Macula", "Crista Ampullaris", "Organ Corti", "Utrikulus", "Sakulus"],
+                a: "Organ Corti",
+                exp: `
+                <b>Jawaban Benar: Organ Corti</b><br>
+                Reseptor Pendengaran = Organ Corti (di Koklea).<br>
+                Reseptor Keseimbangan = Makula & Krista.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Organ Corti:</b> Benar.</li>
+                </ul>`
+            },
+            {
+                q: "Urutan transmisi gelombang suara hingga mencapai cairan perilimfe yang benar adalah...",
+                o: ["Pinna -> MAE -> Membran Tympani -> Ossicula -> Fenestra Ovale (Oval Window)", "Pinna -> MAE -> Ossicula -> Membran Tympani", "Pinna -> Koklea -> Ossicula", "Pinna -> MAE -> Round Window", "Pinna -> Tulang mastoid -> Koklea"],
+                a: "Pinna -> MAE -> Membran Tympani -> Ossicula -> Fenestra Ovale (Oval Window)",
+                exp: `
+                <b>Jawaban Benar: Pinna -> MAE -> MT -> Ossicula -> Oval Window</b><br>
+                Getaran masuk liang telinga -> gendang telinga -> tulang pendengaran -> menekan Oval Window -> menggetarkan perilimfe.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Benar:</b> Jalur konduksi udara normal.</li>
+                </ul>`
+            },
+            {
+                q: "Otot mata yang bertanggung jawab menggerakkan mata ke arah lateral (abduksi) adalah...",
+                o: ["Rectus superior", "Rectus inferior", "Rectus lateralis", "Rectus medialis", "Obliquus superior"],
+                a: "Rectus lateralis",
+                exp: `
+                <b>Jawaban Benar: Rectus lateralis</b><br>
+                M. Rectus Lateralis menarik mata ke samping luar (lateral). Dipersarafi N. Abducens (VI).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Rectus lateralis:</b> Benar.</li>
+                </ul>`
+            },
+            {
+                q: "Seorang pasien sering patah tulang dan kekurangan kalsium darah. Hormon manakah yang berfungsi MENURUNKAN kadar kalsium darah (jika berlebih)?",
+                o: ["Tiroksin", "Kalsitonin", "PTH", "T3", "Aldosteron"],
+                a: "Kalsitonin",
+                exp: `
+                <b>Jawaban Benar: Kalsitonin</b><br>
+                Kalsitonin (dari sel C Tiroid) bekerja menurunkan kalsium darah dengan menyimpannya ke tulang (menghambat osteoklas). Kebalikan dari PTH.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Kalsitonin:</b> Benar. Penurun kalsium.</li>
+                    <li><b>C. PTH:</b> Peningkat kalsium.</li>
+                </ul>`
+            },
+            {
+                q: "Struktur otot dan sendi apa yang berperan dalam menghantarkan/memodulasi suara di telinga tengah?",
+                o: ["Otot tensor timpani & Stapedius", "Sendi temporomandibular", "Otot masseter", "Sendi atlantooccipital", "Otot auricularis"],
+                a: "Otot tensor timpani & Stapedius",
+                exp: `
+                <b>Jawaban Benar: Otot Tensor Timpani & Stapedius</b><br>
+                Dua otot kecil ini melekat pada tulang pendengaran dan berkontraksi untuk meredam suara keras (refleks akustik).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Benar:</b> Otot protektif telinga tengah.</li>
+                </ul>`
+            },
+            {
+                q: "Berikut yang benar mengenai sel parenkim adrenal...",
+                o: ["Zona glomerulosa menghasilkan glukokortikoid", "Sel di medulla (kromafin) menghasilkan epinefrin", "Zona retikularis menghasilkan mineralokortikoid", "Medulla menghasilkan aldosteron", "Korteks tidak memproduksi hormon"],
+                a: "Sel di medulla (kromafin) menghasilkan epinefrin",
+                exp: `
+                <b>Jawaban Benar: Medulla -> Epinefrin</b><br>
+                Korteks: G (Aldosteron), F (Kortisol), R (Androgen).<br>
+                Medulla: Katekolamin.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Benar:</b> Fungsi medulla.</li>
+                    <li><b>A. Salah:</b> Glomerulosa -> Mineralokortikoid.</li>
+                </ul>`
+            },
+            {
+                q: "Hormon yang disimpan dan dilepaskan oleh hipofisis posterior adalah...",
+                o: ["TSH", "ADH (Vasopresin) & Oksitosin", "ACTH", "FSH", "GH"],
+                a: "ADH (Vasopresin) & Oksitosin",
+                exp: `
+                <b>Jawaban Benar: ADH & Oksitosin</b><br>
+                Hipofisis posterior tidak memproduksi hormon, hanya menyimpan hormon buatan hipotalamus (ADH & Oksitosin).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Benar:</b> Neurohormon.</li>
+                </ul>`
+            },
+            {
+                q: "Seorang pasien gondok endemik (defisiensi iodium). Dokter menjelaskan iodium masuk ke sel folikel tiroid melalui protein transpor membran. Apa nama protein tersebut?",
+                o: ["Tiroglobulin", "Tiroperoksidase", "Sodium Iodide Symporter (NIS)", "Pendrin", "Albumin"],
+                a: "Sodium Iodide Symporter (NIS)",
+                exp: `
+                <b>Jawaban Benar: NIS (Sodium Iodide Symporter)</b><br>
+                NIS di membran basolateral memompa Iodium dari darah masuk ke sel tiroid melawan gradien, memanfaatkan gradien Natrium.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. NIS:</b> Benar. Pintu masuk iodium.</li>
+                </ul>`
+            },
+            {
+                q: "Sel apa di pankreas yang menghasilkan Insulin?",
+                o: ["Sel Alpha", "Sel Beta", "Sel Delta", "Sel PP", "Sel Asinar"],
+                a: "Sel Beta",
+                exp: `
+                <b>Jawaban Benar: Sel Beta</b><br>
+                Alpha -> Glukagon.<br>
+                Beta -> Insulin.<br>
+                Delta -> Somatostatin.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Sel Beta:</b> Benar (pusat pulau Langerhans).</li>
+                </ul>`
+            },
+            {
+                q: "Zat kimia (rasa) dapat dideteksi oleh reseptor lidah setelah...",
+                o: ["Masuk ke bulbus olfaktorius", "Larut dalam air liur (saliva) lalu masuk taste pore", "Melewati lamina kribrosa", "Menguap ke udara", "Ditelan"],
+                a: "Larut dalam air liur (saliva) lalu masuk taste pore",
+                exp: `
+                <b>Jawaban Benar: Larut dalam saliva</b><br>
+                Syarat utama pengecapan (gustasi) adalah zat harus berbentuk larutan cairan agar bisa kontak dengan mikrovili reseptor di dalam pori pengecap.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Benar:</b> Media pelarut.</li>
+                </ul>`
+            },
+            {
+                q: "Stimulus ionik pada kuncup pengecap yang mendeteksi rasa ASIN adalah...",
+                o: ["Ion H+", "Ion Na+ (Natrium)", "Gula", "Alkaloid", "Asam amino glutamat"],
+                a: "Ion Na+ (Natrium)",
+                exp: `
+                <b>Jawaban Benar: Ion Na+</b><br>
+                Rasa Asin = Masuknya ion Na+ (garam) lewat kanal ENaC.<br>
+                Rasa Asam = Ion H+.<br>
+                Manis/Pahit/Umami = Reseptor GPCR.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Na+:</b> Benar. Salty.</li>
+                </ul>`
+            },
+            {
+                q: "Zona Fasikulata pada korteks adrenal berfungsi menghasilkan hormon utama yaitu...",
+                o: ["Mineralokortikoid (Aldosteron)", "Glukokortikoid (Kortisol)", "Androgen", "Katekolamin", "Estrogen"],
+                a: "Glukokortikoid (Kortisol)",
+                exp: `
+                <b>Jawaban Benar: Glukokortikoid</b><br>
+                Zona Fasikulata (tengah, paling tebal) memproduksi hormon stres Kortisol.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Glukokortikoid:</b> Benar.</li>
+                </ul>`
+            },
+            {
+                q: "Kartilago penyusun daun telinga (Aurikula) adalah tipe...",
+                o: ["Elastik", "Hialin", "Fibrosa", "Tulang sejati", "Kalsifikasi"],
+                a: "Elastik",
+                exp: `
+                <b>Jawaban Benar: Kartilago Elastik</b><br>
+                Daun telinga butuh fleksibilitas tinggi namun kembali ke bentuk semula, sifat khas kartilago elastik.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Elastik:</b> Benar.</li>
+                    <li><b>B. Hialin:</b> Hidung, sendi.</li>
+                </ul>`
+            },
+            {
+                q: "Aktivasi reseptor penghidu (olfaktori) akan menstimulus protein G (Golf) yang kemudian mengaktifkan enzim...",
+                o: ["Fosfolipase C", "Kanal Cl-", "Adenilat Siklase -> cAMP", "Tirosin Kinase", "ATPase"],
+                a: "Adenilat Siklase -> cAMP",
+                exp: `
+                <b>Jawaban Benar: Adenilat Siklase -> cAMP</b><br>
+                Mekanisme transduksi bau: Odoran -> Reseptor -> G-protein (Golf) -> Adenilat Siklase -> cAMP naik -> Kanal Kation buka -> Depolarisasi.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Adenilat Siklase:</b> Benar. Second messenger pathway.</li>
+                </ul>`
+            },
+            {
+                q: "Komunikasi antar sel saraf yang menggunakan zat kimia (neurotransmitter) di celah sempit disebut...",
+                o: ["Direct communication", "Synaptic communication", "Endocrine communication", "Paracrine communication", "Autocrine"],
+                a: "Synaptic communication",
+                exp: `
+                <b>Jawaban Benar: Synaptic communication</b><br>
+                Komunikasi via sinaps kimiawi adalah ciri khas sistem saraf.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Synaptic:</b> Benar.</li>
+                </ul>`
+            },
+            {
+                q: "Membran yang memisahkan Skala Timpani dengan Duktus Koklearis (Skala Media) adalah...",
+                o: ["Membran Reissner", "Membran Vestibular", "Membran Tektorial", "Membran Basilaris", "Membran Timpani"],
+                a: "Membran Basilaris",
+                exp: `
+                <b>Jawaban Benar: Membran Basilaris</b><br>
+                Lantai Skala Media = Membran Basilaris (memisahkan dari Skala Timpani).<br>
+                Atap Skala Media = Membran Reissner (memisahkan dari Skala Vestibuli).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>D. Basilaris:</b> Benar. Tempat Organ Corti duduk.</li>
+                </ul>`
+            },
+            {
+                q: "Jaras pengecapan hingga mencapai korteks gustatorius yang benar adalah...",
+                o: ["Taste buds -> N. VII/IX/X -> Nucleus Solitarius -> Thalamus (VPM) -> Korteks Gustatorius (Insula)", "Taste buds -> N. V -> Pons -> Korteks Visual", "Taste buds -> N. VIII -> Cochlea -> Thalamus", "Taste buds -> N. VII -> Midbrain -> Oksipital", "Langsung ke korteks tanpa Thalamus"],
+                a: "Taste buds -> N. VII/IX/X -> Nucleus Solitarius -> Thalamus (VPM) -> Korteks Gustatorius (Insula)",
+                exp: `
+                <b>Jawaban Benar: N. 7/9/10 -> Solitarius -> Thalamus -> Insula</b><br>
+                Ini adalah jalur klasik pengecapan. Nucleus Tractus Solitarius (NTS) di medulla adalah relay pertama.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Benar:</b> Jalur anatomis lengkap.</li>
+                </ul>`
+            },
+            {
+                q: "Hormon Tiroid T4 (Tiroksin) dikonversi menjadi bentuk aktif T3 di jaringan perifer melibatkan enzim...",
+                o: ["Deiodinase", "Adenilat siklase", "Peroksidase", "Aromatase", "Protease"],
+                a: "Deiodinase",
+                exp: `
+                <b>Jawaban Benar: Deiodinase</b><br>
+                Enzim Deiodinase membuang satu atom Iodium dari T4 (4 iodium) menjadi T3 (3 iodium) yang jauh lebih aktif.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Deiodinase:</b> Benar.</li>
+                </ul>`
+            },
+            {
+                q: "Dimanakah hormon Prolaktin diproduksi?",
+                o: ["Sel asidofil pars distalis (Laktotrof)", "Sel basofil pars distalis", "Neurohipofisis", "Pars tuberalis", "Hipotalamus"],
+                a: "Sel asidofil pars distalis (Laktotrof)",
+                exp: `
+                <b>Jawaban Benar: Sel Laktotrof (Asidofil)</b><br>
+                Di adenohipofisis, sel asidofil ada 2: Somatotrof (GH) dan Laktotrof (Prolaktin).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Asidofil Laktotrof:</b> Benar.</li>
+                </ul>`
+            },
+            {
+                q: "Berikut ini yang TIDAK benar mengenai refleks endokrin adalah...",
+                o: ["Dapat dipengaruhi cairan tubuh (Humoral)", "Dapat dipengaruhi neurotransmiter (Neural)", "Dapat dipengaruhi hormon lain (Hormonal)", "Hipofisis adalah satu-satunya organ pengatur", "Bekerja secara umpan balik negatif"],
+                a: "Hipofisis adalah satu-satunya organ pengatur",
+                exp: `
+                <b>Jawaban Salah (Dicari): Hipofisis satu-satunya pengatur</b><br>
+                Banyak refleks endokrin terjadi TANPA hipofisis (contoh: Pankreas atur gula, Paratiroid atur kalsium). Hipofisis bukan satu-satunya.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>D. Salah:</b> Pernyataan absolut yang keliru.</li>
+                </ul>`
+            },
+            {
+                q: "Gerakan mata yang sangat cepat untuk berpindah fokus dari satu objek ke objek lain disebut...",
+                o: ["Smooth pursuit", "Vergence", "Saccadic movement", "Vestibulo-ocular reflex", "Nystagmus"],
+                a: "Saccadic movement",
+                exp: `
+                <b>Jawaban Benar: Saccadic movement</b><br>
+                Gerakan sakadik adalah gerakan mata tercepat (ballistic) untuk memindahkan fovea ke target visual baru (misal saat membaca).<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Saccadic:</b> Benar.</li>
+                    <li><b>A. Smooth pursuit:</b> Mengikuti objek bergerak pelan.</li>
+                </ul>`
+            },
+            {
+                q: "Depolarisasi sel rambut pendengaran (cochlea) dipicu oleh masuknya ion...",
+                o: ["Ion K+ dari endolimfe", "Ion Na+", "Ion Ca2+", "Ion Cl-", "Ion Mg2+"],
+                a: "Ion K+ dari endolimfe",
+                exp: `
+                <b>Jawaban Benar: Ion K+</b><br>
+                Uniknya sistem pendengaran: Depolarisasi dipicu oleh masuknya Kalium (K+), bukan Natrium. Ini karena endolimfe sangat kaya K+.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. K+:</b> Benar.</li>
+                </ul>`
+            },
+            {
+                q: "Hormon yang bersifat antagonis terhadap Insulin (menaikkan gula darah) adalah...",
+                o: ["Somatostatin", "Glukagon", "ADH", "Kalsitonin", "Oksitosin"],
+                a: "Glukagon",
+                exp: `
+                <b>Jawaban Benar: Glukagon</b><br>
+                Insulin menurunkan gula. Glukagon menaikkan gula (glikogenolisis/glukoneogenesis). Mereka bekerja berlawanan.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>B. Glukagon:</b> Benar. Hormon puasa.</li>
+                </ul>`
+            },
+            {
+                q: "Seorang wanita mengalami defisiensi hormon steroid akibat kerusakan korteks adrenal. Proses kimia dasar apa yang terganggu?",
+                o: ["Sintesis dari kolesterol", "Sintesis dari asam amino", "Transkripsi DNA", "Glikolisis", "Transport ion"],
+                a: "Sintesis dari kolesterol",
+                exp: `
+                <b>Jawaban Benar: Sintesis dari kolesterol</b><br>
+                Semua hormon steroid (Kortisol, Aldosteron, Seks) dibentuk dari bahan baku Kolesterol. Kerusakan korteks = Gagal olah kolesterol.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>A. Benar:</b> Prekursor steroid.</li>
+                </ul>`
+            },
+            {
+                q: "Seorang dengan hipertiroidisme mengalami penurunan berat badan meski nafsu makan meningkat. Mekanisme fisiologisnya adalah...",
+                o: ["Penurunan lipolisis", "Peningkatan lipogenesis", "Peningkatan lipolisis & metabolisme basal", "Penurunan metabolisme basal", "Penurunan glukoneogenesis"],
+                a: "Peningkatan lipolisis & metabolisme basal",
+                exp: `
+                <b>Jawaban Benar: Peningkatan lipolisis & BMR</b><br>
+                Hormon tiroid (T3/T4) meningkatkan laju metabolisme (membakar kalori) dan memecah lemak (lipolisis) secara masif. Akibatnya kurus walau makan banyak.<br><br>
+                <b>Analisis Opsi:</b>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li><b>C. Peningkatan lipolisis:</b> Benar. Katabolisme tinggi.</li>
+                </ul>`
+            }
+        ];
+
+        // --- LOGIKA APLIKASI ---
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userAnswers = new Array(questions.length).fill(null);
+        let currentMode = '';
+
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const feedbackContainer = document.getElementById('feedback-container');
+        const feedbackText = document.getElementById('feedback-text');
+        
+        const currentQNum = document.getElementById('current-q-num');
+        const totalQNum = document.getElementById('total-q-num');
+        const scoreBadge = document.getElementById('score-badge');
+        const progressBar = document.getElementById('quiz-progress-bar');
+        
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const finishBtn = document.getElementById('finish-btn');
+
+        function startMode(mode) {
+            currentMode = mode;
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = new Array(questions.length).fill(null);
+            
+            startScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            
+            renderQuestion();
+        }
+
+        function backToMenu() {
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+        }
+
+        function renderQuestion() {
+            const q = questions[currentQuestionIndex];
+            
+            currentQNum.innerText = currentQuestionIndex + 1;
+            totalQNum.innerText = questions.length;
+            scoreBadge.innerText = `Skor: ${score}`;
+            scoreBadge.classList.toggle('hidden', currentMode === 'exam');
+            
+            const percent = ((currentQuestionIndex + 1) / questions.length) * 100;
+            progressBar.style.width = `${percent}%`;
+
+            questionText.innerHTML = q.q;
+            
+            optionsContainer.innerHTML = '';
+            feedbackContainer.classList.add('hidden');
+
+            let opts = [...q.o];
+            
+            opts.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                
+                const existingAns = userAnswers[currentQuestionIndex];
+                if (existingAns) {
+                    btn.classList.add('disabled');
+                    btn.disabled = true;
+                    
+                    if (currentMode === 'practice') {
+                        if (opt === q.a) btn.classList.add('correct');
+                        if (opt === existingAns && opt !== q.a) btn.classList.add('incorrect');
+                    } else {
+                        if (opt === existingAns) btn.style.background = 'rgba(255,255,255,0.3)';
+                    }
+                } else {
+                    btn.onclick = () => handleAnswer(opt, btn, q);
+                }
+
+                optionsContainer.appendChild(btn);
+            });
+
+            if (currentMode === 'practice' && userAnswers[currentQuestionIndex]) {
+                showFeedback(q);
+            }
+
+            prevBtn.disabled = currentQuestionIndex === 0;
+            
+            if (currentQuestionIndex === questions.length - 1) {
+                nextBtn.classList.add('hidden');
+                finishBtn.classList.remove('hidden');
+            } else {
+                nextBtn.classList.remove('hidden');
+                finishBtn.classList.add('hidden');
+            }
+        }
+
+        function handleAnswer(selectedOpt, btnElem, questionObj) {
+            userAnswers[currentQuestionIndex] = selectedOpt;
+            
+            const allBtns = optionsContainer.querySelectorAll('.option-btn');
+            allBtns.forEach(b => {
+                b.classList.add('disabled');
+                b.disabled = true;
+            });
+
+            const isCorrect = selectedOpt === questionObj.a;
+            
+            if (isCorrect) {
+                score++;
+                if(currentMode === 'practice') btnElem.classList.add('correct');
+            } else {
+                if(currentMode === 'practice') {
+                    btnElem.classList.add('incorrect');
+                    allBtns.forEach(b => {
+                        if (b.innerText === questionObj.a) b.classList.add('correct');
+                    });
+                }
+            }
+
+            scoreBadge.innerText = `Skor: ${score}`;
+
+            if (currentMode === 'practice') {
+                showFeedback(questionObj);
+            } else {
+                btnElem.style.background = 'rgba(255,255,255,0.3)';
+            }
+        }
+
+        function showFeedback(qObj) {
+            feedbackText.innerHTML = qObj.exp;
+            feedbackContainer.classList.remove('hidden');
+        }
+
+        function navigateQuestion(direction) {
+            currentQuestionIndex += direction;
+            renderQuestion();
+        }
+
+        function finishQuiz() {
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            
+            const finalEl = document.getElementById('final-score');
+            const correctEl = document.getElementById('result-correct');
+            const incorrectEl = document.getElementById('result-incorrect');
+            
+            let currentVal = 0;
+            const step = Math.ceil(score / 50);
+            
+            if (score === 0) {
+                finalEl.innerText = 0;
+            } else {
+                const interval = setInterval(() => {
+                    currentVal += step;
+                    if (currentVal >= score) {
+                        currentVal = score;
+                        clearInterval(interval);
+                    }
+                    finalEl.innerText = currentVal;
+                }, 20);
+            }
+
+            correctEl.innerText = score;
+            incorrectEl.innerText = questions.length - score;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>24 AMBAR LAUNDRY — TABLET CBT 2.2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #EEF2F0;
+  --surface: #F8FBF9;
+  --surface-2: #E5ECE8;
+  --surface-3: #DAE4DE;
+  --border: #C4D0C8;
+  --border-light: #D4DDD8;
+  --ink: #161E19;
+  --ink-muted: #526058;
+  --ink-faint: #A8B8B0;
+  --pine: #2D6A4F;
+  --pine-dim: #BDD8CB;
+  --pine-glow: rgba(45,106,79,0.08);
+  --gold: #8A5C00;
+  --gold-dim: #EBD8A8;
+  --gold-glow: rgba(138,92,0,0.08);
+  --rust: #A83828;
+  --rust-dim: #EDD0CA;
+  --rust-glow: rgba(168,56,40,0.07);
+  --blue: #2A5C8A;
+  --blue-dim: #C0D4EA;
+  --blue-glow: rgba(42,92,138,0.08);
+  --r: 12px;
+  --r-sm: 8px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  min-height: 100vh;
+  padding: 16px;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0;
+}
+
+.shell { max-width: 740px; margin: 0 auto; position: relative; z-index: 1; }
+
+/* ══ START ══ */
+#start-screen { animation: fadeIn 0.5s ease; }
+
+.logo-row { display: flex; align-items: baseline; gap: 12px; padding: 32px 0 6px; }
+.logo-wordmark {
+  font-family: 'Lora', serif;
+  font-size: clamp(2rem, 6.5vw, 3.8rem);
+  letter-spacing: -1px; color: var(--ink); line-height: 1;
+}
+.logo-wordmark span { color: var(--pine); }
+.logo-tag {
+  font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--ink-muted);
+  border: 1px solid var(--border); padding: 3px 8px; border-radius: 99px;
+}
+.divider { height: 1px; background: var(--border); margin: 20px 0; }
+.meta-row { display: flex; gap: 24px; flex-wrap: wrap; padding: 14px 0; }
+.meta-chip { display: flex; align-items: center; gap: 8px; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink-muted); letter-spacing: 0.5px; }
+.meta-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--pine); }
+
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 24px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+.card-title { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--pine); margin-bottom: 14px; }
+
+.mode-grid { display: flex; flex-direction: column; gap: 8px; }
+.mode-btn {
+  display: flex; align-items: center; gap: 16px; padding: 16px 18px;
+  border: 1px solid var(--border-light); border-radius: var(--r-sm);
+  background: var(--surface-2); cursor: pointer; text-align: left; width: 100%;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  transition: all 0.2s ease; position: relative; overflow: hidden;
+}
+.mode-btn::after { content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity 0.2s; }
+.mode-btn.study::after  { background: var(--pine-glow); }
+.mode-btn.exam::after   { background: var(--gold-glow); }
+.mode-btn.drill::after  { background: var(--rust-glow); }
+.mode-btn:hover::after  { opacity: 1; }
+.mode-btn:hover { border-color: var(--border); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+.mode-btn:active { transform: translateY(0); }
+.mode-icon { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; position: relative; z-index: 1; }
+.mode-btn.study .mode-icon { background: var(--pine-dim); }
+.mode-btn.exam  .mode-icon { background: var(--gold-dim); }
+.mode-btn.drill .mode-icon { background: var(--rust-dim); }
+.mode-text { position: relative; z-index: 1; }
+.mode-text h3 { font-weight: 600; font-size: 15px; color: var(--ink); margin-bottom: 2px; }
+.mode-text p  { font-size: 12px; color: var(--ink-muted); font-weight: 300; }
+.mode-arr { margin-left: auto; color: var(--ink-faint); font-size: 18px; position: relative; z-index: 1; transition: transform 0.2s, color 0.2s; }
+.mode-btn:hover .mode-arr { transform: translateX(4px); color: var(--ink-muted); }
+
+.stats-trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border-radius: var(--r-sm); overflow: hidden; margin-top: 12px; }
+.stat-box { background: var(--surface-2); padding: 16px; text-align: center; }
+.stat-val { font-family: 'Lora', serif; font-size: 2rem; line-height: 1; color: var(--pine); }
+.stat-lbl { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink-muted); margin-top: 4px; }
+
+/* ══ QUIZ ══ */
+#quiz-screen { display: none; }
+.quiz-header { display: flex; align-items: center; gap: 12px; padding: 20px 0 16px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+.btn-ghost { background: none; border: 1px solid var(--border); border-radius: var(--r-sm); padding: 8px 14px; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink-muted); cursor: pointer; transition: all 0.15s; letter-spacing: 0.5px; white-space: nowrap; }
+.btn-ghost:hover { border-color: var(--ink-muted); color: var(--ink); background: var(--surface-2); }
+.progress-block { flex: 1; }
+.progress-track { height: 3px; background: var(--border); border-radius: 99px; overflow: hidden; margin-bottom: 5px; }
+.progress-fill { height: 100%; background: var(--pine); border-radius: 99px; transition: width 0.5s cubic-bezier(0.4,0,0.2,1); }
+.progress-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink-muted); letter-spacing: 0.5px; display: flex; justify-content: space-between; }
+.score-pill { font-family: 'DM Mono', monospace; font-size: 12px; padding: 6px 14px; border-radius: 99px; background: var(--pine-dim); color: var(--pine); border: 1px solid rgba(45,106,79,0.25); white-space: nowrap; }
+
+.nav-row-top { display: flex; gap: 10px; align-items: center; padding: 0 0 12px; }
+
+.q-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 28px; margin-bottom: 12px; animation: fadeIn 0.3s ease; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+.q-index { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--pine); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+.q-index .pill-tag { background: var(--pine-dim); border: 1px solid rgba(45,106,79,0.2); padding: 2px 8px; border-radius: 99px; color: var(--pine); font-size: 9px; }
+.q-text { font-size: clamp(15px, 2.2vw, 17px); line-height: 1.7; font-weight: 400; color: var(--ink); margin-bottom: 24px; }
+
+.opts { display: flex; flex-direction: column; gap: 8px; }
+.opt { display: flex; align-items: center; gap: 12px; padding: 13px 16px; border: 1px solid var(--border-light); border-radius: var(--r-sm); background: var(--surface-2); cursor: pointer; width: 100%; text-align: left; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 400; color: var(--ink-muted); transition: all 0.15s ease; position: relative; overflow: hidden; }
+.opt:hover:not(:disabled) { border-color: var(--border); background: var(--surface-3); color: var(--ink); }
+.opt:hover:not(:disabled) .opt-key { border-color: var(--ink-muted); color: var(--ink); }
+.opt:disabled { cursor: default; }
+.opt-key { width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink-faint); background: var(--surface); transition: all 0.15s; }
+.opt-body { flex: 1; line-height: 1.45; }
+.opt.correct { border-color: var(--pine) !important; background: var(--pine-glow) !important; color: var(--ink) !important; }
+.opt.correct .opt-key { background: var(--pine) !important; border-color: var(--pine) !important; color: #fff !important; }
+.opt.incorrect { border-color: var(--rust-dim) !important; background: var(--rust-glow) !important; color: var(--ink-muted) !important; }
+.opt.incorrect .opt-body { text-decoration: line-through; opacity: 0.5; }
+.opt.incorrect .opt-key { background: var(--rust-dim) !important; border-color: var(--rust) !important; color: var(--rust) !important; }
+.opt-badge { margin-left: auto; font-size: 14px; flex-shrink: 0; }
+
+.opt.drill-wrong-shake { animation: shake 0.4s ease; }
+@keyframes shake { 0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)} }
+
+.exp-box { background: var(--surface-2); border: 1px solid var(--border); border-left: 3px solid var(--pine); border-radius: var(--r-sm); padding: 20px 22px; margin-top: 12px; display: none; animation: slideUp 0.3s cubic-bezier(0.4,0,0.2,1); }
+.exp-box.show { display: block; }
+@keyframes slideUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+.exp-header { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--pine); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.exp-header::after { content:''; flex:1; height:1px; background:var(--pine); opacity:0.25; }
+.exp-answer { font-weight: 600; font-size: 15px; color: var(--pine); margin-bottom: 8px; }
+.exp-body { font-size: 13.5px; line-height: 1.75; color: var(--ink-muted); }
+.exp-body strong { color: var(--ink); font-weight: 600; }
+.exp-body em { color: var(--gold); font-style: italic; }
+.exp-body ul { padding-left: 18px; margin-top: 8px; }
+.exp-body ul li { margin-bottom: 4px; }
+.exp-src { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--border); font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink-faint); letter-spacing: 0.3px; }
+
+.nav-btn { display: flex; align-items: center; gap: 6px; padding: 11px 20px; border-radius: var(--r-sm); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.15s; border: 1px solid; }
+.nav-btn.primary { background: var(--pine); border-color: var(--pine); color: #fff; box-shadow: 0 2px 8px rgba(45,106,79,0.2); }
+.nav-btn.primary:hover { background: #1E4D38; border-color: #1E4D38; box-shadow: 0 4px 16px rgba(45,106,79,0.3); transform: translateY(-1px); }
+.nav-btn.secondary { background: transparent; border-color: var(--border); color: var(--ink-muted); }
+.nav-btn.secondary:hover { border-color: var(--ink-muted); color: var(--ink); background: var(--surface-2); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+.nav-btn.danger { background: var(--rust); border-color: var(--rust); color: #fff; }
+.nav-btn.danger:hover { background: #8A2818; border-color: #8A2818; }
+.nav-spacer { flex: 1; }
+
+.flag-btn { background: none; border: 1px solid var(--border); border-radius: var(--r-sm); padding: 10px 14px; cursor: pointer; font-size: 14px; color: var(--ink-muted); transition: all 0.15s; }
+.flag-btn:hover { border-color: var(--gold); color: var(--gold); }
+.flag-btn.flagged { border-color: var(--gold); color: var(--gold); background: var(--gold-glow); }
+
+.q-map-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 20px; margin-top: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.03); }
+.q-map-title { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 12px; }
+.q-map-grid { display: flex; flex-wrap: wrap; gap: 5px; }
+.q-dot { width: 30px; height: 30px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 10px; cursor: pointer; transition: all 0.1s; border: 1px solid var(--border-light); background: var(--surface-2); color: var(--ink-faint); }
+.q-dot:hover { border-color: var(--ink-muted); color: var(--ink-muted); }
+.q-dot.current { border-color: var(--pine); color: var(--pine); background: var(--pine-dim); }
+.q-dot.answered { border-color: rgba(45,106,79,0.4); background: var(--pine-dim); color: var(--pine); }
+.q-dot.wrong { border-color: rgba(168,56,40,0.4); background: var(--rust-dim); color: var(--rust); }
+.q-dot.flagged-dot { border-color: var(--gold); }
+
+/* ══ DRILL RESET ══ */
+.drill-reset-overlay { position: fixed; inset: 0; background: rgba(238,242,240,0.96); z-index: 200; display: none; align-items: center; justify-content: center; backdrop-filter: blur(6px); animation: fadeIn 0.2s ease; }
+.drill-reset-overlay.show { display: flex; }
+.drill-reset-modal { background: var(--surface); border: 1px solid var(--border); border-top: 3px solid var(--rust); border-radius: var(--r); padding: 36px 32px; max-width: 380px; width: 90%; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.08); }
+.drill-reset-modal .big-icon { font-size: 2.8rem; margin-bottom: 14px; }
+.drill-reset-modal h2 { font-family: 'Lora', serif; font-size: 1.5rem; margin-bottom: 8px; color: var(--ink); }
+.drill-reset-modal p { font-size: 14px; color: var(--ink-muted); margin-bottom: 24px; line-height: 1.6; }
+.drill-reset-modal .nav-btn { width: 100%; justify-content: center; margin-bottom: 8px; }
+
+/* ══ RESULTS ══ */
+#result-screen { display: none; animation: fadeIn 0.5s ease; }
+.result-hero { padding: 40px 0 20px; text-align: center; }
+.result-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--pine); margin-bottom: 12px; }
+.result-score { font-family: 'Lora', serif; font-size: clamp(3.5rem, 12vw, 6rem); line-height: 1; color: var(--ink); letter-spacing: -2px; }
+.result-score span { color: var(--pine); }
+.result-sub { font-size: 14px; color: var(--ink-muted); margin-top: 8px; }
+.result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+.result-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 18px 16px; text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,0.03); }
+.result-card .val { font-family: 'Lora', serif; font-size: 2rem; line-height: 1; margin-bottom: 4px; }
+.result-card.correct .val { color: var(--pine); }
+.result-card.wrong .val   { color: var(--rust); }
+.result-card.skipped .val { color: var(--ink-muted); }
+.result-card .lbl { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink-muted); }
+.result-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.result-actions .nav-btn { flex: 1; justify-content: center; }
+
+.exam-overlay { position: fixed; inset: 0; background: rgba(238,242,240,0.95); z-index: 100; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+.exam-overlay.show { display: flex; }
+.exam-modal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 32px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.06); }
+.exam-modal h2 { font-family: 'Lora', serif; font-size: 1.8rem; margin-bottom: 8px; color: var(--ink); }
+.exam-modal p { font-size: 14px; color: var(--ink-muted); margin-bottom: 24px; line-height: 1.6; }
+.exam-modal .nav-btn { width: 100%; justify-content: center; margin-bottom: 8px; }
+
+.streak-toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--pine-dim); border: 1px solid rgba(45,106,79,0.4); border-radius: 99px; padding: 10px 20px; font-family: 'DM Mono', monospace; font-size: 12px; color: var(--pine); letter-spacing: 1px; transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1); z-index: 999; white-space: nowrap; }
+.streak-toast.show { transform: translateX(-50%) translateY(0); }
+
+.timer-badge { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--ink-muted); letter-spacing: 1px; padding: 5px 12px; border-radius: 99px; border: 1px solid var(--border); }
+.timer-badge.warning { color: var(--gold); border-color: rgba(138,92,0,0.3); }
+.timer-badge.danger  { color: var(--rust); border-color: rgba(168,56,40,0.3); }
+
+.kbd-hint { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink-faint); text-align: center; padding: 12px 0 0; letter-spacing: 0.5px; }
+kbd { background: var(--surface-2); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; font-size: 10px; color: var(--ink-muted); }
+
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+@media (max-width: 480px) {
+  body { padding: 10px; }
+  .q-card { padding: 18px 16px; }
+  .result-score { font-size: 3.2rem; }
+  .q-dot { width: 26px; height: 26px; font-size: 9px; }
+  .nav-row-top { flex-wrap: wrap; }
+  .kbd-hint { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- START -->
+<div id="start-screen">
+  <div class="logo-row">
+    <div class="logo-wordmark">24 <span>AMBAR</span> LAUNDRY</div>
+    <div class="logo-tag">TABLET CBT</div>
+  </div>
+  <div class="divider"></div>
+  <div class="meta-row">
+    <div class="meta-chip"><span class="dot"></span> Blok 2.2 — Costae Semester 2</div>
+    <div class="meta-chip"><span class="dot"></span> 72 Soal TABLET CBT 2</div>
+    <div class="meta-chip"><span class="dot"></span> Digestif & Nephrourinary</div>
+  </div>
+  <div class="card" style="margin-bottom:12px;">
+    <div class="card-title">Pilih Mode</div>
+    <div class="mode-grid">
+      <button class="mode-btn study" onclick="startQuiz('study')">
+        <div class="mode-icon">📖</div>
+        <div class="mode-text"><h3>Study Mode</h3><p>Soal + jawaban & penjelasan langsung</p></div>
+        <div class="mode-arr">›</div>
+      </button>
+      <button class="mode-btn exam" onclick="startQuiz('exam')">
+        <div class="mode-icon">⏱</div>
+        <div class="mode-text"><h3>Exam Mode</h3><p>72 soal, 72 menit — simulasi CBT nyata</p></div>
+        <div class="mode-arr">›</div>
+      </button>
+      <button class="mode-btn drill" onclick="startQuiz('drill')">
+        <div class="mode-icon">⚡</div>
+        <div class="mode-text"><h3>Drill Mode</h3><p>Salah sekali → ulang dari soal 1. Zero mercy.</p></div>
+        <div class="mode-arr">›</div>
+      </button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Statistik Sesi Ini</div>
+    <div class="stats-trio">
+      <div class="stat-box"><div class="stat-val" id="s-total">72</div><div class="stat-lbl">Total Soal</div></div>
+      <div class="stat-box"><div class="stat-val" id="s-done">0</div><div class="stat-lbl">Dikerjakan</div></div>
+      <div class="stat-box"><div class="stat-val" id="s-pct">—</div><div class="stat-lbl">Akurasi</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz-screen">
+  <div class="quiz-header">
+    <button class="btn-ghost" onclick="goHome()">← Home</button>
+    <div class="progress-block">
+      <div class="progress-track"><div class="progress-fill" id="prog-fill"></div></div>
+      <div class="progress-label"><span id="prog-txt">0 / 72</span><span id="mode-lbl">Study</span></div>
+    </div>
+    <div id="timer-el" class="timer-badge" style="display:none;">72:00</div>
+    <div class="score-pill" id="score-pill">✓ 0</div>
+  </div>
+
+  <div class="nav-row-top" id="nav-row-top">
+    <button class="nav-btn secondary" id="btn-prev-top" onclick="navigate(-1)">← Prev</button>
+    <button class="flag-btn" id="btn-flag" onclick="toggleFlag()" title="Tandai soal (F)">⚑</button>
+    <div class="nav-spacer"></div>
+    <button class="nav-btn primary" id="btn-next-top" onclick="navigate(1)">Next →</button>
+  </div>
+
+  <div class="q-card" id="q-card">
+    <div class="q-index">
+      <span id="q-num">SOAL 01</span>
+      <span class="pill-tag" id="q-tag">TABLET CBT</span>
+    </div>
+    <div class="q-text" id="q-text"></div>
+    <div class="opts" id="opts-list"></div>
+    <div class="exp-box" id="exp-box">
+      <div class="exp-header">Pembahasan</div>
+      <div class="exp-answer" id="exp-answer"></div>
+      <div class="exp-body" id="exp-body"></div>
+      <div class="exp-src" id="exp-src"></div>
+    </div>
+  </div>
+
+  <div class="q-map-section" id="q-map-wrap">
+    <div class="q-map-title">Peta Soal</div>
+    <div class="q-map-grid" id="q-map"></div>
+  </div>
+
+  <div class="kbd-hint">
+    <kbd>A</kbd>–<kbd>E</kbd> pilih jawaban &nbsp;·&nbsp; <kbd>→</kbd> Next &nbsp;·&nbsp; <kbd>←</kbd> Prev &nbsp;·&nbsp; <kbd>F</kbd> Flag
+  </div>
+</div>
+
+<!-- RESULT -->
+<div id="result-screen">
+  <div class="result-hero">
+    <div class="result-label">Hasil Akhir</div>
+    <div class="result-score" id="r-score">0<span>/72</span></div>
+    <div class="result-sub" id="r-sub">Kamu menjawab 0 benar dari 72 soal</div>
+  </div>
+  <div class="divider"></div>
+  <div class="result-grid" style="margin-top:16px;">
+    <div class="result-card correct"><div class="val" id="r-correct">0</div><div class="lbl">Benar</div></div>
+    <div class="result-card wrong"><div class="val" id="r-wrong">0</div><div class="lbl">Salah</div></div>
+    <div class="result-card skipped"><div class="val" id="r-skip">0</div><div class="lbl">Terlewat</div></div>
+  </div>
+  <div class="result-actions" style="margin-bottom:24px;">
+    <button class="nav-btn primary" onclick="reviewMode()">📋 Review Jawaban</button>
+    <button class="nav-btn secondary" onclick="goHome()">↩ Ulangi</button>
+  </div>
+</div>
+
+<!-- Exam Overlay -->
+<div class="exam-overlay" id="exam-overlay">
+  <div class="exam-modal">
+    <h2>Selesai?</h2>
+    <p>Kamu masih memiliki waktu tersisa. Yakin ingin mengumpulkan sekarang?</p>
+    <button class="nav-btn primary" onclick="submitExam()">Ya, Kumpulkan</button>
+    <button class="nav-btn secondary" style="width:100%;justify-content:center;" onclick="closeOverlay()">Lanjut Ngerjain</button>
+  </div>
+</div>
+
+<!-- Drill Reset Overlay -->
+<div class="drill-reset-overlay" id="drill-reset-overlay">
+  <div class="drill-reset-modal">
+    <div class="big-icon">💥</div>
+    <h2>Salah! Reset.</h2>
+    <p id="drill-reset-msg">Jawaban kamu salah. Drill mode tidak kenal ampun — mulai lagi dari Soal 1.</p>
+    <button class="nav-btn danger" onclick="drillReset()">Oke, Mulai Ulang</button>
+    <button class="nav-btn secondary" style="width:100%;justify-content:center;margin-bottom:0;" onclick="goHome()">Keluar ke Home</button>
+  </div>
+</div>
+
+<div class="streak-toast" id="streak-toast">🔥 Streak!</div>
+
+</div>
+
+<script>
+const Q = [
+{n:1, q:"Apa fungsi ansa Henle?", o:["Filtrasi darah","Sekresi ion kalium","Reabsorpsi air dan natrium untuk konsentrasi urin","Memproduksi hormon ADH","Menyalurkan urin ke kandung kemih"], a:"Reabsorpsi air dan natrium untuk konsentrasi urin", exp:"<strong>Ansa Henle</strong> berperan dalam <strong>reabsorpsi air dan natrium</strong> melalui mekanisme countercurrent multiplier untuk membentuk urin yang pekat. Segmen descending: permeabel terhadap air (air keluar secara osmosis). Segmen ascending: tidak permeabel air, memompa Na+/K+/Cl- keluar secara aktif, menciptakan gradien osmotik medula yang memungkinkan konsentrasi urin.", src:"Fisiologi Nefrourinaria 1 — TABLET CBT 2 Blok 2.2"},
+
+{n:2, q:"Suatu tubulus memiliki ciri-ciri lumen yang sempit, epitel kuboid dengan mikrovili (brush border) yang padat serta banyak mitokondria. Struktur ini bertanggung jawab dalam reabsorbsi air, asam amino, dan sebagian besar ion natrium. Struktur yang dimaksud adalah...", o:["Tubulus kontortus proksimal","Tubulus kontortus distal","Ansa Henle tebal","Ansa Henle tipis","Tubulus kolektivus"], a:"Tubulus kontortus proksimal", exp:"<strong>Tubulus kontortus proksimal (PCT)</strong> memiliki ciri khas: epitel kuboid simpleks dengan <em>brush border</em> (mikrovili padat) yang meningkatkan luas permukaan reabsorbsi, banyak mitokondria (ATP untuk transport aktif), lumen sempit. PCT mereabsorbsi ~65-80% air, 100% glukosa dan asam amino, 80-90% HCO3-, dan sebagian besar Na+.", src:"K20 — Struktur Mikroskopis Sistem Urinarius — TABLET CBT 2"},
+
+{n:3, q:"Struktur apakah yang termasuk dalam tubulus distal ginjal?", o:["Makula densa","Loop of Henle","Sel podosit","Sel Mesangial","Sel Lacis"], a:"Makula densa", exp:"<strong>Makula densa</strong> adalah area sel-sel epitel khusus yang berada di awal tubulus kontortus distal (TKD). Letaknya di antara arteriol aferen dan eferen glomerulus. Sel-sel makula densa tinggi dan sempit, dengan nukleus yang berdekatan satu sama lain. Fungsinya mendeteksi kadar NaCl dalam cairan tubular untuk mengatur sekresi renin melalui apparatus juxtaglomerular.", src:"K20 — Struktur Mikroskopis Sistem Urinarius — TABLET CBT 2"},
+
+{n:4, q:"Bagaimana ADH berpengaruh terhadap ginjal?", o:["Reabsorpsi air di ginjal","Retensi natrium di ginjal","Peningkatan ekskresi air","Peningkatan ekskresi natrium"], a:"Reabsorpsi air di ginjal", exp:"<strong>ADH (Anti Diuretik Hormon / Vasopresin)</strong> bekerja pada tubulus kolektivus ginjal dengan meningkatkan permeabilitas terhadap air melalui insersi saluran air (aquaporin-2). Hasilnya: <strong>reabsorpsi air meningkat</strong> → volume urin menurun → urin lebih pekat → osmolaritas plasma menurun → homeostasis tercapai. ADH disintesis hipotalamus, dilepaskan hipofisis posterior.", src:"K26 — Mekanisme Homeostasis Cairan, Elektrolit — TABLET CBT 2"},
+
+{n:5, q:"Hormon yang mengendalikan keseimbangan cairan dan elektrolit adalah...", o:["ADH","Adrenal","ANP","A dan B","A dan C"], a:"A dan C", exp:"Hormon pengatur keseimbangan cairan dan elektrolit: <strong>ADH</strong> meningkatkan reabsorbsi air di tubulus kolektivus; <strong>Aldosteron</strong> (dari adrenal korteks) meningkatkan reabsorbsi Na+; <strong>ANP</strong> meningkatkan ekskresi Na+ (natriuretik). Jawaban A dan C (ADH + ANP) sesuai dengan PPT TABLET CBT. Ketiganya bersama-sama mengatur volume dan osmolaritas cairan tubuh.", src:"K26 — Mekanisme Homeostasis Cairan, Elektrolit — TABLET CBT 2"},
+
+{n:6, q:"Bila terjadi peningkatan cairan di dalam tubuh, hormon apa yang akan disekresikan?", o:["ADH","Aldosteron","ANP","A dan B","A dan C"], a:"ANP", exp:"Peningkatan volume cairan tubuh → peregangan atrium jantung → <strong>ANP (Atrial Natriuretic Peptide)</strong> dilepaskan oleh atrium kanan. ANP memiliki efek: natriuretik (meningkatkan ekskresi Na+ dan air melalui ginjal/diuretik), menghambat produksi angiotensin II → aldosteron menurun. RAAS: renin → angiotensin → aldosteron dihambat. Hasil: volume cairan turun kembali normal.", src:"K26 — Mekanisme Homeostasis Cairan, Elektrolit — TABLET CBT 2"},
+
+{n:7, q:"Bila terjadi penurunan cairan, hormon apa yang disekresikan?", o:["ADH","ANP","Aldosteron","A dan B","A dan C"], a:"A dan C", exp:"Penurunan volume cairan (dehidrasi, perdarahan) → dua mekanisme utama diaktifkan: (1) <strong>ADH</strong>: osmoreseptor hipotalamus mendeteksi peningkatan osmolaritas plasma → ADH dilepas → reabsorbsi air meningkat. (2) <strong>Aldosteron</strong>: penurunan volume → aktivasi RAAS → angiotensin II → aldosteron dari adrenal → reabsorbsi Na+ meningkat → air mengikuti. Keduanya bekerja sinergis memulihkan volume.", src:"K26 — Mekanisme Homeostasis Cairan, Elektrolit — TABLET CBT 2"},
+
+{n:8, q:"Bagaimana volume urin jika sekresi ADH meningkat?", o:["Volume urin meningkat","Volume urin menurun","Volume urin tidak ada perubahan","Konsentrasi natrium di urine meningkat","Konsentrasi kalium di urine menurun"], a:"Volume urin menurun", exp:"ADH meningkat → permeabilitas tubulus kolektivus terhadap air meningkat (melalui aquaporin-2) → lebih banyak air direabsorbsi dari filtrat kembali ke darah → <strong>volume urin menurun</strong>, urin menjadi lebih pekat (scant urine, osmolaritas urin tinggi). Hasilnya: osmolaritas plasma turun kembali normal, volume plasma meningkat.", src:"K26 — Mekanisme Homeostasis Cairan, Elektrolit — TABLET CBT 2"},
+
+{n:9, q:"Enzim yang berfungsi menghidrolisis lipid adalah...", o:["Lipase yang terdapat pada saliva","Lipase yang terdapat pada pankreas","Lipase yang berada pada mukosa","Amilase yang terdapat pada saliva","Amilase yang terdapat pada pankreas"], a:"Lipase yang terdapat pada pankreas", exp:"<strong>Lipase pankreas</strong> adalah <em>satu-satunya enzim utama</em> yang dapat mencerna lipid (trigliserida). Sekresi lipase pankreas bersifat aktif (langsung aktif, tidak ada proenzim). Proses: emulsifikasi oleh garam empedu (memperbesar luas permukaan) → lipase pankreas memecah TG menjadi 2 asam lemak + 1 monogliserida. Amilase mencerna karbohidrat, bukan lipid.", src:"K13 — Enzim Pencernaan dan Bilirubin — TABLET CBT 2"},
+
+{n:10, q:"Enzim yang menghidrolisis laktosa adalah...", o:["Laktase dari kelenjar saliva","Laktase dari kelenjar pankreas","Laktase dari brush border usus halus","Amilase dari kelenjar saliva","Amilase dari kelenjar pankreas"], a:"Laktase dari brush border usus halus", exp:"<strong>Laktase</strong> adalah enzim brush border (mikrovili) usus halus yang menghidrolisis laktosa menjadi galaktosa + glukosa. Defisiensi laktase menyebabkan intoleransi laktosa. Empat enzim brush border utama: (a) Laktase: laktosa → galaktosa + glukosa; (b) Sukrase: sukrosa → fruktosa + glukosa; (c) Maltase: maltosa → 2 glukosa; (d) α-dekstrinase: memecah ikatan 1,6 glikosidik.", src:"K13 — Enzim Pencernaan dan Bilirubin — TABLET CBT 2"},
+
+{n:11, q:"Rara berjemur untuk mendapatkan Vitamin D. Vitamin D dibentuk oleh senyawa intermediat dalam sintesis kolesterol. Senyawa intermediat tersebut adalah...", o:["7-dehidrokolesterol","Kolekalsiferol","25-hidroksivitamin D","1,25-dihidroksivitamin D","Ergokalsiferol"], a:"7-dehidrokolesterol", exp:"Jalur sintesis Vitamin D di kulit: kolesterol → <strong>7-dehidrokolesterol</strong> (disimpan di kulit) → sinar UV (fotolisis) → <em>previtamin D3</em> → panas tubuh → <strong>kolekalsiferol (Vit D3)</strong>. Selanjutnya: di hati → 25-hidroksivitamin D → di ginjal (1α-hidroksilase) → 1,25-dihidroksivitamin D (kalsitriol, bentuk aktif). Jadi senyawa intermediat dalam sintesis kolesterol yang menjadi prekursor = <strong>7-dehidrokolesterol</strong>.", src:"K17 — Biokimia Metabolisme Vitamin dan Mineral — TABLET CBT 2"},
+
+{n:12, q:"Laju metabolisme seseorang proporsional dengan...", o:["Konsumsi glukosa","Konsumsi asam lemak bebas","Konsumsi protein","Konsumsi oksigen","Konsumsi glikogen"], a:"Konsumsi oksigen", exp:"<strong>Basal Metabolic Rate (BMR)</strong> diukur dengan memantau aktivitas respirasi. Laju utilisasi energi <strong>proporsional dengan konsumsi oksigen</strong>. Pengukuran BMR melibatkan monitoring konsumsi O2 karena setiap mol O2 yang dikonsumsi berhubungan langsung dengan jumlah ATP yang dihasilkan (respirasi aerob). Ini adalah dasar indirect calorimetry.", src:"K18 — Metabolisme dan Bioenergi — TABLET CBT 2"},
+
+{n:13, q:"Berikut yang merupakan fase 1 metabolisme xenobiotik?", o:["Terjadi pembuatan/perubahan gugus fungsionil yang sudah ada","Membuat senyawa lebih polar","Merubah senyawa aktif menjadi inaktif","A dan B benar","Semua jawaban benar"], a:"Semua jawaban benar", exp:"<strong>Fase 1 metabolisme xenobiotik</strong>: reaksi oksidasi-reduksi-hidrolisis. Hasil: (a) memasukkan/memperlihatkan gugus fungsional (-OH, -NH2, -SH) — perubahan gugus fungsional; (b) meningkatkan polaritas (kelarutan air); (c) bisa mengaktivasi (bioaktivasi prokarsinogen) atau menginaktivasi. Dikatalisis terutama Sitokrom P450 di retikulum endoplasma hepar. Fase 2 = konjugasi.", src:"K25 — Metabolisme Xenobiotik — TABLET CBT 2"},
+
+{n:14, q:"Organ utama yang berperan dalam proses metabolisme xenobiotik adalah...", o:["Hati","Ginjal","Paru","Usus","Jantung"], a:"Hati", exp:"<strong>Hati (Hepar)</strong> adalah organ utama metabolisme xenobiotik. Alasannya: (1) kaya enzim Sitokrom P450 (di RE), (2) menerima langsung aliran darah dari saluran pencernaan via vena porta, (3) hepatosit memiliki kapasitas detoksifikasi tinggi. Catatan: biotransformasi tidak selalu = detoksifikasi; dapat meningkatkan aktivitas biologis (contoh: indirect carcinogens).", src:"K25 — Metabolisme Xenobiotik — TABLET CBT 2"},
+
+{n:15, q:"Tujuan utama metabolisme xenobiotik adalah...", o:["Mengubah senyawa asing menjadi aktif","Mengubah senyawa asing menjadi lebih mudah diekskresikan","Menyebar senyawa asing ke seluruh tubuh","Mendistribusikan senyawa asing ke seluruh tubuh","Mengabsorpsi senyawa asing"], a:"Mengubah senyawa asing menjadi lebih mudah diekskresikan", exp:"<strong>Tujuan utama metabolisme xenobiotik</strong> adalah <em>biotransformasi</em>: mengubah senyawa asing (xenobiotik) yang biasanya lipofilik menjadi lebih <strong>polar/hidrofilik</strong> sehingga <strong>lebih mudah diekskresikan</strong> melalui urin (ginjal) atau empedu/feses. Tubuh memiliki mekanisme efektif untuk menginaktivasi lalu mengeksresikan senyawa asing melalui biotransformasi.", src:"K25 — Metabolisme Xenobiotik — TABLET CBT 2"},
+
+{n:16, q:"Proses distribusi bahan xenobiotik melalui berbagai organ. Manakah yang paling mungkin mempengaruhi laju proses distribusi bahan xenobiotik?", o:["Isi darah","Afinitas terhadap jaringan","Bioavailabilitas","Tekanan darah","Koefisien degradasi"], a:"Tekanan darah", exp:"Distribusi xenobiotik dipengaruhi oleh aliran darah ke berbagai organ. <strong>Tekanan darah</strong> menentukan besarnya aliran darah yang membawa xenobiotik ke seluruh jaringan. Organ dengan perfusi tinggi (hepar, ginjal, paru, otak) menerima xenobiotik lebih cepat. Tekanan darah adalah faktor hemodinamik utama yang menentukan laju distribusi ke berbagai kompartemen.", src:"K25 — Metabolisme Xenobiotik — TABLET CBT 2"},
+
+{n:17, q:"Nitrogen positif berupa nitrogen yang masuk (protein) lebih besar daripada nitrogen yang hilang (melalui urine). Contoh kondisi tersebut adalah...", o:["Trauma","Sepsis","Burn","Acute illness","Wanita hamil"], a:"Wanita hamil", exp:"<strong>Keseimbangan nitrogen positif</strong>: asupan nitrogen > kehilangan nitrogen, terjadi saat anabolisme dominan. Contoh: pertumbuhan anak, ibu hamil, pemulihan penyakit, latihan fisik. <strong>Wanita hamil</strong>: protein digunakan untuk membangun jaringan janin, plasenta, uterus. Keseimbangan nitrogen negatif: trauma, sepsis, luka bakar, penyakit akut — katabolisme otot tinggi.", src:"K15 — Metabolisme Protein — TABLET CBT 2"},
+
+{n:18, q:"Protein memiliki banyak fungsi, salah satunya sebagai kontrol dan regulasi. Protein yang memiliki fungsi tersebut adalah...", o:["Histon","Hemoglobin","Immunoglobulin","Insulin","Kolagen"], a:"Insulin", exp:"<strong>Insulin</strong> adalah protein (polipeptida) yang berfungsi sebagai <strong>hormon — kontrol dan regulasi</strong>. Insulin mengatur berbagai proses fisiologis dalam tubuh: kadar glukosa darah, metabolisme lemak dan protein. Contoh protein fungsi kontrol/regulasi: insulin, glukagon, prolaktin, oksitosin, ADH, GH. Hemoglobin = transport; Immunoglobulin = pertahanan; Kolagen = struktur; Histon = pengemasan DNA.", src:"K15 — Metabolisme Protein — TABLET CBT 2"},
+
+{n:19, q:"Jika tubuh kehilangan kemampuan volunter, yang terjadi adalah...", o:["Inkontinensia urine","Resistensi urine","Peningkatan Volume Urine","Penurunan Produksi Urine","Urine lebih pekat"], a:"Inkontinensia urine", exp:"<strong>Inkontinensia urine</strong> adalah ketidakmampuan untuk mengendalikan pengeluaran urine secara sukarela (volunter). Kontrol volunter berkemih dilakukan oleh m. sphincter urethra externa (diinervasi n. pudendus, somatik). Hilangnya kemampuan volunter → sfingter eksterna tidak bisa dikontrol → urine keluar tanpa sengaja = inkontinensia.", src:"K19 — Anatomi Sistem Urinarius — TABLET CBT 2"},
+
+{n:20, q:"Struktur yang mengontrol volunter dalam berkemih adalah...", o:["M. detrusor","M. sphincter externa","M. sphincter interna","Nefron"], a:"M. sphincter externa", exp:"<strong>M. sphincter urethra externa</strong> mengontrol berkemih secara <strong>volunter</strong>. Diinervasi oleh n. pudendus (somatik, S2-S4) yang berasal dari pusat mikturisi pons dan korteks serebri. M. sphincter interna = involunter (otot polos, diinervasi simpatis). M. detrusor = kontraksi involunter saat berkemih (parasimpatis).", src:"K19 — Anatomi Sistem Urinarius — TABLET CBT 2"},
+
+{n:21, q:"Saraf parasimpatis berperan dalam kontrol involunter berkemih dengan cara...", o:["Merangsang kontraksi m. sphincter urethra external","Menghambat pengisian kandung kemih","Merangsang kontraksi m. detrussor urethra","Merangsang relaksasi m. detrussor urethra","Menstimulasi reabsorpsi air di ginjal"], a:"Merangsang kontraksi m. detrussor urethra", exp:"<strong>Saraf parasimpatis (S2-S4, n. splanknik pelvis)</strong>: mengaktifkan pengosongan kandung kemih dengan <strong>merangsang kontraksi m. detrusor</strong> dan relaksasi sfingter interna. Refleks parasimpatis: VU penuh (200ml) → reseptor regang → sinyal ke pons → saraf parasimpatis → kontraksi detrusor → sfingter interna relaksasi → urine mengalir. Dapat diaktifkan valsalva maneuver.", src:"K19 — Anatomi Sistem Urinarius — TABLET CBT 2"},
+
+{n:22, q:"Pada tubulus mana penyerapan HCO3- banyak?", o:["Proximal","Distal","Kolektivus","Ascendens","Descendens"], a:"Proximal", exp:"<strong>80-90% HCO3-</strong> direabsorbsi di <strong>Tubulus Kontortus Proksimal (PCT)</strong>. Mekanisme: H+ disekresi ke lumen (via Na+/H+ antiporter) → H+ + HCO3- → H2CO3 → karbonik anhidrase luminal → CO2 + H2O → CO2 masuk sel → karbonik anhidrase intrasel → HCO3- + H+ → HCO3- keluar ke darah (cotransporter Na+-3HCO3-). Sisanya di TKD dan tubulus kolektivus.", src:"Mochi 2023; TABLET CBT 2"},
+
+{n:23, q:"Proses pembentukan panas pada neonatus atau bayi paling banyak dilakukan oleh komponen...", o:["Sel darah merah","Sel hepatosit","Sel osteoblas","Sel otot","Sel lemak coklat"], a:"Sel lemak coklat", exp:"<strong>Brown fat (lemak coklat)</strong> adalah jaringan adiposa unik pada neonatus, terletak di antara tulang belikat, sekitar leher, dan tubuh bagian atas. Adiposit mengandung banyak mitokondria dengan <em>uncoupling protein (thermogenin/UCP-1)</em> yang memisahkan fosforilasi oksidatif dari produksi ATP → energi dilepas sebagai <strong>panas (termogenesis)</strong>. Sangat penting karena bayi belum bisa menggigil.", src:"K18 — Metabolisme dan Bioenergi — TABLET CBT 2"},
+
+{n:24, q:"Asam amino yang dapat diproduksi dalam tubuh namun saat masih bayi produksinya terbatas sehingga harus didapat dari makanan. Asam amino apa itu?", o:["Alanin","Arginin","Lisin","Aspartat"], a:"Arginin", exp:"<strong>Arginin</strong> termasuk asam amino <em>kondisional/semiessensial</em> (*Nutritionally semiesensial). Dapat disintesis tubuh namun lajunya tidak cukup mendukung pertumbuhan, sehingga pada anak-anak dan bayi harus diperoleh dari makanan. Arginin penting untuk: sintesis protein, produksi NO (vasodilator), siklus urea. Pada tabel: ditandai * (Nutritionally semiesensial).", src:"K15 — Metabolisme Protein — TABLET CBT 2"},
+
+{n:25, q:"Pernyataan yang benar mengenai linea Broedel adalah...", o:["Terletak di 2/3 posterior dan 1/3 medial","Area di batas daerah yang dialiri a. Renalis pars anterior dan superior","Area penuh anastomose","Daerah di perbatasan area ren segmen medioposterior, superior, dan media","Tempat incisi pada kasus ureterolithiasis"], a:"Daerah di perbatasan area ren segmen medioposterior, superior, dan media", exp:"<strong>Linea Broedel (Brödel's line)</strong>: garis avaskuler relatif di ginjal, terletak di 2/3 medial dan 1/3 lateral — batas antara area ren yang diperdarahi a. renalis pars anterior dan posterior. Merupakan <strong>daerah di perbatasan segmen medioposterior, superior, dan media</strong>. Area ini miskin anastomose (zona avaskuler relatif) → dipilih sebagai <strong>tempat incisi nefrolitotomi</strong>, bukan ureterolithiasis.", src:"K19 — Anatomi Sistem Urinarius — TABLET CBT 2"},
+
+{n:26, q:"Komponen utama dalam sistem urinarius yang memproduksi urin adalah...", o:["Ureter","Kandung kemih","Urethra","Ginjal","Anus"], a:"Ginjal", exp:"<strong>Ginjal (ren)</strong> adalah komponen utama sistem urinarius yang memproduksi urin. Sistem urologi terdiri dari: (1) 2 ginjal — tempat pembentukan urin; (2) 2 ureter — membawa urin dari ginjal ke kandung kemih; (3) 1 kandung kemih/vesica urinaria — tempat urin disimpan sementara; (4) 1 uretra — membawa urin dari kandung kemih keluar tubuh.", src:"K19 — Anatomi Sistem Urinarius — TABLET CBT 2"},
+
+{n:27, q:"Seorang lelaki terkena penyakit kolik ureter dengan nyeri tajam melilit. Bagaimana ciri-ciri dari organ yang terkena penyakit tersebut?", o:["Epitel squamous simpleks","Lamina propria dari jaringan ikat","1/3 distal otot menjadi 3 lapis","Ke distal akan menembus kandung urine di bagian depan","Hanya dilapisi oleh serosa"], a:"1/3 distal otot menjadi 3 lapis", exp:"<strong>Ureter</strong> memiliki ciri struktural: mukosa epitel transisional, lamina propria fibroelastis, dan muskularis. Ciri khas: <strong>1/3 distal ureter memiliki 3 lapisan otot</strong> (luar longitudinal, tengah sirkular, dalam longitudinal), sedangkan 2/3 proksimal hanya 2 lapisan (luar longitudinal, dalam sirkular). Lapisan terluar adalah adventisia. Ureter menembus dinding posterior VU secara miring.", src:"K20 — Struktur Mikroskopis Sistem Urinarius — TABLET CBT 2"},
+
+{n:28, q:"Pasien usia 39 tahun dengan urin berwarna merah dan nyeri tekan pada iliaca sinistra, riwayat batu ginjal. CT scan menunjukkan ureter terletak di anterior sebuah otot. Apa otot yang dimaksud?", o:["M. psoas major","M. serratus anterior","M. obturatorius internus","M. rectus abdominis","M. obliquus externus abdominis"], a:"M. psoas major", exp:"Ureter pars abdominalis berjalan <strong>anterior (di depan) m. psoas major</strong> dan menyilang a. iliaca communis untuk masuk ke pelvis. Pada CT scan, ureter terlihat anterior dari m. psoas major. Relasi posterior ureter sinistra: m. psoas major sinistra, bifurcatio arteri iliaka komunis sinistra.", src:"K19 — Anatomi Sistem Urinarius — TABLET CBT 2"},
+
+{n:29, q:"Fungsi utama ureter adalah...", o:["Menghasilkan urin","Reabsorpsi air","Mengalirkan urin dari ginjal ke kandung kemih"], a:"Mengalirkan urin dari ginjal ke kandung kemih", exp:"<strong>Ureter</strong> adalah saluran berotot (25-30 cm) yang berfungsi <strong>mengalirkan urin dari ginjal ke kandung kemih</strong> melalui gerakan peristaltik. Ureter tidak memproduksi urin (fungsi ginjal) dan tidak mereabsorbsi air (fungsi tubulus). Terdapat 3 penyempitan anatomis ureter: pelvico-ureterica, tempat persilangan vasa iliaka, dan ureterovesicalis.", src:"K19 — Anatomi Sistem Urinarius — TABLET CBT 2"},
+
+{n:30, q:"Apa yang terjadi ketika pengisian urine di kandung kemih?", o:["Urethra menutup","Urethra membuka","M. detrussor kontraksi","M. detrussor relaksasi"], a:"M. detrussor relaksasi", exp:"Fase pengisian kandung kemih: urin dari ginjal mengisi VU → <strong>m. detrusor relaksasi</strong> (agar VU dapat menampung), sfingter interna tetap kontraksi (simpatis T11-L2), sfingter eksterna tetap kontraksi volunter (n. pudendus). Saraf simpatis menghambat kontraksi detrusor dan mempertahankan sfingter internal tertutup selama fase pengisian. Sebaliknya, pengosongan = detrusor kontraksi.", src:"K23 — Fisiologi Fungsi Sistem Urinarius III — TABLET CBT 2"},
+
+{n:31, q:"Pasien jatuh dari ketinggian, tidak bisa buang air kecil. Foto Ro vertebra: kerusakan pada vertebra sakral 2-4. Apakah fungsi dari vertebra sakral 2-4 tersebut?", o:["Inhibisi m. detrusor","Relaksasi m. sfingter urethra eksterna","Kontraksi m. sfingter urethra interna","Eksitasi m. detrusor sehingga berkontraksi mengosongkan kandung kemih","Membawa sensasi nyeri saat kandung kemih penuh"], a:"Eksitasi m. detrusor sehingga berkontraksi mengosongkan kandung kemih", exp:"S2-4 mengandung serabut <strong>parasimpatis</strong> (n. splanknik pelvis) yang mengeksitasi/merangsang kontraksi <strong>m. detrusor</strong> untuk mengosongkan kandung kemih. Kerusakan S2-4 → hilangnya parasimpatis → detrusor tidak berkontraksi → tidak bisa BAK (retensi urin). Catatan: S2-4 juga mengandung serabut somatik (n. pudendus) untuk kontrol sfingter eksterna volunter.", src:"K23 — Fisiologi Fungsi Sistem Urinarius III — TABLET CBT 2"},
+
+{n:32, q:"Aldosteron meningkatkan volume dan konsentrasi urine dengan cara?", o:["Reabsorbsi cairan","Reabsorbsi Natrium dan sekresi Kalium","Reabsorbsi Urea","Reabsorbsi Glukosa","Eksresi Natrium"], a:"Reabsorbsi Natrium dan sekresi Kalium", exp:"<strong>Aldosteron</strong> (hormon korteks adrenal) bekerja di tubulus distal dan kolektivus: (1) <strong>Reabsorbsi Na+</strong> — merangsang pompa Na+/K+-ATPase di membran basolateral dan saluran Na+ di membran apikal → Na+ masuk darah → air mengikuti secara osmosis → volume darah naik; (2) <strong>Sekresi K+</strong> — K+ diekskresikan ke lumen tubulus → diekskresikan dalam urin. Ini menjaga keseimbangan elektrolit.", src:"K22 — Fisiologi Fungsi Sistem Urinarius II — TABLET CBT 2"},
+
+{n:33, q:"Distribusi cairan tubuh yang tidak benar adalah...", o:["Cairan interstitial sebanyak 15% dari BB","Cairan intrasel sebesar 40% dari BB","Plasma darah 5% dari BB","Sel darah 8% dari BB","Total cairan dalam tubuh sebesar 60% dari BB"], a:"Sel darah 8% dari BB", exp:"Distribusi cairan tubuh normal: Total cairan = <strong>60% BB</strong>; Cairan intrasel = <strong>40% BB</strong>; Cairan ekstrasel = 20% BB (terdiri dari plasma = 5% + cairan interstitial = 15%). Cairan intravaskuler 5% = plasma; volume sel darah merah = <strong>3% BB</strong> (bukan 8%). Volume darah total = 8% BB (plasma + sel darah merah). Jadi yang salah: sel darah 8% — seharusnya 3%.", src:"K26 — Mekanisme Homeostasis Cairan, Elektrolit — TABLET CBT 2"},
+
+{n:34, q:"Hal berikut yang tidak benar adalah...", o:["Air mengalir dari tekanan osmosis rendah ke tekanan osmosis tinggi","Air mengalir dari tekanan hidrostatik tinggi ke tekanan hidrostatik rendah","Air mengalir dari dalam sel ke luar sel bila sel berada dalam larutan hipertonik","Air mengalir dari luar ke dalam sel bila sel berada dalam larutan hipertonik","Tidak ada perpindahan cairan ketika sel berada dalam larutan isotonik"], a:"Air mengalir dari luar ke dalam sel bila sel berada dalam larutan hipertonik", exp:"Osmosis: air bergerak dari konsentrasi solut rendah (osmolaritas rendah) ke konsentrasi solut tinggi (osmolaritas tinggi). Dalam larutan <strong>hipertonik</strong>: osmolaritas cairan ekstrasel > intrasel → air <em>keluar dari sel</em> (sel mengerut/krenasi), bukan masuk. Jadi pernyataan D (<em>air mengalir dari luar ke dalam sel bila larutan hipertonik</em>) adalah <strong>TIDAK BENAR</strong>.", src:"Mochi 2023 No. 40 — TABLET CBT 2"},
+
+{n:35, q:"Sebuah sel di ginjal diketahui dapat mengubah enzim angiotensinogen menjadi angiotensin I. Enzim apakah yang dimaksud?", o:["Atrial natriuretic peptide","Renin","Aldosteron","Vasopressin","Angiotensin II"], a:"Renin", exp:"<strong>Renin</strong> adalah enzim proteolitik (aspartil protease) yang disintesis dan dilepaskan oleh <strong>sel juxtaglomerular</strong> di dinding arteriol aferen ginjal. Renin memotong angiotensinogen (glikoprotein dari hepar) → menghasilkan <strong>Angiotensin I</strong> (dekapeptida). Angiotensin I kemudian diubah oleh ACE (angiotensin converting enzyme, di paru) → Angiotensin II → merangsang aldosteron. Ini adalah sistem RAAS.", src:"Sherwood 2016 — TABLET CBT 2"},
+
+{n:36, q:"Seseorang didiagnosis menderita fenilketonuria. Mana pernyataan yang benar terkait kondisi tersebut?", o:["Defisiensi fenilalanin","Defisiensi enzim fenilalanin karboksilase","Peningkatan produksi melanin","Terjadi hiperpigmentasi kulit","Produksi tirosin dihambat"], a:"Defisiensi enzim fenilalanin karboksilase", exp:"<strong>Fenilketonuria (PKU)</strong>: defisiensi enzim <strong>fenilalanin hidroksilase</strong> (atau disebut fenilalanin karboksilase) → fenilalanin tidak bisa diubah menjadi tirosin → akumulasi fenilalanin dalam darah → gangguan neurologis. Karena tirosin tidak terbentuk: defisiensi melanin → <strong>hipopigmentasi</strong> kulit (bukan hiperpigmentasi). Gejala: kulit pucat, rambut pirang, gangguan kognitif.", src:"K15 — Biokimia Metabolisme Protein — TABLET CBT 2"},
+
+{n:37, q:"Manakah pernyataan yang benar mengenai kandung kencing (vesica urinaria)?", o:["Lapisan epitel permeabel terhadap air","Terdapat barier osmotik antara urine dan lamina propria","Tunika muskularis tersusun oleh 2 lapisan otot polos","Lapisan paling luar berupa adventisia","Pada lapisan otot longitudinal terdapat otot sfingter interna"], a:"Terdapat barier osmotik antara urine dan lamina propria", exp:"Vesica urinaria: mukosa dilapisi <strong>epitel transisional (urothelium)</strong> — sel payung (umbrella cells) yang <em>impermeabel</em> terhadap air dengan tight junction dan plaques uroplakin membentuk <strong>barier osmotik</strong> antara urin dan lamina propria. Tunika muskularis: <em>3 lapisan</em> (longitudinal-sirkular-longitudinal). Lapisan tengah sirkular membentuk sfingter interna. Lapisan paling luar: adventisia + serosa (peritoneum sebagian).", src:"K20 — Struktur Mikroskopis Sistem Urinarius — TABLET CBT 2"},
+
+{n:38, q:"Seorang lelaki 65 tahun dengan BPH (Benign Prostatic Hyperplasia). Epitel yang melapisi alveoli organ yang terkena gangguan adalah...", o:["Epitel squamous simpleks","Epitel squamous kompleks","Epitel kolumner simpleks","Epitel kuboid simpleks","Epitel transisional"], a:"Epitel kolumner simpleks", exp:"<strong>Kelenjar prostat</strong> terdiri dari 30-50 kelenjar tubuloalveolar majemuk yang tersusun dalam 3 lapisan konsentris. Epitel kelenjar prostat: simple to <strong>pseudostratified columnar epithelium (epitel kolumner simpleks hingga pseudostratifikasi)</strong>. Kelenjar mukosa (terdekat uretra): kuboid-kolumner simpleks; kelenjar submukosa dan utama (main glands): kolumner simpleks hingga pseudostratifikasi.", src:"K20 — Struktur Mikroskopis Sistem Urinarius — TABLET CBT 2"},
+
+{n:39, q:"Diamati sebuah struktur dengan ciri-ciri epitel transisional dan muara dari duktus kolektivus...", o:["Calix Mayor","Tubulus kontortus distal","Calix Minor","Tubulus kontortus proximal","Kapsul Bowman"], a:"Calix Minor", exp:"<strong>Calix minor (kaliks minor)</strong> memiliki ciri: epitel transisional (urothelium) yang melapisi lumennya, dan merupakan tempat muara dari <em>duktus kolektivus papiler (duktus Bellini)</em> pada area cribrosa papila renalis. Calix minor mengumpulkan urin dari papila → calix mayor → pelvis renalis → ureter → VU.", src:"K20 — Struktur Mikroskopis Sistem Urinarius — TABLET CBT 2"},
+
+{n:40, q:"Bagian distal tubulus koligens tersusun dari epitel...", o:["Transisional","Kolumner simpleks","Kolumner kompleks","Squamous simpleks","Squamous kompleks"], a:"Kolumner simpleks", exp:"Tubulus kolektivus/koligens: bagian proksimal dilapisi epitel <em>kuboid simpleks</em> (terdiri dari sel principal dan sel intercalated). Bagian distal mendekati papila renalis → duktus Bellini → epitel menjadi <strong>kolumner simpleks</strong> (sel principal yang tinggi). Catatan TABLET CBT: 'harusnya kuboid simpleks, tetapi karena mendekati papila renalis epitelnya sudah jadi kolumner simpleks'.", src:"PPT K20 Histology of Urinary Systems — TABLET CBT 2"},
+
+{n:41, q:"Proses yang terjadi pada tubulus kontortus distal dan tubulus kolektivus adalah...", o:["Absorpsi natrium dan air","Absorpsi glukosa","Sekresi asam urat","Sekresi protein","Sekresi kreatinin"], a:"Absorpsi natrium dan air", exp:"Di <strong>tubulus kontortus distal (TKD) dan tubulus kolektivus</strong>: Early DCT: reabsorbsi 10-15% air, 5% Na, 5% Cl; Late DCT & Kolektivus (sel principal): reabsorbsi Na+ (dirangsang aldosteron) dan sekresi K+; sel intercalated: reabsorbsi K+, HCO3-, sekresi H+. <strong>Reabsorbsi Na+ dan air (ADH-dependent)</strong> adalah proses utama di segmen ini. Glukosa sudah diabsorbsi 100% di PCT.", src:"PPT K22 Physiology Nephrourinary II — TABLET CBT 2"},
+
+{n:42, q:"Sekresi utama di tubulus distal adalah...", o:["Kalium dan Hidrogen","Natrium dan Kalsium","Bikarbonat dan Klorida","Urea dan Kreatinin"], a:"Kalium dan Hidrogen", exp:"Sekresi utama di <strong>tubulus kontortus distal</strong>: (1) <strong>K+ (kalium)</strong> — sel principal mensekresi K+ ke lumen sebagai pertukaran dengan Na+ yang direabsorbsi (dirangsang aldosteron); (2) <strong>H+ (hidrogen)</strong> — sel intercalated mensekresi H+ untuk pengaturan keseimbangan asam basa. Sekresi H+ membantu reabsorbsi HCO3- dan ekskresi asam titratable.", src:"PPT K22 Physiology Nephrourinary II — TABLET CBT 2"},
+
+{n:43, q:"Glutamin akan mengalami deaminasi menjadi amonia dan bikarbonat hal itu bertujuan untuk...", o:["Menurunkan pH plasma dan meningkatkan asam darah","Menghambat sekresi ion hidrogen ke dalam lumen distal","Menetralkan pH plasma dengan menghasilkan ion bikarbonat","Meningkatkan reabsorpsi bikarbonat secara langsung melalui ATPase","Menghasilkan ATP sebagai sumber energi utama sel tubulus"], a:"Menetralkan pH plasma dengan menghasilkan ion bikarbonat", exp:"Ginjal menggunakan <strong>glutamin</strong> sebagai substrat: glutamin → glutamat + NH3 (amonia) + HCO3-. Proses ini disebut amoniogenesis. Tujuan: (1) NH3 bergabung dengan H+ → NH4+ → diekskresikan dalam urin (membuang H+ tanpa menurunkan pH urin drastis); (2) HCO3- yang dihasilkan masuk ke darah → <strong>menetralkan pH plasma (mengoreksi asidosis)</strong>. Penting pada asidosis metabolik kronik.", src:"TABLET CBT 2 Blok 2.2"},
+
+{n:44, q:"Bagaimana pengaruh hormon antidiuretik terhadap pembentukan urine yang encer?", o:["Mengurangi reabsorpsi air","Meningkatkan absorpsi air","Meningkatkan absorpsi natrium","Tidak berpengaruh pada pembentukan urine"], a:"Mengurangi reabsorpsi air", exp:"Pembentukan urin encer (hipotonik) terjadi saat <strong>kadar ADH rendah</strong>. ADH rendah → permeabilitas tubulus kolektivus terhadap air menurun → <strong>reabsorbsi air berkurang</strong> → lebih banyak air masuk urin → urin encer (volume besar, osmolaritas rendah). Contoh: kelebihan cairan → ADH ditekan → ginjal menghasilkan hingga 20 liter urin encer per hari.", src:"TABLET CBT 2 Blok 2.2"},
+
+{n:45, q:"Pernyataan yang BENAR tentang Vesica Urinaria adalah...", o:["Pada pria, fasies superior berbatasan dengan colon sigmoid dan lengkung jejenum","Lemak retropubik didapatkan pada fasies inferolateral vesica urinaria","Pada wanita, collum vesicae pars anterior berhubungan dengan dinding anterior vagina","Pada wanita, basis/fundus/pars inferior vesicae tertutup peritoneum","Diperdarahi a. vesicalis anterior dan posterior"], a:"Pada wanita, collum vesicae pars anterior berhubungan dengan dinding anterior vagina", exp:"Vesica urinaria pada wanita: <strong>collum vesicae pars anterior berhubungan dengan dinding anterior vagina</strong> (penting secara klinis — fistula vesicovaginal). Koreksi: (A) pada pria, fasies superior berbatasan dengan lengkung ileum dan colon sigmoid; (B) lemak retropubik ada di ruang Retzius (antara VU dan os pubis); (D) pada wanita, fundus dipisah dari uterus oleh excavatio vesicouterina; (E) diperdarahi a. vesicalis superior dan inferior.", src:"TABLET CBT 2 Blok 2.2"},
+
+{n:46, q:"Komponen tidak normal yang terkandung dalam urin adalah...", o:["Glukosa","Urea","Natrium","Air","Asam urat"], a:"Glukosa", exp:"<strong>Glukosa</strong> adalah komponen <em>tidak normal</em> dalam urin (glukosuria). Normalnya, 100% glukosa dari filtrat direabsorbsi di tubulus kontortus proksimal via transporter SGLT (sodium-glucose transporter). Glukosuria terjadi bila kadar glukosa darah melebihi ambang ginjal (~180 mg/dL, kapasitas transport maksimum PCT). Urea, natrium, dan air adalah komponen normal urin. Asam urat juga normal dalam jumlah kecil.", src:"PPT K22 Physiology Nephrourinary II — TABLET CBT 2"},
+
+{n:47, q:"Fungsi utama dari tubulus proksimal adalah...", o:["Menyaring darah","Menyerap kembali air, glukosa, dan elektrolit","Mengeluarkan urea","Membawa urin ke kandung empedu","Memproduksi renin"], a:"Menyerap kembali air, glukosa, dan elektrolit", exp:"<strong>Tubulus kontortus proksimal (PCT)</strong> mereabsorbsi: 65-80% air, <em>100%</em> glukosa dan asam amino, ~65% Na+ dan K+, 50% Cl- dan urea, 80-90% HCO3-. Ini adalah tempat reabsorbsi terbesar di nefron. Filtrasi terjadi di glomerulus. Renin diproduksi sel juxtaglomerular. PCT juga mensekresi: H+, NH4+, garam empedu, oksalat, katekolamin, PAH.", src:"PPT K22 Physiology Nephrourinary II — TABLET CBT 2"},
+
+{n:48, q:"Apakah nama senyawa dalam urin yang merupakan produk akhir dari metabolisme otot?", o:["Kreatinin","Asam urat","Urea","Inulin","Asam amino"], a:"Kreatinin", exp:"<strong>Kreatinin</strong> adalah produk akhir metabolisme <em>kreatin fosfat</em> di otot rangka. Kreatin fosfat → kreatin → kreatinin (secara spontan, ireversibel). Kreatinin dilepas ke darah dengan laju konstan (proporsional massa otot) → difiltrasi glomerulus dan sedikit disekresikan → digunakan untuk estimasi GFR (klirens kreatinin). Urea = produk metabolisme protein/nitrogen; Asam urat = metabolisme purin.", src:"TABLET CBT 2 Blok 2.2"},
+
+{n:49, q:"Sekresi ion H+ ke dalam lumen tubulus dalam proses reabsorpsi bikarbonat di dalam ginjal terutama diatur oleh...", o:["Aktivitas enzim fosfofruktokinase","Aktivitas enzim karbonat anhidrase"], a:"Aktivitas enzim karbonat anhidrase", exp:"<strong>Karbonat anhidrase (CA)</strong> adalah enzim kunci dalam reabsorbsi HCO3-. Dua lokasi CA: (1) CA luminal (membran apikal): H+ + HCO3- → H2CO3 → CO2 + H2O; (2) CA intrasel: CO2 + H2O → H2CO3 → H+ + HCO3-. H+ disekresikan ke lumen via Na+/H+ antiporter; HCO3- keluar ke darah via Na+-3HCO3- cotransporter. Tanpa CA, reabsorbsi HCO3- tidak bisa terjadi efisien.", src:"PPT K24 Keseimbangan Asam Basa — TABLET CBT 2"},
+
+{n:50, q:"Jika ditemukan glukosa pada urin, terjadi kerusakan pada...", o:["Tubulus kontortus proximal","Tubulus kontortus distal","Tubulus Kolektivus","Ansa Henle"], a:"Tubulus kontortus proximal", exp:"<strong>Glukosuria</strong> (glukosa dalam urin) menunjukkan kerusakan pada <strong>tubulus kontortus proksimal (PCT)</strong>. Normalnya, 100% glukosa difiltrasi glomerulus kemudian direabsorbsi sempurna di PCT via SGLT1 dan SGLT2. Kerusakan PCT → kapasitas reabsorbsi glukosa menurun → glukosa lolos ke urin. Ini juga terjadi pada diabetes melitus saat kadar glukosa melebihi ambang ginjal.", src:"PPT K20 Histologi Sistem Nefrourine — TABLET CBT 2"},
+
+{n:51, q:"Proses miksi yang BENAR adalah...", o:["Sinyal penghambatan dikontrol secara sadar oleh lobus temporalis","Dikontrol secara tidak sadar/refleks oleh hipotalamus","Diatur secara parasimpatis oleh nervi spinales VTh 10-L2","Diatur secara simpatis oleh nervi spinales S2-4","Serabut sensoris/somatik dibawa oleh n. pudendus"], a:"Serabut sensoris/somatik dibawa oleh n. pudendus", exp:"<strong>N. pudendus (S2-4)</strong> membawa serabut sensoris/somatik dari VU dan mengontrol sfingter eksternus volunter. Koreksi: (A) kontrol sadar oleh korteks serebri (lobus frontalis, bukan temporal); (B) refleks miksi diatur di pons (Barrington's center), bukan hipotalamus; (C) parasimpatis oleh n. splanknik pelvis S2-4 (bukan Th10-L2); (D) simpatis oleh Th10/11-L2 (bukan S2-4).", src:"K19 Anatomi Sistem Urinarius — TABLET CBT 2"},
+
+{n:52, q:"Pada kondisi peningkatan pH, peningkatan HCO3, peningkatan CO2 terjadi...", o:["Asidosis respiratorik kronis","Alkalosis metabolik kronis","Alkalosis respiratorik","Alkalosis metabolik akut","Asidosis metabolik akut"], a:"Alkalosis metabolik kronis", exp:"Analisis: pH ↑ (alkalosis), HCO3- ↑ (primer: <strong>alkalosis metabolik</strong> — peningkatan HCO3-), CO2 ↑ (kompensasi paru — hipoventilasi untuk menahan CO2). CO2 meningkat menunjukkan kompensasi respiratorik sudah bekerja → kondisi <strong>kronik</strong>. Pada alkalosis metabolik akut, CO2 masih normal atau belum meningkat signifikan.", src:"PPT K27 Keseimbangan Asam Basa — TABLET CBT 2"},
+
+{n:53, q:"Berikut yang TIDAK menjadi substrat pada proses glukoneogenesis?", o:["Gliserol","Asam amino","Asam lemak","Asam laktat","Piruvat"], a:"Asam lemak", exp:"<strong>Glukoneogenesis</strong>: sintesis glukosa dari prekursor non-karbohidrat. Substrat: <strong>Gliserol</strong> (dari lipolisis TG → DHAP), <strong>asam amino glukogenik</strong> (alanin, glutamat, dll.), <strong>laktat</strong> (siklus Cori), <strong>piruvat</strong>. Yang <strong>TIDAK</strong> bisa menjadi substrat: <em>asam lemak</em> — karena asetil-CoA (hasil beta-oksidasi asam lemak) tidak bisa dikonversi kembali ke piruvat/oksaloasetat pada mamalia (reaksi piruvat dehidrogenase irreversibel).", src:"PPT K16 Metabolisme Karbohidrat — TABLET CBT 2"},
+
+{n:54, q:"Pada kondisi penurunan pH, peningkatan CO2, dan peningkatan HCO3 terjadi pada...", o:["Asidosis metabolik kronik","Alkalosis metabolik akut","Asidosis respiratorik kronik","Asidosis respiratorik akut"], a:"Asidosis respiratorik kronik", exp:"Analisis: pH ↓ (asidosis), CO2 ↑ (primer: <strong>respiratorik</strong> — retensi CO2/hipoventilasi), HCO3- ↑ (kompensasi ginjal — retensi bikarbonat untuk mengkompensasi keasaman). HCO3- yang meningkat signifikan menunjukkan kompensasi ginjal telah bekerja penuh → kondisi <strong>kronik</strong>. Asidosis respiratorik akut: HCO3- hanya sedikit naik (3-4 mEq per 10 mmHg CO2 ↑).", src:"PPT K27 Keseimbangan Asam Basa — TABLET CBT 2"},
+
+{n:55, q:"Kondisi ketika penurunan pH, peningkatan CO2, HCO3 normal — dapat menyebabkan kondisi...", o:["Alkalosis metabolik akut","Alkalosis respiratorik kronik","Asidosis respiratorik akut","Asidosis respiratorik kronik","Alkalosis metabolik kronik"], a:"Asidosis respiratorik akut", exp:"Analisis: pH ↓ (asidosis), CO2 ↑ (primer: <strong>respiratorik</strong> — retensi CO2), HCO3- <em>normal</em> (belum ada kompensasi ginjal). HCO3- normal menunjukkan kondisi baru terjadi, kompensasi ginjal belum sempat bekerja → <strong>asidosis respiratorik akut</strong>. Contoh: pneumotoraks, serangan asma berat, overdosis opioid. Kompensasi ginjal memerlukan 3-5 hari.", src:"PPT K27 Keseimbangan Asam Basa — TABLET CBT 2"},
+
+{n:56, q:"Berikut yang tidak benar terkait alkalosis respiratorik...", o:["pH > 7,35","Terjadi karena penurunan CO2","Terjadi karena peningkatan CO2","Kompensasi dengan penurunan HCO3"], a:"Terjadi karena peningkatan CO2", exp:"<strong>Alkalosis respiratorik</strong>: pH > 7,45; terjadi karena <strong>penurunan CO2</strong> (hiperventilasi — CO2 terlalu banyak dibuang, misalnya pada kecemasan, demam, hipoksia, kehamilan). Kompensasi ginjal: menurunkan HCO3- (mengurangi reabsorbsi). Yang <strong>TIDAK BENAR</strong>: pilihan C ('terjadi karena peningkatan CO2') — peningkatan CO2 menyebabkan <em>asidosis</em> respiratorik, bukan alkalosis.", src:"PPT K27 Keseimbangan Asam Basa — TABLET CBT 2"},
+
+{n:57, q:"ANP bekerja dengan cara...", o:["Meningkatkan reabsorpsi Na","Meningkatkan ekskresi Na","Meningkatkan ekskresi air","Meningkatkan reabsorbsi air"], a:"Meningkatkan ekskresi Na", exp:"<strong>ANP (Atrial Natriuretic Peptide)</strong> dilepas atrium kanan saat volume darah berlebih/tekanan darah tinggi. Cara kerja: (1) <strong>Natriuretik</strong> → meningkatkan ekskresi Na+ melalui ginjal → air mengikuti secara osmosis (diuretik); (2) menghambat produksi angiotensin II → aldosteron menurun → Na+ reabsorbsi berkurang; (3) vasodilatasi. Efek keseluruhan: volume plasma dan tekanan darah turun.", src:"PPT K26 Keseimbangan Cairan dan Elektrolit — TABLET CBT 2"},
+
+{n:58, q:"Apa yang menghambat aktivitas enzim hexokinase pada awal tahap glikolisis?", o:["Tingginya ATP","Tingginya kadar fruktosa 1,6 bifosfat","Tingginya kadar glukosa-6-fosfat","Tingginya ADP"], a:"Tingginya kadar glukosa-6-fosfat", exp:"<strong>Hexokinase</strong> (reaksi 1 glikolisis: Glukosa → Glukosa-6-Fosfat) dihambat oleh produknya sendiri melalui <strong>feedback inhibition oleh Glukosa-6-Fosfat (G6P)</strong>. Ini mencegah akumulasi G6P dan mengatur masuknya glukosa ke glikolisis. Glukokinase (isoenzim hepar) <em>tidak</em> mengalami inhibisi G6P — memungkinkan hepar terus menangkap glukosa saat kadar tinggi post-prandial. Catatan TABLET: jawaban BENAR adalah glukosa-6-fosfat.", src:"PPT K16 Metabolisme Karbohidrat — TABLET CBT 2"},
+
+{n:59, q:"Yang tidak benar tentang asidosis metabolik adalah...", o:["pH < 7,35","Dikarenakan penurunan HCO3","Kompensasi dengan penurunan CO2","Karena penurunan CO2"], a:"Karena penurunan CO2", exp:"<strong>Asidosis metabolik</strong>: pH < 7,35; primer: <strong>penurunan HCO3-</strong> (HCO3/H2CO3 < 20:1) → pH < 7,4. Kompensasi: <strong>penurunan CO2</strong> melalui hiperventilasi (pernafasan Kussmaul). Contoh: diare berat, gagal ginjal, ketoasidosis, asidosis laktat. Yang <strong>TIDAK BENAR</strong>: pilihan D ('karena penurunan CO2') — penurunan CO2 adalah <em>kompensasi</em>, bukan penyebab. Penyebab asidosis metabolik = penurunan HCO3-.", src:"PPT K27 Keseimbangan Asam Basa — TABLET CBT 2"},
+
+{n:60, q:"Vitamer dari vitamin A untuk penglihatan yang membentuk rhodopsin adalah...", o:["Retinol","Retinal","Asam retinoat"], a:"Retinal", exp:"<strong>Retinal (retinaldehida)</strong> adalah vitamer vitamin A yang berperan dalam penglihatan. Retinal bergabung dengan protein opsin membentuk <strong>rhodopsin</strong> (pigmen visual di sel batang retina). Saat cahaya mengenai rhodopsin: 11-cis retinal → all-trans retinal → memicu impuls saraf. Retinol = transport dan penyimpanan; Asam retinoat = regulasi gen, diferensiasi sel (tidak bisa dikonversi kembali ke retinol/retinal).", src:"PPT K17 Metabolisme Vitamin dan Mineral — TABLET CBT 2"},
+
+{n:61, q:"Berikut ini pertanyaan terkait vaskularisasi renal yang benar...", o:["V. arcuata lanjut v. interlobaris (ren)","A. renalis membagi jadi lima dengan empat ke posterior dan satu ke anterior","A. arcuata memvaskularisasi apex pyramidal renalis","A. arcuata cabang utama a. segmentalis"], a:"V. arcuata lanjut v. interlobaris (ren)", exp:"Aliran vena ginjal: V. interlobularis → <strong>V. arcuata → V. interlobaris → V. renalis → V. cava inferior</strong>. Jadi V. arcuata berlanjut ke V. interlobaris (bukan sebaliknya) — ini yang benar. Koreksi lainnya: (B) A. renalis: 4 cabang anterior + 1 posterior (bukan 4 posterior + 1 anterior); (C) A. arcuata di batas korteks-medula, bukan apex piramid; (D) A. arcuata adalah cabang A. interlobaris (bukan A. segmentalis langsung).", src:"PPT K19 Anatomi Urinaria — TABLET CBT 2"},
+
+{n:62, q:"Jalur pentosa yang benar adalah...", o:["Tidak dilakukan ketika anemia karena reaktif","Mensintesis glukosa 6 fosfat","Terjadi sebagai alternatif glikolisis saat puasa","Merupakan satu-satunya sintesis asam lemak dengan NADPH","Merupakan sintesis asam lemak penting"], a:"Merupakan sintesis asam lemak penting", exp:"<strong>Pentose Phosphate Pathway (HMP Shunt)</strong>: metabolisme sekunder glukosa. Menghasilkan <strong>NADPH</strong> (bukan NADH) yang digunakan untuk: (1) sintesis asam lemak dan kolesterol; (2) proteksi oksidatif (regenerasi glutathion). Menghasilkan ribosa-5-fosfat (untuk sintesis nukleotida/DNA/RNA). Aktif di eritrosit, hepar, adrenal, tiroid, kelenjar mammae laktasi. Bukan alternatif glikolisis saat puasa.", src:"PPT K16 Metabolisme Karbohidrat — TABLET CBT 2"},
+
+{n:63, q:"Vitamin mana yang menyebabkan gangguan pembekuan darah yang menyebabkan anemia pernisiosa?", o:["Vit B2","Vit B6","Vit C","Vit A","Vit B12"], a:"Vit B12", exp:"<strong>Vitamin B12 (Kobalamin)</strong>: defisiensi menyebabkan <strong>anemia pernisiosa</strong> (megaloblastik) — karena B12 diperlukan untuk sintesis sel darah merah normal dan pembelahan sel. Faktor intrinsik (dari sel parietal lambung) diperlukan untuk absorbsi B12. Defisiensi B12 juga menyebabkan gangguan neurologis. Sumber: hati, daging, telur, susu (tidak ada di produk nabati). Catatan: bukan gangguan pembekuan darah per se — lebih tepat anemia megaloblastik.", src:"PPT K17 Metabolisme Vitamin dan Mineral — TABLET CBT 2"},
+
+{n:64, q:"Apa hasil dari tahap akhir jalur pentosa fosfat?", o:["9 glukosa 1 glukosa 6 fosfat","2 NADH 1 fruktosa 6 fosfat","2 NADH 2 fruktosa 6 fosfat","9 glukosa 5 fosfat 1 ribosa","1 ribosa 5 fosfat NADPH 2"], a:"1 ribosa 5 fosfat NADPH 2", exp:"<strong>Jalur pentosa fosfat fase oksidatif</strong>: dari 1 Glukosa-6-Fosfat → 1 Ribosa-5-Fosfat + <strong>2 NADPH</strong> + CO2. Fase non-oksidatif: ribosa-5-fosfat dapat diinterkonversi ke fruktosa-6-fosfat dan gliseraldehida-3-fosfat (masuk glikolisis). Hasil utama fase oksidatif = <strong>ribosa 5 fosfat + 2 NADPH</strong>. NADPH digunakan untuk biosintesis lipid dan proteksi oksidatif.", src:"PPT K16 Metabolisme Karbohidrat — TABLET CBT 2"},
+
+{n:65, q:"Jika tekanan pada arteriola efferent meningkat, maka...", o:["GFR meningkat","GFR menurun","Tekanan hidrostatik glomerulus menurun","Penyerapan kembali air di tubulus proximal meningkat"], a:"GFR meningkat", exp:"Vasokonstriksi arteriol <strong>eferen</strong> → resistensi aliran darah keluar glomerulus meningkat → darah tertahan di kapiler glomerulus → <strong>tekanan hidrostatik kapiler glomerulus meningkat</strong> → <strong>GFR meningkat</strong>. Sebaliknya, vasokonstriksi arteriol aferen → tekanan kapiler turun → GFR turun. Ini adalah mekanisme autoregulasi ginjal melalui refleks miogenik dan feedback tubuloglomerular.", src:"PPT Fisiologi Neurourinaria 1 — TABLET CBT 2"},
+
+{n:66, q:"Sel podosit mendeteksi kecukupan energi. Berikut yang merupakan hormon mendeteksi kelebihan/sudah cukup energi...", o:["Ghrelin","Leptin","Insulin","Glukagon","Neuropeptida Y"], a:"Leptin", exp:"<strong>Leptin</strong> adalah hormon yang diproduksi oleh jaringan adiposa (sel lemak). Leptin <strong>mengindikasikan kelebihan/kecukupan energi</strong>: saat cadangan lemak banyak → leptin tinggi → hipotalamus mendeteksi → menekan nafsu makan (satiety) dan meningkatkan metabolisme. Sebaliknya, Ghrelin dihasilkan lambung sebagai sinyal lapar. Neuropeptida Y meningkatkan nafsu makan. Insulin juga sebagai sinyal kenyang.", src:"PPT Metabolisme dan Bioenergi — TABLET CBT 2"},
+
+{n:67, q:"Asam amino yang didapat dari makanan untuk ibu hamil dan perkembangan anak adalah...", o:["Asparagine","Lisin","Glisin","Arginin"], a:"Arginin", exp:"<strong>Arginin</strong> (*Nutritionally semiesensial) adalah asam amino yang bisa disintesis tubuh namun lajunya tidak cukup mendukung pertumbuhan anak dan kebutuhan ibu hamil, sehingga harus didapat dari makanan. Arginin penting untuk sintesis protein, produksi NO (nitric oxide), dan siklus urea. Ini berbeda dengan asam amino esensial penuh (Lisin, Triptofan, dll.) yang sama sekali tidak bisa disintesis tubuh.", src:"PPT Metabolisme Protein — TABLET CBT 2"},
+
+{n:68, q:"Ikatan yang digambarkan (α-helix dengan hydrogen bond antara C=O dan N-H) adalah ikatan...", o:["Protein primer","Protein sekunder","Protein tersier"], a:"Protein sekunder", exp:"<strong>Struktur protein sekunder</strong> terbentuk dari interaksi lokal antara asam amino berdekatan yang distabilkan oleh <strong>ikatan hidrogen</strong> antara gugus C=O dan N-H rantai peptida. Menghasilkan pola berulang: α-helix (ikatan H dalam spiral) dan β-sheet (ikatan H antar rantai paralel/antiparalel). Struktur primer = urutan asam amino (ikatan peptida). Tersier = pelipatan 3D (ikatan hidrofobik, disulfida, elektrostatik).", src:"PPT Metabolisme Protein — TABLET CBT 2"},
+
+{n:69, q:"Seseorang mengalami diare berat selama beberapa hari. Hasil uji laboratorium menunjukkan penurunan bikarbonat (HCO3-). Kondisi ini menyebabkan...", o:["Alkalosis metabolik","Asidosis metabolik","Alkalosis respiratorik","Asidosis respiratorik","Tidak terjadi perubahan pH"], a:"Asidosis metabolik", exp:"Diare berat → kehilangan banyak HCO3- (bikarbonat kaya di cairan intestinal) → <strong>penurunan HCO3-</strong> dalam darah → rasio HCO3-/H2CO3 < 20 → pH < 7,35 → <strong>asidosis metabolik</strong>. Kompensasi: hiperventilasi (turunkan CO2 untuk mengembalikan pH). Diare adalah salah satu penyebab tersering asidosis metabolik (bersama gagal ginjal, ketoasidosis diabetikum).", src:"PPT Keseimbangan Asam Basa — TABLET CBT 2"},
+
+{n:70, q:"Struktur yang menyusun membran filtrasi glomerulus adalah...", o:["Sel mesangial","Endotel kapiler","Kapsul Bowman","Sel lacis","Makula densa"], a:"Endotel kapiler", exp:"<strong>Membran filtrasi glomerulus</strong> terdiri dari 3 lapisan: (1) <strong>Endotel kapiler fenestrata</strong> (dengan pori/fenestra ~70nm); (2) Membran basal glomerulus (lamina densa, lamina rara interna dan eksterna — kolagen tipe IV, laminan, proteoglikan bermuatan negatif); (3) Sel podosit pars visceralis kapsula Bowman dengan filtration slit (celah filtrasi ~25nm). Endotel kapiler adalah salah satu komponen utama.", src:"PPT Histologi Nefrourinaria — TABLET CBT 2"},
+
+{n:71, q:"Pernyataan tentang topografi ginjal yang BENAR adalah...", o:["Saat posisi supine, ginjal setinggi V Th10-Th12","Jika melalui bidang horizontal, linea transpylorica akan melewat bagian atas hilus ren sinistra","Terbentang dari regio epigastrium, ingunal, pubis dan umbilicalis","Kedua polus superior ginjal ditempati glandula supra renalis dipisahkan oleh lemak para renalis","Di antara capsula renalis dan fasia renalis terdapat lemak perirenalis"], a:"Di antara capsula renalis dan fasia renalis terdapat lemak perirenalis", exp:"<strong>Di antara capsula renalis dan fascia renalis (Gerota)</strong> terdapat <strong>lemak perirenalis (perirenal fat)</strong> — kantung lemak yang menyelimuti ginjal dan kelenjar adrenal. Di luar fascia Gerota terdapat lemak paranefrik/pararenalis. Koreksi: (A) posisi supine: Th12-L3; (B) linea transpylorica melewat hilus ren <em>dexter</em> dan bawah hilus ren sinistra; (C) regio hipokondria ka-ki, lumbalis ka-ki, umbilicalis; (D) dipisah lemak perirenalis.", src:"PPT Anatomi Urologi — TABLET CBT 2"},
+
+{n:72, q:"Seorang pasien mengalami hipoksia, metabolisme aerob terganggu. Bagaimana cara tubuh memanfaatkan piruvat?", o:["Diubah jadi asetil-KoA dan masuk siklus Krebs","Diubah jadi asam laktat","Langsung dimetabolisme"], a:"Diubah jadi asam laktat", exp:"<strong>Hipoksia</strong> → O2 tidak cukup → mitokondria tidak bisa mengoksidasi NADH → NADH menumpuk → glikolisis terhenti (tidak ada NAD+). Solusi: piruvat + NADH → <strong>asam laktat</strong> + NAD+ (reaksi laktat dehidrogenase/LDH) → NAD+ terbentuk kembali → glikolisis dapat berlanjut (anaerob). Asam laktat dilepas ke darah → dibawa ke hepar → dikonversi kembali ke glukosa (siklus Cori). Glikolisis anaerob menghasilkan hanya 2 ATP.", src:"PPT Metabolisme Karbohidrat — TABLET CBT 2"}
+];
+
+// ═══ STATE ═══
+let mode='study', current=0, answered={}, flags=new Set(), streak=0;
+let timerInterval=null, timeLeft=0, drillActive=false;
+
+function startQuiz(m){
+  mode=m; current=0; answered={}; flags=new Set(); streak=0;
+  drillActive=(m==='drill');
+  if(timerInterval) clearInterval(timerInterval);
+  document.getElementById('start-screen').style.display='none';
+  document.getElementById('result-screen').style.display='none';
+  document.getElementById('quiz-screen').style.display='block';
+  document.getElementById('q-map-wrap').style.display=(m==='drill')?'none':'block';
+  const labels={study:'Study',exam:'Exam',drill:'Drill ⚡'};
+  document.getElementById('mode-lbl').textContent=labels[m];
+  if(m==='exam'){
+    timeLeft=72*60;
+    document.getElementById('timer-el').style.display='block';
+    updateTimer();
+    timerInterval=setInterval(()=>{ timeLeft--; updateTimer(); if(timeLeft<=0){clearInterval(timerInterval);showResult();} },1000);
+  } else { document.getElementById('timer-el').style.display='none'; }
+  buildMap(); renderQ();
+}
+
+function updateTimer(){
+  const m=Math.floor(timeLeft/60),s=timeLeft%60;
+  const el=document.getElementById('timer-el');
+  el.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  el.className='timer-badge'+(timeLeft<300?' danger':timeLeft<600?' warning':'');
+}
+
+function renderQ(){
+  const q=Q[current];
+  document.getElementById('q-num').textContent=`SOAL ${String(q.n).padStart(2,'0')}`;
+  document.getElementById('q-text').textContent=q.q;
+  const keys=['A','B','C','D','E'];
+  const ol=document.getElementById('opts-list');
+  ol.innerHTML='';
+  q.o.forEach((opt,i)=>{
+    const btn=document.createElement('button');
+    btn.className='opt';
+    btn.setAttribute('aria-label',`Pilihan ${keys[i]}: ${opt}`);
+    btn.innerHTML=`<span class="opt-key">${keys[i]}</span><span class="opt-body">${opt}</span><span class="opt-badge"></span>`;
+    if(answered[current]!==undefined){
+      btn.disabled=true;
+      const {chosen,correct}=answered[current];
+      if(i===chosen){ btn.classList.add(correct?'correct':'incorrect'); btn.querySelector('.opt-badge').textContent=correct?'✓':'✗'; }
+      if(!correct && opt===q.a){ btn.classList.add('correct'); btn.querySelector('.opt-badge').textContent='✓'; }
+    } else { btn.onclick=()=>selectAnswer(i); }
+    ol.appendChild(btn);
+  });
+  const eb=document.getElementById('exp-box');
+  if(answered[current]!==undefined && mode!=='exam'){
+    eb.classList.add('show');
+    document.getElementById('exp-answer').innerHTML=`✓ Jawaban Benar: ${q.a}`;
+    document.getElementById('exp-body').innerHTML=q.exp;
+    document.getElementById('exp-src').textContent=q.src?`📚 ${q.src}`:'';
+  } else { eb.classList.remove('show'); }
+  const done=Object.keys(answered).length;
+  document.getElementById('prog-fill').style.width=(done/Q.length*100)+'%';
+  document.getElementById('prog-txt').textContent=`${done} / ${Q.length}`;
+  const corr=Object.values(answered).filter(a=>a.correct).length;
+  document.getElementById('score-pill').textContent=`✓ ${corr}`;
+  const bp=document.getElementById('btn-prev-top'), bn=document.getElementById('btn-next-top');
+  bp.disabled=current===0;
+  const isLast=current===Q.length-1;
+  if(mode==='drill'){ bp.style.display='none'; bn.textContent=isLast?'Selesai ✓':'Next →'; bn.disabled=answered[current]===undefined; }
+  else if(mode==='exam'){ bp.style.display='flex'; bn.textContent=isLast?'Kumpulkan ✓':'Next →'; bn.disabled=false; }
+  else { bp.style.display='flex'; bn.textContent=isLast?'Lihat Hasil →':'Next →'; bn.disabled=false; }
+  document.getElementById('btn-flag').classList.toggle('flagged',flags.has(current));
+  updateMap(); window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function selectAnswer(ci){
+  const q=Q[current];
+  const correct=q.o[ci]===q.a;
+  answered[current]={chosen:ci,correct};
+  document.querySelectorAll('.opt').forEach((btn,i)=>{
+    btn.disabled=true;
+    if(i===ci){ btn.classList.add(correct?'correct':'incorrect'); btn.querySelector('.opt-badge').textContent=correct?'✓':'✗'; if(!correct) btn.classList.add('drill-wrong-shake'); }
+    if(!correct && q.o[i]===q.a){ btn.classList.add('correct'); btn.querySelector('.opt-badge').textContent='✓'; }
+  });
+  if(correct){ streak++; if(streak>0&&streak%3===0) showStreak(streak); } else { streak=0; }
+  if(mode!=='exam'){
+    document.getElementById('exp-box').classList.add('show');
+    document.getElementById('exp-answer').innerHTML=`✓ Jawaban Benar: ${q.a}`;
+    document.getElementById('exp-body').innerHTML=q.exp;
+    document.getElementById('exp-src').textContent=q.src?`📚 ${q.src}`:'';
+  }
+  if(drillActive && !correct){
+    setTimeout(()=>{
+      document.getElementById('drill-reset-msg').textContent=`Jawaban kamu salah di Soal ${q.n}. Drill mode tidak kenal ampun — mulai lagi dari Soal 1.`;
+      document.getElementById('drill-reset-overlay').classList.add('show');
+    },900);
+  }
+  document.getElementById('btn-next-top').disabled=false;
+  updateMap(); updateStats();
+}
+
+function drillReset(){
+  document.getElementById('drill-reset-overlay').classList.remove('show');
+  answered={}; flags=new Set(); streak=0; current=0; renderQ();
+}
+
+function navigate(dir){
+  if(mode==='drill'){ if(dir<0) return; if(answered[current]===undefined&&dir>0) return; if(current===Q.length-1&&dir>0){showResult();return;} current+=dir; renderQ(); return; }
+  if(mode==='exam'&&dir>0&&current===Q.length-1){ document.getElementById('exam-overlay').classList.add('show'); return; }
+  if(mode==='study'&&dir>0&&current===Q.length-1){ showResult(); return; }
+  current=Math.max(0,Math.min(Q.length-1,current+dir)); renderQ();
+}
+
+function goToQ(idx){ if(mode==='drill') return; current=idx; renderQ(); }
+function submitExam(){ clearInterval(timerInterval); closeOverlay(); showResult(); }
+function closeOverlay(){ document.getElementById('exam-overlay').classList.remove('show'); }
+function toggleFlag(){ if(flags.has(current)) flags.delete(current); else flags.add(current); document.getElementById('btn-flag').classList.toggle('flagged',flags.has(current)); updateMap(); }
+
+function buildMap(){
+  const g=document.getElementById('q-map'); g.innerHTML='';
+  Q.forEach((_,i)=>{ const d=document.createElement('button'); d.className='q-dot'; d.textContent=i+1; d.setAttribute('aria-label',`Soal ${i+1}`); d.onclick=()=>goToQ(i); g.appendChild(d); });
+}
+function updateMap(){
+  document.querySelectorAll('.q-dot').forEach((d,i)=>{ d.className='q-dot'; if(i===current) d.classList.add('current'); if(answered[i]!==undefined) d.classList.add(answered[i].correct?'answered':'wrong'); if(flags.has(i)) d.classList.add('flagged-dot'); });
+}
+
+function showResult(){
+  if(timerInterval) clearInterval(timerInterval);
+  const corr=Object.values(answered).filter(a=>a.correct).length;
+  const wrong=Object.values(answered).filter(a=>!a.correct).length;
+  const skip=Q.length-Object.keys(answered).length;
+  document.getElementById('quiz-screen').style.display='none';
+  document.getElementById('result-screen').style.display='block';
+  document.getElementById('r-score').innerHTML=`${corr}<span>/${Q.length}</span>`;
+  document.getElementById('r-sub').textContent=`Kamu menjawab ${corr} benar dari ${Q.length} soal`;
+  document.getElementById('r-correct').textContent=corr;
+  document.getElementById('r-wrong').textContent=wrong;
+  document.getElementById('r-skip').textContent=skip;
+  updateStats();
+}
+
+function reviewMode(){ document.getElementById('result-screen').style.display='none'; document.getElementById('quiz-screen').style.display='block'; current=0; mode='study'; document.getElementById('mode-lbl').textContent='Review'; document.getElementById('q-map-wrap').style.display='block'; buildMap(); renderQ(); }
+function updateStats(){ const done=Object.keys(answered).length; const corr=Object.values(answered).filter(a=>a.correct).length; document.getElementById('s-done').textContent=done; document.getElementById('s-pct').textContent=done>0?Math.round(corr/done*100)+'%':'—'; }
+function showStreak(n){ const t=document.getElementById('streak-toast'); t.textContent=`🔥 ${n}× Streak Benar!`; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
+function goHome(){ if(timerInterval) clearInterval(timerInterval); document.getElementById('drill-reset-overlay').classList.remove('show'); document.getElementById('exam-overlay').classList.remove('show'); document.getElementById('quiz-screen').style.display='none'; document.getElementById('result-screen').style.display='none'; document.getElementById('start-screen').style.display='block'; answered={}; updateStats(); }
+
+document.addEventListener('keydown',(e)=>{
+  if(document.getElementById('quiz-screen').style.display==='none') return;
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
+  const ro=document.getElementById('drill-reset-overlay');
+  if(ro.classList.contains('show')){ if(e.key==='Enter') drillReset(); return; }
+  const eo=document.getElementById('exam-overlay');
+  if(eo.classList.contains('show')){ if(e.key==='Escape') closeOverlay(); if(e.key==='Enter') submitExam(); return; }
+  const keys=['a','b','c','d','e'];
+  if(keys.includes(e.key.toLowerCase())&&answered[current]===undefined){ const idx=keys.indexOf(e.key.toLowerCase()); if(idx<Q[current].o.length) selectAnswer(idx); }
+  if(e.key==='ArrowRight'||e.key==='Enter'){ if(mode==='drill'&&answered[current]!==undefined) navigate(1); else if(mode!=='drill') navigate(1); }
+  if(e.key==='ArrowLeft'&&mode!=='drill') navigate(-1);
+  if(e.key.toLowerCase()==='f') toggleFlag();
+});
+</script>
+</body>
+</html>
