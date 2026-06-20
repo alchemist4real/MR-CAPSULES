@@ -9,7 +9,7 @@ function build() {
     
     let covers = [];
     if (fs.existsSync(coversDir)) {
-      covers = fs.readdirSync(coversDir).filter(f => f.endsWith('.png') || f.endsWith('.jpg') || f.endsWith('.jpeg'));
+      covers = fs.readdirSync(coversDir).filter(f => f.endsWith('.png') || f.endsWith('.jpg') || f.endsWith('.jpeg') || f.endsWith('.gif'));
     }
 
     const blocks = [];

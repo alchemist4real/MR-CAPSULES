@@ -815,9 +815,17 @@ function loadCatalog(newCatalog, restoreIndex = -1) {
   catalog = newCatalog;
   catalog.sort((a,b) => a.title.localeCompare(b.title));
   
+  let shuffledCovers = [...covers].sort(() => 0.5 - Math.random());
+  let coverIndex = 0;
+
   catalog.forEach(item => {
     if (covers.length > 0) {
-      item.cover = covers[Math.floor(Math.random() * covers.length)];
+      item.cover = shuffledCovers[coverIndex];
+      coverIndex++;
+      if (coverIndex >= shuffledCovers.length) {
+        shuffledCovers = [...covers].sort(() => 0.5 - Math.random());
+        coverIndex = 0;
+      }
     } else {
       item.cover = ''; 
     }
