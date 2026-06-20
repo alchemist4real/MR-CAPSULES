@@ -609,6 +609,9 @@ iframe {
     </div>
 
     <div class="transport">
+      <button class="btn" id="btnToggleMode" title="Toggle List Mode">
+        <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+      </button>
       <button class="btn" id="btnPrev">
         <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
       </button>
@@ -784,14 +787,28 @@ async function init() {
   }
 }
 
+let isFlatMode = false;
+
 function applyData(data) {
   rawData = data;
   covers = data.covers || [];
   
-  if (navHistory.length === 0) {
-    loadCatalog(data.semesters);
+  if (isFlatMode) {
+    navHistory = [];
+    document.getElementById('btnBack').style.display = 'none';
+    document.getElementById('btnToggleMode').style.color = 'var(--bg-main)';
+    document.getElementById('btnToggleMode').style.background = 'var(--text-main)';
+    loadCatalog(data.files || []);
   } else {
-    if (!catalog.length) loadCatalog(data.semesters);
+    document.getElementById('btnToggleMode').style.color = 'var(--text-main)';
+    document.getElementById('btnToggleMode').style.background = 'transparent';
+    if (navHistory.length === 0) {
+      document.getElementById('btnBack').style.display = 'none';
+      loadCatalog(data.semesters);
+    } else {
+      document.getElementById('btnBack').style.display = 'flex';
+      if (!catalog.length) loadCatalog(data.semesters);
+    }
   }
 }
 
@@ -986,6 +1003,13 @@ function go(i){
 }
 
 // Controls
+document.getElementById('btnToggleMode').addEventListener('click', () => {
+  isFlatMode = !isFlatMode;
+  if (rawData) {
+    applyData(rawData);
+  }
+});
+
 document.getElementById('btnPrev').addEventListener('click',()=>go(cur-1));
 document.getElementById('btnNext').addEventListener('click',()=>go(cur+1));
 document.getElementById('btnPlay').addEventListener('click',()=>diveIn(cur));

@@ -24,31 +24,48 @@ export default async function handler(req, res) {
     );
 
     const semMap = {};
+    const flatFiles = [];
+
     contentFiles.forEach(item => {
       const parts = item.path.split('/');
-      if (parts.length >= 4) {
-        const semesterName = parts[1];
-        const blockName = parts[2];
-        const fileName = parts.pop();
-        
-        let category = "Other";
-        let name = fileName.replace('.html', '');
-        
-        if (fileName.includes('_')) {
-          const fileParts = fileName.split('_');
-          category = fileParts[0];
-          name = fileParts.slice(1).join('_').replace('.html', '');
-        }
-
-        if (!semMap[semesterName]) semMap[semesterName] = {};
-        if (!semMap[semesterName][blockName]) semMap[semesterName][blockName] = {};
-        if (!semMap[semesterName][blockName][category]) semMap[semesterName][blockName][category] = [];
-        
-        semMap[semesterName][blockName][category].push({
-          name: name,
-          path: item.path
-        });
+      let semesterName = 'Other Semesters';
+      let blockName = 'Other Blocks';
+      const fileName = parts.pop();
+      
+      if (parts.length >= 3) {
+        semesterName = parts[1];
+        blockName = parts[2];
+      } else if (parts.length === 2) {
+        blockName = parts[1];
       }
+
+      let category = 'Other';
+      let name = fileName.replace('.html', '');
+      
+      if (fileName.includes('_')) {
+        const fileParts = fileName.split('_');
+        category = fileParts[0];
+        name = fileParts.slice(1).join('_').replace('.html', '');
+      }
+
+      flatFiles.push({
+        id: fileName,
+        title: name,
+        type: 'file',
+        path: item.path,
+        category: category,
+        blockName: blockName,
+        semesterName: semesterName
+      });
+
+      if (!semMap[semesterName]) semMap[semesterName] = {};
+      if (!semMap[semesterName][blockName]) semMap[semesterName][blockName] = {};
+      if (!semMap[semesterName][blockName][category]) semMap[semesterName][blockName][category] = [];
+      
+      semMap[semesterName][blockName][category].push({
+        name: name,
+        path: item.path
+      });
     });
 
     const semesters = Object.keys(semMap).map(semName => {
@@ -99,12 +116,13 @@ export default async function handler(req, res) {
     const coversFiles = data.tree.filter(item => 
       item.type === 'blob' && 
       item.path.startsWith('cover/') && 
-      (item.path.endsWith('.png') || item.path.endsWith('.jpg') || item.path.endsWith('.jpeg'))
+      (item.path.endsWith('.png') || item.path.endsWith('.jpg') || item.path.endsWith('.jpeg') || item.path.endsWith('.gif'))
     );
     const covers = coversFiles.map(c => c.path);
 
     const result = {
       semesters: semesters,
+      files: flatFiles,
       covers: covers
     };
 
