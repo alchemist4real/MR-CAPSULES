@@ -115,31 +115,52 @@
     .auth-input { background: #000; border: 1px solid var(--border-light); color: #fff; padding: 8px 12px; border-radius: 4px; outline: none; }
     .auth-input:focus { border-color: var(--accent); }
 
-    /* Tabs */
-    .tabs {
-      display: flex; background: var(--bg-card); border-bottom: 1px solid var(--border-light);
+    .user-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+      padding: 24px;
+      overflow-y: auto;
     }
-    .tab {
-      padding: 14px 24px; cursor: pointer; color: var(--text-muted); border-bottom: 2px solid transparent;
-      font-weight: 500; font-size: 14px; transition: all 0.2s;
+    .user-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: transform 0.2s, border-color 0.2s;
     }
-    .tab:hover { color: var(--text-main); }
-    .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-
-    .view-section { display: none; flex-direction: column; flex: 1; overflow: hidden; }
-    .view-section.active { display: flex; }
-
-    .user-item {
-      display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; 
-      border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 14px;
+    .user-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,0.2);
     }
-    .user-info { display: flex; flex-direction: column; gap: 4px; }
-    .user-email { font-weight: 600; color: var(--text-main); }
-    .user-meta { font-size: 12px; color: var(--text-muted); font-family: var(--font-mono); }
-    .user-badges { display: flex; gap: 6px; margin-top: 4px; }
-    .badge { padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; }
+    .user-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .user-email { font-weight: 600; color: var(--text-main); word-break: break-all; font-size: 14px; }
+    .user-meta { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); margin-top: 4px; }
+    .user-badges { display: flex; gap: 4px; flex-wrap: wrap; }
+    .badge { padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: 800; letter-spacing: 0.5px; }
     .badge-admin { background: rgba(226, 255, 74, 0.15); color: var(--accent); }
     .badge-banned { background: rgba(255, 107, 107, 0.15); color: #FF6B6B; }
+    
+    .card-actions {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,0.05);
+    }
+    .btn-card {
+      background: rgba(255,255,255,0.05); color: var(--text-main); border: none; padding: 6px 12px;
+      border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; transition: 0.2s;
+      flex: 1; text-align: center;
+    }
+    .btn-card:hover { background: rgba(255,255,255,0.1); }
+    .btn-card.danger { background: rgba(255,107,107,0.1); color: #FF6B6B; }
+    .btn-card.danger:hover { background: rgba(255,107,107,0.2); }
+    .btn-card.primary { background: rgba(226,255,74,0.1); color: var(--accent); }
+    .btn-card.primary:hover { background: rgba(226,255,74,0.2); }
 
     /* Utilities */
     .hidden { display: none !important; }
@@ -208,22 +229,13 @@
 
       <!-- USERS VIEW -->
       <div id="viewUsers" class="view-section">
-        <div class="toolbar" style="justify-content:space-between;">
-          
-          <!-- Super Admin Add -->
-          <div id="superAdminSection" style="display:none; align-items:center; gap:12px;">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-            <input type="text" id="newAdminInput" class="auth-input" placeholder="New Admin Email / Username" style="width:250px; padding:6px 12px; font-size:13px;">
-            <button id="btnAddAdmin" class="btn">Add Admin</button>
-            <span id="adminMsg" style="font-size:12px; color:var(--text-muted);"></span>
-          </div>
-
+        <div class="toolbar" style="justify-content:flex-end;">
           <button id="btnRefreshUsers" class="btn" style="display:flex; align-items:center; gap:6px;">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
-            Refresh
+            Refresh Users
           </button>
         </div>
-        <div class="file-browser" id="userBrowser">
+        <div class="user-grid" id="userBrowser">
           <!-- User items injected here -->
         </div>
       </div>
@@ -285,7 +297,7 @@
           authOverlay.classList.add('hidden');
           window.adminsList = data.admins || [];
           if (data.isSuperAdmin) {
-            document.getElementById('superAdminSection').style.display = 'flex';
+            window.isSuperAdmin = true;
             document.getElementById('adminTabs').style.display = 'flex';
             loadUsers();
           }
@@ -516,14 +528,6 @@
       }
     };
 
-    document.getElementById('btnAddAdmin').onclick = () => {
-      const val = document.getElementById('newAdminInput').value.trim();
-      if(val) {
-        document.getElementById('adminMsg').textContent = 'Adding...';
-        adminAction('add_admin', { newAdmin: val }).then(() => loadUsers());
-      }
-    };
-
     // Tabs Logic
     document.querySelectorAll('.tab').forEach(t => {
       t.onclick = (e) => {
@@ -568,32 +572,49 @@
         
         const isAdmin = window.adminsList && (window.adminsList.includes(email) || window.adminsList.includes(username));
 
-        const div = document.createElement('div');
-        div.className = 'user-item';
+        const card = document.createElement('div');
+        card.className = 'user-card';
         
         let badgesHtml = '';
         if (isAdmin) badgesHtml += '<span class="badge badge-admin">ADMIN</span>';
         if (isBanned) badgesHtml += '<span class="badge badge-banned">BANNED</span>';
 
-        div.innerHTML = `
-          <div class="user-info">
-            <div class="user-email">${email}</div>
-            <div class="user-meta">Username: ${username} &bull; Created: ${new Date(u.created_at).toLocaleDateString()}</div>
+        card.innerHTML = `
+          <div class="user-card-header">
+            <div>
+              <div class="user-email">${email}</div>
+              <div class="user-meta">@${username} &bull; ${new Date(u.created_at).toLocaleDateString()}</div>
+            </div>
             <div class="user-badges">${badgesHtml}</div>
           </div>
-          <div class="file-actions" style="opacity: 1; display:flex; gap:8px;">
-            ${isAdmin ? 
-              `<button class="btn btn-revoke" data-target="${email}">Revoke Admin</button>` : 
-              ''}
-            <button class="btn ${isBanned ? 'primary' : 'danger'} btn-ban" data-id="${u.id}" data-banned="${isBanned}">
-              ${isBanned ? 'Unban User' : 'Ban User'}
-            </button>
+          
+          <div class="card-actions">
+            ${window.isSuperAdmin ? `
+              ${isAdmin ? 
+                `<button class="btn-card btn-revoke" data-target="${email}">Revoke Admin</button>` : 
+                `<button class="btn-card primary btn-make-admin" data-target="${email}">Make Admin</button>`
+              }
+              <button class="btn-card ${isBanned ? 'primary' : 'danger'} btn-ban" data-id="${u.id}" data-banned="${isBanned}">
+                ${isBanned ? 'Unban' : 'Ban'}
+              </button>
+              <button class="btn-card danger btn-del-user" data-id="${u.id}">Delete</button>
+            ` : ''}
           </div>
         `;
 
-        if (div.querySelector('.btn-revoke')) {
-          div.querySelector('.btn-revoke').onclick = (e) => {
+        if (card.querySelector('.btn-make-admin')) {
+          card.querySelector('.btn-make-admin').onclick = (e) => {
+            if(confirm(`Make ${email} an Admin?`)) {
+              e.target.textContent = '...';
+              adminAction('add_admin', { newAdmin: email }).then(() => loadUsers());
+            }
+          };
+        }
+
+        if (card.querySelector('.btn-revoke')) {
+          card.querySelector('.btn-revoke').onclick = (e) => {
             if(confirm(`Remove admin privileges for ${email}?`)) {
+              e.target.textContent = '...';
               adminAction('remove_admin', { targetAdmin: email }).then(() => {
                  window.adminsList = window.adminsList.filter(a => a !== email);
                  loadUsers();
@@ -602,15 +623,27 @@
           };
         }
 
-        div.querySelector('.btn-ban').onclick = (e) => {
-          const actionText = isBanned ? 'unban' : 'ban';
-          if(confirm(`Are you sure you want to ${actionText} ${email}?`)) {
-            const newMeta = { ...meta, banned: !isBanned };
-            adminAction('ban_user', { userId: u.id, user_metadata: newMeta }).then(() => loadUsers());
-          }
-        };
+        if (card.querySelector('.btn-ban')) {
+          card.querySelector('.btn-ban').onclick = (e) => {
+            const actionText = isBanned ? 'unban' : 'ban';
+            if(confirm(`Are you sure you want to ${actionText} ${email}?`)) {
+              e.target.textContent = '...';
+              const newMeta = { ...meta, banned: !isBanned };
+              adminAction('ban_user', { userId: u.id, user_metadata: newMeta }).then(() => loadUsers());
+            }
+          };
+        }
 
-        userBrowser.appendChild(div);
+        if (card.querySelector('.btn-del-user')) {
+          card.querySelector('.btn-del-user').onclick = (e) => {
+            if(confirm(`WARNING: This will permanently delete the user ${email} from the database. This action cannot be undone. Proceed?`)) {
+              e.target.textContent = '...';
+              adminAction('delete_user', { userId: u.id }).then(() => loadUsers());
+            }
+          };
+        }
+
+        userBrowser.appendChild(card);
       });
     }
 

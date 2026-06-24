@@ -176,6 +176,20 @@ export default async function handler(req, res) {
       return res.status(200).json({ success: true, admins: adminsList });
     }
 
+    if (action === 'delete_user') {
+      if (!isSuperAdmin) return res.status(403).json({ error: 'Only SuperAdmin can delete users' });
+      const { userId } = req.body;
+      const sbKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+      if (!sbKey) return res.status(500).json({ error: 'SUPABASE_SERVICE_ROLE_KEY not configured' });
+      
+      const sbRes = await fetch(`${supabaseUrl}/auth/v1/admin/users/${userId}`, {
+        method: 'DELETE',
+        headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}` }
+      });
+      if (!sbRes.ok) throw new Error(await sbRes.text());
+      return res.status(200).json({ success: true });
+    }
+
     return res.status(400).json({ error: 'Unknown action' });
   } catch (error) {
     return res.status(500).json({ error: error.message });
