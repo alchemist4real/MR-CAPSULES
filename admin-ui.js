@@ -23,22 +23,27 @@ const newAdminInput = document.getElementById('newAdminInput');
 const adminMsg = document.getElementById('adminMsg');
 
 // Automatically hook into Supabase auth changes
-if (window.supabase) {
-  window.supabase.auth.getSession().then(({ data: { session } }) => {
-    if (session && session.access_token) {
-      checkAdminStatus(session.access_token);
-    }
-  });
+function initAdminAuth() {
+  if (window.supabaseClient) {
+    window.supabaseClient.auth.getSession().then(({ data: { session } }) => {
+      if (session && session.access_token) {
+        checkAdminStatus(session.access_token);
+      }
+    });
 
-  window.supabase.auth.onAuthStateChange(async (event, session) => {
-    if (session && session.access_token) {
-      checkAdminStatus(session.access_token);
-    } else {
-      if(adminSection) adminSection.style.display = 'none';
-      currentAdminSession = null;
-    }
-  });
+    window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
+      if (session && session.access_token) {
+        checkAdminStatus(session.access_token);
+      } else {
+        if(adminSection) adminSection.style.display = 'none';
+        currentAdminSession = null;
+      }
+    });
+  } else {
+    setTimeout(initAdminAuth, 500);
+  }
 }
+initAdminAuth();
 
 async function checkAdminStatus(token) {
   try {
@@ -51,18 +56,24 @@ async function checkAdminStatus(token) {
       body: JSON.stringify({ action: 'check' })
     });
     
-    if (res.ok) {
-      const data = await res.json();
-      if (data.success && adminSection) {
-        currentAdminSession = token;
+    const data = await res.json();
+    if (res.ok && data.success && adminSection) {
+      currentAdminSession = token;
+      adminSection.style.display = 'block';
+      if (data.isSuperAdmin && superAdminSection) {
+        superAdminSection.style.display = 'block';
+      }
+    } else {
+      if (adminSection) {
         adminSection.style.display = 'block';
-        if (data.isSuperAdmin && superAdminSection) {
-          superAdminSection.style.display = 'block';
-        }
+        adminSection.innerHTML = `<div style="color:red; font-size:11px;">Admin API Error: ${data.error || 'Unknown'}</div>`;
       }
     }
   } catch(e) {
-    console.error("Admin check failed", e);
+    if (adminSection) {
+      adminSection.style.display = 'block';
+      adminSection.innerHTML = `<div style="color:red; font-size:11px;">Admin Fetch Error: ${e.message}</div>`;
+    }
   }
 }
 
