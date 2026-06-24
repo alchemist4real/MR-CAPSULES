@@ -131,6 +131,51 @@ export default async function handler(req, res) {
       return res.status(200).json({ success: true, message: 'Already an admin', admins: adminsList });
     }
 
+    if (action === 'get_users') {
+      if (!isSuperAdmin) return res.status(403).json({ error: 'Only SuperAdmin can view users' });
+      const sbKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+      if (!sbKey) return res.status(500).json({ error: 'SUPABASE_SERVICE_ROLE_KEY not configured' });
+      
+      const sbRes = await fetch(`${supabaseUrl}/auth/v1/admin/users`, {
+        headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}` }
+      });
+      if (!sbRes.ok) throw new Error(await sbRes.text());
+      const data = await sbRes.json();
+      return res.status(200).json({ success: true, users: data.users || [] });
+    }
+
+    if (action === 'ban_user') {
+      if (!isSuperAdmin) return res.status(403).json({ error: 'Only SuperAdmin can ban users' });
+      const { userId, user_metadata } = req.body;
+      const sbKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+      if (!sbKey) return res.status(500).json({ error: 'SUPABASE_SERVICE_ROLE_KEY not configured' });
+      
+      const sbRes = await fetch(`${supabaseUrl}/auth/v1/admin/users/${userId}`, {
+        method: 'PUT',
+        headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_metadata })
+      });
+      if (!sbRes.ok) throw new Error(await sbRes.text());
+      return res.status(200).json({ success: true });
+    }
+
+    if (action === 'remove_admin') {
+      if (!isSuperAdmin) return res.status(403).json({ error: 'Only SuperAdmin can remove admins' });
+      const { targetAdmin } = req.body;
+      if (adminsList.includes(targetAdmin)) {
+        adminsList = adminsList.filter(a => a !== targetAdmin);
+        const body = {
+          message: `admin: remove admin ${targetAdmin}`,
+          content: Buffer.from(JSON.stringify(adminsList, null, 2)).toString('base64'),
+          sha: adminsData.sha
+        };
+        const resGit = await ghApi('PUT', `/contents/admins.json`, body);
+        const data = await resGit.json();
+        if (!resGit.ok) throw new Error(data.message || JSON.stringify(data));
+      }
+      return res.status(200).json({ success: true, admins: adminsList });
+    }
+
     return res.status(400).json({ error: 'Unknown action' });
   } catch (error) {
     return res.status(500).json({ error: error.message });

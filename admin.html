@@ -115,6 +115,32 @@
     .auth-input { background: #000; border: 1px solid var(--border-light); color: #fff; padding: 8px 12px; border-radius: 4px; outline: none; }
     .auth-input:focus { border-color: var(--accent); }
 
+    /* Tabs */
+    .tabs {
+      display: flex; background: var(--bg-card); border-bottom: 1px solid var(--border-light);
+    }
+    .tab {
+      padding: 14px 24px; cursor: pointer; color: var(--text-muted); border-bottom: 2px solid transparent;
+      font-weight: 500; font-size: 14px; transition: all 0.2s;
+    }
+    .tab:hover { color: var(--text-main); }
+    .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    .view-section { display: none; flex-direction: column; flex: 1; overflow: hidden; }
+    .view-section.active { display: flex; }
+
+    .user-item {
+      display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; 
+      border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 14px;
+    }
+    .user-info { display: flex; flex-direction: column; gap: 4px; }
+    .user-email { font-weight: 600; color: var(--text-main); }
+    .user-meta { font-size: 12px; color: var(--text-muted); font-family: var(--font-mono); }
+    .user-badges { display: flex; gap: 6px; margin-top: 4px; }
+    .badge { padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; }
+    .badge-admin { background: rgba(226, 255, 74, 0.15); color: var(--accent); }
+    .badge-banned { background: rgba(255, 107, 107, 0.15); color: #FF6B6B; }
+
     /* Utilities */
     .hidden { display: none !important; }
   </style>
@@ -138,22 +164,41 @@
     </div>
   </div>
 
+  <div class="tabs" id="adminTabs" style="display:none;">
+    <div class="tab active" data-target="viewFiles">📁 Files</div>
+    <div class="tab" data-target="viewUsers">👥 Users</div>
+  </div>
+
   <div class="content-area">
     <div class="main-panel">
-      <div class="toolbar">
-        <button id="btnUpload" class="btn primary">📤 Upload File</button>
-        <input type="file" id="fileInput" class="hidden" multiple>
-        <button id="btnNewFolder" class="btn">📁 New Folder</button>
-        <button id="btnRefresh" class="btn" style="margin-left:auto;">🔄 Refresh</button>
+      
+      <!-- FILES VIEW -->
+      <div id="viewFiles" class="view-section active">
+        <div class="toolbar">
+          <button id="btnUpload" class="btn primary">📤 Upload File</button>
+          <input type="file" id="fileInput" class="hidden" multiple>
+          <button id="btnNewFolder" class="btn">📁 New Folder</button>
+          <button id="btnRefresh" class="btn" style="margin-left:auto;">🔄 Refresh</button>
+        </div>
+
+        <div class="path-bar" id="pathBar">
+          <span class="path-link" id="pathRoot">Root</span>
+          <span id="pathBreadcrumbs"></span>
+        </div>
+
+        <div class="file-browser" id="fileBrowser">
+          <!-- File items injected here -->
+        </div>
       </div>
 
-      <div class="path-bar" id="pathBar">
-        <span class="path-link" id="pathRoot">Root</span>
-        <span id="pathBreadcrumbs"></span>
-      </div>
-
-      <div class="file-browser" id="fileBrowser">
-        <!-- File items injected here -->
+      <!-- USERS VIEW -->
+      <div id="viewUsers" class="view-section">
+        <div class="toolbar">
+          <button id="btnRefreshUsers" class="btn" style="margin-left:auto;">🔄 Refresh Users</button>
+        </div>
+        <div class="file-browser" id="userBrowser">
+          <!-- User items injected here -->
+        </div>
       </div>
 
       <div id="superAdminSection">
@@ -220,8 +265,11 @@
         
         if (res.ok && data.success) {
           authOverlay.classList.add('hidden');
+          window.adminsList = data.admins || [];
           if (data.isSuperAdmin) {
             document.getElementById('superAdminSection').style.display = 'block';
+            document.getElementById('adminTabs').style.display = 'flex';
+            loadUsers();
           }
           loadTree();
         } else {
@@ -447,9 +495,102 @@
       const val = document.getElementById('newAdminInput').value.trim();
       if(val) {
         document.getElementById('adminMsg').textContent = 'Adding...';
-        adminAction('add_admin', { newAdmin: val });
+        adminAction('add_admin', { newAdmin: val }).then(() => loadUsers());
       }
     };
+
+    // Tabs Logic
+    document.querySelectorAll('.tab').forEach(t => {
+      t.onclick = (e) => {
+        document.querySelectorAll('.tab').forEach(tx => tx.classList.remove('active'));
+        document.querySelectorAll('.view-section').forEach(vx => vx.classList.remove('active'));
+        e.target.classList.add('active');
+        document.getElementById(e.target.getAttribute('data-target')).classList.add('active');
+      }
+    });
+
+    // Users Logic
+    async function loadUsers() {
+      const userBrowser = document.getElementById('userBrowser');
+      userBrowser.innerHTML = '<div style="padding:24px; color:#666; text-align:center;">Loading users...</div>';
+      try {
+        const res = await fetch('/api/admin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${sessionToken}` },
+          body: JSON.stringify({ action: 'get_users' })
+        });
+        const data = await res.json();
+        if (data.success) {
+          renderUsers(data.users);
+        } else {
+          userBrowser.innerHTML = `<div style="padding:24px; color:#FF6B6B;">Failed to load users: ${data.error}</div>`;
+        }
+      } catch(e) {
+        userBrowser.innerHTML = `<div style="padding:24px; color:#FF6B6B;">Error: ${e.message}</div>`;
+      }
+    }
+
+    function renderUsers(users) {
+      const userBrowser = document.getElementById('userBrowser');
+      userBrowser.innerHTML = '';
+      document.getElementById('itemCount').textContent = `${users.length} users`;
+
+      users.forEach(u => {
+        const email = u.email;
+        const meta = u.user_metadata || {};
+        const username = meta.username || '-';
+        const isBanned = meta.banned === true;
+        
+        const isAdmin = window.adminsList && (window.adminsList.includes(email) || window.adminsList.includes(username));
+
+        const div = document.createElement('div');
+        div.className = 'user-item';
+        
+        let badgesHtml = '';
+        if (isAdmin) badgesHtml += '<span class="badge badge-admin">ADMIN</span>';
+        if (isBanned) badgesHtml += '<span class="badge badge-banned">BANNED</span>';
+
+        div.innerHTML = `
+          <div class="user-info">
+            <div class="user-email">${email}</div>
+            <div class="user-meta">Username: ${username} &bull; Created: ${new Date(u.created_at).toLocaleDateString()}</div>
+            <div class="user-badges">${badgesHtml}</div>
+          </div>
+          <div class="file-actions" style="opacity: 1; display:flex; gap:8px;">
+            ${isAdmin ? 
+              `<button class="btn btn-revoke" data-target="${email}">Revoke Admin</button>` : 
+              ''}
+            <button class="btn ${isBanned ? 'primary' : 'danger'} btn-ban" data-id="${u.id}" data-banned="${isBanned}">
+              ${isBanned ? 'Unban User' : 'Ban User'}
+            </button>
+          </div>
+        `;
+
+        if (div.querySelector('.btn-revoke')) {
+          div.querySelector('.btn-revoke').onclick = (e) => {
+            if(confirm(`Remove admin privileges for ${email}?`)) {
+              adminAction('remove_admin', { targetAdmin: email }).then(() => {
+                 window.adminsList = window.adminsList.filter(a => a !== email);
+                 loadUsers();
+              });
+            }
+          };
+        }
+
+        div.querySelector('.btn-ban').onclick = (e) => {
+          const actionText = isBanned ? 'unban' : 'ban';
+          if(confirm(`Are you sure you want to ${actionText} ${email}?`)) {
+            const newMeta = { ...meta, banned: !isBanned };
+            adminAction('ban_user', { userId: u.id, user_metadata: newMeta }).then(() => loadUsers());
+          }
+        };
+
+        userBrowser.appendChild(div);
+      });
+    }
+
+    document.getElementById('btnRefreshUsers').onclick = loadUsers;
+
   </script>
 </body>
 </html>

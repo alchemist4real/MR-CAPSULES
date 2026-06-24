@@ -1121,8 +1121,14 @@ try {
     }
 
     // Check initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session) {
+        if(session.user && session.user.user_metadata && session.user.user_metadata.banned) {
+          alert('YOUR ACCOUNT HAS BEEN BANNED BY THE ADMINISTRATOR.');
+          await supabase.auth.signOut();
+          return;
+        }
+
         if(session.user.user_metadata && session.user.user_metadata.username) {
           currentUsername = session.user.user_metadata.username;
           authUsername.value = currentUsername;
@@ -1133,8 +1139,14 @@ try {
       }
     });
 
-    supabase.auth.onAuthStateChange((event, session) => {
+    supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN') {
+        if(session && session.user && session.user.user_metadata && session.user.user_metadata.banned) {
+          alert('YOUR ACCOUNT HAS BEEN BANNED BY THE ADMINISTRATOR.');
+          await supabase.auth.signOut();
+          return;
+        }
+
         if(session && session.user.user_metadata && session.user.user_metadata.username) {
           currentUsername = session.user.user_metadata.username;
           authUsername.value = currentUsername;
