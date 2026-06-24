@@ -695,52 +695,14 @@ iframe {
         <button id="btnForceReload" class="auth-btn" style="display:none; background:rgba(255,0,0,0.15); color:#FF3333; border:1px solid #FF3333; font-weight:bold; margin-top:24px; text-align:center;">FORCE GLOBAL RELOAD</button>
         
         <!-- ADMIN CONTROLS (Hidden by default) -->
-        <div id="adminSection" style="display:none; margin-top:24px; border-top: 1px solid var(--border-light); padding-top:24px;">
-          <div class="settings-section-title">ADMIN CONTROLS</div>
-          <button id="btnOpenAdmin" class="btn primary" style="width:100%; margin-bottom: 12px; font-weight:bold;">OPEN CONTENT MANAGER</button>
-          
-          <div id="superAdminSection" style="display:none;">
-            <div class="stat-label" style="margin-bottom:8px;">ADD NEW ADMIN</div>
-            <div style="display:flex; width:100%; gap:8px;">
-              <input type="text" id="newAdminInput" class="auth-input" style="flex:1; padding:6px 10px;" placeholder="Email or Username">
-              <button id="btnAddAdmin" class="auth-btn auth-btn-outline" style="padding:6px 12px; font-size:11px;">ADD</button>
-            </div>
-            <div id="adminMsg" style="font-size:11px; margin-top:6px; color:#FF6B6B;"></div>
-          </div>
+        <div id="adminSection" style="display:none; margin-top:16px;">
+          <a href="/admin.html" target="_blank" style="display:block; width:100%; text-decoration:none;">
+            <button class="auth-btn auth-btn-outline" style="width:100%; padding:10px; font-weight:bold; border-color:var(--accent); color:var(--accent);">
+              ⚙️ OPEN CONTENT MANAGER
+            </button>
+          </a>
         </div>
       </div>
-    </div>
-  </div>
-</div>
-
-<!-- ADMIN DASHBOARD MODAL -->
-<div class="settings-overlay" id="adminDashboardModal">
-  <div class="settings-box" style="max-width:800px; width:90%; max-height:85vh; display:flex; flex-direction:column;">
-    <div class="settings-header">
-      <span>CONTENT MANAGER</span>
-      <button class="btn-text" id="btnAdminClose">
-        <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-      </button>
-    </div>
-    <div class="settings-body" style="overflow-y:auto; flex:1;">
-      
-      <div style="display:flex; gap:10px; margin-bottom:16px;">
-        <button id="btnAdminUpload" class="btn primary" style="font-size:12px; padding:6px 12px;">📤 Upload File</button>
-        <input type="file" id="adminFileInput" style="display:none;" multiple>
-        <button id="btnAdminNewFolder" class="btn" style="font-size:12px; padding:6px 12px; border:1px solid var(--border-medium);">📁 New Folder</button>
-        <button id="btnAdminRefresh" class="btn-text" style="font-size:12px; margin-left:auto;">🔄 Refresh</button>
-      </div>
-
-      <div class="admin-path-bar" id="adminPathBar" style="font-family:'DM Mono',monospace; font-size:12px; margin-bottom:12px; padding:8px; background:var(--bg-main); border:1px solid var(--border-light); border-radius:4px; display:flex; align-items:center;">
-        <span style="font-weight:bold; margin-right:8px; cursor:pointer;" id="adminPathRoot">/ Root</span>
-        <span id="adminPathBreadcrumbs"></span>
-      </div>
-
-      <div id="adminFileBrowser" style="display:flex; flex-direction:column; gap:4px; font-family:'DM Mono',monospace; font-size:13px;">
-        <!-- File list will be rendered here -->
-      </div>
-      <div id="adminStatus" style="font-size:12px; color:#888; margin-top:10px; text-align:center;"></div>
-
     </div>
   </div>
 </div>
@@ -1348,6 +1310,46 @@ try {
 }
 
 </script>
-<script src="admin-ui.js"></script>
+<script>
+  // Admin button logic
+  function initAdminCheck() {
+    if (window.supabaseClient) {
+      window.supabaseClient.auth.getSession().then(({ data: { session } }) => {
+        if (session && session.access_token) {
+          checkAdmin(session.access_token);
+        }
+      });
+      window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
+        if (session && session.access_token) {
+          checkAdmin(session.access_token);
+        } else {
+          const adminSec = document.getElementById('adminSection');
+          if(adminSec) adminSec.style.display = 'none';
+        }
+      });
+    } else {
+      setTimeout(initAdminCheck, 500);
+    }
+  }
+  
+  async function checkAdmin(token) {
+    try {
+      const res = await fetch('/api/admin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ action: 'check' })
+      });
+      const data = await res.json();
+      const adminSec = document.getElementById('adminSection');
+      if (res.ok && data.success && adminSec) {
+        adminSec.style.display = 'block';
+      } else if (adminSec) {
+        adminSec.style.display = 'none';
+      }
+    } catch(e) {}
+  }
+  
+  initAdminCheck();
+</script>
 </body>
 </html>

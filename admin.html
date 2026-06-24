@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Content Manager | MR CAPSULES</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-main: #0A0A0A;
+      --bg-card: #151515;
+      --bg-hover: #1f1f1f;
+      --text-main: #EFEFEF;
+      --text-muted: #888888;
+      --accent: #E2FF4A;
+      --accent-hover: #c4dd40;
+      --border-light: rgba(255,255,255,0.08);
+      --font-mono: 'DM Mono', monospace;
+      --font-sans: 'Inter', sans-serif;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Auth Overlay */
+    #authOverlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--bg-main); z-index: 100;
+      display: flex; align-items: center; justify-content: center; flex-direction: column;
+    }
+    #authOverlay.hidden { display: none; }
+    
+    .spinner {
+      width: 40px; height: 40px; border: 3px solid var(--border-light);
+      border-top-color: var(--accent); border-radius: 50%;
+      animation: spin 1s linear infinite; margin-bottom: 20px;
+    }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+
+    /* Layout */
+    .navbar {
+      height: 60px; padding: 0 24px; border-bottom: 1px solid var(--border-light);
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--bg-card);
+    }
+    .brand { font-weight: 800; letter-spacing: 1px; font-size: 16px; }
+    .brand a { color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+    
+    .content-area {
+      display: flex; flex: 1; overflow: hidden;
+    }
+
+    /* Main Area */
+    .main-panel {
+      flex: 1; display: flex; flex-direction: column; background: var(--bg-main);
+    }
+
+    .toolbar {
+      padding: 16px 24px; border-bottom: 1px solid var(--border-light);
+      display: flex; gap: 12px; align-items: center;
+    }
+
+    .btn {
+      background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-light);
+      padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500;
+      display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;
+    }
+    .btn:hover { background: var(--bg-hover); border-color: rgba(255,255,255,0.2); }
+    .btn.primary { background: var(--text-main); color: var(--bg-main); border-color: transparent; font-weight: 600; }
+    .btn.primary:hover { background: #fff; transform: translateY(-1px); }
+    .btn.danger { color: #FF6B6B; border-color: rgba(255,107,107,0.3); }
+    .btn.danger:hover { background: rgba(255,107,107,0.1); }
+
+    .path-bar {
+      padding: 12px 24px; background: var(--bg-card); border-bottom: 1px solid var(--border-light);
+      font-family: var(--font-mono); font-size: 13px; color: var(--text-muted);
+      display: flex; align-items: center;
+    }
+    .path-link { cursor: pointer; color: var(--text-main); transition: 0.2s; }
+    .path-link:hover { color: var(--accent); text-decoration: underline; }
+    .path-separator { margin: 0 8px; color: #555; }
+
+    .file-browser {
+      flex: 1; overflow-y: auto; padding: 0; list-style: none;
+    }
+    .file-item {
+      display: flex; align-items: center; padding: 12px 24px; border-bottom: 1px solid rgba(255,255,255,0.04);
+      transition: background 0.15s; font-family: var(--font-mono); font-size: 14px;
+    }
+    .file-item:hover { background: rgba(255,255,255,0.02); }
+    .file-icon { margin-right: 16px; font-size: 18px; width: 24px; text-align: center; }
+    .file-name { flex: 1; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .file-name:hover { text-decoration: underline; color: var(--accent); }
+    .file-actions { opacity: 0; transition: opacity 0.2s; }
+    .file-item:hover .file-actions { opacity: 1; }
+
+    .status-bar {
+      padding: 8px 24px; font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--border-light);
+      display: flex; justify-content: space-between;
+    }
+
+    #superAdminSection {
+      padding: 16px 24px; border-top: 1px solid var(--border-light); background: var(--bg-card);
+      display: none;
+    }
+    .auth-input { background: #000; border: 1px solid var(--border-light); color: #fff; padding: 8px 12px; border-radius: 4px; outline: none; }
+    .auth-input:focus { border-color: var(--accent); }
+
+    /* Utilities */
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <!-- Auth Check Overlay -->
+  <div id="authOverlay">
+    <div class="spinner"></div>
+    <div id="authMessage">Verifying Identity...</div>
+  </div>
+
+  <div class="navbar">
+    <div class="brand">
+      <a href="/">&larr; <span>MR CAPSULES</span></a>
+      <span style="color:var(--text-muted); margin-left:12px; font-weight:400;">/ Content Manager</span>
+    </div>
+    <div>
+      <span id="userBadge" style="font-size:12px; color:var(--text-muted); margin-right:16px;"></span>
+      <button id="btnSignOut" class="btn">Sign Out</button>
+    </div>
+  </div>
+
+  <div class="content-area">
+    <div class="main-panel">
+      <div class="toolbar">
+        <button id="btnUpload" class="btn primary">📤 Upload File</button>
+        <input type="file" id="fileInput" class="hidden" multiple>
+        <button id="btnNewFolder" class="btn">📁 New Folder</button>
+        <button id="btnRefresh" class="btn" style="margin-left:auto;">🔄 Refresh</button>
+      </div>
+
+      <div class="path-bar" id="pathBar">
+        <span class="path-link" id="pathRoot">Root</span>
+        <span id="pathBreadcrumbs"></span>
+      </div>
+
+      <div class="file-browser" id="fileBrowser">
+        <!-- File items injected here -->
+      </div>
+
+      <div id="superAdminSection">
+        <div style="font-size:11px; margin-bottom:8px; color:var(--text-muted);">SUPER ADMIN CONTROLS</div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <input type="text" id="newAdminInput" class="auth-input" placeholder="New Admin Email/Username" style="width:250px;">
+          <button id="btnAddAdmin" class="btn">Add Admin</button>
+          <span id="adminMsg" style="font-size:12px; margin-left:12px;"></span>
+        </div>
+      </div>
+
+      <div class="status-bar">
+        <span id="statusText">Ready</span>
+        <span id="itemCount">0 items</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const supabaseUrl = 'https://hdhvrlkizorscvehttzd.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhkaHZybGtpem9yc2N2ZWh0dHpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyNjMwNzIsImV4cCI6MjA5MjgzOTA3Mn0.m6L3oEVAfyp2TjYmBCfDRo_30rdsWLEsGVZzRZIy3MU';
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+    let sessionToken = null;
+    let currentTree = [];
+    let currentPath = '';
+
+    const authOverlay = document.getElementById('authOverlay');
+    const authMessage = document.getElementById('authMessage');
+    const statusText = document.getElementById('statusText');
+    const fileBrowser = document.getElementById('fileBrowser');
+    const pathBreadcrumbs = document.getElementById('pathBreadcrumbs');
+    const itemCount = document.getElementById('itemCount');
+    const fileInput = document.getElementById('fileInput');
+
+    // Init Auth
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        verifyAdmin(session);
+      } else {
+        redirectToHome("Not logged in. Redirecting...");
+      }
+    });
+
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') {
+        redirectToHome("Signed out. Redirecting...");
+      }
+    });
+
+    async function verifyAdmin(session) {
+      sessionToken = session.access_token;
+      document.getElementById('userBadge').textContent = session.user.email;
+      
+      try {
+        const res = await fetch('/api/admin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${sessionToken}` },
+          body: JSON.stringify({ action: 'check' })
+        });
+        const data = await res.json();
+        
+        if (res.ok && data.success) {
+          authOverlay.classList.add('hidden');
+          if (data.isSuperAdmin) {
+            document.getElementById('superAdminSection').style.display = 'block';
+          }
+          loadTree();
+        } else {
+          redirectToHome(data.error || "Forbidden. You are not an admin.");
+        }
+      } catch(e) {
+        redirectToHome("Verification failed: " + e.message);
+      }
+    }
+
+    function redirectToHome(msg) {
+      authOverlay.classList.remove('hidden');
+      authMessage.textContent = msg;
+      setTimeout(() => { window.location.href = '/'; }, 1500);
+    }
+
+    document.getElementById('btnSignOut').onclick = async () => {
+      await supabase.auth.signOut();
+    };
+
+    // Load Data
+    async function loadTree() {
+      statusText.textContent = 'Fetching repository...';
+      fileBrowser.innerHTML = '';
+      try {
+        const res = await fetch('/api/admin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${sessionToken}` },
+          body: JSON.stringify({ action: 'tree' })
+        });
+        const data = await res.json();
+        if (data.success && data.tree) {
+          currentTree = data.tree.filter(i => i.path.startsWith('content/') || i.path.startsWith('cover/'));
+          renderBrowser();
+          statusText.textContent = 'Repository loaded.';
+        } else {
+          statusText.textContent = 'Failed to load tree: ' + data.error;
+        }
+      } catch(e) {
+        statusText.textContent = 'Error: ' + e.message;
+      }
+    }
+
+    function renderBrowser() {
+      fileBrowser.innerHTML = '';
+      
+      // Breadcrumbs
+      if (currentPath === '') {
+        pathBreadcrumbs.innerHTML = '';
+      } else {
+        const parts = currentPath.replace(/\/$/, '').split('/');
+        let html = '';
+        let buildPath = '';
+        parts.forEach((p, i) => {
+          buildPath += p + '/';
+          const isLast = i === parts.length - 1;
+          html += `<span class="path-separator">/</span><span class="${isLast ? '' : 'path-link'}" data-path="${buildPath}">${p}</span>`;
+        });
+        pathBreadcrumbs.innerHTML = html;
+        
+        document.querySelectorAll('.path-link').forEach(el => {
+          el.addEventListener('click', (e) => {
+            currentPath = e.target.getAttribute('data-path');
+            renderBrowser();
+          });
+        });
+      }
+
+      document.getElementById('pathRoot').onclick = () => { currentPath = ''; renderBrowser(); };
+
+      // Map contents
+      let items = new Map();
+      currentTree.forEach(item => {
+        if (item.path.startsWith(currentPath)) {
+          const remainder = item.path.substring(currentPath.length);
+          if (remainder.length === 0) return;
+          
+          const parts = remainder.split('/');
+          const name = parts[0];
+          const isFile = parts.length === 1 && item.type === 'blob';
+          
+          if (!items.has(name)) {
+            items.set(name, {
+              name: name,
+              type: isFile ? 'file' : 'folder',
+              path: currentPath + name + (isFile ? '' : '/'),
+              sha: isFile ? item.sha : null
+            });
+          }
+        }
+      });
+
+      const sortedItems = Array.from(items.values()).sort((a,b) => {
+        if(a.type === b.type) return a.name.localeCompare(b.name);
+        return a.type === 'folder' ? -1 : 1;
+      });
+
+      if (sortedItems.length === 0 && currentPath === '') {
+        sortedItems.push({name: 'content', type: 'folder', path: 'content/', sha: null});
+        sortedItems.push({name: 'cover', type: 'folder', path: 'cover/', sha: null});
+      }
+
+      itemCount.textContent = `${sortedItems.length} items`;
+
+      if (sortedItems.length === 0 && currentPath !== '') {
+        fileBrowser.innerHTML = '<div style="padding:24px; color:#666; text-align:center;">Folder is empty</div>';
+      }
+
+      sortedItems.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'file-item';
+        
+        const icon = item.type === 'folder' ? '📁' : (item.name.endsWith('.html') ? '📄' : '🖼️');
+        
+        div.innerHTML = `
+          <div class="file-icon">${icon}</div>
+          <div class="file-name" title="${item.name}">${item.name}</div>
+          <div class="file-actions">
+            <button class="btn danger btn-del" data-path="${item.path}" data-sha="${item.sha}" data-type="${item.type}">Delete</button>
+          </div>
+        `;
+
+        if (item.type === 'folder') {
+          div.querySelector('.file-name').onclick = () => {
+            currentPath = item.path;
+            renderBrowser();
+          };
+        } else {
+          div.querySelector('.file-name').onclick = () => {
+             window.open(`https://github.com/alchemist4real/MR-CAPSULES/blob/main/${item.path}`, '_blank');
+          };
+        }
+
+        div.querySelector('.btn-del').onclick = (e) => {
+          const type = e.target.getAttribute('data-type');
+          const p = e.target.getAttribute('data-path');
+          const sha = e.target.getAttribute('data-sha');
+          
+          if (type === 'folder') {
+            alert("To delete a folder, you must delete all files inside it.");
+            return;
+          }
+
+          if (confirm(`Are you sure you want to delete:\n${p} ?\nThis action cannot be undone.`)) {
+            adminAction('delete', { path: p, sha: sha });
+          }
+        };
+
+        fileBrowser.appendChild(div);
+      });
+    }
+
+    async function adminAction(action, payload) {
+      statusText.textContent = `Processing ${action}...`;
+      try {
+        const res = await fetch('/api/admin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${sessionToken}` },
+          body: JSON.stringify({ action, ...payload })
+        });
+        const data = await res.json();
+        if (data.success) {
+          statusText.textContent = `Success: ${action}`;
+          if (action !== 'add_admin') {
+            setTimeout(loadTree, 1000);
+          } else {
+            const msg = document.getElementById('adminMsg');
+            msg.textContent = 'Admin added!';
+            msg.style.color = '#4CAF50';
+          }
+        } else {
+          statusText.textContent = `Error: ${data.error}`;
+        }
+      } catch(e) {
+        statusText.textContent = `Error: ${e.message}`;
+      }
+    }
+
+    // Actions
+    document.getElementById('btnRefresh').onclick = loadTree;
+    
+    document.getElementById('btnUpload').onclick = () => fileInput.click();
+    fileInput.onchange = (e) => {
+      const files = e.target.files;
+      if (!files.length) return;
+      
+      let processed = 0;
+      statusText.textContent = `Uploading 0/${files.length}...`;
+
+      Array.from(files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const base64 = ev.target.result.split(',')[1];
+          const path = currentPath + file.name;
+          
+          let existingSha = null;
+          const existing = currentTree.find(i => i.path === path);
+          if (existing) existingSha = existing.sha;
+
+          adminAction('upload', { path, contentBase64: base64, sha: existingSha }).then(() => {
+            processed++;
+            statusText.textContent = `Uploaded ${processed}/${files.length}`;
+            if(processed === files.length) {
+              setTimeout(loadTree, 1500);
+              fileInput.value = '';
+            }
+          });
+        };
+        reader.readAsDataURL(file);
+      });
+    };
+
+    document.getElementById('btnNewFolder').onclick = () => {
+      const name = prompt("Enter new folder name:");
+      if(name && name.trim()) {
+        const path = currentPath + name.trim() + '/.gitkeep';
+        const base64 = btoa(' '); 
+        adminAction('upload', { path, contentBase64: base64 });
+      }
+    };
+
+    document.getElementById('btnAddAdmin').onclick = () => {
+      const val = document.getElementById('newAdminInput').value.trim();
+      if(val) {
+        document.getElementById('adminMsg').textContent = 'Adding...';
+        adminAction('add_admin', { newAdmin: val });
+      }
+    };
+  </script>
+</body>
+</html>

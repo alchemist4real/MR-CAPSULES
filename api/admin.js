@@ -75,6 +75,20 @@ export default async function handler(req, res) {
       return res.status(200).json({ success: true, isSuperAdmin, admins: adminsList });
     }
 
+    if (action === 'tree') {
+      const ghRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/main?recursive=1`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${githubToken}`,
+          'Accept': 'application/vnd.github+json',
+          'User-Agent': 'Vercel-Proxy'
+        }
+      });
+      if (!ghRes.ok) throw new Error(`GitHub API Error: ${await ghRes.text()}`);
+      const data = await ghRes.json();
+      return res.status(200).json({ success: true, tree: data.tree });
+    }
+
     if (action === 'upload') {
       const body = {
         message: `admin: upload ${path}`,
