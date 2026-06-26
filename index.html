@@ -678,6 +678,14 @@ iframe {
               <button class="auth-btn auth-btn-outline theme-btn" data-theme-val="device" style="flex:1; padding:6px; font-size:10px;">DEVICE</button>
             </div>
           </div>
+          <div class="stat-divider" style="margin: 8px 0;"></div>
+          <div class="stat-item" style="flex-direction:column; align-items:flex-start; gap:8px;">
+            <span class="stat-label">LOW PERFORMANCE MODE (DISABLE COVERS)</span>
+            <div style="display:flex; width:100%; gap:4px;" id="perfToggles">
+              <button class="auth-btn auth-btn-outline perf-btn active" data-perf-val="off" style="flex:1; padding:6px; font-size:10px;">OFF</button>
+              <button class="auth-btn auth-btn-outline perf-btn" data-perf-val="on" style="flex:1; padding:6px; font-size:10px;">ON</button>
+            </div>
+          </div>
         </div>
       </div>
       <div>
@@ -771,6 +779,43 @@ themeToggles.forEach(btn => {
   });
 });
 
+/* ══ PERFORMANCE ENGINE ══ */
+const perfToggles = document.querySelectorAll('.perf-btn');
+let isLowPerfMode = false;
+try {
+  isLowPerfMode = localStorage.getItem('mr_low_perf') === 'on';
+} catch(e) {}
+
+function applyPerfMode(val, skipRender) {
+  isLowPerfMode = (val === 'on');
+  perfToggles.forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-perf-val') === val);
+  });
+  if (!skipRender && rawData) {
+    applyData(rawData); // re-render catalog
+  }
+}
+applyPerfMode(isLowPerfMode ? 'on' : 'off', true);
+
+perfToggles.forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const val = btn.getAttribute('data-perf-val');
+    try {
+      localStorage.setItem('mr_low_perf', val);
+    } catch(e) {}
+    applyPerfMode(val, false);
+    
+    if (window.supabaseClient) {
+      const { data: { session } } = await window.supabaseClient.auth.getSession();
+      if (session) {
+        await window.supabaseClient.auth.updateUser({
+          data: { low_perf_mode: (val === 'on') }
+        });
+      }
+    }
+  });
+});
+
 let rawData = null;
 let navHistory = [];
 let catalog = [];
@@ -846,7 +891,9 @@ function loadCatalog(newCatalog, restoreIndex = -1) {
   let coverIndex = 0;
 
   catalog.forEach(item => {
-    if (covers.length > 0) {
+    if (isLowPerfMode) {
+      item.cover = '';
+    } else if (covers.length > 0) {
       item.cover = shuffledCovers[coverIndex];
       coverIndex++;
       if (coverIndex >= shuffledCovers.length) {
@@ -1130,10 +1177,19 @@ try {
           return;
         }
 
-        if(session.user.user_metadata && session.user.user_metadata.username) {
-          currentUsername = session.user.user_metadata.username;
-          authUsername.value = currentUsername;
-          updateGreeting();
+        if(session.user && session.user.user_metadata) {
+          if (session.user.user_metadata.username) {
+            currentUsername = session.user.user_metadata.username;
+            authUsername.value = currentUsername;
+            updateGreeting();
+          }
+          if (session.user.user_metadata.low_perf_mode !== undefined) {
+            const pref = session.user.user_metadata.low_perf_mode ? 'on' : 'off';
+            try { localStorage.setItem('mr_low_perf', pref); } catch(e) {}
+            if (isLowPerfMode !== session.user.user_metadata.low_perf_mode) {
+              applyPerfMode(pref, false);
+            }
+          }
         }
         authOverlay.classList.add('hidden');
         startTracking();
@@ -1148,10 +1204,19 @@ try {
           return;
         }
 
-        if(session && session.user.user_metadata && session.user.user_metadata.username) {
-          currentUsername = session.user.user_metadata.username;
-          authUsername.value = currentUsername;
-          updateGreeting();
+        if(session && session.user && session.user.user_metadata) {
+          if (session.user.user_metadata.username) {
+            currentUsername = session.user.user_metadata.username;
+            authUsername.value = currentUsername;
+            updateGreeting();
+          }
+          if (session.user.user_metadata.low_perf_mode !== undefined) {
+            const pref = session.user.user_metadata.low_perf_mode ? 'on' : 'off';
+            try { localStorage.setItem('mr_low_perf', pref); } catch(e) {}
+            if (isLowPerfMode !== session.user.user_metadata.low_perf_mode) {
+              applyPerfMode(pref, false);
+            }
+          }
         }
         authOverlay.classList.add('hidden');
         startTracking();
