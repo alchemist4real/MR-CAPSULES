@@ -369,7 +369,22 @@ html,body{
   .btn{width:32px;height:32px}
   .btn.play svg{width:20px;height:20px}
   .track-container{bottom:12px;right:12px}
+  .btn-top-back { top: 16px; left: 16px; padding: 6px 12px; font-size: 10px; }
+  .btn-top-back svg { width: 14px; height: 14px; }
 }
+
+/* ══ TOP BACK BUTTON ══ */
+.btn-top-back {
+  position: absolute; top: 24px; left: 24px; display: none;
+  align-items: center; gap: 8px; background: var(--bg-main);
+  border: 1.5px solid var(--text-main); color: var(--text-main);
+  padding: 8px 16px; border-radius: 99px; cursor: pointer;
+  font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 600;
+  z-index: 200; transition: background 0.2s, color 0.2s, transform 0.1s;
+}
+.btn-top-back:hover { background: var(--text-main); color: var(--bg-main); }
+.btn-top-back:active { transform: scale(0.95); }
+.btn-top-back svg { width: 16px; height: 16px; fill: currentColor; }
 
 /* ══ SETTINGS MODAL ══ */
 .settings-overlay {
@@ -601,6 +616,10 @@ iframe {
 <div class="scanlines"></div>
 
 <div class="stage" id="stage">
+  <button id="btnTopBack" class="btn-top-back">
+    <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    BACK
+  </button>
   <div class="brand">
     <img src="/logo.svg" alt="logo">
     <span>MR CAPSULES</span>
@@ -866,6 +885,8 @@ function applyData(data) {
   if (isFlatMode) {
     navHistory = [];
     document.getElementById('btnBack').style.display = 'none';
+    const topBack = document.getElementById('btnTopBack');
+    if (topBack) topBack.style.display = 'none';
     document.getElementById('btnToggleMode').style.color = 'var(--bg-main)';
     document.getElementById('btnToggleMode').style.background = 'var(--text-main)';
     loadCatalog(data.files || []);
@@ -874,9 +895,13 @@ function applyData(data) {
     document.getElementById('btnToggleMode').style.background = 'transparent';
     if (navHistory.length === 0) {
       document.getElementById('btnBack').style.display = 'none';
+      const topBack = document.getElementById('btnTopBack');
+      if (topBack) topBack.style.display = 'none';
       loadCatalog(data.semesters);
     } else {
       document.getElementById('btnBack').style.display = 'flex';
+      const topBack = document.getElementById('btnTopBack');
+      if (topBack) topBack.style.display = 'flex';
       if (!catalog.length) loadCatalog(data.semesters);
     }
   }
@@ -1086,6 +1111,8 @@ document.getElementById('btnPrev').addEventListener('click',()=>go(cur-1));
 document.getElementById('btnNext').addEventListener('click',()=>go(cur+1));
 document.getElementById('btnPlay').addEventListener('click',()=>diveIn(cur));
 document.getElementById('btnBack').addEventListener('click', goBack);
+const topBackBtn = document.getElementById('btnTopBack');
+if (topBackBtn) topBackBtn.addEventListener('click', goBack);
 
 document.addEventListener('keydown',e=>{
   if (document.getElementById('iframeViewer').classList.contains('active')) return;
