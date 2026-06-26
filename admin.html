@@ -291,12 +291,30 @@
       display: flex; flex-direction: column; align-items: center; justify-content: center;
     }
     #lightboxModal.hidden { display: none; }
+    #lightboxHeader {
+      position: absolute; top: 0; left: 0; right: 0;
+      padding: 16px 24px; background: rgba(0,0,0,0.5);
+      display: flex; justify-content: space-between; align-items: center;
+      color: #fff; font-family: var(--font-mono); font-size: 14px;
+      z-index: 201; border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .lightbox-actions { display: flex; gap: 12px; }
+    .lightbox-btn {
+      background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.3);
+      padding: 6px 12px; font-family: var(--font-mono); font-size: 12px; cursor: pointer;
+      transition: 0.2s; display: flex; align-items: center; gap: 6px; border-radius: 0;
+    }
+    .lightbox-btn:hover { background: rgba(255,255,255,0.1); border-color: #fff; }
     #lightboxClose {
-      position: absolute; top: 24px; right: 24px;
-      background: transparent; color: #fff; border: none; font-size: 32px; cursor: pointer;
+      background: transparent; color: #fff; border: none; font-size: 28px; cursor: pointer; line-height: 1;
+    }
+    #lightboxContentWrapper {
+      position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+      padding-top: 60px; /* offset for header */
+      box-sizing: border-box;
     }
     #lightboxImage {
-      max-width: 90vw; max-height: 90vh;
+      max-width: 90vw; max-height: 85vh;
       object-fit: contain; border-radius: 0;
     }
     #lightboxText {
@@ -347,7 +365,17 @@
     }
     .modal-input:focus { border-color: var(--accent); }
     .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 8px; }
-    .editor-container { flex: 1; overflow: hidden; border: 1px solid var(--border-light); border-radius: 0; }
+    .editor-container { flex: 1; overflow: hidden; border: 1px solid var(--border-light); border-radius: 0; display: flex; flex-direction: row; position: relative; }
+    .editor-resizer {
+      width: 6px; background: var(--border-light); cursor: col-resize; z-index: 10;
+      display: flex; align-items: center; justify-content: center; transition: 0.2s;
+    }
+    .editor-resizer:hover, .editor-resizer.dragging { background: var(--accent); }
+    .editor-resizer::after { content: "⋮"; font-family: var(--font-mono); color: var(--text-muted); font-size: 12px; }
+    .editor-modal.fullscreen {
+      width: 100vw !important; height: 100vh !important; max-width: 100vw !important;
+      margin: 0; padding: 0; border: none; z-index: 9999;
+    }
 
     /* Mobile Responsiveness */
     @media (max-width: 768px) {
@@ -393,6 +421,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/search/search.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/dialog/dialog.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/search/jump-to-line.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/closebrackets.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/closetag.min.js"></script>
 </head>
 <body>
   <div class="bg"></div>
@@ -487,9 +517,22 @@
 
   <!-- Lightbox Modal -->
   <div id="lightboxModal" class="hidden">
-    <button id="lightboxClose">&times;</button>
-    <img id="lightboxImage" class="hidden" src="" />
-    <div id="lightboxText" class="hidden"></div>
+    <div id="lightboxHeader">
+      <div id="lightboxFilename">file.name</div>
+      <div class="lightbox-actions">
+        <button id="lightboxBtnNewTab" class="lightbox-btn" title="Open in new tab">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+        </button>
+        <button id="lightboxBtnDownload" class="lightbox-btn" title="Download">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        </button>
+        <button id="lightboxClose" title="Close">&times;</button>
+      </div>
+    </div>
+    <div id="lightboxContentWrapper">
+      <img id="lightboxImage" class="hidden" src="" />
+      <div id="lightboxText" class="hidden"></div>
+    </div>
   </div>
 
   <!-- Generic Prompt Modal -->
@@ -506,21 +549,23 @@
 
   <!-- HTML Editor Modal -->
   <div id="editorModal" class="custom-modal-overlay hidden">
-    <div class="custom-modal editor-modal" style="width: 95vw; height: 95vh; max-width: 100%; display: flex; flex-direction: column; padding: 16px;">
+    <div class="custom-modal editor-modal" id="editorModalContainer" style="width: 95vw; height: 95vh; max-width: 100%; display: flex; flex-direction: column; padding: 16px;">
       <div class="modal-title" style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid var(--border-light); padding-bottom: 12px; margin-bottom: 0;">
         <span id="editorTitle" style="font-family: var(--font-mono); font-size: 14px;">Editing File</span>
         <div style="display:flex; gap:8px;">
-          <button id="tabCode" class="btn active" style="font-size: 12px; padding: 6px 12px;">CODE</button>
-          <button id="tabPreview" class="btn" style="font-size: 12px; padding: 6px 12px;">PREVIEW</button>
+          <button id="editorFullscreen" class="btn" style="font-size: 12px; padding: 6px 12px;" title="Toggle Fullscreen">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+          </button>
         </div>
-        <button id="editorClose" style="background:transparent; color:#fff; border:none; font-size:24px; cursor:pointer;">&times;</button>
+        <button id="editorClose" style="background:transparent; color:var(--text-main); border:none; font-size:24px; cursor:pointer;">&times;</button>
       </div>
-      <div class="editor-container" style="flex: 1; position: relative; display: flex; flex-direction: column; overflow: hidden; margin-top: 12px; border: 1px solid var(--border-light);">
-        <div id="editorPane" style="flex: 1; display: flex; flex-direction: column; width: 100%; height: 100%;">
+      <div class="editor-container" id="editorSplitContainer" style="flex: 1; margin-top: 12px; border: 1px solid var(--border-light);">
+        <div id="editorPane" style="width: 50%; display: flex; flex-direction: column; height: 100%;">
           <textarea id="codeEditor"></textarea>
         </div>
-        <div id="previewPane" style="flex: 1; display: none; background: #fff; width: 100%; height: 100%;">
-          <iframe id="editorPreview" style="width: 100%; height: 100%; border: none;"></iframe>
+        <div class="editor-resizer" id="editorResizer"></div>
+        <div id="previewPane" style="width: 50%; display: flex; background: #fff; height: 100%;">
+          <iframe id="editorPreview" style="width: 100%; height: 100%; border: none; pointer-events: none;"></iframe>
         </div>
       </div>
       <div class="modal-actions" style="margin-top: 16px; justify-content: space-between;">
@@ -1050,6 +1095,17 @@
 
       const rawUrl = `https://raw.githubusercontent.com/alchemist4real/MR-CAPSULES/main/${item.path}`;
 
+      // Update Header
+      document.getElementById('lightboxFilename').textContent = item.name;
+      
+      document.getElementById('lightboxBtnNewTab').onclick = () => {
+        window.open(rawUrl, '_blank');
+      };
+      document.getElementById('lightboxBtnDownload').onclick = () => {
+        const a = document.createElement('a'); a.href = rawUrl; a.download = item.name; a.target = '_blank';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      };
+
       if (isImg) {
         img.src = rawUrl;
         img.classList.remove('hidden');
@@ -1066,30 +1122,70 @@
       }
     }
     
+    let editorLiveUpdateTimeout = null;
+    let isFullscreen = false;
+
     async function openEditor(item) {
       const rawUrl = `https://raw.githubusercontent.com/alchemist4real/MR-CAPSULES/main/${item.path}`;
       const emodal = document.getElementById('editorModal');
+      const emodalContainer = document.getElementById('editorModalContainer');
       document.getElementById('editorTitle').textContent = `Editing: ${item.name}`;
       emodal.classList.remove('hidden');
       
-      const editorPane = document.getElementById('editorPane');
-      const previewPane = document.getElementById('previewPane');
-      const tabCode = document.getElementById('tabCode');
-      const tabPreview = document.getElementById('tabPreview');
       const iframe = document.getElementById('editorPreview');
-      
-      // Reset tabs
-      tabCode.classList.add('active');
-      tabPreview.classList.remove('active');
-      editorPane.style.display = 'flex';
-      previewPane.style.display = 'none';
       
       if (!window.cmEditor) {
         window.cmEditor = CodeMirror.fromTextArea(document.getElementById('codeEditor'), { 
           lineNumbers: true, 
           mode: "htmlmixed", 
           theme: "darcula",
+          autoCloseBrackets: true,
+          autoCloseTags: true,
+          lineWrapping: true,
           extraKeys: {"Ctrl-F": "findPersistent"}
+        });
+
+        // Setup live preview debounce
+        window.cmEditor.on("change", () => {
+          clearTimeout(editorLiveUpdateTimeout);
+          editorLiveUpdateTimeout = setTimeout(() => {
+             if (item.name.endsWith('.html')) {
+                iframe.srcdoc = window.cmEditor.getValue();
+             }
+          }, 800);
+        });
+
+        // Setup resizer
+        const resizer = document.getElementById('editorResizer');
+        const editorPane = document.getElementById('editorPane');
+        const previewPane = document.getElementById('previewPane');
+        const splitContainer = document.getElementById('editorSplitContainer');
+        let isResizing = false;
+
+        resizer.addEventListener('mousedown', (e) => {
+          isResizing = true;
+          resizer.classList.add('dragging');
+          iframe.style.pointerEvents = 'none'; // Prevent iframe from swallowing mouse events
+        });
+
+        document.addEventListener('mousemove', (e) => {
+          if (!isResizing) return;
+          const containerRect = splitContainer.getBoundingClientRect();
+          let newWidth = ((e.clientX - containerRect.left) / containerRect.width) * 100;
+          if (newWidth < 10) newWidth = 10;
+          if (newWidth > 90) newWidth = 90;
+          editorPane.style.width = `${newWidth}%`;
+          previewPane.style.width = `${100 - newWidth}%`;
+        });
+
+        document.addEventListener('mouseup', () => {
+          if (isResizing) {
+            isResizing = false;
+            resizer.classList.remove('dragging');
+            // Re-enable pointer events if it's not being dragged
+            iframe.style.pointerEvents = 'auto';
+            window.cmEditor.refresh();
+          }
         });
       }
       
@@ -1097,27 +1193,26 @@
         const r = await fetch(rawUrl);
         const text = await r.text();
         window.cmEditor.setValue(text);
+        if (item.name.endsWith('.html')) {
+           iframe.srcdoc = text;
+        } else {
+           iframe.srcdoc = `<html><body style="font-family:monospace; padding:20px; color:#666;">Preview not available for this file type.</body></html>`;
+        }
       } catch(e) {
         window.cmEditor.setValue("Error loading file: " + e.message);
       }
       setTimeout(() => window.cmEditor.refresh(), 100);
       
-      // Tab Logic
-      tabCode.onclick = () => {
-        tabCode.classList.add('active');
-        tabPreview.classList.remove('active');
-        editorPane.style.display = 'flex';
-        previewPane.style.display = 'none';
-        setTimeout(() => window.cmEditor.refresh(), 50);
+      document.getElementById('editorFullscreen').onclick = () => {
+         isFullscreen = !isFullscreen;
+         if(isFullscreen) {
+            emodalContainer.classList.add('fullscreen');
+         } else {
+            emodalContainer.classList.remove('fullscreen');
+         }
+         setTimeout(() => window.cmEditor.refresh(), 100);
       };
-      tabPreview.onclick = () => {
-        tabPreview.classList.add('active');
-        tabCode.classList.remove('active');
-        editorPane.style.display = 'none';
-        previewPane.style.display = 'flex';
-        iframe.srcdoc = window.cmEditor.getValue();
-      };
-      
+
       document.getElementById('editorClose').onclick = () => emodal.classList.add('hidden');
       document.getElementById('editorCancel').onclick = () => emodal.classList.add('hidden');
       document.getElementById('editorSave').onclick = async (ev) => {
