@@ -12,13 +12,27 @@ export default async function handler(req, res) {
   const supabaseUrl = 'https://hdhvrlkizorscvehttzd.supabase.co';
   const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhkaHZybGtpem9yc2N2ZWh0dHpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyNjMwNzIsImV4cCI6MjA5MjgzOTA3Mn0.m6L3oEVAfyp2TjYmBCfDRo_30rdsWLEsGVZzRZIy3MU';
 
-  // 1. Verify user via Supabase REST API
-  const userRes = await fetch(`${supabaseUrl}/auth/v1/user`, {
-    headers: {
-      'apikey': supabaseKey,
-      'Authorization': `Bearer ${token}`
-    }
+  const githubToken = process.env.GITHUB_TOKEN;
+  const owner = 'alchemist4real';
+  const repo = 'MR-CAPSULES';
+
+  // 1. Prepare concurrent requests to Supabase and GitHub
+  const userPromise = fetch(`${supabaseUrl}/auth/v1/user`, {
+    headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${token}` }
   });
+
+  const now = Date.now();
+  const useCache = global.cachedAdmins && global.cachedAdminsTime && (now - global.cachedAdminsTime < 5 * 60 * 1000);
+  let adminsPromise = null;
+  
+  if (!useCache) {
+    adminsPromise = fetch(`https://api.github.com/repos/${owner}/${repo}/contents/admins.json`, {
+      headers: { 'Authorization': `Bearer ${githubToken}`, 'Accept': 'application/vnd.github.v3+json' }
+    });
+  }
+
+  // 2. Execute concurrently
+  const [userRes, adminsRes] = await Promise.all([userPromise, adminsPromise]);
 
   if (!userRes.ok) {
     return res.status(401).json({ error: 'Invalid token' });
@@ -28,34 +42,21 @@ export default async function handler(req, res) {
   const email = userData.email;
   const username = userData.user_metadata?.username;
 
-  // 2. Fetch admins.json from GitHub to check permissions (with caching)
-  const githubToken = process.env.GITHUB_TOKEN;
-  const owner = 'alchemist4real';
-  const repo = 'MR-CAPSULES';
-
   let adminsList = [];
   let adminsSha = null;
 
-  // Use global cache if valid
-  const now = Date.now();
-  if (global.cachedAdmins && global.cachedAdminsTime && (now - global.cachedAdminsTime < 5 * 60 * 1000)) {
+  if (useCache) {
     adminsList = global.cachedAdmins;
     adminsSha = global.cachedAdminsSha;
   } else {
-    const adminsRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/admins.json`, {
-      headers: { 'Authorization': `Bearer ${githubToken}`, 'Accept': 'application/vnd.github.v3+json' }
-    });
-
     if (!adminsRes.ok) {
       return res.status(500).json({ error: 'Failed to read admins.json from repository' });
     }
-
     const adminsData = await adminsRes.json();
     adminsSha = adminsData.sha;
     const adminsJsonStr = Buffer.from(adminsData.content, 'base64').toString('utf8');
     try {
       adminsList = JSON.parse(adminsJsonStr);
-      // Update cache
       global.cachedAdmins = adminsList;
       global.cachedAdminsSha = adminsSha;
       global.cachedAdminsTime = now;
