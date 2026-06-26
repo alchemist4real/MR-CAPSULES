@@ -295,8 +295,8 @@
       position: absolute; top: 24px; right: 24px;
       background: transparent; color: #fff; border: none; font-size: 32px; cursor: pointer;
     }
-    #lightboxContent {
-      max-width: 90%; max-height: 80%;
+    #lightboxImage {
+      max-width: 90vw; max-height: 90vh;
       object-fit: contain; border-radius: 0;
     }
     #lightboxText {
@@ -383,6 +383,16 @@
   <!-- CodeMirror -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/darcula.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/dialog/dialog.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/xml/xml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/javascript/javascript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/css/css.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/htmlmixed/htmlmixed.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/search/searchcursor.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/search/search.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/dialog/dialog.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/search/jump-to-line.min.js"></script>
 </head>
 <body>
   <div class="bg"></div>
@@ -491,17 +501,29 @@
 
   <!-- HTML Editor Modal -->
   <div id="editorModal" class="custom-modal-overlay hidden">
-    <div class="custom-modal editor-modal">
-      <div class="modal-title" style="display:flex; justify-content:space-between; align-items:center;">
-        <span id="editorTitle">Editing File</span>
+    <div class="custom-modal editor-modal" style="width: 95vw; height: 95vh; max-width: 100%; display: flex; flex-direction: column; padding: 16px;">
+      <div class="modal-title" style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid var(--border-light); padding-bottom: 12px; margin-bottom: 0;">
+        <span id="editorTitle" style="font-family: var(--font-mono); font-size: 14px;">Editing File</span>
+        <div style="display:flex; gap:8px;">
+          <button id="tabCode" class="btn active" style="font-size: 12px; padding: 6px 12px;">CODE</button>
+          <button id="tabPreview" class="btn" style="font-size: 12px; padding: 6px 12px;">PREVIEW</button>
+        </div>
         <button id="editorClose" style="background:transparent; color:#fff; border:none; font-size:24px; cursor:pointer;">&times;</button>
       </div>
-      <div class="editor-container">
-        <textarea id="codeEditor"></textarea>
+      <div class="editor-container" style="flex: 1; position: relative; display: flex; flex-direction: column; overflow: hidden; margin-top: 12px; border: 1px solid var(--border-light);">
+        <div id="editorPane" style="flex: 1; display: flex; flex-direction: column; width: 100%; height: 100%;">
+          <textarea id="codeEditor"></textarea>
+        </div>
+        <div id="previewPane" style="flex: 1; display: none; background: #fff; width: 100%; height: 100%;">
+          <iframe id="editorPreview" style="width: 100%; height: 100%; border: none;"></iframe>
+        </div>
       </div>
-      <div class="modal-actions">
-        <button id="editorCancel" class="btn">Cancel</button>
-        <button id="editorSave" class="btn primary">Save Changes</button>
+      <div class="modal-actions" style="margin-top: 16px; justify-content: space-between;">
+        <div style="font-size: 11px; color: var(--text-muted); font-family: var(--font-mono);">[Ctrl+F] Search | [Esc] Close</div>
+        <div style="display: flex; gap: 8px;">
+          <button id="editorCancel" class="btn">Cancel</button>
+          <button id="editorSave" class="btn primary">Save Changes</button>
+        </div>
       </div>
     </div>
   </div>
@@ -832,7 +854,7 @@
           };
         } else {
           div.querySelector('.file-name').onclick = () => {
-             showPreview(item.path, isImg);
+             showPreview(item, isImg);
           };
         }
 
@@ -874,25 +896,7 @@
       if (document.getElementById('ctxEdit')) {
         document.getElementById('ctxEdit').onclick = async () => {
           modal.classList.add('hidden');
-          const rawUrl = `https://raw.githubusercontent.com/alchemist4real/MR-CAPSULES/main/${item.path}`;
-          const r = await fetch(rawUrl);
-          const text = await r.text();
-          const emodal = document.getElementById('editorModal');
-          document.getElementById('editorTitle').textContent = `Editing: ${item.name}`;
-          emodal.classList.remove('hidden');
-          if (!window.cmEditor) {
-            window.cmEditor = CodeMirror.fromTextArea(document.getElementById('codeEditor'), { lineNumbers: true, mode: "htmlmixed", theme: "darcula" });
-          }
-          window.cmEditor.setValue(text);
-          setTimeout(() => window.cmEditor.refresh(), 100);
-          document.getElementById('editorCancel').onclick = () => emodal.classList.add('hidden');
-          document.getElementById('editorSave').onclick = async (ev) => {
-            ev.target.textContent = 'Saving...';
-            const newContent = window.cmEditor.getValue();
-            const base64 = btoa(unescape(encodeURIComponent(newContent)));
-            await adminAction('upload', { path: item.path, contentBase64: base64, sha: item.sha });
-            emodal.classList.add('hidden'); ev.target.textContent = 'Save Changes'; loadTree();
-          };
+          openEditor(item);
         };
       }
       if (document.getElementById('ctxDownload')) {
@@ -1025,7 +1029,12 @@
       }
     }
 
-    async function showPreview(path, isImg) {
+    async function showPreview(item, isImg) {
+      if (!isImg && (item.name.endsWith('.html') || item.name.endsWith('.css') || item.name.endsWith('.js'))) {
+        openEditor(item);
+        return;
+      }
+      
       const modal = document.getElementById('lightboxModal');
       const img = document.getElementById('lightboxImage');
       const txt = document.getElementById('lightboxText');
@@ -1033,7 +1042,7 @@
       img.classList.add('hidden');
       txt.classList.add('hidden');
 
-      const rawUrl = `https://raw.githubusercontent.com/alchemist4real/MR-CAPSULES/main/${path}`;
+      const rawUrl = `https://raw.githubusercontent.com/alchemist4real/MR-CAPSULES/main/${item.path}`;
 
       if (isImg) {
         img.src = rawUrl;
@@ -1046,9 +1055,74 @@
           const text = await r.text();
           txt.textContent = text;
         } catch(e) {
-          txt.textContent = "Failed to load content preview. You can open it in GitHub directly: " + `https://github.com/alchemist4real/MR-CAPSULES/blob/main/${path}`;
+          txt.textContent = "Failed to load content preview. You can open it in GitHub directly: " + `https://github.com/alchemist4real/MR-CAPSULES/blob/main/${item.path}`;
         }
       }
+    }
+    
+    async function openEditor(item) {
+      const rawUrl = `https://raw.githubusercontent.com/alchemist4real/MR-CAPSULES/main/${item.path}`;
+      const emodal = document.getElementById('editorModal');
+      document.getElementById('editorTitle').textContent = `Editing: ${item.name}`;
+      emodal.classList.remove('hidden');
+      
+      const editorPane = document.getElementById('editorPane');
+      const previewPane = document.getElementById('previewPane');
+      const tabCode = document.getElementById('tabCode');
+      const tabPreview = document.getElementById('tabPreview');
+      const iframe = document.getElementById('editorPreview');
+      
+      // Reset tabs
+      tabCode.classList.add('active');
+      tabPreview.classList.remove('active');
+      editorPane.style.display = 'flex';
+      previewPane.style.display = 'none';
+      
+      if (!window.cmEditor) {
+        window.cmEditor = CodeMirror.fromTextArea(document.getElementById('codeEditor'), { 
+          lineNumbers: true, 
+          mode: "htmlmixed", 
+          theme: "darcula",
+          extraKeys: {"Ctrl-F": "findPersistent"}
+        });
+      }
+      
+      try {
+        const r = await fetch(rawUrl);
+        const text = await r.text();
+        window.cmEditor.setValue(text);
+      } catch(e) {
+        window.cmEditor.setValue("Error loading file: " + e.message);
+      }
+      setTimeout(() => window.cmEditor.refresh(), 100);
+      
+      // Tab Logic
+      tabCode.onclick = () => {
+        tabCode.classList.add('active');
+        tabPreview.classList.remove('active');
+        editorPane.style.display = 'flex';
+        previewPane.style.display = 'none';
+        setTimeout(() => window.cmEditor.refresh(), 50);
+      };
+      tabPreview.onclick = () => {
+        tabPreview.classList.add('active');
+        tabCode.classList.remove('active');
+        editorPane.style.display = 'none';
+        previewPane.style.display = 'flex';
+        iframe.srcdoc = window.cmEditor.getValue();
+      };
+      
+      document.getElementById('editorClose').onclick = () => emodal.classList.add('hidden');
+      document.getElementById('editorCancel').onclick = () => emodal.classList.add('hidden');
+      document.getElementById('editorSave').onclick = async (ev) => {
+        ev.target.textContent = 'Saving...';
+        const content = window.cmEditor.getValue();
+        const base64 = btoa(unescape(encodeURIComponent(content)));
+        await adminAction('upload', { path: item.path, contentBase64: base64, sha: item.sha });
+        ev.target.textContent = 'Save Changes';
+        emodal.classList.add('hidden');
+        loadTree();
+      };
     }
     
     async function uploadFilesSequential(files) {
