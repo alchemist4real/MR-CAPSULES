@@ -1602,9 +1602,15 @@ try {
             </div>
           `;
         }
+      }).on('broadcast', { event: 'unban_device' }, (payload) => {
+        if(payload.payload && payload.payload.deviceId === getDeviceId()) {
+          window.location.reload();
+        }
       }).subscribe(async (status) => {
         if (status === 'SUBSCRIBED') {
-          await sessionRoom.track({ user: 'auth-user', joined_at: new Date().toISOString() });
+           var trackEmail = '';
+           try { var sess = await supabase.auth.getSession(); trackEmail = sess.data.session.user.email || ''; } catch(e) {}
+           await sessionRoom.track({ user: 'auth-user', email: trackEmail, joined_at: new Date().toISOString() });
         }
       });
 

@@ -69,6 +69,7 @@
       animation: spin 1s linear infinite; margin-bottom: 20px;
     }
     @keyframes spin { 100% { transform: rotate(360deg); } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes authLogoFloat { 0% { transform: translateY(0); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0); } }
 
     /* Bottom Dock */
@@ -555,6 +556,12 @@
             </button>
           </div>
         </div>
+        <div style="padding:8px 24px; display:flex; gap:8px; border-bottom:1px solid var(--border-light); font-family:var(--font-mono);">
+          <button class="btn user-filter active" data-filter="all" style="font-size:11px; padding:4px 12px;">ALL</button>
+          <button class="btn user-filter" data-filter="online" style="font-size:11px; padding:4px 12px;">ONLINE</button>
+          <button class="btn user-filter" data-filter="banned" style="font-size:11px; padding:4px 12px;">BANNED</button>
+          <button class="btn user-filter" data-filter="admin" style="font-size:11px; padding:4px 12px;">ADMINS</button>
+        </div>
         <div class="user-grid" id="userBrowser">
           <!-- User items injected here -->
         </div>
@@ -805,6 +812,48 @@
                   const count = Object.keys(state).length;
                   const el = document.getElementById('dashOnlineCount');
                   if(el) el.textContent = count;
+                  // Mark online user cards
+                  var cards = document.querySelectorAll('#userBrowser .user-card');
+                  cards.forEach(function(c) { c.setAttribute('data-online', 'false'); });
+                  Object.values(state).forEach(function(presences) {
+                    presences.forEach(function(p) {
+                      if(p.user && p.user !== 'admin') {
+                        cards.forEach(function(c) {
+                          if(c.querySelector('.user-email') && c.querySelector('.user-email').textContent === p.email) {
+                            c.setAttribute('data-online', 'true');
+                          }
+                        });
+                      }
+                    });
+                  });
+                }).on('presence', { event: 'join' }, ({ key, newPresences }) => {
+                  var logList = document.getElementById('activityLogList');
+                  if(logList) {
+                    newPresences.forEach(function(p) {
+                      var item = document.createElement('div');
+                      item.style.padding = '12px 24px';
+                      item.style.borderBottom = '1px solid var(--border-light)';
+                      item.style.animation = 'fadeIn 0.3s ease';
+                      var name = (p.email || p.user || 'Unknown');
+                      item.innerHTML = '<div style="font-size:12px; color:var(--text-muted);">' + new Date().toLocaleString() + '</div>' +
+                        '<div style="font-weight:600; color:#4ADE80;">' + name + ' came online</div>';
+                      logList.insertBefore(item, logList.firstChild);
+                    });
+                  }
+                }).on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+                  var logList = document.getElementById('activityLogList');
+                  if(logList) {
+                    leftPresences.forEach(function(p) {
+                      var item = document.createElement('div');
+                      item.style.padding = '12px 24px';
+                      item.style.borderBottom = '1px solid var(--border-light)';
+                      item.style.animation = 'fadeIn 0.3s ease';
+                      var name = (p.email || p.user || 'Unknown');
+                      item.innerHTML = '<div style="font-size:12px; color:var(--text-muted);">' + new Date().toLocaleString() + '</div>' +
+                        '<div style="font-weight:600; color:#FF6B6B;">' + name + ' went offline</div>';
+                      logList.insertBefore(item, logList.firstChild);
+                    });
+                  }
                 }).subscribe(async (status) => {
                   if (status === 'SUBSCRIBED') {
                      await window.sessionRoom.track({ user: 'admin', joined_at: new Date().toISOString() });
@@ -1507,6 +1556,10 @@
           actionsHtml += '<button class="btn-card danger btn-del-user" data-id="' + u.id + '">Delete</button>';
         }
 
+        card.setAttribute('data-banned', isBanned ? 'true' : 'false');
+        card.setAttribute('data-admin', isAdmin ? 'true' : 'false');
+        card.setAttribute('data-online', 'false');
+
         card.innerHTML = '<div class="user-card-header">' +
           '<div><div class="user-email">' + email + '</div>' +
           '<div class="user-meta">@' + username + ' &bull; ' + new Date(u.created_at).toLocaleDateString() + '</div></div>' +
@@ -1581,8 +1634,12 @@
                 const base64 = btoa(unescape(encodeURIComponent(JSON.stringify(configObj, null, 2))));
                 await adminAction('upload', { path: 'config.json', contentBase64: base64, sha: cfgData.sha });
                 
-                if (!currentlyBanned && window.sessionRoom) {
-                   await window.sessionRoom.send({ type: 'broadcast', event: 'ban_device', payload: { deviceId: devId } });
+                if (window.sessionRoom) {
+                   if (!currentlyBanned) {
+                      await window.sessionRoom.send({ type: 'broadcast', event: 'ban_device', payload: { deviceId: devId } });
+                   } else {
+                      await window.sessionRoom.send({ type: 'broadcast', event: 'unban_device', payload: { deviceId: devId } });
+                   }
                 }
                 loadUsers();
              } catch(err) {
@@ -1597,6 +1654,54 @@
     }
 
     document.getElementById('btnRefreshUsers').onclick = loadUsers;
+
+    // User filter tabs
+    var currentFilter = 'all';
+    document.querySelectorAll('.user-filter').forEach(function(btn) {
+      btn.onclick = function() {
+        document.querySelectorAll('.user-filter').forEach(function(b) { b.classList.remove('active'); b.style.background = ''; });
+        btn.classList.add('active');
+        btn.style.background = 'var(--accent)';
+        btn.style.color = '#000';
+        currentFilter = btn.getAttribute('data-filter');
+        var cards = document.querySelectorAll('#userBrowser .user-card');
+        cards.forEach(function(card) {
+          var show = true;
+          if (currentFilter === 'banned') show = card.getAttribute('data-banned') === 'true';
+          else if (currentFilter === 'admin') show = card.getAttribute('data-admin') === 'true';
+          else if (currentFilter === 'online') show = card.getAttribute('data-online') === 'true';
+          card.style.display = show ? '' : 'none';
+        });
+      };
+    });
+
+    // Auto-refresh users every 30 seconds
+    setInterval(function() {
+      loadUsers();
+    }, 30000);
+
+    // Auto-refresh dashboard uptime every 15 seconds
+    setInterval(async function() {
+      try {
+        var res = await fetch('/api/admin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + sessionToken },
+          body: JSON.stringify({ action: 'get_users' })
+        });
+        var data = await res.json();
+        if (data.success && data.globalStats) {
+          function fmtT(sec) {
+            sec = parseInt(sec, 10) || 0;
+            var h = Math.floor(sec / 3600).toString().padStart(2, '0');
+            var m = Math.floor((sec % 3600) / 60).toString().padStart(2, '0');
+            var s = (sec % 60).toString().padStart(2, '0');
+            return h + ':' + m + ':' + s;
+          }
+          var el = document.getElementById('dashTotalUptime');
+          if(el) el.textContent = fmtT(data.globalStats.total_uptime);
+        }
+      } catch(e) {}
+    }, 15000);
 
   </script>
 
