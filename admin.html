@@ -928,7 +928,15 @@
                 }).subscribe(async (status) => {
                    if (status === 'SUBSCRIBED') {
                       var tEmail = document.getElementById('userBadge').textContent || 'Admin';
+                      var tNow = Date.now();
                       await window.sessionRoom.track({ user: 'auth-user', email: tEmail, joined_at: new Date().toISOString() });
+                      
+                      window.addHybridLog({
+                         id: 'online_' + tEmail + '_' + tNow,
+                         type: 'online',
+                         time: tNow,
+                         user: tEmail
+                      });
                       window.renderHybridLogs();
                    }
                 });

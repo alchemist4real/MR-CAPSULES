@@ -1404,9 +1404,11 @@ try {
         }
         syncDeviceId(session);
         authOverlay.classList.add('hidden');
-        startTracking();
       }
     });
+    
+    // Always start tracking, even for anonymous lock-screen visitors
+    startTracking();
 
     supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN') {
@@ -1441,7 +1443,6 @@ try {
         if (!currentUsername) {
           document.getElementById('interactionModeModal').classList.add('active');
         }
-        startTracking();
       } else if (event === 'SIGNED_OUT') {
         authOverlay.classList.remove('hidden');
         if(isTracking) window.location.reload();
