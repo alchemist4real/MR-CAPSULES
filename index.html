@@ -638,6 +638,13 @@ iframe {
 }
 #interactionModeModal.active { display: flex; }
 
+/* Reset Password Modal */
+#resetPasswordModal {
+  position: fixed; inset: 0; background: rgba(10,10,10,0.95); z-index: 99999;
+  display: none; align-items: center; justify-content: center; flex-direction: column;
+}
+#resetPasswordModal.active { display: flex; }
+
 </style>
 </head>
 <body>
@@ -1500,15 +1507,36 @@ try {
         authOverlay.classList.remove('hidden');
         if(isTracking) window.location.reload();
       } else if (event === 'PASSWORD_RECOVERY') {
-        const newPassword = prompt("Please enter your new password:");
-        if (newPassword && newPassword.trim() !== '') {
-          supabase.auth.updateUser({ password: newPassword }).then(({ error }) => {
-            if (error) alert("Error updating password: " + error.message);
-            else alert("Password updated successfully!");
-          });
-        } else {
-          alert("Password update cancelled.");
-        }
+        const modal = document.getElementById('resetPasswordModal');
+        if (modal) modal.classList.add('active');
+        
+        document.getElementById('btnSubmitNewPassword').onclick = async () => {
+          const newPassword = document.getElementById('newPasswordInput').value;
+          const msgEl = document.getElementById('resetPasswordMsg');
+          if (newPassword && newPassword.trim() !== '') {
+            msgEl.style.color = 'var(--text-main)';
+            msgEl.textContent = 'Updating...';
+            const { error } = await supabase.auth.updateUser({ password: newPassword });
+            if (error) {
+              msgEl.style.color = 'var(--error)';
+              msgEl.textContent = "Error: " + error.message;
+            } else {
+              msgEl.style.color = 'var(--accent)';
+              msgEl.textContent = "Password updated successfully!";
+              setTimeout(() => {
+                modal.classList.remove('active');
+                window.location.reload();
+              }, 1500);
+            }
+          } else {
+            msgEl.style.color = 'var(--error)';
+            msgEl.textContent = "Please enter a valid password.";
+          }
+        };
+        
+        document.getElementById('btnCancelNewPassword').onclick = () => {
+          if (modal) modal.classList.remove('active');
+        };
       }
     });
 
@@ -1606,7 +1634,9 @@ try {
         return;
       }
       showAuthMsg("Sending reset link...", false);
-      const { error } = await supabase.auth.resetPasswordForEmail(authEmail.value);
+      const { error } = await supabase.auth.resetPasswordForEmail(authEmail.value, {
+        redirectTo: window.location.origin + window.location.pathname
+      });
       if (error) {
         showAuthMsg(error.message, true);
       } else {
@@ -1813,6 +1843,20 @@ try {
   
   initAdminCheck();
 </script>
+<!-- Reset Password Modal -->
+<div id="resetPasswordModal">
+  <div style="background:var(--bg-modal, #0a0a0a); border:1px solid var(--text-main, #fff); padding:32px; max-width:400px; width:90%; text-align:center;">
+    <div style="font-family:var(--font-sans); font-size:24px; color:var(--text-main, #fff); margin-bottom:16px;">RESET PASSWORD</div>
+    <div style="font-family:var(--font-mono); font-size:12px; color:var(--text-muted, #888); margin-bottom:24px; line-height:1.5;">Please enter your new password below.</div>
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <input type="password" id="newPasswordInput" class="auth-input" placeholder="NEW PASSWORD">
+      <button id="btnSubmitNewPassword" class="auth-btn" style="background:var(--text-main, #fff); color:var(--bg-main, #000);">UPDATE PASSWORD</button>
+      <button id="btnCancelNewPassword" class="auth-btn" style="background:transparent; color:var(--text-main, #fff); border:1px solid var(--text-main, #fff);">CANCEL</button>
+      <div id="resetPasswordMsg" class="auth-msg" style="margin-top:8px;"></div>
+    </div>
+  </div>
+</div>
+
 <!-- Interaction Mode Intercept -->
 <div id="interactionModeModal">
   <div style="background:var(--bg-modal); border:1px solid var(--text-main); padding:32px; max-width:400px; width:90%; text-align:center;">
