@@ -1156,18 +1156,21 @@
         const data = await res.json();
         if (data.success) {
           statusText.textContent = `Success: ${action}`;
-          if (action !== 'add_admin') {
-            setTimeout(loadTree, 1000);
-          } else {
+          if (action === 'add_admin') {
             const msg = document.getElementById('adminMsg');
             msg.textContent = 'Admin added!';
             msg.style.color = '#4CAF50';
+          } else if (action !== 'get_config' && action !== 'ban_user' && action !== 'delete_user' && action !== 'remove_admin' && action !== 'get_users') {
+            setTimeout(loadTree, 1000);
           }
+          return data;
         } else {
           statusText.textContent = `Error: ${data.error}`;
+          return null;
         }
       } catch(e) {
         statusText.textContent = `Error: ${e.message}`;
+        return null;
       }
     }
 
@@ -1629,6 +1632,7 @@
              e.target.textContent = '...';
              try {
                 const cfgData = await adminAction('get_config');
+                if (!cfgData) throw new Error("Failed to get config from backend");
                 const configObj = cfgData.config || {};
                 let arr = configObj.bannedDevices || [];
                 
