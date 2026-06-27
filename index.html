@@ -1626,7 +1626,10 @@ try {
         }
       });
 
-      // Uptime Tick
+      // Uptime Tick - uses backend API to bypass RLS
+      var uptimeToken = '';
+      try { var s = await supabase.auth.getSession(); uptimeToken = s.data.session.access_token; } catch(e) {}
+      
       setInterval(async () => {
         sessionUptime += 10;
         localUptime = baseUptime + sessionUptime;
@@ -1636,23 +1639,18 @@ try {
           supabase.auth.updateUser({ data: { uptime: localUptime } }).catch(e => console.log('Uptime save error', e));
         }
         
-        const rpcRes = await supabase.rpc('increment_uptime', { seconds: 10 });
-        if (rpcRes.error) {
-          console.log('Supabase sync error', rpcRes.error);
-          // Fallback if RPC fails
-          const { data, error: selError } = await supabase.from('global_stats').select('total_uptime').eq('id', 1).single();
-          if (data) {
-             await supabase.from('global_stats').update({ total_uptime: (data.total_uptime || 0) + 10 }).eq('id', 1);
-          } else if (selError && selError.code === 'PGRST116') {
-             await supabase.from('global_stats').insert([{ id: 1, total_uptime: 10 }]);
+        try {
+          var res = await fetch('/api/uptime', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + uptimeToken },
+            body: JSON.stringify({ action: 'increment', seconds: 10 })
+          });
+          var data = await res.json();
+          if (data.success) {
+            valGlobal.textContent = fmtTime(data.total_uptime);
           }
-        }
-        
-        const { data, error } = await supabase.from('global_stats').select('total_uptime').eq('id', 1).single();
-        if (data) {
-          valGlobal.textContent = fmtTime(data.total_uptime);
-        } else if (error && error.code === 'PGRST116') {
-          valGlobal.textContent = '00:00:00'; // Row doesn't exist yet
+        } catch(e) {
+          console.log('Global uptime sync error', e);
         }
       }, 10000);
 
@@ -1662,13 +1660,19 @@ try {
         }
       });
 
-      supabase.from('global_stats').select('total_uptime').eq('id', 1).single().then(({data, error}) => {
-        if (data) valGlobal.textContent = fmtTime(data.total_uptime);
-        else if (error) valGlobal.textContent = '00:00:00';
-      }).catch(e => {
-        console.log('Supabase init error', e);
+      // Initial global uptime fetch
+      try {
+        var initRes = await fetch('/api/uptime', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + uptimeToken },
+          body: JSON.stringify({ action: 'get' })
+        });
+        var initData = await initRes.json();
+        if (initData.success) valGlobal.textContent = fmtTime(initData.total_uptime);
+        else valGlobal.textContent = '00:00:00';
+      } catch(e) {
         valGlobal.textContent = '00:00:00';
-      });
+      }
     }
   }
 } catch (e) {
