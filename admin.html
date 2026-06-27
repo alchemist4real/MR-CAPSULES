@@ -883,7 +883,7 @@
                   cards.forEach(function(c) { c.setAttribute('data-online', 'false'); });
                   Object.values(state).forEach(function(presences) {
                     presences.forEach(function(p) {
-                      if(p.user && p.user !== 'admin') {
+                      if(p.user) {
                         cards.forEach(function(c) {
                           if(c.querySelector('.user-email') && c.querySelector('.user-email').textContent === p.email) {
                             c.setAttribute('data-online', 'true');
@@ -904,7 +904,6 @@
                 }).on('presence', { event: 'join' }, ({ key, newPresences }) => {
                   console.log('Presence join:', newPresences);
                   newPresences.forEach(function(p) {
-                    if (p.user === 'admin') return;
                     var name = (p.email || p.user || 'Unknown');
                     window.addHybridLog({
                        id: 'online_' + name + '_' + Date.now(),
@@ -917,7 +916,6 @@
                 }).on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
                   console.log('Presence leave:', leftPresences);
                   leftPresences.forEach(function(p) {
-                    if (p.user === 'admin') return;
                     var name = (p.email || p.user || 'Unknown');
                     window.addHybridLog({
                        id: 'offline_' + name + '_' + Date.now(),
@@ -929,7 +927,8 @@
                   window.renderHybridLogs();
                 }).subscribe(async (status) => {
                    if (status === 'SUBSCRIBED') {
-                      await window.sessionRoom.track({ user: 'admin', joined_at: new Date().toISOString() });
+                      var tEmail = document.getElementById('userBadge').textContent || 'Admin';
+                      await window.sessionRoom.track({ user: 'auth-user', email: tEmail, joined_at: new Date().toISOString() });
                       window.renderHybridLogs();
                    }
                 });
