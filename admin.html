@@ -889,10 +889,20 @@
                             c.setAttribute('data-online', 'true');
                           }
                         });
+                        
+                        var name = (p.email || p.user || 'Unknown');
+                        window.addHybridLog({
+                           id: 'sync_' + name + '_' + (p.joined_at || Date.now()),
+                           type: 'online',
+                           time: p.joined_at ? new Date(p.joined_at).getTime() : Date.now(),
+                           user: name
+                        });
                       }
                     });
                   });
+                  window.renderHybridLogs();
                 }).on('presence', { event: 'join' }, ({ key, newPresences }) => {
+                  console.log('Presence join:', newPresences);
                   newPresences.forEach(function(p) {
                     if (p.user === 'admin') return;
                     var name = (p.email || p.user || 'Unknown');
@@ -905,6 +915,7 @@
                   });
                   window.renderHybridLogs();
                 }).on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+                  console.log('Presence leave:', leftPresences);
                   leftPresences.forEach(function(p) {
                     if (p.user === 'admin') return;
                     var name = (p.email || p.user || 'Unknown');
