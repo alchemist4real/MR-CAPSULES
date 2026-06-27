@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Am I Clean? — PHBS · Blok 2.5 · FK Unsoed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f0faf5;--bg2:#e0f5ea;--bg3:#c5ebd4;--bg4:#a8dfc0;
+  --border:rgba(10,120,60,.10);--border2:rgba(10,120,60,.22);
+  --text:#041a0e;--text2:#0d5c2e;--text3:#3a9a62;
+  --teal:#0a8a6a;--tealbg:rgba(10,138,106,.09);--tealb:rgba(10,138,106,.28);
+  --green:#0f7a35;--greenbg:rgba(15,122,53,.09);--greenb:rgba(15,122,53,.28);
+  --gold:#7a5e00;--goldbg:rgba(122,94,0,.09);--goldb:rgba(122,94,0,.28);
+  --red:#b03030;--redbg:rgba(176,48,48,.08);--redb:rgba(176,48,48,.28);
+  --blue:#1a50bb;--bluebg:rgba(26,80,187,.09);--blueb:rgba(26,80,187,.28);
+  --purp:#6a20aa;--purpbg:rgba(106,32,170,.08);--purpb:rgba(106,32,170,.25);
+  --orange:#b85000;--orangebg:rgba(184,80,0,.09);--orangeb:rgba(184,80,0,.28);
+  --accent:#0a8a6a;--accentbg:rgba(10,138,106,.09);--accentb:rgba(10,138,106,.28);
+  --r:10px;--rl:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.6;min-height:100vh}
+.app{max-width:900px;margin:0 auto;padding:0 16px 60px}
+header{padding:40px 0 28px;text-align:center}
+.eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--text3);text-transform:uppercase;margin-bottom:10px}
+h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(30px,6vw,54px);letter-spacing:-.03em;line-height:1;margin-bottom:10px}
+h1 span{color:var(--accent)}
+.sub{font-size:13px;color:var(--text2);max-width:540px;margin:0 auto}
+.main-tabs{display:flex;gap:3px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:24px}
+.main-tab{flex:1;padding:9px 6px;border-radius:9px;border:none;background:transparent;color:var(--text3);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .18s}
+.main-tab:hover{color:var(--text)}
+.main-tab.active{background:var(--text);color:#fff;font-weight:600}
+.main-panel{display:none}
+.main-panel.active{display:block;animation:fi .2s ease}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.sub-tabs{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:4px;margin-bottom:20px}
+.sub-tab{padding:8px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text3);font-family:'DM Mono',monospace;font-size:10.5px;cursor:pointer;transition:all .18s;text-align:center;line-height:1.4}
+.sub-tab:hover{background:var(--bg3);color:var(--text2);border-color:var(--border2)}
+.sub-tab.active{background:var(--text);color:#fff;border-color:var(--text);font-weight:600}
+.sub-panel{display:none}
+.sub-panel.active{display:block;animation:fi .18s ease}
+.sec-h{font-family:'Syne',sans-serif;font-weight:700;font-size:14.5px;color:var(--text);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.note{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:0 var(--r) var(--r) 0;padding:10px 14px;font-size:12.5px;color:var(--text2);line-height:1.65;margin-bottom:10px}
+.note strong{color:var(--text)}
+.note.blue{border-left-color:var(--blue)}
+.note.green{border-left-color:var(--green)}
+.note.red{border-left-color:var(--red)}
+.note.accent{border-left-color:var(--accent)}
+.note.purp{border-left-color:var(--purp)}
+.note.teal{border-left-color:var(--teal)}
+.note.orange{border-left-color:var(--orange)}
+.dtable-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:14px}
+.dtable-wrap table{width:100%;border-collapse:collapse;font-size:12px}
+.dtable-wrap thead tr{background:var(--bg3)}
+.dtable-wrap th{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.05em;color:var(--text3);font-weight:600;padding:8px 12px;text-align:left;border-bottom:1px solid var(--border)}
+.dtable-wrap td{padding:7px 12px;border-bottom:1px solid var(--border);font-family:'DM Mono',monospace;font-size:11px;color:var(--text2)}
+.dtable-wrap td:first-child{color:var(--text);font-weight:600}
+.dtable-wrap tr:last-child td{border-bottom:none}
+.dtable-wrap tr:nth-child(even){background:rgba(10,120,60,.03)}
+.ind-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:8px}
+.ind-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;position:relative;overflow:hidden}
+.ind-card .stripe{position:absolute;top:0;left:0;width:3px;height:100%}
+.ind-card .ind-name{font-family:'Syne',sans-serif;font-size:12.5px;font-weight:700;margin-bottom:6px}
+.ind-table{width:100%;border-collapse:collapse}
+.ind-table td{font-family:'DM Mono',monospace;font-size:10.5px;padding:3px 0;border-bottom:1px solid var(--border)}
+.ind-table tr:last-child td{border-bottom:none}
+.ind-table td:first-child{color:var(--text3);width:26px}
+.ind-table td:last-child{font-weight:500;color:var(--text)}
+.num-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-bottom:14px}
+.num-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;display:flex;gap:10px;align-items:flex-start}
+.num-badge{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--accent);min-width:28px;line-height:1.1}
+.num-title{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:var(--text);line-height:1.4}
+.num-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-top:2px;line-height:1.4}
+.chain{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.chain-item{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:11px 16px;display:flex;align-items:flex-start;gap:10px}
+.chain-arrow{text-align:center;color:var(--text3);font-size:16px;line-height:1;padding-left:20px}
+.ci-num{font-family:'DM Mono',monospace;font-size:11px;min-width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;background:var(--bg3);border:1px solid var(--border2);color:var(--text3);flex-shrink:0;margin-top:2px}
+.ci-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--text)}
+.ci-desc{font-size:11.5px;color:var(--text2);margin-top:2px}
+/* QUIZ */
+.qconfig{text-align:center;padding:28px 0}
+.qconfig-title{font-family:'Syne',sans-serif;font-weight:700;font-size:18px;margin-bottom:6px}
+.qconfig-sub{font-size:13px;color:var(--text2);margin-bottom:22px}
+.cfg-grid{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:26px}
+.cfg-btn{padding:8px 16px;border-radius:20px;border:2px solid var(--border2);background:var(--bg2);color:var(--text3);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;transition:all .18s}
+.cfg-btn.sel{background:var(--text);color:#fff;border-color:var(--text);font-weight:600}
+.start-btn{padding:12px 34px;border-radius:var(--r);border:none;background:var(--text);color:var(--bg);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .18s}
+.start-btn:hover{background:var(--accent)}
+.qheader{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.qnum-display{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);white-space:nowrap}
+.qnum-display strong{color:var(--text);font-size:15px}
+.qscore-display{margin-left:auto;font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);white-space:nowrap}
+.qscore-display strong{color:var(--accent);font-size:15px}
+.qtype-pill{display:inline-block;padding:3px 10px;border-radius:10px;font-family:'DM Mono',monospace;font-size:10px;font-weight:600}
+.qcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:20px 22px;margin-bottom:12px}
+.qscen{font-size:13px;color:var(--text2);margin-bottom:10px;line-height:1.65;background:var(--bg3);border-radius:8px;padding:10px 14px;border-left:3px solid var(--accent)}
+.qtext{font-size:14px;font-weight:600;color:var(--text);line-height:1.55}
+.opts{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.opt{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-radius:var(--r);border:1.5px solid var(--border2);background:var(--bg);color:var(--text);text-align:left;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.5;transition:all .15s;width:100%}
+.opt:hover:not(:disabled){background:var(--bg3);border-color:rgba(10,120,60,.35)}
+.opt:disabled{cursor:default}
+.opt-key{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;min-width:22px;height:22px;border-radius:6px;background:var(--bg3);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;color:var(--text3);transition:all .15s}
+.opt.correct{background:var(--tealbg);border-color:var(--tealb)}
+.opt.correct .opt-key{background:var(--teal);color:#fff;border-color:var(--teal)}
+.opt.wrong{background:var(--redbg);border-color:var(--redb)}
+.opt.wrong .opt-key{background:var(--red);color:#fff;border-color:var(--red)}
+.opt.reveal{background:var(--tealbg);border-color:var(--tealb);opacity:.75}
+.opt.reveal .opt-key{background:var(--teal);color:#fff;border-color:var(--teal)}
+.expbox{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:12px;font-size:12.5px;color:var(--text2);line-height:1.72;display:none}
+.expbox.show{display:block;animation:fi .2s ease}
+.expbox strong{color:var(--text)}
+.actrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.next-btn{padding:10px 24px;border-radius:var(--r);border:none;background:var(--text);color:var(--bg);font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .18s;display:none}
+.next-btn:hover{background:var(--accent)}
+.end-btn{padding:10px 18px;border-radius:var(--r);border:1px solid var(--redb);background:transparent;color:var(--red);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;transition:all .18s;margin-left:auto}
+.end-btn:hover{background:var(--redbg)}
+.results-wrap{text-align:center;padding:28px 12px}
+.res-big{font-family:'Syne',sans-serif;font-size:64px;font-weight:800;color:var(--text);line-height:1;margin-bottom:4px}
+.res-sub{font-family:'DM Mono',monospace;font-size:13px;color:var(--text3);margin-bottom:18px}
+.res-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:20px;text-align:left}
+.res-stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:11px 14px}
+.res-stat .rv{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--text);margin-bottom:2px}
+.res-stat .rl{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)}
+.retry-btn{padding:12px 32px;border-radius:var(--r);border:none;background:var(--text);color:var(--bg);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .18s;margin-bottom:20px}
+.retry-btn:hover{background:var(--accent)}
+footer{text-align:center;padding-top:36px;font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="eyebrow">PHBS · Blok 2.5 · FK Unsoed · Yudhi Wibowo</div>
+  <h1>Am I <span>Clean?</span></h1>
+  <p class="sub">Quiz interaktif Perilaku Hidup Bersih dan Sehat — definisi, 10 indikator rumah tangga, tatanan PHBS, CTPS, sanitasi, aktivitas fisik, gizi, bahaya merokok, dan strategi promosi kesehatan.</p>
+</header>
+
+<div class="main-tabs">
+  <button class="main-tab active" onclick="switchMain('materi',this)">📋 Materi</button>
+  <button class="main-tab" onclick="switchMain('quiz',this)">🎯 Quiz</button>
+</div>
+
+<!-- MATERI -->
+<div class="main-panel active" id="mp-materi">
+  <div class="sub-tabs">
+    <button class="sub-tab active" onclick="switchSub('s-def',this)">🌿 Definisi &<br>Tujuan PHBS</button>
+    <button class="sub-tab" onclick="switchSub('s-tatanan',this)">🏠 Tatanan<br>PHBS</button>
+    <button class="sub-tab" onclick="switchSub('s-10ind',this)">✅ 10 Indikator<br>Rumah Tangga</button>
+    <button class="sub-tab" onclick="switchSub('s-ctps',this)">🤲 CTPS &<br>Air Bersih</button>
+    <button class="sub-tab" onclick="switchSub('s-aktif',this)">🏃 Aktivitas Fisik<br>& Gizi</button>
+    <button class="sub-tab" onclick="switchSub('s-rokok',this)">🚭 Bahaya<br>Merokok</button>
+    <button class="sub-tab" onclick="switchSub('s-tantangan',this)">⚡ Tantangan &<br>Strategi Promosi</button>
+    <button class="sub-tab" onclick="switchSub('s-dokter',this)">👨‍⚕️ Peran<br>Dokter</button>
+  </div>
+
+  <!-- DEFINISI -->
+  <div class="sub-panel active" id="s-def">
+    <div class="sec-h">Definisi & Tujuan PHBS</div>
+    <div class="note accent">📌 <strong>PHBS</strong> = sekumpulan perilaku yang dipraktikkan atas dasar <strong>kesadaran</strong> sehingga individu, keluarga, kelompok, atau masyarakat mampu <strong>menolong dirinya sendiri</strong> di bidang kesehatan dan berperan aktif dalam mewujudkan kesehatan masyarakat. <em>(Kemenkes RI)</em></div>
+    <div class="note teal">🔑 Kata kunci PHBS: <strong>kesadaran · menolong dirinya sendiri · berperan aktif · kesehatan masyarakat</strong>.</div>
+    <div class="ind-grid">
+      <div class="ind-card">
+        <div class="stripe" style="background:var(--teal)"></div>
+        <div class="ind-name" style="color:var(--teal)">Tujuan Umum PHBS</div>
+        <table class="ind-table">
+          <tr><td>→</td><td>Meningkatkan kualitas hidup masyarakat melalui perilaku sehat</td></tr>
+        </table>
+      </div>
+      <div class="ind-card">
+        <div class="stripe" style="background:var(--green)"></div>
+        <div class="ind-name" style="color:var(--green)">5 Tujuan Khusus PHBS</div>
+        <table class="ind-table">
+          <tr><td>1</td><td>Mencegah penyakit</td></tr>
+          <tr><td>2</td><td>Meningkatkan produktivitas</td></tr>
+          <tr><td>3</td><td>Menurunkan biaya kesehatan</td></tr>
+          <tr><td>4</td><td>Meningkatkan kualitas lingkungan</td></tr>
+          <tr><td>5</td><td>Mendukung pembangunan kesehatan nasional</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="sec-h" style="margin-top:14px">Manfaat PHBS</div>
+    <div class="num-grid">
+      <div class="num-card"><div class="num-badge">🛡</div><div><div class="num-title">Mencegah penyakit</div></div></div>
+      <div class="num-card"><div class="num-badge">💚</div><div><div class="num-title">Meningkatkan kualitas hidup</div></div></div>
+      <div class="num-card"><div class="num-badge">⚡</div><div><div class="num-title">Meningkatkan produktivitas</div></div></div>
+      <div class="num-card"><div class="num-badge">🌱</div><div><div class="num-title">Mewujudkan lingkungan sehat</div></div></div>
+      <div class="num-card"><div class="num-badge">🤝</div><div><div class="num-title">Berperan aktif dalam pembangunan kesehatan</div></div></div>
+    </div>
+    <div class="note blue">📊 <strong>Mengapa PHBS penting?</strong> Sebagian besar faktor risiko penyakit berkaitan dengan perilaku. Perubahan perilaku = intervensi kesehatan yang efektif dan berbiaya rendah.</div>
+    <div class="sec-h" style="margin-top:14px">7 Faktor yang Memengaruhi Perilaku Kesehatan</div>
+    <div class="dtable-wrap"><table>
+      <thead><tr><th>Faktor</th><th>Keterangan</th></tr></thead>
+      <tbody>
+        <tr><td>Pengetahuan</td><td>Tingkat literasi dan pemahaman tentang kesehatan</td></tr>
+        <tr><td>Sikap</td><td>Evaluasi positif/negatif terhadap perilaku sehat</td></tr>
+        <tr><td>Kepercayaan</td><td>Keyakinan individu terhadap efektivitas perilaku sehat</td></tr>
+        <tr><td>Norma sosial</td><td>Tekanan dan harapan dari lingkungan sosial</td></tr>
+        <tr><td>Dukungan keluarga</td><td>Peran keluarga sebagai motivator dan pengawas</td></tr>
+        <tr><td>Lingkungan fisik</td><td>Ketersediaan sarana/prasarana (air bersih, sanitasi)</td></tr>
+        <tr><td>Kebijakan kesehatan</td><td>Regulasi dan program pemerintah yang mendukung PHBS</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <!-- TATANAN PHBS -->
+  <div class="sub-panel" id="s-tatanan">
+    <div class="sec-h">Tatanan PHBS</div>
+    <div class="note accent">📌 PHBS diterapkan pada <strong>5 tatanan</strong> utama, masing-masing dengan indikator spesifik.</div>
+    <div class="dtable-wrap"><table>
+      <thead><tr><th>Tatanan</th><th>Indikator / Komponen Utama</th></tr></thead>
+      <tbody>
+        <tr><td>🏠 Rumah Tangga</td><td>10 indikator PHBS rumah tangga (persalinan, ASI, balita, air bersih, CTPS, jamban, jentik, buah & sayur, aktivitas fisik, tidak merokok)</td></tr>
+        <tr><td>🏫 Sekolah</td><td>Cuci tangan pakai sabun · Jajan sehat · Jamban sehat · Aktivitas fisik · Tidak merokok · Pengendalian jentik · Buang sampah pada tempatnya · Pemantauan status gizi</td></tr>
+        <tr><td>🏢 Tempat Kerja</td><td>Lingkungan kerja bersih · Ketersediaan sanitasi · Aktivitas fisik pekerja · Kawasan tanpa rokok · Pemeriksaan kesehatan berkala</td></tr>
+        <tr><td>🏥 Fasilitas Kesehatan</td><td>Kebersihan lingkungan · Cuci tangan · Pengelolaan limbah medis</td></tr>
+        <tr><td>🌳 Tempat Umum</td><td>Buang sampah pada tempatnya · Jaga kebersihan lingkungan</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note green">🔑 Mnemonic tatanan PHBS: <strong>R-S-K-F-T</strong> = Rumah Tangga · Sekolah · Tempat Kerja · Fasilitas Kesehatan · Tempat Umum</div>
+    <div class="note blue">📌 Tatanan <strong>Tempat Kerja</strong> menekankan: lingkungan bersih, bebas asap rokok, aktivitas fisik, dan pemeriksaan kesehatan berkala.</div>
+  </div>
+
+  <!-- 10 INDIKATOR -->
+  <div class="sub-panel" id="s-10ind">
+    <div class="sec-h">10 Indikator PHBS Rumah Tangga</div>
+    <div class="note accent">📌 Menerapkan 10 indikator PHBS rumah tangga = mewujudkan <strong>keluarga sehat dan masyarakat kuat</strong>. Setiap indikator memiliki detail implementasi spesifik.</div>
+    <div class="num-grid">
+      <div class="num-card"><div class="num-badge">1</div><div><div class="num-title">Persalinan ditolong tenaga kesehatan</div><div class="num-sub">Persalinan aman di fasilitas kesehatan</div></div></div>
+      <div class="num-card"><div class="num-badge">2</div><div><div class="num-title">ASI eksklusif</div><div class="num-sub">Bayi usia 0–6 bulan hanya ASI</div></div></div>
+      <div class="num-card"><div class="num-badge">3</div><div><div class="num-title">Menimbang balita secara berkala</div><div class="num-sub">Pantau pertumbuhan BB rutin</div></div></div>
+      <div class="num-card"><div class="num-badge">4</div><div><div class="num-title">Menggunakan air bersih</div><div class="num-sub">Untuk keperluan sehari-hari</div></div></div>
+      <div class="num-card"><div class="num-badge">5</div><div><div class="num-title">Cuci tangan pakai sabun</div><div class="num-sub">Dengan air mengalir pada waktu penting</div></div></div>
+      <div class="num-card"><div class="num-badge">6</div><div><div class="num-title">Menggunakan jamban sehat</div><div class="num-sub">Cegah pencemaran lingkungan & penyakit</div></div></div>
+      <div class="num-card"><div class="num-badge">7</div><div><div class="num-title">Pemberantasan jentik nyamuk</div><div class="num-sub">Lakukan 3M Plus secara rutin</div></div></div>
+      <div class="num-card"><div class="num-badge">8</div><div><div class="num-title">Konsumsi buah dan sayur</div><div class="num-sub">Setiap hari untuk tubuh sehat & bugar</div></div></div>
+      <div class="num-card"><div class="num-badge">9</div><div><div class="num-title">Aktivitas fisik teratur</div><div class="num-sub">Minimal 30 menit setiap hari</div></div></div>
+      <div class="num-card"><div class="num-badge">10</div><div><div class="num-title">Tidak merokok di dalam rumah</div><div class="num-sub">Rumah bebas asap rokok</div></div></div>
+    </div>
+    <div class="note teal">🔑 Indikator 1-3 = terkait <strong>ibu & anak</strong>. Indikator 4-7 = terkait <strong>sanitasi & lingkungan</strong>. Indikator 8-10 = terkait <strong>gaya hidup sehat</strong>.</div>
+    <div class="note red">⚠️ ASI eksklusif = <strong>0–6 bulan</strong> HANYA ASI, tanpa makanan/minuman tambahan apapun (kecuali obat/vitamin atas indikasi medis).</div>
+  </div>
+
+  <!-- CTPS & AIR BERSIH -->
+  <div class="sub-panel" id="s-ctps">
+    <div class="sec-h">Cuci Tangan Pakai Sabun (CTPS) & Air Bersih & Sanitasi</div>
+    <div class="ind-grid">
+      <div class="ind-card">
+        <div class="stripe" style="background:var(--teal)"></div>
+        <div class="ind-name" style="color:var(--teal)">Manfaat CTPS</div>
+        <table class="ind-table">
+          <tr><td>✔</td><td>Menurunkan angka diare</td></tr>
+          <tr><td>✔</td><td>Menurunkan ISPA (Infeksi Saluran Pernapasan Atas)</td></tr>
+          <tr><td>✔</td><td>Mengurangi transmisi penyakit infeksi</td></tr>
+        </table>
+      </div>
+      <div class="ind-card">
+        <div class="stripe" style="background:var(--blue)"></div>
+        <div class="ind-name" style="color:var(--blue)">5 Waktu Penting CTPS</div>
+        <table class="ind-table">
+          <tr><td>1</td><td>Sebelum makan</td></tr>
+          <tr><td>2</td><td>Sebelum menyiapkan makanan</td></tr>
+          <tr><td>3</td><td>Setelah BAB (Buang Air Besar)</td></tr>
+          <tr><td>4</td><td>Setelah membersihkan/mengganti popok anak</td></tr>
+          <tr><td>5</td><td>Setelah kontak dengan benda kotor</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="sec-h" style="margin-top:14px">Kriteria Air Bersih & Sanitasi Sehat</div>
+    <div class="ind-grid">
+      <div class="ind-card">
+        <div class="stripe" style="background:var(--green)"></div>
+        <div class="ind-name" style="color:var(--green)">4 Kriteria Air Bersih</div>
+        <table class="ind-table">
+          <tr><td>1</td><td>Tidak berwarna</td></tr>
+          <tr><td>2</td><td>Tidak berbau</td></tr>
+          <tr><td>3</td><td>Tidak berasa</td></tr>
+          <tr><td>4</td><td>Bebas kontaminan</td></tr>
+        </table>
+      </div>
+      <div class="ind-card">
+        <div class="stripe" style="background:var(--orange)"></div>
+        <div class="ind-name" style="color:var(--orange)">Sanitasi Sehat</div>
+        <table class="ind-table">
+          <tr><td>•</td><td>Jamban sehat</td></tr>
+          <tr><td>•</td><td>Pengelolaan limbah</td></tr>
+          <tr><td>•</td><td>Pengelolaan sampah rumah tangga</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="note teal">🔑 Mnemonic 5 waktu CTPS: <strong>Se-Se-BAB-Ber-Ko</strong> = Sebelum makan · Sebelum menyiapkan makanan · BAB · Bersihkan anak · Kontak benda kotor</div>
+  </div>
+
+  <!-- AKTIVITAS FISIK & GIZI -->
+  <div class="sub-panel" id="s-aktif">
+    <div class="sec-h">Aktivitas Fisik & Konsumsi Gizi Seimbang</div>
+    <div class="ind-grid">
+      <div class="ind-card">
+        <div class="stripe" style="background:var(--green)"></div>
+        <div class="ind-name" style="color:var(--green)">Rekomendasi Aktivitas Fisik (WHO)</div>
+        <table class="ind-table">
+          <tr><td>Dewasa</td><td>≥150 menit/minggu aktivitas intensitas sedang</td></tr>
+          <tr><td>Anak & Remaja</td><td>≥60 menit per hari</td></tr>
+          <tr><td>PHBS RT</td><td>Minimal 30 menit setiap hari (indikator ke-9)</td></tr>
+        </table>
+      </div>
+      <div class="ind-card">
+        <div class="stripe" style="background:var(--red)"></div>
+        <div class="ind-name" style="color:var(--red)">3 Manfaat Aktivitas Fisik</div>
+        <table class="ind-table">
+          <tr><td>1</td><td>Menurunkan obesitas</td></tr>
+          <tr><td>2</td><td>Menurunkan hipertensi</td></tr>
+          <tr><td>3</td><td>Menurunkan risiko Diabetes Mellitus</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="sec-h" style="margin-top:14px">Konsumsi Gizi Seimbang</div>
+    <div class="dtable-wrap"><table>
+      <thead><tr><th>Pesan Utama</th><th>Detail</th></tr></thead>
+      <tbody>
+        <tr><td>Perbanyak buah & sayur</td><td>Konsumsi setiap hari untuk tubuh sehat dan bugar (Indikator PHBS ke-8)</td></tr>
+        <tr><td>Batasi GGL</td><td>Batasi Gula, Garam, Lemak (kebijakan Kemenkes untuk cegah PTM)</td></tr>
+        <tr><td>Minum air putih cukup</td><td>Hidrasi adekuat setiap hari</td></tr>
+        <tr><td>Pertahankan BB ideal</td><td>Pantau IMT dan lingkar pinggang secara berkala</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note blue">📌 Kebijakan Kemenkes terbaru semakin menekankan pengurangan konsumsi <strong>Gula · Garam · Lemak (GGL)</strong> untuk mencegah penyakit tidak menular.</div>
+    <div class="note teal">🔑 Perbedaan rekomendasi: PHBS RT = min. 30 menit/hari. WHO Dewasa = ≥150 menit/minggu (≈21 menit/hari). WHO Anak = ≥60 menit/hari.</div>
+  </div>
+
+  <!-- BAHAYA MEROKOK -->
+  <div class="sub-panel" id="s-rokok">
+    <div class="sec-h">Bahaya Merokok dalam Rumah</div>
+    <div class="note red">⚠️ Indikator ke-10 PHBS Rumah Tangga: <strong>Tidak merokok di dalam rumah</strong> = ciptakan rumah bebas asap rokok untuk melindungi kesehatan keluarga.</div>
+    <div class="ind-grid">
+      <div class="ind-card">
+        <div class="stripe" style="background:var(--red)"></div>
+        <div class="ind-name" style="color:var(--red)">4 Dampak Merokok dalam Rumah</div>
+        <table class="ind-table">
+          <tr><td>1</td><td>ISPA pada anak</td></tr>
+          <tr><td>2</td><td>Asma</td></tr>
+          <tr><td>3</td><td>Penyakit jantung</td></tr>
+          <tr><td>4</td><td>Kanker paru</td></tr>
+        </table>
+      </div>
+      <div class="ind-card">
+        <div class="stripe" style="background:var(--orange)"></div>
+        <div class="ind-name" style="color:var(--orange)">Kelompok Paling Rentan (Perokok Pasif)</div>
+        <table class="ind-table">
+          <tr><td>1</td><td>Anak-anak</td></tr>
+          <tr><td>2</td><td>Ibu hamil</td></tr>
+        </table>
+        <div style="margin-top:8px;font-size:10.5px;color:var(--text3);font-family:'DM Mono',monospace">Paparan asap rokok orang lain (AROL/second-hand smoke) berbahaya tanpa merokok langsung</div>
+      </div>
+    </div>
+    <div class="note teal">📌 Strategi level kebijakan: <strong>Kawasan Tanpa Rokok (KTR)</strong> — diterapkan di tempat kerja, fasilitas kesehatan, sekolah, dan tempat umum.</div>
+  </div>
+
+  <!-- TANTANGAN & STRATEGI -->
+  <div class="sub-panel" id="s-tantangan">
+    <div class="sec-h">Tantangan Implementasi PHBS & Strategi Promosi</div>
+    <div class="dtable-wrap"><table>
+      <thead><tr><th>Level Tantangan</th><th>Contoh Hambatan</th></tr></thead>
+      <tbody>
+        <tr><td>Faktor Individu</td><td>Pengetahuan rendah · Motivasi rendah</td></tr>
+        <tr><td>Faktor Lingkungan</td><td>Sarana terbatas · Budaya masyarakat yang kurang mendukung</td></tr>
+        <tr><td>Faktor Sistem</td><td>Kebijakan belum optimal · Kurangnya dukungan lintas sektor</td></tr>
+      </tbody>
+    </table></div>
+    <div class="sec-h" style="margin-top:14px">5 Pendekatan Promosi Kesehatan PHBS</div>
+    <div class="chain">
+      <div class="chain-item"><div class="ci-num">1</div><div><div class="ci-title">Advokasi</div><div class="ci-desc">Mendukung kebijakan yang mendukung PHBS — melobi pemangku kepentingan dan pembuat kebijakan</div></div></div>
+      <div class="chain-item"><div class="ci-num">2</div><div><div class="ci-title">Bina Suasana</div><div class="ci-desc">Menciptakan lingkungan sosial yang mendukung perubahan perilaku PHBS</div></div></div>
+      <div class="chain-item"><div class="ci-num">3</div><div><div class="ci-title">Pemberdayaan Masyarakat</div><div class="ci-desc">Meningkatkan kapasitas dan kemandirian masyarakat dalam ber-PHBS</div></div></div>
+      <div class="chain-item"><div class="ci-num">4</div><div><div class="ci-title">Pendidikan Kesehatan</div><div class="ci-desc">Meningkatkan pengetahuan, sikap, dan praktik melalui edukasi sistematis</div></div></div>
+      <div class="chain-item"><div class="ci-num">5</div><div><div class="ci-title">Pendekatan Keluarga</div><div class="ci-desc">Keluarga sebagai unit terkecil perubahan perilaku kesehatan</div></div></div>
+    </div>
+    <div class="note accent">💡 <strong>GERMAS</strong> = Gerakan Masyarakat Hidup Sehat — program nasional Kemenkes yang sejalan dengan PHBS.</div>
+  </div>
+
+  <!-- PERAN DOKTER -->
+  <div class="sub-panel" id="s-dokter">
+    <div class="sec-h">Peran Dokter dalam PHBS</div>
+    <div class="note accent">📌 Dokter berperan penting dalam <strong>mengintegrasikan PHBS ke pelayanan kesehatan primer dan kedokteran keluarga</strong>.</div>
+    <div class="num-grid">
+      <div class="num-card"><div class="num-badge">📚</div><div><div class="num-title">Educator</div><div class="num-sub">Mendidik pasien & masyarakat tentang PHBS</div></div></div>
+      <div class="num-card"><div class="num-badge">💬</div><div><div class="num-title">Counselor</div><div class="num-sub">Memberikan konseling perubahan perilaku</div></div></div>
+      <div class="num-card"><div class="num-badge">📣</div><div><div class="num-title">Advocate</div><div class="num-sub">Advokasi kebijakan mendukung PHBS</div></div></div>
+      <div class="num-card"><div class="num-badge">🌐</div><div><div class="num-title">Community Leader</div><div class="num-sub">Pemimpin komunitas dalam promkes</div></div></div>
+      <div class="num-card"><div class="num-badge">💪</div><div><div class="num-title">Health Promoter</div><div class="num-sub">Promotor kesehatan aktif di masyarakat</div></div></div>
+    </div>
+    <div class="note blue">📌 Peran <strong>Health Promoter</strong> dalam PHBS adalah tambahan yang tidak ada di materi sebelumnya — spesifik untuk konteks PHBS dan promotif.</div>
+    <div class="note green">✅ <strong>Kesimpulan:</strong> PHBS = pilar utama promosi kesehatan. Fokus: perubahan perilaku individu & masyarakat. Menurunkan risiko penyakit menular & tidak menular. Dokter = peran strategis dalam edukasi & pemberdayaan masyarakat.</div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div class="main-panel" id="mp-quiz">
+  <div id="qconfig" class="qconfig">
+    <div class="qconfig-title">Mulai Sesi Quiz</div>
+    <div class="qconfig-sub">Pilih topik (multi-pilih) — soal terus berganti sampai Akhiri Sesi</div>
+    <div class="cfg-grid">
+      <button class="cfg-btn sel" data-type="def">Definisi & Tujuan PHBS</button>
+      <button class="cfg-btn sel" data-type="tatanan">Tatanan PHBS</button>
+      <button class="cfg-btn sel" data-type="ind10">10 Indikator Rumah Tangga</button>
+      <button class="cfg-btn sel" data-type="ctps">CTPS & Air Bersih</button>
+      <button class="cfg-btn sel" data-type="aktif">Aktivitas Fisik & Gizi</button>
+      <button class="cfg-btn sel" data-type="rokok">Bahaya Merokok</button>
+      <button class="cfg-btn sel" data-type="strategi">Tantangan & Strategi</button>
+      <button class="cfg-btn sel" data-type="dokter">Peran Dokter</button>
+    </div>
+    <button class="start-btn" onclick="startSession()">Mulai →</button>
+  </div>
+  <div id="qactive" style="display:none">
+    <div class="qheader">
+      <div class="qnum-display">Soal ke-<strong id="qnum">1</strong></div>
+      <div id="qpill" class="qtype-pill"></div>
+      <div class="qscore-display"><strong id="qscore">0</strong> benar</div>
+    </div>
+    <div class="qcard">
+      <div id="qscen" class="qscen" style="display:none"></div>
+      <div id="qtext" class="qtext"></div>
+    </div>
+    <div class="opts" id="opts"></div>
+    <div class="expbox" id="expbox"></div>
+    <div class="actrow">
+      <button class="next-btn" id="nextbtn" onclick="nextQ()">Soal Berikutnya →</button>
+      <button class="end-btn" onclick="endSession()">Akhiri Sesi</button>
+    </div>
+  </div>
+  <div id="qresults" style="display:none">
+    <div class="results-wrap">
+      <div class="res-big" id="res-pct">—</div>
+      <div class="res-sub" id="res-sub">—</div>
+      <div class="res-grid" id="res-grid"></div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:20px">
+        <button class="retry-btn" style="margin-bottom:0" onclick="restartQuiz()">Coba Lagi</button>
+        <button class="retry-btn" style="margin-bottom:0;background:var(--accent)" onclick="downloadCert()">⬇ Unduh Sertifikat</button>
+      </div>
+      <div class="dtable-wrap" style="margin-bottom:14px"><table><thead><tr><th>Topik</th><th>Soal</th><th>Benar</th></tr></thead><tbody id="res-bytype"></tbody></table></div>
+      <div class="dtable-wrap"><table><thead><tr><th>#</th><th>Soal (ringkas)</th><th>Jawaban Benar</th><th>Hasil</th></tr></thead><tbody id="res-tbody"></tbody></table></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div>am i clean? · PHBS · Blok 2.5 · FK Unsoed · Yudhi Wibowo</div>
+  <div style="margin-top:5px">crafted by alchemist4real · <a href="https://174-three.vercel.app" target="_blank" style="color:var(--text3);text-decoration:none;border-bottom:1px dashed var(--text3)">check other quizzes → 174 archive ↗</a></div>
+</footer>
+</div>
+
+<script>
+window.switchMain=function(id,b){document.querySelectorAll('.main-panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.main-tab').forEach(x=>x.classList.remove('active'));document.getElementById('mp-'+id).classList.add('active');b.classList.add('active');};
+window.switchSub=function(id,b){document.querySelectorAll('.sub-panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.sub-tab').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');b.classList.add('active');};
+
+const activeTypes=new Set(['def','tatanan','ind10','ctps','aktif','rokok','strategi','dokter']);
+document.querySelectorAll('.cfg-btn').forEach(b=>{b.addEventListener('click',()=>{const t=b.dataset.type;if(activeTypes.has(t)){if(activeTypes.size===1)return;activeTypes.delete(t);b.classList.remove('sel');}else{activeTypes.add(t);b.classList.add('sel');}});});
+
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const shuf=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]];}return b;};
+const KEYS='ABCDE'.split('');
+const strip=s=>s.replace(/<[^>]*>/g,'');
+function makePicker(pool){let idx=[];return function(){if(idx.length>=pool.length)idx=[];const av=pool.map((_,i)=>i).filter(i=>!idx.includes(i));const si=rnd(av);idx.push(si);return pool[si];};}
+
+// 1. DEFINISI & TUJUAN
+const DEF_POOL=[
+  {q:'Definisi PHBS menurut Kemenkes RI adalah...',opts:['Program pemerintah untuk memberikan fasilitas kesehatan gratis kepada masyarakat','Sekumpulan perilaku yang dipraktikkan atas dasar kesadaran sehingga individu/masyarakat mampu menolong dirinya sendiri di bidang kesehatan dan berperan aktif dalam mewujudkan kesehatan masyarakat','Kebijakan nasional untuk menurunkan angka kematian ibu dan bayi','Upaya kuratif yang dilakukan tenaga kesehatan di fasilitas primer'],ans:'Sekumpulan perilaku yang dipraktikkan atas dasar kesadaran sehingga individu/masyarakat mampu menolong dirinya sendiri di bidang kesehatan dan berperan aktif dalam mewujudkan kesehatan masyarakat',exp:'<strong>PHBS</strong> = sekumpulan perilaku yang dipraktikkan atas dasar <strong>kesadaran</strong> sehingga individu, keluarga, kelompok, atau masyarakat mampu <strong>menolong dirinya sendiri</strong> di bidang kesehatan dan berperan aktif dalam mewujudkan kesehatan masyarakat.'},
+  {q:'Kata kunci PALING PENTING dalam definisi PHBS adalah...',opts:['Pembiayaan dan fasilitas kesehatan','Kesadaran dan menolong dirinya sendiri','Teknologi medis dan dokter spesialis','Kebijakan pemerintah dan regulasi'],ans:'Kesadaran dan menolong dirinya sendiri',exp:'Kata kunci PHBS: <strong>kesadaran</strong> (bukan paksaan) dan <strong>menolong dirinya sendiri</strong> (kemandirian). Ini yang membedakan PHBS dari intervensi medis pasif.'},
+  {q:'Tujuan umum PHBS adalah...',opts:['Menurunkan biaya operasional fasilitas kesehatan','Meningkatkan kualitas hidup masyarakat melalui perilaku sehat','Memperluas jangkauan tenaga kesehatan ke daerah terpencil','Meningkatkan anggaran kesehatan nasional'],ans:'Meningkatkan kualitas hidup masyarakat melalui perilaku sehat',exp:'Tujuan umum PHBS: <strong>meningkatkan kualitas hidup masyarakat melalui perilaku sehat</strong>.'},
+  {q:'Yang BUKAN termasuk tujuan khusus PHBS adalah...',opts:['Mencegah penyakit','Meningkatkan produktivitas','Menurunkan biaya kesehatan','Memperbanyak fasilitas kesehatan'],ans:'Memperbanyak fasilitas kesehatan',exp:'5 Tujuan khusus PHBS: mencegah penyakit, meningkatkan produktivitas, menurunkan biaya kesehatan, meningkatkan kualitas lingkungan, mendukung pembangunan kesehatan nasional. <strong>Memperbanyak fasilitas kesehatan bukan termasuk</strong>.'},
+  {q:'PHBS dianggap intervensi kesehatan yang efektif karena...',opts:['Mahal namun memberikan hasil terbaik','Efektif dan berbiaya rendah dibandingkan intervensi medis','Hanya memerlukan tenaga dokter spesialis','Tidak memerlukan partisipasi masyarakat'],ans:'Efektif dan berbiaya rendah dibandingkan intervensi medis',exp:'PHBS menjadi pilihan utama promosi kesehatan karena merupakan <strong>intervensi kesehatan yang efektif dan berbiaya rendah</strong> — mengubah perilaku lebih hemat daripada mengobati penyakit.'},
+  {q:'Faktor yang memengaruhi perilaku kesehatan menurut materi PHBS mencakup...',opts:['Genetik, usia, dan jenis kelamin','Pengetahuan, sikap, kepercayaan, norma sosial, dukungan keluarga, lingkungan fisik, dan kebijakan kesehatan','Teknologi medis, biaya pengobatan, dan jarak ke RS','Penghasilan, pendidikan tinggi, dan status pekerjaan'],ans:'Pengetahuan, sikap, kepercayaan, norma sosial, dukungan keluarga, lingkungan fisik, dan kebijakan kesehatan',exp:'7 faktor yang memengaruhi perilaku kesehatan PHBS: <strong>Pengetahuan · Sikap · Kepercayaan · Norma sosial · Dukungan keluarga · Lingkungan fisik · Kebijakan kesehatan</strong>.'},
+  {q:'Berapa jumlah faktor yang memengaruhi perilaku kesehatan menurut landasan teori PHBS?',opts:['4','5','7','10'],ans:'7',exp:'Ada <strong>7 faktor</strong> yang memengaruhi perilaku kesehatan: pengetahuan, sikap, kepercayaan, norma sosial, dukungan keluarga, lingkungan fisik, kebijakan kesehatan.'},
+];
+const pickDef=makePicker(DEF_POOL);
+
+// 2. TATANAN
+const TATANAN_POOL=[
+  {q:'PHBS diterapkan pada berapa tatanan utama?',opts:['3','4','5','6'],ans:'5',exp:'PHBS diterapkan pada <strong>5 tatanan</strong>: Rumah Tangga · Sekolah · Tempat Kerja · Fasilitas Kesehatan · Tempat Umum.'},
+  {q:'Indikator PHBS di tatanan SEKOLAH yang TIDAK ada di tatanan Rumah Tangga adalah...',opts:['Cuci tangan pakai sabun','Jajan sehat dan pemantauan status gizi','Aktivitas fisik','Tidak merokok'],ans:'Jajan sehat dan pemantauan status gizi',exp:'PHBS Sekolah memiliki indikator spesifik: <strong>jajan sehat dan pemantauan status gizi</strong> — tidak ada di 10 indikator PHBS Rumah Tangga.'},
+  {q:'Komponen PHBS di Tempat Kerja yang berhubungan dengan kesehatan berkala adalah...',opts:['Cuci tangan pakai sabun','Konsumsi buah dan sayur','Pemeriksaan kesehatan berkala','Menimbang balita'],ans:'Pemeriksaan kesehatan berkala',exp:'PHBS Tempat Kerja mencakup: lingkungan bersih, sanitasi, aktivitas fisik, kawasan tanpa rokok, dan <strong>pemeriksaan kesehatan berkala</strong>.'},
+  {q:'Tatanan PHBS yang menekankan pengelolaan limbah medis adalah...',opts:['Sekolah','Tempat Kerja','Fasilitas Kesehatan','Tempat Umum'],ans:'Fasilitas Kesehatan',exp:'PHBS di <strong>Fasilitas Kesehatan</strong> menekankan: kebersihan lingkungan, cuci tangan, dan <strong>pengelolaan limbah medis</strong>.'},
+  {q:'Di tatanan Tempat Umum, indikator PHBS yang ditekankan adalah...',opts:['Jajan sehat dan pemantauan status gizi','Bebas asap rokok dan aktivitas fisik','Buang sampah pada tempatnya dan jaga kebersihan lingkungan','Pengelolaan limbah medis dan cuci tangan'],ans:'Buang sampah pada tempatnya dan jaga kebersihan lingkungan',exp:'PHBS Tempat Umum: <strong>buang sampah pada tempatnya</strong> dan <strong>jaga kebersihan lingkungan</strong>.'},
+  {q:'Mnemonic tatanan PHBS "R-S-K-F-T" singkatan dari...',opts:['Rumah Sakit-Sanitasi-Kesehatan-Fisik-Tindakan','Rumah Tangga-Sekolah-Tempat Kerja-Fasilitas Kesehatan-Tempat Umum','Rekap-Siaga-Kader-Fasilitator-Tenaga Kesehatan','Reproduksi-Sanitasi-Kebersihan-Fisik-Tumbuh Kembang'],ans:'Rumah Tangga-Sekolah-Tempat Kerja-Fasilitas Kesehatan-Tempat Umum',exp:'Mnemonic <strong>R-S-K-F-T</strong> = Rumah Tangga · Sekolah · Tempat Kerja (bukan "Komunitas") · Fasilitas Kesehatan · Tempat Umum.'},
+];
+const pickTatanan=makePicker(TATANAN_POOL);
+
+// 3. 10 INDIKATOR
+const IND_POOL=[
+  {q:'Berapa jumlah indikator PHBS Rumah Tangga menurut Kemenkes RI?',opts:['7','8','10','12'],ans:'10',exp:'Ada <strong>10 indikator PHBS Rumah Tangga</strong> menurut Kemenkes RI.'},
+  {q:'Indikator PHBS Rumah Tangga nomor 1 adalah...',opts:['ASI eksklusif','Menggunakan air bersih','Persalinan ditolong tenaga kesehatan','Cuci tangan pakai sabun'],ans:'Persalinan ditolong tenaga kesehatan',exp:'Indikator ke-<strong>1</strong> PHBS RT = <strong>Persalinan ditolong tenaga kesehatan</strong> (persalinan aman di fasilitas kesehatan).'},
+  {q:'ASI eksklusif diberikan pada bayi usia...',opts:['0–3 bulan','0–6 bulan','0–12 bulan','6–12 bulan'],ans:'0–6 bulan',exp:'ASI eksklusif (indikator ke-2 PHBS RT) = diberikan pada bayi usia <strong>0–6 bulan</strong>, hanya ASI tanpa makanan/minuman tambahan apapun.'},
+  {q:'Indikator PHBS Rumah Tangga nomor 7 adalah...',opts:['Cuci tangan pakai sabun','Menggunakan jamban sehat','Pemberantasan jentik nyamuk','Konsumsi buah dan sayur'],ans:'Pemberantasan jentik nyamuk',exp:'Indikator ke-<strong>7</strong> PHBS RT = <strong>Pemberantasan jentik nyamuk</strong> (lakukan 3M Plus untuk mencegah perkembangbiakan nyamuk).'},
+  {q:'Indikator PHBS RT yang terkait dengan pemantauan tumbuh kembang anak adalah...',opts:['ASI eksklusif','Persalinan ditolong nakes','Menimbang balita secara berkala','Menggunakan air bersih'],ans:'Menimbang balita secara berkala',exp:'Indikator ke-<strong>3</strong> PHBS RT = <strong>Menimbang balita secara berkala</strong> — memantau pertumbuhan berat badan balita secara rutin.'},
+  {q:'Kelompok indikator 4, 5, 6, dan 7 PHBS RT berkaitan dengan...',opts:['Ibu dan anak','Sanitasi dan lingkungan','Gaya hidup sehat','Pelayanan kesehatan'],ans:'Sanitasi dan lingkungan',exp:'Indikator 4-7 PHBS RT: air bersih · cuci tangan · jamban sehat · pemberantasan jentik = semua terkait <strong>sanitasi dan lingkungan</strong>.'},
+  {q:'Aktivitas fisik minimal yang dianjurkan dalam indikator ke-9 PHBS Rumah Tangga adalah...',opts:['15 menit setiap hari','30 menit setiap hari','60 menit setiap hari','150 menit per minggu'],ans:'30 menit setiap hari',exp:'Indikator ke-9 PHBS RT: aktivitas fisik teratur = <strong>minimal 30 menit setiap hari</strong>.'},
+  {q:'Indikator PHBS Rumah Tangga nomor 10 adalah...',opts:['Aktivitas fisik teratur','Konsumsi buah dan sayur','Tidak merokok di dalam rumah','Menggunakan jamban sehat'],ans:'Tidak merokok di dalam rumah',exp:'Indikator ke-<strong>10</strong> PHBS RT = <strong>Tidak merokok di dalam rumah</strong> — ciptakan rumah bebas asap rokok.'},
+  {q:'Indikator PHBS RT nomor 6 adalah...',opts:['Cuci tangan pakai sabun','Pemberantasan jentik nyamuk','Menggunakan jamban sehat','Konsumsi buah dan sayur'],ans:'Menggunakan jamban sehat',exp:'Indikator ke-<strong>6</strong> PHBS RT = <strong>Menggunakan jamban sehat</strong> — untuk mencegah pencemaran lingkungan dan penyakit.'},
+  {q:'3M Plus dalam pemberantasan jentik nyamuk (indikator ke-7 PHBS RT) dilakukan untuk...',opts:['Membersihkan tangan, muka, dan kaki','Mencegah perkembangbiakan nyamuk','Memantau pertumbuhan anak','Memberantas hama di dapur'],ans:'Mencegah perkembangbiakan nyamuk',exp:'<strong>3M Plus</strong> pada indikator ke-7 PHBS RT dilakukan untuk <strong>mencegah perkembangbiakan nyamuk</strong> (Menguras, Menutup, Mendaur ulang, Plus tindakan tambahan).'},
+];
+const pickInd=makePicker(IND_POOL);
+
+// 4. CTPS & AIR BERSIH
+const CTPS_POOL=[
+  {q:'Manfaat utama Cuci Tangan Pakai Sabun (CTPS) adalah...',opts:['Meningkatkan nafsu makan','Menurunkan diare, ISPA, dan transmisi penyakit infeksi','Mempercepat penyembuhan luka','Mengurangi risiko hipertensi'],ans:'Menurunkan diare, ISPA, dan transmisi penyakit infeksi',exp:'Manfaat CTPS: (1) menurunkan diare, (2) menurunkan ISPA, (3) mengurangi <strong>transmisi penyakit infeksi</strong>.'},
+  {q:'Berapa jumlah "waktu penting" untuk cuci tangan pakai sabun menurut materi PHBS?',opts:['3','4','5','6'],ans:'5',exp:'Ada <strong>5 waktu penting</strong> CTPS: sebelum makan · sebelum menyiapkan makanan · setelah BAB · setelah membersihkan anak · setelah kontak benda kotor.'},
+  {q:'Waktu penting CTPS yang berkaitan dengan pencegahan penularan dari tinja adalah...',opts:['Sebelum makan','Sebelum menyiapkan makanan','Setelah BAB (Buang Air Besar)','Setelah kontak dengan benda kotor'],ans:'Setelah BAB (Buang Air Besar)',exp:'"<strong>Setelah BAB</strong>" = waktu penting CTPS yang paling kritis untuk memutus rantai penularan penyakit fecal-oral seperti diare dan tifoid.'},
+  {q:'Kriteria air bersih menurut materi PHBS adalah...',opts:['Mengandung klorin, tidak berbau, bebas bakteri','Tidak berwarna, tidak berbau, tidak berasa, bebas kontaminan','Jernih, tidak asin, tidak keruh, mengalir deras','Memiliki pH netral, tidak berasa, tidak berbau, dingin'],ans:'Tidak berwarna, tidak berbau, tidak berasa, bebas kontaminan',exp:'4 kriteria air bersih: <strong>Tidak berwarna · Tidak berbau · Tidak berasa · Bebas kontaminan</strong>.'},
+  {q:'Pengelolaan limbah dan pengelolaan sampah rumah tangga termasuk komponen...',opts:['CTPS (Cuci Tangan Pakai Sabun)','Sanitasi sehat','Aktivitas fisik teratur','Konsumsi gizi seimbang'],ans:'Sanitasi sehat',exp:'Komponen <strong>sanitasi sehat</strong>: jamban sehat · pengelolaan limbah · pengelolaan sampah rumah tangga.'},
+  {q:'Waktu penting CTPS "setelah membersihkan anak" berkaitan dengan pencegahan...',opts:['Penyakit kulit akibat debu','Penularan penyakit melalui kontak dengan feses/urin anak','Penularan penyakit melalui udara','Penularan penyakit melalui makanan mentah'],ans:'Penularan penyakit melalui kontak dengan feses/urin anak',exp:'"Setelah membersihkan/mengganti popok anak" penting karena feses/urin bayi mengandung patogen yang dapat menular melalui tangan — kategori <strong>fecal-oral transmission</strong>.'},
+  {q:'CTPS (Cuci Tangan Pakai Sabun) yang benar harus menggunakan...',opts:['Air hangat saja sudah cukup','Air dan sabun dengan air mengalir','Antiseptik dan air tergenang','Tisu basah sebagai pengganti air'],ans:'Air dan sabun dengan air mengalir',exp:'CTPS yang benar = <strong>air dan sabun dengan air mengalir</strong>. Air tergenang tidak efektif karena dapat terkontaminasi ulang.'},
+];
+const pickCtps=makePicker(CTPS_POOL);
+
+// 5. AKTIVITAS FISIK & GIZI
+const AKTIF_POOL=[
+  {q:'Rekomendasi WHO untuk aktivitas fisik intensitas sedang pada DEWASA adalah...',opts:['≥30 menit per hari','≥60 menit per hari','≥150 menit per minggu','≥200 menit per minggu'],ans:'≥150 menit per minggu',exp:'Rekomendasi WHO untuk dewasa: <strong>≥150 menit aktivitas fisik intensitas sedang per minggu</strong>.'},
+  {q:'Rekomendasi WHO untuk aktivitas fisik pada ANAK dan REMAJA adalah...',opts:['≥30 menit per hari','≥45 menit per hari','≥60 menit per hari','≥150 menit per minggu'],ans:'≥60 menit per hari',exp:'Rekomendasi WHO untuk anak dan remaja: <strong>≥60 menit per hari</strong> — berbeda dari dewasa yang dihitung per minggu.'},
+  {q:'Manfaat aktivitas fisik teratur yang disebutkan dalam materi PHBS mencakup...',opts:['Menurunkan anemia, kolesterol, dan hipertensi','Menurunkan obesitas, hipertensi, dan risiko Diabetes Mellitus','Meningkatkan daya tahan tubuh, kecerdasan, dan mood','Mencegah osteoporosis, kanker, dan gangguan tidur'],ans:'Menurunkan obesitas, hipertensi, dan risiko Diabetes Mellitus',exp:'3 manfaat aktivitas fisik menurut materi: <strong>menurunkan obesitas · menurunkan hipertensi · menurunkan risiko Diabetes Mellitus</strong>.'},
+  {q:'Pesan utama konsumsi gizi seimbang menurut Kemenkes adalah...',opts:['Makan 3 kali sehari dengan protein tinggi','Perbanyak buah & sayur, batasi GGL (Gula-Garam-Lemak), minum air putih cukup, pertahankan BB ideal','Konsumsi suplemen vitamin setiap hari','Hindari semua jenis lemak dan karbohidrat'],ans:'Perbanyak buah & sayur, batasi GGL (Gula-Garam-Lemak), minum air putih cukup, pertahankan BB ideal',exp:'Pesan utama gizi seimbang: perbanyak buah & sayur · batasi <strong>GGL (Gula-Garam-Lemak)</strong> · minum air putih cukup · pertahankan BB ideal.'},
+  {q:'"GGL" dalam kebijakan gizi Kemenkes adalah singkatan dari...',opts:['Gizi-Gerak-Lingkungan','Gula-Garam-Lemak','Gizi-Ganda-Lanjutan','Gandum-Gluten-Laktosa'],ans:'Gula-Garam-Lemak',exp:'<strong>GGL</strong> = <strong>Gula · Garam · Lemak</strong> — ketiganya perlu dibatasi konsumsinya untuk mencegah penyakit tidak menular (PTM).'},
+  {q:'Perbedaan rekomendasi aktivitas fisik antara PHBS RT (indikator ke-9) dan WHO untuk dewasa adalah...',opts:['PHBS RT ≥30 menit/hari; WHO Dewasa ≥150 menit/minggu','Keduanya sama: ≥150 menit/minggu','PHBS RT ≥60 menit/hari; WHO Dewasa ≥30 menit/hari','PHBS RT tidak menyebutkan durasi spesifik'],ans:'PHBS RT ≥30 menit/hari; WHO Dewasa ≥150 menit/minggu',exp:'PHBS RT indikator ke-9: <strong>min. 30 menit/hari</strong>. WHO Dewasa: <strong>≥150 menit/minggu</strong> (setara ≈21 menit/hari). Angka berbeda karena konteks dan cara pengukuran berbeda.'},
+];
+const pickAktif=makePicker(AKTIF_POOL);
+
+// 6. BAHAYA MEROKOK
+const ROKOK_POOL=[
+  {q:'Bahaya merokok di dalam rumah mencakup dampak pada anak berupa...',opts:['Anemia dan kurang gizi','ISPA dan asma','Stunting dan wasting','Diare dan tifoid'],ans:'ISPA dan asma',exp:'Dampak merokok dalam rumah pada anak: <strong>ISPA (Infeksi Saluran Pernapasan Atas)</strong> dan <strong>Asma</strong> — akibat paparan asap rokok orang lain (AROL).'},
+  {q:'Kelompok yang paling rentan terhadap paparan asap rokok orang lain (perokok pasif) adalah...',opts:['Laki-laki dewasa dan lansia','Anak-anak dan ibu hamil','Remaja dan wanita dewasa','Pekerja kantoran dan petani'],ans:'Anak-anak dan ibu hamil',exp:'Kelompok paling rentan perokok pasif: <strong>anak-anak dan ibu hamil</strong> — karena sistem imun dan paru belum/sedang berkembang.'},
+  {q:'Penyakit berat yang dapat disebabkan oleh merokok dalam rumah jangka panjang adalah...',opts:['Diare dan kolera','Malaria dan dengue','Penyakit jantung dan kanker paru','Typoid dan hepatitis'],ans:'Penyakit jantung dan kanker paru',exp:'4 dampak merokok dalam rumah: ISPA pada anak · Asma · <strong>Penyakit jantung · Kanker paru</strong>.'},
+  {q:'Indikator ke berapa dari 10 indikator PHBS RT yang berkaitan dengan tidak merokok?',opts:['Indikator ke-7','Indikator ke-8','Indikator ke-9','Indikator ke-10'],ans:'Indikator ke-10',exp:'<strong>Indikator ke-10</strong> PHBS RT = Tidak merokok di dalam rumah — urutan terakhir dari 10 indikator.'},
+  {q:'Program GERMAS yang dicantumkan dalam materi PHBS merupakan singkatan dari...',opts:['Gerakan Remaja Mandiri Sehat','Gerakan Masyarakat Hidup Sehat','Gerakan Rakyat Menuju Sehat','Gerakan Mandiri Keluarga Sehat'],ans:'Gerakan Masyarakat Hidup Sehat',exp:'<strong>GERMAS</strong> = <strong>Gerakan Masyarakat Hidup Sehat</strong> — program nasional Kemenkes yang sejalan dengan PHBS.'},
+  {q:'Kawasan Tanpa Rokok (KTR) diterapkan di berbagai tatanan PHBS, KECUALI...',opts:['Fasilitas Kesehatan','Sekolah','Tempat Kerja','Rumah Sakit Jiwa'],ans:'Rumah Sakit Jiwa',exp:'KTR diterapkan di: fasilitas kesehatan, sekolah, tempat kerja, tempat umum — tidak ada penyebutan spesifik RSJ. Yang disebut di materi: fasilitas kesehatan, kawasan bebas asap rokok di tempat kerja.'},
+];
+const pickRokok=makePicker(ROKOK_POOL);
+
+// 7. TANTANGAN & STRATEGI
+const STRAT_POOL=[
+  {q:'Tantangan implementasi PHBS di level INDIVIDU antara lain...',opts:['Sarana terbatas dan budaya masyarakat','Kebijakan belum optimal dan lintas sektor kurang','Pengetahuan rendah dan motivasi rendah','Anggaran kecil dan tenaga kesehatan kurang'],ans:'Pengetahuan rendah dan motivasi rendah',exp:'Tantangan level Individu: <strong>pengetahuan rendah dan motivasi rendah</strong>. Level Lingkungan: sarana terbatas & budaya. Level Sistem: kebijakan & lintas sektor.'},
+  {q:'Pendekatan promosi kesehatan PHBS yang bertujuan memberdayakan masyarakat agar mandiri disebut...',opts:['Advokasi','Bina suasana','Pemberdayaan masyarakat','Pendidikan kesehatan'],ans:'Pemberdayaan masyarakat',exp:'<strong>Pemberdayaan masyarakat</strong> = meningkatkan kapasitas dan kemandirian masyarakat dalam ber-PHBS — berbeda dari advokasi (kebijakan) atau bina suasana (lingkungan sosial).'},
+  {q:'"Bina suasana" sebagai pendekatan promosi kesehatan PHBS bertujuan...',opts:['Melobi pemangku kepentingan untuk membuat kebijakan mendukung PHBS','Menciptakan lingkungan sosial yang mendukung perubahan perilaku PHBS','Meningkatkan pengetahuan masyarakat melalui edukasi formal','Memberdayakan keluarga sebagai unit perubahan perilaku'],ans:'Menciptakan lingkungan sosial yang mendukung perubahan perilaku PHBS',exp:'<strong>Bina Suasana</strong> = menciptakan lingkungan sosial yang mendukung perubahan perilaku PHBS — bukan kebijakan (advokasi) dan bukan edukasi (pendidikan kesehatan).'},
+  {q:'Berapa pendekatan promosi kesehatan PHBS menurut materi?',opts:['3','4','5','6'],ans:'5',exp:'Ada <strong>5 pendekatan</strong> promosi kesehatan PHBS: Advokasi · Bina Suasana · Pemberdayaan Masyarakat · Pendidikan Kesehatan · Pendekatan Keluarga.'},
+  {q:'Pendekatan promosi PHBS yang menekankan keluarga sebagai unit terkecil perubahan adalah...',opts:['Advokasi','Bina suasana','Pemberdayaan masyarakat','Pendekatan keluarga'],ans:'Pendekatan keluarga',exp:'<strong>Pendekatan keluarga</strong> = menjadikan keluarga sebagai unit terkecil perubahan perilaku kesehatan — strategi ke-5 promosi PHBS.'},
+  {q:'Tantangan implementasi PHBS di level SISTEM antara lain...',opts:['Pengetahuan dan motivasi individu rendah','Sarana terbatas dan budaya masyarakat','Kebijakan belum optimal dan kurangnya dukungan lintas sektor','Tidak tersedianya tenaga dokter'],ans:'Kebijakan belum optimal dan kurangnya dukungan lintas sektor',exp:'Tantangan level <strong>Sistem</strong>: kebijakan belum optimal dan kurangnya dukungan lintas sektor — bukan masalah individu maupun lingkungan fisik.'},
+  {q:'Advokasi sebagai pendekatan promosi PHBS dilakukan dengan cara...',opts:['Mendidik masyarakat tentang cara ber-PHBS','Menciptakan norma sosial yang mendukung PHBS','Melobi pemangku kepentingan untuk mendukung kebijakan pro-PHBS','Memberikan konseling individual tentang perubahan perilaku'],ans:'Melobi pemangku kepentingan untuk mendukung kebijakan pro-PHBS',exp:'<strong>Advokasi</strong> = mendukung kebijakan yang mendukung PHBS dengan melobi pemangku kepentingan dan pembuat kebijakan — bukan edukasi langsung ke masyarakat.'},
+];
+const pickStrat=makePicker(STRAT_POOL);
+
+// 8. PERAN DOKTER
+const DOKTER_POOL=[
+  {q:'Berapa peran dokter dalam PHBS menurut materi?',opts:['4','5','6','7'],ans:'5',exp:'Ada <strong>5 peran dokter</strong> dalam PHBS: Educator · Counselor · Advocate · Community Leader · Health Promoter. (Berbeda dari materi "Perilaku Hidup Sehat" yang menyebut 6 peran termasuk Care Provider)'},
+  {q:'Peran dokter dalam PHBS yang BERBEDA dari materi Perilaku Hidup Sehat sebelumnya adalah...',opts:['Educator','Counselor','Health Promoter','Advocate'],ans:'Health Promoter',exp:'<strong>Health Promoter</strong> = peran tambahan yang spesifik di materi PHBS, tidak ada di materi Perilaku Hidup Sehat. Di materi sebelumnya ada Care Provider, di PHBS tidak ada Care Provider tapi ada Health Promoter.'},
+  {q:'Dokter mengintegrasikan PHBS ke dalam praktik klinis dilakukan terutama di...',opts:['Rumah sakit tersier','Pelayanan kesehatan primer dan kedokteran keluarga','Pusat penelitian kesehatan','Laboratorium klinik'],ans:'Pelayanan kesehatan primer dan kedokteran keluarga',exp:'Dokter berperan penting dalam mengintegrasikan PHBS ke <strong>pelayanan kesehatan primer dan kedokteran keluarga</strong>.'},
+  {q:'Dokter yang aktif mempromosikan PHBS kepada komunitas menjalankan peran sebagai...',opts:['Educator','Community Leader dan Health Promoter','Counselor','Advocate'],ans:'Community Leader dan Health Promoter',exp:'Promosi PHBS aktif di komunitas = peran <strong>Community Leader</strong> (pemimpin komunitas) dan <strong>Health Promoter</strong> (promotor kesehatan).'},
+  {q:'Kesimpulan utama materi PHBS menyatakan bahwa...',opts:['Teknologi medis adalah kunci utama penurunan penyakit','PHBS adalah pilar utama promosi kesehatan dan menurunkan risiko penyakit menular & tidak menular','Dokter tidak perlu terlibat dalam promosi perilaku','PHBS hanya berlaku untuk penyakit menular saja'],ans:'PHBS adalah pilar utama promosi kesehatan dan menurunkan risiko penyakit menular & tidak menular',exp:'Kesimpulan PHBS: <strong>PHBS = pilar utama promosi kesehatan</strong>. Fokus: perubahan perilaku. Menurunkan risiko <strong>penyakit menular MAUPUN tidak menular</strong>. Dokter = peran strategis.'},
+];
+const pickDokter=makePicker(DOKTER_POOL);
+
+const TMAP={
+  def:{fn:pickDef,typeName:'Definisi & Tujuan PHBS',tpColor:'var(--teal)',tpBg:'rgba(10,138,106,.12)'},
+  tatanan:{fn:pickTatanan,typeName:'Tatanan PHBS',tpColor:'var(--green)',tpBg:'rgba(15,122,53,.12)'},
+  ind10:{fn:pickInd,typeName:'10 Indikator RT',tpColor:'var(--blue)',tpBg:'rgba(26,80,187,.12)'},
+  ctps:{fn:pickCtps,typeName:'CTPS & Air Bersih',tpColor:'#0a6a90',tpBg:'rgba(10,106,144,.12)'},
+  aktif:{fn:pickAktif,typeName:'Aktivitas Fisik & Gizi',tpColor:'var(--orange)',tpBg:'rgba(184,80,0,.12)'},
+  rokok:{fn:pickRokok,typeName:'Bahaya Merokok',tpColor:'var(--red)',tpBg:'rgba(176,48,48,.12)'},
+  strategi:{fn:pickStrat,typeName:'Tantangan & Strategi',tpColor:'var(--purp)',tpBg:'rgba(106,32,170,.12)'},
+  dokter:{fn:pickDokter,typeName:'Peran Dokter',tpColor:'var(--gold)',tpBg:'rgba(122,94,0,.12)'},
+};
+function makeQ(type){const m=TMAP[type];const q={...m.fn()};q.type=type;q.typeName=m.typeName;q.tpColor=m.tpColor;q.tpBg=m.tpBg;return q;}
+
+let typeQueue=[],sessIdx=0,sessScore=0,sessLog=[],currentQ=null;
+function nextType(){if(!typeQueue.length){const t=[...activeTypes];for(let i=t.length-1;i>0;i--){const j=0|Math.random()*(i+1);[t[i],t[j]]=[t[j],t[i]];}typeQueue=[...t];}return typeQueue.shift();}
+function startSession(){sessIdx=0;sessScore=0;sessLog=[];typeQueue=[];document.getElementById('qconfig').style.display='none';document.getElementById('qresults').style.display='none';document.getElementById('qactive').style.display='block';renderQ();}
+function renderQ(){
+  const q=makeQ(nextType());currentQ=q;
+  document.getElementById('qnum').textContent=sessIdx+1;
+  document.getElementById('qscore').textContent=sessScore;
+  const pill=document.getElementById('qpill');
+  pill.textContent=q.typeName;pill.style.background=q.tpBg;pill.style.color=q.tpColor;pill.style.border=`1px solid ${q.tpColor}55`;
+  const scen=document.getElementById('qscen');scen.style.display='none';
+  document.getElementById('qtext').innerHTML=q.q;
+  const og=document.getElementById('opts');og.innerHTML='';
+  shuf(q.opts).forEach((opt,i)=>{
+    const btn=document.createElement('button');btn.className='opt';
+    btn.innerHTML=`<span class="opt-key">${KEYS[i]}</span><span>${opt}</span>`;
+    btn.onclick=()=>selectAns(opt,q,btn);og.appendChild(btn);
+  });
+  const ebox=document.getElementById('expbox');ebox.classList.remove('show');ebox.style.display='none';
+  document.getElementById('nextbtn').style.display='none';
+}
+function selectAns(chosen,q,clickedBtn){
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  const correct=strip(chosen)===strip(q.ans);
+  if(correct)sessScore++;
+  document.querySelectorAll('.opt').forEach(b=>{
+    const lbl=b.querySelector('span:last-child').innerHTML;
+    if(strip(lbl)===strip(q.ans)){if(b===clickedBtn&&correct)b.classList.add('correct');else if(b!==clickedBtn)b.classList.add('reveal');else b.classList.add('correct');}
+    if(b===clickedBtn&&!correct)b.classList.add('wrong');
+  });
+  const ebox=document.getElementById('expbox');
+  ebox.innerHTML=`<div style="margin-bottom:7px;font-weight:700;color:${correct?'var(--teal)':'var(--red)'}">${correct?'✅ Benar!':'❌ Kurang tepat.'} Jawaban: <strong>${q.ans}</strong></div>${q.exp}`;
+  ebox.style.display='block';setTimeout(()=>ebox.classList.add('show'),10);
+  sessLog.push({idx:sessIdx+1,type:q.typeName,q:q.q.replace(/<[^>]+>/g,'').slice(0,55)+'…',ans:q.ans,correct});
+  document.getElementById('qscore').textContent=sessScore;
+  document.getElementById('nextbtn').style.display='inline-block';
+}
+function nextQ(){sessIdx++;document.getElementById('expbox').style.display='none';document.getElementById('expbox').classList.remove('show');renderQ();}
+function endSession(){
+  document.getElementById('qactive').style.display='none';document.getElementById('qresults').style.display='block';
+  const total=sessLog.length;if(!total){restartQuiz();return;}
+  const pct=Math.round((sessScore/total)*100);
+  document.getElementById('res-pct').textContent=pct+'%';
+  document.getElementById('res-sub').textContent=`${sessScore} / ${total} soal benar`;
+  const byType={};sessLog.forEach(l=>{if(!byType[l.type])byType[l.type]={total:0,correct:0};byType[l.type].total++;if(l.correct)byType[l.type].correct++;});
+  const rg=document.getElementById('res-grid');rg.innerHTML='';
+  const medal=pct>=80?'🏆':pct>=60?'👍':'📚';
+  [{v:medal,l:'Nilai'},{v:pct+'%',l:'Persentase'},{v:sessScore+'',l:'Benar'},{v:(total-sessScore)+'',l:'Salah'},{v:total+'',l:'Total'}].forEach(s=>{const d=document.createElement('div');d.className='res-stat';d.innerHTML=`<div class="rv">${s.v}</div><div class="rl">${s.l}</div>`;rg.appendChild(d);});
+  document.getElementById('res-bytype').innerHTML=Object.entries(byType).map(([t,v])=>{const p=Math.round((v.correct/v.total)*100);const c=p>=80?'var(--teal)':p>=60?'var(--gold)':'var(--red)';return`<tr><td>${t}</td><td>${v.total}</td><td style="color:${c};font-weight:700">${v.correct} (${p}%)</td></tr>`;}).join('');
+  document.getElementById('res-tbody').innerHTML=sessLog.map(l=>`<tr><td>${l.idx}</td><td>${l.q}</td><td>${l.ans}</td><td style="color:${l.correct?'var(--teal)':'var(--red)'}">${l.correct?'✅':'❌'}</td></tr>`).join('');
+}
+function restartQuiz(){typeQueue=[];document.getElementById('qresults').style.display='none';document.getElementById('qconfig').style.display='block';}
+
+function downloadCert(){
+  const total=sessLog.length;const pct=Math.round((sessScore/total)*100);
+  const now=new Date();const dateStr=now.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+  const medal=pct>=80?'LULUS':pct>=60?'CUKUP':'PERLU BELAJAR LAGI';
+  const medalColor=pct>=80?'#0a8a6a':pct>=60?'#7a5e00':'#b03030';
+  const byType={};sessLog.forEach(l=>{if(!byType[l.type])byType[l.type]={total:0,correct:0};byType[l.type].total++;if(l.correct)byType[l.type].correct++;});
+  const rows=Object.entries(byType).map(([t,v])=>{const p=Math.round(v.correct/v.total*100);const bar=Math.round(p*1.4);const bc=p>=80?'#0a8a6a':p>=60?'#7a5e00':'#b03030';return`<tr><td style="padding:5px 8px;font-size:11px;color:#0d5c2e;width:220px">${t}</td><td style="padding:5px 8px"><div style="background:#c5ebd4;border-radius:4px;height:10px;width:140px"><div style="background:${bc};width:${bar}px;height:10px;border-radius:4px"></div></div></td><td style="padding:5px 8px;font-size:11px;font-weight:700;color:${bc}">${v.correct}/${v.total} (${p}%)</td></tr>`;}).join('');
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="680" height="520" font-family="Georgia,serif">
+  <defs><pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse"><path d="M 28 0 L 0 0 0 28" fill="none" stroke="#c5ebd4" stroke-width="0.5"/></pattern></defs>
+  <rect width="680" height="520" fill="#f0faf5"/>
+  <rect width="680" height="520" fill="url(#grid)"/>
+  <rect x="20" y="20" width="640" height="480" rx="12" fill="none" stroke="#0a8a6a" stroke-width="2"/>
+  <rect x="26" y="26" width="628" height="468" rx="9" fill="none" stroke="#0a8a6a" stroke-width="0.5" opacity="0.4"/>
+  <text x="340" y="66" text-anchor="middle" font-size="11" letter-spacing="4" fill="#3a9a62" font-family="Georgia,serif">SERTIFIKAT PENYELESAIAN KUIS</text>
+  <line x1="120" y1="74" x2="260" y2="74" stroke="#0a8a6a" stroke-width="0.8"/>
+  <circle cx="340" cy="74" r="3" fill="#0a8a6a"/>
+  <line x1="420" y1="74" x2="560" y2="74" stroke="#0a8a6a" stroke-width="0.8"/>
+  <text x="340" y="116" text-anchor="middle" font-size="34" font-weight="bold" fill="#041a0e" font-family="Georgia,serif">Am I Clean?</text>
+  <text x="340" y="138" text-anchor="middle" font-size="11" fill="#3a9a62" letter-spacing="2" font-family="Georgia,serif">PHBS · BLOK 2.5 · FK UNSOED</text>
+  <line x1="100" y1="152" x2="580" y2="152" stroke="#a8dfc0" stroke-width="1"/>
+  <text x="340" y="185" text-anchor="middle" font-size="13" fill="#0d5c2e" font-family="Georgia,serif">Telah menyelesaikan sesi quiz dengan hasil</text>
+  <rect x="230" y="196" width="220" height="80" rx="8" fill="none" stroke="${medalColor}" stroke-width="1.5"/>
+  <text x="340" y="245" text-anchor="middle" font-size="52" font-weight="bold" fill="${medalColor}" font-family="Georgia,serif">${pct}%</text>
+  <text x="340" y="265" text-anchor="middle" font-size="10" fill="${medalColor}" letter-spacing="3" font-family="Georgia,serif">${medal}</text>
+  <text x="340" y="300" text-anchor="middle" font-size="12" fill="#0d5c2e" font-family="Georgia,serif">${sessScore} soal benar dari ${total} soal · ${dateStr}</text>
+  <line x1="100" y1="314" x2="580" y2="314" stroke="#a8dfc0" stroke-width="1"/>
+  <text x="340" y="332" text-anchor="middle" font-size="10" fill="#3a9a62" letter-spacing="2" font-family="Georgia,serif">DISTRIBUSI SKOR PER TOPIK</text>
+  <foreignObject x="80" y="340" width="520" height="120"><div xmlns="http://www.w3.org/1999/xhtml"><table style="width:100%;border-collapse:collapse">${rows}</table></div></foreignObject>
+  <line x1="100" y1="472" x2="580" y2="472" stroke="#a8dfc0" stroke-width="1"/>
+  <text x="340" y="490" text-anchor="middle" font-size="10" fill="#3a9a62" font-family="Georgia,serif">174 Archive · 174-three.vercel.app · Yudhi Wibowo</text>
+</svg>`;
+  const blob=new Blob([svg],{type:'image/svg+xml'});const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=`am-i-clean-${pct}pct.svg`;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+window.downloadCert=downloadCert;window.startSession=startSession;window.nextQ=nextQ;window.endSession=endSession;window.restartQuiz=restartQuiz;
+</script>
+</body>
+</html>
