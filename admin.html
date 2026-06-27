@@ -540,9 +540,9 @@
 
           <!-- Activity Logs Column -->
           <div style="flex:2; min-width:400px; background:var(--bg-card); border:1px solid var(--border-light); display:flex; flex-direction:column;">
-            <div style="padding:16px 24px; border-bottom:1px solid var(--border-light); font-weight:600; font-family:var(--font-mono);">Recent Login Activity</div>
+            <div style="padding:16px 24px; border-bottom:1px solid var(--border-light); font-weight:600; font-family:var(--font-mono);">Recent Online Activity</div>
             <div id="activityLogList" style="flex:1; overflow-y:auto; padding:0; list-style:none;">
-               <div style="padding:24px; color:var(--text-muted); text-align:center;">Loading logs...</div>
+               <div id="activityPlaceholder" style="padding:24px; color:var(--text-muted); text-align:center;">Waiting for real-time activity...</div>
             </div>
           </div>
         </div>
@@ -848,6 +848,8 @@
                   });
                 }).on('presence', { event: 'join' }, ({ key, newPresences }) => {
                   var logList = document.getElementById('activityLogList');
+                  var ph = document.getElementById('activityPlaceholder');
+                  if (ph) ph.remove();
                   if(logList) {
                     newPresences.forEach(function(p) {
                       var item = document.createElement('div');
@@ -862,6 +864,8 @@
                   }
                 }).on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
                   var logList = document.getElementById('activityLogList');
+                  var ph = document.getElementById('activityPlaceholder');
+                  if (ph) ph.remove();
                   if(logList) {
                     leftPresences.forEach(function(p) {
                       var item = document.createElement('div');
@@ -1508,23 +1512,8 @@
         uptimeEl.textContent = '00:00:00';
       }
       
-      var sorted = users.slice().sort(function(a,b) { return new Date(b.last_sign_in_at || 0) - new Date(a.last_sign_in_at || 0); });
-      var logList = document.getElementById('activityLogList');
-      logList.innerHTML = '';
-      sorted.slice(0, 50).forEach(function(u) {
-        var meta = u.user_metadata || {};
-        var timeStr = u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleString() : 'Never';
-        var devArr = Array.isArray(meta.devices) ? meta.devices : [];
-        var devStr = devArr.length > 0 ? devArr.map(function(d){ return d.id.substr(0,10); }).join(', ') : (meta.deviceId || 'Unknown');
-        var item = document.createElement('div');
-        item.style.padding = '12px 24px';
-        item.style.borderBottom = '1px solid var(--border-light)';
-        item.innerHTML = '<div style="font-size:12px; color:var(--text-muted);">' + timeStr + '</div>' +
-          '<div style="font-weight:600;">' + (meta.username || 'Unknown') + '</div>' +
-          '<div style="font-size:13px;">' + u.email + '</div>' +
-          '<div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Devices: ' + devStr + '</div>';
-        logList.appendChild(item);
-      });
+      // Real-time activity log is managed by presence events.
+      // We no longer overwrite it with static sign-in data.
     }
 
     function renderUsers(users, bannedDevs) {
