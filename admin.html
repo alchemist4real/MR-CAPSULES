@@ -1399,7 +1399,7 @@
         const data = await res.json();
         if (data.success) {
           renderUsers(data.users, bannedDevs);
-          renderDashboard(data.users);
+          renderDashboard(data.users, data.globalStats);
         } else {
           userBrowser.innerHTML = `<div style="padding:24px; color:#FF6B6B;">Failed to load users: ${data.error}</div>`;
         }
@@ -1408,106 +1408,111 @@
       }
     }
 
-    async function renderDashboard(users) {
+    function renderDashboard(users, globalStats) {
       document.getElementById('dashTotalUsers').textContent = users.length;
       
       function fmtTime(sec) {
+        sec = parseInt(sec, 10) || 0;
         const h = Math.floor(sec / 3600).toString().padStart(2, '0');
         const m = Math.floor((sec % 3600) / 60).toString().padStart(2, '0');
         const s = (sec % 60).toString().padStart(2, '0');
-        return `${h}:${m}:${s}`;
+        return h + ':' + m + ':' + s;
       }
       
-      if (window.supabaseClient) {
-        const { data } = await window.supabaseClient.from('global_stats').select('total_uptime').eq('id', 1).single();
-        if(data) document.getElementById('dashTotalUptime').textContent = fmtTime(data.total_uptime);
-        else document.getElementById('dashTotalUptime').textContent = '00:00:00';
+      // Use globalStats from the backend API (bypasses RLS)
+      var uptimeEl = document.getElementById('dashTotalUptime');
+      if (globalStats && globalStats.total_uptime !== undefined) {
+        uptimeEl.textContent = fmtTime(globalStats.total_uptime);
+      } else {
+        uptimeEl.textContent = '00:00:00';
       }
       
-      const sorted = [...users].sort((a,b) => new Date(b.last_sign_in_at || 0) - new Date(a.last_sign_in_at || 0));
-      const logList = document.getElementById('activityLogList');
+      var sorted = users.slice().sort(function(a,b) { return new Date(b.last_sign_in_at || 0) - new Date(a.last_sign_in_at || 0); });
+      var logList = document.getElementById('activityLogList');
       logList.innerHTML = '';
-      sorted.slice(0, 50).forEach(u => {
-        const meta = u.user_metadata || {};
-        const timeStr = u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleString() : 'Never';
-        const item = document.createElement('div');
+      sorted.slice(0, 50).forEach(function(u) {
+        var meta = u.user_metadata || {};
+        var timeStr = u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleString() : 'Never';
+        var devArr = Array.isArray(meta.devices) ? meta.devices : [];
+        var devStr = devArr.length > 0 ? devArr.map(function(d){ return d.id.substr(0,10); }).join(', ') : (meta.deviceId || 'Unknown');
+        var item = document.createElement('div');
         item.style.padding = '12px 24px';
         item.style.borderBottom = '1px solid var(--border-light)';
-        item.innerHTML = `<div style="font-size:12px; color:var(--text-muted);">${timeStr}</div><div style="font-weight:600;">${meta.username || 'Unknown'}</div><div style="font-size:13px;">${u.email}</div><div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Device: ${meta.deviceId || 'Unknown'}</div>`;
+        item.innerHTML = '<div style="font-size:12px; color:var(--text-muted);">' + timeStr + '</div>' +
+          '<div style="font-weight:600;">' + (meta.username || 'Unknown') + '</div>' +
+          '<div style="font-size:13px;">' + u.email + '</div>' +
+          '<div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Devices: ' + devStr + '</div>';
         logList.appendChild(item);
       });
     }
 
-    function renderUsers(users, bannedDevs = []) {
-      const userBrowser = document.getElementById('userBrowser');
+    function renderUsers(users, bannedDevs) {
+      bannedDevs = bannedDevs || [];
+      var userBrowser = document.getElementById('userBrowser');
       userBrowser.innerHTML = '';
-      document.getElementById('itemCount').textContent = `${users.length} users`;
+      document.getElementById('itemCount').textContent = users.length + ' users';
 
-      users.forEach(u => {
-        const email = u.email;
-        const meta = u.user_metadata || {};
-        const username = meta.username || '-';
-        const isBanned = meta.banned === true;
+      users.forEach(function(u) {
+        var email = u.email;
+        var meta = u.user_metadata || {};
+        var username = meta.username || '-';
+        var isBanned = meta.banned === true;
         
-        let devices = Array.isArray(meta.devices) ? meta.devices : [];
-        if (typeof meta.deviceId === 'string' && !devices.some(d => d.id === meta.deviceId)) {
+        var devices = Array.isArray(meta.devices) ? meta.devices.slice() : [];
+        if (typeof meta.deviceId === 'string' && !devices.some(function(d){ return d.id === meta.deviceId; })) {
            devices.push({ id: meta.deviceId, added: u.created_at });
         }
         
-        const isAdmin = window.adminsList && (window.adminsList.includes(email) || window.adminsList.includes(username));
+        var isAdmin = window.adminsList && (window.adminsList.includes(email) || window.adminsList.includes(username));
 
-        const card = document.createElement('div');
+        var card = document.createElement('div');
         card.className = 'user-card';
         card.style.display = 'flex';
         card.style.flexDirection = 'column';
         
-        let badgesHtml = '';
+        var badgesHtml = '';
         if (isAdmin) badgesHtml += '<span class="badge badge-admin">ADMIN</span>';
         if (isBanned) badgesHtml += '<span class="badge badge-banned">BANNED</span>';
 
-        let devicesHtml = '';
+        // Build devices HTML using string concat to avoid nested template literal issues
+        var devicesHtml = '';
         if (devices.length > 0) {
-           devicesHtml = `<div style="margin-top: 15px; font-size: 13px; color: var(--text-muted); border-top: 1px solid var(--border-light); padding-top: 10px;">
-             <div style="font-weight: 600; margin-bottom: 5px;">Known Devices</div>
-             ${devices.map(d => {
-                const isDeviceBanned = bannedDevs.includes(d.id);
-                return `
-                <div style="display:flex; justify-content:space-between; align-items:center; padding: 4px 0;">
-                  <span>${d.id.substr(0,12)}...</span>
-                  <button class="btn-card ${isDeviceBanned ? 'primary' : 'danger'} btn-block-dev" style="padding: 2px 8px; font-size: 11px;" data-dev="${d.id}" data-banned="${isDeviceBanned}">
-                    ${isDeviceBanned ? 'Unban Dev' : 'Block Dev'}
-                  </button>
-                </div>
-                `;
-             }).join('')}
-           </div>`;
+           var devRows = '';
+           for (var di = 0; di < devices.length; di++) {
+              var dev = devices[di];
+              var isDevBanned = bannedDevs.includes(dev.id);
+              devRows += '<div style="display:flex; justify-content:space-between; align-items:center; padding: 4px 0;">';
+              devRows += '<span style="font-family:var(--font-mono); font-size:12px;">' + dev.id.substr(0,14) + '...</span>';
+              devRows += '<button class="btn-card ' + (isDevBanned ? 'primary' : 'danger') + ' btn-block-dev" style="padding: 2px 8px; font-size: 11px;" data-dev="' + dev.id + '" data-banned="' + isDevBanned + '">';
+              devRows += (isDevBanned ? 'Unban Dev' : 'Block Dev');
+              devRows += '</button></div>';
+           }
+           devicesHtml = '<div style="margin-top:12px; font-size:13px; color:var(--text-muted); border-top:1px solid var(--border-light); padding-top:10px;">';
+           devicesHtml += '<div style="font-weight:600; margin-bottom:6px;">Known Devices (' + devices.length + ')</div>';
+           devicesHtml += devRows + '</div>';
         } else {
-           devicesHtml = `<div style="margin-top: 15px; font-size: 13px; color: var(--text-muted); border-top: 1px solid var(--border-light); padding-top: 10px;">No known devices.</div>`;
+           devicesHtml = '<div style="margin-top:12px; font-size:13px; color:var(--text-muted); border-top:1px solid var(--border-light); padding-top:10px;">No known devices yet.</div>';
         }
 
-        card.innerHTML = `
-          <div class="user-card-header">
-            <div>
-              <div class="user-email">${email}</div>
-              <div class="user-meta">@${username} &bull; ${new Date(u.created_at).toLocaleDateString()}</div>
-            </div>
-            <div class="user-badges">${badgesHtml}</div>
-          </div>
-          
-          <div class="card-actions">
-            ${window.isSuperAdmin ? `
-              ${isAdmin ? 
-                `<button class="btn-card btn-revoke" data-target="${email}">Revoke Admin</button>` : 
-                `<button class="btn-card primary btn-make-admin" data-target="${email}">Make Admin</button>`
-              }
-              <button class="btn-card ${isBanned ? 'primary' : 'danger'} btn-ban" data-id="${u.id}" data-banned="${isBanned}">
-                ${isBanned ? 'Unban' : 'Ban'}
-              </button>
-              <button class="btn-card danger btn-del-user" data-id="${u.id}">Delete</button>
-            ` : ''}
-          </div>
-          ${devicesHtml}
-        `;
+        // Build card actions
+        var actionsHtml = '';
+        if (window.isSuperAdmin) {
+          if (isAdmin) {
+            actionsHtml += '<button class="btn-card btn-revoke" data-target="' + email + '">Revoke Admin</button>';
+          } else {
+            actionsHtml += '<button class="btn-card primary btn-make-admin" data-target="' + email + '">Make Admin</button>';
+          }
+          actionsHtml += '<button class="btn-card ' + (isBanned ? 'primary' : 'danger') + ' btn-ban" data-id="' + u.id + '" data-banned="' + isBanned + '">';
+          actionsHtml += (isBanned ? 'Unban' : 'Ban') + '</button>';
+          actionsHtml += '<button class="btn-card danger btn-del-user" data-id="' + u.id + '">Delete</button>';
+        }
+
+        card.innerHTML = '<div class="user-card-header">' +
+          '<div><div class="user-email">' + email + '</div>' +
+          '<div class="user-meta">@' + username + ' &bull; ' + new Date(u.created_at).toLocaleDateString() + '</div></div>' +
+          '<div class="user-badges">' + badgesHtml + '</div></div>' +
+          '<div class="card-actions">' + actionsHtml + '</div>' +
+          devicesHtml;
 
         if (card.querySelector('.btn-make-admin')) {
           card.querySelector('.btn-make-admin').onclick = async (e) => {
