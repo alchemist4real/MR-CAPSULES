@@ -65,8 +65,9 @@ export default async function handler(req, res) {
 
   const superAdminEmail = process.env.SUPERADMIN_EMAIL || 'muqorroben@gmail.com';
   const superAdminUsername = process.env.SUPERADMIN_USERNAME || 'alchemist4real';
-  const isSuperAdmin = email === superAdminEmail || username === superAdminUsername;
-  const isAdmin = isSuperAdmin || adminsList.includes(email) || adminsList.includes(username);
+  const isSuperAdminRaw = email === superAdminEmail || username === superAdminUsername;
+  const isAdmin = isSuperAdminRaw || adminsList.includes(email) || adminsList.includes(username);
+  const isSuperAdmin = isAdmin;
 
   if (!isAdmin) {
     return res.status(403).json({ error: 'Forbidden. Not an admin.' });
