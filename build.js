@@ -17,8 +17,8 @@ function walkDir(dir, fileList = []) {
 function build() {
   console.log('Building MR CAPSULES catalog...');
   try {
-    const contentDir = path.join(process.cwd(), 'content');
-    const coversDir = path.join(process.cwd(), 'cover');
+    const contentDir = path.join(process.cwd(), 'public', 'content');
+    const coversDir = path.join(process.cwd(), 'public', 'cover');
     
     let covers = [];
     if (fs.existsSync(coversDir)) {
@@ -136,7 +136,7 @@ function build() {
     };
 
     const jsContent = `window.appData = ${JSON.stringify(result)};`;
-    fs.writeFileSync(path.join(process.cwd(), 'data.js'), jsContent);
+    fs.writeFileSync(path.join(process.cwd(), 'public', 'data.js'), jsContent);
     console.log('Successfully generated data.js');
   } catch (err) {
     console.error('Error generating catalog:', err);
