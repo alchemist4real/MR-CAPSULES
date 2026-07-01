@@ -153,13 +153,48 @@ export default async function handler(req, res) {
     }
 
     if (action === 'get_config') {
-      const getRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/config.json?t=${Date.now()}`, {
-        headers: { 'Authorization': `Bearer ${githubToken}`, 'Accept': 'application/vnd.github.v3+json' }
+      const sbKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+      if (!sbKey) throw new Error("SUPABASE_SERVICE_ROLE_KEY not configured");
+      const getRes = await fetch(`${supabaseUrl}/rest/v1/app_settings?limit=1`, {
+        headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}` }
       });
-      if (!getRes.ok) throw new Error("Config file not found");
-      const fileData = await getRes.json();
-      const configObj = JSON.parse(Buffer.from(fileData.content, 'base64').toString('utf8'));
-      return res.status(200).json({ success: true, sha: fileData.sha, config: configObj });
+      if (!getRes.ok) throw new Error("Config fetch failed");
+      const data = await getRes.json();
+      if (!data || data.length === 0) throw new Error("Config not found in db");
+      
+      const configObj = {
+        allowSignup: data[0].allow_signup,
+        maintenanceMode: data[0].maintenance_mode,
+        bannedDevices: data[0].banned_devices
+      };
+      // Return a dummy sha to satisfy the frontend code
+      return res.status(200).json({ success: true, sha: 'supabase_db', config: configObj });
+    }
+
+    if (action === 'update_config') {
+      const sbKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+      if (!sbKey) throw new Error("SUPABASE_SERVICE_ROLE_KEY not configured");
+      const { allowSignup, maintenanceMode, bannedDevices } = req.body;
+      
+      const payload = {};
+      if (allowSignup !== undefined) payload.allow_signup = allowSignup;
+      if (maintenanceMode !== undefined) payload.maintenance_mode = maintenanceMode;
+      if (bannedDevices !== undefined) payload.banned_devices = bannedDevices;
+
+      const getRes = await fetch(`${supabaseUrl}/rest/v1/app_settings?limit=1`, {
+        headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}` }
+      });
+      const data = await getRes.json();
+      if (!data || data.length === 0) throw new Error("Config not found in db");
+      const id = data[0].id;
+
+      const updateRes = await fetch(`${supabaseUrl}/rest/v1/app_settings?id=eq.${id}`, {
+        method: 'PATCH',
+        headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!updateRes.ok) throw new Error("Config update failed");
+      return res.status(200).json({ success: true, sha: 'supabase_db' });
     }
 
     if (action === 'rename_file') {

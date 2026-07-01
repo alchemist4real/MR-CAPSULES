@@ -726,7 +726,23 @@
     let selectedFiles = new Set();
 
     window.hybridLogs = [];
-    try { window.hybridLogs = JSON.parse(localStorage.getItem('mrCapsules_hybridLogs') || '[]'); } catch(e) {}
+    
+    window.fetchHybridLogs = async function() {
+      try {
+        const { data, error } = await supabaseClient.from('activity_logs').select('*').order('time', { ascending: false }).limit(100);
+        if (!error && data) {
+          window.hybridLogs = data.map(d => ({
+            id: d.log_id,
+            type: d.type,
+            time: new Date(d.time).getTime(),
+            user: d.user_name,
+            email: d.email,
+            devStr: d.dev_str
+          }));
+          window.renderHybridLogs();
+        }
+      } catch(e) {}
+    };
     
     window.renderHybridLogs = function() {
       var logList = document.getElementById('activityLogList');
@@ -761,13 +777,22 @@
       }
     };
     
-    window.addHybridLog = function(log) {
+    window.addHybridLog = async function(log) {
        const exists = window.hybridLogs.find(l => l.id === log.id);
        if (!exists) {
           window.hybridLogs.push(log);
           window.hybridLogs.sort(function(a, b) { return b.time - a.time; });
           if (window.hybridLogs.length > 200) window.hybridLogs = window.hybridLogs.slice(0, 200);
-          try { localStorage.setItem('mrCapsules_hybridLogs', JSON.stringify(window.hybridLogs)); } catch(e) {}
+          try {
+             await supabaseClient.from('activity_logs').insert({
+                log_id: log.id,
+                type: log.type,
+                time: new Date(log.time).toISOString(),
+                user_name: log.user,
+                email: log.email || null,
+                dev_str: log.devStr || null
+             });
+          } catch(e) {}
        }
     };
 
@@ -878,6 +903,7 @@
             window.isSuperAdmin = true;
             document.getElementById('adminTabs').style.display = 'flex';
             loadUsers();
+            fetchHybridLogs();
             
             try {
               if (supabaseClient) {
@@ -952,6 +978,10 @@
                    }
                 });
                 
+                window.sessionRoom.on('broadcast', { event: 'users_changed' }, () => {
+                  loadUsers();
+                });
+                
                 const btnSendAnn = document.getElementById('btnSendAnnouncement');
                 if (btnSendAnn) {
                   btnSendAnn.onclick = async () => {
@@ -989,19 +1019,7 @@
                 const isAllowed = toggle.checked;
                 const isMaint = toggleMaint.checked;
                 
-                // Fetch latest to avoid wiping bannedDevices
-                let existingConfig = {};
-                try {
-                  const currCfg = await adminAction('get_config');
-                  if (currCfg && currCfg.success) existingConfig = currCfg.config;
-                } catch(e) {}
-                
-                const newConfig = { ...existingConfig, allowSignup: isAllowed, maintenanceMode: isMaint };
-                const base64 = btoa(unescape(encodeURIComponent(JSON.stringify(newConfig, null, 2))));
-                await adminAction('upload', { path: 'config.json', contentBase64: base64, sha: window.configSha });
-                
-                const updatedRes = await adminAction('get_config');
-                if(updatedRes && updatedRes.success) window.configSha = updatedRes.sha;
+                await adminAction('update_config', { allowSignup: isAllowed, maintenanceMode: isMaint });
               };
               
               toggle.onchange = updateConfig;
@@ -1676,7 +1694,10 @@
           card.querySelector('.btn-make-admin').onclick = async (e) => {
             if(await customConfirm(`Make ${email} an Admin?`)) {
               e.target.textContent = '...';
-              adminAction('add_admin', { targetUserId: u.id }).then(() => loadUsers());
+              adminAction('add_admin', { targetUserId: u.id }).then(() => {
+                 loadUsers();
+                 if(window.sessionRoom) window.sessionRoom.send({ type: 'broadcast', event: 'users_changed' });
+              });
             }
           };
         }
@@ -1687,6 +1708,7 @@
               e.target.textContent = '...';
               adminAction('remove_admin', { targetUserId: u.id }).then(() => {
                  loadUsers();
+                 if(window.sessionRoom) window.sessionRoom.send({ type: 'broadcast', event: 'users_changed' });
               });
             }
           };
@@ -1698,7 +1720,10 @@
             if(await customConfirm(`Are you sure you want to ${actionText} ${email}?`)) {
               e.target.textContent = '...';
               const newMeta = { ...meta, banned: !isBanned };
-              adminAction('ban_user', { userId: u.id, user_metadata: newMeta }).then(() => loadUsers());
+              adminAction('ban_user', { userId: u.id, user_metadata: newMeta }).then(() => {
+                 loadUsers();
+                 if(window.sessionRoom) window.sessionRoom.send({ type: 'broadcast', event: 'users_changed' });
+              });
             }
           };
         }
@@ -1707,7 +1732,10 @@
           card.querySelector('.btn-del-user').onclick = async (e) => {
             if(await customConfirm(`WARNING: This will permanently delete the user ${email} from the database. This action cannot be undone. Proceed?`)) {
               e.target.textContent = '...';
-              adminAction('delete_user', { userId: u.id }).then(() => loadUsers());
+              adminAction('delete_user', { userId: u.id }).then(() => {
+                 loadUsers();
+                 if(window.sessionRoom) window.sessionRoom.send({ type: 'broadcast', event: 'users_changed' });
+              });
             }
           };
         }
@@ -1733,10 +1761,8 @@
                 } else {
                    if(!arr.includes(devId)) arr.push(devId);
                 }
-                configObj.bannedDevices = arr;
                 
-                const base64 = btoa(unescape(encodeURIComponent(JSON.stringify(configObj, null, 2))));
-                await adminAction('upload', { path: 'config.json', contentBase64: base64, sha: cfgData.sha });
+                await adminAction('update_config', { bannedDevices: arr });
                 
                 if (window.sessionRoom) {
                    if (!currentlyBanned) {
@@ -1779,21 +1805,18 @@
       };
     });
 
-    // Auto-refresh users every 30 seconds
-    setInterval(function() {
-      loadUsers();
-    }, 30000);
+    // User polling removed in favor of Supabase realtime channel (users_changed)
 
     // Auto-refresh dashboard uptime every 15 seconds
     setInterval(async function() {
       try {
-        var res = await fetch('/api/admin', {
+        var res = await fetch('/api/uptime', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + sessionToken },
-          body: JSON.stringify({ action: 'get_users' })
+          body: JSON.stringify({ action: 'get' })
         });
         var data = await res.json();
-        if (data.success && data.globalStats) {
+        if (data.success && data.total_uptime !== undefined) {
           function fmtT(sec) {
             sec = parseInt(sec, 10) || 0;
             var d = Math.floor(sec / 86400);
@@ -1804,7 +1827,7 @@
             return h + ':' + m + ':' + s;
           }
           var el = document.getElementById('dashTotalUptime');
-          if(el) el.textContent = fmtT(data.globalStats.total_uptime);
+          if(el) el.textContent = fmtT(data.total_uptime);
         }
       } catch(e) {}
     }, 15000);
