@@ -874,7 +874,6 @@
         
         if (res.ok && data.success) {
           authOverlay.classList.add('hidden');
-          window.adminsList = data.admins || [];
           if (data.isSuperAdmin) {
             window.isSuperAdmin = true;
             document.getElementById('adminTabs').style.display = 'flex';
@@ -1618,7 +1617,7 @@
            devices.push({ id: meta.deviceId, added: u.created_at });
         }
         
-        var isAdmin = window.adminsList && (window.adminsList.includes(email) || window.adminsList.includes(username));
+        var isAdmin = u.role === 'admin';
 
         var card = document.createElement('div');
         card.className = 'user-card';
@@ -1677,7 +1676,7 @@
           card.querySelector('.btn-make-admin').onclick = async (e) => {
             if(await customConfirm(`Make ${email} an Admin?`)) {
               e.target.textContent = '...';
-              adminAction('add_admin', { newAdmin: email }).then(() => loadUsers());
+              adminAction('add_admin', { targetUserId: u.id }).then(() => loadUsers());
             }
           };
         }
@@ -1686,8 +1685,7 @@
           card.querySelector('.btn-revoke').onclick = async (e) => {
             if(await customConfirm(`Remove admin privileges for ${email}?`)) {
               e.target.textContent = '...';
-              adminAction('remove_admin', { targetAdmin: email }).then(() => {
-                 window.adminsList = window.adminsList.filter(a => a !== email);
+              adminAction('remove_admin', { targetUserId: u.id }).then(() => {
                  loadUsers();
               });
             }
