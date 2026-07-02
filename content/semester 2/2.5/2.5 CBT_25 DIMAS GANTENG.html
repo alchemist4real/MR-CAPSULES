@@ -1,0 +1,2000 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>25 DIMAS GANTENG — CBT Blok 2.5</title>
+<style>
+:root {
+  --bg: #F5F2EC;
+  --surface: #EDE9E1;
+  --surface-2: #E4DFD5;
+  --surface-3: #D9D3C8;
+  --border: #C8C1B4;
+  --border-light: #D4CEC4;
+  --ink: #1A1814;
+  --ink-muted: #5A5650;
+  --ink-faint: #9A9590;
+  --r: 14px;
+  --r-sm: 9px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--ink); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; padding: 16px; }
+.shell { max-width: 760px; margin: 0 auto; }
+
+#start-screen { animation: fadeIn 0.5s ease; }
+.logo-row { display: flex; align-items: baseline; gap: 14px; padding: 36px 0 8px; flex-wrap: wrap; }
+.logo-wordmark { font-family: Georgia, serif; font-size: clamp(1.9rem,6vw,3.4rem); letter-spacing: -0.5px; color: var(--ink); line-height: 1; }
+.logo-wordmark span { color: var(--ink-muted); }
+.logo-tag { font-family: 'Courier New', monospace; font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--ink); border: 1px solid rgba(26,24,20,0.25); padding: 4px 10px; border-radius: 99px; background: rgba(26,24,20,0.05); }
+.divider { height: 1px; background: var(--border); margin: 20px 0; }
+.meta-row { display: flex; gap: 20px; flex-wrap: wrap; padding: 10px 0; }
+.meta-chip { display: flex; align-items: center; gap: 7px; font-family: 'Courier New', monospace; font-size: 11px; color: var(--ink-muted); }
+.meta-chip .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--ink-muted); flex-shrink: 0; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 24px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(26,24,20,0.06); }
+.card-title { font-family: 'Courier New', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.card-title::after { content:''; flex:1; height:1px; background: var(--border); }
+.mode-grid { display: flex; flex-direction: column; gap: 9px; }
+.mode-btn { display: flex; align-items: center; gap: 15px; padding: 15px 18px; border: 1px solid var(--border-light); border-radius: var(--r-sm); background: var(--surface-2); cursor: pointer; text-align: left; width: 100%; font-family: system-ui, sans-serif; transition: all 0.2s ease; }
+.mode-btn:hover { border-color: var(--ink-muted); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(26,24,20,0.08); }
+.mode-icon { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-family: 'Courier New', monospace; font-size: 13px; font-weight: 500; color: var(--ink-muted); flex-shrink: 0; background: var(--surface-3); }
+.mode-text h3 { font-weight: 600; font-size: 15px; color: var(--ink); margin-bottom: 2px; }
+.mode-text p { font-size: 12px; color: var(--ink-muted); font-weight: 300; line-height: 1.4; }
+.mode-arr { margin-left: auto; color: var(--ink-faint); font-size: 18px; transition: transform 0.2s; }
+.mode-btn:hover .mode-arr { transform: translateX(4px); color: var(--ink); }
+.stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+.stat-box { background: var(--surface-2); border: 1px solid var(--border-light); border-radius: var(--r-sm); padding: 16px 12px; text-align: center; }
+.stat-val { font-family: Georgia, serif; font-size: 1.9rem; line-height: 1; color: var(--ink); }
+.stat-lbl { font-family: 'Courier New', monospace; font-size: 9.5px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink-muted); margin-top: 5px; }
+.hist-list { display: flex; flex-direction: column; gap: 5px; max-height: 140px; overflow-y: auto; margin-top: 10px; }
+.hist-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: var(--bg); border: 1px solid var(--border-light); border-radius: 7px; font-size: 12px; }
+.hi-mode { font-family: 'Courier New', monospace; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; padding: 2px 7px; border-radius: 99px; background: var(--surface-3); color: var(--ink-muted); }
+.hi-score { font-weight: 600; color: var(--ink); margin-left: auto; }
+.hi-pct { font-family: 'Courier New', monospace; font-size: 11px; padding: 2px 7px; border-radius: 99px; background: var(--surface-3); color: var(--ink-muted); }
+.hi-date { font-size: 11px; color: var(--ink-faint); }
+.no-hist { font-size: 13px; color: var(--ink-faint); text-align: center; padding: 16px 0; font-style: italic; }
+.reset-btn { margin-top: 10px; background: none; border: 1px solid var(--border); border-radius: 7px; padding: 6px 14px; font-family: 'Courier New', monospace; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--ink-faint); cursor: pointer; transition: all 0.15s; }
+.reset-btn:hover { border-color: var(--ink-muted); color: var(--ink); }
+.topic-bar { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+.topic-row { display: flex; align-items: center; gap: 10px; font-size: 12px; }
+.topic-name { min-width: 180px; color: var(--ink-muted); font-size: 11px; }
+.topic-track { flex: 1; height: 5px; background: var(--surface-2); border-radius: 99px; overflow: hidden; }
+.topic-fill { height: 100%; border-radius: 99px; background: var(--surface-3); transition: width 0.6s ease; }
+.topic-fill.good { background: var(--ink); }
+.topic-fill.mid  { background: var(--ink-muted); }
+.topic-fill.low  { background: var(--border); }
+.topic-pct { font-family: 'Courier New', monospace; font-size: 10px; color: var(--ink-muted); min-width: 30px; text-align: right; }
+
+#quiz-screen { display: none; }
+.quiz-header { display: flex; align-items: center; gap: 12px; padding: 20px 0 16px; border-bottom: 1px solid var(--border); margin-bottom: 18px; }
+.btn-ghost { background: none; border: 1px solid var(--border); border-radius: var(--r-sm); padding: 8px 14px; font-family: 'Courier New', monospace; font-size: 11px; color: var(--ink-muted); cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+.btn-ghost:hover { border-color: var(--ink-muted); color: var(--ink); background: var(--surface-2); }
+.progress-block { flex: 1; }
+.progress-track { height: 4px; background: var(--surface-3); border-radius: 99px; overflow: hidden; margin-bottom: 5px; }
+.progress-fill { height: 100%; background: linear-gradient(90deg,var(--ink-faint),var(--ink)); border-radius: 99px; transition: width 0.5s cubic-bezier(0.4,0,0.2,1); }
+.progress-label { font-family: 'Courier New', monospace; font-size: 10px; color: var(--ink-muted); display: flex; justify-content: space-between; }
+.score-pill { font-family: 'Courier New', monospace; font-size: 12px; padding: 6px 14px; border-radius: 99px; background: var(--ink); color: var(--bg); border: 1px solid var(--ink); white-space: nowrap; }
+.nav-row-top { display: flex; gap: 10px; align-items: center; padding: 0 0 12px; }
+.q-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 28px; margin-bottom: 12px; animation: fadeIn 0.25s ease; box-shadow: 0 1px 6px rgba(26,24,20,0.07); }
+.q-index { font-family: 'Courier New', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 14px; display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+.pill-tag { background: var(--surface-3); border: 1px solid var(--border); padding: 2px 8px; border-radius: 99px; color: var(--ink-muted); font-size: 9px; }
+.q-text { font-size: clamp(14.5px,2.2vw,16.5px); line-height: 1.75; font-weight: 400; color: var(--ink); margin-bottom: 22px; }
+.opts { display: flex; flex-direction: column; gap: 7px; }
+.opt { display: flex; align-items: center; gap: 12px; padding: 12px 15px; border: 1px solid var(--border-light); border-radius: var(--r-sm); background: var(--surface-2); cursor: pointer; width: 100%; text-align: left; font-family: system-ui, sans-serif; font-size: 14px; color: var(--ink-muted); transition: all 0.15s ease; }
+.opt:hover:not(:disabled) { border-color: var(--ink-muted); background: var(--surface-3); color: var(--ink); }
+.opt:disabled { cursor: default; }
+.opt-key { width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-family: 'Courier New', monospace; font-size: 10px; color: var(--ink-faint); background: var(--surface); transition: all 0.15s; }
+.opt-body { flex: 1; line-height: 1.45; }
+.opt.correct { border-color: var(--ink) !important; background: var(--ink) !important; color: var(--bg) !important; }
+.opt.correct .opt-key { background: var(--bg) !important; border-color: var(--bg) !important; color: var(--ink) !important; }
+.opt.incorrect { border-color: var(--border) !important; background: var(--surface-3) !important; color: var(--ink-faint) !important; }
+.opt.incorrect .opt-body { text-decoration: line-through; opacity: 0.5; }
+.opt.selected { border-color: var(--ink-muted) !important; background: var(--surface-2) !important; color: var(--ink) !important; }
+.opt.selected .opt-key { background: var(--ink-muted) !important; border-color: var(--ink-muted) !important; color: var(--bg) !important; }
+.opt-badge { margin-left: auto; font-size: 14px; flex-shrink: 0; }
+.opt.drill-wrong-shake { animation: shake 0.4s ease; }
+@keyframes shake { 0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)} }
+.exp-box { background: var(--surface-2); border: 1px solid var(--border); border-left: 3px solid var(--ink-muted); border-radius: var(--r-sm); padding: 20px 22px; margin-top: 12px; display: none; animation: slideUp 0.3s cubic-bezier(0.4,0,0.2,1); }
+.exp-box.show { display: block; }
+@keyframes slideUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+.exp-header { font-family: 'Courier New', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.exp-header::after { content:''; flex:1; height:1px; background: var(--border); }
+.exp-answer { font-weight: 600; font-size: 15px; color: var(--ink); margin-bottom: 8px; }
+.exp-body { font-size: 13.5px; line-height: 1.75; color: var(--ink-muted); }
+.exp-body strong { color: var(--ink); font-weight: 600; }
+.exp-src { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--border); font-family: 'Courier New', monospace; font-size: 10px; color: var(--ink-faint); }
+.nav-btn { display: flex; align-items: center; gap: 6px; padding: 11px 20px; border-radius: var(--r-sm); font-family: system-ui, sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.15s; border: 1px solid; }
+.nav-btn.primary { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+.nav-btn.primary:hover { background: #3A3630; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(26,24,20,0.22); }
+.nav-btn.secondary { background: transparent; border-color: var(--border); color: var(--ink-muted); }
+.nav-btn.secondary:hover { border-color: var(--ink-muted); color: var(--ink); background: var(--surface-2); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+.nav-spacer { flex: 1; }
+.flag-btn { background: none; border: 1px solid var(--border); border-radius: var(--r-sm); padding: 10px 14px; cursor: pointer; font-size: 14px; color: var(--ink-muted); transition: all 0.15s; }
+.flag-btn:hover { border-color: var(--ink-muted); color: var(--ink); }
+.flag-btn.flagged { border-color: var(--ink); color: var(--ink); background: var(--surface-2); }
+.q-map-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 20px; margin-top: 12px; }
+.q-map-title { font-family: 'Courier New', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 12px; }
+.q-map-grid { display: flex; flex-wrap: wrap; gap: 5px; }
+.q-dot { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: 'Courier New', monospace; font-size: 9px; cursor: pointer; transition: all 0.1s; border: 1px solid var(--border-light); background: var(--surface-2); color: var(--ink-faint); }
+.q-dot:hover { border-color: var(--ink-muted); color: var(--ink); }
+.q-dot.current { border-color: var(--ink); color: var(--bg); background: var(--ink); }
+.q-dot.answered { background: var(--surface-3); color: var(--ink); border-color: var(--ink-muted); }
+.q-dot.wrong { background: var(--surface-2); color: var(--ink-faint); text-decoration: line-through; }
+.q-dot.flagged-dot { outline: 2px solid var(--ink-muted); outline-offset: 1px; }
+.timer-badge { font-family: 'Courier New', monospace; font-size: 12px; color: var(--ink-muted); padding: 5px 12px; border-radius: 99px; border: 1px solid var(--border); }
+.timer-badge.warning { color: var(--ink); border-color: var(--ink-muted); font-weight: 500; }
+.timer-badge.danger { color: var(--bg); background: var(--ink); border-color: var(--ink); animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.55} }
+.exam-overlay { position: fixed; inset: 0; background: rgba(245,242,236,0.85); z-index: 100; display: none; align-items: center; justify-content: center; backdrop-filter: blur(6px); }
+.exam-overlay.show { display: flex; }
+.exam-modal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 34px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 8px 40px rgba(26,24,20,0.12); }
+.exam-modal h2 { font-family: Georgia, serif; font-size: 1.8rem; margin-bottom: 8px; }
+.exam-modal p { font-size: 14px; color: var(--ink-muted); margin-bottom: 24px; line-height: 1.6; }
+.exam-modal .nav-btn { width: 100%; justify-content: center; margin-bottom: 8px; }
+.drill-reset-overlay { position: fixed; inset: 0; background: rgba(245,242,236,0.88); z-index: 200; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+.drill-reset-overlay.show { display: flex; }
+.drill-reset-modal { background: var(--surface); border: 1px solid var(--border); border-top: 3px solid var(--ink); border-radius: var(--r); padding: 36px 32px; max-width: 380px; width: 90%; text-align: center; }
+.drill-reset-modal h2 { font-family: Georgia, serif; font-size: 1.5rem; margin-bottom: 8px; }
+.drill-reset-modal p { font-size: 14px; color: var(--ink-muted); margin-bottom: 24px; line-height: 1.6; }
+.drill-reset-modal .nav-btn { width: 100%; justify-content: center; margin-bottom: 8px; }
+#result-screen { display: none; animation: fadeIn 0.5s ease; }
+.result-hero { padding: 40px 0 24px; text-align: center; }
+.result-label { font-family: 'Courier New', monospace; font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 12px; }
+.result-score { font-family: Georgia, serif; font-size: clamp(3.2rem,11vw,5.5rem); line-height: 1; color: var(--ink); letter-spacing: -2px; }
+.result-score span { color: var(--ink-muted); }
+.result-sub { font-size: 14px; color: var(--ink-muted); margin-top: 10px; }
+.result-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 16px; }
+.result-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 18px 16px; text-align: center; }
+.result-card .val { font-family: Georgia, serif; font-size: 2rem; line-height: 1; margin-bottom: 4px; color: var(--ink); }
+.result-card.wrong .val { color: var(--ink-faint); }
+.result-card.skipped .val { color: var(--ink-muted); }
+.result-card .lbl { font-family: 'Courier New', monospace; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink-muted); }
+.result-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.result-actions .nav-btn { flex: 1; justify-content: center; }
+.streak-toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--ink); border-radius: 99px; padding: 10px 22px; font-family: 'Courier New', monospace; font-size: 12px; color: var(--bg); transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1); z-index: 999; white-space: nowrap; }
+.streak-toast.show { transform: translateX(-50%) translateY(0); }
+.kbd-hint { font-family: 'Courier New', monospace; font-size: 10px; color: var(--ink-faint); text-align: center; padding: 12px 0 4px; }
+kbd { background: var(--surface-2); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; font-size: 10px; color: var(--ink-muted); }
+.footer { text-align: center; padding: 28px 0 12px; border-top: 1px solid var(--border); margin-top: 8px; }
+.footer-wordmark { font-family: Georgia, serif; font-size: 13px; color: var(--ink-muted); letter-spacing: 0.5px; margin-bottom: 4px; }
+.footer-credit { font-family: 'Courier New', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--ink-faint); }
+@keyframes fadeIn { from{opacity:0}to{opacity:1} }
+@media(max-width:480px){
+  body{padding:10px;}
+  .q-card{padding:18px 14px;}
+  .stats-grid{grid-template-columns:repeat(2,1fr);}
+  .topic-name{min-width:120px;}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- START -->
+<div id="start-screen">
+  <div class="logo-row">
+    <div class="logo-wordmark">25 <span>DIMAS GANTENG</span></div>
+    <div class="logo-tag">BLOK 2.5</div>
+  </div>
+  <div class="meta-row">
+    <div class="meta-chip"><span class="dot"></span>Healthy Lifestyle &amp; Health Promotion</div>
+    <div class="meta-chip"><span class="dot"></span>97 Soal · KAPSUL Cardiovictus 2025</div>
+    <div class="meta-chip"><span class="dot"></span>FK Unsoed · CBT 2.3</div>
+  </div>
+  <div class="divider"></div>
+  <div class="card">
+    <div class="card-title">Pilih Mode Belajar</div>
+    <div class="mode-grid">
+      <button class="mode-btn" onclick="startQuiz('study')">
+        <div class="mode-icon">S</div>
+        <div class="mode-text"><h3>Study Mode</h3><p>Lihat jawaban &amp; pembahasan lengkap langsung setelah pilih</p></div>
+        <div class="mode-arr">›</div>
+      </button>
+      <button class="mode-btn" onclick="startQuiz('exam')">
+        <div class="mode-icon">E</div>
+        <div class="mode-text"><h3>Exam Mode</h3><p>Simulasi ujian — jawaban tersembunyi sampai kumpul</p></div>
+        <div class="mode-arr">›</div>
+      </button>
+      <button class="mode-btn" onclick="startQuiz('drill')">
+        <div class="mode-icon">D</div>
+        <div class="mode-text"><h3>Drill Mode</h3><p>Ulangi soal sampai benar, tanpa skor akhir</p></div>
+        <div class="mode-arr">›</div>
+      </button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Statistik &amp; Riwayat</div>
+    <div class="stats-grid">
+      <div class="stat-box"><div class="stat-val" id="stat-best">—</div><div class="stat-lbl">Best Score</div></div>
+      <div class="stat-box"><div class="stat-val" id="stat-avg">—</div><div class="stat-lbl">Avg Score</div></div>
+      <div class="stat-box"><div class="stat-val" id="stat-sessions">0</div><div class="stat-lbl">Sessions</div></div>
+      <div class="stat-box"><div class="stat-val">97</div><div class="stat-lbl">Total Soal</div></div>
+    </div>
+    <div class="hist-list" id="hist-list"><div class="no-hist">Belum ada sesi — yuk mulai!</div></div>
+    <button class="reset-btn" onclick="clearHistory()">Hapus Riwayat</button>
+  </div>
+  <div class="card">
+    <div class="card-title">Akurasi per Topik</div>
+    <div class="topic-bar" id="topic-bar"><div class="no-hist">Selesaikan satu sesi dulu untuk lihat statistik.</div></div>
+  </div>
+  <div class="footer">
+    <div class="footer-wordmark">25 Dimas Ganteng · Blok 2.5 · KAPSUL Cardiovictus 2025</div>
+    <div class="footer-credit">Sumber: KAPSUL 2.5 Cardiovictus — CBT 2.3 · Periksa kembali kebenaran jawaban</div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz-screen">
+  <div class="quiz-header">
+    <button class="btn-ghost" onclick="confirmExit()">← Keluar</button>
+    <div class="progress-block">
+      <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+      <div class="progress-label"><span id="prog-txt">0 / 97</span><span id="mode-badge">—</span></div>
+    </div>
+    <div class="score-pill" id="score-display">0 / 0</div>
+    <div class="timer-badge" id="timer-el" style="display:none">00:00</div>
+  </div>
+  <div class="nav-row-top">
+    <button class="nav-btn secondary" id="btn-prev" onclick="navigate(-1)">‹ Prev</button>
+    <button class="flag-btn" id="btn-flag" onclick="toggleFlag()">⚑</button>
+    <div class="nav-spacer"></div>
+    <button class="nav-btn primary" id="btn-next" onclick="navigate(1)">Next ›</button>
+  </div>
+  <div class="q-card" id="q-card"></div>
+  <div class="exp-box" id="exp-box">
+    <div class="exp-header">Pembahasan</div>
+    <div class="exp-answer" id="exp-answer"></div>
+    <div class="exp-body" id="exp-body"></div>
+    <div class="exp-src" id="exp-src"></div>
+  </div>
+  <div class="q-map-section">
+    <div class="q-map-title">Question Map</div>
+    <div class="q-map-grid" id="q-map"></div>
+  </div>
+  <div class="kbd-hint">Keyboard: <kbd>A</kbd>–<kbd>E</kbd> pilih · <kbd>→</kbd> next · <kbd>←</kbd> prev · <kbd>F</kbd> flag</div>
+</div>
+
+<!-- RESULTS -->
+<div id="result-screen">
+  <div class="result-hero">
+    <div class="result-label">Session Complete</div>
+    <div class="result-score" id="final-score-display"><span>0</span>/97</div>
+    <div class="result-sub" id="final-sub">—</div>
+  </div>
+  <div class="result-grid">
+    <div class="result-card correct"><div class="val" id="r-correct">0</div><div class="lbl">Benar</div></div>
+    <div class="result-card wrong"><div class="val" id="r-wrong">0</div><div class="lbl">Salah</div></div>
+    <div class="result-card skipped"><div class="val" id="r-skip">0</div><div class="lbl">Skip</div></div>
+  </div>
+  <div class="card" style="margin-bottom:12px">
+    <div class="card-title">Akurasi per Topik (Sesi Ini)</div>
+    <div class="topic-bar" id="result-topic-bar"></div>
+  </div>
+  <div class="result-actions">
+    <button class="nav-btn secondary" onclick="reviewAnswers()">Review</button>
+    <button class="nav-btn primary" onclick="showStart()">↩ Menu</button>
+  </div>
+</div>
+
+<!-- Overlays -->
+<div class="exam-overlay" id="exam-overlay">
+  <div class="exam-modal">
+    <h2>Akhiri Ujian?</h2>
+    <p>Semua jawaban akan dinilai dan hasilnya ditampilkan.</p>
+    <button class="nav-btn primary" onclick="submitExam()">Ya, Kumpulkan</button>
+    <button class="nav-btn secondary" onclick="closeOverlay('exam-overlay')">Lanjut Dulu</button>
+  </div>
+</div>
+<div class="exam-overlay" id="exit-overlay">
+  <div class="exam-modal">
+    <h2>Keluar Sesi?</h2>
+    <p>Progress sesi ini tidak akan tersimpan.</p>
+    <button class="nav-btn primary" onclick="showStart()">Ya, Keluar</button>
+    <button class="nav-btn secondary" onclick="closeOverlay('exit-overlay')">Batal</button>
+  </div>
+</div>
+<div class="drill-reset-overlay" id="drill-overlay">
+  <div class="drill-reset-modal">
+    <h2>Drill Selesai!</h2>
+    <p>Semua soal sudah dijawab dengan benar. Mantap!</p>
+    <button class="nav-btn primary" onclick="startQuiz('drill')">Drill Lagi</button>
+    <button class="nav-btn secondary" onclick="showStart()">Menu Utama</button>
+  </div>
+</div>
+<div class="streak-toast" id="streak-toast"></div>
+
+</div>
+
+<script>
+const QUESTIONS = [
+{
+"n": 1,
+"t": "Gizi & Imunologi",
+"q": "Protein apa yang meningkatkan sintesis glutathion?",
+"o": [
+"Arginin",
+"Glutamin",
+"Histiosin",
+"Pirimidin",
+"Purin"
+],
+"a": "Glutamin",
+"exp": "Dari PPT dr. Sari — Gizi Imun (materi Glutamin): <strong>Glutamin</strong> berperan penting untuk <em>macrofage & mukosa</em>, dengan kebutuhan 12–18 gr/hari (kondisi normal) hingga 18–24 gr/hari pada pasien ICU. Fungsi utamanya adalah <strong>meningkatkan sintesis glutathion (glutathione synthesis)</strong> sebagai salah satu sistem antioksidan tubuh, bekerja bersama Selenium (Se) dan Cystein. Glutamin berbeda dari Arginin (wound healing, T-cell activation) dan Purin/Pirimidin (sintesis DNA/RNA).",
+"src": "K6 (pdf) Gizi Imun"
+},
+{
+"n": 2,
+"t": "Gizi Daur Hidup",
+"q": "Apa sumber polyunsaturated fatty acids?",
+"o": [
+"Kulit ayam",
+"Putih telur",
+"Kuning telur",
+"Ikan laut",
+"Lemak sapi"
+],
+"a": "Ikan laut",
+"exp": "Sumber <strong>MUFA</strong> (Monounsaturated Fatty Acid): minyak zaitun, minyak canola, minyak bunga matahari, kacang tanah, almond, pistachio, alpukat. Sumber <strong>PUFA</strong> (Polyunsaturated Fatty Acid): sayuran, kacang, minyak biji-bijian (asam linoleat, asam alfa linolenat), dan <strong>ikan laut</strong> yang kaya asam eikosapentaenoat (EPA) dan asam dokosaheksaenoat (DHA) — golongan omega-3. Lemak sapi tergolong SFA (saturated fat), sedangkan kulit ayam dan kuning telur juga didominasi lemak jenuh/kolesterol, bukan PUFA.",
+"src": "K7 (pdf) Gizi dalam Daur Hidup"
+},
+{
+"n": 3,
+"t": "Gizi & Imunologi",
+"q": "Yang memiliki kandungan natural antioksidan paling banyak adalah",
+"o": [
+"Buah-buahan berwarna cerah",
+"Keju, yoghurt, produk susu lain",
+"Alkohol dan produk fermentasi lainnya",
+"Telur unggas",
+"Umbi-umbian"
+],
+"a": "Buah-buahan berwarna cerah",
+"exp": "Dari diagram <strong>Antioxidant in Phytochemical</strong> (K14 — Diet pada Anak), kandungan antioksidan alami paling banyak berasal dari <strong>buah dan sayur berwarna cerah</strong> — pigmen warna (orange, hijau, ungu, merah, putih) berkorelasi dengan kandungan fitokimia/antioksidan spesifik: karoten & folat (oranye), vitamin K & folat (hijau), antosianin (ungu), vitamin A & likopen (merah), flavonoid (putih). Produk susu, telur, dan umbi-umbian bukan sumber antioksidan fitokimia yang signifikan, sedangkan alkohol/fermentasi justru berpotensi menjadi sumber oksidan (prooxidant).",
+"src": "K14 (pdf) Diet pada Anak"
+},
+{
+"n": 4,
+"t": "Penilaian Status Gizi",
+"q": "Indeks Massa Tubuh Normal untuk kawasan Asia Pasifik adalah",
+"o": [
+"< 18,5",
+"18,5 – 24,9",
+"18,5 – 22,9",
+"25 – 29,9",
+"23 – 29,9"
+],
+"a": "18,5 – 22,9",
+"exp": "Klasifikasi IMT untuk kawasan <strong>Asia–Pasifik</strong>: Underweight <18,5 | <strong>Normoweight 18,5–22,9</strong> | Overweight 23–24,9 | Obese ≥25,0. Ambang batas normal Asia-Pasifik (22,9) lebih rendah dibanding standar WHO global (24,9), karena populasi Asia memiliki risiko kardiovaskular dan metabolik yang lebih tinggi pada IMT yang sama dibanding orang Barat, sehingga kategori overweight/obese dibuat lebih ketat.",
+"src": "K8 (pdf) PENILAIAN STATUS GIZI"
+},
+{
+"n": 5,
+"t": "Gizi Daur Hidup",
+"q": "Pada kelompok usia manakah kebutuhan energi dapat dihitung menggunakan rumus Harris-Benedict?",
+"o": [
+"Bayi",
+"Batita",
+"Balita",
+"Anak usia sekolah",
+"Remaja"
+],
+"a": "Remaja",
+"exp": "<strong>Rumus Harris-Benedict</strong> digunakan untuk menentukan kebutuhan energi <strong>remaja</strong>: BMR pria (kkal/hari) = 66 + (13,7×BB) + (5×TB) − (6,76×Usia); BMR wanita (kkal/hari) = 665 + (9,6×BB) + (1,8×TB) − (4,7×Usia), dengan BB dalam kg, TB dalam cm, dan usia dalam tahun. Kebutuhan kalori harian dihitung dari BMR × activity factor (Sedentary 1,2 | Light 1,375 | Moderate 1,55 | Elevated 1,725). Untuk bayi/batita/balita digunakan AKG per kilogram berat badan, sedangkan anak usia sekolah menggunakan metode Nelson.",
+"src": "K14 (pdf) Diet pada Anak"
+},
+{
+"n": 6,
+"t": "Gizi Daur Hidup",
+"q": "Ibu hamil yang gizinya baik seperti apa?",
+"o": [
+"Terdapat proteinuria",
+"Terdapat glikosuria",
+"Terdapat anemia",
+"Hb > 11 g/dL",
+"LILA < 23,5 cm"
+],
+"a": "Hb > 11 g/dL",
+"exp": "Tanda ibu hamil sehat dengan status gizi baik: (1) LiLA ≥23,5 cm; (2) IMT pra-hamil 18,5–25,0; (3) kenaikan BB sesuai usia kehamilan; (4) <strong>kadar Hb >11 g/dL</strong> (tidak anemia); (5) tekanan darah normal (sistolik <120, diastolik <80 mmHg); (6) tidak ada glukosuria; (7) tidak ada proteinuria. Opsi proteinuria, glikosuria, dan anemia justru merupakan tanda status gizi yang <em>buruk</em>, sedangkan LILA <23,5 cm adalah nilai yang berisiko (bukan sehat).",
+"src": "K7 (pdf) Gizi dalam Daur Hidup"
+},
+{
+"n": 7,
+"t": "Gizi Daur Hidup",
+"q": "Tanda \"baggy pants\" menandakan apa?",
+"o": [
+"Kwashiorkor",
+"Marasmus",
+"Xeroftalmia",
+"Kreatinisme",
+"Neural tube defect"
+],
+"a": "Marasmus",
+"exp": "<strong>Marasmus</strong> adalah defisiensi makronutrien berat (karbohidrat, lemak, protein) yang ditandai: 'old man face' akibat lemak subkutan menghilang dan massa otot berkurang, kulit tipis dan keriput sehingga tampak seperti '<strong>baggy pants</strong>' (celana kedodoran) pada area bokong/paha karena hilangnya lemak dan otot, serta gangguan multiorgan dan gagal tumbuh. Berbeda dengan kwashiorkor yang ditandai edema akibat defisiensi protein predominan dengan asupan energi relatif cukup.",
+"src": "K21 (pdf) GIZI DAN METABOLISME.pdf"
+},
+{
+"n": 8,
+"t": "Gizi & Imunologi",
+"q": "Vitamin apa yang berpengaruh pada imunitas mukosa",
+"o": [
+"Vitamin A",
+"Vitamin B",
+"Vitamin C",
+"Vitamin D",
+"Vitamin E"
+],
+"a": "Vitamin A",
+"exp": "Dari PPT dr. Sari — Gizi Imun: <strong>Vitamin A</strong> berperan pada NK cells, neutrofil, <strong>mucosal immunity</strong>, limfosit T, monosit, makrofage, dan B limfosit, serta haemopesis. Mukosa (lapisan pelindung saluran napas, cerna, dan genital) adalah lini pertama imunitas tubuh, dan Vitamin A esensial menjaga integritas serta fungsi imun mukosa tersebut. Vitamin lain (thiamin, piridoksin, asam folat, B12, dan C) lebih berperan pada sintesis protein dan penyembuhan luka.",
+"src": "K6 (pdf) Gizi Imun"
+},
+{
+"n": 9,
+"t": "Gizi Seimbang & Pangan",
+"q": "Siapa yang bertanggung jawab dalam memantau keamanan dan kesegaran pangan",
+"o": [
+"BGN",
+"BPOM",
+"OKKP",
+"Dinkes",
+"Dinas Pasar"
+],
+"a": "OKKP",
+"exp": "Pengawasan regulasi dan standar pangan dibagi antar-lembaga: BPOM mengawasi mutu, gizi, label, dan iklan <em>pangan olahan</em>; Badan Gizi Nasional (BGN) mematangkan regulasi standar gizi dan AKG; sedangkan <strong>Otoritas Kompeten Keamanan Pangan (OKKP)</strong> bertanggung jawab langsung untuk melakukan pengawasan terhadap <strong>keamanan dan mutu pangan segar</strong> (baik asal tumbuhan maupun hewan). Karena pertanyaan menyebut 'kesegaran pangan', jawaban yang tepat adalah OKKP, bukan BPOM yang mengurus pangan olahan.",
+"src": "K19 (pdf) MUTU DAN KEAMANAN PANGAN"
+},
+{
+"n": 10,
+"t": "Penilaian Status Gizi",
+"q": "Penilaian status gizi untuk morbiditas & mortalitas yang disebabkan oleh defisiensi gizi adalah:",
+"o": [
+"Ekologi",
+"Klinis",
+"Statistik vital",
+"Biofisik",
+"Biokimia"
+],
+"a": "Statistik vital",
+"exp": "<strong>Metode Statistik Vital</strong> mengidentifikasi outcome berupa <em>morbiditas dan mortalitas</em> yang diakibatkan oleh defisiensi gizi melalui data statistik kesehatan, mencakup kematian berdasarkan umur dan angka kesakitan. Berbeda dari Klinis (rapid clinical survey, tanda anatomik), Biokimia (spesimen lab sebagai 'warning'), Antropometri (pertumbuhan fisik), dan Ekologi (faktor fisik-biologis-lingkungan).",
+"src": "K8 (pdf) PENILAIAN STATUS GIZI.pdf"
+},
+{
+"n": 11,
+"t": "Gizi Seimbang & Pangan",
+"q": "Mineral untuk fortifikasi tepung itu apa",
+"o": [
+"Fe",
+"Zinc",
+"Se",
+"Cu",
+"Cr"
+],
+"a": "Fe",
+"exp": "<strong>Fortifikasi gizi</strong> adalah proses penambahan zat gizi mikro secara sengaja ke dalam bahan pangan yang dikonsumsi luas, bertujuan meningkatkan kualitas gizi makanan tanpa mengubah pola makan sehari-hari. Contoh yang umum: Vitamin A pada minyak goreng, <strong>Fe (zat besi) pada tepung terigu</strong>, dan Iodium pada garam. Fortifikasi Fe pada tepung bertujuan mencegah anemia defisiensi besi yang prevalen di masyarakat.",
+"src": "K18 (pdf) Perbaikan Gizi Masyarakat.pdf"
+},
+{
+"n": 12,
+"t": "Gizi & Imunologi",
+"q": "Penyebab anemia megoloblastik kekurangan",
+"o": [
+"Asam folat",
+"Asam laktat",
+"B3",
+"Tiamin",
+"Kobalamin"
+],
+"a": "Asam folat",
+"exp": "Defisiensi vitamin B menurut tabel: Vitamin B1 (Tiamin) → beri-beri, edema, gangguan saraf; Vitamin B6 (Piridoksin) → anemia, ruam kulit, bibir pecah-pecah; <strong>Vitamin B9 (Asam Folat)</strong> → <strong>anemia megaloblastik dan neural tube defect</strong>; Vitamin B12 (Kobalamin) → memicu anemia, kulit pucat/kekuningan, kerusakan saraf. Meski B12 juga bisa menyebabkan anemia megaloblastik, sumber materi ini secara spesifik memasangkan istilah 'anemia megaloblastik' dengan defisiensi <strong>Asam Folat</strong>.",
+"src": "K21 (pdf) GIZI DAN METABOLISME.pdf"
+},
+{
+"n": 13,
+"t": "Aktivitas Fisik",
+"q": "Senam aerobik termasuk dalam...",
+"o": [
+"Aktivitas fisik",
+"Latihan Fisik",
+"Olahraga",
+"Kebugaran Fisik",
+"Gerak Tubuh"
+],
+"a": "Latihan Fisik",
+"exp": "<strong>Aktivitas fisik</strong> adalah pergerakan tubuh akibat kontraksi otot yang meningkatkan pengeluaran energi, meliputi aktivitas sehari-hari (bekerja, di rumah, bepergian, waktu luang), baik yang termasuk cabang olahraga tertentu maupun tidak. <strong>Latihan fisik</strong> (senam aerobik termasuk di sini) adalah pergerakan tubuh yang <em>terencana, terstruktur, dan teratur</em>, melibatkan komponen fisik, psikis, serta keterampilan (ACSM, 2006). Karena senam aerobik dilakukan secara terstruktur dan terencana, ia digolongkan sebagai latihan fisik, bukan sekadar aktivitas fisik umum.",
+"src": "Modul Fisio Blok 2.5 2026"
+},
+{
+"n": 14,
+"t": "Aktivitas Fisik",
+"q": "Karbohidrat sebelum olahraga",
+"o": [
+"0,1",
+"0,5",
+"0,8",
+"0,7",
+"0,9"
+],
+"a": "0,5",
+"exp": "Sebelum berolahraga, porsi <strong>karbohidrat</strong> yang disarankan adalah sekitar <strong>50–60% (0,5–0,6)</strong> dari total kalori harian. Untuk jenis gizi lainnya, porsi protein adalah 10–20% dan lemak 20–30% dari total kalori. Karbohidrat menjadi fokus utama karena berfungsi sebagai bahan bakar utama tubuh yang paling cepat diubah menjadi energi (glukosa → glikogen otot/hati) untuk mendukung performa latihan.",
+"src": "Karbohidrat sebelum olahraga"
+},
+{
+"n": 15,
+"t": "Gizi Seimbang & Pangan",
+"q": "Sistem untuk memetakan kerentanan wilayah dan mengambil keputusan secara cepat serta akurat.",
+"o": [
+"SKGP",
+"SPPG",
+"ODP",
+"SPGBM",
+"NGO"
+],
+"a": "SKGP",
+"exp": "Dalam kolaborasi lintas sektor untuk ketahanan pangan, pemanfaatan data berbasis bukti dilakukan melalui sistem informasi bersama, seperti <strong>Sistem Kewaspadaan Pangan dan Gizi (SKGP)</strong>, yang digunakan untuk <strong>memetakan kerentanan wilayah dan mengambil keputusan secara cepat serta akurat</strong>. Ini melengkapi partisipasi multipihak (akademisi, NGO, CSR swasta, kader Posyandu/PKK) dan regulasi daerah (Perda/Perbup/Perwali).",
+"src": "K20 (pdf) KOORDINASI PEMBANGUNAN PANGAN DAN GIZI.pdf"
+},
+{
+"n": 16,
+"t": "Gizi Seimbang & Pangan",
+"q": "Apa tujuan perencanaan pangan dan gizi",
+"o": [
+"Tercapainya gizi seimbang",
+"Tercapainya ketahanan pangan",
+"Tercapainya kekuatan pangan",
+"Terjaminnya mutu pangan",
+"Aksesibilitas pangan yang baik"
+],
+"a": "Tercapainya ketahanan pangan",
+"exp": "<strong>Perencanaan pangan dan gizi</strong> adalah serangkaian proses sistematis untuk merancang kebijakan dan program pengelolaan sumber daya, produksi, distribusi, hingga konsumsi makanan pada level individu, keluarga, dan masyarakat. Tujuannya memastikan setiap individu mendapatkan asupan yang aman, beragam, dan memenuhi kebutuhan nutrisi untuk hidup sehat dan produktif, yang secara keseluruhan bermuara pada <strong>tercapainya ketahanan pangan</strong>.",
+"src": "K20 (pdf) KOORDINASI PEMBANGUNAN PANGAN DAN GIZI.pdf"
+},
+{
+"n": 17,
+"t": "Perilaku Merokok & Alkoholisme",
+"q": "Seorang anak terpapar rokok bapaknya, dia termasuk perokok",
+"o": [
+"Perokok aktif",
+"Perokok berat",
+"Perokok sedang",
+"Perokok pasif",
+"Perokok eksperimen"
+],
+"a": "Perokok pasif",
+"exp": "Menurut Sitepoe (2007), perokok dibagi 2 jenis berdasarkan asap yang dihisap: <strong>perokok aktif</strong> = menghisap asap rokok langsung melalui mulut dari rokok yang dibakar (asap mainstream); <strong>perokok pasif</strong> = orang-orang di sekitar perokok aktif yang menghisap asap rokok yang terbentuk pada ujung rokok yang terbakar serta asap yang dihembuskan oleh perokok aktif (asap sidestream). Anak yang terpapar asap rokok bapaknya (bukan menghisap langsung) termasuk <strong>perokok pasif</strong>.",
+"src": "K11. MEROKOK DAN ALKOHOLISME"
+},
+{
+"n": 18,
+"t": "Gizi Daur Hidup",
+"q": "Energi yang paling banyak digunakan secara umum untuk",
+"o": [
+"Aktivitas fisik",
+"Metabolisme basal",
+"Imunitas",
+"Mencegah penuaan",
+"Tumbuh kembang"
+],
+"a": "Metabolisme basal",
+"exp": "Angka Kecukupan Gizi Bayi membagi penggunaan energi menjadi: <strong>50% untuk metabolisme basal</strong>, 25% untuk aktivitas fisik, 15% untuk pertumbuhan, dan 10% terbuang melalui feses. Proporsi terbesar dari total energi harian pada dasarnya selalu digunakan untuk menjaga fungsi metabolisme basal tubuh (menjaga suhu, denyut jantung, fungsi organ dasar), berlaku pada hampir semua kelompok usia.",
+"src": "K7 (pdf) Gizi dalam Daur Hidup."
+},
+{
+"n": 19,
+"t": "Gizi & Imunologi",
+"q": "Stres kronik (kortisol) menyebabkan DM melalui jalur?",
+"o": [
+"Kortisol meningkat > ????",
+"Kortisol menurun > ???",
+"Kortisol meningkat > resistensi insulin > obesitas sentral > DM",
+"Kortisol meningkat > stres oksidatif",
+"Kortisol menurun > tidak memengaruhi metabolisme basal"
+],
+"a": "Kortisol meningkat > resistensi insulin > obesitas sentral > DM",
+"exp": "Mekanisme stres kronik terhadap DM (K6 — Gizi Imun): <em>in stress</em> → peningkatan kortisol dalam darah → kortisol menjadi <strong>antagonis kerja insulin (antagonist the insulin action)</strong> → mencegah pengambilan glukosa oleh reseptor insulin (<em>prevents glucose uptake by insulin receptor</em>) → mencegah masuknya glukosa ke jaringan vital → sistem imun berada dalam kondisi tertekan. Rangkaian ini pada akhirnya menimbulkan <strong>resistensi insulin</strong>, mendorong <strong>obesitas sentral</strong>, dan berujung pada <strong>Diabetes Melitus</strong>.",
+"src": "K6 (pdf) Gizi Imun"
+},
+{
+"n": 20,
+"t": "Aktivitas Fisik",
+"q": "Berapa lama minimal interval pemberian insulin dengan latihan fisik pada pasien diabetes melitus",
+"o": [
+"15 menit",
+"30 menit",
+"45 menit",
+"60 menit",
+"90 menit"
+],
+"a": "60 menit",
+"exp": "Panduan Exercise for Diabetic Patients: hindari olahraga jika kadar glukosa <100 mg/dL atau >250 mg/dL. <strong>Suntikan insulin sebaiknya diberikan 1 jam (60 menit) sebelum latihan fisik</strong>, pada otot yang tidak akan digunakan saat berolahraga. Interval minimal 60 menit ini diperlukan agar kerja insulin tidak bertumpuk dengan efek peningkatan ambilan glukosa akibat olahraga, sehingga menghindari risiko hipoglikemia.",
+"src": "K13A EXERCISE FOR SPECIAL POPULATION I.pdf"
+},
+{
+"n": 21,
+"t": "PHBS & Kesehatan Lingkungan",
+"q": "Waktu cuci tangan pakai sabun berpengaruh untuk menghindari..",
+"o": [
+"Hipertensi",
+"Diabetes Melitus",
+"Osteoporosis",
+"Penyakit infeksius"
+],
+"a": "Penyakit infeksius",
+"exp": "<strong>Cuci Tangan Pakai Sabun (CTPS)</strong> bermanfaat menurunkan risiko diare, menurunkan ISPA, dan mengurangi transmisi <strong>penyakit infeksius</strong> secara umum. Lima waktu penting CTPS: sebelum makan, sebelum menyiapkan makanan, setelah BAB, setelah membersihkan anak, dan setelah kontak dengan benda kotor. Hipertensi, DM, dan osteoporosis adalah penyakit tidak menular (non-infeksius) yang tidak berkaitan langsung dengan kebersihan tangan.",
+"src": "K16 PERILAKU HIDUP BERSIH DAN SEHAT (PHBS)"
+},
+{
+"n": 22,
+"t": "Perilaku Merokok & Alkoholisme",
+"q": "Penyebab fisiologis kecanduan merokok..",
+"o": [
+"Tar",
+"Formaldehid",
+"Asam formiat",
+"Timbal",
+"Nikotin"
+],
+"a": "Nikotin",
+"exp": "Mekanisme Kerja Nikotin: setelah rokok dihisap, dalam beberapa detik nikotin masuk ke otak dan berikatan dengan reseptor <em>Nicotinic Acetylcholine Receptors (nAChRs)</em> subtipe α4β2 → menstimulasi pelepasan <strong>dopamin</strong> → menimbulkan rasa nyaman dan ketagihan untuk terus merokok. <strong>Nikotin</strong> lebih adiktif dibanding heroin/kokain. Tar (karsinogen), Formaldehid, Asam formiat, dan Timbal adalah zat berbahaya lain dalam rokok, tetapi bukan penyebab utama fisiologis kecanduan.",
+"src": "K11. MEROKOK DAN ALKOHOLISME"
+},
+{
+"n": 23,
+"t": "Gizi Daur Hidup",
+"q": "Disebut apakah asi yang berwarna kekuningan?",
+"o": [
+"Asi matur",
+"Foremilk",
+"Kolostrum",
+"Hindmilk",
+"Asi immatur"
+],
+"a": "Kolostrum",
+"exp": "Perbedaan Kolostrum, Foremilk, dan Hindmilk: <strong>Kolostrum</strong> = ASI yang pertama kali keluar, berwarna <strong>kekuningan</strong>, kaya imunoglobulin. Foremilk = ASI di awal sesi menyusui, berwarna putih kebiruan, lebih encer, kaya protein & laktosa. Hindmilk = ASI di akhir sesi menyusui, berwarna putih kekuningan (lebih kental), kaya lemak, memberi rasa kenyang. Karena istilah 'kekuningan' pada soal merujuk pada ciri khas kolostrum sebagai ASI pertama, jawabannya adalah Kolostrum.",
+"src": "K7 (pdf) Gizi dalam Daur Hidup"
+},
+{
+"n": 24,
+"t": "Gizi Seimbang & Pangan",
+"q": "Siapakah yang bertanggung jawab langsung terhadap pengawasan keamanan dan mutu pangan segar?",
+"o": [
+"BGN",
+"BPOM",
+"OKKP",
+"Dinkes",
+"Dinas pasar"
+],
+"a": "OKKP",
+"exp": "Pengawasan regulasi dan standar pangan: BPOM mengawasi mutu, gizi, label, dan iklan pangan <em>olahan</em>; BGN mematangkan standar gizi (AKG, pangan lokal); sedangkan <strong>Otoritas Kompeten Keamanan Pangan (OKKP)</strong> bertanggung jawab <strong>langsung</strong> terhadap pengawasan keamanan dan mutu <strong>pangan segar</strong> (baik asal tumbuhan maupun hewan). Karena soal secara spesifik menyebut 'pangan segar', jawabannya OKKP.",
+"src": "K19 (pdf) MUTU DAN KEAMANAN PANGAN"
+},
+{
+"n": 25,
+"t": "Gizi & Imunologi",
+"q": "Mineral apa yang berguna untuk peningkatan penggunaan asam amino dan jumlah sel imun",
+"o": [
+"Zn",
+"Cu",
+"Se",
+"Sr",
+"Fe"
+],
+"a": "Zn",
+"exp": "<strong>Zinc (Zn)</strong> adalah komponen berbagai enzim: Superoxide dismutase (SOD), RNA polymerase, DNA polymerase, ribonuclease, thymidine kinase. Fungsi Zn: <strong>meningkatkan penggunaan asam amino dan jumlah sel imun</strong>, mendukung replikasi sel, aktivasi limfosit, dan bekerja sebagai antioksidan. Dosis anjuran sekitar 220 mg ZnSO4. Berbeda dari Cu (maturasi kolagen), Se (glutathione peroxidase), dan Fe (transportasi oksigen).",
+"src": "K6 (pdf) Gizi Imun"
+},
+{
+"n": 26,
+"t": "Gizi & Imunologi",
+"q": "Zat mikronutrien yang meningkatkan pembentukan kolagen?",
+"o": [
+"Fe",
+"Cu",
+"Cr",
+"Se",
+"Mn"
+],
+"a": "Cu",
+"exp": "<strong>Cuprum (Cu/Tembaga)</strong> berperan dalam <em>Humoral Response</em>: meningkatkan produksi antibodi (produksi antibodi menurun pada diet defisiensi Cu), serta berperan penting dalam <strong>maturasi kolagen</strong> sebagai kofaktor enzim lysyl oxidase yang mengkatalisis cross-linking serat kolagen sehingga kolagen dapat matang dan membentuk jaringan ikat yang kuat.",
+"src": "K6 - Gizi Imun"
+},
+{
+"n": 27,
+"t": "Perilaku Merokok & Alkoholisme",
+"q": "Seorang remaja tertarik merokok karena sering melihat teman-temannya merokok dan menganggap perilaku tersebut keren. Dalam tahapan pembentukan perilaku merokok, kondisi ini termasuk...",
+"o": [
+"Initiation",
+"Maintenance",
+"Preparation",
+"Becoming a smoker",
+"Dependence"
+],
+"a": "Preparation",
+"exp": "Empat tahapan seseorang melakukan kebiasaan merokok (Komasari & Helmi, 2000): <strong>Tahap Preparatory (Preparation)</strong> — seseorang mendapatkan gambaran yang menyenangkan mengenai rokok melalui mendengar, melihat, atau bacaan; hal ini dapat menimbulkan minat untuk merokok. Tahap Initiation — perintisan, menentukan apakah akan meneruskan atau tidak. Tahap Becoming a Smoker — sudah mengonsumsi ≥4 batang/hari. Tahap Maintenance — merokok sudah menjadi bagian dari cara mengatur diri. Karena remaja pada soal hanya tertarik dan terpapar gambaran positif dari teman-temannya (belum mencoba merokok), ini termasuk tahap Preparation.",
+"src": "K11 - Perilaku Merokok dan Alkoholisme"
+},
+{
+"n": 28,
+"t": "Gizi & Imunologi",
+"q": "Protein yang berperan sebagai modulator sistem imun dalam proses wound healing",
+"o": [
+"Arginin",
+"Glutamin",
+"Histiosin",
+"Pirimidin",
+"Sistein"
+],
+"a": "Arginin",
+"exp": "Dari PPT dr. Sari — Modulasi Imun: <strong>Arginin</strong> memiliki peran: aktivasi T Helper (CD4), T Lymphocyte activation, menjaga nitrogen balance, dosis 1,5–6 gr/hari, mengatasi defisiensi lysine, diare, azotemia (renal dysfunction), dan yang terpenting: <strong>wound healing (penyembuhan luka)</strong>. Arginin meningkatkan sintesis kolagen dan proliferasi sel imun yang dibutuhkan pada proses penyembuhan luka.",
+"src": "K6 - Gizi Imun"
+},
+{
+"n": 29,
+"t": "Aktivitas Fisik",
+"q": "Latihan fisik yang berpotensi meningkatkan tekanan darah secara cepat pada pasien hipertensi sehingga pelaksanaannya harus diperhatikan",
+"o": [
+"Endurance training",
+"Resistance training",
+"Flexibility training",
+"Balance training",
+"Agility training"
+],
+"a": "Resistance training",
+"exp": "<strong>Weight/Resistance Training</strong> pada pasien hipertensi: 'Resistive exercise produces the most striking increases in BP' — latihan resistif menghasilkan peningkatan tekanan darah yang paling dramatis dibanding jenis latihan lain, karena mekanisme peningkatan tekanan intratorakal dan vasokonstriksi perifer saat kontraksi isometrik. Latihan resistif juga menghasilkan peningkatan denyut jantung yang lebih kecil dibanding aerobik. Meski begitu, ada bukti yang berkembang bahwa resistance training tetap bermanfaat untuk mengontrol tekanan darah jangka panjang bila dilakukan dengan teknik yang benar.",
+"src": "K13A - Exercise for Special Population I"
+},
+{
+"n": 30,
+"t": "Aktivitas Fisik (Sedentary Lifestyle)",
+"q": "Sedentary behavior didefinisikan sebagai perilaku saat terjaga (waking behavior) dengan karakteristik pengeluaran energi tertentu dalam posisi duduk, bersandar, atau berbaring. Ambang nilai metabolic equivalents (METs) yang menjadi batas definisi sedentary behavior adalah",
+"o": [
+"≤0,5",
+"≤1,0",
+"≤1,5",
+"≤2,0",
+"≤2,5"
+],
+"a": "≤1,5",
+"exp": "<strong>Sedentary behavior</strong> adalah perilaku saat terjaga yang dikarakteristikkan dengan pengeluaran energi <strong>≤1,5 METs</strong>, dalam posisi duduk, bersandar, atau berbaring. Ini berbeda dari passive standing (≤1,5 METs berdiri), light intensity activity (>1,5–3,0 METs), moderate intensity activity (3,0–<6,0 METs), dan vigorous intensity activity (≥6,0 METs). Contoh sedentary behavior: menonton TV, bermain video game, menggunakan komputer, mengemudi, dan membaca sambil duduk/berbaring.",
+"src": "K12B - Physical Inactivity"
+},
+{
+"n": 31,
+"t": "Aktivitas Fisik (Sedentary Lifestyle)",
+"q": "Pada sedentary lifestyle, imbalance terjadi karena",
+"o": [
+"Over eating and under activity",
+"Over activity and under eating",
+"Over eating and over activity",
+"Under eating and under activity",
+"Over eating and over drinking"
+],
+"a": "Over eating and under activity",
+"exp": "Ketidakseimbangan energi (energy imbalance) pada sedentary lifestyle terjadi dari dua sisi: <strong>over-eating</strong> — makanan lebih murah relatif terhadap pendapatan, lebih banyak variasi makanan, iklan dan promosi makanan, lebih banyak makan di luar rumah (fast food), makan lebih berlemak/berminyak, over-eating akibat kecemasan/stres kerja atau depresi, jam makan tidak teratur; serta <strong>under-activity</strong> — lebih banyak mesin penghemat tenaga (forklift, mesin cuci, pintu otomatis), televisi, komputer/email, lebih banyak mobil (kurang jalan kaki/bersepeda), berkurangnya ruang terbuka untuk rekreasi, ketakutan akan kekerasan di jalan, dan pemanasan sentral yang mengurangi pengeluaran energi tubuh.",
+"src": "K12A - Diet Tidak Sehat"
+},
+{
+"n": 32,
+"t": "Aktivitas Fisik",
+"q": "Latihan fisik yang cocok untuk osteoporosis",
+"o": [
+"Weight strength non bearing",
+"Weight strength with bearing",
+"Resistance training",
+"A dan C",
+"B dan C"
+],
+"a": "B dan C",
+"exp": "Exercise Prescription untuk osteoporosis (ACSM): program latihan bagi lansia sebaiknya mencakup <strong>weight-bearing endurance</strong> dan <strong>resistance activities</strong> yang ditujukan untuk mempertahankan massa tulang, ditambah aktivitas untuk memperbaiki keseimbangan dan mencegah jatuh. <strong>Weight-bearing endurance</strong> memberikan beban pada tulang sehingga merangsang pembentukan massa tulang, sedangkan <strong>resistance training</strong> meningkatkan kekuatan otot yang melindungi tulang. Keduanya (B dan C) diperlukan bersamaan, bukan weight strength non-bearing.",
+"src": "K13B - Exercise for Special Population II"
+},
+{
+"n": 33,
+"t": "Perilaku Merokok & Alkoholisme",
+"q": "Seseorang mengalami kebutaan akibat mengonsumsi alkohol oplosan. Alkohol oplosan tersebut mengandung metanol. Metabolit metanol yang paling berpengaruh terhadap kondisi tersebut adalah:",
+"o": [
+"Etanol",
+"Aldehid",
+"Asam laktat",
+"Asam formiat"
+],
+"a": "Asam formiat",
+"exp": "Metanol dalam alkohol oplosan diserap tubuh lalu dimetabolisme oleh enzim <em>alcohol dehydrogenase (ADH)</em> menjadi <strong>formaldehid</strong>, kemudian diubah lagi menjadi <strong>asam formiat</strong>. Formaldehid dan asam formiat merupakan zat berbahaya dan beracun bagi tubuh, terutama <strong>asam formiat</strong> yang menyebabkan asidosis metabolik, <strong>kebutaan permanen</strong>, dan kematian setelah periode laten 6–30 jam. Konsumsi metanol kadar 15–40% sudah dapat menyebabkan kematian.",
+"src": "K11 - Perilaku Merokok dan Alkoholisme"
+},
+{
+"n": 34,
+"t": "Gizi Seimbang & Pangan",
+"q": "Peran pihak swasta dalam sektor pangan",
+"o": [
+"Melalui CSR bidang gizi",
+"Program P2L",
+"RAD-PG",
+"SKPG",
+"RAN-PG"
+],
+"a": "Melalui CSR bidang gizi",
+"exp": "Dalam kolaborasi lintas sektor pembangunan pangan dan gizi, partisipasi multipihak melibatkan unsur akademisi, lembaga swadaya masyarakat (NGO), serta <strong>pihak swasta melalui program Corporate Social Responsibility (CSR) bidang gizi</strong>, dan masyarakat sipil (kader Posyandu/PKK). Sementara P2L, RAD-PG, SKPG, dan RAN-PG merupakan program atau sistem milik pemerintah, bukan bentuk peran pihak swasta.",
+"src": "K20 - Koordinasi Pembangunan Pangan dan Gizi"
+},
+{
+"n": 35,
+"t": "Gizi & Imunologi",
+"q": "Ketidakmampuan untuk memproduksi kolagen dan kurangnya penyerapan zat besi merupakan akibat dari defisiensi…",
+"o": [
+"Vitamin A",
+"Vitamin B",
+"Vitamin C",
+"Vitamin D",
+"Vitamin E"
+],
+"a": "Vitamin C",
+"exp": "Defisiensi <strong>Vitamin C</strong> menyebabkan: gangguan produksi kolagen, gangguan absorpsi zat besi, dan imunodefisiensi, dengan gejala klinis: tubuh mudah lelah, gusi berdarah, stomatitis, luka sulit sembuh, kulit kering, dan rentan memar — kondisi ini dikenal sebagai <strong>Scurvy (Skorbut)</strong>. Vitamin C dibutuhkan sebagai kofaktor pembentukan ikatan hidrogen kolagen dan meningkatkan absorpsi zat besi non-heme di usus.",
+"src": "K21 - Gizi dan Metabolisme"
+},
+{
+"n": 36,
+"t": "Gizi Seimbang & Pangan",
+"q": "Apa akar masalah gizi di Indonesia",
+"o": [
+"Rendahnya asupan gizi",
+"Penyakit infeksi",
+"Rendahnya aksesibilitas pangan",
+"Buruknya pola asuh",
+"Masalah ekonomi dan politik"
+],
+"a": "Masalah ekonomi dan politik",
+"exp": "Berdasarkan kerangka konseptual UNICEF (1990, diadaptasi Ruel 2008): rendahnya asupan gizi dan penyakit infeksi adalah penyebab langsung (30%); ketahanan pangan, akses layanan kesehatan, dan pola asuh adalah penyebab tidak langsung (70%); sedangkan <strong>masalah ekonomi dan politik</strong> — meliputi sumber daya, lingkungan, teknologi, kelembagaan, dan politik/ideologi — merupakan <strong>akar masalah (basic cause)</strong> gizi yang mendasari seluruh rangkaian penyebab di atasnya.",
+"src": "K18 - Perbaikan Gizi Masyarakat"
+},
+{
+"n": 37,
+"t": "Perilaku Merokok & Alkoholisme",
+"q": "Alkohol 15% termasuk klasifikasi kategori apa?",
+"o": [
+"Golongan A",
+"Golongan B",
+"Golongan C",
+"Golongan D",
+"Non-alkohol"
+],
+"a": "Golongan B",
+"exp": "Menurut Peraturan Menteri Kesehatan RI No. 86/Men.Kes/Per/IV/77, minuman keras diklasifikasikan menjadi tiga golongan berdasarkan kadar etanol: <strong>Golongan A</strong> = kadar etanol 1–5%; <strong>Golongan B</strong> = kadar etanol <strong>lebih dari 5% sampai dengan 20%</strong>; <strong>Golongan C</strong> = kadar etanol lebih dari 20% sampai dengan 55%. Alkohol dengan kadar 15% berada dalam rentang 5–20%, sehingga termasuk <strong>Golongan B</strong>.",
+"src": "K11 - Perilaku Merokok dan Alkoholisme"
+},
+{
+"n": 38,
+"t": "Promosi Kesehatan",
+"q": "Seorang dokter akan membantu pasiennya memperbaiki gaya hidupnya menggunakan prinsip SMART goal. Ia memiliki plan untuk melakukan jalan kaki 20 menit, 5 kali dalam seminggu, dan melakukan evaluasi pada minggu ke 8. Saat melakukan evaluasi prinsip apa yang diterapkannya...",
+"o": [
+"Specific",
+"Measurable",
+"Achievable",
+"Relevant",
+"Time-bound"
+],
+"a": "Time-bound",
+"exp": "Pendekatan SMART Goal Setting dalam konseling lifestyle: <strong>S</strong>pecific (target spesifik: jalan kaki 30 menit, 5x/minggu), <strong>M</strong>easurable (terukur jelas: melacak langkah, BB, kadar gula), <strong>A</strong>chievable (realistis dan dapat dicapai), <strong>R</strong>elevant (relevan dengan kondisi pasien dan komorbiditas), <strong>T</strong>ime-bound (ada batas waktu yang jelas — 'target dalam 8 minggu'). Karena dokter melakukan <strong>evaluasi pada minggu ke-8</strong> (batas waktu yang telah ditentukan sejak awal), prinsip yang diterapkan adalah <strong>Time-bound</strong>.",
+"src": "K2 - Pengantar Healthy Lifestyle"
+},
+{
+"n": 39,
+"t": "Kebugaran Fisik",
+"q": "Komponen kebugaran berkaitan dengan kesehatan",
+"o": [
+"Kecepatan",
+"Keseimbangan",
+"Koordinasi",
+"Kekuatan otot",
+"Kelincahan"
+],
+"a": "Kekuatan otot",
+"exp": "<strong>Health-Related Components of Fitness</strong> (komponen kebugaran fisik berkaitan dengan kesehatan): komposisi tubuh, fleksibilitas, <strong>kekuatan otot</strong>, ketahanan otot, ketahanan jantung paru (kardiovaskular). <strong>Skill-Related Components of Fitness</strong> (berkaitan dengan keterampilan/performa): kecepatan, keseimbangan, koordinasi, kelincahan, power, reaction time. Dari opsi yang tersedia, hanya kekuatan otot yang termasuk health-related components.",
+"src": "K4 - Kebugaran Fisik"
+},
+{
+"n": 40,
+"t": "Aktivitas Fisik",
+"q": "Bukan merupakan efek overtraining....",
+"o": [
+"Cedera",
+"Osteoporosis",
+"Obesitas",
+"Amenorrhea"
+],
+"a": "Obesitas",
+"exp": "Efek <strong>overtraining</strong> (latihan berlebihan tanpa pemulihan cukup) meliputi: peningkatan risiko <strong>cedera</strong> (overuse injury), <strong>osteoporosis</strong> (terutama pada female athlete triad), dan <strong>amenorrhea</strong> (gangguan siklus menstruasi akibat defisit energi kronis). <strong>Obesitas</strong> bukan efek overtraining — sebaliknya, overtraining justru berkaitan dengan defisit energi dan penurunan berat badan berlebihan, bukan penumpukan lemak.",
+"src": "Overtraining"
+},
+{
+"n": 41,
+"t": "Aktivitas Fisik",
+"q": "Diet berolahraga makanan gizi yang dianjurkan setelah olahraga",
+"o": [
+"Tinggi karbo, tinggi protein, rendah lemak",
+"Tinggi karbo, rendah protein, tinggi lemak",
+"Rendah karbo, rendah protein, tinggi lemak",
+"Tinggi karbo, rendah protein, rendah lemak"
+],
+"a": "Tinggi karbo, tinggi protein, rendah lemak",
+"exp": "Meals before & after competition: sebelum kompetisi (300–800 kkal) dianjurkan makanan ringan, mudah dicerna, kaya karbohidrat. Setelah kompetisi/olahraga, tubuh membutuhkan pengisian ulang glikogen dan perbaikan jaringan otot, sehingga dianjurkan makanan <strong>tinggi karbohidrat</strong> (mengisi kembali glikogen), <strong>moderat-tinggi protein</strong> (perbaikan/sintesis otot), dan <strong>rendah lemak & tinggi serat</strong> (lemak memperlambat pengosongan lambung). Meski PPT dosen sebenarnya menyebut proporsi protein 'sedang (moderat)' bukan 'tinggi', dari opsi yang tersedia, jawaban paling mendekati adalah kombinasi tinggi karbo–tinggi protein–rendah lemak.",
+"src": "K5 - Gizi dan Kebugaran"
+},
+{
+"n": 42,
+"t": "Aktivitas Fisik",
+"q": "Gerakan yang boleh dilakukan oleh pasien osteoporosis pada saat melakukan latihan fisik adalah",
+"o": [
+"Gerakan membungkuk",
+"Gerakan berputar",
+"Berdiri 1 kaki dengan berpegangan",
+"Sit up",
+"Gerakan melompat"
+],
+"a": "Berdiri 1 kaki dengan berpegangan",
+"exp": "Pasien osteoporosis harus menghindari: gerakan membungkuk ke depan (risiko fraktur kompresi vertebra), gerakan berputar/rotasi (torsi berlebih pada tulang rapuh), sit up (tekanan berlebih pada vertebra lumbal), dan gerakan melompat (impact tinggi berisiko fraktur). <strong>Berdiri 1 kaki dengan berpegangan</strong> merupakan latihan keseimbangan (balance exercise) yang aman — melatih keseimbangan untuk mencegah jatuh (yang sangat berbahaya pada pasien osteoporosis), dilakukan dengan support/pegangan untuk keamanan.",
+"src": "Latihan fisik pada osteoporosis"
+},
+{
+"n": 43,
+"t": "Penilaian Status Gizi",
+"q": "Metode penilaian status gizi untuk mengetahui ketidakseimbangan diet akibat defisiensi gizi adalah",
+"o": [
+"Food recall",
+"FFQ",
+"Survei",
+"Biofisik",
+"Biokimia"
+],
+"a": "Survei",
+"exp": "<strong>Metode Survei Konsumsi</strong> (Metode Penilaian Status Gizi Tidak Langsung) mengidentifikasi tahap pertama defisiensi gizi, yaitu <em>ketidakseimbangan diet (dietary inadequacy)</em>, dengan melihat jumlah dan jenis zat gizi yang dikonsumsi. Metode ini memberi gambaran konsumsi gizi masyarakat, keluarga, dan individu, serta mengidentifikasi kelebihan/kekurangan gizi — mencakup teknik Food Recall, Food Record, FFQ (Food Frequency Questionnaire), dan Food Weighing. Karena semua teknik tersebut tergabung dalam <strong>Metode Survei</strong>, jawaban paling tepat dan mencakup adalah Survei.",
+"src": "K8 - Penilaian Status Gizi"
+},
+{
+"n": 44,
+"t": "Gizi & Imunologi",
+"q": "Zat gizi yang berperan mengubah hidrogen peroksida menjadi air",
+"o": [
+"Cu",
+"Cr",
+"Se",
+"Zn",
+"Fe"
+],
+"a": "Se",
+"exp": "Dari tabel <strong>Antioxidant system of mammalian cells</strong>: enzim <strong>Glutathione peroxidase</strong>, berlokasi di sitosol, membutuhkan mineral <strong>Selenium (Se)</strong> sebagai komponen aktifnya, berfungsi <em>an enzyme that converts hydrogen peroxide to water</em> — mengubah hidrogen peroksida menjadi air. Berbeda dengan Superoxide dismutase (Cu, Zn, Mn — mengubah superoksida menjadi hidrogen peroksida), Catalase (Fe — mengubah hidrogen peroksida menjadi air melalui jalur berbeda), dan Alpha tocopherol/Carotene (memutus rantai peroksidasi lipid).",
+"src": "K6 - Gizi Imun"
+},
+{
+"n": 45,
+"t": "Konseling & Rehabilitasi Sosial",
+"q": "Pada saat rehabilitasi sosial, kita bisa saja bertemu dengan pasien yang membutuhkan perawatan lebih dari PFA, apa saja ciri-cirinya?",
+"o": [
+"Klien Halusinasi saat komunikasi",
+"Klien sedih hingga menangis",
+"Klien hanya menjawab pendek-pendek saja",
+"Situasi bising suara klien tidak terdengar",
+"Banyak yang harus dikerjakan dengan kasus yang sama"
+],
+"a": "Klien Halusinasi saat komunikasi",
+"exp": "Seseorang yang membutuhkan bantuan lanjutan melebihi Psychological First Aid (PFA) memiliki ciri: orang dengan cedera serius dan mengancam jiwa, orang yang sangat terpukul sehingga tidak dapat mengurus dirinya dan anak/keluarganya, orang dengan kecenderungan menyakiti diri sendiri, dan orang dengan kemungkinan akan menyakiti orang lain. <strong>Klien yang mengalami halusinasi saat berkomunikasi</strong> menunjukkan gangguan psikiatrik berat yang memerlukan penanganan profesional lebih lanjut (melampaui cakupan PFA yang bersifat dukungan psikososial dasar), sementara sedih, menjawab pendek, atau situasi bising adalah kondisi yang masih dapat ditangani dalam kerangka PFA biasa.",
+"src": "K24 - Rehabilitasi Sosial pada Individu, Keluarga, dan Masyarakat"
+},
+{
+"n": 46,
+"t": "Kebugaran Fisik",
+"q": "Yang bukan merupakan manfaat fleksibilitas",
+"o": [
+"Meningkatkan kekuatan",
+"Meningkatkan keterampilan",
+"Mengurangi kekakuan",
+"Mengurangi risiko cedera",
+"Mempengaruhi postur"
+],
+"a": "Meningkatkan kekuatan",
+"exp": "<strong>Fleksibilitas</strong> adalah kemampuan persendian untuk melakukan gerakan dalam ruang gerak sendi secara maksimal, dipengaruhi oleh elastisitas otot, tendon, dan ligamen di sekitar sendi. Manfaat fleksibilitas: mempengaruhi postur tubuh, mempermudah gerak tubuh, mengurangi kekakuan, <strong>meningkatkan keterampilan</strong>, dan mengurangi risiko cedera. <strong>Meningkatkan kekuatan</strong> bukan manfaat fleksibilitas — kekuatan otot dilatih melalui resistance/strength training, bukan latihan fleksibilitas.",
+"src": "K4 - Kebugaran Fisik"
+},
+{
+"n": 47,
+"t": "PHBS & Kesehatan Lingkungan",
+"q": "Seorang petugas mengecek air minum di suatu desa. Air yang dicek tidak berwarna, tidak berbau, tidak berasa. Air tersebut masuk dalam kategori",
+"o": [
+"Air bersih",
+"Air kemasan",
+"Air disinfektan",
+"Air minum",
+"Air mineral"
+],
+"a": "Air bersih",
+"exp": "Kriteria <strong>Air Bersih</strong> (dari materi PHBS): tidak berwarna, tidak berbau, tidak berasa, dan bebas kontaminan. Ini merupakan kriteria dasar/umum untuk menilai kualitas fisik air. Sanitasi sehat mencakup jamban sehat, pengelolaan limbah, dan pengelolaan sampah rumah tangga. Air minum memerlukan standar tambahan (mikrobiologis, kimia) yang lebih ketat di luar tiga ciri fisik dasar tersebut, sehingga dari deskripsi soal, jawaban yang paling sesuai adalah Air Bersih.",
+"src": "K16 - Perilaku Hidup Bersih dan Sehat (PHBS)"
+},
+{
+"n": 48,
+"t": "Promosi Kesehatan",
+"q": "Kualitas tidur dewasa sebaiknya berapa jam?",
+"o": [
+"4 - 5 jam",
+"6 - 7 jam",
+"7 - 9 jam",
+"8 - 9 jam",
+"6 - 5 jam"
+],
+"a": "7 - 9 jam",
+"exp": "Berdasarkan kebutuhan tidur per usia (National Sleep Foundation): dewasa (usia 18–64 tahun) membutuhkan <strong>7–9 jam</strong> tidur per hari. Tips sleep hygiene: jadwal tidur konsisten, hindari layar elektronik 3 jam sebelum tidur, hindari kafein 4–6 jam sebelum tidur, hindari alkohol dan makan berat 2–3 jam sebelum tidur, kamar gelap tenang sejuk, power nap 10–20 menit di siang hari, dan olahraga rutin (tapi hindari vigorous exercise mendekati waktu tidur). Konsekuensi sleep deficiency meliputi obesitas, DM tipe 2, penyakit kardiovaskular, depresi, hingga peningkatan risiko kematian dini.",
+"src": "06 | TIDUR & PEMULIHAN"
+},
+{
+"n": 49,
+"t": "Gizi Seimbang & Pangan",
+"q": "Standarisasi apa yang harus Industri penuhi untuk sertifikasi pangan?",
+"o": [
+"HACCP",
+"BGN",
+"SPGN",
+"SPPG",
+"SPKG"
+],
+"a": "HACCP",
+"exp": "Pengawasan keamanan pangan olahan diperankan oleh BPOM, mencakup pramarket (evaluasi mutu, pendaftaran izin edar) dan postmarket (pemeriksaan rutin sarana peredaran). Untuk sertifikasi, industri pangan wajib memenuhi <strong>Sertifikasi Sistem Manajemen Keamanan Pangan Olahan (SMKPO)</strong> dan menerapkan standar seperti <strong>Hazard Analysis Critical Control Point (HACCP)</strong> — sebuah sistem manajemen keamanan pangan berbasis identifikasi, evaluasi, dan pengendalian bahaya yang signifikan bagi keamanan pangan.",
+"src": "K19 - Mutu dan Keamanan Pangan"
+},
+{
+"n": 50,
+"t": "Gizi Seimbang & Pangan",
+"q": "Tanggung jawab siapa untuk mengawasi langsung pangan dan kebersihannya?",
+"o": [
+"Dinas Kesehatan",
+"Dinas Pasar",
+"Badan Gizi Nasional",
+"OKKP",
+"BPOM"
+],
+"a": "OKKP",
+"exp": "Sama dengan konsep pada soal sebelumnya: <strong>Otoritas Kompeten Keamanan Pangan (OKKP)</strong> bertanggung jawab langsung untuk melakukan pengawasan terhadap keamanan dan mutu pangan segar (baik asal tumbuhan maupun hewan), termasuk aspek kebersihannya. BPOM lebih berfokus pada pangan olahan, sedangkan Dinas Kesehatan, Dinas Pasar, dan BGN memiliki peran berbeda dalam ekosistem pengawasan pangan.",
+"src": "K19 - Mutu dan Keamanan Pangan"
+},
+{
+"n": 51,
+"t": "Gizi Seimbang & Pangan",
+"q": "Dampak lingkungan yang positif dari memakai pangan dengan sumber daya lokal adalah",
+"o": [
+"Menurunkan emisi karbon",
+"Meningkatkan roda industri",
+"Meningkatkan lama simpan pasca panen",
+"Meningkatkan ekonomi mikro",
+"Meningkatkan lumbung pangan"
+],
+"a": "Menurunkan emisi karbon",
+"exp": "Pangan berbasis sumber daya lokal memiliki beberapa manfaat: kemandirian pangan (mengurangi ketergantungan pada pasokan impor/daerah lain), potensi gizi & keragaman (pangan lokal non-beras kaya karbohidrat, protein, dan nutrisi penting lainnya), ekonomi kerakyatan (menggerakkan UMKM lokal), serta <strong>dampak lingkungan</strong>: memangkas biaya dan <strong>emisi karbon</strong> dari transportasi logistik karena bahan pangan diproduksi serta dikonsumsi di wilayah setempat (rantai distribusi lebih pendek).",
+"src": "Pangan Berbasis Sumber Daya Lokal"
+},
+{
+"n": 52,
+"t": "Perilaku Merokok & Alkoholisme",
+"q": "Seorang mahasiswa minum alkohol bersama temannya tanpa menunjukkan toleransi dan ketergantungan",
+"o": [
+"Penyalahgunaan",
+"Ketergantungan",
+"Eksperimen",
+"Lupa",
+"Intoksikasi kronis"
+],
+"a": "Eksperimen",
+"exp": "Tahapan perilaku minum-minuman keras (Furhmann, 1990) dibedakan menjadi tiga: (a) <strong>eksperimen</strong> — seseorang menggunakan alkohol/obat-obatan hanya pada saat-saat tertentu, umumnya digunakan bila berada di tengah-tengah kelompoknya; toleransi terhadap obat-obatan/minuman keras pada tahap ini masih jarang; (b) kebiasaan — penggunaan makin meningkat, mulai muncul gejala peningkatan toleransi; (c) ketergantungan — keinginan menggunakan secara teratur makin meningkat, muncul gangguan fisik maupun psikologis. Karena mahasiswa pada soal minum bersama teman tanpa menunjukkan toleransi dan ketergantungan, ini termasuk tahap <strong>Eksperimen</strong>.",
+"src": "Tahapan mengenai perilaku minum-minuman keras"
+},
+{
+"n": 53,
+"t": "Aktivitas Fisik",
+"q": "Yang tidak termasuk komponen latihan fisik .....",
+"o": [
+"Frekuensi melakukan latihan fisik",
+"Waktu saat melakukan latihan fisik",
+"Intensitas latihan fisik",
+"Durasi latihan fisik",
+"Jenis latihan fisik"
+],
+"a": "Waktu saat melakukan latihan fisik",
+"exp": "Komponen latihan fisik mengikuti prinsip <strong>FITT</strong>: <strong>F</strong>rekuensi (jumlah latihan fisik dalam seminggu, disesuaikan tujuan latihan), <strong>I</strong>ntensitas (ukuran seberapa berat latihan dilakukan), <strong>T</strong>ime/durasi (lamanya waktu latihan per sesi), dan <strong>T</strong>ype/jenis latihan fisik. <strong>'Waktu saat melakukan latihan fisik'</strong> (misalnya pagi atau sore hari) bukan komponen FITT — dalam FITT, 'Time' berarti durasi (lamanya latihan per sesi), bukan jam pelaksanaannya.",
+"src": "Komponen Latihan Fisik (FITT)"
+},
+{
+"n": 54,
+"t": "Aktivitas Fisik",
+"q": "Gerakan yang boleh dilakukan oleh pasien osteoporosis pada saat melakukan latihan fisik adalah",
+"o": [
+"Gerakan membungkuk",
+"Gerakan berputar",
+"Berdiri 1 kaki dengan berpegangan",
+"Sit up",
+"Gerakan melompat"
+],
+"a": "Berdiri 1 kaki dengan berpegangan",
+"exp": "Sama seperti pembahasan sebelumnya: pasien osteoporosis harus menghindari gerakan membungkuk, berputar, sit up, dan melompat karena berisiko fraktur akibat torsi/tekanan/impact berlebih pada tulang yang rapuh. <strong>Berdiri 1 kaki dengan berpegangan</strong> adalah balance exercise yang aman, melatih keseimbangan untuk mencegah risiko jatuh yang sangat berbahaya pada pasien osteoporosis.",
+"src": "Latihan fisik pada osteoporosis"
+},
+{
+"n": 55,
+"t": "Promosi Kesehatan",
+"q": "Media promosi kesehatan terbaik menurut Edgar Dale",
+"o": [
+"Field trip",
+"Benda tiruan",
+"Sandiwara",
+"Demonstrasi",
+"Tulisan"
+],
+"a": "Benda tiruan",
+"exp": "<strong>Piramida/Kerucut Edgar Dale (Cone of Experience)</strong> mengurutkan media promosi kesehatan dari yang paling abstrak/kurang efektif (puncak) ke yang paling konkret/efektif (dasar): kata → tulisan → rekaman/radio → film → televisi → field trip → demonstrasi → sandiwara → <strong>benda tiruan</strong> → benda asli (paling efektif, paling konkret). Dari opsi yang tersedia, <strong>benda tiruan</strong> berada paling dekat dengan dasar piramida (paling konkret dan mendekati pengalaman nyata) dibanding field trip, sandiwara, demonstrasi, atau tulisan.",
+"src": "Piramida Media Promosi — Edgar Dale"
+},
+{
+"n": 56,
+"t": "Aktivitas Fisik",
+"q": "Olahraga yang tidak dianjurkan saat kehamilan trimester 2",
+"o": [
+"Telungkup",
+"Telentang",
+"Memutar",
+"Jongkok",
+"Jinjit"
+],
+"a": "Telentang",
+"exp": "Berdasarkan tabel kesimpulan latihan fisik kehamilan (TM I, II, III, dan Nifas): pada <strong>Trimester II (TM II)</strong>, gerakan yang harus dihindari adalah posisi <strong>telentang</strong> — karena uterus yang membesar dapat menekan vena cava inferior sehingga mengurangi aliran darah balik ke jantung (supine hypotensive syndrome). Trimester I menghindari olahraga kontak; Trimester III menghindari memutar, berjinjit, dan berjongkok; masa Nifas menghindari posisi telungkup.",
+"src": "Kesimpulan Latihan Fisik Kehamilan"
+},
+{
+"n": 57,
+"t": "Aktivitas Fisik",
+"q": "Yang merupakan latihan fisik untuk pasien obesitas, yaitu...",
+"o": [
+"Weight bearing endurance aerobic",
+"Non weight bearing endurance aerobic",
+"Resistance training",
+"Balance training",
+"Coordination training"
+],
+"a": "Resistance training",
+"exp": "Berdasarkan ECSS position statement — Exercise and Obesity (2006): aktivitas lifestyle, bila dilakukan dengan intensitas cukup, memberikan efek serupa terhadap berat badan dan kesehatan metabolik dibanding olahraga terstruktur (aerobik) dengan intensitas dan volume yang sama. <strong>Strength (resistance) training memperbaiki muscle fitness tanpa mengorbankan kesehatan metabolik</strong>. Oleh karena itu, resistance training menjadi komponen alami dari rekomendasi aktivitas fisik yang meningkatkan kesehatan pada pasien obesitas.",
+"src": "ECSS position statement: Exercise and obesity (2006)"
+},
+{
+"n": 58,
+"t": "Kesehatan Mental & Remaja",
+"q": "Cyber bullying perlu dihindari juga karena",
+"o": [
+"Sama seperti bullying langsung",
+"Sedang trending topik",
+"Menjaga nama baik orang tua",
+"Menggunakan akun palsu",
+"Pelaku susah ditemukan"
+],
+"a": "Sama seperti bullying langsung",
+"exp": "<strong>Cyberbullying</strong> merupakan bentuk kekerasan atau bullying yang dilakukan melalui media digital (media sosial, chat, game online, dll). Dampaknya <strong>setara bahkan dapat lebih berat</strong> dibandingkan bullying tatap muka (bullying langsung), karena korban dapat menerima intimidasi selama 24 jam tanpa batas tempat dan waktu — berbeda dari bullying tatap muka yang biasanya terbatas pada lokasi dan waktu tertentu (misal sekolah/jam sekolah).",
+"src": "Cyberbullying"
+},
+{
+"n": 59,
+"t": "Konseling & Rehabilitasi Sosial",
+"q": "Apa faktor keberhasilan konseling",
+"o": [
+"Biaya konseling perjam",
+"Kerapihan dan performance konselor dalam berpakaian",
+"Keaktifan klien mengikuti seluruh tahapan konseling",
+"Bakat dan minat yang sejalan dengan klien",
+"Kemampuan klien untuk menyelesaikan masalah pada masa kecil"
+],
+"a": "Keaktifan klien mengikuti seluruh tahapan konseling",
+"exp": "Keberhasilan proses konseling sangat ditentukan oleh <strong>keaktifan klien dalam mengikuti seluruh tahapan konseling</strong> — mulai dari pembukaan, eksplorasi masalah, hingga penyusunan rencana solusi. Konseling bersifat kolaboratif (pendekatan Carl Rogers, person-centered), sehingga partisipasi aktif klien menjadi kunci utama, bukan biaya, penampilan konselor, ataupun kesesuaian bakat/minat konselor dengan klien.",
+"src": "Konseling"
+},
+{
+"n": 60,
+"t": "Kebugaran Fisik",
+"q": "Yang bukan termasuk kriteria penghentian pengukuran kebugaran fisik adalah",
+"o": [
+"Nyeri dada",
+"Sianosis",
+"Tekanan darah sistolik > 160 mmHg",
+"Permintaan peserta tes",
+"Kegagalan perangkat uji pengukuran"
+],
+"a": "Tekanan darah sistolik > 160 mmHg",
+"exp": "Kriteria penghentian pengukuran kebugaran fisik: timbul keluhan nyeri/tertekan di dada, nyeri menjalar dari tangan kiri ke dagu, jantung berdebar-debar (aritmia), sesak napas, kepala ringan, mual, dan rasa lelah berlebihan; peserta tampak pucat, bingung, <strong>sianosis</strong>, perubahan irama jantung, kulit dingin dan lembab; peningkatan tekanan darah sistolik dan diastolik berlebihan (<strong>sistolik >250 mmHg, diastolik >115 mmHg</strong>); permintaan peserta tes; serta kegagalan perangkat uji pengukuran. Batas sistolik yang benar adalah >250 mmHg, bukan >160 mmHg, sehingga opsi C <strong>tidak termasuk</strong> kriteria penghentian.",
+"src": "Kriteria Penghentian Pengukuran Kebugaran Fisik"
+},
+{
+"n": 61,
+"t": "Gizi & Imunologi",
+"q": "Obesitas menjadi sindrom metabolik melalui mekanisme",
+"o": [
+"Peningkatan metabolisme lemak",
+"Peningkatan kekuatan otot",
+"Peningkatan sensitivitas insulin",
+"Peningkatan mediator inflamasi",
+"Peningkatan antioksidan endogen"
+],
+"a": "Peningkatan mediator inflamasi",
+"exp": "Mekanisme <strong>Obesity and Health Risk</strong>: Obesitas → penumpukan lemak (fat deposit) → peroksidasi lipid (lipid peroxidation) → <strong>peningkatan mediator inflamasi sistemik (systemic inflammation)</strong> → risiko kesehatan (health risk) berupa sindrom metabolik, diabetes, dan penyakit kardiovaskular. Obesitas justru menurunkan sensitivitas insulin (bukan meningkatkan) dan tidak berkaitan dengan peningkatan antioksidan endogen atau kekuatan otot.",
+"src": "Obesity and Health Risk"
+},
+{
+"n": 62,
+"t": "Penilaian Status Gizi",
+"q": "Metode pemeriksaan status gizi yang bisa mengetahui efisiensi zat gizi dalam jaringan dan cairan dalam tubuh disebut apa?",
+"o": [
+"Klinis",
+"Biokimia",
+"Biofisik",
+"Ekologi",
+"Statistika Vital"
+],
+"a": "Biofisik",
+"exp": "<strong>Biofisik</strong>: mengetahui terjadinya defisiensi berupa berkurangnya derajat simpanan zat gizi dalam jaringan atau cairan tubuh. Merupakan metode non-biokimia yang: (1) mengukur kemampuan fungsional dari jaringan (fisik, fisiologi, sel); (2) mengukur perubahan struktur yang tidak dapat diuji secara klinis, terutama pada kerangka tubuh. Berbeda dari Biokimia (pemeriksaan spesimen laboratoris sebagai 'warning'), Klinis (tanda anatomik/rapid clinical survey), dan Ekologi (faktor fisik-biologis-lingkungan).",
+"src": "Biofisik — Penilaian Status Gizi"
+},
+{
+"n": 63,
+"t": "Gizi & Imunologi",
+"q": "Prooxidant senyawa awalnya berupa",
+"o": [
+"Enzim",
+"Asam lemak",
+"Disakarida",
+"Asam amino",
+"Antioksidan"
+],
+"a": "Antioksidan",
+"exp": "Konsep <strong>Prooxidant Paradox</strong> (Singh et al, 2010): antioksidan (AO) yang tadinya disebut 'miracle molecules' pada kondisi tertentu justru dapat berperilaku sebagai <strong>prooxidant (PO)</strong> — molekul fisiologis yang menginduksi stres oksidatif. Contoh: Vitamin C berperilaku sebagai prooxidant bila bergabung dengan Fe3+ dan Cu3+ (Duarte & Lunec, 2005); Alpha-tocopherol menjadi prooxidant bila Vitamin C sangat rendah (Cillard, 1980); Carotenoids berperilaku prooxidant pada konsentrasi O2 tinggi (Young & Lowe, 2001); dietetic phenolics & flavonoid juga bisa menjadi prooxidant dalam kondisi tertentu.",
+"src": "Prooxidants — Diet pada Anak"
+},
+{
+"n": 64,
+"t": "Gizi Seimbang & Pangan",
+"q": "Bagaimana cara mengatasi rawan pangan?",
+"o": [
+"Diversifikasi pangan",
+"Pengurangan emisi karbon",
+"Meningkatkan konsumsi pangan impor",
+"Mengurangi produksi pangan lokal",
+"Meningkatkan penggunaan bahan tambahan pangan"
+],
+"a": "Diversifikasi pangan",
+"exp": "<strong>Kerawanan pangan</strong> adalah kondisi ketidakmampuan wilayah, masyarakat, atau rumah tangga dalam mengakses atau menyediakan pangan yang cukup, ditandai dengan jumlah atau mutu nutrisi makanan di bawah standar fisiologis, sehingga mengganggu pertumbuhan dan kesehatan masyarakat. Penyebabnya antara lain bencana alam, kekeringan/gagal panen, konflik, dan perburukan kondisi ekonomi. Cara mengatasinya adalah dengan <strong>diversifikasi pangan</strong> — mengurangi ketergantungan pada satu jenis pangan pokok agar mutu pangan tidak mudah jatuh di bawah standar saat terjadi gangguan pasokan.",
+"src": "Kerawanan Pangan"
+},
+{
+"n": 65,
+"t": "Gizi Daur Hidup",
+"q": "Agar tidak terjadi Neural Tube Defect maka harus cukup intake:",
+"o": [
+"Vitamin A",
+"Vitamin B6",
+"Vitamin B12",
+"Vitamin C",
+"Asam Folat"
+],
+"a": "Asam Folat",
+"exp": "Berdasarkan tabel Defisiensi Vitamin B: <strong>Vitamin B9 (Asam Folat)</strong> — defisiensinya menyebabkan anemia megaloblastik dan <strong>neural tube defect</strong>. Prinsip gizi seimbang ibu hamil menganjurkan asam folat (400 μg) untuk mencegah terjadinya neural tube defect (spina bifida, anensefali) yang terjadi akibat kegagalan penutupan tabung saraf pada minggu ke-3 hingga ke-4 kehamilan. Asam folat berperan dalam sintesis DNA dan pembelahan sel yang cepat pada periode kritis tersebut.",
+"src": "Defisiensi Vitamin B"
+},
+{
+"n": 66,
+"t": "Aktivitas Fisik",
+"q": "Intensitas aktivitas fisik anaerobic (resistance training) dapat diketahui dari",
+"o": [
+"Denyut jantung",
+"Lama melakukan aktivitas fisik",
+"Frekuensi melakukan aktivitas fisik",
+"METs (Metabolic Equivalent)",
+"1 RM (1 repetition maximum)"
+],
+"a": "1 RM (1 repetition maximum)",
+"exp": "Intensitas pada latihan beban diukur menggunakan <strong>Repetition Maximum (RM)</strong> — beban maksimal yang dapat diangkat pada 1 repetisi. Intensitas berdasar 1-RM: ringan 30–49%, sedang 50–69%, berat 70–84%. Selain itu ada juga Repetition in Reserve (RIR) yang mengindikasikan jumlah repetisi yang masih mampu dilakukan sebelum mencapai kegagalan (failure). Berbeda dengan aktivitas aerobik yang intensitasnya diukur melalui denyut jantung atau METs, aktivitas anaerobik (resistance training) diukur melalui <strong>1 RM</strong>.",
+"src": "Intensitas pada Latihan Beban"
+},
+{
+"n": 67,
+"t": "Konseling & Rehabilitasi Sosial",
+"q": "Penggunaan bahasa saat proses konseling perlu mempertimbangkan",
+"o": [
+"Permasalahan klien",
+"Riwayat pendidikan klien",
+"Kemampuan konselor",
+"Jenis kelamin",
+"Keinginan konselor"
+],
+"a": "Riwayat pendidikan klien",
+"exp": "Dalam tahapan 'Memimpin' proses konseling, konselor perlu memastikan menggunakan bahasa yang mudah dipahami klien, dengan mempertimbangkan <strong>riwayat pendidikan klien</strong> (tingkat pemahaman/literasi klien) — sehingga penyampaian informasi dapat efektif dan tidak menimbulkan kesalahpahaman. Ini penting agar bahasa yang digunakan sesuai dengan tingkat pemahaman klien, bukan berdasarkan kemampuan atau keinginan konselor semata.",
+"src": "Memimpin — Konseling"
+},
+{
+"n": 68,
+"t": "Aktivitas Fisik",
+"q": "Tipe latihan fisik untuk pasien osteoporosis",
+"o": [
+"Endurance with weight bearing",
+"Endurance non weight bearing",
+"Resistance training",
+"A dan C",
+"B dan C"
+],
+"a": "A dan C",
+"exp": "Sesuai Exercise Prescription ACSM untuk osteoporosis: latihan yang direkomendasikan mencakup <strong>weight-bearing endurance</strong> (endurance dengan pembebanan, seperti jalan kaki atau naik tangga yang memberikan beban gravitasi pada tulang) ditambah <strong>resistance training</strong> (latihan kekuatan otot yang melindungi tulang). Kombinasi keduanya (A dan C) menjadi tipe latihan fisik yang tepat, sedangkan endurance non-weight-bearing (seperti berenang) tidak memberikan stimulus mekanik yang cukup untuk mempertahankan kepadatan tulang.",
+"src": "Exercise for Special Population — Osteoporosis"
+},
+{
+"n": 69,
+"t": "Aktivitas Fisik",
+"q": "Latihan fisik dapat mengurangi risiko diabetes melitus melalui mekanisme...",
+"o": [
+"Meningkatkan resistensi insulin",
+"Meningkatkan metabolisme lemak",
+"Meningkatkan sensitivitas insulin",
+"Menurunkan massa otot",
+"Menurunkan penggunaan glukosa oleh otot"
+],
+"a": "Meningkatkan sensitivitas insulin",
+"exp": "Latihan fisik pada pasien DM bekerja melalui mekanisme <strong>peningkatan sensitivitas insulin</strong> — kontraksi otot saat latihan menstimulasi translokasi transporter glukosa GLUT4 ke membran sel otot melalui jalur AMPK (AMP-activated protein kinase) dan aktivasi eNOS, sehingga glukosa dapat masuk ke dalam sel otot tanpa bergantung penuh pada kerja insulin. Latihan teratur meningkatkan sensitivitas insulin, sehingga kontrol gula darah menjadi lebih baik. Resistensi insulin (opsi A) justru merupakan kondisi yang ingin diperbaiki, bukan hasil dari latihan fisik.",
+"src": "Mekanisme Latihan Fisik dan Sensitivitas Insulin"
+},
+{
+"n": 70,
+"t": "Kebugaran Fisik",
+"q": "Urutan yang tidak sesuai untuk tes kebugaran fisik...",
+"o": [
+"Tes pertama dilakukan tes yang bebannya paling berat",
+"Interval disesuaikan dengan kecepatan pemulihan nadi",
+"Tes paling berat ditaruh terakhir",
+"Disesuaikan dengan kelompok / massal",
+"Disesuaikan dengan peserta"
+],
+"a": "Tes pertama dilakukan tes yang bebannya paling berat",
+"exp": "Urutan pengukuran kebugaran fisik yang benar: pengukuran <strong>dimulai dari komponen kebugaran fisik yang memberikan tingkat kelelahan paling ringan</strong>, sementara komponen yang memberikan kelelahan paling berat dilakukan <strong>terakhir</strong>. Selang waktu pengukuran antar komponen disesuaikan dengan tingkat pemulihan peserta (denyut nadi sudah mendekati denyut nadi istirahat), serta disesuaikan dengan jumlah peserta tes (perorangan atau massal). Opsi A menyatakan urutan sebaliknya ('dimulai dengan yang bebannya paling berat') — sehingga ini adalah urutan yang <strong>tidak sesuai/salah</strong>.",
+"src": "Urutan Pengukuran Kebugaran Fisik"
+},
+{
+"n": 71,
+"t": "Kesehatan Reproduksi Remaja",
+"q": "Apa penyebab seseorang di masa pubertas tidak mengontrol keinginannya melakukan relasi seksual?",
+"o": [
+"Tidak mendapat pengetahuan tentang hormon",
+"Tidak tahu risiko seks bebas",
+"Tidak diajarkan oleh orang tuanya mengenai relasi seksual",
+"Tidak menghindari stimulasi yang menimbulkan keinginan relasi seks",
+"Tidak peduli norma agama"
+],
+"a": "Tidak diajarkan oleh orang tuanya mengenai relasi seksual",
+"exp": "Perilaku seksual pada masa pubertas dipengaruhi oleh siklus menarke/mimpi basah yang menimbulkan birahi, di tengah batasan lawan jenis versus paparan seks bebas. Pendidikan seksual sejak dini oleh orang tua (menjelaskan anak sesuai usia, dengan bahasa jelas dan batasan yang tegas) merupakan faktor protektif utama. Ketika seorang remaja <strong>tidak diajarkan oleh orang tuanya mengenai relasi seksual</strong>, ia kehilangan bekal pemahaman dan batasan yang seharusnya membantu mengontrol keinginannya, sehingga menjadi penyebab utama ketidakmampuan mengontrol dorongan seksual.",
+"src": "Perilaku Seksual Remaja"
+},
+{
+"n": 72,
+"t": "Aktivitas Fisik",
+"q": "Anak dan remaja dikatakan physically inactive apabila tidak memenuhi rekomendasi aktivitas fisik berupa aktivitas intensitas sedang (moderate) hingga berat (vigorous) minimal...",
+"o": [
+"60 menit per hari",
+"70 menit per hari",
+"30 menit per hari",
+"90 menit per hari",
+"120 menit per hari"
+],
+"a": "60 menit per hari",
+"exp": "Definisi Physical Inactivity: physical inactivity adalah istilah untuk mengidentifikasi orang yang tidak mencapai tingkat aktivitas fisik rutin yang direkomendasikan. Untuk <strong>dewasa</strong>: minimal 150 menit/minggu aktivitas moderate atau setara. Untuk <strong>anak dan remaja</strong>: minimal <strong>60 menit per hari</strong> aktivitas intensitas sedang hingga berat (moderate-to-vigorous). Anak/remaja yang tidak memenuhi ambang 60 menit/hari ini dikategorikan sebagai physically inactive.",
+"src": "Definition of Physical Inactivity"
+},
+{
+"n": 73,
+"t": "Perilaku Merokok & Alkoholisme",
+"q": "Seorang remaja mengatakan, \"Saya tahu merokok itu berbahaya, tapi berhentinya kapan-kapan saja.\" Tahap perubahan perilaku menurut Transtheoretical Model adalah...",
+"o": [
+"Precontemplation",
+"Contemplation",
+"Preparation",
+"Action",
+"Maintenance"
+],
+"a": "Contemplation",
+"exp": "<strong>Transtheoretical Model (TTM)</strong> menggambarkan perubahan perilaku terjadi melalui serangkaian tahapan yang dinamis dan tidak linear: Precontemplation (belum menyadari/menyangkal ada masalah), <strong>Contemplation</strong> (sudah menyadari perilaku berbahaya, ambivalen — ingin berubah tapi belum ada komitmen waktu, sering mengatakan 'nanti/kapan-kapan'), Preparation (mulai membuat rencana konkret untuk berubah), Action (sudah mengubah perilaku), dan Maintenance (mempertahankan perubahan). Ucapan remaja 'saya tahu berbahaya, tapi berhentinya kapan-kapan saja' menunjukkan kesadaran tanpa komitmen waktu — ciri khas tahap <strong>Contemplation</strong>.",
+"src": "Transtheoretical Model (TTM)"
+},
+{
+"n": 74,
+"t": "Perilaku Merokok & Alkoholisme",
+"q": "Seorang remaja telah mencoba merokok satu kali karena diajak temannya. Setelah itu ia masih ragu apakah akan melanjutkan kebiasaan merokok atau berhenti. Tahap pembentukan perilaku merokok yang paling sesuai adalah...",
+"o": [
+"Initiation",
+"Maintenance",
+"Preparation",
+"Becoming a smoker",
+"Dependence"
+],
+"a": "Initiation",
+"exp": "Empat tahapan pembentukan perilaku merokok (Komasari & Helmi, 2000): Tahap Preparatory (mendapat gambaran menyenangkan tentang rokok sebelum mencoba); <strong>Tahap Initiation</strong> — tahap perintisan merokok, yaitu tahap apakah seseorang akan meneruskan atau tidak terhadap perilaku merokok setelah mencobanya; Tahap Becoming a Smoker (sudah mengonsumsi ≥4 batang/hari); Tahap Maintenance (merokok sudah menjadi bagian dari cara mengatur diri). Karena remaja pada soal sudah <strong>mencoba merokok satu kali</strong> dan <strong>masih ragu untuk melanjutkan atau berhenti</strong>, kondisi ini persis menggambarkan Tahap <strong>Initiation</strong>.",
+"src": "K11 - Perilaku Merokok dan Alkoholisme"
+},
+{
+"n": 75,
+"t": "Gizi Daur Hidup",
+"q": "Penurunan massa otot pada lansia..",
+"o": [
+"Sarcopenia",
+"Demensia",
+"Hipertensi",
+"Neoplasia",
+"Diabetes"
+],
+"a": "Sarcopenia",
+"exp": "Kebutuhan gizi lansia dipengaruhi oleh degenerasi fisiologis. Masalah gizi utama pada lansia meliputi: <strong>sarkopenia</strong> (penurunan massa otot), obesitas, dan gizi kurang. Pada umumnya kebutuhan gizi lansia berkurang (makronutrien, natrium, kromium, magnesium, klor), kebutuhan energi berkurang 5% tiap tahunnya, dengan kebutuhan lemak maksimal 20% dari kebutuhan energi (lemak jenuh <10%). Demensia, hipertensi, neoplasia, dan diabetes adalah penyakit komorbid pada lansia, bukan istilah khusus untuk penurunan massa otot.",
+"src": "Kebutuhan Gizi pada Lansia"
+},
+{
+"n": 76,
+"t": "Konseling & Rehabilitasi Sosial",
+"q": "Saat memberikan Psychological First Aid (PFA), tindakan yang tidak dianjurkan adalah...",
+"o": [
+"Membuat penilaian atau menghakimi situasi klien.",
+"Mendengarkan klien dengan penuh perhatian.",
+"Memberikan kesempatan kepada klien untuk bercerita sesuai keinginannya.",
+"Menunjukkan perhatian melalui anggukan dan kontak mata yang sesuai.",
+"Membantu menghubungkan klien dengan sumber bantuan yang dibutuhkan."
+],
+"a": "Membuat penilaian atau menghakimi situasi klien.",
+"exp": "Hal yang tidak boleh dilakukan dalam <strong>Psychological First Aid (PFA)</strong>: tidak boleh membuat asumsi apapun, tidak boleh membuat spekulasi hal yang memungkinkan akan terjadi, <strong>tidak boleh melakukan judgement/penilaian atau menghakimi situasi klien</strong>, tidak boleh memaksa klien berbicara (memberikan keterangan), dan tidak boleh melakukan diagnosis. PFA bersifat mendukung tanpa menghakimi — mendengarkan penuh perhatian, memberi kesempatan bercerita, menunjukkan perhatian melalui bahasa tubuh, dan menghubungkan ke sumber bantuan justru merupakan tindakan yang dianjurkan.",
+"src": "Rehabilitasi Sosial — Psychological First Aid (PFA)"
+},
+{
+"n": 77,
+"t": "Kebugaran Fisik",
+"q": "Seseorang dikatakan memiliki lingkar pinggang yang berisiko mengalami penyakit metabolik apabila...",
+"o": [
+"≥ 80 cm untuk pria",
+"≥ 80 cm untuk wanita",
+"≥ 90 cm untuk wanita",
+"> 90 cm untuk pria",
+"> 80 cm untuk wanita"
+],
+"a": "≥ 80 cm untuk wanita",
+"exp": "<strong>Lingkar pinggang</strong> diukur pada lokasi titik tengah antara rusuk paling bawah dengan krista iliaka. Klasifikasi risiko: berisiko menderita penyakit kardiovaskular/metabolik bila lingkar pinggang <strong>≥90 cm untuk laki-laki</strong> dan <strong>≥80 cm untuk perempuan</strong>. Karena soal menanyakan ambang risiko wanita, jawabannya adalah <strong>≥80 cm untuk wanita</strong> (bukan >80 cm atau ≥90 cm).",
+"src": "K9. Kebugaran Fisik — dr. Susi"
+},
+{
+"n": 78,
+"t": "Gizi Seimbang & Pangan",
+"q": "Bahan pangan sumber karbohidrat alternatif di Indonesia adalah...",
+"o": [
+"Ubi, singkong, sagu",
+"Talas, jagung, ubi",
+"Beras, Ubi, singkong",
+"Jagung, singkong, ubi",
+"Sagu, Jagung, Beras"
+],
+"a": "Ubi, singkong, sagu",
+"exp": "Pangan sumber karbohidrat di Indonesia terdiri dari pangan pokok utama (beras dan jagung) serta pangan <strong>alternatif</strong>: <strong>ubi, singkong, sagu, dan talas</strong>. Peningkatan aksesibilitas pangan yang beragam mendorong pemanfaatan sumber karbohidrat alternatif ini untuk mengurangi ketergantungan pada beras. Beras dan jagung, meski sumber karbohidrat, tergolong pangan pokok utama (bukan alternatif), sehingga opsi yang tepat adalah kombinasi ubi, singkong, dan sagu.",
+"src": "K11. Peningkatan Aksesibilitas Pangan yang Beragam — dr. Madya"
+},
+{
+"n": 79,
+"t": "Kesehatan Mental & Remaja",
+"q": "Salah satu cara melakukan regulasi emosi untuk mencegah tawuran ketika adalah...",
+"o": [
+"Membiasakan semua keinginan anak selalu dipenuhi.",
+"Melakukan teknik pernapasan (inhale–exhale) saat dibully.",
+"Membalas perlakuan teman agar dianggap berani",
+"Menghindari semua bentuk interaksi sosial",
+"Menyimpan semua kemarahan tanpa mengungkapkannya."
+],
+"a": "Melakukan teknik pernapasan (inhale–exhale) saat dibully.",
+"exp": "<strong>Regulasi emosi</strong> adalah kemampuan mengelola respons fisiologis dan perilaku terhadap suatu pemicu (misal diejek/dibully) agar tidak berujung tindakan agresif seperti tawuran. <strong>Teknik pernapasan (inhale–exhale)</strong> adalah bentuk regulasi emosi yang efektif untuk meredakan gejolak amarah dan kecemasan secara instan saat berada di bawah tekanan, karena membantu menenangkan sistem saraf sehingga seseorang dapat merespons dengan kepala dingin, bukan dengan agresi. Opsi lain justru merupakan bentuk pemanjaan perilaku (A), tindakan agresif yang memicu tawuran (C), atau bentuk penghindaran masalah yang tidak menyelesaikan akar persoalan (D, E).",
+"src": "Regulasi Emosi untuk Mencegah Tawuran"
+},
+{
+"n": 80,
+"t": "Kebugaran Fisik",
+"q": "Prinsip penurunan berat badan kecuali",
+"o": [
+"Turun 0,5 - 1 kg dalam seminggu",
+"Berat badan turun 20% dari yang sebelumnya",
+"Defisit kalori 500-1000 kkal / hari",
+"Olahraga strength",
+"Dalam kurun waktu tertentu"
+],
+"a": "Berat badan turun 20% dari yang sebelumnya",
+"exp": "Prinsip penurunan berat badan yang sehat (rekomendasi medis terkini): target turun <strong>0,5–1 kg per minggu</strong>, dengan <strong>defisit kalori 500–1000 kkal/hari</strong>, dikombinasikan olahraga strength (kekuatan), dan dilakukan dalam kurun waktu tertentu (jangka waktu mingguan/bulanan yang realistis dan berkelanjutan). <strong>'Berat badan turun 20% dari yang sebelumnya'</strong> bukan prinsip atau pedoman umum penurunan berat badan — kehilangan berat badan secara drastis sebesar itu tergolong ekstrem, tidak realistis, dan berisiko membahayakan kesehatan (seperti memicu kekurangan gizi atau batu empedu).",
+"src": "Prinsip Penurunan Berat Badan"
+},
+{
+"n": 81,
+"t": "Promosi Kesehatan",
+"q": "Menurut lawrence green, yang termasuk predisposing factor dalam promosi kesehatan adalah ..",
+"o": [
+"Fasilitas",
+"Adat istiadat",
+"Tokoh masyarakat",
+"Pemerintah"
+],
+"a": "Adat istiadat",
+"exp": "Model Lawrence Green membagi 3 faktor perilaku kesehatan. <strong>Faktor Predisposisi (Predisposing factor)</strong> merupakan faktor utama/terpenting dalam berperilaku kesehatan — mempermudah terjadinya perilaku seseorang/masyarakat, mencakup pengetahuan, sikap, tradisi, dan <strong>kepercayaan/adat istiadat masyarakat</strong> terhadap hal-hal yang berkaitan dengan kesehatan. Fasilitas termasuk enabling factor, sedangkan tokoh masyarakat termasuk reinforcing factor.",
+"src": "K2. Promkes — Faktor Predisposisi"
+},
+{
+"n": 82,
+"t": "Gizi Daur Hidup",
+"q": "Salah satu dampak konsumsi makanan tinggi Advanced Glycation End Products (AGEs) pada anak adalah...",
+"o": [
+"Meningkatkan stres oksidatif",
+"Menurunkan inflamasi",
+"Meningkatkan sintesis kolagen",
+"Meningkatkan imunitas secara langsung",
+"Menurunkan risiko penyakit kronis"
+],
+"a": "Meningkatkan stres oksidatif",
+"exp": "<strong>AGEs (Advanced Glycation End Products)</strong> adalah senyawa oksidan kompleks yang terbentuk ketika gula sederhana berikatan (crosslink) dengan protein/lipid melalui reaksi non-enzimatik, umumnya pada suhu tinggi (digoreng, dipanggang). Sifatnya irreversibly accumulate dalam sel dan jaringan tubuh, sehingga dampak patologisnya adalah <strong>meningkatkan stres oksidatif</strong> dan inflamasi — bukan menurunkan inflamasi, meningkatkan imunitas, atau menurunkan risiko penyakit kronis (justru sebaliknya, AGEs meningkatkan risiko penyakit kronis).",
+"src": "K6. Diet Tidak Sehat"
+},
+{
+"n": 83,
+"t": "Gizi Daur Hidup",
+"q": "Pada semua kelompok umur, energi terutama digunakan untuk",
+"o": [
+"Metabolisme basal",
+"Aktivitas fisik",
+"Pertumbuhan dan perkembangan",
+"Dibuang melalui feses",
+"Disimpan dalam tubuh"
+],
+"a": "Metabolisme basal",
+"exp": "Angka Kecukupan Gizi (contoh pada bayi): energi digunakan 50% untuk <strong>metabolisme basal</strong>, 25% untuk aktivitas fisik, 15% untuk pertumbuhan, dan 10% terbuang melalui feses. Meski proporsi persisnya bervariasi antar kelompok usia (mis. dewasa memiliki kebutuhan pertumbuhan yang jauh lebih kecil), pada <strong>semua kelompok umur</strong>, porsi energi terbesar tetap digunakan untuk menjalankan fungsi <strong>metabolisme basal</strong> tubuh sehari-hari.",
+"src": "K5. Gizi dalam Daur Hidup"
+},
+{
+"n": 84,
+"t": "Aktivitas Fisik",
+"q": "Rekomendasi aktivitas fisik untuk orang dewasa",
+"o": [
+"Aktivitas fisik moderate 20 menit dalam 5 kali perminggu",
+"Aktivitas fisik vigorous 30 menit dalam 3 kali perminggu",
+"Aktivitas fisik moderate 30 menit dalam 5 kali perminggu",
+"Aktivitas fisik vigorous 20 menit dalam 5 kali perminggu",
+"Aktivitas fisik moderate 30 menit dalam 3 kali perminggu"
+],
+"a": "Aktivitas fisik moderate 30 menit dalam 5 kali perminggu",
+"exp": "Rekomendasi ACSM & AHA (2007) untuk orang dewasa: aktivitas fisik <strong>moderate sekurang-kurangnya 30 menit dalam 5 hari per minggu</strong>, ATAU aktivitas fisik vigorous sekurang-kurangnya 20 menit dalam 3 hari per minggu. Aktivitas aerobik bermanfaat untuk kardiovaskular, sedangkan resistance exercise bermanfaat untuk tulang dan otot. Rumus praktis: moderate = 30 menit × 5 hari; vigorous = 20 menit × 3 hari.",
+"src": "K16. Aktivitas Fisik"
+},
+{
+"n": 85,
+"t": "Konseling & Rehabilitasi Sosial",
+"q": "Tujuan utama dari konseling adalah...",
+"o": [
+"Membantu pasien memperoleh insight terhadap masalahnya dan menemukan solusi.",
+"Membuat pasien melampiaskan seluruh emosinya tanpa tindak lanjut.",
+"Memberikan keputusan terbaik bagi pasien tanpa melibatkan pasien.",
+"Mengubah perilaku pasien secara paksa agar sesuai keinginan konselor.",
+"Memberikan nasihat dan instruksi tanpa menggali masalah pasien."
+],
+"a": "Membantu pasien memperoleh insight terhadap masalahnya dan menemukan solusi.",
+"exp": "Berdasarkan prinsip konseling person-centered (Carl Rogers), hubungan konselor–klien bersifat setara (statusnya sama-sama sejawat), bukan hubungan otoritatif atas–bawah. Tujuan utama konseling adalah <strong>membantu pasien memperoleh insight (pemahaman) terhadap masalahnya sendiri dan menemukan solusinya sendiri</strong> — konselor berperan memfasilitasi proses eksplorasi diri klien, bukan memberikan keputusan, instruksi, atau memaksakan perubahan perilaku secara sepihak.",
+"src": "Konseling — Bu Wulan"
+},
+{
+"n": 86,
+"t": "Gizi Daur Hidup",
+"q": "Bagaimana prinsip pemberian makan pada balita",
+"o": [
+"Pemberian snack mendominasi",
+"Memberikan makan jika saat anak mau makan saja",
+"Pemberian bentuk yang dapat diterima",
+"Terdiri dari 70% karbohidrat untuk pembentukan energi",
+"Makanan dengan jumlah energi tinggi untuk menunjang pertumbuhan"
+],
+"a": "Pemberian bentuk yang dapat diterima",
+"exp": "Bentuk MP-ASI disesuaikan bertahap dengan usia: 6 bulan (porsi kecil, cair/lembek, diberikan pelan-pelan), 7–8 bulan (porsi kecil, makanan saring seperti nasi tim saring), 9–11 bulan (tim kasar, dapat diberi lauk), 12 bulan (makanan keluarga). Prinsip utama pemberian makan pada balita adalah <strong>pemberian bentuk makanan yang dapat diterima</strong> sesuai tahap perkembangan oromotorik anak, bukan memaksakan tekstur atau jumlah tertentu yang tidak sesuai usianya, dan bukan pula membiarkan snack mendominasi atau makan hanya bila anak mau.",
+"src": "K10. Diet pada Anak"
+},
+{
+"n": 87,
+"t": "Konseling & Rehabilitasi Sosial",
+"q": "Konselor yg baik ditandai dengan",
+"o": [
+"Berbicara seperlunya saja",
+"Menggunakan bahasa awam",
+"Melakukan eye contact dan menyimak dgn baik"
+],
+"a": "Melakukan eye contact dan menyimak dgn baik",
+"exp": "<strong>Keterampilan Mendengar</strong> konselor yang baik mencakup: kontak mata (melihat mata dengan pandangan penuh perhatian, jarak yang cukup), postur tubuh (tegak, tidak melipat tangan di dada, menyender), gesture (mempertegas dengan gerakan tangan), dan kalimat feedback (mengulang kata-kata kunci klien menjadi kalimat sederhana untuk mempertajam pertanyaan). Kombinasi <strong>eye contact yang baik dan kemampuan menyimak</strong> menjadi penanda utama konselor yang efektif, lebih dari sekadar berbicara seperlunya atau menggunakan bahasa awam.",
+"src": "K10. Konseling"
+},
+{
+"n": 88,
+"t": "Aktivitas Fisik",
+"q": "Rekomendasi frekuensi latihan anaerobik (resistance training) untuk menjaga kebugaran adalah...",
+"o": [
+"3 kali seminggu",
+"5 kali seminggu",
+"1 kali seminggu",
+"7 kali seminggu",
+"6 kali seminggu"
+],
+"a": "3 kali seminggu",
+"exp": "Berdasarkan <strong>Physical Activity Pyramid</strong>: Strength Training (2–3 hari/minggu, seluruh kelompok otot utama), Flexibility Training (≥2 hari/minggu), Cardiorespiratory Endurance Exercise (3–5 hari/minggu, 20–60 menit), dan Moderate-Intensity Physical Activity (hampir setiap hari). Rekomendasi frekuensi latihan anaerobik (resistance/strength training) untuk menjaga kebugaran adalah <strong>3 kali seminggu</strong>, memberikan waktu pemulihan yang cukup antar sesi latihan intensitas tinggi.",
+"src": "K3. Aktivitas Fisik — Physical Activity Pyramid"
+},
+{
+"n": 89,
+"t": "Aktivitas Fisik",
+"q": "Seorang laki-laki berusia 35 tahun rutin melakukan jalan cepat selama 30 menit setiap hari selama 5 hari dalam seminggu (150 menit/minggu), sehingga telah memenuhi rekomendasi aktivitas fisik. Namun, ia bekerja sebagai pegawai kantor dan menghabiskan sekitar 8–9 jam setiap hari dengan duduk di depan komputer. Kondisi tersebut dikategorikan sebagai...",
+"o": [
+"Physically active but sedentary",
+"Physically inactive and sedentary",
+"Physically active and non-sedentary",
+"Physically inactive but non-sedentary",
+"Vigorous active non-sedentary"
+],
+"a": "Physically active but sedentary",
+"exp": "Matriks <strong>Physical Inactivity vs Sedentary Behaviour</strong> mengklasifikasikan seseorang berdasarkan dua sumbu independen: (1) memenuhi rekomendasi aktivitas fisik atau tidak (physically active/inactive); (2) duduk dalam waktu lama atau tidak (sedentary/non-sedentary). Laki-laki pada soal <strong>telah memenuhi rekomendasi aktivitas fisik</strong> (150 menit/minggu jalan cepat) sehingga tergolong physically active, namun ia juga <strong>duduk dalam waktu lama</strong> (8–9 jam/hari) sehingga tergolong sedentary. Kedua kondisi ini dapat terjadi bersamaan — seseorang bisa aktif secara fisik namun tetap sedentari dalam sebagian besar waktunya — sehingga kategori yang tepat adalah <strong>Physically active but sedentary</strong>.",
+"src": "K12B. Physical Inactivity"
+},
+{
+"n": 90,
+"t": "Aktivitas Fisik",
+"q": "Tingkat aktivitas fisik sedang terbukti dapat mempertahankan kesehatan, yaitu",
+"o": [
+"Aktivitas intensitas berat selama 150 – 300 menit per minggu",
+"Aktivitas intensitas berat selama 75 – 150 menit per minggu",
+"Aktivitas intensitas sedang selama 75 - 150 menit per minggu",
+"Aktivitas intensitas sedang selama 75 – 300 menit per minggu",
+"Aktivitas intensitas berat selama 75 – 300 menit per minggu"
+],
+"a": "Aktivitas intensitas berat selama 75 – 150 menit per minggu",
+"exp": "Tabel tingkat aktivitas fisik: Tingkat <strong>Rendah</strong> = aktivitas fisik dasar + (aktivitas sedang <150 menit/minggu ATAU aktivitas berat <75 menit/minggu) → hanya sedikit manfaat. Tingkat <strong>Sedang</strong> = aktivitas fisik dasar + (aktivitas sedang <strong>150–300 menit/minggu</strong> ATAU aktivitas <strong>berat 75–150 menit/minggu</strong>) → sebagian besar manfaat kesehatan diperoleh. Tingkat <strong>Tinggi</strong> = aktivitas sedang >300 menit/minggu ATAU berat >150 menit/minggu → banyak manfaat diperoleh. Dari opsi yang tersedia, jawaban yang sesuai definisi tingkat sedang adalah aktivitas <strong>berat selama 75–150 menit/minggu</strong>.",
+"src": "K3. Aktivitas Fisik"
+},
+{
+"n": 91,
+"t": "Aktivitas Fisik",
+"q": "Yang tidak termasuk resiko jatuh pada lansia",
+"o": [
+"Kelemahan Otot",
+"Penggunaan alat bantu jalan",
+"Keseimbangan yang buruk",
+"Gangguan penglihatan",
+"Faktor Lingkungan"
+],
+"a": "Penggunaan alat bantu jalan",
+"exp": "Faktor risiko jatuh pada lansia (Risk Factors — Most Osteoporotic Fractures Occur in a Fall): <strong>kelemahan otot (muscle weakness)</strong>, <strong>keseimbangan yang buruk (poor balance)</strong>, <strong>gangguan penglihatan (poor eyesight)</strong>, penggunaan obat golongan benzodiazepine, dan kesehatan umum yang buruk — juga termasuk faktor lingkungan (lantai licin, pencahayaan kurang). <strong>Penggunaan alat bantu jalan</strong> justru merupakan tindakan protektif yang mengurangi risiko jatuh, bukan faktor risikonya.",
+"src": "K13B. Exercise for Special Population II"
+},
+{
+"n": 92,
+"t": "Promosi Kesehatan",
+"q": "Dalam merencanakan promkes, hal pertama yang perlu dilakukan adalah",
+"o": [
+"Menentukan jadwal pelaksanaan",
+"Menentukan prioritas masalah",
+"Menentukan media promkes",
+"Menentukan sasaran promkes",
+"Menentukan metode promkes"
+],
+"a": "Menentukan prioritas masalah",
+"exp": "Perencanaan promosi kesehatan dimulai dari: (1) <strong>Menentukan kebutuhan</strong>, yang terdiri dari diagnosis masalah dan <strong>menetapkan prioritas masalah</strong>; kemudian (2) mengembangkan komponen promkes, meliputi menentukan tujuan promkes, sasaran, isi promkes, metode, media, rencana evaluasi, hingga jadwal pelaksanaan. Karena menentukan jadwal, media, sasaran, dan metode semuanya berada pada tahap kedua (setelah kebutuhan ditetapkan), langkah <strong>pertama</strong> yang wajib dilakukan adalah <strong>menentukan prioritas masalah</strong>.",
+"src": "K22. Metode dan Strategi Promosi Kesehatan"
+},
+{
+"n": 93,
+"t": "Aktivitas Fisik",
+"q": "Daya tahan utama untuk aktivitas fisik",
+"o": [
+"Diet lemak",
+"Diet protein",
+"Diet karbo",
+"Diet protein dan lemak",
+"Diet protein dan suplemen"
+],
+"a": "Diet karbo",
+"exp": "<strong>Karbohidrat</strong> merupakan sumber energi utama saat melakukan aktivitas fisik, terutama pada intensitas sedang hingga tinggi. Karbohidrat diubah menjadi glukosa, kemudian disimpan sebagai <strong>glikogen</strong> di otot dan hati. Saat berolahraga, glikogen menjadi bahan bakar utama untuk mempertahankan daya tahan (endurance) tubuh, sehingga asupan karbohidrat yang cukup sebelum dan setelah aktivitas fisik penting untuk menjaga performa dan mempercepat pemulihan.",
+"src": "Daya Tahan dan Diet Karbohidrat"
+},
+{
+"n": 94,
+"t": "Gizi Daur Hidup",
+"q": "Zat gizi yang perlu dibatasi pada anak usia sekolah yang menyebabkan karies adalah",
+"o": [
+"Karbohidrat kompleks",
+"Glukosa",
+"Asam Lemak",
+"Lemak trans"
+],
+"a": "Glukosa",
+"exp": "Karies gigi pada anak usia sekolah disebabkan oleh bakteri mulut (Streptococcus mutans) yang memfermentasi <strong>gula sederhana (terutama glukosa/sukrosa)</strong>, menghasilkan asam yang melarutkan email gigi hingga terjadi karies. Karbohidrat kompleks (pati) tidak langsung menyebabkan karies karena memerlukan pemecahan enzimatik lebih lanjut sebelum dapat difermentasi bakteri. Karena glukosa adalah substrat langsung bagi bakteri penyebab karies, zat gizi ini perlu dibatasi konsumsinya pada anak usia sekolah.",
+"src": "Karies Gigi pada Anak Usia Sekolah"
+},
+{
+"n": 95,
+"t": "Gizi Daur Hidup",
+"q": "Manfaat lemak pada ibu hamil adalah...",
+"o": [
+"Menjadi sumber energi utama bagi ibu dan janin",
+"Sebagai cadangan energi dan persiapan laktasi",
+"Membentuk hemoglobin",
+"Meningkatkan penyerapan glukosa ke dalam sel",
+"Menjadi sumber energi utama bagi otak"
+],
+"a": "Sebagai cadangan energi dan persiapan laktasi",
+"exp": "Lemak pada ibu hamil berfungsi utama sebagai <strong>cadangan energi</strong> yang disimpan dalam tubuh, serta mempersiapkan <strong>laktasi</strong> (produksi ASI pascapersalinan) karena lemak esensial dibutuhkan untuk sintesis komponen ASI (termasuk DHA untuk perkembangan otak janin/bayi). Karbohidrat, bukan lemak, adalah sumber energi utama bagi ibu, janin, dan otak; zat besi/protein lebih berperan dalam pembentukan hemoglobin; dan lemak tidak meningkatkan penyerapan glukosa ke dalam sel.",
+"src": "Manfaat Lemak pada Ibu Hamil"
+},
+{
+"n": 96,
+"t": "Penilaian Status Gizi",
+"q": "Dalam suatu survei status gizi masyarakat, seorang petugas tidak hanya menilai kondisi individu, tetapi juga menilai faktor-faktor yang mempengaruhi status gizi, seperti kondisi lingkungan, ketersediaan pangan, keadaan sosial ekonomi, serta faktor biologis. Metode penilaian status gizi yang digunakan adalah...",
+"o": [
+"Penilaian faktor ekologi",
+"Penilaian biofisik",
+"Penilaian biokimia",
+"Penilaian antropometri",
+"Penilaian klinis"
+],
+"a": "Penilaian faktor ekologi",
+"exp": "<strong>Metode Faktor Ekologi</strong> mengidentifikasi faktor non-gizi yang dapat mempengaruhi status gizi masyarakat, meliputi faktor <strong>fisik (iklim, tanah, irigasi), biologis, dan lingkungan budaya (sosial ekonomi)</strong>. Tujuannya untuk mengetahui penyebab malnutrisi sehingga dapat dirancang intervensi yang tepat. Karena petugas pada soal menilai faktor lingkungan, ketersediaan pangan, sosial ekonomi, dan biologis (bukan hanya kondisi fisik individu), metode yang digunakan adalah Penilaian Faktor Ekologi — berbeda dari biofisik (simpanan zat gizi jaringan), biokimia (spesimen lab), antropometri (ukuran tubuh), dan klinis (tanda anatomik individu).",
+"src": "K8. Penilaian Status Gizi"
+},
+{
+"n": 97,
+"t": "Gizi Seimbang & Pangan",
+"q": "Selain ketersediaan dan daya beli, salah satu aspek yang memengaruhi akses pangan adalah...",
+"o": [
+"Acceptability pangan",
+"Antropometri",
+"Klinis",
+"Biofisik",
+"Survei konsumsi"
+],
+"a": "Acceptability pangan",
+"exp": "Akses pangan tidak hanya ditentukan oleh <strong>ketersediaan (availability)</strong> dan <strong>daya beli (affordability)</strong>, tetapi juga oleh <strong>acceptability (keberterimaan pangan)</strong> — yaitu apakah suatu makanan dapat diterima oleh seseorang atau masyarakat berdasarkan: budaya dan adat istiadat, agama atau kepercayaan, kebiasaan makan, serta selera dan preferensi individu. Meskipun pangan tersedia dan terjangkau, bila tidak dapat diterima secara budaya/agama, akses pangan tetap dapat terhambat.",
+"src": "Akses Pangan — Acceptability"
+}
+];
+
+const TOPICS = [...new Set(QUESTIONS.map(q=>q.t))];
+let mode='study',cur=0,answered={},flagged=new Set(),score=0,streak=0,timerInterval=null;
+let sessions=0,bestScore=0,allScores=[],topicStats={};
+
+function loadStats(){
+  try{
+    sessions=parseInt(localStorage.getItem('dg25_s')||'0');
+    bestScore=parseInt(localStorage.getItem('dg25_b')||'0');
+    allScores=JSON.parse(localStorage.getItem('dg25_sc')||'[]');
+    topicStats=JSON.parse(localStorage.getItem('dg25_t')||'{}');
+  }catch(e){}
+  renderStats();
+}
+
+function renderStats(){
+  document.getElementById('stat-sessions').textContent=sessions||'0';
+  document.getElementById('stat-best').textContent=bestScore?bestScore+'/97':'—';
+  if(allScores.length>0){
+    const avg=Math.round(allScores.reduce((a,b)=>a+b.score,0)/allScores.length);
+    document.getElementById('stat-avg').textContent=avg+' ('+Math.round(avg/97*100)+'%)';
+  } else document.getElementById('stat-avg').textContent='—';
+  renderHistList();
+  renderTopicBar('topic-bar',topicStats);
+}
+
+function renderHistList(){
+  const list=document.getElementById('hist-list');
+  if(!allScores.length){list.innerHTML='<div class="no-hist">Belum ada sesi — yuk mulai!</div>';return;}
+  list.innerHTML=[...allScores].reverse().slice(0,8).map(s=>{
+    const pct=Math.round(s.score/97*100);
+    return `<div class="hist-item"><span class="hi-mode">${s.mode}</span><span class="hi-date">${s.date}</span><span class="hi-score">${s.score}/97</span><span class="hi-pct">${pct}%</span></div>`;
+  }).join('');
+}
+
+function renderTopicBar(elId,stats){
+  const el=document.getElementById(elId);
+  if(!el)return;
+  const tw=TOPICS.filter(t=>stats[t]&&(stats[t].correct+stats[t].wrong)>0);
+  if(!tw.length){el.innerHTML='<div class="no-hist">Belum ada data.</div>';return;}
+  el.innerHTML=tw.map(t=>{
+    const d=stats[t],total=d.correct+d.wrong,pct=Math.round(d.correct/total*100);
+    return `<div class="topic-row"><span class="topic-name">${t}</span><div class="topic-track"><div class="topic-fill ${pct>=75?'good':pct>=50?'mid':'low'}" style="width:${pct}%"></div></div><span class="topic-pct">${pct}%</span></div>`;
+  }).join('');
+}
+
+function clearHistory(){
+  if(!confirm('Hapus semua riwayat sesi?'))return;
+  ['dg25_s','dg25_b','dg25_sc','dg25_t'].forEach(k=>localStorage.removeItem(k));
+  sessions=0;bestScore=0;allScores=[];topicStats={};renderStats();
+}
+
+function startQuiz(m){
+  mode=m;cur=0;answered={};flagged=new Set();score=0;streak=0;
+  document.getElementById('start-screen').style.display='none';
+  document.getElementById('result-screen').style.display='none';
+  document.getElementById('quiz-screen').style.display='block';
+  document.getElementById('score-display').style.display=m==='drill'?'none':'';
+  const te=document.getElementById('timer-el');
+  clearInterval(timerInterval);
+  if(m==='exam'){
+    te.style.display='';let t=7200;
+    timerInterval=setInterval(()=>{
+      t--;const m2=Math.floor(t/60),s=t%60;
+      te.textContent=(m2<10?'0':'')+m2+':'+(s<10?'0':'')+s;
+      te.className='timer-badge'+(t<300?' warning':'')+(t<60?' danger':'');
+      if(t<=0){clearInterval(timerInterval);submitExam();}
+    },1000);
+  } else te.style.display='none';
+  renderQ();
+}
+
+function renderQ(){
+  const total=QUESTIONS.length,q=QUESTIONS[cur];
+  document.getElementById('prog-fill').style.width=((cur+1)/total*100)+'%';
+  document.getElementById('prog-txt').textContent=(cur+1)+' / '+total;
+  document.getElementById('mode-badge').textContent=mode.charAt(0).toUpperCase()+mode.slice(1)+' Mode';
+  const correct=Object.values(answered).filter(v=>v===true).length;
+  const attempted=Object.keys(answered).filter(k=>!k.includes('-')).length;
+  document.getElementById('score-display').textContent=correct+' / '+attempted;
+  document.getElementById('btn-prev').disabled=cur===0;
+  document.getElementById('btn-next').textContent=cur===total-1?(mode==='exam'?'Kumpulkan ›':'Selesai ›'):'Next ›';
+  document.getElementById('btn-flag').className='flag-btn'+(flagged.has(cur)?' flagged':'');
+
+  const optsHTML=q.o.map((opt,i)=>{
+    const key=String.fromCharCode(65+i);let cls='opt',badge='';
+    if(answered.hasOwnProperty(cur)){
+      const isC=opt===q.a,wasC=answered[cur+'-choice']===opt;
+      if(mode==='exam'){if(wasC)cls+=' selected';}
+      else{if(isC){cls+=' correct';badge='✓';}else if(wasC&&!isC){cls+=' incorrect';badge='✗';}}
+    }
+    const dis=answered.hasOwnProperty(cur)&&mode!=='drill'?'disabled':'';
+    return `<button class="${cls}" ${dis} onclick="selectOpt(this,'${opt.replace(/'/g,"&#39;").replace(/"/g,'&quot;')}')"><span class="opt-key">${key}</span><span class="opt-body">${opt}</span><span class="opt-badge">${badge}</span></button>`;
+  }).join('');
+
+  document.getElementById('q-card').innerHTML=`
+    <div class="q-index">Soal ${q.n} dari ${total}
+      <span class="pill-tag">${mode.toUpperCase()}</span>
+      <span class="pill-tag">${q.t}</span>
+      ${flagged.has(cur)?'<span class="pill-tag">Flagged ⚑</span>':''}
+    </div>
+    <div class="q-text">${q.q}</div>
+    <div class="opts">${optsHTML}</div>`;
+
+  const expBox=document.getElementById('exp-box');
+  if(answered.hasOwnProperty(cur)&&mode==='study'){
+    document.getElementById('exp-answer').textContent='✓ Jawaban: '+q.a;
+    document.getElementById('exp-body').innerHTML=q.exp;
+    document.getElementById('exp-src').textContent='📚 Sumber: '+q.src;
+    expBox.className='exp-box show';
+  } else expBox.className='exp-box';
+  renderMap();
+}
+
+function selectOpt(btn,chosen){
+  const q=QUESTIONS[cur],correct=chosen===q.a;
+  answered[cur+'-choice']=chosen;
+  if(mode==='drill'){
+    if(correct){
+      answered[cur]=true;streak++;
+      showToast(streak%5===0?'🔥 '+streak+' streak!':'✓ Benar!');
+      setTimeout(()=>{if(cur<QUESTIONS.length-1)navigate(1);else{clearInterval(timerInterval);document.getElementById('drill-overlay').classList.add('show');}},600);
+    } else {
+      btn.classList.add('drill-wrong-shake');
+      delete answered[cur];delete answered[cur+'-choice'];
+      setTimeout(()=>btn.classList.remove('drill-wrong-shake'),400);
+      streak=0;showToast('✗ Coba lagi!');
+    }
+    renderQ();return;
+  }
+  answered[cur]=correct;
+  if(correct){score++;streak++;showToast(streak%5===0?'🔥 '+streak+' streak!':'✓ Benar!');}
+  else{streak=0;showToast('✗ Salah');}
+  renderQ();
+}
+
+function navigate(dir){
+  if(dir===1&&cur===QUESTIONS.length-1){
+    if(mode==='exam'){document.getElementById('exam-overlay').classList.add('show');return;}
+    showResults();return;
+  }
+  cur=Math.max(0,Math.min(QUESTIONS.length-1,cur+dir));renderQ();
+}
+
+function toggleFlag(){flagged.has(cur)?flagged.delete(cur):flagged.add(cur);renderQ();}
+
+function renderMap(){
+  document.getElementById('q-map').innerHTML=QUESTIONS.map((_,i)=>{
+    let cls='q-dot';
+    if(i===cur)cls+=' current';
+    else if(answered.hasOwnProperty(i))cls+=answered[i]?' answered':' wrong';
+    if(flagged.has(i))cls+=' flagged-dot';
+    return `<div class="${cls}" onclick="jumpTo(${i})">${i+1}</div>`;
+  }).join('');
+}
+
+function jumpTo(i){cur=i;renderQ();}
+
+function submitExam(){
+  closeOverlay('exam-overlay');clearInterval(timerInterval);
+  QUESTIONS.forEach((_,i)=>{if(!answered.hasOwnProperty(i))answered[i]=false;});
+  showResults();
+}
+
+function showResults(){
+  clearInterval(timerInterval);
+  const total=QUESTIONS.length;
+  const correct=Object.values(answered).filter(v=>v===true).length;
+  const wrong=Object.values(answered).filter(v=>v===false).length;
+  const skip=total-Object.keys(answered).filter(k=>!k.includes('-')).length;
+  const pct=Math.round(correct/total*100);
+  const sT={};
+  QUESTIONS.forEach((q,i)=>{
+    if(!sT[q.t])sT[q.t]={correct:0,wrong:0};
+    if(answered.hasOwnProperty(i)){if(answered[i])sT[q.t].correct++;else sT[q.t].wrong++;}
+  });
+  Object.keys(sT).forEach(t=>{
+    if(!topicStats[t])topicStats[t]={correct:0,wrong:0};
+    topicStats[t].correct+=sT[t].correct;topicStats[t].wrong+=sT[t].wrong;
+  });
+  sessions++;
+  const dateStr=new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'2-digit'});
+  allScores.push({score:correct,mode,date:dateStr});
+  if(allScores.length>20)allScores.shift();
+  if(correct>bestScore)bestScore=correct;
+  try{
+    localStorage.setItem('dg25_s',sessions);localStorage.setItem('dg25_b',bestScore);
+    localStorage.setItem('dg25_sc',JSON.stringify(allScores));localStorage.setItem('dg25_t',JSON.stringify(topicStats));
+  }catch(e){}
+  document.getElementById('quiz-screen').style.display='none';
+  document.getElementById('result-screen').style.display='block';
+  document.getElementById('final-score-display').innerHTML='<span>'+correct+'</span>/97';
+  document.getElementById('final-sub').textContent=pct+'% benar — '+(pct>=75?'Lolos CBT! 🎉':pct>=60?'Hampir, terus drilling!':'Yuk belajar lagi!');
+  document.getElementById('r-correct').textContent=correct;
+  document.getElementById('r-wrong').textContent=wrong;
+  document.getElementById('r-skip').textContent=skip;
+  renderTopicBar('result-topic-bar',sT);
+}
+
+function reviewAnswers(){
+  document.getElementById('result-screen').style.display='none';
+  document.getElementById('quiz-screen').style.display='block';
+  mode='study';cur=0;renderQ();
+}
+
+function showStart(){
+  clearInterval(timerInterval);
+  document.getElementById('quiz-screen').style.display='none';
+  document.getElementById('result-screen').style.display='none';
+  document.getElementById('start-screen').style.display='block';
+  document.querySelectorAll('.drill-reset-overlay,.exam-overlay').forEach(el=>el.classList.remove('show'));
+  loadStats();
+}
+
+function confirmExit(){document.getElementById('exit-overlay').classList.add('show');}
+function closeOverlay(id){document.getElementById(id).classList.remove('show');}
+function showToast(msg){
+  const t=document.getElementById('streak-toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),1800);
+}
+
+document.addEventListener('keydown',e=>{
+  if(document.getElementById('quiz-screen').style.display==='none')return;
+  const k=e.key.toLowerCase();
+  if(k==='arrowright')navigate(1);
+  else if(k==='arrowleft')navigate(-1);
+  else if(k==='f')toggleFlag();
+  else if('abcde'.includes(k)){
+    const idx='abcde'.indexOf(k),q=QUESTIONS[cur];
+    if(idx<q.o.length&&!answered.hasOwnProperty(cur)){
+      const btns=document.querySelectorAll('.opts .opt');
+      if(btns[idx])selectOpt(btns[idx],q.o[idx]);
+    }
+  }
+});
+
+loadStats();
+</script>
+</body>
+</html>
