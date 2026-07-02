@@ -29,9 +29,12 @@ export default async function handler(req, res) {
   const userData = await userRes.json();
   const email = userData.email;
 
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!serviceKey) return res.status(500).json({ error: 'Server config error' });
+
   // 2. Check if user is an admin via user_roles table
   const roleRes = await fetch(`${supabaseUrl}/rest/v1/user_roles?user_id=eq.${userData.id}&select=role`, {
-    headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${token}` }
+    headers: { 'apikey': serviceKey, 'Authorization': `Bearer ${serviceKey}` }
   });
   
   let roleData = [];
