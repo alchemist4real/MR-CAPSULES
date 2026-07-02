@@ -1905,13 +1905,28 @@
       }
     }
 
-    const t = localStorage.getItem('mr_theme') || localStorage.getItem('theme');
-    if (t === 'mrs') {
-      document.documentElement.setAttribute('data-theme', 'mrs');
-      document.addEventListener('DOMContentLoaded', () => { walkAndReplaceMR(document.body, true); });
-    } else if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      document.documentElement.setAttribute('data-theme', 'dark');
+    function applyAdminTheme(t) {
+      if (t === 'mrs') {
+        document.documentElement.setAttribute('data-theme', 'mrs');
+        walkAndReplaceMR(document.body, true);
+      } else if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        walkAndReplaceMR(document.body, false);
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+        walkAndReplaceMR(document.body, false);
+      }
     }
+
+    const t = localStorage.getItem('mr_theme') || localStorage.getItem('theme');
+    applyAdminTheme(t);
+    
+    // Listen for theme changes from index.html in another tab
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'mr_theme' || e.key === 'theme') {
+        applyAdminTheme(e.newValue);
+      }
+    });
   </script>
 </body>
 </html>
