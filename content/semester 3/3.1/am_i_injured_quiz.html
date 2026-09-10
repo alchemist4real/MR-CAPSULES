@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Am I Injured? — Konsep Umum Penyakit · Blok 3.1 · FK Unsoed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fbf2ef;--bg2:#f6e2dc;--bg3:#f0cec3;--bg4:#e8b6a6;
+  --border:rgba(140,30,20,.10);--border2:rgba(140,30,20,.22);
+  --text:#2a0e08;--text2:#7a2a1a;--text3:#a85b45;
+  --red:#a8221a;--redbg:rgba(168,34,26,.09);--redb:rgba(168,34,26,.28);
+  --gold:#8a6200;--goldbg:rgba(138,98,0,.09);--goldb:rgba(138,98,0,.28);
+  --blue:#1a4faa;--bluebg:rgba(26,79,170,.09);--blueb:rgba(26,79,170,.28);
+  --purp:#6a20aa;--purpbg:rgba(106,32,170,.08);--purpb:rgba(106,32,170,.25);
+  --teal:#0a6a70;--tealbg:rgba(10,106,112,.09);--tealb:rgba(10,106,112,.28);
+  --accent:#c23c1a;--accentbg:rgba(194,60,26,.09);--accentb:rgba(194,60,26,.28);
+  --r:10px;--rl:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.6;min-height:100vh}
+.app{max-width:900px;margin:0 auto;padding:0 16px 60px}
+header{padding:40px 0 28px;text-align:center}
+.eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--text3);text-transform:uppercase;margin-bottom:10px}
+h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(30px,6vw,54px);letter-spacing:-.03em;line-height:1;margin-bottom:10px}
+h1 span{color:var(--accent)}
+.sub{font-size:13px;color:var(--text2);max-width:520px;margin:0 auto}
+.main-tabs{display:flex;gap:3px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:24px}
+.main-tab{flex:1;padding:9px 6px;border-radius:9px;border:none;background:transparent;color:var(--text3);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .18s}
+.main-tab:hover{color:var(--text)}
+.main-tab.active{background:var(--text);color:#fff;font-weight:600}
+.main-panel{display:none}
+.main-panel.active{display:block;animation:fi .2s ease}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.sub-tabs{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:4px;margin-bottom:20px}
+.sub-tab{padding:8px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text3);font-family:'DM Mono',monospace;font-size:10.5px;cursor:pointer;transition:all .18s;text-align:center;line-height:1.4}
+.sub-tab:hover{background:var(--bg3);color:var(--text2);border-color:var(--border2)}
+.sub-tab.active{background:var(--text);color:#fff;border-color:var(--text);font-weight:600}
+.sub-panel{display:none}
+.sub-panel.active{display:block;animation:fi .18s ease}
+.sec-h{font-family:'Syne',sans-serif;font-weight:700;font-size:14.5px;color:var(--text);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.note{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:0 var(--r) var(--r) 0;padding:10px 14px;font-size:12.5px;color:var(--text2);line-height:1.65;margin-bottom:10px}
+.note strong{color:var(--text)}
+.note.blue{border-left-color:var(--blue)}
+.note.red{border-left-color:var(--red)}
+.note.accent{border-left-color:var(--accent)}
+.note.purp{border-left-color:var(--purp)}
+.note.teal{border-left-color:var(--teal)}
+.dtable-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:14px}
+.dtable-wrap table{width:100%;border-collapse:collapse;font-size:12px}
+.dtable-wrap thead tr{background:var(--bg3)}
+.dtable-wrap th{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.05em;color:var(--text3);font-weight:600;padding:8px 12px;text-align:left;border-bottom:1px solid var(--border)}
+.dtable-wrap td{padding:7px 12px;border-bottom:1px solid var(--border);font-family:'DM Mono',monospace;font-size:11px;color:var(--text2)}
+.dtable-wrap td:first-child{color:var(--text);font-weight:600}
+.dtable-wrap tr:last-child td{border-bottom:none}
+.dtable-wrap tr:nth-child(even){background:rgba(140,30,20,.03)}
+.ind-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:8px}
+.ind-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;position:relative;overflow:hidden}
+.ind-card .stripe{position:absolute;top:0;left:0;width:3px;height:100%}
+.ind-card .ind-name{font-family:'Syne',sans-serif;font-size:12.5px;font-weight:700;margin-bottom:6px}
+.ind-table{width:100%;border-collapse:collapse}
+.ind-table td{font-family:'DM Mono',monospace;font-size:10.5px;padding:3px 0;border-bottom:1px solid var(--border)}
+.ind-table tr:last-child td{border-bottom:none}
+.ind-table td:first-child{color:var(--text3);width:30px}
+.ind-table td:last-child{font-weight:500;color:var(--text)}
+.chain{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.chain-item{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:11px 16px;display:flex;align-items:flex-start;gap:10px}
+.chain-arrow{text-align:center;color:var(--text3);font-size:16px;line-height:1;padding-left:20px}
+.ci-num{font-family:'DM Mono',monospace;font-size:11px;min-width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;background:var(--bg3);border:1px solid var(--border2);color:var(--text3);flex-shrink:0;margin-top:2px}
+.ci-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--text)}
+.ci-desc{font-size:11.5px;color:var(--text2);margin-top:2px}
+.qconfig{text-align:center;padding:28px 0}
+.qconfig-title{font-family:'Syne',sans-serif;font-weight:700;font-size:18px;margin-bottom:6px}
+.qconfig-sub{font-size:13px;color:var(--text2);margin-bottom:22px}
+.cfg-grid{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:26px}
+.cfg-btn{padding:8px 16px;border-radius:20px;border:2px solid var(--border2);background:var(--bg2);color:var(--text3);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;transition:all .18s}
+.cfg-btn.sel{background:var(--text);color:#fff;border-color:var(--text);font-weight:600}
+.start-btn{padding:12px 34px;border-radius:var(--r);border:none;background:var(--text);color:var(--bg);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .18s}
+.start-btn:hover{background:var(--accent)}
+.qheader{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.qnum-display{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);white-space:nowrap}
+.qnum-display strong{color:var(--text);font-size:15px}
+.qscore-display{margin-left:auto;font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);white-space:nowrap}
+.qscore-display strong{color:var(--accent);font-size:15px}
+.qtype-pill{display:inline-block;padding:3px 10px;border-radius:10px;font-family:'DM Mono',monospace;font-size:10px;font-weight:600}
+.qcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:20px 22px;margin-bottom:12px}
+.qscen{font-size:13px;color:var(--text2);margin-bottom:10px;line-height:1.65}
+.qdata{font-family:'DM Mono',monospace;font-size:12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:12px;line-height:2}
+.qtext{font-size:14px;font-weight:600;color:var(--text);line-height:1.55}
+.opts{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.opt{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-radius:var(--r);border:1.5px solid var(--border2);background:var(--bg);color:var(--text);text-align:left;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.5;transition:all .15s;width:100%}
+.opt:hover:not(:disabled){background:var(--bg3);border-color:rgba(140,30,20,.35)}
+.opt:disabled{cursor:default}
+.opt-key{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;min-width:22px;height:22px;border-radius:6px;background:var(--bg3);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;color:var(--text3);transition:all .15s}
+.opt.correct{background:var(--bluebg);border-color:var(--blueb)}
+.opt.correct .opt-key{background:var(--blue);color:#fff;border-color:var(--blue)}
+.opt.wrong{background:var(--redbg);border-color:var(--redb)}
+.opt.wrong .opt-key{background:var(--red);color:#fff;border-color:var(--red)}
+.opt.reveal{background:var(--bluebg);border-color:var(--blueb);opacity:.75}
+.opt.reveal .opt-key{background:var(--blue);color:#fff;border-color:var(--blue)}
+.expbox{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:12px;font-size:12.5px;color:var(--text2);line-height:1.72;display:none}
+.expbox.show{display:block;animation:fi .2s ease}
+.expbox strong{color:var(--text)}
+.actrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.next-btn{padding:10px 24px;border-radius:var(--r);border:none;background:var(--text);color:var(--bg);font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .18s;display:none}
+.next-btn:hover{background:var(--accent)}
+.end-btn{padding:10px 18px;border-radius:var(--r);border:1px solid var(--redb);background:transparent;color:var(--red);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;transition:all .18s;margin-left:auto}
+.end-btn:hover{background:var(--redbg)}
+.results-wrap{text-align:center;padding:28px 12px}
+.res-big{font-family:'Syne',sans-serif;font-size:64px;font-weight:800;color:var(--text);line-height:1;margin-bottom:4px}
+.res-sub{font-family:'DM Mono',monospace;font-size:13px;color:var(--text3);margin-bottom:18px}
+.res-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:20px;text-align:left}
+.res-stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:11px 14px}
+.res-stat .rv{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--text);margin-bottom:2px}
+.res-stat .rl{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)}
+.retry-btn{padding:12px 32px;border-radius:var(--r);border:none;background:var(--text);color:var(--bg);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .18s;margin-bottom:20px}
+.retry-btn:hover{background:var(--accent)}
+footer{text-align:center;padding-top:36px;font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="eyebrow">Patologi Umum · Blok 3.1 · FK Unsoed</div>
+  <h1>Am I <span>Injured?</span></h1>
+  <p class="sub">Quiz Konsep Umum Penyakit: Etiologi & Patogenesis, Jejas Sel, Radikal Bebas, Peradangan & Mediator, PAMPs/Sitokin, dan Kasus Klinis Aplikatif.</p>
+</header>
+
+<div class="main-tabs">
+  <button class="main-tab active" onclick="switchMain('materi',this)">📋 Materi</button>
+  <button class="main-tab" onclick="switchMain('quiz',this)">🎯 Quiz</button>
+</div>
+
+<div class="main-panel active" id="mp-materi">
+  <div class="sub-tabs">
+    <button class="sub-tab active" onclick="switchSub('s-konsep',this)">🧬 Konsep Dasar<br>Penyakit</button>
+    <button class="sub-tab" onclick="switchSub('s-jejas',this)">⚡ Mekanisme<br>Jejas Sel</button>
+    <button class="sub-tab" onclick="switchSub('s-radikal',this)">☢️ Radikal Bebas &<br>Antioksidan</button>
+    <button class="sub-tab" onclick="switchSub('s-peradangan',this)">🔥 Peradangan &<br>Mediator</button>
+    <button class="sub-tab" onclick="switchSub('s-pamps',this)">🛡️ PAMPs/PRR &<br>Sitokin</button>
+    <button class="sub-tab" onclick="switchSub('s-imun',this)">🦠 Imunitas Seluler<br>& Adaptif</button>
+    <button class="sub-tab" onclick="switchSub('s-klinis',this)">🩺 Kasus Klinis<br>Aplikatif</button>
+    <button class="sub-tab" onclick="switchSub('s-atero',this)">🫀 Aterosklerosis<br>(Jejas Kronik)</button>
+  </div>
+
+  <div class="sub-panel active" id="s-konsep">
+    <div class="sec-h">Konsep Dasar Penyakit</div>
+    <div class="note accent"><strong>Patologi</strong> mempelajari struktur, biokimia, dan fungsi abnormal dari organ/sistem. Ilmu yang melatarbelakangi: imunologi, mikrobiologi, molekuler/seluler, dan morfologi → memahami patologi/patogenesis.</div>
+    <div class="note blue">📌 Alur berpikir: <strong>Basic science → BRIDGING → tanda & gejala klinis</strong>. Jejas sel mendasari terjadinya kelainan.</div>
+    <div class="sec-h" style="font-size:13px;border:none;margin-bottom:8px;margin-top:12px">Jejas Reversible vs Irreversible</div>
+    <div class="ind-grid">
+      <div class="ind-card"><div class="stripe" style="background:var(--blue)"></div><div class="ind-name" style="color:var(--blue)">Jejas Reversible</div>
+        <table class="ind-table"><tr><td>•</td><td>Sel mampu melewati stressor</td></tr><tr><td>•</td><td>Kembali ke keadaan normal/homeostasis</td></tr></table></div>
+      <div class="ind-card"><div class="stripe" style="background:var(--red)"></div><div class="ind-name" style="color:var(--red)">Jejas Irreversible</div>
+        <table class="ind-table"><tr><td>•</td><td>Jejas berat & agresif</td></tr><tr><td>•</td><td>Melewati "point of no return"</td></tr><tr><td>•</td><td>Homeostasis gagal → kematian sel</td></tr></table></div>
+    </div>
+    <div class="sec-h" style="font-size:13px;border:none;margin-bottom:8px;margin-top:12px">4 Aspek Proses Terjadinya Penyakit</div>
+    <div class="chain">
+      <div class="chain-item"><div class="ci-num">1</div><div><div class="ci-title">Etiologi</div><div class="ci-desc">Penyebab penyakit (genetik / didapat)</div></div></div>
+      <div class="chain-arrow">↓</div>
+      <div class="chain-item"><div class="ci-num">2</div><div><div class="ci-title">Patogenesis</div><div class="ci-desc">Mekanisme biokimia & molekuler perkembangan penyakit</div></div></div>
+      <div class="chain-arrow">↓</div>
+      <div class="chain-item"><div class="ci-num">3</div><div><div class="ci-title">Perubahan Morfologi</div><div class="ci-desc">Perubahan morfologi sel dan organ serta perubahan fungsi</div></div></div>
+      <div class="chain-arrow">↓</div>
+      <div class="chain-item"><div class="ci-num">4</div><div><div class="ci-title">Manifestasi Klinis</div><div class="ci-desc">Tanda dan gejala yang tampak secara klinis</div></div></div>
+    </div>
+    <div class="sec-h" style="font-size:13px;border:none;margin-bottom:8px;margin-top:12px">Etiologi</div>
+    <div class="dtable-wrap"><table>
+      <thead><tr><th>Kategori</th><th>Contoh</th></tr></thead>
+      <tbody>
+        <tr><td>Genetik</td><td>Mutasi, polimorfisme</td></tr>
+        <tr><td>Didapat/Acquired</td><td>Infeksi, nutrisi, metabolisme, kimia, fisik</td></tr>
+        <tr><td>One etiology one disease</td><td>Contoh: infeksi</td></tr>
+        <tr><td>Multifactorial</td><td>Contoh: kanker, aterosklerosis</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note gold" style="border-left-color:var(--gold)">🔑 <strong>Struktur berpikir tentang penyakit:</strong> Definisi → Etiologi → Patogenesis → Faktor risiko → Klasifikasi, lalu bridging ke klinis: Tanda → Gejala → Pemeriksaan penunjang → Diagnosis → Terapi → Prognosis.</div>
+  </div>
+
+  <div class="sub-panel" id="s-jejas">
+    <div class="sec-h">Mekanisme Jejas Sel</div>
+    <div class="note red">⚠️ 6 mekanisme utama jejas sel: <strong>deplesi ATP, kerusakan mitokondria, akumulasi radikal bebas (stres oksidatif), influx Ca²⁺ & gangguan homeostasis Ca, defek permeabilitas membran, kerusakan DNA & protein</strong>.</div>
+    <div class="sec-h" style="font-size:13px;border:none;margin-bottom:8px;margin-top:12px">Kerusakan Mitokondria — Dua Jalur</div>
+    <div class="ind-grid">
+      <div class="ind-card"><div class="stripe" style="background:var(--purp)"></div><div class="ind-name" style="color:var(--purp)">Jalur Apoptosis</div>
+        <table class="ind-table"><tr><td>•</td><td>↓ Sintesa protein</td></tr><tr><td>•</td><td>Aktivasi Cytochrome C & Caspase</td></tr><tr><td>•</td><td>↑ Permeabilitas mitokondria → APOPTOSIS</td></tr></table></div>
+      <div class="ind-card"><div class="stripe" style="background:var(--red)"></div><div class="ind-name" style="color:var(--red)">Jalur Nekrotik</div>
+        <table class="ind-table"><tr><td>•</td><td>↓ Suplai O2</td></tr><tr><td>•</td><td>Aktivasi Cyclophilin D → ↑ permeabilitas mitokondria</td></tr><tr><td>•</td><td>Abnormal fosforilasi oksidatif → ↑ ROS → NEKROTIK</td></tr></table></div>
+    </div>
+    <div class="note teal">📌 Asam arakidonat terbentuk dari membran sel rusak via enzim <strong>fosfatidilkolin & fosfatidilinositol</strong>. Tromboksan & prostaglandin dibentuk enzim <strong>cyclooxygenase</strong>; leukotrien dibentuk enzim <strong>lipoxygenase</strong>. Efek prostaglandin: <strong>nyeri</strong>.</div>
+    <div class="sec-h" style="font-size:13px;border:none;margin-bottom:8px;margin-top:12px">Influx Ca²⁺ & Gangguan Homeostasis</div>
+    <div class="chain">
+      <div class="chain-item"><div class="ci-num">1</div><div><div class="ci-title">↑ Ca²⁺ dalam sel, mitokondria, SER</div></div></div>
+      <div class="chain-arrow">↓</div>
+      <div class="chain-item"><div class="ci-num">2</div><div><div class="ci-title">↑ Cytosolic Ca²⁺</div></div></div>
+      <div class="chain-arrow">↓</div>
+      <div class="chain-item"><div class="ci-num">3</div><div><div class="ci-title">Dua efek</div><div class="ci-desc">(a) ↑ permeabilitas mitokondria → ↓ATP; (b) Aktivasi fosfolipase, protease (rusak membran) & endonuklease (rusak inti)</div></div></div>
+    </div>
+    <div class="note accent">📌 Kerusakan permeabilitas membran terjadi via: ROS mengaktifkan lipid peroksidase; iskemia → ↑sintesa fosfolipase, ↑Ca-dependent phospholipase, ↑Ca mitokondria. Membran yang rusak: mitokondria, plasma, dan <strong>lisosom</strong> (mengaktifkan enzim → nekrotik).</div>
+  </div>
+
+  <div class="sub-panel" id="s-radikal">
+    <div class="sec-h">Radikal Bebas & Antioksidan</div>
+    <div class="note red"><strong>Radikal bebas</strong> = molekul/ion dengan satu elektron tidak berpasangan di orbit luar; zat antara berusia pendek, sangat reaktif. Fungsi: membunuh bakteri intraseluler.</div>
+    <div class="dtable-wrap"><table>
+      <thead><tr><th>Kelompok</th><th>Jenis</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="5">ROS (Reactive Oxygen Species)</td><td>OFRs / Oxygen Free Radical</td></tr>
+        <tr><td>O2⁺ / Anion Superoxide</td></tr>
+        <tr><td>OH⁺ / Radikal Hidroksil — <strong>paling reaktif</strong></td></tr>
+        <tr><td>ROO⁺ / Radikal Peroksil</td></tr>
+        <tr><td>H2O2 / Hidrogen Peroksida; ¹O2 / Oksigen Singlet</td></tr>
+        <tr><td rowspan="3">RNS (Radical Nitrogen Species)</td><td>NO⁺ / Nitrit Oksida</td></tr>
+        <tr><td>⁻OONO / Peroksinitrit</td></tr>
+        <tr><td>⁻OONO2 / Peroksinitrat</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note gold" style="border-left-color:var(--gold)">📌 Sumber radikal bebas: reaksi reduksi-oksidasi metabolisme N, radiasi UV/X-Ray, metabolisme bahan kimia/obat, logam berlebihan (Fe, Cu). Efek: lipid peroksidase di membran, modifikasi oksidasi, lesi DNA.</div>
+    <div class="sec-h" style="font-size:13px;border:none;margin-bottom:8px;margin-top:12px">3 Antioksidan Utama</div>
+    <div class="dtable-wrap"><table>
+      <thead><tr><th>Antioksidan</th><th>Lokasi/Reaksi</th></tr></thead>
+      <tbody>
+        <tr><td>Catalase</td><td>Peroksisom; menguraikan H2O2 → O2 + H2O</td></tr>
+        <tr><td>Superoxide Dismutase (SOD)</td><td>Mn-SOD (mitokondria), Cu/Zn-SOD (sitosol); ubah O2⁻ → H2O2</td></tr>
+        <tr><td>Glutathione Peroxidase</td><td>Katalisis breakdown radikal bebas; rasio GSSG/GSH = indikator status oksidatif sel</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="sub-panel" id="s-peradangan">
+    <div class="sec-h">Peradangan & Mediator</div>
+    <div class="note accent">Sesaat setelah infeksi terjadi <strong>tripel respon vaskuler</strong>: (1) vasokonstriksi sesaat, (2) vasodilatasi (peran histamin & NO), (3) ↑ permeabilitas kapiler/venula pos-kapiler & kontraksi endotel.</div>
+    <div class="sec-h" style="font-size:13px;border:none;margin-bottom:8px;margin-top:12px">Barier Pertahanan & Makrofag Jaringan</div>
+    <div class="dtable-wrap"><table>
+      <thead><tr><th>Organ</th><th>Nama Makrofag Jaringan</th></tr></thead>
+      <tbody>
+        <tr><td>Hepar</td><td>Sel Kupffer</td></tr>
+        <tr><td>Plasenta</td><td>Hofbauer cell</td></tr>
+        <tr><td>SSP</td><td>Mikroglia</td></tr>
+        <tr><td>Jaringan ikat</td><td>Histiosit</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note blue">📌 Mediator peradangan berasal dari: <strong>Plasma</strong> (kinin, koagulan, sistem komplemen) dan <strong>Sel radang</strong> (histamin, serotonin, NO, PG, LE) serta matriks ekstraseluler.</div>
+    <div class="note red">⚠️ <strong>Fungsi Kalikrein</strong> pada peradangan: aktivasi C5→C5a, aktivasi C3→C3a, aktivasi plasminogen→plasmin, aktivasi kininogen→kinin/bradikinin.</div>
+    <div class="note teal">📌 Sumber sel mediator: trombosit, basofil, PMN, monosit, makrofag, sel mast, sel endotel, sel rusak. Sumber mediator: granul intrasitoplasmik, derivat fosfolipid/asam arakidonat, produk regulasi vaskuler/kinin.</div>
+  </div>
+
+  <div class="sub-panel" id="s-pamps">
+    <div class="sec-h">PAMPs/DAMPs, PRR & Sitokin</div>
+    <div class="note accent"><strong>PAMPs</strong> (Pathogen Associated Molecular Pattern) & <strong>DAMPs</strong> (Damage Associated Molecular Pattern) = reseptor dari bakteri/virus/parasit yang rusak, dikenali oleh PRR (Pattern Recognition Receptor) → reaksi peradangan.</div>
+    <div class="dtable-wrap"><table>
+      <thead><tr><th>PRR</th><th>Lokasi</th><th>Dikenali / Fungsi</th></tr></thead>
+      <tbody>
+        <tr><td>TLR (Toll-Like Receptor)</td><td>Membran plasma & endosom</td><td>LPS bakteri, peptidoglikan, asam nukleat virus; reseptor sitokin IL-1 & IL-18</td></tr>
+        <tr><td>NLR (NOD-Like Receptor)</td><td>Sitosol</td><td>Peptidoglikan dinding sel bakteri; aktivasi IL-1 & IL-18 (>20 protein sitosolik, domain leucine-rich repeat + NACHT)</td></tr>
+        <tr><td>RLR (RIG-Like Receptor)</td><td>Sitosol</td><td>RNA virus (RIG-I, MDA5); aktifkan interferon tipe I antivirus</td></tr>
+      </tbody>
+    </table></div>
+    <div class="sec-h" style="font-size:13px;border:none;margin-bottom:8px;margin-top:12px">Klasifikasi Sitokin</div>
+    <div class="ind-grid">
+      <div class="ind-card"><div class="stripe" style="background:var(--blue)"></div><div class="ind-name" style="color:var(--blue)">Berdasar Struktur</div>
+        <table class="ind-table"><tr><td>•</td><td>Hematopoietin (eritropoietin, trombopoietin)</td></tr><tr><td>•</td><td>Interferon</td></tr><tr><td>•</td><td>Chemokine</td></tr><tr><td>•</td><td>Tumor Necrosis Factor</td></tr></table></div>
+      <div class="ind-card"><div class="stripe" style="background:var(--purp)"></div><div class="ind-name" style="color:var(--purp)">Berdasar Fungsi</div>
+        <table class="ind-table"><tr><td>Tipe 1</td><td>TNFα, IFN-γ</td></tr><tr><td>Tipe 2</td><td>IL-4, IL-10, IL-13, TGF-β → pembentukan antibodi</td></tr></table></div>
+    </div>
+    <div class="dtable-wrap"><table>
+      <thead><tr><th>Sitokin</th><th>Fungsi Kunci</th></tr></thead>
+      <tbody>
+        <tr><td>TNF</td><td>Sitokin pro-inflamasi; aktifkan pathway survival sel, diferensiasi, respons inflamasi, apoptosis</td></tr>
+        <tr><td>IL-1</td><td>Stimulasi ekspresi sel endotel untuk melepas faktor adesi; terkait termoregulasi hipotalamus → febris, nyeri, hipotensi, vasodilatasi</td></tr>
+        <tr><td>IL-12</td><td>Dilepas APC; aktivasi sel T</td></tr>
+        <tr><td>IL-10</td><td>Melindungi dari infeksi autoimun & reaksi alergi</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="sub-panel" id="s-imun">
+    <div class="sec-h">Imunitas Seluler & Adaptif</div>
+    <div class="dtable-wrap"><table>
+      <thead><tr><th>Jaringan Limfoid</th><th>Contoh</th></tr></thead>
+      <tbody>
+        <tr><td>Primer</td><td>Sum-sum tulang, Timus</td></tr>
+        <tr><td>Sekunder</td><td>Lien, Limfonodi, MALT</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note purp">📌 <strong>Cellular immunity</strong>: sel T, sel radang (monosit, PMN, makrofag, leukosit). <strong>Adaptive immunity</strong>: sel B.</div>
+    <div class="sec-h" style="font-size:13px;border:none;margin-bottom:8px;margin-top:12px">Respon Infeksi Virus vs Bakteri</div>
+    <div class="ind-grid">
+      <div class="ind-card"><div class="stripe" style="background:var(--red)"></div><div class="ind-name" style="color:var(--red)">Infeksi Virus</div>
+        <table class="ind-table"><tr><td>•</td><td>Presentasi via MHC-I</td></tr><tr><td>•</td><td>Diaktifkan sel T CD8+</td></tr></table></div>
+      <div class="ind-card"><div class="stripe" style="background:var(--teal)"></div><div class="ind-name" style="color:var(--teal)">Infeksi Bakteri</div>
+        <table class="ind-table"><tr><td>•</td><td>Makrofag & sel dendritik lepas IL-12 → aktivasi sel T</td></tr><tr><td>•</td><td>Presentasi via MHC-II, diaktifkan sel T CD4+</td></tr></table></div>
+    </div>
+    <div class="note accent">📌 Sel T teraktivasi: melepas <strong>IL-2</strong> (autokrin → proliferasi sel T di lesi), <strong>IFN-γ</strong> (proliferasi makrofag), <strong>IFN-γ + IL-4/5</strong> (aktivasi sel B → sel plasma → antibodi → aktivasi komplemen).</div>
+  </div>
+
+  <div class="sub-panel" id="s-klinis">
+    <div class="sec-h">Kasus Klinis Aplikatif</div>
+    <div class="note red"><strong>HPV & Karsinoma Serviks:</strong> HPV = non-enveloped double-stranded DNA virus. Protein L1 (kapsid, menempel via HSPGs), L2 (proteolitik, rusak matriks ekstraseluler). E6 berikatan p53 (tumor suppressor); E7 berikatan gen Rb → proliferasi. Progresi: Normal → Metaplasia → CIN I → CIN II → CIN III → Invasive (CIN I-III reversibel, invasive irreversibel).</div>
+    <div class="note purp"><strong>Preeklamsia:</strong> Sindrom hipertensi, proteinuria, edema (6% wanita hamil). Sitotrofoblas → EVT (extravillous trophoblast) menggantikan endotel arteri spiralis ibu. Kegagalan remodeling arteri spiralis → aktivasi NK & makrofag → memicu preeklamsia. HIF (Hypoxia Inducible Factor) meningkat trimester 1, menurun usia kehamilan 9 minggu; persisten HIF → hipoksia.</div>
+    <div class="note teal"><strong>Abortus — penyebab:</strong> kelainan kromosom janin (aneuploidy, polyploidy, translokasi), faktor endokrin ibu (luteal-phase defect, DM), defek fisik uterus (leiomyoma submukosa, polip), kelainan sistemik (hipertensi, koagulopati), infeksi (Toxoplasma, Mycoplasma, Listeria, virus).</div>
+    <div class="note blue"><strong>Karsinoma Mammae:</strong> Prognosis terbaik = tipe Luminal A; prognosis terburuk = Triple Negative. Grading berdasarkan: struktur tubuli, mitosis, struktur kribiform dengan inti monomorf, polimorfi sel.</div>
+    <div class="note accent"><strong>DM Tipe 1:</strong> Sel T autoreaktif merusak sel beta pankreas penghasil insulin. Etiologi genetik: HLA DR4, DQ8, DQ2. Autoantibodi: GAD, IA-2/IA-2β, ZnT8. Stadium: Stage 1 (>1 jenis autoantibodi, asimtomatik), Stage 2 (disglikemia, asimtomatik), Stage 3 (gejala hiperglikemia: poliuria, polidipsia, enuresis, penurunan BB, penglihatan kabur).</div>
+  </div>
+
+  <div class="sub-panel" id="s-atero">
+    <div class="sec-h">Aterosklerosis sebagai Model Jejas Sel Kronik</div>
+    <div class="note accent"><strong>Mindset kunci:</strong> Berbagai etiologi jejas (infeksius maupun non-infeksius) pada akhirnya bermuara pada mekanisme jejas sel & inflamasi yang serupa — disfungsi endotel, stres oksidatif, dan aktivasi jalur inflamasi bawaan melalui <strong>DAMP</strong> maupun <strong>PAMP</strong>. Aterosklerosis = contoh penyakit jejas kronik non-infeksi yang "meminjam" mesin inflamasi yang sama dengan penyakit infeksi.</div>
+
+    <div class="sec-h" style="font-size:13px;border:none;margin-bottom:8px;margin-top:12px">1. Kerangka Umum: Dari "Jejas" ke "Penyakit"</div>
+    <div class="chain">
+      <div class="chain-item"><div class="ci-num">1</div><div><div class="ci-title">Etiologi Jejas</div><div class="ci-desc">Infeksius (bakteri, virus, jamur, parasit → PAMP) atau non-infeksius (hiperlipidemia, hipertensi, rokok, diabetes → DAMP; + hipoksia, agen fisik, kimia, imunologik, genetik)</div></div></div>
+      <div class="chain-arrow">↓</div>
+      <div class="chain-item"><div class="ci-num">2</div><div><div class="ci-title">Jalur Akhir Bersama (Mekanisme Jejas Sel Universal)</div><div class="ci-desc">Kerusakan mitokondria & deplesi ATP, stres oksidatif (ROS/RNS), kerusakan membran, gangguan homeostasis Ca²⁺, kerusakan DNA/protein</div></div></div>
+      <div class="chain-arrow">↓</div>
+      <div class="chain-item"><div class="ci-num">3</div><div><div class="ci-title">Respons Sel/Jaringan: Adaptasi vs Reversibel vs Irreversibel</div><div class="ci-desc">Jejas ringan & terus-menerus → adaptasi kronik (mis. disfungsi endotel kronik). Jejas berat/menetap → kematian sel (apoptosis/nekrosis) → DAMP dilepas → memicu inflamasi steril</div></div></div>
+      <div class="chain-arrow">↓</div>
+      <div class="chain-item"><div class="ci-num">4</div><div><div class="ci-title">Manifestasi: Inflamasi Kronik → Penyakit</div><div class="ci-desc">Rekrutmen leukosit, remodeling jaringan, kerusakan struktural menetap. Contoh: plak aterosklerotik rentan ruptur</div></div></div>
+    </div>
+    <div class="note red">⚠️ Baik infeksi maupun jejas non-infeksi sama-sama mengaktifkan <strong>pattern recognition receptors</strong> (TLR, RAGE) dan jalur <strong>NF-κB</strong>. Bedanya hanya pada ligand: <strong>PAMP</strong> (Pathogen-Associated Molecular Pattern) pada infeksi vs <strong>DAMP</strong> (Damage-Associated Molecular Pattern) pada jejas steril.</div>
+
+    <div class="sec-h" style="font-size:13px;border:none;margin-bottom:8px;margin-top:12px">2. Empat Pintu Masuk, Satu Lesi: Disfungsi Endotel</div>
+    <div class="dtable-wrap"><table>
+      <thead><tr><th>Faktor Risiko</th><th>Jalur Molekuler</th></tr></thead>
+      <tbody>
+        <tr><td>Hiperlipidemia</td><td>oxLDL·LOX-1: LDL tertahan subendotel → teroksidasi (oxLDL) → ikat LOX-1 → aktivasi NADPH oxidase → deplesi BH4 → eNOS uncoupling (NO↓, O2•⁻↑)</td></tr>
+        <tr><td>Hipertensi</td><td>Shear Stress·Ang II: aliran turbulen percabangan arteri → relokalisasi kaveolin-1 → eNOS-Ser1177↓ + Angiotensin II → Nox → superoksida → eNOS uncoupling mekanis</td></tr>
+        <tr><td>Rokok</td><td>Radikal bebas eksogen dari asap langsung merusak endotel & konsumsi NO, deplesi BH4, ↑endotelin-1 → disfungsi endotel akut-langsung</td></tr>
+        <tr><td>Diabetes Melitus</td><td>AGE–RAGE: hiperglikemia kronik → AGE → ikat RAGE → NF-κB↑ + 5 jalur ROS Brownlee → disfungsi endotel oksidatif + inflamatorik</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note purp">🎯 <strong>Titik Konvergensi:</strong> Keempat jalur berbeda ini berakhir pada penurunan <strong>NO</strong> (hilangnya "rem" anti-inflamasi endotel) dan pelepasan <strong>DAMP</strong> (HMGB1, kristal kolesterol) — menyatukan empat etiologi berbeda ke dalam satu fenotipe <strong>endotel teraktivasi</strong>.</div>
+    <div class="ind-grid">
+      <div class="ind-card"><div class="stripe" style="background:var(--blue)"></div><div class="ind-name" style="color:var(--blue)">Analogi Infeksi</div>
+        <table class="ind-table"><tr><td>•</td><td>PAMP (LPS, peptidoglikan) mengaktifkan TLR sel imun bawaan secara langsung — respons cepat & spesifik terhadap mikroba</td></tr></table></div>
+      <div class="ind-card"><div class="stripe" style="background:var(--red)"></div><div class="ind-name" style="color:var(--red)">Pada Aterosklerosis</div>
+        <table class="ind-table"><tr><td>•</td><td>Tidak ada mikroba. DAMP dari sel stres/rusak "meniru" sinyal PAMP melalui reseptor sama (TLR2/4, RAGE) → inflamasi steril kronik, sulit "selesai" karena stimulus (kristal kolesterol) tak bisa dieliminasi seperti mikroba</td></tr></table></div>
+    </div>
+
+    <div class="sec-h" style="font-size:13px;border:none;margin-bottom:8px;margin-top:12px">3. Jalur Progresi: Aktivasi Endotel → Plak Rentan</div>
+    <div class="chain">
+      <div class="chain-item"><div class="ci-num">1</div><div><div class="ci-title">Aktivasi Endotel</div><div class="ci-desc">↑P-/E-selektin, ICAM-1, VCAM-1, MCP-1 (dipicu NF-κB akibat ↓NO + DAMP)</div></div></div>
+      <div class="chain-arrow">↓</div>
+      <div class="chain-item"><div class="ci-num">2</div><div><div class="ci-title">Rekrutmen Monosit</div><div class="ci-desc">Rolling → aktivasi kemokin (MCP-1/CCR2) → adhesi kuat (VLA-4/ICAM-1) → migrasi transendotelial ke intima</div></div></div>
+      <div class="chain-arrow">↓</div>
+      <div class="chain-item"><div class="ci-num">3</div><div><div class="ci-title">Sel Busa (Foam Cell)</div><div class="ci-desc">Monosit → makrofag → reseptor scavenger (CD36, SR-A, LOX-1) menelan oxLDL berlebih tanpa umpan balik → akumulasi lipid</div></div></div>
+      <div class="chain-arrow">↓</div>
+      <div class="chain-item"><div class="ci-num">4</div><div><div class="ci-title">Aktivasi Inflamasom NLRP3</div><div class="ci-desc">Kristal kolesterol merusak fagolisosom → NLRP3/ASC/caspase-1 → IL-1β & IL-18 aktif → memperkuat inflamasi (loop mandiri)</div></div></div>
+      <div class="chain-arrow">↓</div>
+      <div class="chain-item"><div class="ci-num">5</div><div><div class="ci-title">Migrasi Sel Otot Polos (SMC)</div><div class="ci-desc">PDGF-BB dari endotel/makrofag → SMC kontraktil → sintetik/migratorik → membentuk tudung fibrosa (stabilisasi awal)</div></div></div>
+      <div class="chain-arrow">↓</div>
+      <div class="chain-item"><div class="ci-num">6</div><div><div class="ci-title">Ketidakstabilan Plak</div><div class="ci-desc">Apoptosis makrofag + efferositosis gagal → inti nekrotik↑; MMP (kolagenase) menipiskan tudung fibrosa → risiko ruptur</div></div></div>
+    </div>
+    <div class="note teal">📌 Langkah 1-4 pada dasarnya respons inflamasi akut/subakut klasik (vasoaktif, permeabilitas, rekrutmen leukosit) — hanya terjadi kronik, di dinding pembuluh darah, dipicu lipid teroksidasi, bukan mikroba. Langkah 5-6 menggambarkan konsep umum <strong>"penyembuhan vs kerusakan berkelanjutan"</strong> yang juga berlaku pada penyembuhan luka & fibrosis organ lain.</div>
+
+    <div class="sec-h" style="font-size:13px;border:none;margin-bottom:8px;margin-top:12px">4. Jembatan Konsep: Inflamasi Infeksius vs Steril</div>
+    <div class="dtable-wrap"><table>
+      <thead><tr><th>Aspek</th><th>Infeksi (PAMP)</th><th>Jejas Non-infeksi/Steril (DAMP)</th></tr></thead>
+      <tbody>
+        <tr><td>Sumber sinyal</td><td>LPS, peptidoglikan, asam nukleat virus</td><td>HMGB1, kristal kolesterol, oxLDL</td></tr>
+        <tr><td>Reseptor</td><td>TLR2/4, NOD-like receptors</td><td>TLR2/4, RAGE, LOX-1 (reseptor sama, ligand beda)</td></tr>
+        <tr><td>Jalur akhir</td><td colspan="2">NF-κB → sitokin proinflamasi (IL-1β, TNF-α, IL-6) → molekul adhesi → rekrutmen leukosit</td></tr>
+        <tr><td>Durasi</td><td>Akut, sembuh setelah patogen eliminasi</td><td>Kronik — stimulus sulit dieliminasi tuntas</td></tr>
+        <tr><td>Contoh</td><td>Pneumonia, sepsis, abses</td><td>Aterosklerosis, gout, NASH</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="sec-h" style="font-size:13px;border:none;margin-bottom:8px;margin-top:12px">5. Faktor Risiko → Inisiasi vs Instabilitas Plak</div>
+    <div class="dtable-wrap"><table>
+      <thead><tr><th>Faktor Risiko</th><th>Driver Inisiasi Plak</th><th>Driver Instabilitas Plak</th></tr></thead>
+      <tbody>
+        <tr><td>Hiperlipidemia</td><td>Pembentukan sel busa via reseptor scavenger; aktivasi NLRP3 oleh kristal kolesterol</td><td>Perluasan inti nekrotik; IL-1β pertahankan sekresi MMP</td></tr>
+        <tr><td>Hipertensi</td><td>Aktivasi endotel mekanis di percabangan/lengkungan arteri → tentukan lokasi lesi</td><td>↑Stres dinding pada tudung tipis → ruptur mekanis</td></tr>
+        <tr><td>Rokok</td><td>Upregulasi molekul adhesi cepat & kuat → adhesi monosit dipercepat</td><td>Modifikasi oksidatif LDL & aktivasi trombosit/makrofag → plak protrombotik</td></tr>
+        <tr><td>Diabetes Melitus</td><td>AGE-RAGE perkuat molekul adhesi & MCP-1 → rekrutmen monosit dipercepat</td><td>Sinyal RAGE/NF-κB kronik pertahankan inflamasi & MMP → plak difus rentan ruptur</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note gold" style="border-left-color:var(--gold)">🔑 <strong>Simpulan mindset:</strong> (1) Jejas adalah bahasa universal patologi — mekanismenya terbatas: stres oksidatif, disfungsi mitokondria, gangguan membran, aktivasi inflamasi bawaan. (2) PAMP & DAMP memakai "pintu" reseptor yang sama (TLR, RAGE) — penyakit non-infeksi kronik dapat menyerupai "infeksi tanpa mikroba". (3) Kronisitas mengubah karakter inflamasi — pada jejas steril kronik, stimulus tidak pernah hilang sehingga inflamasi terus menyala dan merusak struktur protektif (tudung fibrosa).</div>
+  </div>
+</div>
+
+<div class="main-panel" id="mp-quiz">
+  <div id="qconfig" class="qconfig">
+    <div class="qconfig-title">Mulai Sesi Quiz</div>
+    <div class="qconfig-sub">Pilih topik (multi-pilih) — soal infinite sampai Akhiri Sesi</div>
+    <div class="cfg-grid">
+      <button class="cfg-btn sel" data-type="konsep">Konsep Dasar Penyakit</button>
+      <button class="cfg-btn sel" data-type="jejas">Mekanisme Jejas Sel</button>
+      <button class="cfg-btn sel" data-type="radikal">Radikal Bebas & Antioksidan</button>
+      <button class="cfg-btn sel" data-type="peradangan">Peradangan & Mediator</button>
+      <button class="cfg-btn sel" data-type="pamps">PAMPs/PRR & Sitokin</button>
+      <button class="cfg-btn sel" data-type="imun">Imunitas Seluler & Adaptif</button>
+      <button class="cfg-btn sel" data-type="klinis">Kasus Klinis Aplikatif</button>
+      <button class="cfg-btn sel" data-type="atero">Aterosklerosis (Jejas Kronik)</button>
+    </div>
+    <button class="start-btn" onclick="startSession()">Mulai →</button>
+  </div>
+  <div id="qactive" style="display:none">
+    <div class="qheader">
+      <div class="qnum-display">Soal ke-<strong id="qnum">1</strong></div>
+      <div id="qpill" class="qtype-pill"></div>
+      <div class="qscore-display"><strong id="qscore">0</strong> benar</div>
+    </div>
+    <div class="qcard">
+      <div id="qscen" class="qscen" style="display:none"></div>
+      <div id="qdata" class="qdata" style="display:none"></div>
+      <div id="qtext" class="qtext"></div>
+    </div>
+    <div class="opts" id="opts"></div>
+    <div class="expbox" id="expbox"></div>
+    <div class="actrow">
+      <button class="next-btn" id="nextbtn" onclick="nextQ()">Soal Berikutnya →</button>
+      <button class="end-btn" onclick="endSession()">Akhiri Sesi</button>
+    </div>
+  </div>
+  <div id="qresults" style="display:none">
+    <div class="results-wrap">
+      <div class="res-big" id="res-pct">—</div>
+      <div class="res-sub" id="res-sub">—</div>
+      <div class="res-grid" id="res-grid"></div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:20px">
+        <button class="retry-btn" style="margin-bottom:0" onclick="restartQuiz()">Coba Lagi</button>
+        <button class="retry-btn" style="margin-bottom:0;background:var(--accent)" onclick="downloadCert()">⬇ Unduh Sertifikat</button>
+      </div>
+      <div class="dtable-wrap" style="margin-bottom:14px"><table><thead><tr><th>Topik</th><th>Soal</th><th>Benar</th></tr></thead><tbody id="res-bytype"></tbody></table></div>
+      <div class="dtable-wrap"><table><thead><tr><th>#</th><th>Soal (ringkas)</th><th>Jawaban Benar</th><th>Hasil</th></tr></thead><tbody id="res-tbody"></tbody></table></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div>am i injured? · Konsep Umum Penyakit · Blok 3.1 · FK Unsoed</div>
+  <div style="margin-top:5px">crafted by alchemist4real · <a href="https://174-three.vercel.app" target="_blank" style="color:var(--text3);text-decoration:none;border-bottom:1px dashed var(--text3)">check other quizzes → 174 archive ↗</a></div>
+</footer>
+</div>
+
+<script>
+window.switchMain=function(id,b){document.querySelectorAll('.main-panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.main-tab').forEach(x=>x.classList.remove('active'));document.getElementById('mp-'+id).classList.add('active');b.classList.add('active');};
+window.switchSub=function(id,b){document.querySelectorAll('.sub-panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.sub-tab').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');b.classList.add('active');};
+
+const activeTypes=new Set(['konsep','jejas','radikal','peradangan','pamps','imun','klinis','atero']);
+document.querySelectorAll('.cfg-btn').forEach(b=>{b.addEventListener('click',()=>{const t=b.dataset.type;if(activeTypes.has(t)){if(activeTypes.size===1)return;activeTypes.delete(t);b.classList.remove('sel');}else{activeTypes.add(t);b.classList.add('sel');}});});
+
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const shuf=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]];}return b;};
+const KEYS='ABCDE'.split('');
+const strip=s=>s.replace(/<[^>]*>/g,'');
+function makePicker(pool){let idx=[];return function(){if(idx.length>=pool.length)idx=[];const av=pool.map((_,i)=>i).filter(i=>!idx.includes(i));const si=rnd(av);idx.push(si);return pool[si];};}
+
+const KONSEP_POOL=[
+  {q:'Patologi mempelajari...',opts:['Struktur, biokimia, dan fungsi abnormal dari organ/sistem','Hanya struktur normal organ','Hanya fungsi biokimia sel sehat','Klasifikasi obat-obatan'],ans:'Struktur, biokimia, dan fungsi abnormal dari organ/sistem',exp:'<strong>Patologi</strong> mempelajari struktur, biokimia, dan fungsi <strong>abnormal</strong> dari organ/sistem.'},
+  {q:'Jejas reversible ditandai dengan...',opts:['Sel gagal beradaptasi dan mati','Sel mampu melewati stressor dan kembali ke homeostasis','Sel melewati point of no return','Terjadi nekrosis permanen'],ans:'Sel mampu melewati stressor dan kembali ke homeostasis',exp:'<strong>Jejas reversible</strong>: sel mampu melewati stressor dan <strong>kembali ke keadaan normal/homeostasis</strong>.'},
+  {q:'Jejas irreversible ditandai dengan...',opts:['Sel selalu kembali normal','Jejas ringan dan sementara','Jejas berat, melewati point of no return, homeostasis gagal → kematian sel','Terjadi hanya pada sel kanker'],ans:'Jejas berat, melewati point of no return, homeostasis gagal → kematian sel',exp:'<strong>Jejas irreversible</strong> = jejas berat dan agresif, melewati <strong>point of no return</strong>, homeostasis gagal → <strong>kematian sel</strong>.'},
+  {q:'4 aspek proses terjadinya penyakit secara berurutan adalah...',opts:['Manifestasi klinis → Patogenesis → Etiologi → Morfologi','Etiologi → Patogenesis → Perubahan morfologi → Manifestasi klinis','Morfologi → Etiologi → Manifestasi → Patogenesis','Patogenesis → Manifestasi → Etiologi → Morfologi'],ans:'Etiologi → Patogenesis → Perubahan morfologi → Manifestasi klinis',exp:'4 aspek: <strong>Etiologi → Patogenesis (mekanisme biokimia/molekuler) → Perubahan morfologi sel & organ + fungsi → Manifestasi klinis</strong>.'},
+  {q:'Patogenesis didefinisikan sebagai...',opts:['Penyebab langsung penyakit','Serangkaian perubahan proses seluler, biokimia, dan molekuler akibat agen jejas','Gejala klinis yang tampak','Klasifikasi penyakit berdasarkan organ'],ans:'Serangkaian perubahan proses seluler, biokimia, dan molekuler akibat agen jejas',exp:'<strong>Patogenesis</strong> = serangkaian perubahan proses <strong>seluler, biokimia, dan molekuler</strong> pada sel/organ akibat adanya agen jejas.'},
+  {q:'Contoh penyakit dengan etiologi "one etiology one disease" adalah...',opts:['Kanker','Aterosklerosis','Infeksi','Diabetes tipe 2'],ans:'Infeksi',exp:'<strong>Infeksi</strong> adalah contoh "one etiology one disease" — satu penyebab menghasilkan satu penyakit spesifik.'},
+  {q:'Kanker dan aterosklerosis termasuk penyakit dengan etiologi...',opts:['One etiology one disease','Multifactorial','Genetik murni','Idiopatik'],ans:'Multifactorial',exp:'<strong>Kanker</strong> dan <strong>aterosklerosis</strong> termasuk penyakit <strong>multifactorial</strong> — melibatkan banyak faktor penyebab.'},
+  {q:'Struktur berpikir tentang penyakit (bagian pre-bridging) meliputi...',opts:['Tanda, gejala, diagnosis, terapi, prognosis','Definisi, etiologi, patogenesis, faktor risiko, klasifikasi','Pemeriksaan penunjang saja','Hanya diagnosis dan terapi'],ans:'Definisi, etiologi, patogenesis, faktor risiko, klasifikasi',exp:'Struktur berpikir tentang penyakit: <strong>Definisi → Etiologi → Patogenesis → Faktor risiko → Klasifikasi</strong>, baru kemudian bridging ke klinis.'},
+];
+const pickKonsep=makePicker(KONSEP_POOL);
+
+const JEJAS_POOL=[
+  {q:'6 mekanisme jejas sel meliputi, KECUALI...',opts:['Deplesi ATP','Kerusakan mitokondria','Peningkatan sintesis kolagen','Influx Ca dan kehilangan homeostasis Ca'],ans:'Peningkatan sintesis kolagen',exp:'6 mekanisme jejas sel: deplesi ATP, kerusakan mitokondria, akumulasi radikal bebas, influx Ca²⁺, defek permeabilitas membran, kerusakan DNA/protein. <strong>Sintesis kolagen bukan mekanisme jejas sel.</strong>'},
+  {q:'Penurunan sintesa protein yang mengaktivasi cytochrome C dan caspase akan menyebabkan...',opts:['Nekrosis','Apoptosis','Hipertrofi','Metaplasia'],ans:'Apoptosis',exp:'↓ Sintesa protein → aktivasi <strong>cytochrome C dan caspase</strong> → permeabilitas mitokondria ↑ → <strong>APOPTOSIS</strong>.'},
+  {q:'Penurunan suplai O2 yang mengaktivasi protein Cyclophilin D akan berujung pada...',opts:['Apoptosis','Nekrotik','Hipertrofi','Regenerasi'],ans:'Nekrotik',exp:'↓ suplai O2 → aktivasi protein <strong>Cyclophilin D</strong> → permeabilitas mitokondria ↑, abnormal fosforilasi oksidatif → ROS ↑ → <strong>NEKROTIK</strong>.'},
+  {q:'Enzim cyclooxygenase berperan dalam pembentukan...',opts:['Leukotrien','Tromboksan dan prostaglandin','Histamin','Bradikinin'],ans:'Tromboksan dan prostaglandin',exp:'<strong>Cyclooxygenase</strong> membentuk <strong>tromboksan dan prostaglandin</strong> dari asam arakidonat. Salah satu efek prostaglandin adalah nyeri.'},
+  {q:'Enzim lipoxygenase berperan dalam pembentukan...',opts:['Tromboksan','Prostaglandin','Leukotrien','Histamin'],ans:'Leukotrien',exp:'<strong>Lipoxygenase</strong> membentuk <strong>leukotrien</strong> dari asam arakidonat.'},
+  {q:'Peningkatan Ca²⁺ sitosolik dalam sel menyebabkan dua efek utama, yaitu...',opts:['Peningkatan sintesis protein dan regenerasi sel','↑ permeabilitas mitokondria (↓ATP) dan aktivasi fosfolipase/protease/endonuklease','Penurunan aktivitas enzim seluruhnya','Peningkatan produksi kolagen'],ans:'↑ permeabilitas mitokondria (↓ATP) dan aktivasi fosfolipase/protease/endonuklease',exp:'↑Ca²⁺ sitosolik → (1) ↑permeabilitas mitokondria → ↓ATP; (2) aktivasi enzim <strong>fosfolipase & protease</strong> (rusak membran) serta <strong>endonuklease</strong> (rusak inti).'},
+  {q:'Kerusakan permeabilitas membran sel dapat terjadi melalui mekanisme, KECUALI...',opts:['ROS mengaktifkan lipid peroksidase','Iskemia meningkatkan sintesa fosfolipase','Peningkatan sintesis DNA baru','Iskemia meningkatkan Ca dependent phospholipase'],ans:'Peningkatan sintesis DNA baru',exp:'Kerusakan membran terjadi via: ROS aktifkan lipid peroksidase; iskemia → ↑sintesa fosfolipase, ↑Ca dependent phospholipase, ↑Ca mitokondria. <strong>Sintesis DNA baru bukan mekanisme kerusakan membran.</strong>'},
+  {q:'Rusaknya membran lisosom pada jejas sel akan mengaktifkan berbagai enzim yang menyebabkan...',opts:['Regenerasi sel','Apoptosis terprogram','Nekrotik','Hipertrofi kompensasi'],ans:'Nekrotik',exp:'Membran <strong>lisosom</strong> yang rusak mengaktifkan berbagai enzim litik → <strong>nekrotik</strong>.'},
+];
+const pickJejas=makePicker(JEJAS_POOL);
+
+const RADIKAL_POOL=[
+  {q:'Radikal bebas didefinisikan sebagai...',opts:['Molekul stabil dengan elektron berpasangan penuh','Molekul atau ion dengan satu elektron tidak berpasangan di orbit luar','Protein struktural membran sel','Enzim pemecah lemak'],ans:'Molekul atau ion dengan satu elektron tidak berpasangan di orbit luar',exp:'<strong>Radikal bebas</strong> = molekul/ion dengan <strong>satu elektron tidak berpasangan</strong> di orbit luar; zat antara berusia pendek dan sangat reaktif.'},
+  {q:'Radikal bebas jenis ROS yang paling reaktif adalah...',opts:['Anion Superoxide (O2⁺)','Radikal Hidroksil (OH⁺)','Hidrogen Peroksida (H2O2)','Oksigen Singlet'],ans:'Radikal Hidroksil (OH⁺)',exp:'<strong>Radikal Hidroksil (OH⁺)</strong> adalah jenis ROS yang <strong>paling reaktif</strong>.'},
+  {q:'RNS (Radical Nitrogen Species) meliputi...',opts:['O2⁺ dan OH⁺','NO⁺, peroksinitrit, dan peroksinitrat','H2O2 dan ROO⁺','Katalase dan SOD'],ans:'NO⁺, peroksinitrit, dan peroksinitrat',exp:'<strong>RNS</strong> meliputi: NO⁺ (nitrit oksida), ⁻OONO (peroksinitrit), ⁻OONO2 (peroksinitrat).'},
+  {q:'Sumber radikal bebas meliputi, KECUALI...',opts:['Radiasi UV dan X-Ray','Reaksi reduksi-oksidasi metabolisme N','Konsumsi air putih yang cukup','Logam berlebihan seperti Fe dan Cu'],ans:'Konsumsi air putih yang cukup',exp:'Sumber radikal bebas: reaksi redoks metabolisme N, radiasi UV/X-Ray, metabolisme bahan kimia/obat, logam berlebihan (Fe, Cu). <strong>Konsumsi air putih bukan sumber radikal bebas.</strong>'},
+  {q:'Enzim yang mengubah H2O2 menjadi O2 dan H2O di peroksisom adalah...',opts:['Superoxide Dismutase','Catalase','Glutathione peroxidase','Cyclooxygenase'],ans:'Catalase',exp:'<strong>Catalase</strong> (di peroksisom) menguraikan H2O2 → O2 + H2O.'},
+  {q:'Superoxide Dismutase (SOD) berfungsi mengubah...',opts:['H2O2 menjadi O2 dan H2O','O2⁻ menjadi H2O2 dan O2','Glutathione teroksidasi menjadi tereduksi','Prostaglandin menjadi tromboksan'],ans:'O2⁻ menjadi H2O2 dan O2',exp:'<strong>SOD</strong> mengubah <strong>O2⁻ menjadi H2O2 dan O2</strong>. Ada Mn-SOD (mitokondria) dan Cu/Zn-SOD (sitosol).'},
+  {q:'Rasio GSSG terhadap GSH mencerminkan...',opts:['Kadar hemoglobin darah','Status oksidatif sel dan kemampuan detoksifikasi ROS','Jumlah sel darah putih','Kadar glukosa darah'],ans:'Status oksidatif sel dan kemampuan detoksifikasi ROS',exp:'Rasio glutathione teroksidasi (GSSG) terhadap tereduksi (GSH) mencerminkan <strong>status oksidatif sel</strong> dan indikator <strong>kemampuan sel mendetoksifikasi ROS</strong>.'},
+];
+const pickRadikal=makePicker(RADIKAL_POOL);
+
+const PERADANGAN_POOL=[
+  {q:'Tripel respon vaskuler segera setelah infeksi meliputi urutan...',opts:['Vasodilatasi → vasokonstriksi → penurunan permeabilitas','Vasokonstriksi sesaat → vasodilatasi → peningkatan permeabilitas kapiler','Peningkatan permeabilitas → vasokonstriksi → vasodilatasi','Kontraksi endotel saja tanpa perubahan vaskuler'],ans:'Vasokonstriksi sesaat → vasodilatasi → peningkatan permeabilitas kapiler',exp:'Tripel respon vaskuler: <strong>vasokonstriksi sesaat → vasodilatasi (peran histamin & NO) → ↑permeabilitas kapiler/venula pos-kapiler & kontraksi endotel</strong>.'},
+  {q:'Makrofag jaringan pada hepar disebut...',opts:['Mikroglia','Histiosit','Sel Kupffer','Hofbauer cell'],ans:'Sel Kupffer',exp:'Makrofag jaringan hepar = <strong>Sel Kupffer</strong>.'},
+  {q:'Makrofag jaringan pada SSP (sistem saraf pusat) disebut...',opts:['Sel Kupffer','Mikroglia','Hofbauer cell','Histiosit'],ans:'Mikroglia',exp:'Makrofag jaringan SSP = <strong>Mikroglia</strong>.'},
+  {q:'Makrofag jaringan pada plasenta disebut...',opts:['Sel Kupffer','Mikroglia','Hofbauer cell','Histiosit'],ans:'Hofbauer cell',exp:'Makrofag jaringan plasenta = <strong>Hofbauer cell</strong>.'},
+  {q:'Mediator peradangan yang berasal dari plasma meliputi...',opts:['Histamin, serotonin, NO','Kinin, koagulan, sistem komplemen','PG dan LE saja','Matriks ekstraseluler'],ans:'Kinin, koagulan, sistem komplemen',exp:'Mediator dari <strong>plasma</strong>: kinin, koagulan, sistem komplemen. Mediator dari <strong>sel radang</strong>: histamin, serotonin, NO, PG, LE.'},
+  {q:'Fungsi kalikrein pada peradangan meliputi, KECUALI...',opts:['Aktifasi C5 dan C5a','Aktifasi C3 dan C3a','Aktifkan plasminogen menjadi plasmin','Menghambat aktivasi kininogen'],ans:'Menghambat aktivasi kininogen',exp:'Kalikrein: aktifasi C5→C5a, C3→C3a, aktifkan plasminogen→plasmin, dan <strong>mengaktifkan (bukan menghambat) kininogen→kinin/bradikinin</strong>.'},
+  {q:'Kalikrein mengaktifkan kininogen menjadi...',opts:['Histamin','Prostaglandin','Kinin/bradikinin','Serotonin'],ans:'Kinin/bradikinin',exp:'Kalikrein mengaktifkan <strong>kininogen → kinin/bradikinin</strong>, mediator penting dalam peradangan (vasodilatasi, nyeri).'},
+];
+const pickPeradangan=makePicker(PERADANGAN_POOL);
+
+const PAMPS_POOL=[
+  {q:'PAMPs adalah singkatan dari...',opts:['Pathogen Associated Molecular Pattern','Protein Activated Membrane Peptide','Plasma Antigen Marker Protein','Peripheral Adaptive Molecular Process'],ans:'Pathogen Associated Molecular Pattern',exp:'<strong>PAMPs</strong> = <strong>Pathogen Associated Molecular Pattern</strong> — pola molekul dari patogen yang dikenali sistem imun bawaan.'},
+  {q:'Toll-Like Receptors (TLR) berlokasi di...',opts:['Hanya sitosol','Membran plasma dan membran endosom','Hanya inti sel','Hanya matriks ekstraseluler'],ans:'Membran plasma dan membran endosom',exp:'<strong>TLR</strong> terletak di <strong>membran plasma dan endosom</strong> sel dendritik, fagosit, sel B, sel endotel, dan berbagai tipe sel lain.'},
+  {q:'RIG-Like Receptors (RLR) berperan sebagai sensor sitosol yang sensitif terhadap...',opts:['LPS bakteri','Peptidoglikan','RNA virus','Karbohidrat jamur'],ans:'RNA virus',exp:'<strong>RLR</strong> = sensor sitosol sensitif terhadap <strong>RNA virus</strong>, terdiri dari RIG-I dan MDA5, mengaktifkan interferon tipe I antivirus.'},
+  {q:'NOD-Like Receptors (NLR) mengandung domain struktural, salah satunya...',opts:['Immunoglobulin domain','Leucine-rich repeat','Kinase domain','SH2 domain'],ans:'Leucine-rich repeat',exp:'NLR mengandung domain <strong>leucine-rich repeat</strong> (sensitif terhadap ligan, mirip TLR) dan domain NACHT.'},
+  {q:'Sitokin berdasarkan struktur dibedakan menjadi 4 kelompok, yaitu...',opts:['Tipe 1 dan Tipe 2 saja','Hematopoietin, interferon, chemokine, TNF','Sel T dan sel B','Antibodi dan komplemen'],ans:'Hematopoietin, interferon, chemokine, TNF',exp:'Berdasarkan struktur: <strong>hematopoietin</strong> (eritropoietin, trombopoietin), <strong>interferon</strong>, <strong>chemokine</strong>, <strong>tumor necrosis factor</strong>.'},
+  {q:'Sitokin tipe 2 yang berperan dalam pembentukan antibodi meliputi...',opts:['TNFα dan IFN-γ','IL-4, IL-10, IL-13, TGF-β','IL-2 saja','Hanya IFN-γ'],ans:'IL-4, IL-10, IL-13, TGF-β',exp:'Sitokin <strong>tipe 2</strong>: IL-4, IL-10, IL-13, TGF-β — berperan dalam <strong>pembentukan antibodi</strong>.'},
+  {q:'IL-1 berhubungan dengan thermoregulatory centre di hipotalamus, menyebabkan gejala...',opts:['Hipotermia dan bradikardia','Febris, nyeri, hipotensi, vasodilatasi','Konstipasi dan mual','Hipoglikemia'],ans:'Febris, nyeri, hipotensi, vasodilatasi',exp:'<strong>IL-1</strong> terkait thermoregulatory centre hipotalamus → <strong>febris, nyeri, hipotensi, vasodilatasi</strong>.'},
+  {q:'IL-10 berfungsi melindungi tubuh dari...',opts:['Infeksi bakteri gram positif saja','Reaksi autoimun dan reaksi alergi','Kerusakan mitokondria','Radikal bebas ROS'],ans:'Reaksi autoimun dan reaksi alergi',exp:'<strong>IL-10</strong> melindungi dari infeksi yang bersifat <strong>autoimun dan reaksi alergi (allergic reactions)</strong>.'},
+];
+const pickPamps=makePicker(PAMPS_POOL);
+
+const IMUN_POOL=[
+  {q:'Jaringan limfoid primer terdiri dari...',opts:['Lien dan limfonodi','Sum-sum tulang dan timus','MALT dan limfonodi','Hepar dan lien'],ans:'Sum-sum tulang dan timus',exp:'<strong>Jaringan limfoid primer</strong>: sum-sum tulang dan timus (tempat pematangan sel imun).'},
+  {q:'Jaringan limfoid sekunder terdiri dari...',opts:['Sum-sum tulang, timus, hepar','Lien, limfonodi, MALT','Hanya sum-sum tulang','Hanya timus'],ans:'Lien, limfonodi, MALT',exp:'<strong>Jaringan limfoid sekunder</strong>: lien, limfonodi, MALT (tempat respon imun terjadi).'},
+  {q:'Pada infeksi virus, antigen dipresentasikan melalui...',opts:['MHC-II ke sel T CD4+','MHC-I ke sel T CD8+','Hanya reseptor TLR9','Hanya komplemen'],ans:'MHC-I ke sel T CD8+',exp:'Infeksi <strong>virus</strong>: presentasi antigen via <strong>MHC-I</strong> ke sel T <strong>CD8+</strong>.'},
+  {q:'Pada infeksi bakteri, makrofag dan sel dendritik pertama kali akan melepaskan...',opts:['IFN-γ','IL-12','IL-10','TGF-β'],ans:'IL-12',exp:'Pada infeksi bakteri, makrofag & sel dendritik pertama kali melepaskan <strong>IL-12</strong> untuk mengaktivasi sel T.'},
+  {q:'Sel T CD4+ berperan dalam presentasi antigen infeksi bakteri melalui...',opts:['MHC-I','MHC-II','TLR9 langsung','Komplemen C3'],ans:'MHC-II',exp:'Sel T <strong>CD4+</strong> berperan pada infeksi bakteri, presentasi antigen via <strong>MHC-II</strong>.'},
+  {q:'Sel T teraktivasi yang melepas IL-2 secara autokrin akan menyebabkan...',opts:['Apoptosis sel T','Proliferasi sel T di lesi','Penghambatan makrofag','Penurunan produksi antibodi'],ans:'Proliferasi sel T di lesi',exp:'IL-2 dilepas secara <strong>autokrin</strong> oleh sel T teraktivasi → menyebabkan <strong>proliferasi sel T di lesi</strong>.'},
+  {q:'Antigen Presenting Cells (APC) terdapat pada sel...',opts:['Eritrosit, trombosit, sel otot','Makrofag, sel dendritik, sel B','Hanya sel epitel','Hanya sel endotel'],ans:'Makrofag, sel dendritik, sel B',exp:'<strong>APC</strong> terdapat pada sel <strong>makrofag, sel dendritik, dan sel B</strong>.'},
+];
+const pickImun=makePicker(IMUN_POOL);
+
+const KLINIS_POOL=[
+  {q:'Etiologi karsinoma epidermoid serviks adalah...',opts:['Epstein-Barr Virus','Human Papilloma Virus (HPV)','Hepatitis B Virus','Cytomegalovirus'],ans:'Human Papilloma Virus (HPV)',exp:'Etiologi karsinoma epidermoid serviks adalah <strong>Human Papilloma Virus (HPV)</strong> — non-enveloped double-stranded DNA virus.'},
+  {q:'Protein kapsid virus HPV yang menempel ke sel epitel via Heparan Sulfat Proteoglikan (HSPGs) adalah...',opts:['E6','E7','L1','L2'],ans:'L1',exp:'<strong>L1</strong> = protein kapsid virus HPV yang menempel ke sel epitel dengan berikatan pada <strong>Heparan Sulfat Proteoglikan (HSPGs)</strong>.'},
+  {q:'Protein E6 HPV berikatan dengan p53, yang merupakan...',opts:['Tumor suppressor','Onkogen aktif','Protein struktural virus','Reseptor sitokin'],ans:'Tumor suppressor',exp:'Protein <strong>E6</strong> HPV berikatan dengan <strong>p53</strong>, sebuah <strong>tumor suppressor</strong>, menonaktifkan fungsinya.'},
+  {q:'Progresi lesi prakanker serviks yang benar adalah...',opts:['CIN III → CIN II → CIN I → Normal','Normal → Metaplasia → CIN I → CIN II → CIN III → Invasive','Invasive → CIN III → Metaplasia → Normal','Metaplasia → Invasive → CIN I'],ans:'Normal → Metaplasia → CIN I → CIN II → CIN III → Invasive',exp:'Progresi: <strong>Normal → Metaplasia → CIN I → CIN II → CIN III → Invasive</strong>. CIN I-III bersifat reversibel, invasive bersifat irreversibel.'},
+  {q:'Preeklamsia ditandai dengan sindrom...',opts:['Hipertensi, proteinuria, dan edema','Hipotensi dan bradikardia','Hiperglikemia dan glukosuria','Anemia dan trombositopenia saja'],ans:'Hipertensi, proteinuria, dan edema',exp:'<strong>Preeklamsia/eklamsia</strong> = sindrom <strong>hipertensi, proteinuria, dan edema</strong> pada ~6% wanita hamil.'},
+  {q:'Kegagalan remodeling arteri spiralis pada preeklamsia terjadi akibat aktivasi...',opts:['Sel T CD8+ saja','NK cell dan makrofag','Sel B','Eosinofil'],ans:'NK cell dan makrofag',exp:'Kegagalan keseimbangan remodeling arteri spiralis mengaktivasi <strong>NK cell dan makrofag</strong>, memicu preeklamsia.'},
+  {q:'HIF (Hypoxia Inducible Factor) pada kehamilan normal meningkat pada trimester...',opts:['Trimester pertama, lalu menurun usia kehamilan 9 minggu','Trimester kedua terus meningkat','Trimester ketiga saja','Tidak pernah meningkat pada kehamilan normal'],ans:'Trimester pertama, lalu menurun usia kehamilan 9 minggu',exp:'HIF meningkat pada <strong>trimester pertama</strong> dan <strong>menurun pada usia kehamilan 9 minggu</strong>; HIF yang persisten menyebabkan hipoksia patologis.'},
+  {q:'Penyebab abortus yang berkaitan dengan kelainan janin adalah...',opts:['Leiomyoma submukosa','Aneuploidy, polyploidy, translokasi kromosom fetal','Infeksi Mycoplasma','Koagulopati ibu'],ans:'Aneuploidy, polyploidy, translokasi kromosom fetal',exp:'Penyebab abortus terkait janin: <strong>fetal chromosomal anomalies</strong> — aneuploidy, polyploidy, dan translokasi.'},
+  {q:'Prognosis terbaik pada keganasan payudara berasal dari tipe...',opts:['Triple Negative','HER2 enriched','Luminal A','Basal-like'],ans:'Luminal A',exp:'Prognosis <strong>terbaik</strong> keganasan payudara = tipe <strong>Luminal A</strong>; prognosis <strong>terburuk</strong> = <strong>Triple Negative</strong>.'},
+  {q:'DM Tipe 1 disebabkan oleh...',opts:['Resistensi insulin perifer','Sel T autoreaktif yang merusak sel beta pankreas penghasil insulin','Kelebihan produksi glukagon','Defisiensi enzim pencernaan karbohidrat'],ans:'Sel T autoreaktif yang merusak sel beta pankreas penghasil insulin',exp:'DM Tipe 1 disebabkan oleh <strong>sel T autoreaktif</strong> yang merusak <strong>sel beta pankreas</strong> penghasil insulin, dipengaruhi interaksi genetik dan lingkungan.'},
+  {q:'Autoantibodi yang terlibat pada DM Tipe 1 meliputi, KECUALI...',opts:['GAD (glutamic acid decarboxylase)','IA-2/IA-2β','ZnT8 (zinc transporter 8)','Anti-dsDNA'],ans:'Anti-dsDNA',exp:'Autoantibodi DM Tipe 1: <strong>GAD, IA-2/IA-2β, ZnT8</strong>. Anti-dsDNA adalah autoantibodi khas <strong>Lupus (SLE)</strong>, bukan DM1.'},
+  {q:'Stadium DM Tipe 1 dengan gejala klinis hiperglikemia (poliuria, polidipsia, penurunan BB) adalah stage...',opts:['Stage 1','Stage 2','Stage 3','Stage 4'],ans:'Stage 3',exp:'<strong>Stage 3</strong> DM Tipe 1 ditandai gejala klinis hiperglikemia: <strong>poliuria, polidipsia, enuresis, penurunan BB, penglihatan kabur</strong>. Stage 1 & 2 bersifat asimtomatik.'},
+];
+const pickKlinis=makePicker(KLINIS_POOL);
+
+const ATERO_POOL=[
+  {q:'Aterosklerosis dalam konsep peta ini dipakai sebagai contoh...',opts:['Penyakit infeksi akut','Penyakit jejas kronik non-infeksi yang meminjam mesin inflamasi penyakit infeksi','Penyakit genetik murni tanpa faktor lingkungan','Penyakit autoimun spesifik organ'],ans:'Penyakit jejas kronik non-infeksi yang meminjam mesin inflamasi penyakit infeksi',exp:'Aterosklerosis = contoh penyakit <strong>jejas kronik non-infeksi</strong> yang "meminjam" mesin inflamasi yang sama dengan penyakit infeksi (via reseptor TLR/RAGE yang sama, ligand berbeda: DAMP bukan PAMP).'},
+  {q:'Perbedaan utama antara PAMP dan DAMP dalam mengaktifkan reseptor pengenalan pola adalah...',opts:['PAMP dan DAMP menggunakan reseptor yang sama sekali berbeda','PAMP dan DAMP mengaktifkan reseptor yang sama (TLR, RAGE), namun ligand asalnya berbeda','DAMP hanya bekerja pada sel kanker','PAMP tidak melibatkan NF-κB'],ans:'PAMP dan DAMP mengaktifkan reseptor yang sama (TLR, RAGE), namun ligand asalnya berbeda',exp:'PAMP (dari mikroba, pada infeksi) dan DAMP (dari sel stres/rusak, pada jejas steril) sama-sama mengaktifkan <strong>reseptor pengenalan pola yang sama</strong> (TLR, RAGE) dan jalur NF-κB — bedanya hanya ligand asalnya.'},
+  {q:'Pada hiperlipidemia, oxLDL menyebabkan disfungsi endotel melalui jalur...',opts:['Ikatan langsung ke reseptor insulin','Ikatan ke LOX-1 → aktivasi NADPH oxidase → deplesi BH4 → eNOS uncoupling','Aktivasi langsung sel T sitotoksik','Penghambatan produksi kolesterol hepatik'],ans:'Ikatan ke LOX-1 → aktivasi NADPH oxidase → deplesi BH4 → eNOS uncoupling',exp:'oxLDL mengikat <strong>LOX-1</strong> → aktivasi NADPH oxidase → deplesi BH4 → <strong>eNOS uncoupling</strong> (NO↓, O2•⁻↑) → disfungsi endotel.'},
+  {q:'Pada hipertensi, disfungsi endotel terjadi terutama akibat mekanisme...',opts:['Infeksi virus kronik pada endotel','Shear stress/aliran turbulen di percabangan arteri dan Angiotensin II','Defisiensi vitamin C berat','Reaksi alergi terhadap lipid'],ans:'Shear stress/aliran turbulen di percabangan arteri dan Angiotensin II',exp:'Hipertensi: aliran turbulen di percabangan arteri → relokalisasi kaveolin-1 → eNOS-Ser1177↓ + <strong>Angiotensin II</strong> → Nox → superoksida → eNOS uncoupling mekanis.'},
+  {q:'Efek langsung radikal bebas dari asap rokok terhadap endotel adalah...',opts:['Meningkatkan produksi NO secara signifikan','Mengonsumsi NO langsung, deplesi BH4, dan meningkatkan endotelin-1','Menstimulasi regenerasi sel endotel baru','Tidak berpengaruh pada fungsi endotel'],ans:'Mengonsumsi NO langsung, deplesi BH4, dan meningkatkan endotelin-1',exp:'Radikal bebas asap rokok langsung merusak endotel: <strong>mengonsumsi NO</strong>, deplesi BH4, ↑<strong>endotelin-1</strong> → disfungsi endotel akut-langsung.'},
+  {q:'Pada diabetes melitus, hiperglikemia kronik menyebabkan disfungsi endotel melalui jalur...',opts:['AGE mengikat RAGE → NF-κB↑ dan jalur ROS Brownlee','Penurunan kadar glukosa intraseluler','Peningkatan sintesis NO berlebihan','Penghambatan sistem imun bawaan sepenuhnya'],ans:'AGE mengikat RAGE → NF-κB↑ dan jalur ROS Brownlee',exp:'Hiperglikemia kronik → <strong>AGE</strong> (Advanced Glycation End-products) → ikat <strong>RAGE</strong> → NF-κB↑ + 5 jalur ROS Brownlee → disfungsi endotel oksidatif + inflamatorik.'},
+  {q:'Titik konvergensi dari keempat faktor risiko klasik aterosklerosis adalah...',opts:['Peningkatan produksi insulin','Disfungsi endotel, hilangnya bioavailabilitas NO, dan pelepasan DAMP','Peningkatan massa otot polos vaskular saja','Penurunan tekanan darah sistemik'],ans:'Disfungsi endotel, hilangnya bioavailabilitas NO, dan pelepasan DAMP',exp:'Keempat jalur berbeda (hiperlipidemia, hipertensi, rokok, DM) berakhir pada <strong>disfungsi endotel</strong>, penurunan <strong>NO</strong>, dan pelepasan <strong>DAMP</strong> (HMGB1, kristal kolesterol) — satu fenotipe endotel teraktivasi.'},
+  {q:'Urutan jalur progresi dari aktivasi endotel menuju sel busa (foam cell) yang benar adalah...',opts:['Sel busa → rekrutmen monosit → aktivasi endotel','Aktivasi endotel → rekrutmen monosit → sel busa','Rekrutmen monosit → sel busa → aktivasi endotel','Sel busa terbentuk tanpa perlu aktivasi endotel'],ans:'Aktivasi endotel → rekrutmen monosit → sel busa',exp:'Urutan: <strong>Aktivasi Endotel</strong> (↑selektin, ICAM-1, VCAM-1, MCP-1) → <strong>Rekrutmen Monosit</strong> (rolling → adhesi → migrasi transendotelial) → <strong>Sel Busa</strong> (makrofag menelan oxLDL via reseptor scavenger).'},
+  {q:'Aktivasi inflamasom NLRP3 pada plak aterosklerosis dipicu oleh...',opts:['Infeksi bakteri gram negatif','Kristal kolesterol yang merusak fagolisosom','Kekurangan vitamin D','Peningkatan hormon tiroid'],ans:'Kristal kolesterol yang merusak fagolisosom',exp:'<strong>Kristal kolesterol</strong> merusak fagolisosom → aktivasi <strong>NLRP3/ASC/caspase-1</strong> → IL-1β & IL-18 aktif → memperkuat inflamasi (loop mandiri).'},
+  {q:'Sel otot polos (SMC) yang bermigrasi membentuk tudung fibrosa distimulasi oleh...',opts:['PDGF-BB dari endotel/makrofag','Insulin dari sel beta pankreas','Eritropoietin dari ginjal','Hormon paratiroid'],ans:'PDGF-BB dari endotel/makrofag',exp:'<strong>PDGF-BB</strong> dari endotel/makrofag menstimulasi SMC kontraktil → sintetik/migratorik → membentuk <strong>tudung fibrosa</strong> (stabilisasi awal plak).'},
+  {q:'Ketidakstabilan dan risiko ruptur plak aterosklerosis terutama disebabkan oleh...',opts:['Peningkatan sintesis kolagen berlebihan pada tudung fibrosa','Apoptosis makrofag, efferositosis gagal, dan aktivitas MMP yang menipiskan tudung fibrosa','Penurunan jumlah sel busa secara drastis','Regenerasi endotel yang terlalu cepat'],ans:'Apoptosis makrofag, efferositosis gagal, dan aktivitas MMP yang menipiskan tudung fibrosa',exp:'Apoptosis makrofag + efferositosis gagal → inti nekrotik↑; <strong>MMP</strong> (matrix metalloproteinase/kolagenase) menipiskan tudung fibrosa → <strong>risiko ruptur</strong>.'},
+  {q:'Perbedaan durasi/resolusi antara inflamasi pada infeksi vs inflamasi steril pada aterosklerosis adalah...',opts:['Keduanya sama-sama bersifat akut dan self-limited','Infeksi biasanya akut & sembuh setelah patogen eliminasi; inflamasi steril bersifat kronik karena stimulus sulit dieliminasi','Infeksi selalu kronik, sedangkan aterosklerosis selalu akut','Tidak ada perbedaan durasi antara keduanya'],ans:'Infeksi biasanya akut & sembuh setelah patogen eliminasi; inflamasi steril bersifat kronik karena stimulus sulit dieliminasi','exp':'Inflamasi pada infeksi biasanya <strong>akut</strong>, sembuh setelah patogen dieliminasi. Inflamasi steril (aterosklerosis) bersifat <strong>kronik</strong> karena stimulus (lipid, kristal) sulit dieliminasi tuntas.'},
+];
+const pickAtero=makePicker(ATERO_POOL);
+
+const TMAP={
+  konsep:{fn:pickKonsep,typeName:'Konsep Dasar Penyakit',tpColor:'var(--accent)',tpBg:'rgba(194,60,26,.12)'},
+  jejas:{fn:pickJejas,typeName:'Mekanisme Jejas Sel',tpColor:'var(--purp)',tpBg:'rgba(106,32,170,.10)'},
+  radikal:{fn:pickRadikal,typeName:'Radikal Bebas & Antioksidan',tpColor:'#8a4010',tpBg:'rgba(138,64,16,.10)'},
+  peradangan:{fn:pickPeradangan,typeName:'Peradangan & Mediator',tpColor:'var(--red)',tpBg:'rgba(168,34,26,.10)'},
+  pamps:{fn:pickPamps,typeName:'PAMPs/PRR & Sitokin',tpColor:'var(--blue)',tpBg:'rgba(26,79,170,.10)'},
+  imun:{fn:pickImun,typeName:'Imunitas Seluler & Adaptif',tpColor:'var(--teal)',tpBg:'rgba(10,106,112,.10)'},
+  klinis:{fn:pickKlinis,typeName:'Kasus Klinis Aplikatif',tpColor:'var(--gold)',tpBg:'rgba(138,98,0,.12)'},
+  atero:{fn:pickAtero,typeName:'Aterosklerosis (Jejas Kronik)',tpColor:'#a8221a',tpBg:'rgba(168,34,26,.14)'},
+};
+function makeQ(type){const m=TMAP[type];const q={...m.fn()};q.type=type;q.typeName=m.typeName;q.tpColor=m.tpColor;q.tpBg=m.tpBg;if(!q.scenario)q.scenario=null;if(!q.rawData)q.rawData=null;return q;}
+
+let typeQueue=[],sessIdx=0,sessScore=0,sessLog=[],currentQ=null;
+function nextType(){if(!typeQueue.length){const t=[...activeTypes];for(let i=t.length-1;i>0;i--){const j=0|Math.random()*(i+1);[t[i],t[j]]=[t[j],t[i]];}typeQueue=[...t];}return typeQueue.shift();}
+function startSession(){sessIdx=0;sessScore=0;sessLog=[];typeQueue=[];document.getElementById('qconfig').style.display='none';document.getElementById('qresults').style.display='none';document.getElementById('qactive').style.display='block';renderQ();}
+function renderQ(){
+  const q=makeQ(nextType());currentQ=q;
+  document.getElementById('qnum').textContent=sessIdx+1;
+  document.getElementById('qscore').textContent=sessScore;
+  const pill=document.getElementById('qpill');
+  pill.textContent=q.typeName;pill.style.background=q.tpBg;pill.style.color=q.tpColor;pill.style.border=`1px solid ${q.tpColor}55`;
+  const scen=document.getElementById('qscen');
+  if(q.scenario){scen.innerHTML=`<strong>Konteks:</strong> ${q.scenario}`;scen.style.display='block';}else scen.style.display='none';
+  const db=document.getElementById('qdata');
+  if(q.rawData){db.innerHTML=q.rawData;db.style.display='block';}else db.style.display='none';
+  document.getElementById('qtext').innerHTML=q.q;
+  const og=document.getElementById('opts');og.innerHTML='';
+  shuf(q.opts).forEach((opt,i)=>{
+    const btn=document.createElement('button');btn.className='opt';
+    btn.innerHTML=`<span class="opt-key">${KEYS[i]}</span><span>${opt}</span>`;
+    btn.onclick=()=>selectAns(opt,q,btn);og.appendChild(btn);
+  });
+  const ebox=document.getElementById('expbox');ebox.classList.remove('show');ebox.style.display='none';
+  document.getElementById('nextbtn').style.display='none';
+}
+function selectAns(chosen,q,clickedBtn){
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  const correct=strip(chosen)===strip(q.ans);
+  if(correct)sessScore++;
+  document.querySelectorAll('.opt').forEach(b=>{
+    const lbl=b.querySelector('span:last-child').innerHTML;
+    if(strip(lbl)===strip(q.ans)){if(b===clickedBtn&&correct)b.classList.add('correct');else if(b!==clickedBtn)b.classList.add('reveal');else b.classList.add('correct');}
+    if(b===clickedBtn&&!correct)b.classList.add('wrong');
+  });
+  const ebox=document.getElementById('expbox');
+  ebox.innerHTML=`<div style="margin-bottom:7px;font-weight:700;color:${correct?'var(--blue)':'var(--red)'}">${correct?'✅ Benar!':'❌ Kurang tepat.'} Jawaban: <strong>${q.ans}</strong></div>${q.exp}`;
+  ebox.style.display='block';setTimeout(()=>ebox.classList.add('show'),10);
+  sessLog.push({idx:sessIdx+1,type:q.typeName,q:q.q.replace(/<[^>]+>/g,'').slice(0,55)+'…',ans:q.ans,correct});
+  document.getElementById('qscore').textContent=sessScore;
+  document.getElementById('nextbtn').style.display='inline-block';
+}
+function nextQ(){sessIdx++;document.getElementById('expbox').style.display='none';document.getElementById('expbox').classList.remove('show');renderQ();}
+function endSession(){
+  document.getElementById('qactive').style.display='none';document.getElementById('qresults').style.display='block';
+  const total=sessLog.length;if(!total){restartQuiz();return;}
+  const pct=Math.round((sessScore/total)*100);
+  document.getElementById('res-pct').textContent=pct+'%';
+  document.getElementById('res-sub').textContent=`${sessScore} / ${total} soal benar`;
+  const byType={};sessLog.forEach(l=>{if(!byType[l.type])byType[l.type]={total:0,correct:0};byType[l.type].total++;if(l.correct)byType[l.type].correct++;});
+  const rg=document.getElementById('res-grid');rg.innerHTML='';
+  const medal=pct>=80?'🏆':pct>=60?'👍':'📚';
+  [{v:medal,l:'Nilai'},{v:pct+'%',l:'Persentase'},{v:sessScore+'',l:'Benar'},{v:(total-sessScore)+'',l:'Salah'},{v:total+'',l:'Total'}].forEach(s=>{const d=document.createElement('div');d.className='res-stat';d.innerHTML=`<div class="rv">${s.v}</div><div class="rl">${s.l}</div>`;rg.appendChild(d);});
+  document.getElementById('res-bytype').innerHTML=Object.entries(byType).map(([t,v])=>{const p=Math.round((v.correct/v.total)*100);const c=p>=80?'var(--blue)':p>=60?'var(--gold)':'var(--red)';return`<tr><td>${t}</td><td>${v.total}</td><td style="color:${c};font-weight:700">${v.correct} (${p}%)</td></tr>`;}).join('');
+  document.getElementById('res-tbody').innerHTML=sessLog.map(l=>`<tr><td>${l.idx}</td><td>${l.q}</td><td>${l.ans}</td><td style="color:${l.correct?'var(--green,#1a7a35)':'var(--red)'}">${l.correct?'✅':'❌'}</td></tr>`).join('');
+}
+function restartQuiz(){typeQueue=[];document.getElementById('qresults').style.display='none';document.getElementById('qconfig').style.display='block';}
+
+function downloadCert(){
+  const total=sessLog.length;const pct=Math.round((sessScore/total)*100);
+  const now=new Date();const dateStr=now.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+  const medal=pct>=80?'LULUS':pct>=60?'CUKUP':'PERLU BELAJAR LAGI';
+  const medalColor=pct>=80?'#1a8a40':pct>=60?'#8a6200':'#a8221a';
+  const byType={};sessLog.forEach(l=>{if(!byType[l.type])byType[l.type]={total:0,correct:0};byType[l.type].total++;if(l.correct)byType[l.type].correct++;});
+  const rows=Object.entries(byType).map(([t,v])=>{const p=Math.round(v.correct/v.total*100);const bar=Math.round(p*1.4);const bc=p>=80?'#1a8a40':p>=60?'#8a6200':'#a8221a';return`<tr><td style="padding:5px 8px;font-size:11px;color:#7a2a1a;width:220px">${t}</td><td style="padding:5px 8px"><div style="background:#f0cec3;border-radius:4px;height:10px;width:140px"><div style="background:${bc};width:${bar}px;height:10px;border-radius:4px"></div></div></td><td style="padding:5px 8px;font-size:11px;font-weight:700;color:${bc}">${v.correct}/${v.total} (${p}%)</td></tr>`;}).join('');
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="680" height="520" font-family="Georgia,serif">
+  <defs><pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse"><path d="M 28 0 L 0 0 0 28" fill="none" stroke="#e8b6a6" stroke-width="0.5"/></pattern></defs>
+  <rect width="680" height="520" fill="#fbf2ef"/>
+  <rect width="680" height="520" fill="url(#grid)"/>
+  <rect x="20" y="20" width="640" height="480" rx="12" fill="none" stroke="#a8221a" stroke-width="2"/>
+  <rect x="26" y="26" width="628" height="468" rx="9" fill="none" stroke="#a8221a" stroke-width="0.5" opacity="0.4"/>
+  <text x="340" y="66" text-anchor="middle" font-size="11" letter-spacing="4" fill="#a85b45" font-family="Georgia,serif">SERTIFIKAT PENYELESAIAN KUIS</text>
+  <line x1="120" y1="74" x2="260" y2="74" stroke="#a8221a" stroke-width="0.8"/>
+  <circle cx="340" cy="74" r="3" fill="#a8221a"/>
+  <line x1="420" y1="74" x2="560" y2="74" stroke="#a8221a" stroke-width="0.8"/>
+  <text x="340" y="116" text-anchor="middle" font-size="34" font-weight="bold" fill="#2a0e08" font-family="Georgia,serif">Am I Injured?</text>
+  <text x="340" y="138" text-anchor="middle" font-size="11" fill="#a85b45" letter-spacing="2" font-family="Georgia,serif">KONSEP UMUM PENYAKIT · BLOK 3.1 · FK UNSOED</text>
+  <line x1="100" y1="152" x2="580" y2="152" stroke="#e8b6a6" stroke-width="1"/>
+  <text x="340" y="185" text-anchor="middle" font-size="13" fill="#7a2a1a" font-family="Georgia,serif">Telah menyelesaikan sesi quiz dengan hasil</text>
+  <rect x="230" y="196" width="220" height="80" rx="8" fill="none" stroke="${medalColor}" stroke-width="1.5"/>
+  <text x="340" y="245" text-anchor="middle" font-size="52" font-weight="bold" fill="${medalColor}" font-family="Georgia,serif">${pct}%</text>
+  <text x="340" y="265" text-anchor="middle" font-size="10" fill="${medalColor}" letter-spacing="3" font-family="Georgia,serif">${medal}</text>
+  <text x="340" y="300" text-anchor="middle" font-size="12" fill="#7a2a1a" font-family="Georgia,serif">${sessScore} soal benar dari ${total} soal · ${dateStr}</text>
+  <line x1="100" y1="314" x2="580" y2="314" stroke="#e8b6a6" stroke-width="1"/>
+  <text x="340" y="332" text-anchor="middle" font-size="10" fill="#a85b45" letter-spacing="2" font-family="Georgia,serif">DISTRIBUSI SKOR PER TOPIK</text>
+  <foreignObject x="80" y="340" width="520" height="150"><div xmlns="http://www.w3.org/1999/xhtml"><table style="width:100%;border-collapse:collapse">${rows}</table></div></foreignObject>
+  <line x1="100" y1="490" x2="580" y2="490" stroke="#e8b6a6" stroke-width="1"/>
+  <text x="340" y="507" text-anchor="middle" font-size="10" fill="#a85b45" font-family="Georgia,serif">174 Archive · 174-three.vercel.app</text>
+</svg>`;
+  const blob=new Blob([svg],{type:'image/svg+xml'});const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=`am-i-injured-${pct}pct.svg`;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+window.downloadCert=downloadCert;window.startSession=startSession;window.nextQ=nextQ;window.endSession=endSession;window.restartQuiz=restartQuiz;
+</script>
+</body>
+</html>
