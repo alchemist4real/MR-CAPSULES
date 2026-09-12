@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Am I Interacting? — Quiz Interaksi Obat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f8f9;--bg2:#eef3f5;--bg3:#e3ebee;--bg4:#d5e1e5;
+  --border:rgba(15,80,95,.10);--border2:rgba(15,80,95,.20);
+  --text:#0e2430;--text2:#2c4a58;--text3:#6f8894;
+  --green:#1f7a4a;--greenbg:rgba(31,122,74,.09);--greenb:rgba(31,122,74,.25);
+  --gold:#0f6a7a;--goldbg:rgba(15,106,122,.09);--goldb:rgba(15,106,122,.28);
+  --red:#b03030;--redbg:rgba(176,48,48,.08);--redb:rgba(176,48,48,.25);
+  --blue:#1a4faa;--bluebg:rgba(26,79,170,.09);--blueb:rgba(26,79,170,.28);
+  --purp:#4433a0;--purpbg:rgba(68,51,160,.08);--purpb:rgba(68,51,160,.25);
+  --teal:#0c8299;--tealbg:rgba(12,130,153,.08);--tealb:rgba(12,130,153,.25);
+  --r:10px;--rl:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.6;min-height:100vh}
+.app{max-width:900px;margin:0 auto;padding:0 16px 60px}
+header{padding:40px 0 28px;text-align:center}
+.eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--text3);text-transform:uppercase;margin-bottom:10px}
+h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(30px,6vw,54px);letter-spacing:-.03em;line-height:1;margin-bottom:10px}
+h1 span{color:var(--teal)}
+.sub{font-size:13px;color:var(--text2);max-width:520px;margin:0 auto}
+.main-tabs{display:flex;gap:3px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:24px}
+.main-tab{flex:1;padding:9px 6px;border-radius:9px;border:none;background:transparent;color:var(--text3);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .18s}
+.main-tab:hover{color:var(--text)}
+.main-tab.active{background:var(--gold);color:#fff;font-weight:600}
+.main-panel{display:none}
+.main-panel.active{display:block;animation:fi .2s ease}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.sub-tabs{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:4px;margin-bottom:20px}
+.sub-tab{padding:8px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text3);font-family:'DM Mono',monospace;font-size:10.5px;cursor:pointer;transition:all .18s;text-align:center;line-height:1.4}
+.sub-tab:hover{background:var(--bg3);color:var(--text2);border-color:var(--border2)}
+.sub-tab.active{background:var(--gold);color:#fff;border-color:var(--text);font-weight:600}
+.sub-panel{display:none}
+.sub-panel.active{display:block;animation:fi .18s ease}
+.sec-h{font-family:'Syne',sans-serif;font-weight:700;font-size:18px;padding-bottom:8px;border-bottom:2px solid var(--gold);margin-bottom:14px;color:var(--text)}
+p{margin-bottom:10px;color:var(--text2)}
+ul{margin:0 0 12px 20px;color:var(--text2)}
+li{margin-bottom:5px}
+strong{color:var(--text)}
+.divider{height:1px;background:var(--border);margin:16px 0}
+.note{border-radius:var(--r);padding:12px 14px;margin:10px 0;font-size:13.5px;border:1px solid}
+.note.blue{background:var(--bluebg);border-color:var(--blueb);color:var(--text)}
+.note.green{background:var(--greenbg);border-color:var(--greenb);color:var(--text)}
+.note.gold{background:var(--goldbg);border-color:var(--goldb);color:var(--text)}
+.note.red{background:var(--redbg);border-color:var(--redb);color:var(--text)}
+.note.purp{background:var(--purpbg);border-color:var(--purpb);color:var(--text)}
+.note.teal{background:var(--tealbg);border-color:var(--tealb);color:var(--text)}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px}
+th,td{border:1px solid var(--border2);padding:8px 10px;text-align:left}
+th{background:var(--bg3);font-family:'DM Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--text2)}
+.flowbox{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:14px 0}
+.flowitem{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;color:var(--text)}
+.flowarrow{color:var(--gold);font-size:18px}
+
+/* Quiz */
+.qconfig{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:24px}
+.qconfig-title{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;margin-bottom:4px}
+.qconfig-sub{font-size:12.5px;color:var(--text3);margin-bottom:16px}
+.cfg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-bottom:18px}
+.cfg-btn{padding:10px 8px;border-radius:8px;border:1.5px solid var(--border2);background:#fff;color:var(--text3);font-size:11.5px;font-weight:600;cursor:pointer;transition:all .15s;text-align:center;line-height:1.3}
+.cfg-btn.sel{background:var(--gold);color:#fff;border-color:var(--text)}
+.start-btn{width:100%;padding:14px;border-radius:10px;border:none;background:var(--text);color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;cursor:pointer;transition:all .15s}
+.start-btn:hover{background:var(--gold)}
+.qheader{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;font-size:13px;color:var(--text3)}
+.qnum-display strong{color:var(--text);font-size:16px}
+.qtype-pill{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;font-family:'DM Mono',monospace}
+.qscore-display strong{color:var(--green);font-size:16px}
+.qcard{background:#fff;border:1px solid var(--border);border-radius:var(--rl);padding:20px;margin-bottom:14px}
+.qtext{font-size:16px;font-weight:600;line-height:1.5;color:var(--text)}
+.opts{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.opt{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;border:1.5px solid var(--border2);background:#fff;cursor:pointer;text-align:left;font-size:13.5px;transition:all .12s;font-family:'DM Sans',sans-serif}
+.opt:hover:not(:disabled){border-color:var(--gold);background:var(--goldbg)}
+.opt:disabled{cursor:default}
+.opt-key{font-family:'DM Mono',monospace;font-weight:700;font-size:11px;color:var(--text3);background:var(--bg3);border-radius:5px;padding:3px 7px;flex-shrink:0}
+.opt.correct{border-color:var(--green);background:var(--greenbg)}
+.opt.correct .opt-key{background:var(--green);color:#fff}
+.opt.wrong{border-color:var(--red);background:var(--redbg)}
+.opt.wrong .opt-key{background:var(--red);color:#fff}
+.expbox{display:none;background:var(--tealbg);border:1px solid var(--tealb);border-radius:10px;padding:14px;font-size:13px;margin-bottom:14px;line-height:1.55}
+.expbox.show{display:block;animation:fi .2s ease}
+.actrow{display:flex;gap:10px}
+.next-btn{flex:1;padding:13px;border-radius:10px;border:none;background:var(--text);color:#fff;font-weight:700;font-size:14px;cursor:pointer}
+.next-btn:hover{background:var(--gold)}
+.end-btn{padding:13px 18px;border-radius:10px;border:1.5px solid var(--border2);background:#fff;color:var(--text3);font-weight:600;font-size:13px;cursor:pointer}
+.end-btn:hover{border-color:var(--red);color:var(--red)}
+.results-wrap{text-align:center;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:30px 20px}
+.res-big{font-family:'Syne',sans-serif;font-weight:800;font-size:56px;color:var(--gold)}
+.res-sub{font-size:13px;color:var(--text3);margin-bottom:20px}
+.retry-btn{padding:11px 20px;border-radius:9px;border:none;background:var(--text);color:#fff;font-weight:700;font-size:13px;cursor:pointer}
+.dtable-wrap{overflow-x:auto;text-align:left}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="eyebrow">Farmakologi · FK Unsoed · Dr. dr. Setiawati, M.Sc.</div>
+  <h1>Am I <span style="color:var(--gold)">Interacting?</span></h1>
+  <p class="sub">Quiz Interaksi Obat — jenis, mekanisme (farmaseutik, farmakokinetik, farmakodinamik), interaksi obat-makanan, dan studi kasus klinis.</p>
+</header>
+
+<div class="main-tabs">
+  <button class="main-tab active" onclick="switchMain('materi',this)">📋 Materi</button>
+  <button class="main-tab" onclick="switchMain('quiz',this)">🎯 Quiz</button>
+</div>
+
+<!-- MATERI -->
+<div class="main-panel active" id="mp-materi">
+<div class="sub-tabs">
+<button class="sub-tab active" onclick="switchSub('tab-pendahuluan',this)">Pendahuluan</button>
+<button class="sub-tab" onclick="switchSub('tab-jenis',this)">Jenis & Hasil</button>
+<button class="sub-tab" onclick="switchSub('tab-faktor',this)">Faktor Lain</button>
+<button class="sub-tab" onclick="switchSub('tab-mekanisme',this)">Mekanisme Umum</button>
+<button class="sub-tab" onclick="switchSub('tab-farmaseutik',this)">Farmaseutik</button>
+<button class="sub-tab" onclick="switchSub('tab-absorbsi',this)">FK — Absorbsi</button>
+<button class="sub-tab" onclick="switchSub('tab-distribusi',this)">FK — Distribusi</button>
+<button class="sub-tab" onclick="switchSub('tab-metabolisme',this)">FK — Metabolisme & Ekskresi</button>
+<button class="sub-tab" onclick="switchSub('tab-farmakodinamik',this)">Farmakodinamik</button>
+<button class="sub-tab" onclick="switchSub('tab-makanan',this)">Obat-Makanan</button>
+<button class="sub-tab" onclick="switchSub('tab-kasus',this)">Studi Kasus</button>
+<button class="sub-tab" onclick="switchSub('tab-prinsip',this)">Prinsip & Klasifikasi</button>
+</div>
+
+<!-- PENDAHULUAN -->
+<div class="sub-panel active" id="tab-pendahuluan">
+<div class="sec-h">Definisi & Epidemiologi Interaksi Obat</div>
+<p>Interaksi obat adalah <strong>kombinasi obat dengan zat lain</strong> (obat lain, makanan, alkohol, penyakit, atau hasil lab) yang <strong>mengubah efek obat pada tubuh</strong>. Kombinasi ini dapat membuat efek obat menjadi <strong>kurang atau lebih kuat</strong>, dan dapat menimbulkan <strong>efek samping tak terduga yang berbahaya</strong>.</p>
+<div class="note red">
+<strong>Data epidemiologi interaksi obat:</strong>
+<ul style="margin-top:6px">
+<li>Terjadi pada <strong>15–20% pasien rawat inap</strong></li>
+<li>Menjadi penyebab <strong>3–5% kejadian efek samping obat (ESO) yang serius</strong></li>
+<li><strong>Risiko meningkat</strong> seiring bertambahnya jumlah obat yang dikonsumsi (<strong>polifarmasi</strong>)</li>
+<li>Dapat menyebabkan <strong>kegagalan terapi</strong> atau <strong>toksisitas</strong></li>
+</ul>
+</div>
+<p style="text-align:center;font-size:12.5px;color:var(--text3)">Karena prevalensinya cukup tinggi dan berdampak klinis nyata, pemahaman interaksi obat penting bagi setiap tenaga medis dalam meresepkan obat secara aman.</p>
+</div>
+
+<!-- JENIS & HASIL -->
+<div class="sub-panel" id="tab-jenis">
+<div class="sec-h">Types of Drug Interactions</div>
+<table>
+<tr><th>Jenis</th><th>Keterangan</th><th>Contoh</th></tr>
+<tr><td><strong>Drug–drug</strong></td><td>Reaksi antara dua obat atau lebih; bisa melibatkan obat resep, OTC, herbal, vitamin, suplemen</td><td>Diuretik ↔ ibuprofen → efek diuretik turun</td></tr>
+<tr><td><strong>Drug–food</strong></td><td>Asupan makanan/minuman mengubah efek obat</td><td>Statin ↔ jus grapefruit</td></tr>
+<tr><td><strong>Drug–alcohol</strong></td><td>Dapat menyebabkan kelelahan, reaksi tertunda, dan menambah risiko efek samping negatif</td><td>—</td></tr>
+<tr><td><strong>Drug–disease</strong></td><td>Penggunaan obat memperparah/mengubah kondisi penyakit yang sudah ada</td><td>Dekongestan pada pasien hipertensi</td></tr>
+<tr><td><strong>Drug–laboratory</strong></td><td>Obat mengganggu hasil pemeriksaan laboratorium</td><td>Antidepresan ↔ tes alergi</td></tr>
+</table>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none">Interaksi Obat: Merugikan vs Menguntungkan</div>
+<div class="note red">
+<strong>Merugikan:</strong>
+<ul style="margin-top:6px">
+<li>Sedatif ↔ antihistamin → penurunan kesadaran</li>
+<li>Warfarin + Aspirin → perdarahan</li>
+<li>Digoksin + Verapamil → bradikardia berat</li>
+<li>ACEI + Kalium → hiperkalemia</li>
+</ul>
+</div>
+<div class="note green">
+<strong>Menguntungkan (dimanfaatkan secara terapeutik):</strong>
+<ul style="margin-top:6px">
+<li>Sulfametoksazol ↔ trimetoprim → kotrimoksazol (sinergisme)</li>
+<li>Metoklopramid ↔ parasetamol → absorbsi parasetamol meningkat</li>
+<li>ACE inhibitor + Diuretik (hipertensi)</li>
+<li>Levodopa + Karbidopa (Parkinson)</li>
+<li>Amoksisilin + Asam klavulanat (infeksi)</li>
+</ul>
+</div>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none">Hasil Interaksi: Antagonisme, Sinergisme, Idiosinkrasi</div>
+<div class="note blue"><strong>Antagonisme</strong> — saling menurunkan efek masing-masing obat. Contoh: adrenalin dan histamin; ekspektoran dan antitusif.</div>
+<div class="note gold"><strong>Sinergisme</strong> — kerja sama dua obat menghasilkan efek sama atau lebih tinggi. Contoh: sulfametoksazol + trimetoprim (efek sinergisme); amoksisilin + asam klavulanat (klavulanat melindungi cincin beta-laktam amoksisilin sehingga meningkatkan aktivitasnya).</div>
+<div class="note purp"><strong>Idiosinkrasi</strong> — suatu obat memberi efek yang secara kualitatif berlainan dari efek normalnya, umumnya karena kelainan genetik pasien. Contoh: primakuin → anemia hemolitik.</div>
+</div>
+
+<!-- FAKTOR LAIN -->
+<div class="sub-panel" id="tab-faktor">
+<div class="sec-h">Faktor Lain dalam Interaksi Obat</div>
+<p>Selain faktor obatnya sendiri, <strong>riwayat medis pribadi</strong> pasien turut menentukan besar-kecilnya dampak interaksi:</p>
+<div class="flowbox">
+<div class="flowitem" style="background:var(--goldbg);border-color:var(--goldb)">Genetika</div>
+<div class="flowitem">Berat badan</div>
+<div class="flowitem">Usia</div>
+<div class="flowitem">Jenis kelamin</div>
+<div class="flowitem">Lifestyle</div>
+<div class="flowitem">Lama obat di tubuh</div>
+<div class="flowitem">Lama pemakaian obat</div>
+</div>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none">Faktor terkait Obat (Drug Factors)</div>
+<ul>
+<li><strong>Dose</strong> — besar dosis yang diberikan</li>
+<li><strong>How the drug is taken</strong> — rute/cara pemberian</li>
+<li><strong>Formulation</strong> — bentuk sediaan obat</li>
+<li><strong>The order in which medications are taken</strong> — urutan pemberian antar obat</li>
+</ul>
+<div class="note teal">Kombinasi faktor personal + faktor obat inilah yang menjelaskan mengapa interaksi yang sama bisa berdampak berbeda pada tiap pasien.</div>
+</div>
+
+<!-- MEKANISME UMUM -->
+<div class="sub-panel" id="tab-mekanisme">
+<div class="sec-h">Mekanisme Interaksi Obat</div>
+<p>Secara garis besar, mekanisme interaksi obat dibagi menjadi tiga jalur utama:</p>
+<div class="flowbox">
+<div class="flowitem" style="background:var(--goldbg);border-color:var(--goldb)">Interaksi Farmaseutik</div>
+<div class="flowarrow">+</div>
+<div class="flowitem" style="background:var(--bg3)">Interaksi Farmakokinetik</div>
+<div class="flowarrow">+</div>
+<div class="flowitem" style="background:var(--purpbg);border-color:var(--purpb)">Interaksi Farmakodinamik</div>
+</div>
+<p style="text-align:center;font-size:12.5px;color:var(--text3)">Ketiganya bermuara pada satu hasil: Mekanisme Interaksi Obat yang mengubah efektivitas atau keamanan terapi.</p>
+<div class="divider"></div>
+<p>Interaksi farmakokinetik sendiri dibagi lagi ke dalam 4 tahap sesuai proses ADME:</p>
+<ul>
+<li>a. Interaksi dalam <strong>Absorbsi</strong></li>
+<li>b. Interaksi dalam <strong>Distribusi</strong></li>
+<li>c. Interaksi dalam <strong>Metabolisme</strong></li>
+<li>d. Interaksi dalam <strong>Ekskresi</strong></li>
+</ul>
+</div>
+
+<!-- FARMASEUTIK -->
+<div class="sub-panel" id="tab-farmaseutik">
+<div class="sec-h">1. Interaksi Farmaseutik / Inkompatibilitas</div>
+<div class="note red">
+<ul style="margin:0">
+<li>Terjadi <strong>di luar tubuh</strong> (sebelum obat masuk ke pasien)</li>
+<li>Obat saling <strong>tidak tercampur</strong></li>
+<li>Merupakan interaksi secara <strong>fisika/kimia</strong></li>
+<li>Kadang dapat diamati: <strong>endapan, perubahan warna, timbul gas, lembab pada serbuk</strong> → inaktivasi obat</li>
+<li>Contoh umum: interaksi antar obat suntik (obat/vehicle), atau interaksi obat suntik dengan cairan infus</li>
+</ul>
+</div>
+<table>
+<tr><th>Obat A</th><th>Obat B</th><th>Efek</th></tr>
+<tr><td>Gentamisin</td><td>Karbenisilin</td><td>Inaktif</td></tr>
+<tr><td>Penisilin G</td><td>Vitamin C</td><td>Inaktif</td></tr>
+<tr><td>Amfoterisin B</td><td>Garam fisiologis/ringer</td><td>Endapan</td></tr>
+<tr><td>Fenitoin</td><td>Dekstrosa 5%</td><td>Endapan</td></tr>
+</table>
+</div>
+
+<!-- ABSORBSI -->
+<div class="sub-panel" id="tab-absorbsi">
+<div class="sec-h">2. Interaksi Farmakokinetik — Absorbsi</div>
+<p>Terjadi jika salah satu obat mempengaruhi <strong>ADME obat kedua</strong>, sehingga kadar plasma obat kedua meningkat atau menurun (toksisitas naik/turun, efektivitas naik/turun). Interaksi ini <strong>tidak bisa diekstrapolasikan</strong> ke obat lain segolongan karena tiap obat punya sifat fisikokimia berbeda. Contoh: simetidin ≠ H2-bloker lain; terfenadin ≠ antihistamin nonsedatif lain.</p>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none">A. Perubahan pH Lambung</div>
+<p>pH lambung puasa 1,5–3,0 (sangat asam); setelah makan naik ke 3,0–5,0. <strong>Obat asam lemah</strong> diabsorbsi lebih baik dalam suasana asam, <strong>obat basa lemah</strong> lebih baik dalam suasana basa.</p>
+<div class="note gold">
+<strong>Contoh:</strong> Ketokonazol/itrakonazol butuh suasana asam untuk larut → antasida/PPI menaikkan pH lambung → absorbsi turun 50–90% (beri ketokonazol 2 jam sebelum antasida). Besi (iron sulfate) butuh suasana asam untuk reduksi Fe³⁺→Fe²⁺ → PPI menurunkan absorbsi besi 40–60%.
+</div>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none">B. Pembentukan Kompleks (Chelation)</div>
+<p>Obat membentuk kompleks tak larut air dengan ion logam (Ca²⁺, Mg²⁺, Al³⁺, Fe²⁺/³⁺, Zn²⁺) sehingga tidak dapat diabsorbsi.</p>
+<div class="note purp">Contoh: Tetrasiklin + produk susu (kalsium) → kompleks chelate → absorbsi turun 50–90% → risiko kegagalan terapi/resistensi. Fluoroquinolone + antasida (Al/Mg/Ca) → absorbsi turun 50–90%.</div>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none">C. Perubahan Motilitas Gastrointestinal</div>
+<p><strong>Metoklopramid</strong> (antagonis D₂, agonis 5-HT₄) mempercepat pengosongan lambung — bila dikombinasi parasetamol, absorbsi parasetamol meningkat & onset lebih cepat. Sebaliknya, <strong>antikolinergik</strong> (atropin, skopolamin) dan <strong>opioid</strong> (morfin, kodein) memperlambat motilitas GI — jika dikombinasi parasetamol, onset kerja tertunda.</p>
+<div class="note teal">Makanan berlemak memperlambat pengosongan lambung (2–6 jam): meningkatkan absorbsi griseofulvin/itrakonazol, menurunkan absorbsi captopril/furosemid. Makanan tinggi serat mempercepat transit usus sehingga waktu kontak obat-mukosa berkurang (contoh: digoksin).</div>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none">D. Mekanisme Tidak Diketahui</div>
+<p>Beberapa obat mengurangi absorbsi obat lain tanpa mekanisme kerja yang jelas.</p>
+<table>
+<tr><th>Obat A</th><th>Obat B</th><th>Efek</th></tr>
+<tr><td>Al(OH)₃</td><td>Propanolol, indometazin, INH</td><td>Obat A mengurangi absorbsi obat B</td></tr>
+<tr><td>Antasid</td><td>Fenitoin, simetidin, ranitidin, klorpromazin</td><td>sda</td></tr>
+<tr><td>Furosemid</td><td>Fenitoin</td><td>sda</td></tr>
+</table>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none">Waktu Pemberian Antibiotik yang Tepat</div>
+<div class="note blue">
+<strong>Perut kosong (1 jam sebelum/2 jam sesudah makan):</strong> amoksisilin, ampisilin, tetrasiklin (kecuali doksisiklin & minosiklin), penisilin V, azitromisin tablet.
+</div>
+<div class="note green">
+<strong>Bersama makanan:</strong> metronidazole, nitrofurantoin, doksisiklin, minosiklin, eritromisin bentuk basa, klindamisin.
+</div>
+<div class="note gold">
+<strong>Boleh dengan/tanpa makanan:</strong> azitromisin suspensi, sefalosporin (cefaclor, cefuroxime, cephalexin), ciprofloksasin, levofloksasin, kotrimoksazol.
+</div>
+<div class="note red">
+<strong>Pertimbangan khusus:</strong> quinolon & tetrasiklin hindari bersamaan produk susu/suplemen kalsium-magnesium-besi; hindari alkohol dengan semua antibiotik (terutama metronidazole & tinidazole); jus jeruk/minuman sangat asam dapat menurunkan efektivitas penisilin.
+</div>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none">Strategi Manajemen Interaksi Absorbsi</div>
+<ul>
+<li><strong>Pemisahan waktu pemberian</strong>: chelation minimal 2–4 jam; pH-dependent 2 jam sebelum/setelah; motilitas disesuaikan onset yang diinginkan</li>
+<li><strong>Modifikasi formulasi</strong>: solution vs tablet, enteric coating, sustained release</li>
+<li><strong>Monitoring klinis</strong>: efektivitas terapi, kadar obat (TDM), efek samping under/overdose</li>
+<li><strong>Edukasi pasien</strong>: timing pemberian, interaksi makanan, gejala yang harus dilaporkan</li>
+</ul>
+</div>
+
+<!-- DISTRIBUSI -->
+<div class="sub-panel" id="tab-distribusi">
+<div class="sec-h">3. Interaksi Farmakokinetik — Distribusi</div>
+<div class="sec-h" style="font-size:13px;border:none">Konsep Dasar Ikatan Protein Plasma</div>
+<ul>
+<li><strong>Albumin</strong> (35–50 g/L) — mengikat obat asam & netral</li>
+<li><strong>α1-acid glycoprotein/AAG</strong> (0,5–1,2 g/L) — mengikat obat basa</li>
+<li><strong>Lipoprotein</strong> — mengikat obat lipofilik; <strong>Globulin</strong> — mengikat hormon & obat spesifik</li>
+</ul>
+<p>Karakteristik ikatan: <strong>reversible</strong> (dinamis bound-unbound), <strong>saturable</strong> (kapasitas terbatas), <strong>competitive</strong> (banyak obat berebut binding site sama).</p>
+<div class="note gold">
+<strong>Fraksi bebas (fu)</strong> = [obat bebas] / [obat total] — hanya obat bebas yang aktif farmakologis. Ikatan tinggi (&gt;95%, misal warfarin 99%) → perubahan kecil fraksi bebas = efek besar. Ikatan rendah (&lt;50%, misal digoksin 25%) → perubahan besar = efek minimal.
+</div>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none">Mekanisme Kompetisi Ikatan Protein</div>
+<div class="note blue"><strong>Kompetisi langsung</strong> — dua obat berebut binding site sama; obat berafinitas lebih tinggi menggantikan yang lebih rendah (juga dipengaruhi konsentrasi/mass action).</div>
+<div class="note purp"><strong>Kompetisi tidak langsung</strong> — perubahan konformasi protein oleh satu obat (alosterik) mengubah afinitas site lain / kapasitas ikatan total.</div>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none">Studi Kasus: Warfarin + Aspirin</div>
+<p><strong>Warfarin</strong>: ikatan protein 99,5%, fraksi bebas hanya 0,5%, indeks terapeutik sangat sempit (INR 2–3). Perubahan kecil fraksi bebas → efek besar (dari 99,5%→99,0% bound = fraksi bebas berlipat ganda = risiko perdarahan 2×).</p>
+<div class="note red">
+<strong>Fase Akut (0–24 jam):</strong> Aspirin menggantikan warfarin dari albumin (displacement) → warfarin bebas naik → efek antikoagulan naik akut, INR bisa naik dalam beberapa jam.<br>
+<strong>Fase Redistribusi (1–3 hari):</strong> warfarin bebas terdistribusi ke jaringan, klirens hepatik naik → steady state baru dengan kadar total lebih rendah (net effect secara teori kembali normal).<br>
+<strong>Fase Farmakodinamik:</strong> aspirin menghambat COX-1 trombosit (antiagregasi) + antikoagulan warfarin → sinergisme risiko bleeding (1+1&gt;2). GI bleeding naik 2–4×, ICH naik 1,5–2×.
+</div>
+<p><strong>Phenytoin + Asam Valproat</strong>: valproat menggantikan phenytoin dari albumin → free phenytoin naik 2–3×, risiko toksisitas tinggi.</p>
+</div>
+
+<!-- METABOLISME & EKSKRESI -->
+<div class="sub-panel" id="tab-metabolisme">
+<div class="sec-h">4. Interaksi Farmakokinetik — Metabolisme & Ekskresi</div>
+<div class="sec-h" style="font-size:13px;border:none">Hambatan Metabolisme (Inhibisi Enzim)</div>
+<p>Menurunkan aktivitas enzim metabolisme → kadar obat naik. Contoh: <strong>Simetidin + Phenytoin</strong> → kadar phenytoin naik; <strong>Eritromisin + Teofilin</strong> → toksisitas teofilin.</p>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none">Induksi Metabolisme</div>
+<p>Meningkatkan aktivitas enzim metabolisme → kadar obat lain turun. Contoh: <strong>Rifampisin + Warfarin</strong> → efek warfarin turun; <strong>Phenobarbital + Kontrasepsi oral</strong> → efektivitas KB turun.</p>
+<table>
+<tr><th>Substrat</th><th>Penginduksi</th><th>Efek</th></tr>
+<tr><td>Siklosporin</td><td>Rifampisin</td><td>Kadar siklosporin & imunosupresi turun</td></tr>
+<tr><td>Teofilin</td><td>Fenobarbital, merokok</td><td>Kadar teofilin turun, dosis perlu naik</td></tr>
+<tr><td>Parasetamol</td><td>Etanol, INH</td><td>Hepatotoksisitas naik</td></tr>
+</table>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none">Gangguan Eksresi Empedu & Sirkulasi Enterohepatik</div>
+<table>
+<tr><th>Substrat</th><th>Penghambat</th><th>Efek</th></tr>
+<tr><td>Rifampisin</td><td>Probenesid</td><td>Ekskresi rifampisin turun</td></tr>
+<tr><td>Estrogen (kontrasepsi oral)</td><td>Antibiotik spektrum luas</td><td>Daya reabsorbsi turun</td></tr>
+</table>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none">Interaksi dalam Ekskresi Ginjal</div>
+<p>4 mekanisme: (1) gangguan ekskresi ginjal akibat kerusakan ginjal oleh obat, (2) kompetisi untuk sekresi aktif di tubulus ginjal, (3) perubahan pH urin, (4) perubahan kesetimbangan Na tubuh total.</p>
+<table>
+<tr><th>Obat A</th><th>Obat B</th><th>Efek</th></tr>
+<tr><td>Amfoterisin B</td><td>Flusitosin</td><td>Kadar flusitosin naik → depresi sumsum tulang</td></tr>
+<tr><td>Aminoglikosida, siklosporin</td><td>Digoksin</td><td>Kadar digoksin naik & efek toksik</td></tr>
+<tr><td>Digoksin</td><td>Kuinidin, verapamil</td><td>Sekresi digoksin di tubulus ginjal turun & absorbsi di usus naik</td></tr>
+<tr><td>Salisilat</td><td>Na bikarbonat</td><td>Urin jadi basa → ionisasi & ekskresi salisilat naik</td></tr>
+<tr><td>Diuretik, AINS</td><td>Litium</td><td>Keracunan litium</td></tr>
+</table>
+<div class="note gold">
+Perubahan keseimbangan cairan & elektrolit: <strong>Digitalis + Diuretik/amfoterisin B</strong> → hipokalemia oleh obat B → toksisitas digitalis naik. <strong>Antihipertensi + AINS</strong> → retensi air-garam oleh AINS → efek antihipertensi turun.
+</div>
+</div>
+
+<!-- FARMAKODINAMIK -->
+<div class="sub-panel" id="tab-farmakodinamik">
+<div class="sec-h">Interaksi Farmakodinamik</div>
+<p>Interaksi pada tingkat <strong>reseptor</strong> (antagonis reseptor) atau sistem efektor <strong>tanpa mengubah kadar obat dalam darah</strong>.</p>
+<table>
+<tr><th>Reseptor</th><th>Agonis</th><th>Antagonis</th></tr>
+<tr><td>Histamin H2</td><td>Histamin</td><td>Simetidin, ranitidin, nizatidin</td></tr>
+<tr><td>Dopaminergik</td><td>Dopamin</td><td>Haloperidol, fenotiazin</td></tr>
+</table>
+<div class="note teal">
+<strong>Interaksi fisiologis (antagonis fisiologis)</strong> — bekerja pada organ yang sama namun reseptor berbeda. Contoh: Antidiabetik + Beta bloker → efek antidiabetik terganggu (gejala hipoglikemia tertutupi). Aminoglikosid + Furosemid → oto- dan nefrotoksisitas meningkat.
+</div>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none">Sifat Interaksi Farmakodinamik</div>
+<div class="note gold">
+<strong>a. Sinergisme</strong><br>
+• Aditif: 1+1=2 — contoh Aspirin + Parasetamol (analgesik)<br>
+• Potensial: 1+1&gt;2 — contoh Alkohol + Benzodiazepin (depresi SSP)
+</div>
+<div class="note blue">
+<strong>b. Antagonisme</strong><br>
+• Kompetitif: kompetisi pada reseptor sama — contoh Nalokson vs Morfin (reseptor opioid)<br>
+• Non-kompetitif: efek berlawanan lewat mekanisme berbeda — contoh Histamin vs Epinefrin (pada bronkus)
+</div>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none">Istilah pada Interaksi Obat-Reseptor</div>
+<ul>
+<li><strong>Antagonis (blocker)</strong> — kompetitif: dapat diatasi peningkatan dosis; non-kompetitif: tidak dapat diatasi peningkatan dosis</li>
+<li><strong>Agonis/antagonis parsial</strong></li>
+<li><strong>Antagonis reversibel</strong> vs <strong>Antagonis irreversibel</strong></li>
+</ul>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none">Contoh Interaksi Lain</div>
+<table>
+<tr><th>Obat A</th><th>Obat B</th><th>Efek</th></tr>
+<tr><td>L-DOPA</td><td>Vitamin B6</td><td>Efek antiparkinson obat A turun</td></tr>
+<tr><td>Spironolakton</td><td>Aspirin</td><td>Efek diuretik A turun</td></tr>
+<tr><td>Klonidin</td><td>Sotalol</td><td>Tekanan darah naik</td></tr>
+</table>
+</div>
+
+<!-- MAKANAN -->
+<div class="sub-panel" id="tab-makanan">
+<div class="sec-h">Interaksi Obat–Makanan</div>
+<div class="sec-h" style="font-size:13px;border:none">A. Makanan yang Mempengaruhi Absorpsi</div>
+<ul>
+<li><strong>Makanan berlemak</strong> — meningkatkan absorpsi griseofulvin & itrakonazol; menurunkan absorpsi aspirin & captopril</li>
+<li><strong>Produk susu</strong> — tetrasiklin membentuk kompleks kalsium; ciprofloksasin mengalami chelation dengan kalsium</li>
+<li><strong>Jus jeruk bali (grapefruit)</strong> — inhibisi CYP3A4 intestinal; contoh: simvastatin, nifedipin, siklosporin</li>
+</ul>
+<div class="note red">
+<strong>B. Makanan Kaya Tyramine</strong> (keju matang, anggur merah, daging asap) berinteraksi dengan <strong>MAOI</strong> → dapat memicu <strong>krisis hipertensi</strong> (mekanisme: hambatan metabolisme tyramine).
+</div>
+<div class="note green">
+<strong>C. Makanan Kaya Vitamin K</strong> (sayuran hijau: bayam, brokoli) berinteraksi dengan <strong>Warfarin</strong> → menurunkan efek antikoagulan.
+</div>
+</div>
+
+<!-- KASUS -->
+<div class="sub-panel" id="tab-kasus">
+<div class="sec-h">Studi Kasus Klinis</div>
+
+<div class="sec-h" style="font-size:13px;border:none">Kasus Sederhana</div>
+<ul>
+<li><strong>Captopril vs Furosemide</strong> → efek captopril meningkat</li>
+<li><strong>Captopril vs Diazepam</strong> → efek captopril meningkat</li>
+<li><strong>Metronidazol vs Cimetidin</strong> → cimetidin menghambat metabolisme metronidazol</li>
+<li><strong>Furosemid vs Ibuprofen</strong> → risiko nefrotoksik naik; ibuprofen mengantagonis efek diuretika</li>
+</ul>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none">Warfarin — Deretan Interaksi Major</div>
+<div class="note red">
+<strong>Warfarin + Mikonazol</strong> — mikonazol (antijamur spektrum luas) menghambat enzim sitokrom P-450 hati → meningkatkan efek antikoagulan warfarin. Perlu diwaspadai karena mikonazol topikal pun dapat terdeteksi secara sistemik. <em>(Major)</em>
+</div>
+<div class="note red">
+<strong>Warfarin + Antibiotik</strong> — hampir semua antibiotik dapat memotensiasi efek warfarin dengan menghambat flora usus penghasil vitamin K dan menghambat metabolisme hepatik warfarin. Contoh obat penghambat metabolisme warfarin: ciprofloxacin, clarithromycin, erythromycin, metronidazole, trimetoprim-sulfametoksazol → risiko perdarahan naik. <em>(Major)</em>
+</div>
+<div class="note red">
+<strong>Warfarin + Acetaminofen (parasetamol)</strong> — respons hipotrombinemik warfarin dapat meningkat bila parasetamol dikonsumsi &gt;2 g/hari selama &gt;1 minggu (satu studi case-control: parasetamol jadi penyebab 30% kasus INR&gt;6,0 pada pasien warfarin). Mekanisme: penurunan kapasitas enzim sitokrom P450 oleh parasetamol → metabolisme warfarin menurun. <em>(Major)</em>
+</div>
+<div class="note red">
+<strong>Warfarin + NSAID</strong> — perdarahan & INR naik; mekanisme via efek antiplatelet + kerusakan mukosa lambung (bukan lewat respons hipotrombinemik). NSAID juga dapat mengubah kontrol antikoagulan lewat pelepasan warfarin dari binding site albumin. COX-2 inhibitor (celecoxib, rofecoxib) berpotensi lebih aman dikombinasi warfarin karena sifat antiplateletnya lebih rendah. <em>(Major)</em>
+</div>
+<div class="note gold">
+<strong>Warfarin + Makanan</strong>: Grapefruit menurunkan kemampuan tubuh memetabolisme warfarin (Coumadin). Alkohol dapat meningkatkan efek warfarin → risiko perdarahan naik. Alpukat tinggi vitamin K. Margarin & mayones memiliki kandungan vitamin K yang tidak dapat diprediksi.
+</div>
+<div class="note gold">
+<strong>Vitamin K + Antibiotik</strong> — sefalosporin menurunkan absorpsi vitamin K; pemakaian antibiotik jangka panjang (&gt;10 hari) dapat menyebabkan defisiensi vitamin K karena membunuh bakteri usus yang menghasilkan vitamin K. <em>(Major)</em>
+</div>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none">Sulfas Ferosus & Ciprofloksasin</div>
+<div class="note teal">
+<strong>Sulfas ferosus</strong>: absorbsi ditingkatkan oleh kobal, inosin, etionin, vitamin C, HCl, suksinat, dan senyawa asam; absorbsi menurun bila terdapat fosfat atau antasida.
+</div>
+<div class="note teal">
+<strong>Ciprofloksasin ↔ ferrous sulfate</strong>: ciprofloksasin menurunkan efek besi oral dengan mengurangi absorbsinya dari lambung/usus — sebaiknya tidak diminum bersamaan; beri ciprofloksasin minimal 2 jam sebelum atau 6 jam setelah produk besi. <strong>Doksisiklin</strong> juga menurunkan kadar ferrous sulfate oral dengan mekanisme serupa.
+</div>
+<div class="note teal">
+<strong>Ciprofloksasin ↔ yogurt/susu/makanan berfortifikasi kalsium (sereal)</strong> → menurunkan efektivitas ciprofloksasin.<br>
+<strong>Ciprofloksasin ↔ multivitamin</strong> (magnesium, aluminium, kalsium, besi) → mempengaruhi absorbsi → beri ciprofloksasin 2–4 jam sebelum atau setelah multivitamin.
+</div>
+</div>
+
+<!-- PRINSIP -->
+<div class="sub-panel" id="tab-prinsip">
+<div class="sec-h">Prinsip Utama Pemakaian Obat</div>
+<ul>
+<li>Gunakan obat <strong>sesedikit mungkin</strong></li>
+<li>Minum obat dengan <strong>air putih</strong></li>
+<li><strong>Hati-hati</strong> pada pemakaian obat dengan: batas keamanan sempit, pasien usia lanjut, pasien penyakit parah, pasien disfungsi hati dan ginjal</li>
+</ul>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none">Drug Interaction Classification</div>
+<div class="note red"><strong>Major</strong> — sangat signifikan secara klinis; hindari kombinasi karena risiko melebihi manfaat.</div>
+<div class="note gold"><strong>Moderate</strong> — cukup signifikan secara klinis; biasanya hindari kombinasi, gunakan hanya pada keadaan khusus.</div>
+<div class="note green"><strong>Minor</strong> — minim signifikansi klinis; minimalkan risiko, pertimbangkan obat alternatif dan/atau lakukan monitoring.</div>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none">Strategi Pencegahan Interaksi</div>
+<ul>
+<li><strong>Seleksi obat</strong> — hindari kombinasi terkontraindikasi, pilih alternatif lebih aman, pertimbangkan mekanisme kerja berbeda</li>
+<li><strong>Modifikasi dosis</strong> — penyesuaian dosis, monitoring ketat saat inisiasi, titrasi bertahap</li>
+<li><strong>Modifikasi waktu pemberian</strong> — pisahkan interval 2–4 jam (contoh: antasida & antibiotik)</li>
+</ul>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none">Alat Bantu Cek Interaksi Obat</div>
+<p>Beberapa drug interaction checker yang disarankan: Medscape Drug Interaction Checker, Drugs.com Interaction Checker, WebMD Drug Interaction Checker, RxList Drug Interaction Checker.</p>
+
+<div class="divider"></div>
+<div class="sec-h" style="font-size:13px;border:none">Daftar Pustaka</div>
+<ul>
+<li>Bertram G. Katzung, Susan B. Masters, Anthony J. Trevor. <em>Basic and Clinical Pharmacology.</em> McGraw-Hill Medical, 2009.</li>
+<li>Bailey D G, Malcolm J, Arnold O, Spence J D. 1998. Grapefruit juice drug interactions. <em>Br J Clin Pharmacol</em>; 46: 101–110 (Review).</li>
+</ul>
+</div>
+
+</div>
+
+<!-- QUIZ -->
+<div class="main-panel" id="mp-quiz">
+  <div id="qconfig" class="qconfig">
+    <div class="qconfig-title">Mulai Sesi Quiz</div>
+    <div class="qconfig-sub">Pilih topik (multi-pilih)</div>
+    <div class="cfg-grid" id="cfg-grid">
+<button class="cfg-btn sel" data-type="pool_pendahuluan">Pendahuluan & Epidemiologi</button>
+<button class="cfg-btn sel" data-type="pool_jenis_hasil">Jenis & Hasil Interaksi</button>
+<button class="cfg-btn sel" data-type="pool_faktor">Faktor Lain</button>
+<button class="cfg-btn sel" data-type="pool_farmaseutik">Interaksi Farmaseutik</button>
+<button class="cfg-btn sel" data-type="pool_absorbsi">FK — Absorbsi</button>
+<button class="cfg-btn sel" data-type="pool_distribusi">FK — Distribusi</button>
+<button class="cfg-btn sel" data-type="pool_metabolisme_ekskresi">FK — Metabolisme & Ekskresi</button>
+<button class="cfg-btn sel" data-type="pool_farmakodinamik">Farmakodinamik</button>
+<button class="cfg-btn sel" data-type="pool_makanan">Obat—Makanan</button>
+<button class="cfg-btn sel" data-type="pool_kasus_warfarin">Studi Kasus — Warfarin</button>
+<button class="cfg-btn sel" data-type="pool_kasus_lain">Studi Kasus — Lainnya</button>
+<button class="cfg-btn sel" data-type="pool_prinsip">Prinsip & Klasifikasi</button>
+</div>
+    <button class="start-btn" onclick="startSession()">Mulai →</button>
+  </div>
+  <div id="qactive" style="display:none">
+    <div class="qheader">
+      <div class="qnum-display">Soal ke-<strong id="qnum">1</strong></div>
+      <div id="qpill" class="qtype-pill"></div>
+      <div class="qscore-display"><strong id="qscore">0</strong> benar</div>
+    </div>
+    <div class="qcard">
+      <div id="qtext" class="qtext"></div>
+    </div>
+    <div class="opts" id="opts"></div>
+    <div class="expbox" id="expbox"></div>
+    <div class="actrow">
+      <button class="next-btn" id="nextbtn" onclick="nextQ()">Soal Berikutnya →</button>
+      <button class="end-btn" onclick="endSession()">Akhiri Sesi</button>
+    </div>
+  </div>
+  <div id="qresults" style="display:none">
+    <div class="results-wrap">
+      <div class="res-big" id="res-pct">—</div>
+      <div class="res-sub" id="res-sub">—</div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:20px">
+        <button class="retry-btn" style="margin-bottom:0" onclick="restartQuiz()">Coba Lagi</button>
+      </div>
+      <div class="dtable-wrap" style="margin-bottom:14px"><table><thead><tr><th>Topik</th><th>Soal</th><th>Benar</th></tr></thead><tbody id="res-bytype"></tbody></table></div>
+      <div class="dtable-wrap"><table><thead><tr><th>#</th><th>Soal (ringkas)</th><th>Jawaban Benar</th><th>Hasil</th></tr></thead><tbody id="res-detail"></tbody></table></div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+window.switchMain=function(id,b){document.querySelectorAll('.main-panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.main-tab').forEach(x=>x.classList.remove('active'));document.getElementById('mp-'+id).classList.add('active');b.classList.add('active');};
+window.switchSub=function(id,b){const parent=b.closest('.main-panel');parent.querySelectorAll('.sub-panel').forEach(p=>p.classList.remove('active'));parent.querySelectorAll('.sub-tab').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');b.classList.add('active');};
+document.querySelectorAll('.cfg-btn').forEach(b=>{ b.onclick=()=>b.classList.toggle('sel'); });
+
+const KEYS=['A','B','C','D','E'];
+function shuf(a){const arr=[...a];for(let i=arr.length-1;i>0;i--){const j=0|Math.random()*(i+1);[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+function stripHtml(s){const d=document.createElement('div');d.innerHTML=s;return d.textContent||d.innerText||'';}
+
+const pool_pendahuluan = [
+ {pertanyaan:`Interaksi obat terjadi pada berapa persen pasien rawat inap?`,pilihan:[`15-20%`,`1-5%`,`50-60%`,`80-90%`,`30-40%`],jawaban:`15-20%`,pembahasan:`Interaksi obat terjadi pada 15-20% pasien rawat inap, dan menjadi penyebab 3-5% kejadian efek samping obat yang serius.`},
+ {pertanyaan:`Faktor apa yang meningkatkan risiko terjadinya interaksi obat pada pasien?`,pilihan:[`Polifarmasi (jumlah obat yang dikonsumsi)`,`Warna obat`,`Merek dagang obat`,`Bentuk kemasan`,`Harga obat`],jawaban:`Polifarmasi (jumlah obat yang dikonsumsi)`,pembahasan:`Risiko interaksi obat meningkat seiring bertambahnya jumlah obat yang dikonsumsi (polifarmasi).`},
+ {pertanyaan:`Interaksi obat didefinisikan sebagai...`,pilihan:[`Kombinasi obat dengan zat lain yang mengubah efek obat pada tubuh`,`Proses obat masuk ke sirkulasi sistemik`,`Reaksi alergi terhadap obat`,`Proses metabolisme obat di hati`,`Efek plasebo dari suatu obat`],jawaban:`Kombinasi obat dengan zat lain yang mengubah efek obat pada tubuh`,pembahasan:`Interaksi obat adalah kombinasi obat dengan zat lain yang mengubah efek obat pada tubuh, dapat membuat obat kurang/lebih kuat, dan dapat menimbulkan efek samping tak terduga.`},
+ {pertanyaan:`Interaksi obat dapat menyebabkan hal-hal berikut, KECUALI...`,pilihan:[`Peningkatan jumlah kunjungan rawat jalan rutin`,`Obat menjadi kurang atau lebih kuat`,`Efek samping tak terduga yang berbahaya`,`Kegagalan terapi`,`Toksisitas`],jawaban:`Peningkatan jumlah kunjungan rawat jalan rutin`,pembahasan:`Interaksi obat dapat menyebabkan obat kurang/lebih kuat, efek samping tak terduga, kegagalan terapi, atau toksisitas -- bukan sekadar administratif seperti jumlah kunjungan.`},
+ {pertanyaan:`Interaksi obat menjadi penyebab berapa persen kejadian efek samping obat (ESO) yang serius?`,pilihan:[`3-5%`,`15-20%`,`50%`,`90%`,`1%`],jawaban:`3-5%`,pembahasan:`Interaksi obat merupakan penyebab 3-5% kejadian efek samping obat yang serius, sementara terjadi pada 15-20% pasien rawat inap.`}
+];
+
+const pool_jenis_hasil = [
+ {pertanyaan:`Interaksi antara statin dan jus grapefruit termasuk jenis interaksi...`,pilihan:[`Drug-food`,`Drug-drug`,`Drug-alcohol`,`Drug-disease`,`Drug-laboratory`],jawaban:`Drug-food`,pembahasan:`Drug-food interaction terjadi ketika asupan makanan/minuman mengubah efek obat, contohnya statin dengan jus grapefruit.`},
+ {pertanyaan:`Penggunaan dekongestan pada pasien hipertensi merupakan contoh interaksi jenis...`,pilihan:[`Drug-disease`,`Drug-drug`,`Drug-food`,`Drug-alcohol`,`Drug-laboratory`],jawaban:`Drug-disease`,pembahasan:`Drug-disease interaction adalah penggunaan obat yang mengubah/memperparah kondisi penyakit yang sudah ada, contohnya dekongestan pada pasien hipertensi.`},
+ {pertanyaan:`Antidepresan yang mempengaruhi hasil tes alergi merupakan contoh interaksi jenis...`,pilihan:[`Drug-laboratory`,`Drug-disease`,`Drug-food`,`Drug-drug`,`Drug-alcohol`],jawaban:`Drug-laboratory`,pembahasan:`Drug-laboratory interaction terjadi ketika suatu obat mengganggu hasil pemeriksaan laboratorium, contohnya antidepresan dengan tes alergi.`},
+ {pertanyaan:`Kombinasi diuretik dengan ibuprofen yang menurunkan efek diuretik adalah contoh interaksi...`,pilihan:[`Drug-drug`,`Drug-food`,`Drug-disease`,`Drug-laboratory`,`Drug-alcohol`],jawaban:`Drug-drug`,pembahasan:`Drug-drug interaction adalah reaksi antara dua obat atau lebih, contohnya diuretik dengan ibuprofen yang menurunkan efek diuretik.`},
+ {pertanyaan:`Kombinasi obat berikut yang tergolong "menguntungkan" secara terapeutik adalah...`,pilihan:[`Sulfametoksazol + trimetoprim`,`Warfarin + Aspirin`,`Digoksin + Verapamil`,`ACEI + Kalium`,`Sedatif + Antihistamin`],jawaban:`Sulfametoksazol + trimetoprim`,pembahasan:`Sulfametoksazol + trimetoprim menghasilkan kotrimoksazol lewat sinergisme yang menguntungkan; kombinasi lainnya (warfarin+aspirin, digoksin+verapamil, ACEI+kalium, sedatif+antihistamin) tergolong interaksi merugikan.`},
+ {pertanyaan:`Hasil interaksi di mana suatu obat memberikan efek yang secara kualitatif berlainan dengan efek normalnya, umumnya karena kelainan genetika pasien, disebut...`,pilihan:[`Idiosinkrasi`,`Sinergisme`,`Antagonisme`,`Adisi`,`Potensiasi`],jawaban:`Idiosinkrasi`,pembahasan:`Idiosinkrasi adalah efek yang secara kualitatif berlainan dari efek normal, umumnya akibat kelainan genetika pasien. Contoh: primakuin menyebabkan anemia hemolitik.`},
+ {pertanyaan:`Kombinasi amoksisilin dan asam klavulanat menghasilkan efek sinergisme karena...`,pilihan:[`Asam klavulanat melindungi cincin beta-laktam amoksisilin sehingga meningkatkan aktivitasnya`,`Asam klavulanat menghambat absorbsi amoksisilin`,`Amoksisilin merusak asam klavulanat`,`Keduanya saling menetralkan efek`,`Asam klavulanat bersifat antagonis terhadap amoksisilin`],jawaban:`Asam klavulanat melindungi cincin beta-laktam amoksisilin sehingga meningkatkan aktivitasnya`,pembahasan:`Asam klavulanat meningkatkan aktivitas amoksisilin dengan melindungi/memproteksi cincin beta-laktam amoksisilin dari perusakan enzim beta-laktamase bakteri.`}
+];
+
+const pool_faktor = [
+ {pertanyaan:`Berikut termasuk "Personal medical history" yang mempengaruhi interaksi obat, KECUALI...`,pilihan:[`Harga obat di pasaran`,`Genetika`,`Berat badan`,`Usia`,`Jenis kelamin`],jawaban:`Harga obat di pasaran`,pembahasan:`Faktor personal yang mempengaruhi interaksi obat meliputi genetika, berat badan, usia, jenis kelamin, lifestyle, lama obat dalam tubuh, dan lama pemakaian obat -- bukan harga obat.`},
+ {pertanyaan:`Faktor "drug factors" yang mempengaruhi interaksi obat meliputi hal berikut, KECUALI...`,pilihan:[`Warna kemasan obat`,`Dose (dosis)`,`How the drug is taken (cara pemberian)`,`Formulation (formulasi)`,`Urutan pemberian obat`],jawaban:`Warna kemasan obat`,pembahasan:`Drug factors meliputi dosis, cara pemberian, formulasi, dan urutan pemberian obat -- bukan warna kemasan.`},
+ {pertanyaan:`"Lifestyle" pasien termasuk dalam kategori faktor...`,pilihan:[`Personal medical history`,`Drug factors`,`Interaksi farmaseutik`,`Interaksi farmakodinamik`,`Klasifikasi major/moderate/minor`],jawaban:`Personal medical history`,pembahasan:`Lifestyle merupakan salah satu komponen "personal medical history" bersama genetika, berat badan, usia, jenis kelamin, dan durasi pemakaian/keberadaan obat dalam tubuh.`},
+ {pertanyaan:`Urutan pemberian obat (the order in which medications are taken) termasuk dalam kategori...`,pilihan:[`Drug factors`,`Personal medical history`,`Interaksi farmakodinamik`,`Klasifikasi interaksi`,`Interaksi obat-makanan`],jawaban:`Drug factors`,pembahasan:`Urutan pemberian obat termasuk drug factors, bersama dosis, cara pemberian, dan formulasi.`}
+];
+
+const pool_farmaseutik = [
+ {pertanyaan:`Interaksi farmaseutik/inkompatibilitas terjadi...`,pilihan:[`Di luar tubuh`,`Di dalam sel target`,`Di reseptor otak`,`Di tubulus ginjal`,`Di dalam hati`],jawaban:`Di luar tubuh`,pembahasan:`Interaksi farmaseutik/inkompatibilitas terjadi di luar tubuh, akibat obat saling tidak tercampur secara fisika/kimia.`},
+ {pertanyaan:`Tanda-tanda yang dapat diamati pada interaksi farmaseutik meliputi, KECUALI...`,pilihan:[`Peningkatan kesadaran pasien`,`Timbulnya endapan`,`Perubahan warna`,`Timbul gas`,`Lembab pada serbuk`],jawaban:`Peningkatan kesadaran pasien`,pembahasan:`Tanda interaksi farmaseutik adalah endapan, perubahan warna, timbul gas, lembab pada serbuk -- yang berujung inaktivasi obat, bukan perubahan kesadaran pasien (itu efek farmakodinamik/klinis).`},
+ {pertanyaan:`Kombinasi Amfoterisin B dengan garam fisiologis/ringer menghasilkan efek...`,pilihan:[`Endapan`,`Inaktif tanpa endapan`,`Peningkatan potensi`,`Tidak ada perubahan`,`Warna berubah menjadi merah`],jawaban:`Endapan`,pembahasan:`Amfoterisin B dengan garam fisiologis/ringer menghasilkan endapan -- salah satu contoh interaksi farmaseutik.`},
+ {pertanyaan:`Kombinasi Penisilin G dengan Vitamin C menghasilkan efek...`,pilihan:[`Inaktif`,`Endapan`,`Peningkatan potensi`,`Sinergisme`,`Toksisitas ginjal`],jawaban:`Inaktif`,pembahasan:`Penisilin G dengan vitamin C menghasilkan inaktivasi obat -- contoh interaksi farmaseutik.`},
+ {pertanyaan:`Interaksi antar obat suntik (obat/vehicle) atau obat suntik dengan cairan infus adalah contoh khas dari interaksi...`,pilihan:[`Farmaseutik`,`Farmakokinetik`,`Farmakodinamik`,`Drug-disease`,`Drug-laboratory`],jawaban:`Farmaseutik`,pembahasan:`Interaksi antar obat suntik atau obat suntik dengan cairan infus adalah contoh khas interaksi farmaseutik yang terjadi di luar tubuh.`}
+];
+
+const pool_absorbsi = [
+ {pertanyaan:`Ketokonazol memerlukan suasana lambung yang bersifat...`,pilihan:[`Asam, untuk disolusi optimal`,`Basa, untuk disolusi optimal`,`Netral, tidak berpengaruh`,`Sangat basa, di atas pH 8`,`Tidak dipengaruhi pH sama sekali`],jawaban:`Asam, untuk disolusi optimal`,pembahasan:`Ketokonazol memerlukan suasana asam untuk disolusi; bila diberikan bersama antasida/PPI yang menaikkan pH lambung, absorbsinya turun drastis 50-90%.`},
+ {pertanyaan:`Interaksi tetrasiklin dengan produk susu terjadi melalui mekanisme...`,pilihan:[`Pembentukan kompleks (chelation) dengan kalsium`,`Perubahan pH lambung`,`Induksi enzim metabolisme`,`Kompetisi sekresi tubulus ginjal`,`Perubahan motilitas usus`],jawaban:`Pembentukan kompleks (chelation) dengan kalsium`,pembahasan:`Tetrasiklin memiliki gugus enolic beta-diketone yang membentuk kompleks chelate dengan kalsium dalam susu -- kompleks ini tidak larut dan tidak dapat diabsorbsi, menurunkan absorbsi tetrasiklin 50-90%.`},
+ {pertanyaan:`Metoklopramid mempengaruhi absorbsi parasetamol melalui mekanisme...`,pilihan:[`Mempercepat pengosongan lambung sehingga parasetamol lebih cepat mencapai usus halus`,`Menghambat enzim sitokrom P450`,`Membentuk kompleks dengan parasetamol`,`Menurunkan pH lambung`,`Menghambat sekresi tubulus ginjal`],jawaban:`Mempercepat pengosongan lambung sehingga parasetamol lebih cepat mencapai usus halus`,pembahasan:`Metoklopramid (antagonis D2, agonis 5-HT4) mempercepat pengosongan lambung, sehingga parasetamol lebih cepat mencapai usus halus (tempat absorpsinya) dan onsetnya lebih cepat.`},
+ {pertanyaan:`Antibiotik yang sebaiknya diminum saat perut kosong (1 jam sebelum/2 jam setelah makan) adalah...`,pilihan:[`Amoksisilin`,`Metronidazole`,`Doksisiklin`,`Eritromisin bentuk basa`,`Klindamisin`],jawaban:`Amoksisilin`,pembahasan:`Amoksisilin, ampisilin, tetrasiklin (kecuali doksisiklin & minosiklin), penisilin V, dan azitromisin tablet sebaiknya diminum saat perut kosong.`},
+ {pertanyaan:`Fluoroquinolone yang dikombinasikan dengan antasida (Al, Mg, Ca) akan mengalami...`,pilihan:[`Penurunan absorpsi 50-90%`,`Peningkatan absorpsi 2 kali lipat`,`Tidak ada perubahan absorpsi`,`Peningkatan toksisitas ginjal`,`Percepatan onset kerja`],jawaban:`Penurunan absorpsi 50-90%`,pembahasan:`Fluoroquinolone berikatan (chelation) dengan ion logam pada antasida, menurunkan absorpsinya sebesar 50-90%.`},
+ {pertanyaan:`Griseofulvin dan itrakonazol mengalami peningkatan absorpsi bila dikonsumsi bersama...`,pilihan:[`Makanan berlemak`,`Makanan tinggi serat`,`Antasida`,`Susu`,`Minuman beralkohol`],jawaban:`Makanan berlemak`,pembahasan:`Makanan berlemak memperlambat pengosongan lambung dan meningkatkan absorpsi obat lipofilik seperti griseofulvin dan itrakonazol.`},
+ {pertanyaan:`Sebaiknya ciprofloksasin diberikan berapa jam sebelum atau setelah mengonsumsi produk susu/multivitamin yang mengandung mineral?`,pilihan:[`2-4 jam sebelum atau setelah`,`Langsung bersamaan`,`24 jam sebelum atau setelah`,`Tidak masalah kapan saja`,`1 minggu sebelum atau setelah`],jawaban:`2-4 jam sebelum atau setelah`,pembahasan:`Ciprofloksasin sebaiknya diberikan 2-4 jam sebelum atau setelah multivitamin/produk susu yang mengandung magnesium, aluminium, kalsium, atau besi untuk menghindari chelation yang menurunkan absorbsi.`}
+];
+
+const pool_distribusi = [
+ {pertanyaan:`Protein plasma yang berperan mengikat obat-obat yang bersifat asam dan netral adalah...`,pilihan:[`Albumin`,`Alfa-1 acid glycoprotein (AAG)`,`Lipoprotein`,`Globulin`,`Fibrinogen`],jawaban:`Albumin`,pembahasan:`Albumin (35-50 g/L) berperan mengikat obat-obat yang bersifat asam dan netral, sedangkan AAG mengikat obat basa.`},
+ {pertanyaan:`Hanya fraksi obat dalam bentuk apa yang aktif secara farmakologi?`,pilihan:[`Fraksi bebas (unbound)`,`Fraksi terikat protein`,`Fraksi terkonjugasi`,`Fraksi terionisasi penuh`,`Fraksi yang sudah dimetabolisme`],jawaban:`Fraksi bebas (unbound)`,pembahasan:`Hanya obat bebas (fraksi unbound) yang aktif secara farmakologi; obat yang terikat protein plasma tidak dapat berdifusi bebas ke jaringan.`},
+ {pertanyaan:`Warfarin memiliki ikatan protein plasma sebesar 99,5%. Apa implikasi klinisnya terkait interaksi obat?`,pilihan:[`Perubahan kecil pada fraksi bebas dapat menimbulkan efek yang besar`,`Warfarin tidak akan pernah berinteraksi dengan obat lain`,`Warfarin selalu aman dikombinasikan dengan obat apapun`,`Fraksi bebas warfarin tidak berpengaruh pada efek klinis`,`Ikatan protein warfarin tidak bisa berubah sama sekali`],jawaban:`Perubahan kecil pada fraksi bebas dapat menimbulkan efek yang besar`,pembahasan:`Karena ikatan proteinnya sangat tinggi (99,5%), perubahan kecil saja (misalnya dari 99,5% menjadi 99,0% bound) menyebabkan fraksi bebas berlipat ganda -- efek klinis menjadi jauh lebih besar dibanding obat dengan ikatan protein rendah.`},
+ {pertanyaan:`Pada fase akut (0-24 jam) interaksi Warfarin+Aspirin, mekanisme yang terjadi adalah...`,pilihan:[`Aspirin menggantikan warfarin dari ikatan albumin (displacement)`,`Aspirin menginduksi enzim metabolisme warfarin`,`Aspirin menghambat absorbsi warfarin di usus`,`Aspirin meningkatkan ekskresi warfarin lewat ginjal`,`Aspirin membentuk kompleks tidak larut dengan warfarin`],jawaban:`Aspirin menggantikan warfarin dari ikatan albumin (displacement)`,pembahasan:`Pada fase akut, aspirin menggantikan warfarin dari albumin (displacement interaction), meningkatkan warfarin bebas dan efek antikoagulan secara akut.`},
+ {pertanyaan:`Mengapa risiko perdarahan pada kombinasi Warfarin+Aspirin tetap tinggi meski secara teori kadar total warfarin kembali normal pada fase redistribusi?`,pilihan:[`Karena ada sinergisme farmakodinamik -- aspirin menghambat COX-1 trombosit sehingga efek antiplatelet + antikoagulan bergabung`,`Karena warfarin menjadi resisten terhadap metabolisme`,`Karena aspirin meningkatkan produksi vitamin K`,`Karena kombinasi ini tidak benar-benar berinteraksi`,`Karena efek warfarin menjadi nol total`],jawaban:`Karena ada sinergisme farmakodinamik -- aspirin menghambat COX-1 trombosit sehingga efek antiplatelet + antikoagulan bergabung`,pembahasan:`Selain interaksi farmakokinetik (displacement protein), terdapat sinergisme farmakodinamik: aspirin menghambat COX-1 trombosit (antiplatelet) yang bergabung dengan efek antikoagulan warfarin, meningkatkan risiko perdarahan GI 2-4x dan ICH 1,5-2x.`},
+ {pertanyaan:`Interaksi Phenytoin dengan Asam Valproat terjadi melalui mekanisme...`,pilihan:[`Valproat menggantikan phenytoin dari ikatan albumin`,`Valproat menginduksi metabolisme phenytoin`,`Valproat menghambat absorbsi phenytoin di lambung`,`Valproat meningkatkan ekskresi renal phenytoin`,`Valproat membentuk kompleks tidak larut dengan phenytoin`],jawaban:`Valproat menggantikan phenytoin dari ikatan albumin`,pembahasan:`Asam valproat menggantikan phenytoin dari ikatan albumin (kompetisi ikatan protein), menyebabkan free phenytoin meningkat 2-3 kali lipat dan berisiko toksisitas tinggi.`}
+];
+
+const pool_metabolisme_ekskresi = [
+ {pertanyaan:`Kombinasi Simetidin dengan Phenytoin menyebabkan...`,pilihan:[`Peningkatan kadar phenytoin (hambatan metabolisme)`,`Penurunan kadar phenytoin (induksi metabolisme)`,`Tidak ada perubahan kadar phenytoin`,`Peningkatan ekskresi phenytoin lewat ginjal`,`Phenytoin menjadi inaktif seketika`],jawaban:`Peningkatan kadar phenytoin (hambatan metabolisme)`,pembahasan:`Simetidin menghambat metabolisme phenytoin (menurunkan aktivitas enzim), sehingga kadar phenytoin meningkat.`},
+ {pertanyaan:`Rifampisin dikombinasi dengan warfarin menyebabkan efek warfarin...`,pilihan:[`Menurun, karena rifampisin menginduksi enzim metabolisme`,`Meningkat, karena rifampisin menghambat enzim metabolisme`,`Tidak berubah`,`Warfarin menjadi lebih toksik`,`Warfarin diekskresi lebih lambat`],jawaban:`Menurun, karena rifampisin menginduksi enzim metabolisme`,pembahasan:`Rifampisin adalah penginduksi enzim metabolisme yang kuat, sehingga meningkatkan metabolisme warfarin dan menurunkan efeknya.`},
+ {pertanyaan:`Kombinasi apa yang dapat menurunkan efektivitas kontrasepsi oral melalui induksi enzim metabolisme?`,pilihan:[`Phenobarbital + Kontrasepsi oral`,`Simetidin + Kontrasepsi oral`,`Eritromisin + Kontrasepsi oral`,`Ketokonazol + Kontrasepsi oral`,`Antasida + Kontrasepsi oral`],jawaban:`Phenobarbital + Kontrasepsi oral`,pembahasan:`Phenobarbital menginduksi enzim metabolisme sehingga menurunkan efektivitas kontrasepsi oral (estrogen).`},
+ {pertanyaan:`Tahap pertama dari 3 proses ekskresi ginjal adalah...`,pilihan:[`Filtrasi glomerulus`,`Sekresi aktif tubulus proksimal`,`Reabsorbsi pasif tubulus distal`,`Konjugasi hepar`,`Induksi enzim`],jawaban:`Filtrasi glomerulus`,pembahasan:`3 proses ekskresi ginjal: filtrasi glomerulus, sekresi aktif di tubulus proksimalis, dan reabsorbsi pasif di tubulus distal/proksimal.`},
+ {pertanyaan:`Kombinasi Aminoglikosida/siklosporin dengan Digoksin menyebabkan...`,pilihan:[`Kadar digoksin naik dan efek toksik`,`Kadar digoksin turun`,`Tidak ada interaksi`,`Digoksin menjadi inaktif`,`Aminoglikosida menjadi lebih aktif`],jawaban:`Kadar digoksin naik dan efek toksik`,pembahasan:`Aminoglikosida dan siklosporin dapat merusak ginjal, sehingga ekskresi digoksin (yang eliminasinya terutama lewat ginjal) terganggu, menyebabkan akumulasi dan efek toksik.`},
+ {pertanyaan:`Kombinasi Diuretik/AINS dengan Litium dapat menyebabkan...`,pilihan:[`Keracunan litium`,`Litium menjadi inaktif`,`Peningkatan ekskresi litium`,`Tidak ada interaksi bermakna`,`Penurunan kadar litium drastis`],jawaban:`Keracunan litium`,pembahasan:`Diuretik dan AINS dapat menurunkan klirens litium (kompetisi ekskresi ginjal / perubahan keseimbangan Na), menyebabkan keracunan litium.`},
+ {pertanyaan:`Kombinasi Digitalis dengan Diuretik/amfoterisin B berisiko menimbulkan toksisitas digitalis karena...`,pilihan:[`Diuretik/amfoterisin B menyebabkan hipokalemia yang meningkatkan toksisitas digitalis`,`Diuretik menghambat metabolisme digitalis`,`Diuretik meningkatkan absorbsi digitalis di usus`,`Amfoterisin B membentuk kompleks dengan digitalis`,`Tidak ada mekanisme yang jelas`],jawaban:`Diuretik/amfoterisin B menyebabkan hipokalemia yang meningkatkan toksisitas digitalis`,pembahasan:`Diuretik dan amfoterisin B menyebabkan hipokalemia, yang meningkatkan sensitivitas jantung terhadap efek toksik digitalis.`}
+];
+
+const pool_farmakodinamik = [
+ {pertanyaan:`Interaksi farmakodinamik terjadi pada tingkat...`,pilihan:[`Reseptor atau sistem efektor, tanpa mengubah kadar obat dalam darah`,`Absorbsi obat di usus`,`Metabolisme obat di hati`,`Ekskresi obat di ginjal`,`Distribusi obat ke jaringan`],jawaban:`Reseptor atau sistem efektor, tanpa mengubah kadar obat dalam darah`,pembahasan:`Interaksi farmakodinamik terjadi pada tingkat reseptor (antagonis pada reseptor) atau sistem efektor tanpa mengubah kadar obat dalam darah -- berbeda dengan interaksi farmakokinetik.`},
+ {pertanyaan:`Kombinasi Aspirin + Parasetamol sebagai analgesik merupakan contoh sinergisme jenis...`,pilihan:[`Aditif (1+1=2)`,`Potensial (1+1>2)`,`Antagonisme kompetitif`,`Antagonisme non-kompetitif`,`Idiosinkrasi`],jawaban:`Aditif (1+1=2)`,pembahasan:`Aspirin + Parasetamol adalah contoh sinergisme aditif, di mana efek gabungan setara dengan penjumlahan efek masing-masing (1+1=2).`},
+ {pertanyaan:`Kombinasi Alkohol + Benzodiazepin yang menimbulkan depresi SSP berlebihan merupakan contoh sinergisme jenis...`,pilihan:[`Potensial (1+1>2)`,`Aditif (1+1=2)`,`Antagonisme kompetitif`,`Antagonisme non-kompetitif`,`Idiosinkrasi`],jawaban:`Potensial (1+1>2)`,pembahasan:`Alkohol + Benzodiazepin adalah contoh sinergisme potensial, di mana efek gabungan lebih besar dari penjumlahan efek masing-masing (1+1>2).`},
+ {pertanyaan:`Nalokson yang bekerja melawan morfin pada reseptor opioid adalah contoh...`,pilihan:[`Antagonisme kompetitif`,`Antagonisme non-kompetitif`,`Sinergisme aditif`,`Sinergisme potensial`,`Idiosinkrasi`],jawaban:`Antagonisme kompetitif`,pembahasan:`Nalokson vs morfin adalah antagonisme kompetitif karena keduanya berkompetisi pada reseptor opioid yang sama.`},
+ {pertanyaan:`Histamin vs Epinefrin pada bronkus merupakan contoh...`,pilihan:[`Antagonisme non-kompetitif`,`Antagonisme kompetitif`,`Sinergisme aditif`,`Sinergisme potensial`,`Interaksi farmaseutik`],jawaban:`Antagonisme non-kompetitif`,pembahasan:`Histamin vs Epinefrin pada bronkus adalah antagonisme non-kompetitif -- efek berlawanan dihasilkan melalui mekanisme/reseptor yang berbeda.`},
+ {pertanyaan:`Antagonis yang efeknya masih dapat diatasi dengan peningkatan dosis agonis disebut antagonis...`,pilihan:[`Kompetitif`,`Non-kompetitif`,`Ireversibel total`,`Fisiologis permanen`,`Idiosinkratik`],jawaban:`Kompetitif`,pembahasan:`Antagonis kompetitif dapat diatasi dengan meningkatkan dosis agonis, sedangkan antagonis non-kompetitif tidak dapat diatasi dengan cara ini.`},
+ {pertanyaan:`Kombinasi Antidiabetik dengan Beta bloker berisiko karena...`,pilihan:[`Beta bloker dapat menutupi gejala hipoglikemia akibat antidiabetik (antagonisme fisiologis)`,`Beta bloker menghambat metabolisme antidiabetik`,`Beta bloker membentuk kompleks dengan antidiabetik`,`Beta bloker meningkatkan absorbsi antidiabetik`,`Tidak ada risiko klinis yang bermakna`],jawaban:`Beta bloker dapat menutupi gejala hipoglikemia akibat antidiabetik (antagonisme fisiologis)`,pembahasan:`Ini contoh interaksi fisiologis (antagonis fisiologis): keduanya bekerja pada organ yang sama namun reseptor berbeda, sehingga beta bloker dapat menutupi tanda-tanda hipoglikemia dan mengganggu efek obat antidiabetik.`}
+];
+
+const pool_makanan = [
+ {pertanyaan:`Jus grapefruit dapat meningkatkan efek toksik obat-obat berikut karena menghambat enzim CYP3A4 intestinal, KECUALI...`,pilihan:[`Parasetamol`,`Simvastatin`,`Nifedipin`,`Siklosporin`,`Semua benar sebagai obat yang dipengaruhi grapefruit`],jawaban:`Parasetamol`,pembahasan:`Grapefruit menghambat CYP3A4 intestinal dan mempengaruhi simvastatin, nifedipin, dan siklosporin -- bukan parasetamol yang dimetabolisme via jalur lain.`},
+ {pertanyaan:`Makanan tinggi tyramine (keju matang, anggur merah, daging asap) berbahaya bila dikombinasikan dengan...`,pilihan:[`MAOI (obat antidepresan golongan monoamine oxidase inhibitor)`,`Antibiotik golongan penisilin`,`Antasida`,`Diuretik`,`NSAID`],jawaban:`MAOI (obat antidepresan golongan monoamine oxidase inhibitor)`,pembahasan:`Makanan tinggi tyramine dapat memicu krisis hipertensi bila dikombinasikan dengan MAOI, karena MAOI menghambat metabolisme tyramine.`},
+ {pertanyaan:`Sayuran hijau seperti bayam dan brokoli yang kaya vitamin K dapat mempengaruhi efek obat...`,pilihan:[`Warfarin (menurunkan efek antikoagulan)`,`Insulin (menurunkan efek hipoglikemik)`,`Parasetamol (meningkatkan efek analgesik)`,`Digoksin (meningkatkan efek inotropik)`,`Amoksisilin (menurunkan efek antibiotik)`],jawaban:`Warfarin (menurunkan efek antikoagulan)`,pembahasan:`Vitamin K dari sayuran hijau dapat menurunkan efek antikoagulan warfarin karena warfarin bekerja dengan menghambat faktor pembekuan yang bergantung vitamin K.`},
+ {pertanyaan:`Produk susu dapat menurunkan absorpsi obat berikut melalui mekanisme chelation dengan kalsium, KECUALI...`,pilihan:[`Parasetamol`,`Tetrasiklin`,`Ciprofloksasin`,`Semua benar (tetrasiklin dan ciprofloksasin sama-sama terpengaruh)`,`Doksisiklin`],jawaban:`Parasetamol`,pembahasan:`Tetrasiklin dan ciprofloksasin (fluoroquinolone) mengalami chelation dengan kalsium dari produk susu; parasetamol tidak mengalami interaksi ini.`}
+];
+
+const pool_kasus_warfarin = [
+ {pertanyaan:`Mikonazol meningkatkan efek antikoagulan warfarin melalui mekanisme...`,pilihan:[`Menghambat enzim sitokrom P-450 hepatik`,`Menginduksi enzim sitokrom P-450 hepatik`,`Meningkatkan ekskresi warfarin lewat ginjal`,`Menurunkan absorpsi warfarin di usus`,`Membentuk kompleks tak larut dengan warfarin`],jawaban:`Menghambat enzim sitokrom P-450 hepatik`,pembahasan:`Mikonazol adalah antijamur spektrum luas yang menghambat enzim sitokrom P-450 hepatik, meningkatkan efek antikoagulan warfarin -- klasifikasi Major, bahkan bentuk topikal dapat terdeteksi secara sistemik.`},
+ {pertanyaan:`Hampir semua antibiotik dapat memotensiasi efek warfarin melalui dua mekanisme, yaitu...`,pilihan:[`Menghambat flora usus penghasil vitamin K dan menghambat metabolisme hepatik warfarin`,`Meningkatkan absorbsi warfarin dan meningkatkan ekskresi vitamin K`,`Menurunkan ikatan protein warfarin dan meningkatkan filtrasi glomerulus`,`Membentuk kompleks langsung dengan warfarin di lambung`,`Meningkatkan produksi trombosit`],jawaban:`Menghambat flora usus penghasil vitamin K dan menghambat metabolisme hepatik warfarin`,pembahasan:`Antibiotik memotensiasi warfarin dengan menghambat flora usus penghasil vitamin K sekaligus menghambat metabolisme hepatik warfarin (contoh: ciprofloxacin, clarithromycin, erythromycin, metronidazole, trimetoprim-sulfametoksazol).`},
+ {pertanyaan:`Menurut satu studi case-control, acetaminofen (parasetamol) menjadi penyebab berapa persen kasus INR>6,0 pada pasien yang menggunakan warfarin?`,pilihan:[`30%`,`5%`,`75%`,`10%`,`90%`],jawaban:`30%`,pembahasan:`Studi case-control mengidentifikasi acetaminofen sebagai penyebab 30% kasus INR lebih dari 6,0 pada pasien yang menggunakan warfarin dosis 325 mg.`},
+ {pertanyaan:`Respons hipotrombinemik warfarin dapat meningkat bila acetaminofen dikonsumsi pada dosis...`,pilihan:[`Lebih dari 2 g/hari selama lebih dari satu minggu`,`Kurang dari 500 mg sekali saja`,`Hanya dosis tunggal berapapun besarnya`,`Hanya jika diberikan secara IV`,`Tidak ada hubungan dosis sama sekali`],jawaban:`Lebih dari 2 g/hari selama lebih dari satu minggu`,pembahasan:`Respons hipotrombinemik terhadap warfarin dapat meningkat bila acetaminofen dikonsumsi pada dosis lebih dari 2 g per hari selama lebih dari satu minggu.`},
+ {pertanyaan:`Mekanisme interaksi Warfarin dengan NSAID (selain aspirin) terutama melalui...`,pilihan:[`Efek antiplatelet dan kerusakan mukosa lambung, bukan respons hipotrombinemik`,`Peningkatan metabolisme warfarin secara drastis`,`Pembentukan kompleks tidak larut air`,`Peningkatan produksi vitamin K`,`Penurunan absorbsi warfarin di usus`],jawaban:`Efek antiplatelet dan kerusakan mukosa lambung, bukan respons hipotrombinemik`,pembahasan:`NSAID meningkatkan risiko perdarahan terutama lewat efek antiplatelet dan kerusakan mukosa gaster, karena sebagian besar NSAID tidak menghasilkan respons hipotrombinemik seperti aspirin dosis tinggi.`},
+ {pertanyaan:`COX-2 inhibitor selektif seperti celecoxib dan rofecoxib dianggap berpotensi lebih aman dikombinasikan dengan warfarin dibanding NSAID tradisional karena...`,pilihan:[`Sifat antiplateletnya lebih rendah`,`Tidak memiliki efek analgesik sama sekali`,`Selalu meningkatkan metabolisme warfarin`,`Tidak diabsorbsi lewat saluran cerna`,`Menghambat total efek warfarin`],jawaban:`Sifat antiplateletnya lebih rendah`,pembahasan:`COX-2 inhibitor selektif memiliki sifat antiplatelet yang lebih rendah dibanding NSAID tradisional, sehingga secara teori risiko interaksi perdarahan dengan warfarin lebih kecil.`},
+ {pertanyaan:`Konsumsi grapefruit pada pasien warfarin sebaiknya dihindari karena...`,pilihan:[`Menurunkan kemampuan tubuh memetabolisme warfarin, meningkatkan risiko perdarahan`,`Meningkatkan metabolisme warfarin secara drastis`,`Tidak memiliki efek apapun terhadap warfarin`,`Menetralkan efek antikoagulan warfarin sepenuhnya`,`Menyebabkan warfarin tidak terabsorbsi sama sekali`],jawaban:`Menurunkan kemampuan tubuh memetabolisme warfarin, meningkatkan risiko perdarahan`,pembahasan:`Grapefruit menurunkan kemampuan tubuh memetabolisme warfarin (Coumadin), yang berpotensi meningkatkan efek antikoagulan dan risiko perdarahan.`},
+ {pertanyaan:`Penggunaan antibiotik jangka panjang (lebih dari 10 hari) dapat menyebabkan defisiensi vitamin K karena...`,pilihan:[`Membunuh bakteri usus yang bermanfaat penghasil vitamin K`,`Meningkatkan absorbsi vitamin K di usus`,`Menghambat sintesis vitamin K di hati saja`,`Meningkatkan ekskresi vitamin K lewat ginjal`,`Tidak ada hubungan dengan flora usus`],jawaban:`Membunuh bakteri usus yang bermanfaat penghasil vitamin K`,pembahasan:`Penggunaan antibiotik jangka panjang membunuh tidak hanya bakteri berbahaya tetapi juga bakteri usus bermanfaat yang mengaktivasi/menghasilkan vitamin K, sehingga dapat menimbulkan defisiensi vitamin K.`}
+];
+
+const pool_kasus_lain = [
+ {pertanyaan:`Kombinasi Captopril dengan Furosemide menyebabkan efek captopril...`,pilihan:[`Meningkat`,`Menurun`,`Tidak berubah`,`Menjadi toksik pada ginjal`,`Menjadi inaktif total`],jawaban:`Meningkat`,pembahasan:`Kombinasi Captopril + Furosemide menyebabkan peningkatan efek captopril (hipotensi lebih kuat).`},
+ {pertanyaan:`Interaksi antara Metronidazol dengan Cimetidin terjadi karena...`,pilihan:[`Cimetidin menghambat metabolisme metronidazol`,`Cimetidin menginduksi metabolisme metronidazol`,`Cimetidin meningkatkan ekskresi metronidazol`,`Cimetidin membentuk kompleks dengan metronidazol`,`Tidak ada interaksi bermakna`],jawaban:`Cimetidin menghambat metabolisme metronidazol`,pembahasan:`Cimetidin menghambat metabolisme metronidazol, sehingga dapat meningkatkan kadar dan efek metronidazol.`},
+ {pertanyaan:`Kombinasi Furosemid dengan Ibuprofen berisiko menyebabkan, KECUALI...`,pilihan:[`Peningkatan efek diuretik furosemid`,`Peningkatan risiko nefrotoksik`,`Antagonisme efek diuretika oleh ibuprofen`,`Retensi cairan akibat penghambatan prostaglandin oleh ibuprofen`,`Penurunan efektivitas terapi diuretik`],jawaban:`Peningkatan efek diuretik furosemid`,pembahasan:`Ibuprofen justru bersifat antagonis terhadap efek diuretik furosemid (bukan meningkatkan), sekaligus meningkatkan risiko nefrotoksik akibat kombinasi keduanya.`},
+ {pertanyaan:`Ciprofloksasin dapat menurunkan efek ferrous sulfate (obat besi) oral karena...`,pilihan:[`Mengurangi absorbsi obat besi dari lambung dan usus`,`Meningkatkan ekskresi besi lewat ginjal`,`Meningkatkan metabolisme besi di hati`,`Membentuk senyawa besi yang lebih mudah diserap`,`Tidak ada interaksi bermakna`],jawaban:`Mengurangi absorbsi obat besi dari lambung dan usus`,pembahasan:`Ciprofloksasin menurunkan efek ferrous sulfate oral dengan mengurangi absorbsinya dari lambung dan usus (mekanisme chelation) -- sebaiknya diberikan dengan jeda waktu.`},
+ {pertanyaan:`Absorbsi sulfas ferosus (obat besi) dapat ditingkatkan oleh zat-zat berikut, KECUALI...`,pilihan:[`Fosfat`,`Vitamin C`,`HCl`,`Asam suksinat`,`Kobal dan inosin`],jawaban:`Fosfat`,pembahasan:`Absorbsi sulfas ferosus ditingkatkan oleh kobal, inosin, etionin, vitamin C, HCl, suksinat, dan senyawa asam -- namun menurun bila terdapat fosfat atau antasida.`},
+ {pertanyaan:`Interval waktu yang disarankan antara pemberian ciprofloksasin dan produk besi (ferrous sulfate) adalah...`,pilihan:[`Minimal 2 jam sebelum atau 6 jam setelah produk besi`,`Boleh diberikan bersamaan tanpa jeda`,`Minimal 24 jam sebelum atau setelah`,`Tidak perlu diberi jeda sama sekali`,`Hanya boleh diberikan di malam hari`],jawaban:`Minimal 2 jam sebelum atau 6 jam setelah produk besi`,pembahasan:`Ciprofloksasin sebaiknya diberikan minimal 2 jam sebelum atau 6 jam setelah menggunakan produk besi untuk menghindari penurunan absorbsi akibat chelation.`}
+];
+
+const pool_prinsip = [
+ {pertanyaan:`Klasifikasi interaksi obat "Major" berarti...`,pilihan:[`Sangat signifikan secara klinis, kombinasi sebaiknya dihindari karena risiko melebihi manfaat`,`Minim signifikansi klinis, cukup dimonitor`,`Tidak ada dampak klinis sama sekali`,`Hanya berlaku untuk obat generik`,`Interaksi yang menguntungkan pasien`],jawaban:`Sangat signifikan secara klinis, kombinasi sebaiknya dihindari karena risiko melebihi manfaat`,pembahasan:`Klasifikasi Major berarti interaksi sangat signifikan secara klinis dan kombinasi obat tersebut sebaiknya dihindari karena risiko interaksi melebihi manfaatnya.`},
+ {pertanyaan:`Klasifikasi interaksi obat "Minor" berarti...`,pilihan:[`Minim signifikansi klinis; minimalkan risiko dan pertimbangkan alternatif atau monitoring`,`Kombinasi harus selalu dihindari mutlak`,`Interaksi yang paling berbahaya`,`Tidak perlu dipertimbangkan sama sekali oleh klinisi`,`Hanya terjadi pada obat generik`],jawaban:`Minim signifikansi klinis; minimalkan risiko dan pertimbangkan alternatif atau monitoring`,pembahasan:`Klasifikasi Minor berarti minim signifikansi klinis -- klinisi diminta meminimalkan risiko, menilai kebutuhan alternatif obat, dan/atau menetapkan rencana monitoring.`},
+ {pertanyaan:`Berikut merupakan prinsip utama pemakaian obat menurut materi kuliah, KECUALI...`,pilihan:[`Gunakan sebanyak mungkin jenis obat untuk hasil maksimal`,`Gunakan obat sesedikit mungkin`,`Minum obat dengan air putih`,`Hati-hati pada pasien usia lanjut`,`Hati-hati pada pasien disfungsi hati dan ginjal`],jawaban:`Gunakan sebanyak mungkin jenis obat untuk hasil maksimal`,pembahasan:`Prinsip utama justru menganjurkan menggunakan obat sesedikit mungkin (bukan sebanyak mungkin) untuk meminimalkan risiko interaksi.`},
+ {pertanyaan:`Kelompok pasien berikut memerlukan kehati-hatian ekstra dalam pemakaian obat, KECUALI...`,pilihan:[`Pasien dengan riwayat vaksinasi lengkap`,`Pasien usia lanjut`,`Pasien dengan batas keamanan obat sempit`,`Pasien penyakit parah`,`Pasien disfungsi hati dan ginjal`],jawaban:`Pasien dengan riwayat vaksinasi lengkap`,pembahasan:`Kelompok yang memerlukan kehati-hatian khusus adalah pasien dengan obat berbatas keamanan sempit, usia lanjut, penyakit parah, dan disfungsi hati/ginjal -- bukan status vaksinasi.`},
+ {pertanyaan:`Strategi pencegahan interaksi obat melalui "modifikasi waktu pemberian" umumnya menerapkan interval pemisahan sekitar...`,pilihan:[`2-4 jam`,`15 menit`,`24-48 jam`,`1 minggu`,`Tidak perlu ada interval`],jawaban:`2-4 jam`,pembahasan:`Strategi modifikasi waktu pemberian umumnya memisahkan waktu konsumsi 2-4 jam, misalnya antara antasida dan antibiotik.`}
+];
+
+const usedIdx = {};
+function pick_pool(poolName, poolArr){
+  if(!usedIdx[poolName]) usedIdx[poolName] = [];
+  if(usedIdx[poolName].length >= poolArr.length) usedIdx[poolName] = [];
+  let idx;
+  do { idx = 0 | Math.random()*poolArr.length; } while(usedIdx[poolName].includes(idx) && usedIdx[poolName].length < poolArr.length);
+  usedIdx[poolName].push(idx);
+  return poolArr[idx];
+}
+
+const POOL_MAP = {
+  pool_pendahuluan, pool_jenis_hasil, pool_faktor, pool_farmaseutik,
+  pool_absorbsi, pool_distribusi, pool_metabolisme_ekskresi, pool_farmakodinamik,
+  pool_makanan, pool_kasus_warfarin, pool_kasus_lain, pool_prinsip
+};
+const POOL_LABELS = {
+  pool_pendahuluan:'Pendahuluan & Epidemiologi', pool_jenis_hasil:'Jenis & Hasil Interaksi',
+  pool_faktor:'Faktor Lain', pool_farmaseutik:'Interaksi Farmaseutik',
+  pool_absorbsi:'FK — Absorbsi', pool_distribusi:'FK — Distribusi',
+  pool_metabolisme_ekskresi:'FK — Metabolisme & Ekskresi', pool_farmakodinamik:'Farmakodinamik',
+  pool_makanan:'Obat—Makanan', pool_kasus_warfarin:'Studi Kasus — Warfarin',
+  pool_kasus_lain:'Studi Kasus — Lainnya', pool_prinsip:'Prinsip & Klasifikasi'
+};
+const POOL_COLORS = {
+  pool_pendahuluan:['var(--gold)','var(--goldbg)'], pool_jenis_hasil:['var(--blue)','var(--bluebg)'],
+  pool_faktor:['var(--green)','var(--greenbg)'], pool_farmaseutik:['var(--red)','var(--redbg)'],
+  pool_absorbsi:['var(--teal)','var(--tealbg)'], pool_distribusi:['var(--purp)','var(--purpbg)'],
+  pool_metabolisme_ekskresi:['var(--teal)','var(--tealbg)'], pool_farmakodinamik:['var(--purp)','var(--purpbg)'],
+  pool_makanan:['var(--green)','var(--greenbg)'], pool_kasus_warfarin:['var(--red)','var(--redbg)'],
+  pool_kasus_lain:['var(--gold)','var(--goldbg)'], pool_prinsip:['var(--blue)','var(--bluebg)']
+};
+
+function makeQ(type){
+  const poolArr = POOL_MAP[type];
+  if(!poolArr) return {type:'dummy', typeName:'End of Pool', tpColor:'gray', tpBg:'lightgray', q:'No more questions', opts:['A'], ans:'A', exp:''};
+  const item = pick_pool(type, poolArr);
+  const [tpColor, tpBg] = POOL_COLORS[type] || ['var(--gold)','var(--goldbg)'];
+  let optsArr = [...item.pilihan];
+  return {
+    type, typeName: POOL_LABELS[type] || type,
+    tpColor, tpBg,
+    q: item.pertanyaan,
+    opts: shuf(optsArr),
+    ans: item.jawaban,
+    exp: item.pembahasan
+  };
+}
+
+let typeQueue=[], activeTypes=[], sessIdx=0, sessScore=0, sessLog=[], currentQ=null, typeStats={};
+const TOTAL_Q = 20;
+
+function nextType(){
+  if(!typeQueue.length){
+    const t=[...activeTypes];
+    for(let i=t.length-1;i>0;i--){const j=0|Math.random()*(i+1);[t[i],t[j]]=[t[j],t[i]];}
+    typeQueue=[...t];
+  }
+  return typeQueue.shift();
+}
+
+function startSession(){
+  activeTypes = Array.from(document.querySelectorAll('.cfg-btn.sel')).map(b=>b.dataset.type);
+  if(activeTypes.length===0){ alert('Pilih minimal satu topik.'); return; }
+  sessIdx=0; sessScore=0; sessLog=[]; typeQueue=[]; typeStats={};
+  activeTypes.forEach(t=>typeStats[t]={correct:0,total:0});
+  document.getElementById('qconfig').style.display='none';
+  document.getElementById('qresults').style.display='none';
+  document.getElementById('qactive').style.display='block';
+  renderQ();
+}
+
+function renderQ(){
+  const q=makeQ(nextType()); currentQ=q;
+  document.getElementById('qnum').textContent=sessIdx+1;
+  document.getElementById('qscore').textContent=sessScore;
+  const pill=document.getElementById('qpill');
+  pill.textContent=q.typeName; pill.style.background=q.tpBg; pill.style.color=q.tpColor; pill.style.border=`1px solid ${q.tpColor}44`;
+  document.getElementById('qtext').innerHTML=q.q;
+  const og=document.getElementById('opts'); og.innerHTML='';
+  q.opts.forEach((opt,i)=>{
+    const btn=document.createElement('button'); btn.className='opt';
+    btn.innerHTML=`<span class="opt-key">${KEYS[i]}</span><span>${opt}</span>`;
+    btn.onclick=()=>selectAns(opt,q,btn); og.appendChild(btn);
+  });
+  const ebox=document.getElementById('expbox'); ebox.classList.remove('show'); ebox.style.display='none';
+  document.getElementById('nextbtn').style.display='none';
+}
+
+function selectAns(chosen,q,clickedBtn){
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  const correct = stripHtml(chosen)===stripHtml(q.ans);
+  if(correct) sessScore++;
+  typeStats[q.type].total++;
+  if(correct) typeStats[q.type].correct++;
+  document.querySelectorAll('.opt').forEach(b=>{
+    const txt = b.querySelector('span:last-child').textContent;
+    if(stripHtml(txt)===stripHtml(q.ans)) b.classList.add('correct');
+    else if(b===clickedBtn) b.classList.add('wrong');
+  });
+  const ebox=document.getElementById('expbox');
+  ebox.innerHTML = `<strong>${correct ? '✓ Benar!' : '✗ Kurang tepat.'}</strong><br>${q.exp}`;
+  ebox.style.display='block'; ebox.classList.add('show');
+  document.getElementById('qscore').textContent=sessScore;
+  sessLog.push({q:stripHtml(q.q).slice(0,80), ans:stripHtml(q.ans), correct});
+  document.getElementById('nextbtn').style.display='block';
+}
+
+function nextQ(){
+  sessIdx++;
+  if(sessIdx>=TOTAL_Q){ endSession(); return; }
+  renderQ();
+}
+
+function endSession(){
+  document.getElementById('qactive').style.display='none';
+  document.getElementById('qresults').style.display='block';
+  const pct = sessLog.length ? Math.round(sessScore/sessLog.length*100) : 0;
+  document.getElementById('res-pct').textContent = pct+'%';
+  document.getElementById('res-sub').textContent = `${sessScore} dari ${sessLog.length} soal benar`;
+  const byType = document.getElementById('res-bytype'); byType.innerHTML='';
+  Object.keys(typeStats).forEach(t=>{
+    if(typeStats[t].total===0) return;
+    const tr=document.createElement('tr');
+    tr.innerHTML = `<td>${POOL_LABELS[t]||t}</td><td>${typeStats[t].total}</td><td>${typeStats[t].correct}</td>`;
+    byType.appendChild(tr);
+  });
+  const detail = document.getElementById('res-detail'); detail.innerHTML='';
+  sessLog.forEach((l,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML = `<td>${i+1}</td><td>${l.q}...</td><td>${l.ans}</td><td>${l.correct?'✓':'✗'}</td>`;
+    detail.appendChild(tr);
+  });
+}
+
+function restartQuiz(){
+  document.getElementById('qresults').style.display='none';
+  document.getElementById('qconfig').style.display='block';
+}
+</script>
+</body>
+</html>
