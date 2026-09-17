@@ -1,27 +1,40 @@
-// Couple Contribution Package (Farid & Khesy)
-const COUPLE_EMAILS = new Set([
-  'farid.hmzh00@gmail.com',
-  'khesyian@gmail.com'
-]);
+// Couple Contribution Package — DB-backed configuration
+// Reads couple config from Supabase `couple_config` table instead of in-memory Sets
 
-const COUPLE_USER_IDS = new Set([
-  '20326419-e37a-4e46-a473-cb013a21acfe', // Farid (farid.hmzh00@gmail.com)
-  'a197ddbd-7f7f-44ad-8c77-4fd868607241'  // Khesy (khesyian@gmail.com)
-]);
+async function loadCoupleConfig(supabaseUrl, sbKey) {
+  try {
+    const res = await fetch(`${supabaseUrl}/rest/v1/couple_config?id=eq.1&select=*`, {
+      headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}`, 'Cache-Control': 'no-cache' },
+      cache: 'no-store'
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!Array.isArray(data) || data.length === 0) return null;
+    return data[0]; // { partner1_email, partner1_user_id, partner2_email, partner2_user_id, ... }
+  } catch (e) {
+    console.warn('Failed to load couple config:', e.message);
+    return null;
+  }
+}
 
-function isCoupleMember(user) {
-  if (!user) return false;
-  if (user.id && COUPLE_USER_IDS.has(user.id)) return true;
+function isCoupleMember(user, coupleConfig) {
+  if (!user || !coupleConfig) return false;
   const email = (user.email || '').toLowerCase();
-  if (COUPLE_EMAILS.has(email)) return true;
-  const meta = user.user_metadata || {};
-  const username = (meta.username || '').toLowerCase();
-  const fullName = (meta.full_name || meta.name || '').toLowerCase();
+  const p1Email = (coupleConfig.partner1_email || '').toLowerCase();
+  const p2Email = (coupleConfig.partner2_email || '').toLowerCase();
+  // Exact match by user_id or email only — no fuzzy matching
+  if (user.id && (user.id === coupleConfig.partner1_user_id || user.id === coupleConfig.partner2_user_id)) return true;
+  if (email && (email === p1Email || email === p2Email)) return true;
+  return false;
+}
 
-  const isFarid = (email.includes('farid') || username.includes('farid') || fullName.includes('farid')) && !email.includes('muqorroben');
-  const isKhesy = email.includes('khesy') || email.includes('keisya') || email.includes('kheisya') || username.includes('khesy') || username.includes('keisya') || fullName.includes('khesy') || fullName.includes('keisya');
-
-  return isFarid || isKhesy;
+function getCoupleLabel(coupleConfig, allUsers) {
+  if (!coupleConfig) return null;
+  const p1 = allUsers ? allUsers.find(u => (u.email || '').toLowerCase() === (coupleConfig.partner1_email || '').toLowerCase()) : null;
+  const p2 = allUsers ? allUsers.find(u => (u.email || '').toLowerCase() === (coupleConfig.partner2_email || '').toLowerCase()) : null;
+  const name1 = p1?.user_metadata?.username || coupleConfig.partner1_email.split('@')[0];
+  const name2 = p2?.user_metadata?.username || coupleConfig.partner2_email.split('@')[0];
+  return `Paket Contribution Couple: ${name1} & ${name2}`;
 }
 
 async function fetchAllAdminUsers(supabaseUrl, sbKey) {
@@ -74,12 +87,13 @@ export default async function handler(req, res) {
 
   try {
     if (action === 'get_my_contributions') {
-      const isCouple = isCoupleMember(userData);
+      const coupleConfig = await loadCoupleConfig(supabaseUrl, sbKey);
+      const isCouple = isCoupleMember(userData, coupleConfig);
       let targetUserIds = [userId];
 
       if (isCouple) {
         const allUsers = await fetchAllAdminUsers(supabaseUrl, sbKey);
-        const coupleUsers = allUsers.filter(isCoupleMember);
+        const coupleUsers = allUsers.filter(u => isCoupleMember(u, coupleConfig));
         if (coupleUsers.length > 0) {
           targetUserIds = Array.from(new Set(coupleUsers.map(u => u.id)));
         }
@@ -95,10 +109,17 @@ export default async function handler(req, res) {
       });
       const data = await resData.json();
       if (!Array.isArray(data)) console.error('get_my_contributions error:', data);
+
+      let coupleLabel = null;
+      if (isCouple) {
+        const allUsers = await fetchAllAdminUsers(supabaseUrl, sbKey);
+        coupleLabel = getCoupleLabel(coupleConfig, allUsers);
+      }
+
       return res.status(200).json({
         success: true,
         is_couple: isCouple,
-        couple_package: isCouple ? 'Paket Contribution Couple: Farid & Khesy' : null,
+        couple_package: coupleLabel,
         contributions: Array.isArray(data) ? data : []
       });
     }
@@ -113,9 +134,10 @@ export default async function handler(req, res) {
       const validData = Array.isArray(data) ? data : [];
       
       const allUsers = await fetchAllAdminUsers(supabaseUrl, sbKey);
+      const coupleConfig = await loadCoupleConfig(supabaseUrl, sbKey);
       
-      // Calculate pooled points for couple package (Farid & Khesy)
-      const coupleUserIds = new Set(allUsers.filter(isCoupleMember).map(u => u.id));
+      // Calculate pooled points for couple package
+      const coupleUserIds = new Set(allUsers.filter(u => isCoupleMember(u, coupleConfig)).map(u => u.id));
       let coupleTotalPoints = 0;
       validData.forEach(c => {
         if (coupleUserIds.has(c.user_id)) {
@@ -128,7 +150,7 @@ export default async function handler(req, res) {
         const u = allUsers.find(au => au.id === c.user_id);
         const email = u ? u.email : 'Unknown';
         const username = u?.user_metadata?.username || (u ? u.email.split('@')[0] : 'Unknown');
-        const userIsCouple = isCoupleMember(u);
+        const userIsCouple = isCoupleMember(u, coupleConfig);
         if (!userIsCouple) {
           if (!scores[email]) {
             scores[email] = {
@@ -151,15 +173,17 @@ export default async function handler(req, res) {
         }));
 
       // Add 1 single combined couple entry only if coupleTotalPoints > 0
-      if (coupleTotalPoints > 0) {
-        const coupleUsers = allUsers.filter(isCoupleMember);
+      if (coupleTotalPoints > 0 && coupleConfig) {
+        const coupleUsers = allUsers.filter(u => isCoupleMember(u, coupleConfig));
         const coupleNames = coupleUsers.map(u => u?.user_metadata?.username || u.email.split('@')[0]);
-        const coupleUsername = coupleNames.length > 0 ? coupleNames.join(' & ') : 'farid.hmzh00 & khesyian';
+        const coupleUsername = coupleNames.length > 0 ? coupleNames.join(' & ') : `${coupleConfig.partner1_email.split('@')[0]} & ${coupleConfig.partner2_email.split('@')[0]}`;
+        const coupleLabel = getCoupleLabel(coupleConfig, allUsers);
         list.push({
           email: coupleUsers.map(u => u.email).join(', '),
           username: coupleUsername,
           points: coupleTotalPoints,
-          is_couple: true
+          is_couple: true,
+          couple_label: coupleLabel
         });
       }
        
@@ -182,9 +206,10 @@ export default async function handler(req, res) {
       }
       
       // Check couple package
-      if (isCoupleMember(userData)) {
+      const coupleConfig = await loadCoupleConfig(supabaseUrl, sbKey);
+      if (isCoupleMember(userData, coupleConfig)) {
         const allUsers = await fetchAllAdminUsers(supabaseUrl, sbKey);
-        const coupleUserIds = Array.from(new Set(allUsers.filter(isCoupleMember).map(u => u.id)));
+        const coupleUserIds = Array.from(new Set(allUsers.filter(u => isCoupleMember(u, coupleConfig)).map(u => u.id)));
         if (coupleUserIds.length > 0) {
           const filterParam = coupleUserIds.length > 1
             ? `user_id=in.(${coupleUserIds.join(',')})`
@@ -216,17 +241,30 @@ export default async function handler(req, res) {
     }
 
     if (action === 'get_couple_package') {
+      const coupleConfig = await loadCoupleConfig(supabaseUrl, sbKey);
+      if (!coupleConfig) {
+        return res.status(200).json({ success: true, enabled: false, couple: [] });
+      }
       const allUsers = await fetchAllAdminUsers(supabaseUrl, sbKey);
-      const coupleUsers = allUsers.filter(isCoupleMember);
+      const p1 = allUsers.find(u => (u.email || '').toLowerCase() === coupleConfig.partner1_email.toLowerCase());
+      const p2 = allUsers.find(u => (u.email || '').toLowerCase() === coupleConfig.partner2_email.toLowerCase());
       return res.status(200).json({
         success: true,
-        enabled: coupleUsers.length > 0,
-        couple: coupleUsers.map(u => ({
-          id: u.id,
-          email: u.email,
-          username: u.user_metadata?.username || u.email.split('@')[0],
-          full_name: u.user_metadata?.full_name || u.user_metadata?.name || ''
-        }))
+        enabled: true,
+        couple: [
+          {
+            id: p1?.id || coupleConfig.partner1_user_id,
+            email: coupleConfig.partner1_email,
+            username: p1?.user_metadata?.username || coupleConfig.partner1_email.split('@')[0],
+            full_name: p1?.user_metadata?.full_name || p1?.user_metadata?.name || ''
+          },
+          {
+            id: p2?.id || coupleConfig.partner2_user_id,
+            email: coupleConfig.partner2_email,
+            username: p2?.user_metadata?.username || coupleConfig.partner2_email.split('@')[0],
+            full_name: p2?.user_metadata?.full_name || p2?.user_metadata?.name || ''
+          }
+        ]
       });
     }
 
@@ -246,8 +284,11 @@ export default async function handler(req, res) {
 
       const { partner1_email, partner2_email, unlink } = body;
       if (unlink) {
-        COUPLE_EMAILS.clear();
-        COUPLE_USER_IDS.clear();
+        // Delete couple config from DB
+        await fetch(`${supabaseUrl}/rest/v1/couple_config?id=eq.1`, {
+          method: 'DELETE',
+          headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}` }
+        });
         return res.status(200).json({ success: true, message: 'Couple package unlinked.' });
       }
 
@@ -263,12 +304,30 @@ export default async function handler(req, res) {
         return res.status(404).json({ error: 'One or both partners not found in user accounts.' });
       }
 
-      COUPLE_EMAILS.clear();
-      COUPLE_USER_IDS.clear();
-      COUPLE_EMAILS.add(p1.email.toLowerCase());
-      COUPLE_EMAILS.add(p2.email.toLowerCase());
-      COUPLE_USER_IDS.add(p1.id);
-      COUPLE_USER_IDS.add(p2.id);
+      // Upsert couple config into DB (singleton row id=1)
+      const upsertRes = await fetch(`${supabaseUrl}/rest/v1/couple_config`, {
+        method: 'POST',
+        headers: {
+          'apikey': sbKey,
+          'Authorization': `Bearer ${sbKey}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'resolution=merge-duplicates'
+        },
+        body: JSON.stringify({
+          id: 1,
+          partner1_email: p1.email.toLowerCase(),
+          partner1_user_id: p1.id,
+          partner2_email: p2.email.toLowerCase(),
+          partner2_user_id: p2.id,
+          updated_at: new Date().toISOString()
+        })
+      });
+
+      if (!upsertRes.ok) {
+        const errText = await upsertRes.text();
+        console.error('Failed to upsert couple_config:', errText);
+        return res.status(500).json({ error: 'Failed to save couple config to database.' });
+      }
 
       return res.status(200).json({
         success: true,

@@ -1,8 +1,8 @@
 let supabaseClient = null;
 Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient; }, set(v) { supabaseClient = v; } });
 
-    // GitHub raw content base URL
-    const GITHUB_RAW_BASE = 'https://raw.githubusercontent.com/alchemist4real/MR-CAPSULES/main';
+    // GitHub raw content base URL (points to dedicated content repo MR-CAPSULES-CONTENT)
+    const GITHUB_RAW_BASE = window.CONTENT_RAW_BASE || 'https://raw.githubusercontent.com/alchemist4real/MR-CAPSULES-CONTENT/main';
 
     // UTF-8 safe base64 encoding
     function utf8ToBase64(str) {
@@ -11,6 +11,39 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
       for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
       return btoa(binary);
     }
+
+    // WebKit/Safari compatible clipboard writer with execCommand fallback
+    async function safeCopyToClipboard(text) {
+      if (!text) return false;
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(text);
+          return true;
+        }
+      } catch (err) {
+        console.warn("navigator.clipboard.writeText failed, trying execCommand fallback:", err);
+      }
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        ta.style.top = '0';
+        ta.style.opacity = '0';
+        ta.setAttribute('readonly', '');
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        ta.setSelectionRange(0, text.length);
+        const success = document.execCommand('copy');
+        document.body.removeChild(ta);
+        return success;
+      } catch (e) {
+        console.error("execCommand fallback failed:", e);
+        return false;
+      }
+    }
+    window.safeCopyToClipboard = safeCopyToClipboard;
 
     let sessionToken = null;
     let currentPath = '';
@@ -457,6 +490,53 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
       });
     };
 
+    // Inline Login Form Helper for iPad/Private Browsing/Direct link access
+    function showAdminLoginForm() {
+      authOverlay.classList.remove('hidden');
+      const spinner = document.getElementById('authSpinner');
+      if (spinner) spinner.style.display = 'none';
+      const authMsg = document.getElementById('authMessage');
+      if (authMsg) authMsg.style.display = 'none';
+      const loginForm = document.getElementById('adminLoginForm');
+      if (loginForm) {
+        loginForm.style.display = 'flex';
+        const emailInput = document.getElementById('adminLoginEmail');
+        const passInput = document.getElementById('adminLoginPassword');
+        const submitBtn = document.getElementById('btnAdminLoginSubmit');
+        const errEl = document.getElementById('adminLoginError');
+
+        const doLogin = async () => {
+          const email = emailInput?.value.trim();
+          const password = passInput?.value;
+          if (!email || !password) {
+            if (errEl) { errEl.textContent = 'Please enter email and password'; errEl.style.display = 'block'; }
+            return;
+          }
+          if (errEl) errEl.style.display = 'none';
+          if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Signing in...'; }
+          try {
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+            if (data && data.session) {
+              loginForm.style.display = 'none';
+              if (spinner) spinner.style.display = '';
+              if (authMsg) { authMsg.style.display = ''; authMsg.textContent = 'Verifying permissions...'; }
+              await verifyAdmin(data.session);
+            }
+          } catch (err) {
+            if (errEl) { errEl.textContent = err.message || 'Login failed'; errEl.style.display = 'block'; }
+          } finally {
+            if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Sign In'; }
+          }
+        };
+
+        if (submitBtn) submitBtn.onclick = doLogin;
+        if (passInput) passInput.onkeydown = (e) => { if (e.key === 'Enter') doLogin(); };
+        if (emailInput) emailInput.onkeydown = (e) => { if (e.key === 'Enter') doLogin(); };
+        setTimeout(() => emailInput?.focus(), 100);
+      }
+    }
+
     // Init Auth
     (async function initSupabaseAndAuth() {
         try {
@@ -468,15 +548,18 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
               if (session) {
                 verifyAdmin(session);
               } else {
-                redirectToHome("Not logged in. Redirecting...");
+                showAdminLoginForm();
               }
             }).catch(err => {
-              redirectToHome("Session error: " + err.message);
+              console.warn("Session error:", err);
+              showAdminLoginForm();
             });
 
             supabaseClient.auth.onAuthStateChange((event, session) => {
               if (event === 'SIGNED_OUT') {
-                redirectToHome("Signed out. Redirecting...");
+                showAdminLoginForm();
+              } else if (event === 'SIGNED_IN' && session) {
+                verifyAdmin(session);
               }
             });
         } catch (e) {
@@ -549,7 +632,7 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
       
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000);
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
         
         const res = await fetch('/api/admin', {
           method: 'POST',
@@ -803,10 +886,32 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
           
           loadTree();
         } else {
+          // If token might be stale (401/403), try refreshing session once
+          if (!verifyAdmin._retried && (res.status === 401 || res.status === 403)) {
+            verifyAdmin._retried = true;
+            try {
+              const { data: refreshData } = await supabaseClient.auth.refreshSession();
+              if (refreshData?.session) {
+                return verifyAdmin(refreshData.session);
+              }
+            } catch(re) {}
+          }
+          verifyAdmin._retried = false;
           redirectToHome(data.error || "Forbidden. You are not an admin.");
         }
       } catch(e) {
-        redirectToHome(e.name === 'AbortError' ? "Verification timed out (15s)." : "Verification failed: " + e.message);
+        // On timeout or network error, retry once with refreshed token
+        if (!verifyAdmin._retried) {
+          verifyAdmin._retried = true;
+          try {
+            const { data: refreshData } = await supabaseClient.auth.refreshSession();
+            if (refreshData?.session) {
+              return verifyAdmin(refreshData.session);
+            }
+          } catch(re) {}
+        }
+        verifyAdmin._retried = false;
+        redirectToHome(e.name === 'AbortError' ? "Verification timed out. Check your connection." : "Verification failed: " + e.message);
       }
     }
 
@@ -939,7 +1044,7 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
           <div class="file-icon">${icon}</div>
           <div class="file-name" title="${item.name}">${item.name}</div>
           <div class="file-actions">
-            ${item.type !== 'folder' ? `<button class="btn btn-actions" style="font-family:var(--font-mono); font-size:16px; padding:4px 8px; background:transparent; border:none; cursor:pointer;" data-json='${encodeURIComponent(JSON.stringify(item))}'>⋮</button>` : ''}
+            ${item.type !== 'folder' ? `<button class="btn btn-actions" style="font-family:var(--font-mono); font-size:18px; min-width:36px; min-height:36px; display:inline-flex; align-items:center; justify-content:center; background:transparent; border:none; cursor:pointer; border-radius:4px;" data-json='${encodeURIComponent(JSON.stringify(item))}'>⋮</button>` : ''}
           </div>
         `;
 
@@ -1243,7 +1348,8 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
           const text = await fetchFileSecureText(item.path);
           txt.textContent = text;
         } catch(e) {
-          txt.textContent = "Failed to load content preview. You can open it in GitHub directly: " + `https://github.com/alchemist4real/MR-CAPSULES/blob/main/${item.path}`;
+          const contentRepo = window.CONTENT_REPO_URL || 'https://github.com/alchemist4real/MR-CAPSULES-CONTENT';
+          txt.textContent = "Failed to load content preview. You can open it in GitHub directly: " + `${contentRepo}/blob/main/${item.path}`;
         }
       }
     }
@@ -1507,7 +1613,7 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
           if (!u.last_sign_in_at) return;
           var meta = u.user_metadata || {};
           var devArr = Array.isArray(meta.devices) ? meta.devices : [];
-          var devStr = devArr.length > 0 ? devArr.map(function(d){ return d.id.substr(0,10); }).join(', ') : (meta.deviceId || 'Unknown');
+          var devStr = devArr.length > 0 ? devArr.map(function(d){ return d.name || d.id.substr(0,10); }).join(', ') : (meta.deviceId || 'Unknown');
           
           var logEntry = {
              id: 'login_' + u.id + '_' + u.last_sign_in_at,
@@ -1768,11 +1874,39 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
 
         let deviceRowsHtml = '';
         if (devices.length > 0) {
+          // Sort devices: most recently seen first
+          devices.sort((a, b) => {
+            const ta = a.last_seen ? new Date(a.last_seen).getTime() : 0;
+            const tb = b.last_seen ? new Date(b.last_seen).getTime() : 0;
+            return tb - ta;
+          });
           devices.forEach(dev => {
             const isDevBanned = bannedDevs.includes(dev.id);
+            const devName = dev.name || 'Unknown';
+            // Calculate relative last-seen time
+            let lastSeenStr = '';
+            let isStale = false;
+            if (dev.last_seen) {
+              const diff = Date.now() - new Date(dev.last_seen).getTime();
+              const mins = Math.floor(diff / 60000);
+              const hrs = Math.floor(diff / 3600000);
+              const days = Math.floor(diff / 86400000);
+              if (mins < 2) lastSeenStr = 'just now';
+              else if (mins < 60) lastSeenStr = mins + 'm ago';
+              else if (hrs < 24) lastSeenStr = hrs + 'h ago';
+              else lastSeenStr = days + 'd ago';
+              isStale = days > 30;
+            } else {
+              lastSeenStr = 'never';
+              isStale = true;
+            }
+            const staleStyle = isStale ? 'opacity:0.45; text-decoration:line-through;' : '';
             deviceRowsHtml += `
-              <div class="user-device-item">
-                <span class="user-device-id" title="${sanitize(dev.id)}">${sanitize(dev.id.substring(0, 16))}...</span>
+              <div class="user-device-item" style="${staleStyle}">
+                <div style="display:flex; flex-direction:column; gap:2px; min-width:0; flex:1;">
+                  <span class="user-device-id" title="${sanitize(dev.id)}" style="font-weight:500;">${sanitize(devName)}</span>
+                  <span style="font-size:11px; color:var(--text-muted);">${sanitize(dev.id.substring(0, 12))}… · ${lastSeenStr}</span>
+                </div>
                 <div class="user-device-actions">
                   <button class="btn-dev-action ${isDevBanned ? '' : 'danger'} btn-block-dev" data-dev="${sanitize(dev.id)}" data-banned="${isDevBanned}">
                     ${isDevBanned ? 'Unban' : 'Block'}
@@ -2035,43 +2169,22 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
     }, 30000);
 
     /* ══ PERSONA ENGINE (Synced from Main Site) ══ */
-    function walkAndReplaceMR(node, isMrs) {
-      if (!node) return;
-      if (node.nodeName === 'SCRIPT' || node.nodeName === 'STYLE' || node.nodeName === 'IFRAME' || node.nodeName === 'CODE' || node.nodeName === 'PRE' || node.nodeName === 'INPUT' || node.nodeName === 'TEXTAREA' || (node.classList && (node.classList.contains('CodeMirror') || node.classList.contains('cm-editor')))) return;
-      if (node.nodeType === 3) {
-        if (node.originalValue === undefined) node.originalValue = node.nodeValue;
-        if (isMrs) {
-          if (/mr/i.test(node.originalValue)) {
-            node.nodeValue = node.originalValue
-              .replace(/\bMr\.\s*Capsules\b/g, 'Mrs. Capsules')
-              .replace(/\bMR\.\s*CAPSULES\b/g, 'MRS. CAPSULES')
-              .replace(/\bMR\s+CAPSULES\b/g, 'MRS CAPSULES')
-              .replace(/\bMr\.\b/g, 'Mrs.')
-              .replace(/\bMR\b/g, 'MRS')
-              .replace(/\bMr\b/g, 'Mrs')
-              .replace(/\bmr\b/g, 'mrs');
-          }
-        } else {
-          if (node.originalValue !== undefined) node.nodeValue = node.originalValue;
-        }
-      } else if (node.nodeType === 1) {
-        node.childNodes.forEach(child => walkAndReplaceMR(child, isMrs));
-      }
-    }
-
     function applyAdminPersona(p) {
       const isMrs = (p === 'mrs');
-      if (document.originalTitle === undefined) document.originalTitle = document.title;
-      if (isMrs) {
-        document.title = document.originalTitle
-          .replace(/\bMr\.\s*Capsules\b/g, 'Mrs. Capsules')
-          .replace(/\bMr\./g, 'Mrs.')
-          .replace(/\bMR\b/g, 'MRS')
-          .replace(/\bMr\b/g, 'Mrs');
-      } else {
-        document.title = document.originalTitle;
-      }
-      walkAndReplaceMR(document.body, isMrs);
+      const mrText = isMrs ? 'Mrs. Capsules' : 'Mr. Capsules';
+      document.title = isMrs ? 'Mrs. Capsules · Admin' : 'Mr. Capsules · Admin';
+      document.querySelectorAll('.dock-brand b, .nav-brand span, .brand span, .sc-brand span').forEach(el => {
+        el.textContent = mrText;
+      });
+      document.querySelectorAll('.credit-footer').forEach(el => {
+        if (isMrs) {
+          el.innerHTML = el.innerHTML.replace(/\bMr\.\s*Capsules\b/g, 'Mrs. Capsules');
+        } else {
+          el.innerHTML = el.innerHTML.replace(/\bMrs\.\s*Capsules\b/g, 'Mr. Capsules');
+        }
+      });
+      document.body.classList.toggle('persona-mrs', isMrs);
+      document.body.classList.toggle('persona-mr', !isMrs);
     }
 
     const savedAdminPersona = localStorage.getItem('mr_persona') || 'mr';
@@ -2279,6 +2392,8 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
 // ═══════════════════════════════════════════════════════════════
 
 (function initApiKeysModule() {
+  window._lastCreatedKey = '';
+
   function bindKeyEvents() {
     var btnRefresh = document.getElementById('btnRefreshApiKeys');
     if (btnRefresh) btnRefresh.onclick = loadApiKeys;
@@ -2286,19 +2401,135 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
     var btnGenerate = document.getElementById('btnGenerateApiKey');
     if (btnGenerate) btnGenerate.onclick = generateApiKey;
 
-    var btnCopy = document.getElementById('btnCopyApiKey');
-    if (btnCopy) btnCopy.onclick = copyRevealedKey;
+    var newKeyNameInput = document.getElementById('newKeyName');
+    if (newKeyNameInput) {
+      newKeyNameInput.onkeydown = function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          generateApiKey();
+        }
+      };
+    }
+
+    // Modal Copy & Close events
+    var btnCopyCreatedKey = document.getElementById('btnCopyCreatedKey');
+    if (btnCopyCreatedKey) btnCopyCreatedKey.onclick = copyCreatedKey;
+
+    var btnCloseModalDone = document.getElementById('btnCloseApiKeyModalDone');
+    if (btnCloseModalDone) {
+      btnCloseModalDone.onclick = function() {
+        var modal = document.getElementById('apiKeyCreatedModal');
+        if (window.ModalManager) ModalManager.close(modal);
+        else if (modal) modal.classList.remove('active');
+        loadApiKeys();
+      };
+    }
+
+    var btnModalCopyAntigravityConfig = document.getElementById('btnModalCopyAntigravityConfig');
+    if (btnModalCopyAntigravityConfig) {
+      btnModalCopyAntigravityConfig.onclick = async function() {
+        var k = window._lastCreatedKey || (document.getElementById('createdApiKeyInput')?.value) || 'mrc_your_api_key_here';
+        var configObj = {
+          mcpServers: {
+            "mr-capsules": {
+              url: window.location.origin + "/api/mcp",
+              headers: {
+                "x-api-key": k
+              }
+            }
+          }
+        };
+        var ok = await safeCopyToClipboard(JSON.stringify(configObj, null, 2));
+        var orig = btnModalCopyAntigravityConfig.innerText;
+        btnModalCopyAntigravityConfig.innerText = ok ? '✓ Config Tersalin!' : 'Gagal Salin';
+        setTimeout(function() { btnModalCopyAntigravityConfig.innerText = orig; }, 1800);
+      };
+    }
+
+    var btnModalCopyClaudeConfig = document.getElementById('btnModalCopyClaudeConfig');
+    if (btnModalCopyClaudeConfig) {
+      btnModalCopyClaudeConfig.onclick = async function() {
+        var k = window._lastCreatedKey || (document.getElementById('createdApiKeyInput')?.value) || 'mrc_your_api_key_here';
+        var claudeConfig = {
+          mcpServers: {
+            "mr-capsules": {
+              command: "npx",
+              args: ["-y", "mcp-remote", window.location.origin + "/api/mcp", "--header", "x-api-key: " + k]
+            }
+          }
+        };
+        var ok = await safeCopyToClipboard(JSON.stringify(claudeConfig, null, 2));
+        var orig = btnModalCopyClaudeConfig.innerText;
+        btnModalCopyClaudeConfig.innerText = ok ? '✓ Config Claude Tersalin!' : 'Gagal Salin';
+        setTimeout(function() { btnModalCopyClaudeConfig.innerText = orig; }, 1800);
+      };
+    }
+
+    var btnModalCopyBearerHeader = document.getElementById('btnModalCopyBearerHeader');
+    if (btnModalCopyBearerHeader) {
+      btnModalCopyBearerHeader.onclick = async function() {
+        var k = window._lastCreatedKey || (document.getElementById('createdApiKeyInput')?.value) || 'mrc_your_api_key_here';
+        var headerStr = 'Authorization: Bearer ' + k;
+        var ok = await safeCopyToClipboard(headerStr);
+        var orig = btnModalCopyBearerHeader.innerText;
+        btnModalCopyBearerHeader.innerText = ok ? '✓ Header Tersalin!' : 'Gagal Salin';
+        setTimeout(function() { btnModalCopyBearerHeader.innerText = orig; }, 1800);
+      };
+    }
+
+    // Connector Section Copy Handlers
+    var btnCopyAntigravityConfig = document.getElementById('btnCopyAntigravityConfig');
+    if (btnCopyAntigravityConfig) {
+      btnCopyAntigravityConfig.onclick = async function() {
+        var apiKeyVal = window._lastCreatedKey || 'mrc_your_api_key_here';
+        var configObj = {
+          mcpServers: {
+            "mr-capsules": {
+              url: window.location.origin + "/api/mcp",
+              headers: {
+                "x-api-key": apiKeyVal
+              }
+            }
+          }
+        };
+        var ok = await safeCopyToClipboard(JSON.stringify(configObj, null, 2));
+        var orig = btnCopyAntigravityConfig.innerText;
+        btnCopyAntigravityConfig.innerText = ok ? '✓ Config Copied!' : 'Copy Failed';
+        setTimeout(function() { btnCopyAntigravityConfig.innerText = orig; }, 1500);
+      };
+    }
+
+    var btnCopyAntigravityEndpoint = document.getElementById('btnCopyAntigravityEndpoint');
+    if (btnCopyAntigravityEndpoint) {
+      btnCopyAntigravityEndpoint.onclick = async function() {
+        var ep = window.location.origin + '/api/mcp';
+        var ok = await safeCopyToClipboard(ep);
+        var orig = btnCopyAntigravityEndpoint.innerText;
+        btnCopyAntigravityEndpoint.innerText = ok ? '✓ Copied Endpoint!' : 'Copy Failed';
+        setTimeout(function() { btnCopyAntigravityEndpoint.innerText = orig; }, 1500);
+      };
+    }
+
+    var btnCopyClaudeEndpoint = document.getElementById('btnCopyClaudeEndpoint');
+    if (btnCopyClaudeEndpoint) {
+      btnCopyClaudeEndpoint.onclick = async function() {
+        var ep = window.location.origin + '/api/mcp';
+        var ok = await safeCopyToClipboard(ep);
+        var orig = btnCopyClaudeEndpoint.innerText;
+        btnCopyClaudeEndpoint.innerText = ok ? '✓ URL Endpoint Tersalin!' : 'Gagal Salin';
+        setTimeout(function() { btnCopyClaudeEndpoint.innerText = orig; }, 1500);
+      };
+    }
 
     var btnCopyOpenApiUrl = document.getElementById('btnCopyOpenApiUrl');
     if (btnCopyOpenApiUrl) {
-      btnCopyOpenApiUrl.onclick = function() {
+      btnCopyOpenApiUrl.onclick = async function() {
         var preset = (document.getElementById('chatGptPresetSelect')?.value) || 'essential';
         var url = window.location.origin + '/api/openapi.json?category=' + encodeURIComponent(preset);
-        navigator.clipboard.writeText(url).then(function() {
-          var orig = btnCopyOpenApiUrl.innerText;
-          btnCopyOpenApiUrl.innerText = 'Copied!';
-          setTimeout(function() { btnCopyOpenApiUrl.innerText = orig; }, 1500);
-        });
+        var ok = await safeCopyToClipboard(url);
+        var orig = btnCopyOpenApiUrl.innerText;
+        btnCopyOpenApiUrl.innerText = ok ? 'Copied!' : 'Copy Failed';
+        setTimeout(function() { btnCopyOpenApiUrl.innerText = orig; }, 1500);
       };
     }
 
@@ -2311,8 +2542,8 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
         try {
           var res = await fetch(url);
           var json = await res.json();
-          await navigator.clipboard.writeText(JSON.stringify(json, null, 2));
-          btnCopyOpenApiJson.innerText = 'JSON Copied!';
+          var ok = await safeCopyToClipboard(JSON.stringify(json, null, 2));
+          btnCopyOpenApiJson.innerText = ok ? 'JSON Copied!' : 'Copy Failed';
           setTimeout(function() { btnCopyOpenApiJson.innerText = 'Copy JSON'; }, 1500);
         } catch(e) {
           btnCopyOpenApiJson.innerText = 'Error!';
@@ -2323,13 +2554,12 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
 
     var btnCopyGptPrompt = document.getElementById('btnCopyGptPrompt');
     if (btnCopyGptPrompt) {
-      btnCopyGptPrompt.onclick = function() {
+      btnCopyGptPrompt.onclick = async function() {
         var prompt = 'Anda adalah Medical AI Assistant MR-CAPSULES & DoctorTablet. Anda terhubung ke database modul kedokteran dan catatan klinis via Actions.\n\nAturan Wajib Pembuatan Catatan Medis (doctortablet_save_note):\n1. Analisis & petakan struktur hirarki topik terlebih dahulu.\n2. Tulis materi dengan high-density reasoning, studi kasus, & jebakan ujian (BUKAN transkrip slide PPT mentah).\n3. WAJIB sertakan Callouts GitHub ([!NOTE], [!TIP], [!WARNING]), Tabel komparasi, Diagram Mermaid, dan Rumus Matematika/Skor Medis dalam format LaTeX ($...$ / $$...$$).\n4. Parameter author WAJIB nama lengkap pengguna tanpa gelar akademis (misal: "Ahmad Muqorrobin", jangan sertakan "dr." atau "S.Ked").';
-        navigator.clipboard.writeText(prompt).then(function() {
-          var orig = btnCopyGptPrompt.innerText;
-          btnCopyGptPrompt.innerText = '✓ Prompt Copied to Clipboard!';
-          setTimeout(function() { btnCopyGptPrompt.innerText = orig; }, 2000);
-        });
+        var ok = await safeCopyToClipboard(prompt);
+        var orig = btnCopyGptPrompt.innerText;
+        btnCopyGptPrompt.innerText = ok ? '✓ Prompt Copied to Clipboard!' : 'Copy Failed';
+        setTimeout(function() { btnCopyGptPrompt.innerText = orig; }, 2000);
       };
     }
 
@@ -2354,10 +2584,21 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
 
   window.loadApiKeys = loadApiKeys;
 
-  // POST to /api/mcp using the existing session JWT
+  // POST to /api/mcp using existing session JWT with localStorage fallback
   async function mcpCall(method, params) {
     var tok = window.sessionToken;
+    if (!tok) {
+      try {
+        var stored = localStorage.getItem('sb-hdhvrlkizorscvehttzd-auth-token');
+        if (stored) {
+          var parsed = JSON.parse(stored);
+          tok = parsed.access_token || parsed.currentSession?.access_token;
+          if (tok) window.sessionToken = tok;
+        }
+      } catch(e) {}
+    }
     if (!tok) throw new Error('Not authenticated');
+
     var res = await fetch('/api/mcp', {
       method: 'POST',
       headers: {
@@ -2373,172 +2614,225 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
 
   async function loadOAuthTokens() {
     var oauthListEl = document.getElementById('oauthTokensList');
+    var statOauthSessions = document.getElementById('statOauthSessions');
     if (!oauthListEl) return;
 
-    oauthListEl.innerHTML = '<div style="color:var(--text-muted); font-size:14px; padding:24px; text-align:center;">Loading OAuth sessions...</div>';
+    oauthListEl.innerHTML = '<div style="color:var(--text-muted); font-size:14px; padding:24px; text-align:center;">Memuat sesi OAuth...</div>';
 
     try {
       var result = await mcpCall('oauth_tokens_list', {});
       var tokens = result.tokens || [];
 
+      if (statOauthSessions) {
+        statOauthSessions.textContent = tokens.length;
+      }
+
       if (tokens.length === 0) {
-        oauthListEl.innerHTML = '<div style="color:var(--text-muted); font-size:14px; padding:20px; text-align:center; border:1px dashed var(--border-light); border-radius:10px;">No active OAuth sessions found. Connect via Claude.ai connector to generate an OAuth token.</div>';
+        oauthListEl.innerHTML = '<div style="color:var(--text-muted); font-size:13.5px; padding:20px; text-align:center; border:1px dashed var(--border-light); border-radius:10px;">Belum ada sesi OAuth aktif. Hubungkan melalui Antigravity, Claude, atau ChatGPT untuk membuat sesi OAuth.</div>';
         return;
       }
 
       oauthListEl.innerHTML = tokens.map(function(t) {
         var created = new Date(t.created_at).toLocaleString();
-        var expires = t.expires_at ? new Date(t.expires_at).toLocaleString() : 'No expiry';
-        return '<div style="display:flex; justify-content:space-between; align-items:center; padding:16px 20px; border:1px solid var(--border-light); border-radius:10px; margin-bottom:12px; background:var(--bg-card); gap:16px; width:100%; box-sizing:border-box; flex-wrap:wrap;">' +
+        var expires = t.expires_at ? new Date(t.expires_at).toLocaleString() : 'Tanpa batas waktu';
+        var cid = (t.client_id || '').toLowerCase();
+        var isAntigravity = cid.includes('antigravity') || cid.includes('gemini');
+        var isChatGPT = cid.includes('chatgpt') || cid.includes('openai');
+        var clientName = isAntigravity ? 'Google Antigravity Connector' : (isChatGPT ? 'ChatGPT Connector' : 'Claude AI Connector');
+        var badgeStyle = isAntigravity ? 'background:var(--c4); color:var(--c1);' : 'background:var(--accent-soft); color:var(--accent);';
+
+        return '<div class="api-key-item-card">' +
           '<div style="flex:1; min-width:240px;">' +
-            '<div style="font-weight:700; font-size:15px; color:var(--text-main); margin-bottom:6px; display:flex; align-items:center; gap:8px;">' +
-              '<span style="color:var(--c4); font-weight:700;">Claude AI Connector</span>' +
-              '<span style="font-size:12px; background:var(--accent-soft); color:var(--accent); padding:3px 10px; border-radius:99px; font-weight:700;">ACTIVE</span>' +
+            '<div style="font-weight:700; font-size:14.5px; color:var(--text-main); margin-bottom:6px; display:flex; align-items:center; gap:8px;">' +
+              '<span style="color:var(--c4); font-weight:700;">' + clientName + '</span>' +
+              '<span style="font-size:11px; ' + badgeStyle + ' padding:3px 8px; border-radius:99px; font-weight:800;">ACTIVE</span>' +
             '</div>' +
-            '<div style="font-size:14px; color:var(--text-main); margin-bottom:6px; word-break:break-all;">Account: <strong>' + sanitize(t.user_email) + '</strong></div>' +
-            '<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">' +
-              '<code style="font-size:12.5px; background:var(--bg-inset); padding:3px 8px; border-radius:4px; color:var(--c4); font-weight:600;">' + sanitize(t.token_prefix) + '</code>' +
-              '<span style="font-size:13px; color:var(--text-muted);">Authorized ' + created + '</span>' +
-              '<span style="font-size:13px; color:var(--text-muted);">&middot; Expires: ' + expires + '</span>' +
+            '<div style="font-size:13px; color:var(--text-main); margin-bottom:6px; word-break:break-all;">Akun: <strong>' + sanitize(t.user_email) + '</strong></div>' +
+            '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">' +
+              '<code style="font-size:12px; background:var(--bg-inset); padding:3px 8px; border-radius:4px; color:var(--c4); font-weight:700;">' + sanitize(t.token_prefix) + '</code>' +
+              '<button class="btn-unified sm" onclick="window._copyKeyPrefix(\'' + sanitize(t.token_prefix).replace(/'/g, "\\'") + '\')" style="padding:2px 8px; font-size:11px;">📋 Salin</button>' +
+              '<span style="font-size:12.5px; color:var(--text-muted);">Diotorisasi: ' + created + '</span>' +
+              '<span style="font-size:12.5px; color:var(--text-muted);">&middot; Kadaluarsa: ' + expires + '</span>' +
             '</div>' +
           '</div>' +
-          '<button class="btn-unified sm danger" style="flex-shrink:0;" onclick="window._revokeOAuthToken(\'' + sanitize(t.token_id).replace(/'/g, "\\'") + '\', \'' + sanitize(t.user_email).replace(/'/g, "\\'") + '\')">Disconnect</button>' +
+          '<button class="btn-unified sm danger" style="flex-shrink:0;" onclick="window._revokeOAuthToken(\'' + sanitize(t.token_id).replace(/'/g, "\\'") + '\', \'' + sanitize(t.user_email).replace(/'/g, "\\'") + '\', \'' + clientName.replace(/'/g, "\\'") + '\')">Putuskan Koneksi</button>' +
         '</div>';
       }).join('');
 
     } catch (err) {
-      oauthListEl.innerHTML = '<div style="color:var(--danger); padding:16px;">Failed to load OAuth tokens: ' + sanitize(err.message) + '</div>';
+      if (statOauthSessions) statOauthSessions.textContent = '-';
+      oauthListEl.innerHTML = '<div style="color:var(--danger); padding:16px;">Gagal memuat sesi OAuth: ' + sanitize(err.message) + '</div>';
     }
   }
 
-  window._revokeOAuthToken = async function(tokenId, userEmail) {
-    var confirmed = await customConfirm('Disconnect Claude OAuth session for "' + userEmail + '"? Claude will lose access to MCP tools immediately.');
+  window._revokeOAuthToken = async function(tokenId, userEmail, clientName) {
+    var name = clientName || 'AI Connector';
+    var confirmed = await customConfirm('Putuskan koneksi ' + name + ' untuk akun "' + userEmail + '"? Sesi ini akan kehilangan akses tools MCP.');
     if (!confirmed) return;
     try {
       await mcpCall('oauth_tokens_revoke', { token_id: tokenId });
-      showToast('Claude OAuth session disconnected', 'success');
+      showToast(name + ' berhasil diputuskan', 'success');
       loadOAuthTokens();
     } catch (err) {
-      showToast('Error: ' + err.message, 'error');
+      showToast('Gagal: ' + err.message, 'error');
     }
   };
 
   async function loadApiKeys() {
     var listEl = document.getElementById('apiKeysList');
-    var generateSection = document.getElementById('apiKeysGenerateSection');
-    var accessInfo = document.getElementById('apiKeysAccessInfo');
+    var statActiveKeys = document.getElementById('statActiveKeys');
+    var quotaBadge = document.getElementById('apiKeysQuotaBadge');
     if (!listEl) return;
 
     loadOAuthTokens();
 
-    listEl.innerHTML = '<div style="color:var(--text-muted); font-size:14px; padding:24px; text-align:center;">Loading...</div>';
+    listEl.innerHTML = '<div style="color:var(--text-muted); font-size:14px; padding:24px; text-align:center;">Memuat daftar kunci API...</div>';
 
     try {
-      var result = await mcpCall('apikeys.list', {});
+      var result = await mcpCall('apikeys_list', {});
       var keys = result.keys || [];
 
-      if (generateSection) generateSection.style.display = '';
-      if (accessInfo) accessInfo.style.display = 'none';
+      if (statActiveKeys) {
+        statActiveKeys.textContent = keys.length + ' / 5';
+      }
+      if (quotaBadge) {
+        quotaBadge.textContent = keys.length + ' / 5 Aktif';
+      }
 
       if (keys.length === 0) {
-        listEl.innerHTML = '<div style="color:var(--text-muted); font-size:14px; padding:24px; text-align:center;">No developer API keys yet. Generate one above.</div>';
+        listEl.innerHTML = '<div style="text-align:center; padding:32px 16px; color:var(--text-muted); border:1px dashed var(--border-light); border-radius:10px;">' +
+          '<div style="font-size:32px; margin-bottom:8px;">🔑</div>' +
+          '<div style="font-weight:700; font-size:14.5px; color:var(--text-main); margin-bottom:4px;">Belum Ada Kunci API Developer</div>' +
+          '<div style="font-size:13px; margin-bottom:14px; color:var(--text-muted);">Buat kunci baru di atas untuk menghubungkan AI Assistant (Antigravity, Claude, ChatGPT) atau skrip Anda.</div>' +
+          '<button class="btn-unified primary sm" onclick="document.getElementById(\'newKeyName\')?.focus()">+ Buat Kunci Sekarang</button>' +
+        '</div>';
         return;
       }
 
       listEl.innerHTML = keys.map(function(k) {
-        var created = new Date(k.created_at).toLocaleDateString();
-        var lastUsed = k.last_used_at ? new Date(k.last_used_at).toLocaleDateString() : 'Never';
-        var expiresInfo = k.expires_at ? ('Expires ' + new Date(k.expires_at).toLocaleDateString()) : 'No expiry';
-        return '<div style="display:flex; justify-content:space-between; align-items:center; padding:16px 20px; border:1px solid var(--border-light); border-radius:10px; margin-bottom:12px; background:var(--bg-card); gap:16px; width:100%; box-sizing:border-box; flex-wrap:wrap;">' +
+        var created = new Date(k.created_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
+        var lastUsed = k.last_used_at ? new Date(k.last_used_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Belum pernah';
+        var isExpired = k.expires_at && new Date(k.expires_at) < new Date();
+        var expiresInfo = k.expires_at ? (isExpired ? ('Kadaluarsa sejak ' + new Date(k.expires_at).toLocaleDateString('id-ID')) : ('Berlaku s/d ' + new Date(k.expires_at).toLocaleDateString('id-ID'))) : 'Tanpa batas waktu';
+        var statusBadge = isExpired ? '<span class="api-key-badge-expired">● KADALUARSA</span>' : '<span class="api-key-badge-active">● AKTIF</span>';
+
+        return '<div class="api-key-item-card">' +
           '<div style="flex:1; min-width:240px;">' +
-            '<div style="font-weight:700; font-size:15px; color:var(--text-main); margin-bottom:6px; word-break:break-word;">' + sanitize(k.name) + '</div>' +
-            '<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">' +
-              '<code style="font-size:13px; background:var(--bg-inset); padding:3px 8px; border-radius:4px; color:var(--c4); font-weight:600;">' + sanitize(k.key_prefix) + '...</code>' +
-              '<span style="font-size:13px; color:var(--text-muted);">Created ' + created + '</span>' +
-              '<span style="font-size:13px; color:var(--text-muted);">&middot; Last used: ' + lastUsed + '</span>' +
-              '<span style="font-size:13px; color:var(--text-muted);">&middot; ' + (k.request_count || 0) + ' requests</span>' +
-              '<span style="font-size:13px; color:var(--text-muted);">&middot; ' + expiresInfo + '</span>' +
+            '<div style="display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap;">' +
+              '<strong style="font-size:15px; color:var(--text-main); word-break:break-word;">' + sanitize(k.name) + '</strong>' +
+              statusBadge +
+            '</div>' +
+            '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:6px;">' +
+              '<code style="font-size:12.5px; background:var(--bg-inset); padding:3px 8px; border-radius:6px; color:var(--c4); font-weight:700;">' + sanitize(k.key_prefix) + '...</code>' +
+              '<button class="btn-unified sm" onclick="window._copyKeyPrefix(\'' + sanitize(k.key_prefix).replace(/'/g, "\\'") + '\')" title="Salin Prefix Identifier" style="padding:2px 8px; font-size:11px;">📋 Salin Prefix</button>' +
+            '</div>' +
+            '<div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; font-size:12.5px; color:var(--text-muted);">' +
+              '<span>📅 Dibuat: ' + created + '</span>' +
+              '<span>&middot; ⚡ Dipakai: ' + lastUsed + '</span>' +
+              '<span>&middot; 📊 ' + (k.request_count || 0) + ' req</span>' +
+              '<span>&middot; ⏳ ' + expiresInfo + '</span>' +
             '</div>' +
           '</div>' +
-          '<button class="btn-unified sm danger" style="flex-shrink:0;" onclick="window._revokeApiKey(\'' + k.id + '\', \'' + sanitize(k.name).replace(/'/g, "\\'") + '\')">Revoke</button>' +
+          '<button class="btn-unified sm danger" style="flex-shrink:0;" onclick="window._revokeApiKey(\'' + k.id + '\', \'' + sanitize(k.name).replace(/'/g, "\\'") + '\')">🗑️ Cabut Kunci</button>' +
         '</div>';
       }).join('');
 
     } catch (err) {
-      if (err.message && err.message.toLowerCase().includes('division')) {
-        if (generateSection) generateSection.style.display = 'none';
-        if (accessInfo) accessInfo.style.display = '';
-        listEl.innerHTML = '';
-      } else {
-        listEl.innerHTML = '<div style="color:var(--danger); padding:16px;">' + sanitize(err.message) + '</div>';
-      }
+      if (statActiveKeys) statActiveKeys.textContent = '-';
+      if (quotaBadge) quotaBadge.textContent = 'Error';
+      listEl.innerHTML = '<div style="color:var(--danger); padding:16px;">Gagal memuat kunci API: ' + sanitize(err.message) + '</div>';
     }
   }
 
   async function generateApiKey() {
     var nameInput = document.getElementById('newKeyName');
     var expirySelect = document.getElementById('newKeyExpiry');
-    var revealBox = document.getElementById('apiKeyRevealBox');
-    var revealText = document.getElementById('apiKeyRevealText');
     var btn = document.getElementById('btnGenerateApiKey');
 
     var name = nameInput ? nameInput.value.trim() : '';
-    if (!name) { showToast('Please enter a key name', 'error'); return; }
+    if (!name) {
+      showToast('Masukkan nama atau deskripsi kunci API', 'error');
+      if (nameInput) nameInput.focus();
+      return;
+    }
 
     var expiresInDays = (expirySelect && expirySelect.value) ? parseInt(expirySelect.value, 10) : null;
 
-    if (btn) { btn.disabled = true; btn.textContent = 'Generating...'; }
+    if (btn) { btn.disabled = true; btn.textContent = 'Membuat Kunci...'; }
 
     try {
-      var result = await mcpCall('apikeys.create', { name: name, expires_in_days: expiresInDays });
+      var result = await mcpCall('apikeys_create', { name: name, expires_in_days: expiresInDays });
 
-      if (revealText) revealText.textContent = result.raw_key;
-      if (revealBox) revealBox.style.display = '';
+      window._lastCreatedKey = result.raw_key;
 
+      // 1. Automatically copy to clipboard immediately!
+      await safeCopyToClipboard(result.raw_key);
+
+      // 2. Put key into modal input
+      var keyInput = document.getElementById('createdApiKeyInput');
+      if (keyInput) keyInput.value = result.raw_key;
+
+      // 3. Clear form inputs
       if (nameInput) nameInput.value = '';
       if (expirySelect) expirySelect.value = '';
 
-      showToast('API key generated! Copy it now.', 'success');
+      // 4. Open Dedicated High-Visibility Modal
+      var modal = document.getElementById('apiKeyCreatedModal');
+      if (window.ModalManager) {
+        ModalManager.open(modal);
+      } else if (modal) {
+        modal.classList.add('active');
+      }
+
+      showToast('✓ Kunci API berhasil dibuat & disalin ke clipboard!', 'success');
       loadApiKeys();
     } catch (err) {
-      showToast('Error: ' + err.message, 'error');
+      showToast('Gagal membuat API key: ' + err.message, 'error');
     } finally {
-      if (btn) { btn.disabled = false; btn.textContent = '+ Generate Key'; }
+      if (btn) { btn.disabled = false; btn.textContent = '+ Buat Kunci API'; }
     }
   }
 
-  function copyRevealedKey() {
-    var revealText = document.getElementById('apiKeyRevealText');
-    if (!revealText || !revealText.textContent) return;
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(revealText.textContent).then(function() {
-        showToast('API key copied!', 'success');
-      }).catch(function(err) {
-        showToast('Copy failed: ' + err.message, 'error');
-      });
+  async function copyCreatedKey() {
+    var key = window._lastCreatedKey || (document.getElementById('createdApiKeyInput')?.value) || '';
+    if (!key) return;
+    var ok = await safeCopyToClipboard(key);
+    var textEl = document.getElementById('btnCopyCreatedKeyText');
+    var iconEl = document.getElementById('btnCopyCreatedKeyIcon');
+    if (ok) {
+      if (textEl) textEl.textContent = '✓ Kunci Tersalin!';
+      if (iconEl) iconEl.textContent = '✅';
+      showToast('Kunci API tersalin ke clipboard!', 'success');
+      setTimeout(function() {
+        if (textEl) textEl.textContent = 'Salin Kunci';
+        if (iconEl) iconEl.textContent = '📋';
+      }, 2000);
     } else {
-      // Fallback
-      var ta = document.createElement('textarea');
-      ta.value = revealText.textContent;
-      ta.style.position = 'fixed';
-      ta.style.opacity = '0';
-      document.body.appendChild(ta);
-      ta.focus(); ta.select();
-      try { document.execCommand('copy'); showToast('API key copied!', 'success'); } catch(e) {}
-      ta.remove();
+      showToast('Gagal menyalin kunci', 'error');
     }
   }
+
+  // Copy key prefix helper with toast
+  window._copyKeyPrefix = async function(prefix) {
+    if (!prefix) return;
+    var ok = await safeCopyToClipboard(prefix);
+    if (ok) {
+      showToast('Prefix "' + prefix + '" tersalin ke clipboard!', 'success');
+    } else {
+      showToast('Gagal menyalin prefix', 'error');
+    }
+  };
 
   // Used by onclick= in rendered key cards. Must be global.
   window._revokeApiKey = async function(keyId, keyName) {
-    var confirmed = await customConfirm('Revoke key "' + keyName + '"? Services using it will stop working immediately.');
+    var confirmed = await customConfirm('Cabut kunci API "' + keyName + '"? Layanan atau AI yang menggunakan kunci ini akan kehilangan akses seketika.');
     if (!confirmed) return;
     try {
-      await mcpCall('apikeys.revoke', { key_id: keyId });
-      showToast('API key revoked', 'success');
+      await mcpCall('apikeys_revoke', { key_id: keyId });
+      showToast('Kunci API "' + keyName + '" berhasil dicabut', 'success');
       loadApiKeys();
     } catch (err) {
-      showToast('Error: ' + err.message, 'error');
+      showToast('Gagal mencabut kunci: ' + err.message, 'error');
     }
   };
 })();

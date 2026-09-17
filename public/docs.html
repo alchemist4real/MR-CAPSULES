@@ -218,11 +218,37 @@
   <em>"Anda adalah Medical AI Assistant MR-CAPSULES &amp; DoctorTablet. Saat membuat catatan medis (doctortablet_save_note): 1) Analisis &amp; petakan struktur hirarki topik terlebih dahulu. 2) Tulis materi dengan high-density reasoning, studi kasus, &amp; jebakan ujian (BUKAN transkrip slide PPT mentah). 3) WAJIB sertakan Callouts GitHub ([!NOTE], [!TIP], [!WARNING]), Tabel komparasi, Diagram Mermaid, dan Rumus Matematika/Skor Medis dalam format LaTeX ($...$ / $$...$$). 4) Parameter author WAJIB nama lengkap pengguna tanpa gelar akademis."</em>
 </div>
 
+<h3>D. Menghubungkan ke Google Antigravity (Agent &amp; IDE Connector)</h3>
+<p>Google Antigravity dapat terhubung langsung ke MR-CAPSULES melalui server <strong>Streamable HTTP MCP</strong> atau <strong>OAuth 2.0 PKCE Flow</strong>.</p>
+<ol>
+  <li><strong>Opsi 1 - Konfigurasi Streamable HTTP MCP (Direkomendasikan untuk Agen):</strong>
+    <p>Tambahkan konfigurasi berikut ke berkas konfigurasi MCP Antigravity (<code>mcp.json</code> atau <code>settings.json</code>):</p>
+    <pre style="background:var(--bg-inset); padding:12px; border-radius:8px; font-family:var(--font-mono); font-size:12px; overflow-x:auto;">{
+  "mcpServers": {
+    "mr-capsules": {
+      "url": "https://mr-capsules.vercel.app/api/mcp",
+      "headers": {
+        "x-api-key": "mrc_your_api_key_here"
+      }
+    }
+  }
+}</pre>
+  </li>
+  <li><strong>Opsi 2 - Otorisasi OAuth 2.0 PKCE Langsung:</strong>
+    <p>Antigravity mendukung otorisasi OAuth 2.0 native dengan skema pengalihan kustom (<code>antigravity://oauth/callback</code>):</p>
+    <ul>
+      <li><strong>Authorization URL:</strong> <code>https://mr-capsules.vercel.app/authorize?client_id=antigravity-mcp&amp;redirect_uri=antigravity://oauth/callback&amp;response_type=code</code></li>
+      <li><strong>Token URL:</strong> <code>https://mr-capsules.vercel.app/token</code></li>
+      <li><strong>One-Click Connect:</strong> Jika browser Anda sudah memiliki sesi login aktif di MR-CAPSULES, halaman otorisasi otomatis menyembunyikan formulir dan menampilkan tombol 1-klik <em>"Approve &amp; Connect as [email]"</em>.</li>
+    </ul>
+  </li>
+</ol>
+
 <div class="alert-box">
   <strong>CATATAN PENGGUNAAN:</strong> API Key dibatasi maksimum 5 kunci aktif per pengguna, dengan <em>rate limit</em> 60 request/menit untuk mencegah penyalahgunaan.
 </div>
 
-<h3>D. Ringkasan Kemampuan MCP &amp; Action Tools (78+ Method)</h3>
+<h3>E. Ringkasan Kemampuan MCP &amp; Action Tools (78+ Method)</h3>
 <p>Setelah tersambung, kamu tidak perlu hafal nama-nama fungsi di bawah ini &mdash; cukup minta dengan bahasa biasa ke Claude atau ChatGPT, dan AI akan otomatis memilih serta menjalankan fungsi yang sesuai:</p>
 <ul>
   <li><strong>DoctorTablet Medical Vault (Catatan Medis):</strong> <code>doctortablet_list_notes</code>, <code>doctortablet_read_note</code>, <code>doctortablet_save_note</code>, <code>doctortablet_list_categories</code>, <code>doctortablet_create_category</code>, <code>doctortablet_search_notes</code>, <code>doctortablet_delete_note</code>, <code>doctortablet_export_merged_document</code></li>
@@ -1262,43 +1288,22 @@ Tolong update explanation soal nomor 13 di file tersebut."</pre>
     }
 
     /* ══ PERSONA ENGINE (Synced from Main Site) ══ */
-    function walkAndReplaceMR(node, isMrs) {
-      if (!node) return;
-      if (node.nodeName === 'SCRIPT' || node.nodeName === 'STYLE' || node.nodeName === 'IFRAME' || node.nodeName === 'CODE' || node.nodeName === 'PRE' || node.nodeName === 'INPUT' || node.nodeName === 'TEXTAREA') return;
-      if (node.nodeType === 3) {
-        if (node.originalValue === undefined) node.originalValue = node.nodeValue;
-        if (isMrs) {
-          if (/mr/i.test(node.originalValue)) {
-            node.nodeValue = node.originalValue
-              .replace(/\bMr\.\s*Capsules\b/g, 'Mrs. Capsules')
-              .replace(/\bMR\.\s*CAPSULES\b/g, 'MRS. CAPSULES')
-              .replace(/\bMR\s+CAPSULES\b/g, 'MRS CAPSULES')
-              .replace(/\bMr\.\b/g, 'Mrs.')
-              .replace(/\bMR\b/g, 'MRS')
-              .replace(/\bMr\b/g, 'Mrs')
-              .replace(/\bmr\b/g, 'mrs');
-          }
-        } else {
-          if (node.originalValue !== undefined) node.nodeValue = node.originalValue;
-        }
-      } else if (node.nodeType === 1) {
-        node.childNodes.forEach(child => walkAndReplaceMR(child, isMrs));
-      }
-    }
-
     function applyDocsPersona(p) {
       const isMrs = (p === 'mrs');
-      if (document.originalTitle === undefined) document.originalTitle = document.title;
-      if (isMrs) {
-        document.title = document.originalTitle
-          .replace(/\bMr\.\s*Capsules\b/g, 'Mrs. Capsules')
-          .replace(/\bMr\./g, 'Mrs.')
-          .replace(/\bMR\b/g, 'MRS')
-          .replace(/\bMr\b/g, 'Mrs');
-      } else {
-        document.title = document.originalTitle;
-      }
-      walkAndReplaceMR(document.body, isMrs);
+      const mrText = isMrs ? 'Mrs. Capsules' : 'Mr. Capsules';
+      document.title = isMrs ? 'Mrs. Capsules · System Documentation' : 'Mr. Capsules · System Documentation';
+      document.querySelectorAll('.dn-brand b, .nav-brand span, .brand span, .sc-brand span').forEach(el => {
+        el.textContent = mrText;
+      });
+      document.querySelectorAll('.credit-footer').forEach(el => {
+        if (isMrs) {
+          el.innerHTML = el.innerHTML.replace(/\bMr\.\s*Capsules\b/g, 'Mrs. Capsules');
+        } else {
+          el.innerHTML = el.innerHTML.replace(/\bMrs\.\s*Capsules\b/g, 'Mr. Capsules');
+        }
+      });
+      document.body.classList.toggle('persona-mrs', isMrs);
+      document.body.classList.toggle('persona-mr', !isMrs);
     }
 
     const savedPersona = localStorage.getItem('mr_persona') || 'mr';

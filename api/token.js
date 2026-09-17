@@ -73,16 +73,22 @@ export default async function handler(req, res) {
     body = body.toString('utf-8');
   }
   if (typeof body === 'string') {
-    try {
-      const params = new URLSearchParams(body);
-      const parsed = Object.fromEntries(params.entries());
-      if (Object.keys(parsed).length > 0) {
-        body = parsed;
-      } else {
-        body = JSON.parse(body);
+    const trimmed = body.trim();
+    if (trimmed.startsWith('{')) {
+      try { body = JSON.parse(trimmed); } catch(e) {}
+    }
+    if (typeof body === 'string') {
+      try {
+        const params = new URLSearchParams(trimmed);
+        const parsed = Object.fromEntries(params.entries());
+        if (Object.keys(parsed).length > 0 && parsed[Object.keys(parsed)[0]] !== '') {
+          body = parsed;
+        } else {
+          try { body = JSON.parse(trimmed); } catch(err) {}
+        }
+      } catch(e) {
+        try { body = JSON.parse(trimmed); } catch(err) {}
       }
-    } catch(e) {
-      try { body = JSON.parse(body); } catch(err) {}
     }
   }
 
@@ -140,6 +146,15 @@ export default async function handler(req, res) {
 
     const codeRecord = rows[0];
 
+    // Reject guest accounts from receiving OAuth tokens
+    if (codeRecord.user_email && (codeRecord.user_email.toLowerCase().startsWith('guest_') || /^guest_\d+_\d+@/i.test(codeRecord.user_email))) {
+      await fetch(`${SUPABASE_URL}/rest/v1/oauth_codes?code=eq.${encodeURIComponent(code)}`, {
+        method: 'DELETE',
+        headers: { 'apikey': SB_SERVICE_KEY, 'Authorization': `Bearer ${SB_SERVICE_KEY}` }
+      });
+      return res.status(403).json({ error: 'access_denied', error_description: 'Guest accounts cannot be issued OAuth tokens' });
+    }
+
     // Check expiration
     if (new Date(codeRecord.expires_at) < new Date()) {
       // Delete expired code
@@ -171,7 +186,7 @@ export default async function handler(req, res) {
     // Issue Access Token and Refresh Token
     const accessToken = `mrc_at_${crypto.randomBytes(32).toString('hex')}`;
     const refreshToken = `mrc_rt_${crypto.randomBytes(32).toString('hex')}`;
-    const expiresIn = 3600; // 1 hour
+    const expiresIn = 86400; // 24 hours (prevents frequent expiration drops on mobile/Claude)
     const expiresAt = new Date(Date.now() + expiresIn * 1000).toISOString();
 
     const host = req.headers['x-forwarded-host'] || req.headers.host || 'mr-capsules.vercel.app';
@@ -218,7 +233,7 @@ export default async function handler(req, res) {
     });
   }
 
-  // ── 2. Refresh Token Grant (Token Rotation) ──────────────────────────────
+  // ── 2. Refresh Token Grant (Token Rotation with Parallel Grace Period) ───
   if (grantType === 'refresh_token') {
     const refreshTokenInput = body.refresh_token;
     if (!refreshTokenInput) {
@@ -238,12 +253,41 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'invalid_grant', error_description: 'Failed to query refresh token' });
     }
 
-    const rows = await tokenRes.json();
-    if (!rows || rows.length === 0) {
+    let rows = await tokenRes.json();
+    let oldToken = (rows && rows.length > 0) ? rows[0] : null;
+
+    // Grace period check for parallel requests (e.g. Claude issuing concurrent requests)
+    if (!oldToken) {
+      const graceRes = await fetch(`${SUPABASE_URL}/rest/v1/oauth_tokens?refresh_token=eq.${encodeURIComponent(refreshTokenInput)}&revoked=eq.true&order=created_at.desc&limit=1`, {
+        headers: { 'apikey': SB_SERVICE_KEY, 'Authorization': `Bearer ${SB_SERVICE_KEY}` }
+      });
+      if (graceRes.ok) {
+        const graceRows = await graceRes.json();
+        if (graceRows && graceRows.length > 0) {
+          const recent = graceRows[0];
+          const revokedAgeMs = Date.now() - new Date(recent.created_at).getTime();
+          if (revokedAgeMs < 60000) {
+            const activeRes = await fetch(`${SUPABASE_URL}/rest/v1/oauth_tokens?client_id=eq.${encodeURIComponent(recent.client_id)}&user_email=eq.${encodeURIComponent(recent.user_email)}&revoked=eq.false&order=created_at.desc&limit=1`, {
+              headers: { 'apikey': SB_SERVICE_KEY, 'Authorization': `Bearer ${SB_SERVICE_KEY}` }
+            });
+            if (activeRes.ok) {
+              const activeRows = await activeRes.json();
+              if (activeRows && activeRows.length > 0) {
+                const latest = activeRows[0];
+                return res.status(200).json({
+                  access_token: latest.access_token,
+                  token_type: 'Bearer',
+                  expires_in: 86400,
+                  refresh_token: latest.refresh_token,
+                  scope: 'mcp'
+                });
+              }
+            }
+          }
+        }
+      }
       return res.status(400).json({ error: 'invalid_grant', error_description: 'Invalid, revoked, or expired refresh token' });
     }
-
-    const oldToken = rows[0];
 
     // Revoke old refresh token (Rotation enforcement)
     await fetch(`${SUPABASE_URL}/rest/v1/oauth_tokens?access_token=eq.${encodeURIComponent(oldToken.access_token)}`, {
@@ -256,10 +300,10 @@ export default async function handler(req, res) {
       body: JSON.stringify({ revoked: true })
     });
 
-    // Issue new token pair
+    // Issue new token pair (24h lifespan)
     const newAccessToken = `mrc_at_${crypto.randomBytes(32).toString('hex')}`;
     const newRefreshToken = `mrc_rt_${crypto.randomBytes(32).toString('hex')}`;
-    const expiresIn = 3600;
+    const expiresIn = 86400; // 24 hours
     const expiresAt = new Date(Date.now() + expiresIn * 1000).toISOString();
 
     await fetch(`${SUPABASE_URL}/rest/v1/oauth_tokens`, {

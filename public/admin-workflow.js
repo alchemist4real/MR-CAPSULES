@@ -4,6 +4,25 @@ let currentUserId = null;
 let isAdminUser = false;
 window.currentDivisionId = 'all';
 
+// WebKit/Safari-safe date parser
+function parseSafeDate(dateStr) {
+    if (!dateStr) return null;
+    if (dateStr instanceof Date) return isNaN(dateStr.getTime()) ? null : dateStr;
+    if (typeof dateStr === 'number') return new Date(dateStr);
+    if (typeof dateStr === 'string') {
+        let sanitized = dateStr.trim();
+        // Convert Postgres 'YYYY-MM-DD HH:MM:SS' to ISO 'YYYY-MM-DDTHH:MM:SS'
+        if (/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}/.test(sanitized)) {
+            sanitized = sanitized.replace(' ', 'T');
+        }
+        const d = new Date(sanitized);
+        return isNaN(d.getTime()) ? null : d;
+    }
+    const d = new Date(dateStr);
+    return isNaN(d.getTime()) ? null : d;
+}
+window.parseSafeDate = parseSafeDate;
+
 document.addEventListener('DOMContentLoaded', () => {
     // Wait for sessionToken to be populated by admin.js
     if (window.sessionToken) {
@@ -67,6 +86,23 @@ async function initWorkflow() {
     // Check if user has admin badge in the UI (set by admin.js verifyAdmin)
     const badge = document.getElementById('userBadge');
     isAdminUser = badge && (badge.dataset.role === 'admin' || badge.dataset.role === 'superadmin');
+
+    // Show couple sidebar widget only for admin users
+    if (isAdminUser) {
+        const coupleWidget = document.getElementById('coupleSidebarWidget');
+        if (coupleWidget) {
+            coupleWidget.style.display = '';
+            // Load couple config to populate sidebar names
+            apiCall('contributions', { action: 'get_couple_package' }).then(coupleRes => {
+                const sidebarNames = document.getElementById('coupleSidebarNames');
+                if (coupleRes && coupleRes.success && Array.isArray(coupleRes.couple) && coupleRes.couple.length >= 2) {
+                    if (sidebarNames) sidebarNames.textContent = `${coupleRes.couple[0].username} & ${coupleRes.couple[1].username}`;
+                } else {
+                    if (sidebarNames) sidebarNames.textContent = 'Not configured';
+                }
+            }).catch(() => {});
+        }
+    }
 
     const divRes = await apiCall('divisions', { action: 'get_my_division' });
     
@@ -302,10 +338,11 @@ function renderKanban(tasks) {
         if (dueMatch) {
             dueDateStr = dueMatch[1];
             displayDesc = displayDesc.replace(dueMatch[0], '').trim();
-            const dueTime = new Date(dueDateStr).getTime();
+            const dueD = parseSafeDate(dueDateStr);
+            const dueTime = dueD ? dueD.getTime() : 0;
             const now = Date.now();
-            if (dueTime < now) dueColor = 'var(--danger)';
-            else if (dueTime < now + 86400000 * 3) dueColor = 'var(--accent)';
+            if (dueTime && dueTime < now) dueColor = 'var(--danger)';
+            else if (dueTime && dueTime < now + 86400000 * 3) dueColor = 'var(--accent)';
         }
 
         let meta = `<div style="font-size:13.5px; margin-bottom:6px;"><span style="color:var(--text-main); font-weight:600;">Sem:</span> ${task.semester || '-'} | <span style="color:var(--text-main); font-weight:600;">Blk:</span> ${task.block || '-'}</div>`;
@@ -325,7 +362,8 @@ function renderKanban(tasks) {
         else if (task.status === 'done' && task.completed_at) { activeDateLabel = 'Done'; activeDateVal = task.completed_at; }
         
         if (activeDateVal) {
-            meta += `<div style="margin-top:6px; font-size:13px;"><span style="color:var(--text-main); font-weight:600;">${activeDateLabel}:</span> <span>${new Date(activeDateVal).toLocaleDateString()}</span></div>`;
+            const actD = parseSafeDate(activeDateVal);
+            meta += `<div style="margin-top:6px; font-size:13px;"><span style="color:var(--text-main); font-weight:600;">${activeDateLabel}:</span> <span>${actD ? actD.toLocaleDateString() : '-'}</span></div>`;
         }
 
         if (dueDateStr) {
@@ -619,11 +657,11 @@ function openTaskModal(task) {
         <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--border-light);">
             <div style="font-size:12px; font-weight:700; color:var(--text-muted); margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">Timeline</div>
             <div style="display:grid; grid-template-columns:auto 1fr; gap:6px 16px; font-size:13px;">
-                <span style="color:var(--text-muted)">Created:</span> <span>${task.created_at ? new Date(task.created_at).toLocaleString() : '-'}</span>
-                <span style="color:var(--text-muted)">Assigned:</span> <span>${task.assigned_at ? new Date(task.assigned_at).toLocaleString() : '-'}</span>
-                <span style="color:var(--text-muted)">Submitted:</span> <span>${task.submitted_at ? new Date(task.submitted_at).toLocaleString() : '-'}</span>
-                <span style="color:var(--text-muted)">Reviewed:</span> <span>${task.review_started_at ? new Date(task.review_started_at).toLocaleString() : '-'}</span>
-                <span style="color:var(--text-muted)">Completed:</span> <span>${task.completed_at ? new Date(task.completed_at).toLocaleString() : '-'}</span>
+                <span style="color:var(--text-muted)">Created:</span> <span>${task.created_at && parseSafeDate(task.created_at) ? parseSafeDate(task.created_at).toLocaleString() : '-'}</span>
+                <span style="color:var(--text-muted)">Assigned:</span> <span>${task.assigned_at && parseSafeDate(task.assigned_at) ? parseSafeDate(task.assigned_at).toLocaleString() : '-'}</span>
+                <span style="color:var(--text-muted)">Submitted:</span> <span>${task.submitted_at && parseSafeDate(task.submitted_at) ? parseSafeDate(task.submitted_at).toLocaleString() : '-'}</span>
+                <span style="color:var(--text-muted)">Reviewed:</span> <span>${task.review_started_at && parseSafeDate(task.review_started_at) ? parseSafeDate(task.review_started_at).toLocaleString() : '-'}</span>
+                <span style="color:var(--text-muted)">Completed:</span> <span>${task.completed_at && parseSafeDate(task.completed_at) ? parseSafeDate(task.completed_at).toLocaleString() : '-'}</span>
             </div>
         </div>
         <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--border-light);">
@@ -675,7 +713,7 @@ window.loadTaskLogs = async function(taskId) {
 
             return `<div style="font-size:13px; border-bottom:1px solid var(--border-light); padding:10px 0;">
                 <div><span style="color:${actionColor}; font-weight:700;">${l.action.replace(/_/g, ' ').toUpperCase()}</span> by <b>${l.user ? (l.user.username || l.user.email.split('@')[0]) : 'System'}</b></div>
-                <div style="color:var(--text-muted); font-size:12px; margin-top:3px;">${new Date(l.created_at).toLocaleString()}</div>
+                <div style="color:var(--text-muted); font-size:12px; margin-top:3px;">${l.created_at && parseSafeDate(l.created_at) ? parseSafeDate(l.created_at).toLocaleString() : '-'}</div>
                 ${noteHtml}
             </div>`;
         }).join('');
@@ -1130,9 +1168,9 @@ window.openManageCoupleModal = async function() {
         const sidebarNames = document.getElementById('coupleSidebarNames');
         if (sidebarNames) sidebarNames.textContent = `${p1.username} & ${p2.username}`;
     } else {
-        p1Select.value = 'farid.hmzh00@gmail.com';
-        p2Select.value = 'khesyian@gmail.com';
-        if (statusText) statusText.textContent = 'Farid (farid.hmzh00@gmail.com) & Khesy (khesyian@gmail.com)';
+        p1Select.value = '';
+        p2Select.value = '';
+        if (statusText) statusText.textContent = 'Belum ada couple yang dikonfigurasi';
     }
 };
 
@@ -1168,6 +1206,10 @@ window.saveCouplePackage = async function() {
         if (sidebarNames && res.couple) {
             sidebarNames.textContent = `${res.couple[0].username} & ${res.couple[1].username}`;
         }
+        const statusText = document.getElementById('coupleCurrentStatusText');
+        if (statusText && res.couple) {
+            statusText.textContent = `${res.couple[0].username} (${res.couple[0].email}) & ${res.couple[1].username} (${res.couple[1].email})`;
+        }
     } else {
         showToast('Failed: ' + (res?.error || 'Unknown error'), 'error');
     }
@@ -1187,6 +1229,8 @@ window.unlinkCouplePackage = async function() {
         if (typeof window.loadContributions === 'function') window.loadContributions();
         const sidebarNames = document.getElementById('coupleSidebarNames');
         if (sidebarNames) sidebarNames.textContent = 'None (Unlinked)';
+        const statusText = document.getElementById('coupleCurrentStatusText');
+        if (statusText) statusText.textContent = 'Belum ada couple yang dikonfigurasi';
     } else {
         showToast('Failed: ' + (res?.error || 'Unknown error'), 'error');
     }
@@ -1215,13 +1259,16 @@ window.loadContributions = async function() {
         const myPointsEl = document.getElementById('myPoints');
         if (myPointsEl) {
             myPointsEl.textContent = total;
-            if (resMe.is_couple || resMe.couple_package) {
-                myPointsEl.title = 'Paket Contribution Couple: Farid & Khesy';
+        if (resMe.is_couple || resMe.couple_package) {
+                myPointsEl.title = resMe.couple_package || 'Couple Package Active';
             }
         }
         
         // check 30 days
-        const hasRecent = resMe.contributions.some(c => new Date(c.created_at) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000));
+        const hasRecent = resMe.contributions.some(c => {
+            const cd = parseSafeDate(c.created_at);
+            return cd && cd.getTime() > (Date.now() - 30 * 24 * 60 * 60 * 1000);
+        });
         const statusEl = document.getElementById('contributionStatus');
         const isCouple = resMe.is_couple || resMe.couple_package;
         if(hasRecent || isAdminUser) {
@@ -1249,7 +1296,7 @@ window.loadContributions = async function() {
         } else {
             resLeader.leaderboard.forEach((u, i) => {
                 const medal = i === 0 ? '1st' : (i === 1 ? '2nd' : (i === 2 ? '3rd' : `${i+1}.`));
-                const coupleBadge = u.is_couple ? ' <span style="font-size:12px; vertical-align:middle;" title="Paket Contribution Couple: Farid & Khesy">💑</span>' : '';
+                const coupleBadge = u.is_couple ? ` <span style="font-size:12px; vertical-align:middle;" title="${u.couple_label || 'Couple Package'}">💑</span>` : '';
                 list.innerHTML += `
                     <li style="display:flex; justify-content:space-between; padding:12px 24px; border-bottom:1px solid var(--border-light); align-items:center; gap:12px; min-width:0;">
                         <div style="display:flex; gap:16px; align-items:center; min-width:0; flex:1;">

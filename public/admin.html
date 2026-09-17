@@ -33,8 +33,16 @@
       <div class="auth-brand-title">Mr. Capsules</div>
       <div class="auth-brand-subtitle">SYSTEM ACCESS</div>
     </div>
-    <div class="spinner"></div>
+    <div class="spinner" id="authSpinner"></div>
     <div id="authMessage" role="status" aria-live="polite" class="auth-status-msg">Verifying Identity...</div>
+    <form id="adminLoginForm" style="display:none; width:100%; max-width:320px; margin-top:20px; flex-direction:column; gap:12px;" onsubmit="event.preventDefault();">
+      <div style="font-size:13px; color:var(--text-muted); text-align:center; margin-bottom:4px;">Sign in to access admin console</div>
+      <input type="email" id="adminLoginEmail" class="auth-input" placeholder="Admin Email" required autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false" style="width:100%; box-sizing:border-box; font-size:16px;">
+      <input type="password" id="adminLoginPassword" class="auth-input" placeholder="Password" required autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false" style="width:100%; box-sizing:border-box; font-size:16px;">
+      <button type="button" id="btnAdminLoginSubmit" class="btn-unified primary" style="width:100%; justify-content:center; height:38px; font-weight:700;">Sign In</button>
+      <div id="adminLoginError" style="color:var(--danger); font-size:12px; text-align:center; display:none;"></div>
+      <a href="/" class="btn-unified" style="text-align:center; justify-content:center; text-decoration:none; opacity:0.8; font-size:12px;">Back to Website</a>
+    </form>
   </div>
 
   <!-- Mobile Top Header Bar (<= 768px) -->
@@ -171,18 +179,6 @@
               <div id="myPoints" class="analytics-value">-</div>
               <div id="contributionStatus" role="status" aria-live="polite" class="member-item-row-status"></div>
             </div>
-            <div class="analytics-card">
-              <div class="analytics-label">GUEST CLEANUP</div>
-              <div id="guestCleanupResult" role="status" aria-live="polite" class="cleanup-result">Remove stale guest accounts</div>
-              <div class="guest-cleanup-row">
-                <label for="guestCleanupHours">Older than (hours)</label>
-                <input type="number" id="guestCleanupHours" min="1" max="8760" step="1" value="24" inputmode="numeric" />
-              </div>
-              <button id="btnGuestCleanup" class="btn-unified guest-cleanup-btn">
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                <span>Clean Guests (24h+)</span>
-              </button>
-            </div>
           </div>
 
           <!-- Logs & Leaderboard Row -->
@@ -224,15 +220,15 @@
                     <!-- Dynamic divisions injected here -->
                 </div>
                 
-                <div id="coupleSidebarWidget" class="org-sidebar-couple-widget" style="padding:12px; margin-top:14px; border:1px solid var(--border-light); border-radius:4px; background:color-mix(in srgb, var(--c2) 18%, transparent);">
+                <div id="coupleSidebarWidget" class="org-sidebar-couple-widget" style="display:none; padding:12px; margin-top:14px; border:1px solid var(--border-light); border-radius:4px; background:color-mix(in srgb, var(--c2) 18%, transparent);">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                        <span style="font-size:11px; font-weight:700; color:var(--text-main); display:flex; align-items:center; gap:4px;">
+                        <span style="font-size:12px; font-weight:700; color:var(--text-main); display:flex; align-items:center; gap:4px;">
                             <span>💑 COUPLE PACKAGE</span>
                         </span>
-                        <button class="btn-unified" style="padding:2px 8px; font-size:11px;" onclick="window.openManageCoupleModal()" title="Manage Couple Package">Configure</button>
+                        <button class="btn-unified" style="padding:4px 10px; font-size:12px; min-height:28px;" onclick="window.openManageCoupleModal()" title="Manage Couple Package">Configure</button>
                     </div>
-                    <div id="coupleSidebarStatus" style="font-size:11px; color:var(--text-muted); line-height:1.4;">
-                        <span id="coupleSidebarNames" style="font-weight:600; color:var(--text-main);">Farid &amp; Khesy</span><br>
+                    <div id="coupleSidebarStatus" style="font-size:12px; color:var(--text-muted); line-height:1.4;">
+                        <span id="coupleSidebarNames" style="font-weight:600; color:var(--text-main);">Loading...</span><br>
                         <span style="color:var(--text-muted);">Points &amp; access synced</span>
                     </div>
                 </div>
@@ -255,9 +251,11 @@
         <script>
           function toggleOrgSidebar(btn) {
               const sb = document.getElementById('orgSidebar');
-              sb.classList.toggle('collapsed');
-              const isCol = sb.classList.contains('collapsed');
-              btn.innerHTML = isCol ? '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>' : '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>';
+              if (sb) {
+                  sb.classList.toggle('collapsed');
+                  const isCollapsed = sb.classList.contains('collapsed');
+                  if (btn) btn.title = isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar';
+              }
           }
         </script>
         
@@ -316,6 +314,22 @@
                       <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"></path><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"></path><circle cx="12" cy="12" r="2"></circle><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"></path><path d="M19.1 4.9C23 8.8 23 15.1 19.1 19"></path></svg>
                       <span>Broadcast</span>
                     </button>
+                </div>
+                <!-- Guest Cleanup in Team Tab -->
+                <div class="guest-cleanup-team-card">
+                    <div class="guest-cleanup-inner">
+                        <label for="guestCleanupHours" class="guest-cleanup-label">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                            <span>Clean Guests &gt;</span>
+                        </label>
+                        <input type="number" id="guestCleanupHours" min="1" max="8760" step="1" value="24" inputmode="numeric" class="auth-input guest-cleanup-hours-input" title="Hours old" />
+                        <span class="guest-cleanup-unit">hrs</span>
+                        <button id="btnGuestCleanup" class="btn-unified danger guest-cleanup-btn" title="Clean stale guest accounts">
+                            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            <span>Clean</span>
+                        </button>
+                    </div>
+                    <div id="guestCleanupResult" role="status" aria-live="polite" class="cleanup-result"></div>
                 </div>
             </div>
             
@@ -476,7 +490,10 @@
       <!-- API KEYS VIEW -->
       <div id="viewApiKeys" class="view-section">
         <div class="toolbar">
-          <h2 class="toolbar-header">API Keys</h2>
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <h2 class="toolbar-header" style="margin:0;">Developer API Keys & AI Connectors</h2>
+            <div style="font-size:13px; color:var(--text-muted);">Kelola kunci akses MCP dan hubungkan Google Antigravity, Claude, atau ChatGPT ke MR-CAPSULES.</div>
+          </div>
           <button id="btnRefreshApiKeys" class="btn-unified">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
             Refresh
@@ -484,99 +501,159 @@
         </div>
 
         <div class="api-keys-container">
-          <div id="apiKeysAccessInfo" class="api-keys-card" style="display:none; color:var(--text-muted); font-size:13px;">
-            You must join a division to generate API keys. Go to the <strong>Team</strong> tab to join one.
+          <!-- 1. Stats & Quota Summary Cards -->
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:14px; margin-bottom:24px;">
+            <div class="api-stat-tile">
+              <div class="api-stat-label">Kunci API Developer</div>
+              <div class="api-stat-value" id="statActiveKeys">0 / 5</div>
+              <div class="api-stat-sub">Quota aktif per akun</div>
+            </div>
+            <div class="api-stat-tile">
+              <div class="api-stat-label">Sesi AI Terhubung</div>
+              <div class="api-stat-value" id="statOauthSessions">0</div>
+              <div class="api-stat-sub">Via OAuth 2.0 PKCE</div>
+            </div>
+            <div class="api-stat-tile">
+              <div class="api-stat-label">MCP Gateway Status</div>
+              <div class="api-stat-value" id="statMcpGateway" style="color:#10b981; font-size:16px; display:flex; align-items:center; gap:6px;">
+                <span style="width:8px; height:8px; border-radius:50%; background:#10b981; display:inline-block;"></span>
+                Online (v1.2.0)
+              </div>
+              <div class="api-stat-sub"><code style="font-size:12px;">POST /api/mcp</code></div>
+            </div>
           </div>
 
-          <div id="apiKeysGenerateSection" style="display:none;">
-            <div class="api-keys-card">
-              <h3 style="margin:0 0 6px 0; font-size:14px; font-weight:600; color:var(--text-main);">Generate New API Key</h3>
-              <p style="margin:0 0 16px 0; font-size:13px; color:var(--text-muted);">AI assistants (Claude, ChatGPT, etc.) use this key via <code style="font-size:11px; background:var(--bg-inset); padding:2px 6px; border-radius:4px;">POST /api/mcp</code></p>
-              <div class="api-keys-form-row">
-                <div style="flex:1; min-width:200px;">
-                  <label class="form-label" for="newKeyName">Key Name</label>
-                  <input type="text" id="newKeyName" class="auth-input" placeholder="e.g. Claude Desktop, My Script" maxlength="50" style="width:100%;">
+          <!-- 2. Generate New API Key Card -->
+          <div id="apiKeysGenerateSection" class="api-keys-card" style="margin-bottom:24px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+              <div>
+                <h3 style="margin:0 0 4px 0; font-size:15px; font-weight:700; color:var(--text-main);">+ Buat API Key Baru</h3>
+                <p style="margin:0; font-size:13px; color:var(--text-muted);">Gunakan kunci ini untuk otentikasi Bearer token pada AI Assistant, script otomasi, atau MCP server.</p>
+              </div>
+              <span style="font-size:12px; font-weight:700; color:var(--c4); background:color-mix(in srgb, var(--c4) 10%, transparent); padding:3px 8px; border-radius:6px;">POST /api/mcp</span>
+            </div>
+            <div class="api-keys-form-row">
+              <div style="flex:2; min-width:240px;">
+                <label class="form-label" for="newKeyName">Nama Kunci (Deskripsi)</label>
+                <input type="text" id="newKeyName" class="auth-input" placeholder="contoh: Google Antigravity, Claude Desktop, Mac Mini" maxlength="50" style="width:100%;">
+              </div>
+              <div style="flex:1; min-width:160px;">
+                <label class="form-label" for="newKeyExpiry">Masa Berlaku</label>
+                <select id="newKeyExpiry" class="auth-input" style="width:100%;">
+                  <option value="">Tanpa Batas (Never)</option>
+                  <option value="30">30 Hari</option>
+                  <option value="90">90 Hari</option>
+                  <option value="365">1 Tahun</option>
+                </select>
+              </div>
+              <button id="btnGenerateApiKey" class="btn-unified primary" style="white-space:nowrap; height:40px; padding:0 20px; font-weight:700;">+ Buat Kunci API</button>
+            </div>
+          </div>
+
+          <!-- 3. Active Developer API Keys Card List -->
+          <div class="api-keys-card" style="margin-bottom:24px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+              <div>
+                <h3 style="margin:0 0 4px 0; font-size:15px; font-weight:700; color:var(--text-main);">Daftar Kunci API Developer</h3>
+                <p style="margin:0; font-size:12.5px; color:var(--text-muted);">Kunci aktif yang dapat mengakses 78 tools MCP MR-CAPSULES.</p>
+              </div>
+              <span id="apiKeysQuotaBadge" style="font-size:12px; font-weight:700; padding:4px 10px; border-radius:99px; background:var(--accent-soft); color:var(--accent);">Memuat...</span>
+            </div>
+            <div id="apiKeysList">
+              <div style="color:var(--text-muted); font-size:14px; padding:24px; text-align:center;">Memuat daftar kunci API...</div>
+            </div>
+          </div>
+
+          <!-- 4. Connected AI Sessions (OAuth 2.0 PKCE) -->
+          <div class="api-keys-card" style="margin-bottom:28px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+              <div>
+                <div class="api-keys-section-title" style="margin-bottom:4px;">
+                  <span style="background:var(--accent-soft); color:var(--accent); padding:3px 8px; border-radius:99px; font-size:12px;">MCP OAUTH 2.0</span>
+                  <span>Sesi AI Terhubung (Antigravity / Claude / ChatGPT)</span>
                 </div>
-                <div style="min-width:160px;">
-                  <label class="form-label" for="newKeyExpiry">Expires In</label>
-                  <select id="newKeyExpiry" class="auth-input" style="width:100%;">
-                    <option value="">Never</option>
-                    <option value="30">30 days</option>
-                    <option value="90">90 days</option>
-                    <option value="365">1 year</option>
-                  </select>
-                </div>
-                <button id="btnGenerateApiKey" class="btn-unified primary" style="white-space:nowrap;">+ Generate Key</button>
+                <p style="margin:0; font-size:12.5px; color:var(--text-muted);">Aplikasi yang terhubung otomatis menggunakan protokol OAuth 2.0 PKCE tanpa menyimpan kunci statis.</p>
               </div>
             </div>
+            <div id="oauthTokensList">
+              <div style="color:var(--text-muted); font-size:14px; padding:24px; text-align:center;">Memuat sesi OAuth...</div>
+            </div>
           </div>
 
-          <div id="apiKeyRevealBox" class="api-keys-reveal-box">
-            <div style="font-size:13px; font-weight:600; color:var(--c4); margin-bottom:12px;">Copy this key now — it will NOT be shown again.</div>
-            <div style="display:flex; gap:10px; align-items:center; margin-bottom:16px;">
-              <code id="apiKeyRevealText" style="flex:1; font-family:var(--font-mono); font-size:13px; background:var(--bg-inset); padding:10px 14px; border-radius:8px; word-break:break-all; color:var(--text-main);"></code>
-              <button id="btnCopyApiKey" class="btn-unified primary" style="white-space:nowrap;">Copy</button>
+          <!-- 5. AI Assistant Connectors Section (Permanent & Dedicated 3-Column Grid) -->
+          <div style="margin-bottom:32px;">
+            <div class="api-keys-section-title" style="margin-bottom:8px;">
+              <span style="background:var(--c4); color:var(--c1); font-weight:800; padding:3px 8px; border-radius:99px; font-size:12px;">PANDUAN KONEKTOR AI</span>
+              <span>Hubungkan Asisten AI ke MR-CAPSULES</span>
             </div>
-            
-            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:16px; margin-top:16px;">
-              <!-- CLAUDE CONNECTOR CARD -->
-              <div style="background:var(--bg-card); border:1px solid var(--border-light); border-radius:10px; padding:16px;">
-                <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
-                  <span style="background:var(--accent-soft); color:var(--accent); font-weight:700; font-size:11px; padding:3px 8px; border-radius:99px;">CLAUDE MCP</span>
-                  <strong style="font-size:13px; color:var(--text-main);">Claude.ai Connector (Streamable HTTP)</strong>
+            <p style="margin:0 0 16px 0; font-size:13px; color:var(--text-muted);">Pilih salah satu metode integrasi di bawah untuk mengaktifkan 78 tools medis & konten ke asisten AI Anda.</p>
+
+            <div class="api-connector-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:18px;">
+              <!-- Google Antigravity Connector -->
+              <div class="connector-card">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="background:var(--c4); color:var(--c1); font-weight:800; font-size:12px; padding:3px 8px; border-radius:99px;">ANTIGRAVITY</span>
+                    <strong style="font-size:13.5px; color:var(--text-main);">Google Antigravity Connector</strong>
+                  </div>
                 </div>
-                <div class="api-keys-step">1. Claude.ai &rarr; <strong>Settings</strong> &rarr; <strong>Connectors</strong> &rarr; <strong>Add Custom Connector</strong></div>
-                <div class="api-keys-step">2. Name: <code style="background:var(--bg-inset); padding:2px 5px; border-radius:4px;">Mr Capsules</code></div>
+                <div class="api-keys-step">1. <strong>OAuth 2.0 PKCE Flow (Satu Klik):</strong> Buka otorisasi langsung untuk agen/IDE Antigravity:</div>
+                <div style="margin:8px 0 12px 0;">
+                  <a href="/authorize?client_id=antigravity-mcp&redirect_uri=antigravity://oauth/callback&response_type=code" target="_blank" class="btn-unified primary" style="display:inline-block; text-decoration:none; padding:7px 14px; font-size:12px; font-weight:700;">🚀 Connect via Antigravity OAuth</a>
+                </div>
+                <div class="api-keys-step">2. <strong>Streamable HTTP Config:</strong> Konfigurasi server MCP (settings/mcp):</div>
+                <div style="display:flex; gap:6px; margin:8px 0 10px 0; align-items:center; flex-wrap:wrap;">
+                  <button id="btnCopyAntigravityConfig" class="btn-unified" style="padding:5px 10px; font-size:12px; white-space:nowrap;">📋 Copy MCP Config JSON</button>
+                  <button id="btnCopyAntigravityEndpoint" class="btn-unified" style="padding:5px 10px; font-size:12px; white-space:nowrap;">Copy HTTP Endpoint</button>
+                </div>
+                <div class="api-keys-step">3. <strong>Endpoint:</strong> <code style="background:var(--bg-inset); padding:3px 6px; border-radius:4px; font-size:12px;">https://mr-capsules.vercel.app/api/mcp</code></div>
+              </div>
+
+              <!-- Claude Connector -->
+              <div class="connector-card">
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+                  <span style="background:var(--accent-soft); color:var(--accent); font-weight:800; font-size:12px; padding:3px 8px; border-radius:99px;">CLAUDE MCP</span>
+                  <strong style="font-size:13.5px; color:var(--text-main);">Claude.ai Connector (Streamable HTTP)</strong>
+                </div>
+                <div class="api-keys-step">1. Buka Claude.ai &rarr; <strong>Settings</strong> &rarr; <strong>Connectors</strong> &rarr; <strong>Add Custom Connector</strong></div>
+                <div class="api-keys-step">2. Nama: <code style="background:var(--bg-inset); padding:2px 5px; border-radius:4px;">Mr Capsules</code></div>
                 <div class="api-keys-step">3. URL: <code style="background:var(--bg-inset); padding:2px 5px; border-radius:4px;">https://mr-capsules.vercel.app/api/mcp</code></div>
                 <div class="api-keys-step">4. Klik <strong>Add</strong> &rarr; <strong>Connect</strong> &rarr; Login akun Mr. Capsules</div>
+                <div style="margin-top:10px;">
+                  <button id="btnCopyClaudeEndpoint" class="btn-unified" style="width:100%; font-size:12px; padding:6px 10px;">📋 Salin URL Endpoint Claude</button>
+                </div>
               </div>
 
-              <!-- CHATGPT CONNECTOR CARD -->
-              <div style="background:var(--bg-card); border:1px solid var(--border-light); border-radius:10px; padding:16px;">
-                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+              <!-- ChatGPT Connector -->
+              <div class="connector-card">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
                   <div style="display:flex; align-items:center; gap:8px;">
-                    <span style="background:var(--accent-soft); color:var(--c4); border:1px solid var(--border-medium); font-weight:700; font-size:11px; padding:3px 8px; border-radius:99px;">CHATGPT ACTIONS</span>
-                    <strong style="font-size:13px; color:var(--text-main);">ChatGPT Custom GPT Connector</strong>
+                    <span style="background:var(--accent-soft); color:var(--c4); border:1px solid var(--border-medium); font-weight:800; font-size:12px; padding:3px 8px; border-radius:99px;">CHATGPT ACTIONS</span>
+                    <strong style="font-size:13.5px; color:var(--text-main);">ChatGPT Custom GPT Connector</strong>
                   </div>
                 </div>
                 <div class="api-keys-step">1. ChatGPT &rarr; <strong>Explore GPTs</strong> &rarr; <strong>Create/Configure</strong> &rarr; <strong>Actions</strong> &rarr; <strong>Create new action</strong></div>
-                <div class="api-keys-step">2. Klik <strong>Import from URL</strong> &rarr; Tempelkan URL Skema OpenAPI:</div>
-                <div style="display:flex; gap:6px; margin:6px 0 8px 0; align-items:center;">
-                  <select id="chatGptPresetSelect" class="auth-input" style="padding:4px 8px; font-size:12px; height:auto;">
-                    <option value="essential">Essential Preset (~24 Tools, Best for 30 Limit)</option>
+                <div class="api-keys-step">2. Klik <strong>Import from URL</strong> &rarr; Pilih kategori & tempelkan URL:</div>
+                <div style="display:flex; gap:6px; margin:8px 0; align-items:center; flex-wrap:wrap;">
+                  <select id="chatGptPresetSelect" class="auth-input" style="padding:4px 8px; font-size:12px; height:auto; flex:1; min-width:140px;">
+                    <option value="essential">Essential Preset (~24 Tools)</option>
                     <option value="doctortablet">DoctorTablet Medical Vault (8 Tools)</option>
                     <option value="content">Content & Storage (12 Tools)</option>
                     <option value="tasks">Tasks Board & Kanban (14 Tools)</option>
                     <option value="all">Full Suite (78 Tools)</option>
                   </select>
-                  <button id="btnCopyOpenApiUrl" class="btn-unified" style="padding:4px 10px; font-size:12px; white-space:nowrap;">Copy URL</button>
-                  <button id="btnCopyOpenApiJson" class="btn-unified" style="padding:4px 10px; font-size:12px; white-space:nowrap;">Copy JSON</button>
+                  <button id="btnCopyOpenApiUrl" class="btn-unified" style="padding:5px 10px; font-size:12px; white-space:nowrap;">Copy URL</button>
+                  <button id="btnCopyOpenApiJson" class="btn-unified" style="padding:5px 10px; font-size:12px; white-space:nowrap;">Copy JSON</button>
                 </div>
-                <div class="api-keys-step">3. <strong>Authentication:</strong> API Key (Bearer: tempel key di atas) ATAU OAuth 2.0</div>
+                <div class="api-keys-step">3. <strong>Authentication:</strong> Tempel API Key di atas (Bearer) ATAU OAuth 2.0</div>
                 <div class="api-keys-step">4. <strong>Privacy Policy URL:</strong> <code style="background:var(--bg-inset); padding:2px 5px; border-radius:4px;">https://mr-capsules.vercel.app/docs#privacy</code></div>
                 <div style="margin-top:8px;">
-                  <button id="btnCopyGptPrompt" class="btn-unified" style="width:100%; font-size:11px; padding:5px 8px;">📋 Copy DoctorTablet System Prompt</button>
+                  <button id="btnCopyGptPrompt" class="btn-unified" style="width:100%; font-size:12px; padding:8px 12px; min-height:36px;">📋 Copy DoctorTablet System Prompt</button>
                 </div>
               </div>
             </div>
           </div>
-
-          <div style="margin-bottom: 28px;">
-            <div class="api-keys-section-title">
-              <span style="background:var(--accent-soft); color:var(--accent); padding:4px 10px; border-radius:99px; font-size:11px;">MCP OAuth</span>
-              <span>Connected Claude / Client Sessions</span>
-            </div>
-            <div id="oauthTokensList">
-              <div style="color:var(--text-muted); font-size:14px; padding:24px; text-align:center;">Loading OAuth sessions...</div>
-            </div>
-          </div>
-
-          <div>
-            <div class="api-keys-section-title" style="color:var(--text-muted);">Developer API Keys (max 5)</div>
-            <div id="apiKeysList">
-              <div style="color:var(--text-muted); font-size:14px; padding:24px; text-align:center;">Loading...</div>
-            </div>
-          </div>
+        </div>
       </div>
     </div>
 
@@ -798,8 +875,8 @@
           </select>
         </div>
         <div style="display:flex; align-items:center; gap:8px; margin-top:-6px; margin-bottom:4px; text-align:left;">
-          <input type="checkbox" id="chkShowAllUsersForDivision" onchange="window.renderAddMemberUserDropdown(document.getElementById('selectMemberDivision').value)" style="cursor:pointer;" />
-          <label for="chkShowAllUsersForDivision" style="font-size:11px; color:var(--text-muted); cursor:pointer;">Tampilkan semua user (termasuk yang ingin pindah divisi)</label>
+          <input type="checkbox" id="chkShowAllUsersForDivision" onchange="window.renderAddMemberUserDropdown(document.getElementById('selectMemberDivision').value)" style="cursor:pointer; width:16px; height:16px;" />
+          <label for="chkShowAllUsersForDivision" style="font-size:12.5px; color:var(--text-muted); cursor:pointer;">Tampilkan semua user (termasuk yang ingin pindah divisi)</label>
         </div>
         <div class="form-group" style="text-align:left;">
           <label for="selectMemberRole" style="display:block; margin-bottom:6px; font-size:12px; font-weight:700; color:var(--text-main);">PERAN / ROLE</label>
@@ -843,7 +920,7 @@
           </select>
         </div>
         <div id="coupleCurrentBox" style="padding:10px 14px; background:var(--c1); border:1px solid var(--border-light); border-radius:4px; font-size:12px; line-height:1.4; text-align:left;">
-          <span style="font-weight:700;">Status Saat Ini:</span> <span id="coupleCurrentStatusText" style="color:var(--text-main);">Farid (farid.hmzh00@gmail.com) &amp; Khesy (khesyian@gmail.com)</span>
+          <span style="font-weight:700;">Status Saat Ini:</span> <span id="coupleCurrentStatusText" style="color:var(--text-main);">Loading...</span>
         </div>
         <div class="modal-actions" style="display:flex; justify-content:space-between; gap:10px;">
           <button class="btn-unified" style="color:var(--danger);" onclick="window.unlinkCouplePackage()">Unlink Couple</button>
@@ -872,6 +949,70 @@
            <button class="btn-unified primary division-picker-btn" onclick="joinDivision('review')">Database Review (Quality Assurance)</button>
            <button class="btn-unified primary division-picker-btn" onclick="joinDivision('management')">Management (Pengurus & Inovasi)</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- API Key Created Success Modal -->
+  <div id="apiKeyCreatedModal" class="settings-overlay">
+    <div class="settings-box" style="max-width:580px; width:95%;">
+      <div class="settings-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:18px;">🔑</span>
+          <span class="modal-title" style="letter-spacing:0.5px;">KUNCI API BARU DIBUAT</span>
+        </div>
+        <button class="btn-text" id="btnCloseApiKeyModalX" onclick="if(window.ModalManager) ModalManager.close(document.getElementById('apiKeyCreatedModal')); else document.getElementById('apiKeyCreatedModal').classList.remove('active');">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          CLOSE
+        </button>
+      </div>
+      <div class="settings-body" style="padding:20px 24px; display:flex; flex-direction:column; gap:16px;">
+        
+        <!-- Status alert banner -->
+        <div style="background:color-mix(in srgb, #10b981 12%, transparent); border:1px solid rgba(16, 185, 129, 0.4); border-radius:8px; padding:12px 16px; display:flex; align-items:center; gap:10px;">
+          <span style="font-size:18px;">✅</span>
+          <div style="font-size:13px; color:var(--text-main); font-weight:600;">
+            Kunci API baru Anda siap digunakan dan telah otomatis disalin ke clipboard!
+          </div>
+        </div>
+
+        <!-- Warning notice -->
+        <div style="background:color-mix(in srgb, #f59e0b 12%, transparent); border:1px solid rgba(245, 158, 11, 0.4); border-radius:8px; padding:12px 16px; font-size:12.5px; line-height:1.5; color:var(--text-main);">
+          <strong style="color:#d97706; display:block; margin-bottom:4px;">⚠️ PENTING — Simpan Sekarang:</strong>
+          Kunci rahasia ini <strong>HANYA DITAMPILKAN SATU KALI INI</strong> demi keamanan data. Setelah Anda menutup jendela ini, kunci lengkap tidak dapat dilihat kembali.
+        </div>
+
+        <!-- Raw key input & big copy button -->
+        <div>
+          <label class="form-label" style="margin-bottom:6px; display:block;">Kunci API Lengkap (Raw Secret Key):</label>
+          <div style="display:flex; gap:8px; align-items:stretch;">
+            <input type="text" id="createdApiKeyInput" readonly class="auth-input" style="font-family:var(--font-mono); font-size:13px; font-weight:700; color:var(--c4); background:var(--bg-inset); padding:10px 14px; flex:1; border-radius:8px; cursor:pointer;" title="Klik untuk seleksi semua" onclick="this.select();">
+            <button id="btnCopyCreatedKey" class="btn-unified primary" style="white-space:nowrap; padding:0 18px; font-weight:700; display:flex; align-items:center; gap:6px;">
+              <span id="btnCopyCreatedKeyIcon">📋</span>
+              <span id="btnCopyCreatedKeyText">Salin Kunci</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick copy config helpers -->
+        <div style="background:var(--bg-card); border:1px solid var(--border-light); border-radius:10px; padding:14px 16px;">
+          <div style="font-size:11.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:10px; letter-spacing:0.04em;">
+            ⚡ Quick Export Konfigurasi AI Assistant:
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button id="btnModalCopyAntigravityConfig" class="btn-unified" style="font-size:12px; padding:6px 12px;">📋 Config Antigravity JSON</button>
+            <button id="btnModalCopyClaudeConfig" class="btn-unified" style="font-size:12px; padding:6px 12px;">📋 Config Claude Desktop</button>
+            <button id="btnModalCopyBearerHeader" class="btn-unified" style="font-size:12px; padding:6px 12px;">📋 Header Bearer Token</button>
+          </div>
+        </div>
+
+        <!-- Action Button -->
+        <div style="display:flex; justify-content:flex-end; margin-top:8px;">
+          <button id="btnCloseApiKeyModalDone" class="btn-unified primary" style="padding:10px 24px; font-size:13.5px; font-weight:700; width:100%; text-align:center;">
+            ✓ Saya Sudah Menyimpan Kunci Ini (Selesai & Tutup)
+          </button>
+        </div>
+
       </div>
     </div>
   </div>

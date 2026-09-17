@@ -33,6 +33,10 @@ export default async function handler(req, res) {
       lower.endsWith('chatgpt.com') ||
       lower.endsWith('oaistatic.com') ||
       lower.endsWith('oaiusercontent.com') ||
+      lower.endsWith('antigravity.google') ||
+      lower.includes('google.com') ||
+      lower.includes('gemini.google.com') ||
+      lower.includes('antigravity') ||
       lower.endsWith('vercel.app') ||
       lower.includes('localhost') ||
       lower.includes('127.0.0.1')
@@ -120,7 +124,7 @@ export default async function handler(req, res) {
     const trimmed = uri.trim();
 
     // Support custom desktop application URI schemes
-    if (/^(chatgpt|openai|claude|vscode|cursor):\/\//i.test(trimmed)) {
+    if (/^(chatgpt|openai|claude|vscode|cursor|antigravity|gemini):\/\//i.test(trimmed)) {
       return true;
     }
 
@@ -151,6 +155,11 @@ export default async function handler(req, res) {
         host.endsWith('.claude.ai') ||
         host === 'anthropic.com' ||
         host.endsWith('.anthropic.com') ||
+        host === 'antigravity.google' ||
+        host.endsWith('.antigravity.google') ||
+        host === 'google.com' ||
+        host.endsWith('.google.com') ||
+        host === 'gemini.google.com' ||
         host === 'mr-capsules.vercel.app' ||
         host.endsWith('.vercel.app')
       ) {
@@ -181,12 +190,26 @@ export default async function handler(req, res) {
   // Handle POST submit (User Approval / Authentication)
   if (req.method === 'POST') {
     let body = req.body;
+    if (Buffer.isBuffer(body)) {
+      body = body.toString('utf-8');
+    }
     if (typeof body === 'string') {
-      try {
-        const params = new URLSearchParams(body);
-        body = Object.fromEntries(params.entries());
-      } catch(e) {
-        try { body = JSON.parse(body); } catch(err) {}
+      const trimmed = body.trim();
+      if (trimmed.startsWith('{')) {
+        try { body = JSON.parse(trimmed); } catch(e) {}
+      }
+      if (typeof body === 'string') {
+        try {
+          const params = new URLSearchParams(trimmed);
+          const parsed = Object.fromEntries(params.entries());
+          if (Object.keys(parsed).length > 0 && parsed[Object.keys(parsed)[0]] !== '') {
+            body = parsed;
+          } else {
+            try { body = JSON.parse(trimmed); } catch(err) {}
+          }
+        } catch(e) {
+          try { body = JSON.parse(trimmed); } catch(err) {}
+        }
       }
     }
     body = body || {};
@@ -196,12 +219,14 @@ export default async function handler(req, res) {
 
     let authenticatedUser = null;
 
-    // 1. Try session token verification with Supabase
-    if (sessionToken && SB_SERVICE_KEY) {
+    const ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhkaHZybGtpem9yc2N2ZWh0dHpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyNjMwNzIsImV4cCI6MjA5MjgzOTA3Mn0.m6L3oEVAfyp2TjYmBCfDRo_30rdsWLEsGVZzRZIy3MU';
+
+    // 1. Try active session token verification if provided
+    if (sessionToken) {
       try {
         const userRes = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
           headers: {
-            'apikey': SB_SERVICE_KEY,
+            'apikey': SB_SERVICE_KEY || ANON_KEY,
             'Authorization': `Bearer ${sessionToken}`
           }
         });
@@ -211,7 +236,7 @@ export default async function handler(req, res) {
       } catch(e) {}
     }
 
-    // 2. Try password authentication with Supabase Auth
+    // 2. Fall back to password authentication if not authenticated by session token
     if (!authenticatedUser && email && password) {
       let targetEmail = email.toLowerCase().trim();
 
@@ -232,8 +257,6 @@ export default async function handler(req, res) {
           }
         } catch(e) {}
       }
-
-      const ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhkaHZybGtpem9yc2N2ZWh0dHpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyNjMwNzIsImV4cCI6MjA5MjgzOTA3Mn0.m6L3oEVAfyp2TjYmBCfDRo_30rdsWLEsGVZzRZIy3MU';
 
       try {
         let authRes = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
@@ -265,6 +288,16 @@ export default async function handler(req, res) {
         }
       } catch(err) {
         errorMessage = 'Authentication error: ' + err.message;
+      }
+    }
+
+    // Explicitly reject guest accounts from OAuth authorization
+    if (authenticatedUser) {
+      const uEmail = (authenticatedUser.email || email).toLowerCase().trim();
+      const isGuest = uEmail.startsWith('guest_') || /^guest_\d+_\d+@/i.test(uEmail) || authenticatedUser.user_metadata?.is_guest === true;
+      if (isGuest) {
+        errorMessage = 'Guest accounts cannot authorize external AI connectors. Please sign in with a registered account.';
+        authenticatedUser = null;
       }
     }
 
@@ -349,8 +382,18 @@ export default async function handler(req, res) {
   const actionUrl = `/authorize?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&state=${encodeURIComponent(state)}&code_challenge=${encodeURIComponent(codeChallenge)}&code_challenge_method=${encodeURIComponent(codeChallengeMethod)}&resource=${encodeURIComponent(canonicalResource)}`;
 
   // Detect client type for tailored UI branding
-  const isChatGPT = (redirectUri && (redirectUri.includes('openai.com') || redirectUri.includes('chatgpt.com'))) || clientId.includes('chatgpt') || clientId.includes('openai');
-  const clientDisplayName = isChatGPT ? 'ChatGPT' : (clientId.includes('claude') || (redirectUri && redirectUri.includes('claude.ai')) ? 'Claude' : 'AI Assistant');
+  const isAntigravity = clientId.includes('antigravity') || 
+                        clientId.includes('gemini') || 
+                        (redirectUri && (redirectUri.includes('antigravity') || redirectUri.startsWith('antigravity://') || redirectUri.startsWith('gemini://')));
+  const isChatGPT = !isAntigravity && ((redirectUri && (redirectUri.includes('openai.com') || redirectUri.includes('chatgpt.com'))) || clientId.includes('chatgpt') || clientId.includes('openai'));
+  const isClaude = !isAntigravity && !isChatGPT && (clientId.includes('claude') || (redirectUri && redirectUri.includes('claude.ai')));
+  const clientDisplayName = isAntigravity ? 'Google Antigravity' : (isChatGPT ? 'ChatGPT' : (isClaude ? 'Claude' : 'AI Assistant'));
+
+  const clientBadgeStyle = isAntigravity
+    ? 'background:var(--c4, #003870); color:var(--c1, #DCF4A2); border:1.5px solid var(--c4, #003870);'
+    : (isChatGPT 
+      ? 'background:var(--c4, #003870); color:var(--c1, #DCF4A2); border:1.5px solid var(--c4, #003870);' 
+      : 'background:transparent; color:var(--c4, #003870); border:1.5px solid var(--border-medium, rgba(0,85,164,0.45));');
 
   const html = `
     <!DOCTYPE html>
@@ -399,9 +442,7 @@ export default async function handler(req, res) {
         .logo-icon { width: 40px; height: 40px; border-radius: 8px; }
         .plus-icon { color: var(--text-muted, #0055A4); font-size: 18px; font-weight: 300; opacity: 0.6; }
         .client-badge {
-          background: ${isChatGPT ? 'var(--c4, #003870)' : 'transparent'};
-          color: ${isChatGPT ? 'var(--c1, #DCF4A2)' : 'var(--c4, #003870)'};
-          border: 1.5px solid ${isChatGPT ? 'var(--c4, #003870)' : 'var(--border-medium, rgba(0,85,164,0.45))'};
+          ${clientBadgeStyle}
           font-family: 'OffBit-DotBold', 'Courier New', monospace;
           font-weight: 700;
           font-size: 13px;
@@ -426,15 +467,31 @@ export default async function handler(req, res) {
         .session-detected-box {
           display: none;
           background: color-mix(in srgb, var(--c3, #0055A4) 8%, transparent);
-          border: 1.5px solid var(--border-medium, rgba(0,85,164,0.45));
+          border: 1.5px solid var(--c3, #0055A4);
           color: var(--c3, #0055A4);
-          padding: 12px 14px;
+          padding: 14px 16px;
           border-radius: 8px;
           font-size: 13px;
           margin-bottom: 20px;
           text-align: left;
         }
-        .session-detected-box strong { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 2px; }
+        .session-badge {
+          display: inline-block;
+          background: var(--c4, #003870);
+          color: var(--c1, #DCF4A2);
+          font-family: 'OffBit-DotBold', monospace;
+          font-size: 10.5px;
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
+          padding: 3px 8px;
+          border-radius: 99px;
+        }
+        .session-user-line {
+          font-size: 14px;
+          color: var(--c4, #003870);
+          margin-top: 6px;
+          word-break: break-all;
+        }
         .error-banner {
           background: color-mix(in srgb, var(--danger, #003870) 10%, transparent);
           border: 1.5px solid color-mix(in srgb, var(--danger, #003870) 45%, transparent);
@@ -464,9 +521,10 @@ export default async function handler(req, res) {
           background: transparent;
           color: var(--c3, #0055A4);
           font-family: 'OffBit-Dot', 'Courier New', monospace;
-          font-size: 14px;
+          font-size: 16px; /* 16px prevents iOS Safari from auto-zooming on focus */
           outline: none;
           transition: border-color 0.2s ease, box-shadow 0.2s ease;
+          -webkit-appearance: none;
         }
         input[type="email"]:focus, input[type="text"]:focus, input[type="password"]:focus {
           border-color: var(--c4, #003870);
@@ -489,7 +547,7 @@ export default async function handler(req, res) {
         .password-toggle:hover { color: var(--c3, #0055A4); }
         .btn-submit {
           width: 100%;
-          padding: 13px;
+          padding: 14px;
           border-radius: 99px;
           border: none;
           background: var(--c3, #0055A4);
@@ -499,11 +557,44 @@ export default async function handler(req, res) {
           font-size: 14px;
           letter-spacing: 0.03em;
           cursor: pointer;
-          transition: opacity 0.2s ease, transform 0.1s ease;
+          transition: opacity 0.2s ease, transform 0.1s ease, background 0.2s ease;
           margin-top: 6px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
         }
-        .btn-submit:hover { opacity: 0.9; }
-        .btn-submit:active { transform: scale(0.98); }
+        .btn-submit:hover:not(:disabled) { opacity: 0.9; }
+        .btn-submit:active:not(:disabled) { transform: scale(0.98); }
+        .btn-submit:disabled {
+          opacity: 0.75;
+          cursor: not-allowed;
+          background: var(--c4, #003870);
+        }
+        .btn-switch-account {
+          background: none;
+          border: none;
+          color: var(--c4, #003870);
+          font-family: 'OffBit-Dot', monospace;
+          font-size: 12px;
+          text-decoration: underline;
+          cursor: pointer;
+          padding: 4px 8px;
+          transition: opacity 0.2s;
+        }
+        .btn-switch-account:hover { opacity: 0.75; }
+        .spinner {
+          display: inline-block;
+          width: 14px;
+          height: 14px;
+          border: 2px solid rgba(220, 244, 162, 0.4);
+          border-top-color: var(--c1, #DCF4A2);
+          border-radius: 50%;
+          animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
         .footer-note { font-size: 12px; color: var(--text-muted, #0055A4); margin-top: 20px; letter-spacing: 0.05em; }
         .footer-note a { color: var(--c4, #003870); text-decoration: underline; font-weight: 500; }
         .footer-note a:hover { opacity: 0.8; }
@@ -517,32 +608,53 @@ export default async function handler(req, res) {
           <span class="client-badge">${escHtml(clientDisplayName)}</span>
         </div>
         <h1>Connect to Mr. Capsules</h1>
-        <p class="subtitle">Authorize ${escHtml(clientDisplayName)} to access medical educational content, task workflows, and DoctorTablet notes.</p>
+        <p class="subtitle">Authorize <strong>${escHtml(clientDisplayName)}</strong> to access medical curriculum, content repository, Kanban tasks, and DoctorTablet clinical vault.</p>
 
+        <!-- Active Session Card (shown and expanded when session detected) -->
         <div id="session-detected-box" class="session-detected-box">
-          <strong>✓ Active Account Found</strong>
-          <span>Connected as <span id="detected-user-email"></span></span>
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
+            <span class="session-badge">✓ Active Account</span>
+            <span style="font-size:11px; color:var(--c4, #003870); opacity:0.8;">One-Click Authorize</span>
+          </div>
+          <div class="session-user-line">
+            Signed in as: <strong id="detected-user-email"></strong>
+          </div>
+          <div style="font-size:12px; color:var(--text-muted, #0055A4); margin-top:4px;">
+            Ready to connect directly with your existing browser session.
+          </div>
         </div>
 
-        ${errorMessage ? `<div class="error-banner">${errorMessage}</div>` : ''}
+        ${errorMessage ? `<div class="error-banner">${escHtml(errorMessage)}</div>` : ''}
 
         <form id="auth-form" method="POST" action="${actionUrl}">
           <input type="hidden" id="session_token" name="session_token" value="">
           
-          <div class="input-group">
-            <label for="email">Email Address / Username</label>
-            <input type="text" id="email" name="email" placeholder="user@domain.com" required autocomplete="username">
-          </div>
-          
-          <div class="input-group">
-            <label for="password">Password</label>
-            <div class="password-wrapper">
-              <input type="password" id="password" name="password" placeholder="Enter your password" autocomplete="current-password" required>
-              <button type="button" class="password-toggle" onclick="togglePasswordVisibility()">Show</button>
+          <!-- Credentials inputs group: HIDDEN if active session detected, VISIBLE if no session or switcher clicked -->
+          <div id="credentials-group">
+            <div class="input-group">
+              <label for="email">Email Address / Username</label>
+              <input type="text" id="email" name="email" placeholder="user@domain.com" required autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="email">
+            </div>
+            
+            <div class="input-group">
+              <label for="password">Password</label>
+              <div class="password-wrapper">
+                <input type="password" id="password" name="password" placeholder="Enter your password" autocomplete="current-password" required autocapitalize="none" autocorrect="off" spellcheck="false">
+                <button type="button" class="password-toggle" onclick="togglePasswordVisibility()">Show</button>
+              </div>
             </div>
           </div>
           
-          <button type="submit" id="submit-btn" class="btn-submit">Approve &amp; Connect ${escHtml(clientDisplayName)}</button>
+          <button type="submit" id="submit-btn" class="btn-submit">
+            <span id="btn-text">Approve &amp; Connect ${escHtml(clientDisplayName)}</span>
+          </button>
+
+          <!-- Toggle switch to use another account or reveal password -->
+          <div id="switch-account-row" style="display:none; margin-top:14px;">
+            <button type="button" id="switch-account-btn" class="btn-switch-account" onclick="switchToPasswordLogin()">
+              ⇄ Use different account or re-enter password
+            </button>
+          </div>
         </form>
 
         <div class="footer-note">
@@ -551,44 +663,58 @@ export default async function handler(req, res) {
       </div>
 
       <script>
+        var clientName = ${JSON.stringify(clientDisplayName)};
+        var hasError = ${JSON.stringify(!!errorMessage)};
+        var sessionMode = false;
+
         (function() {
           try {
-            const hasError = ${JSON.stringify(!!errorMessage)};
-            let userEmail = null;
-            let tokenVal = null;
+            var userEmail = null;
+            var tokenVal = null;
 
-            for (let i = 0; i < localStorage.length; i++) {
-              const key = localStorage.key(i);
+            for (var i = 0; i < localStorage.length; i++) {
+              var key = localStorage.key(i);
               if (key && (key.includes('auth-token') || key.includes('supabase') || key.includes('sb-'))) {
                 try {
-                  const data = JSON.parse(localStorage.getItem(key));
+                  var data = JSON.parse(localStorage.getItem(key));
                   if (data && data.user && data.user.email) {
-                    userEmail = data.user.email;
-                    tokenVal = data.access_token || (data.currentSession && data.currentSession.access_token);
-                    break;
+                    var e = data.user.email.toLowerCase();
+                    if (!e.startsWith('guest_') && !data.user.user_metadata?.is_guest) {
+                      userEmail = data.user.email;
+                      tokenVal = data.access_token || (data.currentSession && data.currentSession.access_token);
+                      break;
+                    }
                   }
-                } catch(e) {}
+                } catch(err) {}
               }
             }
 
             if (!userEmail) {
-              userEmail = localStorage.getItem('mr_user_email') || localStorage.getItem('user_email');
-            }
-
-            if (userEmail) {
-              document.getElementById('email').value = userEmail;
-              if (tokenVal && !hasError) {
-                document.getElementById('session_token').value = tokenVal;
-                document.getElementById('detected-user-email').innerText = userEmail;
-                document.getElementById('session-detected-box').style.display = 'block';
-                // If valid token found, password is not strictly required for 1-click approval
-                document.getElementById('password').removeAttribute('required');
-                document.getElementById('password').placeholder = '•••••••• (or type to re-authenticate)';
+              var stored = localStorage.getItem('mr_user_email') || localStorage.getItem('user_email');
+              if (stored && !stored.toLowerCase().startsWith('guest_')) {
+                userEmail = stored;
               }
             }
 
-            if (hasError) {
-              document.getElementById('password').focus();
+            // If an active session exists AND there wasn't a submission error, activate 1-click mode
+            if (userEmail && tokenVal && !hasError) {
+              sessionMode = true;
+              document.getElementById('session_token').value = tokenVal;
+              document.getElementById('email').value = userEmail;
+              document.getElementById('detected-user-email').innerText = userEmail;
+              document.getElementById('session-detected-box').style.display = 'block';
+              document.getElementById('credentials-group').style.display = 'none';
+              document.getElementById('password').removeAttribute('required');
+              document.getElementById('btn-text').innerText = 'Approve & Connect as ' + userEmail;
+              document.getElementById('switch-account-row').style.display = 'block';
+            } else if (userEmail) {
+              document.getElementById('email').value = userEmail;
+              if (hasError) {
+                document.getElementById('password').focus();
+              }
+            }
+
+            if (!sessionMode) {
               document.getElementById('password').setAttribute('required', 'required');
             }
           } catch(err) {
@@ -596,9 +722,20 @@ export default async function handler(req, res) {
           }
         })();
 
+        function switchToPasswordLogin() {
+          sessionMode = false;
+          document.getElementById('session_token').value = '';
+          document.getElementById('session-detected-box').style.display = 'none';
+          document.getElementById('credentials-group').style.display = 'block';
+          document.getElementById('switch-account-row').style.display = 'none';
+          document.getElementById('password').setAttribute('required', 'required');
+          document.getElementById('btn-text').innerText = 'Approve & Connect ' + clientName;
+          document.getElementById('password').focus();
+        }
+
         function togglePasswordVisibility() {
-          const passInput = document.getElementById('password');
-          const toggleBtn = document.querySelector('.password-toggle');
+          var passInput = document.getElementById('password');
+          var toggleBtn = document.querySelector('.password-toggle');
           if (passInput.type === 'password') {
             passInput.type = 'text';
             toggleBtn.innerText = 'Hide';
@@ -607,6 +744,23 @@ export default async function handler(req, res) {
             toggleBtn.innerText = 'Show';
           }
         }
+
+        // Form submit handler with instant button loading feedback
+        document.getElementById('auth-form').addEventListener('submit', function(e) {
+          var submitBtn = document.getElementById('submit-btn');
+
+          if (!sessionMode) {
+            var pass = document.getElementById('password').value;
+            if (!pass) {
+              e.preventDefault();
+              document.getElementById('password').focus();
+              return;
+            }
+          }
+
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = '<span class="spinner"></span> <span>CONNECTING TO ' + clientName.toUpperCase() + '...</span>';
+        });
       </script>
     </body>
     </html>

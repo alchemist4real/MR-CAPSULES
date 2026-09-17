@@ -13,8 +13,9 @@ export default async function handler(req, res) {
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhkaHZybGtpem9yc2N2ZWh0dHpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyNjMwNzIsImV4cCI6MjA5MjgzOTA3Mn0.m6L3oEVAfyp2TjYmBCfDRo_30rdsWLEsGVZzRZIy3MU';
 
   const githubToken = process.env.GITHUB_TOKEN;
-  const owner = 'alchemist4real';
-  const repo = 'MR-CAPSULES';
+  const owner = process.env.GITHUB_CONTENT_OWNER || process.env.GITHUB_OWNER || 'alchemist4real';
+  const repo = process.env.GITHUB_CONTENT_REPO || 'MR-CAPSULES-CONTENT';
+  const fallbackRepo = 'MR-CAPSULES';
 
   // 1. Verify User from Supabase
   const userPromise = fetch(`${supabaseUrl}/auth/v1/user`, {
@@ -72,7 +73,7 @@ export default async function handler(req, res) {
   const isAdmin = isSuperAdmin || hasAdminRole;
   const canAccessDashboard = isAdmin || hasDivision;
 
-  const host = req.headers.host || 'localhost';
+  const host = req.headers['x-forwarded-host'] || req.headers.host || 'mr-capsules.vercel.app';
   const urlObj = new URL(req.url, `https://${host}`);
   const queryAction = req.query?.action || urlObj.searchParams.get('action');
   const body = (typeof req.body === 'object' && req.body !== null) ? req.body : {};
@@ -117,9 +118,9 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Payload too large. Maximum size is 10MB.' });
   }
 
-  // Helper to make GitHub API calls
-  const ghApi = async (method, endpoint, bodyObj) => {
-    return fetch(`https://api.github.com/repos/${owner}/${repo}${endpoint}`, {
+  // Helper to make GitHub API calls with fallback
+  const ghApi = async (method, endpoint, bodyObj, targetRepo = repo) => {
+    let res = await fetch(`https://api.github.com/repos/${owner}/${targetRepo}${endpoint}`, {
       method,
       headers: {
         'Authorization': `Bearer ${githubToken}`,
@@ -128,6 +129,21 @@ export default async function handler(req, res) {
       },
       body: bodyObj ? JSON.stringify(bodyObj) : undefined
     });
+
+    if (!res.ok && res.status === 404 && targetRepo !== fallbackRepo && method === 'GET') {
+      console.warn(`[Admin API] ${targetRepo}${endpoint} returned 404. Falling back to ${fallbackRepo}...`);
+      res = await fetch(`https://api.github.com/repos/${owner}/${fallbackRepo}${endpoint}`, {
+        method,
+        headers: {
+          'Authorization': `Bearer ${githubToken}`,
+          'Accept': 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json'
+        },
+        body: bodyObj ? JSON.stringify(bodyObj) : undefined
+      });
+    }
+
+    return res;
   };
 
   // Git Data API Helpers (for bypassing 1MB limits)
@@ -165,8 +181,6 @@ export default async function handler(req, res) {
     if (action === 'download') {
       const { path } = req.body;
       if (!path) return res.status(400).json({ error: 'Missing path' });
-      const owner = 'alchemist4real';
-      const repo = 'MR-CAPSULES';
       const encodedPath = path.split('/').map(s => encodeURIComponent(s)).join('/');
       const fileRes = await ghApi('GET', `/contents/${encodedPath}`);
       if (!fileRes.ok) return res.status(404).json({ error: 'File not found on GitHub' });
@@ -407,7 +421,7 @@ export default async function handler(req, res) {
 
       const usersWithRoles = (data.users || []).map(u => {
         const roleRecord = rolesData.find(r => r.identifier === u.email || r.identifier === (u.user_metadata || {}).username);
-        const userDevices = devicesData.filter(d => d.user_id === u.id).map(d => ({ id: d.device_id, added: d.created_at }));
+        const userDevices = devicesData.filter(d => d.user_id === u.id).map(d => ({ id: d.device_id, added: d.created_at, last_seen: d.last_seen, name: d.device_name || 'Unknown', user_agent: d.user_agent || '' }));
         const divRecord = divData.find(d => d.user_id === u.id);
         
         // Ensure user_metadata exists

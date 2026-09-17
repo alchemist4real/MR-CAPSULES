@@ -49,14 +49,16 @@ export default async function handler(req, res) {
   const SUPABASE_URL = 'https://hdhvrlkizorscvehttzd.supabase.co';
   const SB_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-  const GH_OWNER = 'alchemist4real';
-  const GH_REPO = 'MR-CAPSULES';
+  const GH_OWNER = process.env.GITHUB_CONTENT_OWNER || process.env.GITHUB_OWNER || 'alchemist4real';
+  const GH_CODEBASE_REPO = 'MR-CAPSULES';
+  const GH_CONTENT_REPO = process.env.GITHUB_CONTENT_REPO || 'MR-CAPSULES-CONTENT';
+  const GH_REPO = GH_CONTENT_REPO; // Default for content, upload, and cover tools
   const SUPERADMIN_EMAIL = process.env.SUPERADMIN_EMAIL || 'muqorroben@gmail.com';
   const MAX_KEYS_PER_USER = 5;
 
   const initUrlObj = new URL(req.url, `https://${req.headers.host || 'mr-capsules.vercel.app'}`);
   if (initUrlObj.searchParams.get('upload') === 'true') {
-    return handleDirectUpload(req, res, SUPABASE_URL, SB_SERVICE_KEY, GITHUB_TOKEN, GH_OWNER, GH_REPO, SUPERADMIN_EMAIL);
+    return handleDirectUpload(req, res, SUPABASE_URL, SB_SERVICE_KEY, GITHUB_TOKEN, GH_OWNER, GH_CONTENT_REPO, SUPERADMIN_EMAIL);
   }
 
 
@@ -139,32 +141,6 @@ export default async function handler(req, res) {
         jsonrpc: '2.0',
         id: mcpRequestId,
         result: {}
-      });
-    }
-
-    // MCP tools/list — respond with static + dynamic custom tool list
-    if (method === 'tools/list') {
-      const staticTools = getMcpToolsList().map(t => ({
-        ...t,
-        name: t.name.replace(/\./g, '_')
-      }));
-      let customTools = [];
-      try {
-        customTools = (await getActiveCustomTools(SUPABASE_URL, SB_SERVICE_KEY)).map(ct => ({
-          name: ct.name,
-          description: `[Custom Tool] ${ct.description}`,
-          inputSchema: ct.inputSchema || { type: 'object', properties: {} }
-        }));
-      } catch (e) {
-        customTools = [];
-      }
-      return res.status(200).json({
-        jsonrpc: '2.0',
-        id: mcpRequestId,
-        result: {
-          tools: [...staticTools, ...customTools],
-          nextCursor: null
-        }
       });
     }
 
@@ -266,8 +242,6 @@ export default async function handler(req, res) {
   // Supports OAuth Bearer Access Tokens (mrc_at_...), API keys (mrc_...), and JWTs
   const authHeader = (req.headers.authorization || '').trim();
   const xApiKey = (req.headers['x-api-key'] || req.headers['api-key'] || '').trim();
-  const urlObj = new URL(req.url, `https://${req.headers.host || 'mr-capsules.vercel.app'}`);
-  const queryKey = (urlObj.searchParams.get('key') || '').trim();
 
   let authResult = null;
   const currentReqHost = req.headers['x-forwarded-host'] || req.headers.host || 'mr-capsules.vercel.app';
@@ -287,12 +261,10 @@ export default async function handler(req, res) {
     authResult = await authenticateApiKey(authHeader, SUPABASE_URL, SB_SERVICE_KEY);
   } else if (xApiKey.startsWith('mrc_')) {
     authResult = await authenticateApiKey(xApiKey, SUPABASE_URL, SB_SERVICE_KEY);
-  } else if (queryKey.startsWith('mrc_')) {
-    authResult = await authenticateApiKey(queryKey, SUPABASE_URL, SB_SERVICE_KEY);
   } else {
     res.setHeader(
       'WWW-Authenticate',
-      `Bearer realm="https://${currentReqHost}", error="invalid_token", error_description="Bearer token required"`
+      `Bearer realm="https://${currentReqHost}", error="invalid_token", error_description="Bearer token required", resource_metadata="https://${currentReqHost}/.well-known/oauth-protected-resource"`
     );
     const authErr = { message: 'Unauthorized. Bearer token required.' };
     if (isMcpJsonRpc) {
@@ -304,13 +276,24 @@ export default async function handler(req, res) {
   if (!authResult || authResult.error) {
     res.setHeader(
       'WWW-Authenticate',
-      `Bearer realm="https://${currentReqHost}", error="invalid_token", error_description="Invalid or expired token"`
+      `Bearer realm="https://${currentReqHost}", error="invalid_token", error_description="Invalid or expired token", resource_metadata="https://${currentReqHost}/.well-known/oauth-protected-resource"`
     );
     const msg = authResult?.error || 'Unauthorized';
     if (isMcpJsonRpc) {
       return res.status(401).json({ jsonrpc: '2.0', id: mcpRequestId, error: { code: -32001, message: msg } });
     }
     return res.status(401).json({ success: false, error: msg });
+  }
+
+  // ── Block Guest Accounts from MCP Gateway ─────────────────────────────────
+  const userEmail = (authResult.email || '').toLowerCase().trim();
+  const isGuest = userEmail.startsWith('guest_') || /^guest_\d+_\d+@/i.test(userEmail) || authResult.userMetadata?.is_guest === true;
+  if (isGuest) {
+    const guestErrMsg = 'Forbidden: Guest accounts cannot access MCP connector tools. Please sign in with a registered account.';
+    if (isMcpJsonRpc) {
+      return res.status(403).json({ jsonrpc: '2.0', id: mcpRequestId, error: { code: -32003, message: guestErrMsg } });
+    }
+    return res.status(403).json({ success: false, error: guestErrMsg });
   }
 
   // ── Rate limit (Universal: API keys, OAuth Tokens, JWTs) ─────────────────
@@ -327,10 +310,39 @@ export default async function handler(req, res) {
   // ── Resolve roles (same logic as api/admin.js) ────────────────────────────
   const roles = await resolveRoles(authResult.userId, authResult.email, SUPABASE_URL, SB_SERVICE_KEY, SUPERADMIN_EMAIL);
 
+  // ── MCP tools/list — return tool list only for verified authenticated callers ──
+  if (method === 'tools/list') {
+    const staticTools = getMcpToolsList().map(t => ({
+      ...t,
+      name: t.name.replace(/\./g, '_')
+    }));
+    let customTools = [];
+    try {
+      customTools = (await getActiveCustomTools(SUPABASE_URL, SB_SERVICE_KEY)).map(ct => ({
+        name: ct.name,
+        description: `[Custom Tool] ${ct.description}`,
+        inputSchema: ct.inputSchema || { type: 'object', properties: {} }
+      }));
+    } catch (e) {
+      customTools = [];
+    }
+    if (isMcpJsonRpc) {
+      return res.status(200).json({
+        jsonrpc: '2.0',
+        id: mcpRequestId,
+        result: {
+          tools: [...staticTools, ...customTools],
+          nextCursor: null
+        }
+      });
+    }
+    return res.status(200).json({ success: true, tools: [...staticTools, ...customTools] });
+  }
+
   // ── Route to handler ──────────────────────────────────────────────────────
   try {
     const result = await routeMethod(method, params, authResult, roles, {
-      SUPABASE_URL, SB_SERVICE_KEY, GITHUB_TOKEN, GH_OWNER, GH_REPO, MAX_KEYS_PER_USER, SUPERADMIN_EMAIL,
+      SUPABASE_URL, SB_SERVICE_KEY, GITHUB_TOKEN, GH_OWNER, GH_REPO, GH_CODEBASE_REPO, GH_CONTENT_REPO, MAX_KEYS_PER_USER, SUPERADMIN_EMAIL,
       reqHost: currentReqHost
     });
 
@@ -370,20 +382,21 @@ export default async function handler(req, res) {
 export function getMcpToolsList() {
   return [
     { name: 'system_health', description: 'Health check — returns server info and usage instructions', inputSchema: { type: 'object', properties: {} } },
-    { name: 'content_list', description: 'List all educational content organized by semester, block, and category', inputSchema: { type: 'object', properties: {} } },
-    { name: 'content_get', description: 'Download a specific content file by path (returns full HTML)', inputSchema: { type: 'object', properties: { path: { type: 'string', description: 'File path, e.g. content/semester 1/1.2/1.2-2_Overall CBT.html' } }, required: ['path'] } },
-    { name: 'content_tree', description: 'Get the full file tree of content/ and cover/ directories', inputSchema: { type: 'object', properties: {} } },
+    { name: 'content_list', description: 'List educational content organized by semester and block. Supports filtering by semester, block, category, or search keyword. Without filters, returns a compact curriculum overview to save tokens.', inputSchema: { type: 'object', properties: { semester: { type: 'string', description: 'Filter by semester name or number, e.g. "semester 1" or "1"' }, block: { type: 'string', description: 'Filter by block code, e.g. "1.2" or "2.5"' }, category: { type: 'string', description: 'Filter by category prefix, e.g. "CBT", "IDENT", "LECTURE"' }, search: { type: 'string', description: 'Search term to match file titles' }, compact: { type: 'boolean', description: 'If true, returns compact summary counts per block instead of full file lists (default true when no filters provided)' } } } },
+    { name: 'content_search', description: 'Fast keyword search across educational content titles, modules, categories, semesters, and blocks without downloading heavy HTML. Returns matching file paths and direct public URLs in <100 tokens.', inputSchema: { type: 'object', properties: { query: { type: 'string', description: 'Search keyword, e.g. "farmakologi", "reechard", "histologi", "cbt 2"' }, semester: { type: 'string', description: 'Optional semester filter, e.g. "semester 1" or "1"' }, block: { type: 'string', description: 'Optional block filter, e.g. "1.2" or "2.5"' }, category: { type: 'string', description: 'Optional category filter, e.g. "CBT", "IDENT", "LECTURE"' }, limit: { type: 'number', description: 'Maximum matching items to return (default 20, max 50)' } }, required: ['query'] } },
+    { name: 'content_get', description: 'Download and extract educational content from a file. By default uses smart extraction to strip redundant CSS/scripts and extract structured quiz questions or clean lecture text, saving up to 90% tokens.', inputSchema: { type: 'object', properties: { path: { type: 'string', description: 'File path, e.g. content/semester 2/2.5/2.5 CBT_21 REECHARD GANTENG.html' }, format: { type: 'string', enum: ['smart', 'quiz_only', 'text_only', 'metadata', 'raw'], description: 'Extraction format: "smart" (default, extracts questions or clean text), "quiz_only" (structured questions array), "text_only" (markdown notes), "metadata" (title & question count in <100 tokens), "raw" (full HTML)' }, offset: { type: 'number', description: 'Question offset for pagination (0-indexed, default 0)' }, limit: { type: 'number', description: 'Number of questions to return (default 30, max 100)' }, max_chars: { type: 'number', description: 'Safety character cap for text extraction (default 40000)' } }, required: ['path'] } },
+    { name: 'content_tree', description: 'Get content file paths. By default returns a clean array of paths saving 80% tokens, with optional prefix filtering.', inputSchema: { type: 'object', properties: { prefix: { type: 'string', description: 'Optional path prefix to filter, e.g. "content/semester 2/"' }, paths_only: { type: 'boolean', description: 'If true (default), returns string paths array. If false, returns raw git tree blobs with SHAs.' } } } },
     { name: 'content_upload', description: 'Upload a content file directly. You can pass contentBase64, contentGzipBase64 (compressed & 100% checksum-verified, ideal when network egress is blocked), OR a public url (for files up to 100MB) to fetch and commit the file reliably without chunking.', inputSchema: { type: 'object', properties: { path: { type: 'string', description: 'Target path, e.g. content/Semester 1/file.html' }, contentBase64: { type: 'string', description: 'Base64 encoded file content' }, contentGzipBase64: { type: 'string', description: 'Gzip compressed base64 encoded content (80% smaller, checksum verified)' }, url: { type: 'string', description: 'Public URL to fetch the file from' } }, required: ['path'] } },
     { name: 'content_upload_from_agent_path', description: 'Generates authenticated curl commands and instructions for Claude to upload a large local file directly from the sandbox filesystem (avoiding base64 typing corruption).', inputSchema: { type: 'object', properties: { agentFilePath: { type: 'string', description: 'Absolute file path in agent sandbox, e.g. /mnt/user-data/outputs/farmakokinetik.html' }, targetPath: { type: 'string', description: 'Target path in repository, e.g. content/semester 3/3.1/3.1 LECTURE_Am I Kinetic.html' } }, required: ['agentFilePath', 'targetPath'] } },
-    { name: 'content_pull_to_sandbox', description: 'Pull/download a content file from the repository directly into the Claude agent sandbox filesystem as a real file — instant, zero typing. Returns ready-to-run bash commands that Claude executes automatically.', inputSchema: { type: 'object', properties: { path: { type: 'string', description: 'Repository file path, e.g. content/semester 3/3.1/3.1 LECTURE_Farmakokinetika.html' }, saveTo: { type: 'string', description: 'Optional absolute destination path in sandbox. Defaults to /mnt/user-data/outputs/<filename>' } }, required: ['path'] } },
+    { name: 'content_pull_to_sandbox', description: 'Pull/download a content file directly into the sandbox filesystem without exposing API credentials. Returns clean curl and python commands.', inputSchema: { type: 'object', properties: { path: { type: 'string', description: 'Repository file path, e.g. content/semester 3/3.1/3.1 LECTURE_Farmakokinetika.html' }, saveTo: { type: 'string', description: 'Optional absolute destination path in sandbox. Defaults to /mnt/user-data/outputs/<filename>' } }, required: ['path'] } },
     { name: 'upload_init', description: 'Initialize a bulletproof chunked upload session for large files of any size (videos, PDFs, zip pools, large HTML). Prevents serverless size limits & timeouts.', inputSchema: { type: 'object', properties: { path: { type: 'string', description: 'Target path, e.g. content/Semester 1/video.mp4 or cover/semester1.png' }, totalChunks: { type: 'number', description: 'Total number of chunks to be uploaded' }, totalSizeBytes: { type: 'number', description: 'Optional estimated file size in bytes' } }, required: ['path', 'totalChunks'] } },
     { name: 'upload_chunk', description: 'Upload a single Base64 chunk (recommended size: 500KB - 1.5MB per chunk) for an active upload session.', inputSchema: { type: 'object', properties: { uploadId: { type: 'string', description: 'Session ID returned by upload_init' }, chunkIndex: { type: 'number', description: '1-indexed chunk number (1 to totalChunks)' }, chunkBase64: { type: 'string', description: 'Base64 encoded chunk data' } }, required: ['uploadId', 'chunkIndex', 'chunkBase64'] } },
     { name: 'upload_commit', description: 'Reassemble all uploaded chunks, verify integrity, and commit the complete large file to GitHub reliably.', inputSchema: { type: 'object', properties: { uploadId: { type: 'string', description: 'Session ID returned by upload_init' } }, required: ['uploadId'] } },
     { name: 'upload_status', description: 'Check status, received chunks, and missing chunks of an active chunked upload session.', inputSchema: { type: 'object', properties: { uploadId: { type: 'string', description: 'Session ID returned by upload_init' } }, required: ['uploadId'] } },
     { name: 'upload_cancel', description: 'Cancel an active chunked upload session and clean up temporary chunk data.', inputSchema: { type: 'object', properties: { uploadId: { type: 'string', description: 'Session ID returned by upload_init' } }, required: ['uploadId'] } },
-    { name: 'content_delete', description: 'Delete a content file by path', inputSchema: { type: 'object', properties: { path: { type: 'string' } }, required: ['path'] } },
+    { name: 'content_delete', description: 'Delete one or more content files in a single atomic Git commit. Accepts either a single path string or an array of paths.', inputSchema: { type: 'object', properties: { path: { type: 'string', description: 'Single file path to delete' }, paths: { type: 'array', items: { type: 'string' }, description: 'Array of file paths to delete in bulk' } } } },
     { name: 'content_rename', description: 'Rename or move a content file', inputSchema: { type: 'object', properties: { path: { type: 'string' }, newPath: { type: 'string' } }, required: ['path', 'newPath'] } },
-    { name: 'tasks_list', description: 'List all content tasks on the task board', inputSchema: { type: 'object', properties: {} } },
+    { name: 'tasks_list', description: 'List content tasks on the board. Supports filtering by status, priority, semester, block, and pagination. By default returns compact task summaries saving tokens.', inputSchema: { type: 'object', properties: { status: { type: 'string', enum: ['open', 'in_progress', 'in_review', 'done'], description: 'Filter by task status' }, priority: { type: 'string', enum: ['low', 'normal', 'high', 'urgent'], description: 'Filter by priority' }, semester: { type: 'string', description: 'Filter by semester' }, block: { type: 'string', description: 'Filter by block' }, limit: { type: 'number', description: 'Max tasks to return (default 20, max 100)' }, offset: { type: 'number', description: 'Offset for pagination (default 0)' }, compact: { type: 'boolean', description: 'If true (default), returns compact task summaries without lengthy descriptions' } } } },
     { name: 'tasks_create', description: 'Create a new content task (management only)', inputSchema: { type: 'object', properties: { title: { type: 'string' }, description: { type: 'string' }, semester: { type: 'string' }, block: { type: 'string' }, category: { type: 'string' }, priority: { type: 'string', enum: ['low','normal','high','urgent'] } }, required: ['title'] } },
     { name: 'tasks_claim', description: 'Claim an open task (developer only)', inputSchema: { type: 'object', properties: { task_id: { type: 'string' } }, required: ['task_id'] } },
     { name: 'tasks_submit', description: 'Submit a task for review (developer only)', inputSchema: { type: 'object', properties: { task_id: { type: 'string' } }, required: ['task_id'] } },
@@ -433,12 +446,12 @@ export function getMcpToolsList() {
     { name: 'cover_list', description: 'List all cover image files in the cover/ directory', inputSchema: { type: 'object', properties: {} } },
     { name: 'cover_upload', description: 'Upload or update a cover image in cover/ (base64 encoded)', inputSchema: { type: 'object', properties: { filename: { type: 'string', description: 'e.g. semester 1.png' }, contentBase64: { type: 'string' } }, required: ['filename', 'contentBase64'] } },
     { name: 'cover_delete', description: 'Delete a cover image from cover/', inputSchema: { type: 'object', properties: { filename: { type: 'string' } }, required: ['filename'] } },
-    { name: 'docs_get', description: 'Get the full documentation page HTML and sections (docs.html)', inputSchema: { type: 'object', properties: {} } },
+    { name: 'docs_get', description: 'Get documentation outline or a specific section from docs.html. By default returns table of contents in ~250 tokens instead of full 86KB HTML.', inputSchema: { type: 'object', properties: { sectionIndex: { type: 'number', description: '1-indexed section number to fetch only that specific section' }, full_html: { type: 'boolean', description: 'If true, returns full raw docs.html' } } } },
     { name: 'docs_update_section', description: 'Update or revise a specific documentation section in docs.html', inputSchema: { type: 'object', properties: { sectionIndex: { type: 'number', description: '1-indexed section number' }, title: { type: 'string' }, contentHtml: { type: 'string' } }, required: ['sectionIndex'] } },
     { name: 'docs_add_section', description: 'Append a new documentation section to docs.html', inputSchema: { type: 'object', properties: { title: { type: 'string' }, contentHtml: { type: 'string' } }, required: ['title', 'contentHtml'] } },
     { name: 'users_remove_device', description: 'Remove a registered device entry from a user account (Admin/User self)', inputSchema: { type: 'object', properties: { user_id: { type: 'string' }, device_id: { type: 'string' } }, required: ['user_id', 'device_id'] } },
     { name: 'users_block_device', description: 'Block or unblock a device ID globally in system settings (Admin only)', inputSchema: { type: 'object', properties: { device_id: { type: 'string' }, banned: { type: 'boolean' } }, required: ['device_id', 'banned'] } },
-    { name: 'codebase_read_file', description: 'Read the full content of any codebase file in the repository (SuperAdmin only)', inputSchema: { type: 'object', properties: { path: { type: 'string', description: 'Relative path, e.g. api/admin.js or build.js' } }, required: ['path'] } },
+    { name: 'codebase_read_file', description: 'Read content of a codebase file in the repository (SuperAdmin only). Supports line range pagination to prevent token exhaustion on large files.', inputSchema: { type: 'object', properties: { path: { type: 'string', description: 'Relative path, e.g. api/admin.js or build.js' }, start_line: { type: 'number', description: '1-indexed start line' }, end_line: { type: 'number', description: '1-indexed end line' }, force: { type: 'boolean', description: 'Set true to force reading entire file even if > 40KB' } }, required: ['path'] } },
     { name: 'codebase_write_file', description: 'Create or update any codebase file in the repository (SuperAdmin only)', inputSchema: { type: 'object', properties: { path: { type: 'string' }, contentBase64: { type: 'string' }, commitMessage: { type: 'string' } }, required: ['path', 'contentBase64'] } },
     { name: 'codebase_delete_file', description: 'Delete any codebase file from the repository (SuperAdmin only)', inputSchema: { type: 'object', properties: { path: { type: 'string' }, commitMessage: { type: 'string' } }, required: ['path'] } },
     { name: 'codebase_search', description: 'Search text or code across the codebase repository (SuperAdmin only)', inputSchema: { type: 'object', properties: { query: { type: 'string' } }, required: ['query'] } },
@@ -461,6 +474,28 @@ export function getMcpToolsList() {
 // AUTH HELPERS
 // ═══════════════════════════════════════════════════════════════
 
+async function sbFetch(url, options = {}, retries = 2) {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      return await fetch(url, options);
+    } catch (err) {
+      if (attempt === retries) throw err;
+      const msg = err.message || '';
+      const code = err.code || err.cause?.code || '';
+      if (
+        msg.includes('fetch failed') ||
+        code === 'UND_ERR_SOCKET' ||
+        code === 'UND_ERR_CONNECT_TIMEOUT' ||
+        err.name === 'TypeError'
+      ) {
+        await new Promise(r => setTimeout(r, 150 * (attempt + 1)));
+        continue;
+      }
+      throw err;
+    }
+  }
+}
+
 async function authenticateApiKey(rawKey, supabaseUrl, sbKey) {
   const encoder = new TextEncoder();
   const data = encoder.encode(rawKey);
@@ -468,7 +503,7 @@ async function authenticateApiKey(rawKey, supabaseUrl, sbKey) {
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   const keyHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-  const rpcRes = await fetch(`${supabaseUrl}/rest/v1/rpc/validate_api_key`, {
+  const rpcRes = await sbFetch(`${supabaseUrl}/rest/v1/rpc/validate_api_key`, {
     method: 'POST',
     headers: {
       'apikey': sbKey,
@@ -489,7 +524,7 @@ async function authenticateApiKey(rawKey, supabaseUrl, sbKey) {
 
   const { out_key_id: keyId, out_user_id: userId } = rows[0];
 
-  const userRes = await fetch(`${supabaseUrl}/auth/v1/admin/users/${userId}`, {
+  const userRes = await sbFetch(`${supabaseUrl}/auth/v1/admin/users/${userId}`, {
     headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}` }
   });
 
@@ -510,7 +545,7 @@ async function authenticateApiKey(rawKey, supabaseUrl, sbKey) {
 }
 
 async function authenticateJWT(token, supabaseUrl, sbKey) {
-  const userRes = await fetch(`${supabaseUrl}/auth/v1/user`, {
+  const userRes = await sbFetch(`${supabaseUrl}/auth/v1/user`, {
     headers: {
       'apikey': sbKey,
       'Authorization': `Bearer ${token}`
@@ -548,7 +583,7 @@ function canonicalizeUrl(rawUrl) {
 }
 
 async function authenticateOAuthAccessToken(token, supabaseUrl, sbKey, reqHost = 'mr-capsules.vercel.app') {
-  const res = await fetch(`${supabaseUrl}/rest/v1/oauth_tokens?access_token=eq.${encodeURIComponent(token)}&revoked=eq.false&select=*`, {
+  const res = await sbFetch(`${supabaseUrl}/rest/v1/oauth_tokens?access_token=eq.${encodeURIComponent(token)}&revoked=eq.false&select=*`, {
     headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}` }
   });
 
@@ -606,7 +641,7 @@ async function resolveRoles(userId, email, supabaseUrl, sbKey, superAdminEmail) 
   const isSuperAdmin = email === superAdminEmail;
 
   const encEmail = encodeURIComponent(email || '');
-  const roleRes = await fetch(`${supabaseUrl}/rest/v1/user_roles?identifier=eq.${encEmail}&select=role`, {
+  const roleRes = await sbFetch(`${supabaseUrl}/rest/v1/user_roles?identifier=eq.${encEmail}&select=role`, {
     headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}` }
   });
   let hasAdminRole = false;
@@ -616,7 +651,7 @@ async function resolveRoles(userId, email, supabaseUrl, sbKey, superAdminEmail) 
   }
 
   let divisionId = null;
-  const divRes = await fetch(`${supabaseUrl}/rest/v1/division_members?user_id=eq.${userId}&select=division_id`, {
+  const divRes = await sbFetch(`${supabaseUrl}/rest/v1/division_members?user_id=eq.${userId}&select=division_id`, {
     headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}` }
   });
   if (divRes.ok) {
@@ -629,14 +664,14 @@ async function resolveRoles(userId, email, supabaseUrl, sbKey, superAdminEmail) 
   // Fallback: If no division found by userId, look up real Supabase auth user by email
   if (!divisionId && email && sbKey) {
     try {
-      const sbUsersRes = await fetch(`${supabaseUrl}/auth/v1/admin/users?per_page=1000`, {
+      const sbUsersRes = await sbFetch(`${supabaseUrl}/auth/v1/admin/users?per_page=1000`, {
         headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}` }
       });
       if (sbUsersRes.ok) {
         const usersData = await sbUsersRes.json();
         const matchedUser = (usersData.users || []).find(u => u.email === email);
         if (matchedUser && matchedUser.id !== userId) {
-          const fallbackDivRes = await fetch(`${supabaseUrl}/rest/v1/division_members?user_id=eq.${matchedUser.id}&select=division_id`, {
+          const fallbackDivRes = await sbFetch(`${supabaseUrl}/rest/v1/division_members?user_id=eq.${matchedUser.id}&select=division_id`, {
             headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}` }
           });
           if (fallbackDivRes.ok) {
@@ -661,7 +696,7 @@ async function resolveRoles(userId, email, supabaseUrl, sbKey, superAdminEmail) 
     isManagement: divisionId === 'management' || isAdmin,
     isDeveloper: divisionId === 'development' || isAdmin,
     isReviewer: divisionId === 'review' || isAdmin,
-    canUseApiKeys: hasDivision || isAdmin
+    canUseApiKeys: !!userId
   };
 }
 
@@ -670,7 +705,7 @@ async function resolveRoles(userId, email, supabaseUrl, sbKey, superAdminEmail) 
 // ═══════════════════════════════════════════════════════════════
 
 async function checkRateLimit(keyId, supabaseUrl, sbKey) {
-  const rpcRes = await fetch(`${supabaseUrl}/rest/v1/rpc/check_and_increment_rate_limit`, {
+  const rpcRes = await sbFetch(`${supabaseUrl}/rest/v1/rpc/check_and_increment_rate_limit`, {
     method: 'POST',
     headers: {
       'apikey': sbKey,
@@ -689,7 +724,7 @@ async function checkRateLimit(keyId, supabaseUrl, sbKey) {
 // ═══════════════════════════════════════════════════════════════
 
 async function ghApi(method, endpoint, bodyObj, githubToken, owner, repo) {
-  return fetch(`https://api.github.com/repos/${owner}/${repo}${endpoint}`, {
+  let res = await fetch(`https://api.github.com/repos/${owner}/${repo}${endpoint}`, {
     method,
     headers: {
       'Authorization': `Bearer ${githubToken}`,
@@ -698,6 +733,20 @@ async function ghApi(method, endpoint, bodyObj, githubToken, owner, repo) {
     },
     body: bodyObj ? JSON.stringify(bodyObj) : undefined
   });
+
+  if (!res.ok && res.status === 404 && repo !== 'MR-CAPSULES' && method === 'GET') {
+    res = await fetch(`https://api.github.com/repos/${owner}/MR-CAPSULES${endpoint}`, {
+      method,
+      headers: {
+        'Authorization': `Bearer ${githubToken}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+      },
+      body: bodyObj ? JSON.stringify(bodyObj) : undefined
+    });
+  }
+
+  return res;
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -705,7 +754,7 @@ async function ghApi(method, endpoint, bodyObj, githubToken, owner, repo) {
 // ═══════════════════════════════════════════════════════════════
 
 async function routeMethod(method, params, auth, roles, cfg) {
-  const { SUPABASE_URL: su, SB_SERVICE_KEY: sk, GITHUB_TOKEN: gt, GH_OWNER: go, GH_REPO: gr, MAX_KEYS_PER_USER: maxKeys, SUPERADMIN_EMAIL } = cfg;
+  const { SUPABASE_URL: su, SB_SERVICE_KEY: sk, GITHUB_TOKEN: gt, GH_OWNER: go, GH_REPO: gr, GH_CODEBASE_REPO: gcr = 'MR-CAPSULES', MAX_KEYS_PER_USER: maxKeys, SUPERADMIN_EMAIL } = cfg;
 
   validateToolArguments(method, params);
 
@@ -727,37 +776,41 @@ async function routeMethod(method, params, auth, roles, cfg) {
   }
 
   if (m === 'apikeys_list') {
-    if (!roles.canUseApiKeys) throw err403('Only division members can manage API keys');
+    if (!roles.canUseApiKeys) throw err403('Authenticated account required to manage API keys');
     return listApiKeys(auth.userId, su, sk);
   }
   if (m === 'apikeys_create') {
-    if (!roles.canUseApiKeys) throw err403('Only division members can create API keys');
+    if (!roles.canUseApiKeys) throw err403('Authenticated account required to create API keys');
     return createApiKey(auth.userId, params, su, sk, maxKeys);
   }
   if (m === 'apikeys_revoke') {
-    if (!roles.canUseApiKeys) throw err403('Only division members can revoke API keys');
+    if (!roles.canUseApiKeys) throw err403('Authenticated account required to revoke API keys');
     const res = await revokeApiKey(auth.userId, params, su, sk);
     await logAction(auth.email, 'mcp_apikey_revoke', { key_id: params.key_id }, su, sk);
     return res;
   }
   if (m === 'oauth_tokens_list') {
-    if (!roles.canUseApiKeys) throw err403('Only division members can view OAuth tokens');
+    if (!roles.canUseApiKeys) throw err403('Authenticated account required to view OAuth tokens');
     return listOAuthTokens(auth.userId, auth.email, roles.isSuperAdmin, su, sk);
   }
   if (m === 'oauth_tokens_revoke') {
-    if (!roles.canUseApiKeys) throw err403('Only division members can revoke OAuth tokens');
+    if (!roles.canUseApiKeys) throw err403('Authenticated account required to revoke OAuth tokens');
     if (!params.token_id && !params.access_token) throw err400('Missing params.token_id or params.access_token');
     const res = await revokeOAuthToken(params.token_id || params.access_token, su, sk);
     await logAction(auth.email, 'mcp_oauth_revoke', { token_id: params.token_id || params.access_token }, su, sk);
     return res;
   }
 
-  if (m === 'content_list') return contentList(gt, go, gr);
+  if (m === 'content_list') return contentList(params, gt, go, gr);
+  if (m === 'content_search') {
+    if (!params.query) throw err400('Missing params.query');
+    return contentSearch(params, gt, go, gr, cfg.reqHost);
+  }
   if (m === 'content_get') {
     if (!params.path) throw err400('Missing params.path');
-    return contentGet(params.path, gt, go, gr);
+    return contentGet(params, gt, go, gr, cfg.reqHost);
   }
-  if (m === 'content_tree') return contentTree(gt, go, gr);
+  if (m === 'content_tree') return contentTree(params, gt, go, gr);
   if (m === 'content_upload') {
     if (!roles.hasDivision && !roles.isAdmin) throw err403('Division membership required to upload');
     if (!params.path || (!params.contentBase64 && !params.url)) throw err400('Missing params.path, params.contentBase64, or params.url');
@@ -772,7 +825,7 @@ async function routeMethod(method, params, auth, roles, cfg) {
   }
   if (m === 'content_pull_to_sandbox') {
     if (!params.path) throw err400('Missing params.path');
-    return contentPullToSandbox(params, gt, go, gr);
+    return contentPullToSandbox(params, gt, go, gr, cfg.reqHost);
   }
   if (m === 'upload_init') {
     if (!roles.hasDivision && !roles.isAdmin) throw err403('Division membership required to upload');
@@ -798,8 +851,7 @@ async function routeMethod(method, params, auth, roles, cfg) {
   }
   if (m === 'content_delete') {
     if (!roles.hasDivision && !roles.isAdmin) throw err403('Division membership required to delete');
-    if (!params.path) throw err400('Missing params.path');
-    validatePath(params.path);
+    if (!params.path && !params.paths) throw err400('Missing params.path or params.paths');
     return contentDelete(params, auth.email, gt, go, gr, su, sk);
   }
   if (m === 'content_rename') {
@@ -812,7 +864,7 @@ async function routeMethod(method, params, auth, roles, cfg) {
 
   if (m === 'tasks_list') {
     if (!roles.hasDivision && !roles.isAdmin) throw err403('Division membership required');
-    return tasksList(su, sk);
+    return tasksList(params, su, sk);
   }
   if (m === 'tasks_create') {
     if (!roles.isManagement) throw err403('Management division only');
@@ -911,7 +963,7 @@ async function routeMethod(method, params, auth, roles, cfg) {
     return contentDelete({ path }, auth.email, gt, go, gr, su, sk);
   }
 
-  if (m === 'docs_get') return docsGet(gt, go, gr);
+  if (m === 'docs_get') return docsGet(params, gt, go, gr, cfg.reqHost);
   if (m === 'docs_update_section') {
     if (!roles.isAdmin) throw err403('Admin only to edit documentation');
     return docsUpdateSection(params, auth.email, gt, go, gr, su, sk);
@@ -1047,24 +1099,24 @@ async function routeMethod(method, params, auth, roles, cfg) {
     if (!roles.isSuperAdmin) throw err403('SuperAdmin only to access codebase files');
     if (!params.path) throw err400('Missing params.path');
     validateCodebasePath(params.path);
-    return codebaseReadFile(params.path, auth.email, gt, go, gr, su, sk);
+    return codebaseReadFile(params, auth.email, gt, go, gcr, su, sk);
   }
   if (m === 'codebase_write_file') {
     if (!roles.isSuperAdmin) throw err403('SuperAdmin only to modify codebase files');
     if (!params.path || !params.contentBase64) throw err400('Missing params.path or params.contentBase64');
     validateCodebasePath(params.path);
-    return codebaseWriteFile(params, auth.email, gt, go, gr, su, sk);
+    return codebaseWriteFile(params, auth.email, gt, go, gcr, su, sk);
   }
   if (m === 'codebase_delete_file') {
     if (!roles.isSuperAdmin) throw err403('SuperAdmin only to delete codebase files');
     if (!params.path) throw err400('Missing params.path');
     validateCodebasePath(params.path);
-    return codebaseDeleteFile(params, auth.email, gt, go, gr, su, sk);
+    return codebaseDeleteFile(params, auth.email, gt, go, gcr, su, sk);
   }
   if (m === 'codebase_search') {
     if (!roles.isSuperAdmin) throw err403('SuperAdmin only');
     if (!params.query) throw err400('Missing params.query');
-    return codebaseSearch(params.query, gt, go, gr);
+    return codebaseSearch(params.query, gt, go, gcr);
   }
   if (m === 'mcp_create_tool') {
     if (!roles.isSuperAdmin) throw err403('SuperAdmin only to create custom MCP tools');
@@ -1160,7 +1212,7 @@ function validateToolArguments(method, params) {
   }
 
   for (const [key, val] of Object.entries(params)) {
-    if (val === undefined || val === null) continue;
+    if (val === undefined || val === null || val === '') continue;
     const propSchema = props[key];
     if (!propSchema) continue;
 
@@ -1170,7 +1222,9 @@ function validateToolArguments(method, params) {
       const maxLen = isLargePayload ? 5242880 : 20000;
       if (val.length > maxLen) throw err400(`Parameter params.${key} exceeds maximum allowed length`);
     } else if (propSchema.type === 'number') {
-      if (typeof val !== 'number' || Number.isNaN(val)) throw err400(`Invalid type for params.${key}: expected number`);
+      const numVal = Number(val);
+      if (Number.isNaN(numVal)) throw err400(`Invalid type for params.${key}: expected number`);
+      params[key] = numVal;
     } else if (propSchema.type === 'boolean') {
       if (typeof val !== 'boolean') throw err400(`Invalid type for params.${key}: expected boolean`);
     } else if (propSchema.type === 'array') {
@@ -1190,8 +1244,13 @@ function validateToolArguments(method, params) {
   }
 }
 
-async function codebaseReadFile(path, adminEmail, githubToken, owner, repo, su, sk) {
-  const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`, {
+async function codebaseReadFile(paramsOrPath, adminEmail, githubToken, owner, repo, su, sk) {
+  const isString = typeof paramsOrPath === 'string';
+  const path = isString ? paramsOrPath : paramsOrPath.path;
+  const params = isString ? {} : paramsOrPath;
+
+  const cleanPath = path.split('/').map(encodeURIComponent).join('/');
+  const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${cleanPath}`, {
     headers: { 'Authorization': `Bearer ${githubToken}`, 'Accept': 'application/vnd.github+json', 'User-Agent': 'MR-CAPSULES-MCP' }
   });
   if (!res.ok) throw new Error(`Failed to read codebase file ${path}: ${res.statusText}`);
@@ -1199,7 +1258,39 @@ async function codebaseReadFile(path, adminEmail, githubToken, owner, repo, su, 
   if (data.type !== 'file') throw err400(`Path ${path} is a ${data.type}, not a file`);
   const contentUtf8 = Buffer.from(data.content.replace(/\n/g, ''), 'base64').toString('utf8');
   await logAction(adminEmail, 'mcp_codebase_read', { path }, su, sk);
-  return { path, content: contentUtf8, sha: data.sha, size: data.size };
+
+  const lines = contentUtf8.split('\n');
+  const totalLines = lines.length;
+
+  if (params.start_line !== undefined || params.end_line !== undefined) {
+    const start = Math.max(1, parseInt(params.start_line) || 1);
+    const end = Math.min(totalLines, Math.max(start, parseInt(params.end_line) || (start + 100)));
+    const sliced = lines.slice(start - 1, end).join('\n');
+    return {
+      path,
+      total_lines: totalLines,
+      slice: { start_line: start, end_line: end, returned_lines: end - start + 1 },
+      content: sliced,
+      sha: data.sha,
+      size: data.size
+    };
+  }
+
+  if (contentUtf8.length > 40000 && params.force !== true) {
+    const sliced = lines.slice(0, 100).join('\n');
+    return {
+      path,
+      total_lines: totalLines,
+      slice: { start_line: 1, end_line: 100, returned_lines: 100 },
+      content: sliced,
+      truncated: true,
+      sha: data.sha,
+      size: data.size,
+      warning: `File is large (${(data.size / 1024).toFixed(1)} KB, ${totalLines} lines). Showing first 100 lines. Call with start_line and end_line, or pass force: true for full file.`
+    };
+  }
+
+  return { path, total_lines: totalLines, content: contentUtf8, sha: data.sha, size: data.size };
 }
 
 async function codebaseWriteFile(params, adminEmail, githubToken, owner, repo, su, sk) {
@@ -1382,7 +1473,7 @@ async function executeCustomTool(toolDef, params, auth, roles, su, sk, gt) {
 // ═══════════════════════════════════════════════════════════════
 
 async function listApiKeys(userId, su, sk) {
-  const res = await fetch(`${su}/rest/v1/api_keys?user_id=eq.${userId}&revoked_at=is.null&select=id,name,key_prefix,expires_at,last_used_at,request_count,created_at&order=created_at.desc`, {
+  const res = await sbFetch(`${su}/rest/v1/api_keys?user_id=eq.${userId}&revoked_at=is.null&select=id,name,key_prefix,expires_at,last_used_at,request_count,created_at&order=created_at.desc`, {
     headers: { 'apikey': sk, 'Authorization': `Bearer ${sk}` }
   });
   if (!res.ok) throw new Error('Failed to list API keys');
@@ -1395,7 +1486,7 @@ async function createApiKey(userId, params, su, sk, maxKeys) {
   if (!name || typeof name !== 'string' || name.trim().length === 0) throw err400('Missing or empty params.name');
   if (name.trim().length > 50) throw err400('Key name max 50 characters');
 
-  const countRes = await fetch(`${su}/rest/v1/api_keys?user_id=eq.${userId}&revoked_at=is.null&select=id`, {
+  const countRes = await sbFetch(`${su}/rest/v1/api_keys?user_id=eq.${userId}&revoked_at=is.null&select=id`, {
     headers: { 'apikey': sk, 'Authorization': `Bearer ${sk}` }
   });
   if (countRes.ok) {
@@ -1414,27 +1505,29 @@ async function createApiKey(userId, params, su, sk, maxKeys) {
   const keyPrefix = rawKey.slice(0, 12);
 
   let expiresAt = null;
-  if (expires_in_days && Number.isInteger(expires_in_days) && expires_in_days > 0) {
+  const numDays = (expires_in_days !== undefined && expires_in_days !== null && expires_in_days !== '') ? Number(expires_in_days) : null;
+  if (numDays !== null && !isNaN(numDays) && numDays > 0) {
     const d = new Date();
-    d.setDate(d.getDate() + expires_in_days);
+    d.setDate(d.getDate() + numDays);
     expiresAt = d.toISOString();
   }
 
-  const insertRes = await fetch(`${su}/rest/v1/api_keys`, {
+  const insertRes = await sbFetch(`${su}/rest/v1/api_keys`, {
     method: 'POST',
     headers: { 'apikey': sk, 'Authorization': `Bearer ${sk}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
     body: JSON.stringify({ user_id: userId, name: name.trim(), key_hash: keyHash, key_prefix: keyPrefix, expires_at: expiresAt })
   });
 
   if (!insertRes.ok) throw new Error('Failed to create key: ' + await insertRes.text());
-  const [keyRecord] = await insertRes.json();
+  const rows = await insertRes.json();
+  const keyRecord = Array.isArray(rows) ? rows[0] : rows;
 
   return {
     raw_key: rawKey,
     key_prefix: keyPrefix,
-    name: keyRecord.name,
-    expires_at: keyRecord.expires_at,
-    created_at: keyRecord.created_at,
+    name: keyRecord ? keyRecord.name : name.trim(),
+    expires_at: keyRecord ? keyRecord.expires_at : expiresAt,
+    created_at: keyRecord ? keyRecord.created_at : new Date().toISOString(),
     warning: 'Copy this key now. It will not be shown again.'
   };
 }
@@ -1443,7 +1536,7 @@ async function revokeApiKey(userId, params, su, sk) {
   const { key_id } = params;
   if (!key_id) throw err400('Missing params.key_id');
 
-  const checkRes = await fetch(`${su}/rest/v1/api_keys?id=eq.${key_id}&user_id=eq.${userId}&select=id`, {
+  const checkRes = await sbFetch(`${su}/rest/v1/api_keys?id=eq.${key_id}&user_id=eq.${userId}&select=id`, {
     headers: { 'apikey': sk, 'Authorization': `Bearer ${sk}` }
   });
   if (checkRes.ok) {
@@ -1451,7 +1544,7 @@ async function revokeApiKey(userId, params, su, sk) {
     if (!rows || rows.length === 0) throw err403('Key not found or does not belong to you');
   }
 
-  const revokeRes = await fetch(`${su}/rest/v1/api_keys?id=eq.${key_id}`, {
+  const revokeRes = await sbFetch(`${su}/rest/v1/api_keys?id=eq.${key_id}`, {
     method: 'PATCH',
     headers: { 'apikey': sk, 'Authorization': `Bearer ${sk}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({ revoked_at: new Date().toISOString() })
@@ -1466,7 +1559,7 @@ async function listOAuthTokens(userId, userEmail, isSuperAdmin, su, sk) {
     query += `&user_id=eq.${encodeURIComponent(userId)}`;
   }
   try {
-    const res = await fetch(query, {
+    const res = await sbFetch(query, {
       headers: { 'apikey': sk, 'Authorization': `Bearer ${sk}` }
     });
     if (!res.ok) {
@@ -1492,7 +1585,7 @@ async function listOAuthTokens(userId, userEmail, isSuperAdmin, su, sk) {
 }
 
 async function revokeOAuthToken(tokenIdOrAccessToken, su, sk) {
-  const res = await fetch(`${su}/rest/v1/oauth_tokens?access_token=eq.${encodeURIComponent(tokenIdOrAccessToken)}`, {
+  const res = await sbFetch(`${su}/rest/v1/oauth_tokens?access_token=eq.${encodeURIComponent(tokenIdOrAccessToken)}`, {
     method: 'PATCH',
     headers: { 'apikey': sk, 'Authorization': `Bearer ${sk}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({ revoked: true })
@@ -1505,9 +1598,21 @@ async function revokeOAuthToken(tokenIdOrAccessToken, su, sk) {
 // CONTENT HANDLERS
 // ═══════════════════════════════════════════════════════════════
 
-async function contentList(githubToken, owner, repo) {
+async function contentList(paramsOrGt, gtOrOwner, ownerOrRepo, repoOptional) {
+  let params = {}, gt, owner, repo;
+  if (typeof paramsOrGt === 'object' && paramsOrGt !== null) {
+    params = paramsOrGt;
+    gt = gtOrOwner;
+    owner = ownerOrRepo;
+    repo = repoOptional;
+  } else {
+    gt = paramsOrGt;
+    owner = gtOrOwner;
+    repo = ownerOrRepo;
+  }
+
   const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/main?recursive=1`, {
-    headers: { 'Authorization': `Bearer ${githubToken}`, 'Accept': 'application/vnd.github+json' }
+    headers: { 'Authorization': `Bearer ${gt}`, 'Accept': 'application/vnd.github+json', 'User-Agent': 'MR-CAPSULES-MCP' }
   });
   if (!res.ok) throw new Error('GitHub API error fetching tree');
   const data = await res.json();
@@ -1516,21 +1621,58 @@ async function contentList(githubToken, owner, repo) {
     item.type === 'blob' && item.path.startsWith('content/') && item.path.endsWith('.html')
   );
 
+  const semFilter = params.semester ? String(params.semester).toLowerCase().replace(/^semester\s*/i, '') : null;
+  const blockFilter = params.block ? String(params.block).toLowerCase() : null;
+  const catFilter = params.category ? String(params.category).toLowerCase() : null;
+  const searchFilter = params.search ? String(params.search).toLowerCase() : null;
+
+  const isFilterActive = !!(semFilter || blockFilter || catFilter || searchFilter);
+  const isCompact = params.compact === true || (!isFilterActive && params.compact !== false);
+
   const semMap = {};
+  let matchedCount = 0;
+
   contentFiles.forEach(item => {
     const parts = item.path.split('/');
-    const semesterName = parts.length >= 3 ? parts[1] : 'Other';
-    const blockName = parts.length >= 3 ? parts[2] : (parts.length >= 2 ? parts[1] : 'Other');
+    const semName = parts.length >= 3 ? parts[1] : 'Other';
+    const blkName = parts.length >= 3 ? parts[2] : (parts.length >= 2 ? parts[1] : 'Other');
     const fileName = parts[parts.length - 1];
     const fileParts = fileName.split('_');
     const category = fileParts.length > 1 ? fileParts[0] : 'Other';
     const name = fileParts.length > 1 ? fileParts.slice(1).join('_').replace('.html', '') : fileName.replace('.html', '');
 
-    if (!semMap[semesterName]) semMap[semesterName] = {};
-    if (!semMap[semesterName][blockName]) semMap[semesterName][blockName] = {};
-    if (!semMap[semesterName][blockName][category]) semMap[semesterName][blockName][category] = [];
-    semMap[semesterName][blockName][category].push({ name, path: item.path });
+    if (semFilter) {
+      const cleanSem = semName.toLowerCase().replace(/^semester\s*/i, '');
+      if (cleanSem !== semFilter) return;
+    }
+    if (blockFilter && blkName.toLowerCase() !== blockFilter) return;
+    if (catFilter && !category.toLowerCase().includes(catFilter)) return;
+    if (searchFilter && !name.toLowerCase().includes(searchFilter) && !fileName.toLowerCase().includes(searchFilter)) return;
+
+    matchedCount++;
+
+    if (!semMap[semName]) semMap[semName] = {};
+    if (!semMap[semName][blkName]) semMap[semName][blkName] = {};
+    if (!semMap[semName][blkName][category]) semMap[semName][blkName][category] = [];
+    semMap[semName][blkName][category].push({ title: name, path: item.path, size_bytes: item.size });
   });
+
+  if (isCompact && !isFilterActive) {
+    const summary = Object.entries(semMap).map(([sem, blks]) => ({
+      semester: sem,
+      blocks: Object.entries(blks).map(([blk, cats]) => ({
+        block: blk,
+        total_files: Object.values(cats).reduce((acc, f) => acc + f.length, 0),
+        categories: Object.keys(cats)
+      }))
+    }));
+    return {
+      compact: true,
+      total_files: matchedCount,
+      curriculum: summary,
+      hint: "Call content_list with { semester: 'semester 2' } or { block: '2.5' } to list files, or use content_search({ query: 'keyword' })."
+    };
+  }
 
   const semesters = Object.entries(semMap).map(([semName, blocks]) => ({
     semester: semName,
@@ -1538,31 +1680,250 @@ async function contentList(githubToken, owner, repo) {
       block: blockName,
       categories: Object.entries(cats).map(([catName, files]) => ({
         category: catName,
-        files: files.map(f => ({ title: f.name, path: f.path }))
+        files: files.map(f => ({ title: f.title, path: f.path }))
       }))
     }))
   }));
 
-  return { semesters, total_files: contentFiles.length };
+  return { compact: false, semesters, total_files: matchedCount };
 }
 
-async function contentGet(path, githubToken, owner, repo) {
-  const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`, {
-    headers: { 'Authorization': `Bearer ${githubToken}`, 'Accept': 'application/vnd.github.v3+json' }
+async function contentSearch(params, githubToken, owner, repo, reqHost = 'mr-capsules.vercel.app') {
+  const query = (params.query || '').toLowerCase().trim();
+  if (!query) throw err400('Missing params.query');
+  const semFilter = params.semester ? String(params.semester).toLowerCase().replace(/^semester\s*/i, '') : null;
+  const blockFilter = params.block ? String(params.block).toLowerCase() : null;
+  const catFilter = params.category ? String(params.category).toLowerCase() : null;
+  const limit = Math.min(50, Math.max(1, parseInt(params.limit) || 20));
+
+  const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/main?recursive=1`, {
+    headers: { 'Authorization': `Bearer ${githubToken}`, 'Accept': 'application/vnd.github+json', 'User-Agent': 'MR-CAPSULES-MCP' }
+  });
+  if (!res.ok) throw new Error('GitHub API error fetching tree');
+  const data = await res.json();
+
+  const contentFiles = data.tree.filter(item =>
+    item.type === 'blob' && item.path.startsWith('content/') && item.path.endsWith('.html')
+  );
+
+  const matches = [];
+
+  for (const item of contentFiles) {
+    const parts = item.path.split('/');
+    const semName = parts.length >= 3 ? parts[1] : 'Other';
+    const blkName = parts.length >= 3 ? parts[2] : (parts.length >= 2 ? parts[1] : 'Other');
+    const fileName = parts[parts.length - 1];
+    const fileParts = fileName.split('_');
+    const category = fileParts.length > 1 ? fileParts[0] : 'Other';
+    const title = fileParts.length > 1 ? fileParts.slice(1).join('_').replace('.html', '') : fileName.replace('.html', '');
+
+    if (semFilter) {
+      const cleanSem = semName.toLowerCase().replace(/^semester\s*/i, '');
+      if (cleanSem !== semFilter) continue;
+    }
+    if (blockFilter && blkName.toLowerCase() !== blockFilter) continue;
+    if (catFilter && !category.toLowerCase().includes(catFilter)) continue;
+
+    const fullSearchable = `${title} ${fileName} ${category} ${blkName} ${semName}`.toLowerCase();
+    if (fullSearchable.includes(query)) {
+      const cleanPath = item.path.split('/').map(encodeURIComponent).join('/');
+      matches.push({
+        title,
+        category,
+        semester: semName,
+        block: blkName,
+        path: item.path,
+        size_kb: item.size ? +(item.size / 1024).toFixed(1) : undefined,
+        public_url: `https://${reqHost || 'mr-capsules.vercel.app'}/${cleanPath}`
+      });
+      if (matches.length >= limit) break;
+    }
+  }
+
+  return {
+    query: params.query,
+    total_matches: matches.length,
+    matches
+  };
+}
+
+function extractSmartContent(html, format = 'smart', options = {}, reqHost = 'mr-capsules.vercel.app', filePath = '') {
+  const cleanPath = filePath.split('/').map(encodeURIComponent).join('/');
+  const publicUrl = `https://${reqHost || 'mr-capsules.vercel.app'}/${cleanPath}`;
+  const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i) || html.match(/<h1[^>]*>([^<]+)<\/h1>/i);
+  const title = titleMatch ? titleMatch[1].trim() : (filePath.split('/').pop() || 'Untitled');
+
+  if (format === 'raw') {
+    const isLarge = html.length > 50000;
+    return {
+      path: filePath,
+      format: 'raw',
+      size_bytes: html.length,
+      warning: isLarge ? 'Payload > 50KB. Consider format: "smart" for up to 90% token reduction.' : undefined,
+      content: html,
+      public_url: publicUrl
+    };
+  }
+
+  // Check for Quiz / Questions / Flashcards array in scripts
+  const quizRegex = /(?:const|let|var|window\.)\s*([a-zA-Z0-9_]*(?:questions?|quizBank|quizPool|quizData|masterQuestions|flashcardsData)[a-zA-Z0-9_]*)\s*=\s*(\[[\s\S]*?\])\s*;/i;
+  const match = html.match(quizRegex);
+  let parsedQuiz = null;
+
+  if (match) {
+    try {
+      const arrayStr = match[2];
+      parsedQuiz = Function(`"use strict"; return (${arrayStr});`)();
+    } catch (e) {
+      parsedQuiz = null;
+    }
+  }
+
+  if (format === 'metadata') {
+    return {
+      path: filePath,
+      title,
+      type: parsedQuiz ? 'quiz' : 'lecture',
+      total_questions: parsedQuiz && Array.isArray(parsedQuiz) ? parsedQuiz.length : null,
+      size_bytes: html.length,
+      public_url: publicUrl
+    };
+  }
+
+  if (format === 'quiz_only' || (format === 'smart' && parsedQuiz && Array.isArray(parsedQuiz) && parsedQuiz.length > 0)) {
+    if (!parsedQuiz || !Array.isArray(parsedQuiz) || parsedQuiz.length === 0) {
+      return {
+        path: filePath,
+        title,
+        error: 'No structured quiz questions detected in this file.',
+        public_url: publicUrl
+      };
+    }
+
+    const offset = Math.max(0, parseInt(options.offset) || 0);
+    const limit = Math.min(100, Math.max(1, parseInt(options.limit) || (options.offset !== undefined ? 20 : 30)));
+    const sliced = parsedQuiz.slice(offset, offset + limit);
+
+    return {
+      path: filePath,
+      title,
+      type: 'quiz',
+      format: format,
+      total_questions: parsedQuiz.length,
+      pagination: {
+        offset,
+        limit,
+        returned: sliced.length,
+        has_more: offset + limit < parsedQuiz.length
+      },
+      questions: sliced,
+      public_url: publicUrl
+    };
+  }
+
+  // Lecture / Notes / Text extraction
+  let cleanText = html
+    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+    .replace(/<svg[^>]*>[\s\S]*?<\/svg>/gi, '')
+    .replace(/<nav[^>]*>[\s\S]*?<\/nav>/gi, '')
+    .replace(/<header[^>]*>[\s\S]*?<\/header>/gi, '')
+    .replace(/<footer[^>]*>[\s\S]*?<\/footer>/gi, '')
+    .replace(/<head[^>]*>[\s\S]*?<\/head>/gi, '')
+    .replace(/<h1[^>]*>([\s\S]*?)<\/h1>/gi, '\n\n# $1\n')
+    .replace(/<h2[^>]*>([\s\S]*?)<\/h2>/gi, '\n\n## $1\n')
+    .replace(/<h3[^>]*>([\s\S]*?)<\/h3>/gi, '\n\n### $1\n')
+    .replace(/<h4[^>]*>([\s\S]*?)<\/h4>/gi, '\n\n#### $1\n')
+    .replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, '\n- $1')
+    .replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, '\n$1\n')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<tr[^>]*>([\s\S]*?)<\/tr>/gi, '$1\n')
+    .replace(/<t[dh][^>]*>([\s\S]*?)<\/t[dh]>/gi, ' | $1')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/[ \t]+/g, ' ')
+    .replace(/\n\s*\n\s*\n+/g, '\n\n')
+    .trim();
+
+  const maxChars = parseInt(options.max_chars) || 40000;
+  let truncated = false;
+  if (cleanText.length > maxChars) {
+    cleanText = cleanText.slice(0, maxChars) + `\n\n[... Truncated due to size (${cleanText.length} chars). Use public_url to read online ...]`;
+    truncated = true;
+  }
+
+  return {
+    path: filePath,
+    title,
+    type: 'lecture_notes',
+    format: 'text',
+    truncated,
+    length_chars: cleanText.length,
+    original_size_bytes: html.length,
+    content: cleanText,
+    public_url: publicUrl
+  };
+}
+
+async function contentGet(paramsOrPath, githubToken, owner, repo, reqHost = 'mr-capsules.vercel.app') {
+  const isString = typeof paramsOrPath === 'string';
+  const path = isString ? paramsOrPath : paramsOrPath.path;
+  const format = (!isString && paramsOrPath.format) ? paramsOrPath.format : (isString ? 'raw' : 'smart');
+  const options = isString ? {} : paramsOrPath;
+
+  const cleanPath = path.split('/').map(encodeURIComponent).join('/');
+  const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${cleanPath}`, {
+    headers: { 'Authorization': `Bearer ${githubToken}`, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'MR-CAPSULES-MCP' }
   });
   if (!res.ok) throw err404('File not found: ' + path);
   const data = await res.json();
   const decoded = Buffer.from(data.content.replace(/\n/g, ''), 'base64').toString('utf8');
-  return { path, content: decoded, sha: data.sha };
+
+  if (format === 'raw') {
+    return { path, content: decoded, sha: data.sha, size: data.size, public_url: `https://${reqHost || 'mr-capsules.vercel.app'}/${cleanPath}` };
+  }
+
+  const result = extractSmartContent(decoded, format, options, reqHost, path);
+  result.sha = data.sha;
+  return result;
 }
 
-async function contentTree(githubToken, owner, repo) {
+async function contentTree(paramsOrGt, gtOrOwner, ownerOrRepo, repoOptional) {
+  let params = {}, gt, owner, repo;
+  if (typeof paramsOrGt === 'object' && paramsOrGt !== null) {
+    params = paramsOrGt;
+    gt = gtOrOwner;
+    owner = ownerOrRepo;
+    repo = repoOptional;
+  } else {
+    gt = paramsOrGt;
+    owner = gtOrOwner;
+    repo = ownerOrRepo;
+  }
+
   const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/main?recursive=1`, {
-    headers: { 'Authorization': `Bearer ${githubToken}`, 'Accept': 'application/vnd.github+json' }
+    headers: { 'Authorization': `Bearer ${gt}`, 'Accept': 'application/vnd.github+json', 'User-Agent': 'MR-CAPSULES-MCP' }
   });
   if (!res.ok) throw new Error('GitHub API error');
   const data = await res.json();
-  return { tree: data.tree.filter(item => item.path.startsWith('content/') || item.path.startsWith('cover/')) };
+
+  let filtered = data.tree.filter(item => item.path.startsWith('content/') || item.path.startsWith('cover/'));
+  if (params.prefix) {
+    const pfx = String(params.prefix).toLowerCase();
+    filtered = filtered.filter(item => item.path.toLowerCase().startsWith(pfx));
+  }
+
+  const pathsOnly = params.paths_only !== false;
+  if (pathsOnly) {
+    return { total: filtered.length, paths: filtered.map(item => item.path) };
+  }
+
+  return { tree: filtered };
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1973,72 +2334,79 @@ ${pyCmd}
    - contentGzipBase64: "<paste the output string from python command>"`;
 }
 
-async function contentPullToSandbox(params, githubToken, owner, repo) {
+async function contentPullToSandbox(params, githubToken, owner, repo, reqHost = 'mr-capsules.vercel.app') {
   const repoPath = params.path;
   const filename = repoPath.split('/').pop();
   const saveTo = params.saveTo || `/mnt/user-data/outputs/${filename}`;
   const saveDir = saveTo.substring(0, saveTo.lastIndexOf('/'));
 
-  // Verify file exists in repo first
-  const checkRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(repoPath)}`, {
+  const cleanPath = repoPath.split('/').map(encodeURIComponent).join('/');
+
+  // Verify file exists in repo first using server-side GitHub token (token is never leaked to client)
+  const checkRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${cleanPath}`, {
     headers: { 'Authorization': `Bearer ${githubToken}`, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'MR-CAPSULES-MCP' }
   });
   if (!checkRes.ok) throw err404('File not found in repo: ' + repoPath);
   const fileInfo = await checkRes.json();
   const fileSizeKB = fileInfo.size ? (fileInfo.size / 1024).toFixed(1) : '?';
-  const rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/main/${encodeURIComponent(repoPath)}`;
 
-  // Method 1: curl raw (fastest, works if github.com is in egress allowlist)
-  const curlRawCmd = `mkdir -p '${saveDir}' && curl -fsSL -H "Authorization: Bearer ${githubToken}" -H "Accept: application/vnd.github.v3.raw" "https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(repoPath)}" -o '${saveTo}' && echo "✅ Saved $(wc -c < '${saveTo}') bytes to ${saveTo}"`;
+  // Clean public URLs requiring ZERO credentials (prevents Claude safety filters from blocking execution)
+  const host = reqHost || 'mr-capsules.vercel.app';
+  const publicWebUrl = `https://${host}/${cleanPath}`;
+  const githubRawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/main/${cleanPath}`;
 
-  // Method 2: GitHub API + base64 decode (if raw fails)
-  const curlApiCmd = `mkdir -p '${saveDir}' && curl -fsSL -H "Authorization: Bearer ${githubToken}" -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(repoPath)}" | python3 -c "import sys,json,base64; d=json.load(sys.stdin); open('${saveTo}','wb').write(base64.b64decode(d['content'])); print('✅ Saved',len(base64.b64decode(d['content'])),'bytes to ${saveTo}')"`;
+  // Method 1: curl from deployed web host (Zero API keys, 100% credential-safe)
+  const curlWebCmd = `mkdir -p '${saveDir}' && curl -fsSL "${publicWebUrl}" -o '${saveTo}' && echo "✅ Saved $(wc -c < '${saveTo}') bytes to ${saveTo}"`;
 
-  // Method 3: Python-only (if curl is not available)
-  const pyCmd = `python3 -c "
-import urllib.request, json, base64, os
-os.makedirs('${saveDir}', exist_ok=True)
-req = urllib.request.Request('https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(repoPath)}', headers={'Authorization': 'Bearer ${githubToken}', 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'MR-CAPSULES-MCP'})
-data = json.loads(urllib.request.urlopen(req).read())
-content = base64.b64decode(data['content'])
-open('${saveTo}', 'wb').write(content)
-print(f'✅ Saved {len(content)} bytes to ${saveTo}')
-"`;
+  // Method 2: curl raw GitHub (Zero credentials)
+  const curlRawCmd = `mkdir -p '${saveDir}' && curl -fsSL "${githubRawUrl}" -o '${saveTo}' && echo "✅ Saved $(wc -c < '${saveTo}') bytes to ${saveTo}"`;
+
+  // Method 3: Python urllib (Zero credentials)
+  const pyCmd = `python3 -c "import urllib.request, os; os.makedirs('${saveDir}', exist_ok=True); urllib.request.urlretrieve('${publicWebUrl}', '${saveTo}'); print('✅ Saved file to ${saveTo}')"`;
 
   return {
     success: true,
     file: repoPath,
     size_kb: fileSizeKB,
     save_to: saveTo,
-    instructions: `File "${repoPath}" (${fileSizeKB} KB) is ready to pull. Run ONE of these commands in your bash/terminal tool — the file will appear instantly at ${saveTo}`,
-    method_1_curl_raw: curlRawCmd,
-    method_2_curl_api: curlApiCmd,
+    public_url: publicWebUrl,
+    instructions: `File "${repoPath}" (${fileSizeKB} KB) is ready. In agent environments with a bash/terminal tool, run method_1_curl. In Claude.ai Web or environments without a terminal, call tool 'content_get' with { path: '${repoPath}', format: 'smart' } to view questions or text directly in chat.`,
+    method_1_curl: curlWebCmd,
+    method_2_github_raw: curlRawCmd,
     method_3_python: pyCmd,
-    auto_command: curlRawCmd
+    auto_command: curlWebCmd
   };
 }
 
 async function contentDelete(params, adminEmail, githubToken, owner, repo, su, sk) {
-  const { path } = params;
+  const paths = Array.isArray(params.paths) ? params.paths : (params.path ? [params.path] : []);
+  if (!paths || paths.length === 0) throw err400('Missing params.path or params.paths');
+  paths.forEach(validatePath);
+
   const refRes = await ghApi('GET', '/git/refs/heads/main', null, githubToken, owner, repo);
   const refData = await refRes.json();
   const commitSha = refData.object.sha;
   const commitRes = await ghApi('GET', `/git/commits/${commitSha}`, null, githubToken, owner, repo);
   const commitData = await commitRes.json();
+
+  const treeEntries = paths.map(p => ({ path: p, mode: '100644', type: 'blob', sha: null }));
   const treeRes = await ghApi('POST', '/git/trees', {
     base_tree: commitData.tree.sha,
-    tree: [{ path, mode: '100644', type: 'blob', sha: null }]
+    tree: treeEntries
   }, githubToken, owner, repo);
   const treeData = await treeRes.json();
+
+  const commitMessage = paths.length === 1 ? `mcp: delete ${paths[0]}` : `mcp: bulk delete ${paths.length} files`;
   const newCommitRes = await ghApi('POST', '/git/commits', {
-    message: `mcp: delete ${path}`,
+    message: commitMessage,
     tree: treeData.sha,
     parents: [commitSha]
   }, githubToken, owner, repo);
   const newCommit = await newCommitRes.json();
+
   await ghApi('PATCH', '/git/refs/heads/main', { sha: newCommit.sha }, githubToken, owner, repo);
-  await logAction(adminEmail, 'mcp_delete', { path }, su, sk);
-  return { success: true, path };
+  await logAction(adminEmail, 'mcp_delete', { paths }, su, sk);
+  return { success: true, deleted: paths, deletedCount: paths.length };
 }
 
 async function contentRename(params, adminEmail, githubToken, owner, repo, su, sk) {
@@ -2077,12 +2445,61 @@ async function contentRename(params, adminEmail, githubToken, owner, repo, su, s
 // TASKS HANDLERS
 // ═══════════════════════════════════════════════════════════════
 
-async function tasksList(su, sk) {
-  const res = await fetch(`${su}/rest/v1/content_tasks?select=*&order=created_at.desc`, {
+async function tasksList(paramsOrSu, suOrSk, skOptional) {
+  let params = {}, su, sk;
+  if (typeof paramsOrSu === 'object' && paramsOrSu !== null) {
+    params = paramsOrSu;
+    su = suOrSk;
+    sk = skOptional;
+  } else {
+    su = paramsOrSu;
+    sk = suOrSk;
+  }
+
+  let url = `${su}/rest/v1/content_tasks?select=*&order=created_at.desc`;
+  if (params.status) {
+    url += `&status=eq.${encodeURIComponent(params.status)}`;
+  }
+  if (params.priority) {
+    url += `&priority=eq.${encodeURIComponent(params.priority)}`;
+  }
+  if (params.semester) {
+    url += `&semester=ilike.*${encodeURIComponent(params.semester)}*`;
+  }
+  if (params.block) {
+    url += `&block=eq.${encodeURIComponent(params.block)}`;
+  }
+  const limit = Math.min(100, Math.max(1, parseInt(params.limit) || 20));
+  url += `&limit=${limit}`;
+
+  if (params.offset) {
+    const offset = Math.max(0, parseInt(params.offset) || 0);
+    url += `&offset=${offset}`;
+  }
+
+  const res = await fetch(url, {
     headers: { 'apikey': sk, 'Authorization': `Bearer ${sk}` }
   });
+  if (!res.ok) throw new Error(await res.text());
   const tasks = await res.json();
-  return { tasks };
+
+  const isCompact = params.compact !== false;
+  if (isCompact) {
+    const compactTasks = (tasks || []).map(t => ({
+      id: t.id,
+      title: t.title,
+      status: t.status,
+      priority: t.priority,
+      semester: t.semester,
+      block: t.block,
+      category: t.category,
+      assigned_to: t.assigned_to,
+      created_at: t.created_at
+    }));
+    return { total: tasks.length, compact: true, tasks: compactTasks, hint: "Pass compact: false for full descriptions" };
+  }
+
+  return { total: tasks.length, tasks };
 }
 
 async function tasksCreate(params, userId, su, sk) {
@@ -2882,30 +3299,31 @@ async function recordContribution(userId, points, taskId, type, su, sk) {
   }
 }
 
-// Couple Contribution Package (Farid & Khesy)
-const COUPLE_EMAILS = new Set([
-  'farid.hmzh00@gmail.com',
-  'khesyian@gmail.com'
-]);
+// Couple Contribution Package — DB-backed configuration
+async function loadCoupleConfig(su, sk) {
+  try {
+    const res = await fetch(`${su}/rest/v1/couple_config?id=eq.1&select=*`, {
+      headers: { 'apikey': sk, 'Authorization': `Bearer ${sk}`, 'Cache-Control': 'no-cache' },
+      cache: 'no-store'
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!Array.isArray(data) || data.length === 0) return null;
+    return data[0];
+  } catch (e) {
+    console.warn('Failed to load couple config:', e.message);
+    return null;
+  }
+}
 
-const COUPLE_USER_IDS = new Set([
-  '20326419-e37a-4e46-a473-cb013a21acfe', // Farid (farid.hmzh00@gmail.com)
-  'a197ddbd-7f7f-44ad-8c77-4fd868607241'  // Khesy (khesyian@gmail.com)
-]);
-
-function isCoupleMember(user) {
-  if (!user) return false;
-  if (user.id && COUPLE_USER_IDS.has(user.id)) return true;
+function isCoupleMember(user, coupleConfig) {
+  if (!user || !coupleConfig) return false;
   const email = (user.email || '').toLowerCase();
-  if (COUPLE_EMAILS.has(email)) return true;
-  const meta = user.user_metadata || {};
-  const username = (meta.username || '').toLowerCase();
-  const fullName = (meta.full_name || meta.name || '').toLowerCase();
-
-  const isFarid = (email.includes('farid') || username.includes('farid') || fullName.includes('farid')) && !email.includes('muqorroben');
-  const isKhesy = email.includes('khesy') || email.includes('keisya') || email.includes('kheisya') || username.includes('khesy') || username.includes('keisya') || fullName.includes('khesy') || fullName.includes('keisya');
-
-  return isFarid || isKhesy;
+  const p1Email = (coupleConfig.partner1_email || '').toLowerCase();
+  const p2Email = (coupleConfig.partner2_email || '').toLowerCase();
+  if (user.id && (user.id === coupleConfig.partner1_user_id || user.id === coupleConfig.partner2_user_id)) return true;
+  if (email && (email === p1Email || email === p2Email)) return true;
+  return false;
 }
 
 async function contributionsLeaderboard(su, sk) {
@@ -2918,9 +3336,10 @@ async function contributionsLeaderboard(su, sk) {
   });
   const { users } = await usersRes.json();
   const allUsers = Array.isArray(users) ? users : [];
+  const coupleConfig = await loadCoupleConfig(su, sk);
 
-  // Calculate pooled points for couple package (Farid & Khesy)
-  const coupleUserIds = new Set(allUsers.filter(isCoupleMember).map(u => u.id));
+  // Calculate pooled points for couple package
+  const coupleUserIds = new Set(allUsers.filter(u => isCoupleMember(u, coupleConfig)).map(u => u.id));
   let coupleTotalPoints = 0;
   (data || []).forEach(c => {
     if (coupleUserIds.has(c.user_id)) {
@@ -2933,7 +3352,7 @@ async function contributionsLeaderboard(su, sk) {
     const u = allUsers.find(au => au.id === c.user_id);
     const email = u ? u.email : 'Unknown';
     const username = u?.user_metadata?.username || email.split('@')[0];
-    const userIsCouple = isCoupleMember(u);
+    const userIsCouple = isCoupleMember(u, coupleConfig);
     if (!userIsCouple) {
       if (!scores[email]) scores[email] = { points: 0, username, is_couple: false };
       scores[email].points += (c.points || 0);
@@ -2945,10 +3364,10 @@ async function contributionsLeaderboard(su, sk) {
     .map(([email, d]) => ({ email, username: d.username, points: d.points, is_couple: false }));
 
   // Add 1 single combined couple entry only if coupleTotalPoints > 0
-  if (coupleTotalPoints > 0) {
-    const coupleUsers = allUsers.filter(isCoupleMember);
+  if (coupleTotalPoints > 0 && coupleConfig) {
+    const coupleUsers = allUsers.filter(u => isCoupleMember(u, coupleConfig));
     const coupleNames = coupleUsers.map(u => u?.user_metadata?.username || u.email.split('@')[0]);
-    const coupleUsername = coupleNames.length > 0 ? coupleNames.join(' & ') : 'farid.hmzh00 & khesyian';
+    const coupleUsername = coupleNames.length > 0 ? coupleNames.join(' & ') : `${coupleConfig.partner1_email.split('@')[0]} & ${coupleConfig.partner2_email.split('@')[0]}`;
     list.push({
       email: coupleUsers.map(u => u.email).join(', '),
       username: coupleUsername,
@@ -2966,17 +3385,23 @@ async function contributionsMy(userId, su, sk) {
   const usersRes = await fetch(`${su}/auth/v1/admin/users?per_page=1000`, {
     headers: { 'apikey': sk, 'Authorization': `Bearer ${sk}` }
   });
-  let isCouple = false;
+  let isCoupleUser = false;
+  let coupleLabel = null;
+  const coupleConfig = await loadCoupleConfig(su, sk);
   if (usersRes.ok) {
     const { users } = await usersRes.json();
     const allUsers = Array.isArray(users) ? users : [];
     const currentUser = allUsers.find(u => u.id === userId);
-    if (isCoupleMember(currentUser)) {
-      isCouple = true;
-      const coupleUsers = allUsers.filter(isCoupleMember);
+    if (isCoupleMember(currentUser, coupleConfig)) {
+      isCoupleUser = true;
+      const coupleUsers = allUsers.filter(u => isCoupleMember(u, coupleConfig));
       if (coupleUsers.length > 0) {
         targetUserIds = Array.from(new Set(coupleUsers.map(u => u.id)));
       }
+      // Build dynamic label
+      const name1 = coupleUsers[0]?.user_metadata?.username || coupleConfig.partner1_email.split('@')[0];
+      const name2 = coupleUsers[1]?.user_metadata?.username || coupleConfig.partner2_email.split('@')[0];
+      coupleLabel = `Paket Contribution Couple: ${name1} & ${name2}`;
     }
   }
 
@@ -2993,8 +3418,8 @@ async function contributionsMy(userId, su, sk) {
   return {
     total_points: total,
     count: list.length,
-    is_couple: isCouple,
-    couple_package: isCouple ? 'Paket Contribution Couple: Farid & Khesy' : null,
+    is_couple: isCoupleUser,
+    couple_package: coupleLabel,
     contributions: list
   };
 }
@@ -3177,32 +3602,9 @@ async function divisionsRemoveMember(userId, divisionId, adminEmail, su, sk) {
   return { success: true, userId, divisionId };
 }
 
-async function contentDeleteFiles(paths, adminEmail, githubToken, owner, repo, su, sk) {
-  const refRes = await ghApi('GET', '/git/refs/heads/main', null, githubToken, owner, repo);
-  const refData = await refRes.json();
-  const commitSha = refData.object.sha;
-
-  const commitRes = await ghApi('GET', `/git/commits/${commitSha}`, null, githubToken, owner, repo);
-  const commitData = await commitRes.json();
-
-  const treeEntries = paths.map(p => ({ path: p, mode: '100644', type: 'blob', sha: null }));
-
-  const treeRes = await ghApi('POST', '/git/trees', {
-    base_tree: commitData.tree.sha,
-    tree: treeEntries
-  }, githubToken, owner, repo);
-  const treeData = await treeRes.json();
-
-  const newCommitRes = await ghApi('POST', '/git/commits', {
-    message: `mcp: bulk delete ${paths.length} files`,
-    tree: treeData.sha,
-    parents: [commitSha]
-  }, githubToken, owner, repo);
-  const newCommit = await newCommitRes.json();
-
-  await ghApi('PATCH', '/git/refs/heads/main', { sha: newCommit.sha }, githubToken, owner, repo);
-  await logAction(adminEmail, 'mcp_delete_files', { paths }, su, sk);
-  return { success: true, deletedCount: paths.length };
+async function contentDeleteFiles(pathsOrParams, adminEmail, githubToken, owner, repo, su, sk) {
+  const params = Array.isArray(pathsOrParams) ? { paths: pathsOrParams } : (pathsOrParams.paths ? pathsOrParams : { paths: [pathsOrParams.path] });
+  return contentDelete(params, adminEmail, githubToken, owner, repo, su, sk);
 }
 
 async function tasksDelete(taskId, adminEmail, su, sk) {
@@ -3289,9 +3691,77 @@ async function coverList(githubToken, owner, repo) {
   return { covers };
 }
 
-async function docsGet(githubToken, owner, repo) {
-  const fileData = await contentGet('docs.html', githubToken, owner, repo);
-  return { html: fileData.content, path: 'docs.html' };
+async function docsGet(paramsOrGt, gtOrOwner, ownerOrRepo, repoOptional, reqHost = 'mr-capsules.vercel.app') {
+  let params = {}, gt, owner, repo;
+  if (typeof paramsOrGt === 'object' && paramsOrGt !== null) {
+    params = paramsOrGt;
+    gt = gtOrOwner;
+    owner = ownerOrRepo;
+    repo = repoOptional;
+  } else {
+    gt = paramsOrGt;
+    owner = gtOrOwner;
+    repo = ownerOrRepo;
+  }
+
+  const fileData = await contentGet('docs.html', gt, owner, repo);
+  const html = fileData.content;
+
+  if (params.full_html === true) {
+    return { path: 'docs.html', html, size_bytes: html.length };
+  }
+
+  const rawSections = html.split('<div class="docs-section">');
+  const outline = [];
+
+  for (let i = 1; i < rawSections.length; i++) {
+    const sec = rawSections[i];
+    const endIdx = sec.indexOf('</div>');
+    const secBody = endIdx !== -1 ? sec.substring(0, endIdx) : sec;
+    const titleMatch = secBody.match(/<h2[^>]*>([\s\S]*?)<\/h2>/i);
+    const title = titleMatch ? titleMatch[1].replace(/<[^>]+>/g, '').trim() : `Section ${i}`;
+    outline.push({ sectionIndex: i, title });
+  }
+
+  if (params.sectionIndex !== undefined && params.sectionIndex !== null) {
+    const sIdx = parseInt(params.sectionIndex);
+    if (sIdx < 1 || sIdx >= rawSections.length) {
+      throw err400(`Invalid sectionIndex: ${sIdx}. Valid range is 1 to ${rawSections.length - 1}`);
+    }
+    const targetSec = rawSections[sIdx];
+    const endIdx = targetSec.indexOf('</div>');
+    const secBody = endIdx !== -1 ? targetSec.substring(0, endIdx) : targetSec;
+    const titleMatch = secBody.match(/<h2[^>]*>([\s\S]*?)<\/h2>/i);
+    const title = titleMatch ? titleMatch[1].replace(/<[^>]+>/g, '').trim() : `Section ${sIdx}`;
+
+    const cleanText = secBody
+      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+      .replace(/<h2[^>]*>([\s\S]*?)<\/h2>/gi, '\n## $1\n')
+      .replace(/<h3[^>]*>([\s\S]*?)<\/h3>/gi, '\n### $1\n')
+      .replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, '\n- $1')
+      .replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, '\n$1\n')
+      .replace(/<tr[^>]*>([\s\S]*?)<\/tr>/gi, '$1\n')
+      .replace(/<t[dh][^>]*>([\s\S]*?)<\/t[dh]>/gi, ' | $1')
+      .replace(/<[^>]+>/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    return {
+      sectionIndex: sIdx,
+      title,
+      total_sections: rawSections.length - 1,
+      content_text: cleanText,
+      content_html: `<div class="docs-section">\n${secBody.trim()}\n</div>`
+    };
+  }
+
+  return {
+    path: 'docs.html',
+    total_sections: rawSections.length - 1,
+    outline,
+    hint: 'To read a specific section, call docs_get with { sectionIndex: <number> }. For full raw HTML, pass { full_html: true }.'
+  };
 }
 
 function sanitizeDocsHtml(rawHtml) {

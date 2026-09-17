@@ -2,11 +2,12 @@ export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
   const token = process.env.GITHUB_TOKEN;
-  const owner = 'alchemist4real';
-  const repo = 'MR-CAPSULES';
+  const owner = process.env.GITHUB_CONTENT_OWNER || process.env.GITHUB_OWNER || 'alchemist4real';
+  const contentRepo = process.env.GITHUB_CONTENT_REPO || 'MR-CAPSULES-CONTENT';
+  const fallbackRepo = 'MR-CAPSULES';
 
   try {
-    const ghRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/main?recursive=1`, {
+    let ghRes = await fetch(`https://api.github.com/repos/${owner}/${contentRepo}/git/trees/main?recursive=1`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -14,6 +15,18 @@ export default async function handler(req, res) {
         'User-Agent': 'Vercel-Proxy'
       }
     });
+
+    if (!ghRes.ok && contentRepo !== fallbackRepo) {
+      console.warn(`[Content API] Content repo ${contentRepo} returned ${ghRes.status}. Falling back to ${fallbackRepo}...`);
+      ghRes = await fetch(`https://api.github.com/repos/${owner}/${fallbackRepo}/git/trees/main?recursive=1`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/vnd.github+json',
+          'User-Agent': 'Vercel-Proxy'
+        }
+      });
+    }
 
     if (!ghRes.ok) throw new Error(`GitHub API Error: ${await ghRes.text()}`);
     
@@ -125,7 +138,8 @@ export default async function handler(req, res) {
     const result = {
       semesters: semesters,
       files: flatFiles,
-      covers: covers
+      covers: covers,
+      contentCdn: process.env.CONTENT_CDN || ''
     };
 
     // Cache for 5 minutes to reduce GitHub API rate limit consumption

@@ -149,7 +149,8 @@ function build() {
     const result = {
       semesters: semesters,
       files: flatFiles,
-      covers: covers.map(c => `cover/${c}`)
+      covers: covers.map(c => `cover/${c}`),
+      contentCdn: process.env.CONTENT_CDN || ''
     };
 
     const jsContent = `window.appData = ${JSON.stringify(result)};`;
@@ -157,9 +158,21 @@ function build() {
     fs.writeFileSync(path.join(publicDir, 'data.js'), jsContent);
 
     // Copy all static web assets to public/ directory for Vercel CDN deployment
+    // (content/ and cover/ are excluded as they are hosted on the separate content repository/CDN)
     const rootFiles = fs.readdirSync(process.cwd());
     rootFiles.forEach(file => {
-      if (file === 'node_modules' || file === '.git' || file === '.vercel' || file === 'api' || file === 'public' || file === 'graphify-out' || file === '.agents' || file === 'scratch') {
+      if (
+        file === 'node_modules' ||
+        file === '.git' ||
+        file === '.vercel' ||
+        file === 'api' ||
+        file === 'public' ||
+        file === 'graphify-out' ||
+        file === '.agents' ||
+        file === 'scratch' ||
+        file === 'content' ||
+        file === 'cover'
+      ) {
         return;
       }
       const srcPath = path.join(process.cwd(), file);

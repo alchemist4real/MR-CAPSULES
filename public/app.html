@@ -1,0 +1,2680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mr. Capsules</title>
+<link rel="icon" type="image/svg+xml" href="/logo.svg">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="shortcut icon" href="/favicon.ico">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="/tokens.css?v=1.9">
+<link rel="stylesheet" href="/index-styles.css?v=1.9">
+</head>
+<body>
+
+<!-- Global Reload Overlay -->
+<div id="reloadOverlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:var(--scrim); z-index:999999; flex-direction:column; justify-content:center; align-items:center;  color:var(--c3); text-align:center;">
+  <h1 class="glitch-text" style="font-size:3rem; margin-bottom:10px; letter-spacing:4px;">SYSTEM OVERRIDE</h1>
+  <p style="font-size:1.2rem; color:var(--c3); max-width:600px; line-height:1.6;">ADMINISTRATOR HAS INITIATED A GLOBAL PROTOCOL RELOAD.</p>
+  <p style="font-size:1.2rem; color:var(--c3);">PURGING CACHE & RECALIBRATING IN...</p>
+  <div id="reloadCountdown" style="font-size:8rem; font-weight:bold; margin-top:20px;">3</div>
+</div>
+
+<!-- Maintenance Overlay -->
+<div id="maintenanceOverlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:var(--scrim); z-index:9999999; flex-direction:column; justify-content:center; align-items:center;">
+  <div style="background:var(--bg-modal); border:1.5px solid var(--text-main); border-radius:var(--radius-card); padding:40px; max-width:500px; width:90%; text-align:center; color:var(--text-main);">
+    <h1 style="font-size:3rem; margin-bottom:10px; letter-spacing:2px; font-family:var(--font-sans);">MAINTENANCE MODE</h1>
+    <p style="font-size:1.2rem; color:var(--text-muted); line-height:1.6;">The system is currently undergoing scheduled maintenance.<br>Please check back later.</p>
+  </div>
+</div>
+
+<!-- Global Toast Container -->
+<div id="toastContainer" style="position:fixed; top:24px; left:50%; transform:translateX(-50%); z-index:9999999; display:flex; flex-direction:column; gap:12px; pointer-events:none;"></div>
+
+<!-- AUTH OVERLAY -->
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-container">
+    <div class="auth-brand-left">
+      <img src="/logo.svg" alt="logo">
+      <div class="auth-brand-title">Mr. Capsules</div>
+      <div class="auth-brand-subtitle">OPEN SOURCE LEARNING CENTER</div>
+    </div>
+    <div class="auth-box">
+      <div>
+        <div class="auth-title">AUTHENTICATION</div>
+        <div class="auth-subtitle">SECURE ACCESS REQUIRED</div>
+      </div>
+      <form class="auth-form" id="authForm" onsubmit="return false;">
+        <input type="email" class="auth-input" id="authEmail" placeholder="EMAIL ADDRESS" required>
+        <input type="password" class="auth-input" id="authPassword" placeholder="PASSWORD" required>
+        <button type="button" class="auth-btn" id="btnSignIn">LOG IN</button>
+        <button type="button" class="auth-btn auth-btn-outline" id="btnSignUp">SIGN UP</button>
+        <button type="button" class="auth-btn auth-btn-outline" id="btnGuest" style="margin-top: 8px; border-color: var(--accent); color: var(--accent);">GUEST MODE</button>
+        <button type="button" class="btn-text" id="btnForgotPwd" style="font-size: 12px; margin-top: 8px; opacity: 0.85; justify-content: center; width: 100%;">FORGOT PASSWORD? CONTACT ADMIN</button>
+        <div class="auth-msg" id="authMsg"></div>
+      </form>
+    </div>
+  </div>
+  <div class="credit-footer">
+    Maintained by Mr. Capsules Community • <a href="/" style="color: inherit; text-decoration: underline;">LANDING PAGE</a> • <a href="/docs.html" target="_blank" style="color: inherit; text-decoration: underline;">READ DOCS</a> • <a href="javascript:void(0)" id="footerContactAdmin" style="color: inherit; text-decoration: underline;">CONTACT ADMIN</a>
+  </div>
+</div>
+
+<div class="bg"></div>
+<div class="noise"></div>
+<div class="scanlines"></div>
+
+<div class="stage" id="stage">
+  <button id="btnTopBack" class="btn-top-back">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    BACK
+  </button>
+  <div class="brand">
+    <a href="/" style="text-decoration:none; color:inherit; display:flex; align-items:center; gap:8px;" title="Back to Landing Page">
+      <img src="/logo.svg" alt="logo">
+      <span>Mr. Capsules</span>
+    </a>
+  </div>
+  <div class="greeting" id="greetingText"></div>
+
+  <!-- Guest Restriction Banner -->
+  <div id="guestTopBanner" style="display:none; position:absolute; top:8px; left:50%; transform:translateX(-50%); z-index:100; background:var(--c2); border:1.5px solid var(--c3); border-radius:var(--radius-pill); padding:6px 16px; font-family:var(--font-mono); font-size:12px; color:var(--c3); box-shadow:0 2px 8px var(--border-light); align-items:center; gap:10px;">
+    <span>⚠️ GUEST PREVIEW: <strong id="guestBannerCount">0</strong>/3 MODULES USED</span>
+    <span style="opacity:0.4;">•</span>
+    <a href="/?auth=signup" style="color:var(--c3); font-weight:700; text-decoration:underline;">CREATE FREE ACCOUNT &rarr;</a>
+  </div>
+
+  <div class="cf-wrap" id="cfWrap">
+    <div id="cf"></div>
+  </div>
+
+  <div class="now-title">
+    <div class="t-s" id="nowSong">Mr. Capsules</div>
+    <div class="t-a" id="nowArtist">Loading content</div>
+  </div>
+
+  <div class="player-bar">
+    <div class="left-ctrl">
+      <div class="mini-thumb" id="mThumb"><img id="mImg" src="" style="display:none;"></div>
+      <div class="mini-info">
+        <div class="mini-s" id="mSong">Mr. Capsules</div>
+        <div class="mini-a" id="mArtist">Select a block</div>
+      </div>
+    </div>
+
+    <div class="transport">
+      <button class="btn" id="btnToggleMode" title="Toggle List Mode" aria-label="Toggle List Mode">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+      </button>
+      <button class="btn" id="btnPrev" aria-label="Previous">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+      </button>
+      <button class="btn play" id="btnPlay" aria-label="Play">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path id="pp" d="M8 5v14l11-7z"/></svg>
+      </button>
+      <button class="btn" id="btnNext" aria-label="Next">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18l8.5-6L6 6v12zM16 6h2v12h-2z"/></svg>
+      </button>
+    </div>
+
+    <div class="right-ctrl">
+      <!-- DOCS BUTTON -->
+      <a href="/docs.html" target="_blank" class="btn sm" title="Documentation" aria-label="Documentation" style="text-decoration:none; display:flex; align-items:center; justify-content:center;">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+      </a>
+      <!-- SETTINGS BUTTON -->
+      <button class="btn sm" title="Settings" id="btnSettings" aria-label="Settings">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
+      </button>
+
+      <!-- BACK BUTTON -->
+      <button class="btn sm" title="Back" id="btnBack" aria-label="Back">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="credit-footer">Maintained by Mr. Capsules Community</div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="settings-overlay" id="settingsModal">
+  <div class="settings-box">
+    <div class="settings-header">
+      <span>SETTINGS & STATUS</span>
+      <button class="btn-text" id="btnSettingsClose">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg> CLOSE
+      </button>
+    </div>
+    <div class="settings-body">
+      <div>
+        <div class="settings-section-title">NETWORK</div>
+        <div class="stat-block">
+          <div class="stat-item">
+            <span class="stat-label">CURRENTLY ONLINE</span>
+            <span class="stat-val" id="onlineCount">1</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-label">YOUR TOTAL TIME</span>
+            <span class="stat-val" id="valLocal">00:00:00</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-label">GLOBAL ENGAGEMENT</span>
+            <span class="stat-val" id="valGlobal">Loading...</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="settings-section-title">PREFERENCES</div>
+        <div class="stat-block" style="margin-bottom:12px;">
+          <div class="stat-item" style="flex-direction:row; align-items:center; justify-content:space-between; width:100%;">
+            <span class="stat-label">PERSONA<br><span style="opacity:0.8; font-size:12px;">Mr. / Mrs. Title</span></span>
+            <div style="display:flex; gap:6px;" id="personaToggles">
+              <button class="auth-btn auth-btn-outline persona-btn active" data-persona="mr" style="min-height:34px; padding:6px 14px; font-size:12.5px;">Mr.</button>
+              <button class="auth-btn auth-btn-outline persona-btn" data-persona="mrs" style="min-height:34px; padding:6px 14px; font-size:12.5px;">Mrs.</button>
+            </div>
+          </div>
+          <div class="stat-divider" style="margin: 8px 0;"></div>
+          <div class="stat-item" style="flex-direction:row; align-items:center; justify-content:space-between; width:100%;">
+            <span class="stat-label">LOW PERF MODE<br><span style="opacity:0.8; font-size:12px;">DISABLE COVERS</span></span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="perfToggleCb">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="stat-divider" style="margin: 8px 0;"></div>
+          <div class="stat-item" style="flex-direction:row; align-items:center; justify-content:space-between; width:100%;">
+            <span class="stat-label">GUIDED TOUR<br><span style="opacity:0.8; font-size:12px;">LEARN THE SYSTEM</span></span>
+            <button class="auth-btn auth-btn-outline" style="min-height:34px; padding:6px 14px; font-size:12.5px;" onclick="document.getElementById('settingsModal').classList.remove('active'); document.getElementById('interactionModeModal').classList.add('active');">LAUNCH</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="settings-section-title">DOCUMENTATION</div>
+        <div class="stat-block" style="margin-bottom:24px;">
+          <div class="stat-item" style="flex-direction:row; align-items:center; justify-content:space-between; width:100%;">
+            <span class="stat-label">Mr. Capsules Docs<br><span style="opacity:0.8; font-size:12px;">VIEW GUIDE & INFO</span></span>
+            <a href="/docs.html" target="_blank" style="text-decoration:none;">
+              <button class="auth-btn auth-btn-outline" style="min-height:34px; padding:6px 14px; font-size:12.5px; display:flex; align-items:center; gap:4px;">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                OPEN
+              </button>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="settings-section-title">ACCOUNT</div>
+        <div class="stat-block" style="margin-bottom:12px;">
+          <div class="stat-item" style="flex-direction:column; align-items:flex-start; gap:8px;">
+            <span class="stat-label">USERNAME</span>
+            <div style="display:flex; width:100%; gap:8px;">
+              <input type="text" id="authUsername" class="auth-input" style="flex:1; padding:6px 10px;" placeholder="YOUR NAME">
+              <button id="btnSaveUsername" class="auth-btn auth-btn-outline" style="min-height:36px; padding:6px 14px; font-size:12.5px;">SAVE</button>
+            </div>
+          </div>
+          <div class="stat-item" style="flex-direction:column; align-items:flex-start; gap:8px; margin-top:12px;">
+            <span class="stat-label">CHANGE PASSWORD</span>
+            <div style="display:flex; width:100%; gap:8px;">
+              <input type="password" id="settingsNewPassword" class="auth-input" style="flex:1; padding:6px 10px;" placeholder="NEW PASSWORD">
+              <button id="btnUpdatePassword" class="auth-btn auth-btn-outline" style="min-height:36px; padding:6px 14px; font-size:12.5px; white-space:nowrap;">UPDATE</button>
+            </div>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:24px;">
+            <button class="btn-text" id="btnLogout" style="opacity:1; background:color-mix(in srgb, var(--c4) 10%, transparent); min-height:36px; padding:8px 16px; border-radius:var(--radius-pill); color:var(--danger); border:1.5px solid var(--danger); font-size:12.5px;">SIGN OUT</button>
+            
+            <a href="/admin.html" id="adminSection" style="display:none; text-decoration:none;">
+              <button class="btn-text" style="opacity:1; background:var(--border-light); min-height:36px; padding:8px 16px; border-radius:var(--radius-pill); color:var(--text-main); border:1.5px solid var(--text-main); display:flex; align-items:center; gap:6px; font-weight:600; font-size:12.5px;">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                ADMIN
+              </button>
+            </a>
+          </div>
+          
+          <button id="btnForceReload" class="auth-btn" style="display:none; background:color-mix(in srgb, var(--c3) 12%, transparent); color:var(--c3); border:1px solid var(--c3); font-weight:bold; margin-top:24px; text-align:center;">FORCE GLOBAL RELOAD</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Iframe Viewer -->
+<div class="iframe-overlay" id="iframeViewer">
+  <div class="iframe-header">
+    <button class="btn-text" id="btnIframeBack">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Back
+    </button>
+    <div class="iframe-title" id="iframeTitle">VIEWER</div>
+    <div style="display:flex; align-items:center; gap:16px;">
+      <button class="btn-text" id="btnIframeNext" style="display:none; color:var(--text-main); opacity:0.8;">
+      </button>
+      <button class="btn-text" id="btnIframeFullscreen" title="Fullscreen" aria-label="Fullscreen">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+      </button>
+    </div>
+  </div>
+  <iframe id="viewerFrame" src=""></iframe>
+</div>
+
+<script src="data.js"></script>
+<script>
+/* ══ PERSONA ENGINE ══ */
+const personaToggles = document.querySelectorAll('.persona-btn');
+let currentPersona = 'mr';
+try {
+  currentPersona = localStorage.getItem('mr_persona') || 'mr';
+} catch(e) {}
+
+function showAppToast(msg, duration = 2500) {
+  const tContainer = document.getElementById('toastContainer');
+  if (!tContainer) return;
+  const toast = document.createElement('div');
+  toast.style.cssText = 'background:var(--c2); color:var(--c3); border:1.5px solid var(--c3); border-radius:var(--radius-pill); padding:8px 18px; font-family:var(--font-mono); font-size:12px; box-shadow:0 4px 12px var(--border-light); transform:translateY(-15px); opacity:0; transition:0.25s; pointer-events:auto; display:flex; align-items:center; gap:8px;';
+  toast.textContent = msg;
+  tContainer.appendChild(toast);
+  requestAnimationFrame(() => { toast.style.transform = 'translateY(0)'; toast.style.opacity = '1'; });
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(-15px)';
+    setTimeout(() => toast.remove(), 250);
+  }, duration);
+}
+
+function applyPersona(p, updateStorage = true, notify = false) {
+  currentPersona = (p === 'mrs') ? 'mrs' : 'mr';
+  const isMrs = (currentPersona === 'mrs');
+  const mrText = isMrs ? 'Mrs. Capsules' : 'Mr. Capsules';
+
+  // 1. Page Title
+  document.title = mrText;
+
+  // 2. Brand Header Logo Text
+  document.querySelectorAll('.brand span').forEach(el => {
+    el.textContent = mrText;
+  });
+
+  // 3. Auth Brand Title
+  document.querySelectorAll('.auth-brand-title').forEach(el => {
+    el.textContent = mrText;
+  });
+
+  // 4. Credit Footers
+  document.querySelectorAll('.credit-footer').forEach(el => {
+    if (isMrs) {
+      el.innerHTML = el.innerHTML.replace(/\bMr\.\s*Capsules\b/g, 'Mrs. Capsules');
+    } else {
+      el.innerHTML = el.innerHTML.replace(/\bMrs\.\s*Capsules\b/g, 'Mr. Capsules');
+    }
+  });
+
+  // 5. Default Song/Track Title when at root
+  const nowSong = document.getElementById('nowSong');
+  if (nowSong && (nowSong.textContent === 'Mr. Capsules' || nowSong.textContent === 'Mrs. Capsules')) {
+    nowSong.textContent = mrText;
+    nowSong.setAttribute('data-text', mrText);
+  }
+  const mSong = document.getElementById('mSong');
+  if (mSong && (mSong.textContent === 'Mr. Capsules' || mSong.textContent === 'Mrs. Capsules')) {
+    mSong.textContent = mrText;
+  }
+
+  // 6. Settings Documentation Label
+  const settingsDocsText = document.querySelector('#settingsModal .stat-block a[href*="docs"]')?.closest('.stat-item')?.querySelector('.stat-label');
+  if (settingsDocsText) {
+    settingsDocsText.innerHTML = `${mrText} Docs<br><span style="opacity:0.8; font-size:12px;">VIEW GUIDE & INFO</span>`;
+  }
+
+  // 7. Modals
+  const welcomeTitle = document.querySelector('#interactionModeModal div[style*="font-size:24px"]');
+  if (welcomeTitle) {
+    welcomeTitle.textContent = isMrs ? 'WELCOME TO MRS CAPSULES' : 'WELCOME TO MR CAPSULES';
+  }
+
+  // 8. Contact Links
+  const waBtn = document.getElementById('btnContactWa');
+  if (waBtn && waBtn.href) {
+    waBtn.href = waBtn.href.replace(/Mr\.%20Capsules|Mrs\.%20Capsules/g, isMrs ? 'Mrs.%20Capsules' : 'Mr.%20Capsules');
+  }
+  const emailBtn = document.getElementById('btnContactEmail');
+  if (emailBtn && emailBtn.href) {
+    emailBtn.href = emailBtn.href.replace(/Mr\.%20Capsules|Mrs\.%20Capsules/g, isMrs ? 'Mrs.%20Capsules' : 'Mr.%20Capsules');
+  }
+
+  // 9. Persona Selector Buttons: Lock down labels so they NEVER get corrupted!
+  personaToggles.forEach(btn => {
+    const val = btn.getAttribute('data-persona');
+    btn.classList.toggle('active', val === currentPersona);
+    btn.textContent = (val === 'mrs') ? 'Mrs.' : 'Mr.';
+  });
+
+  // 10. Persona Title Label in Settings: Always preserve 'Mr. / Mrs. Title'
+  const pLabel = document.querySelector('#personaToggles')?.closest('.stat-item')?.querySelector('.stat-label');
+  if (pLabel) {
+    pLabel.innerHTML = 'PERSONA<br><span style="opacity:0.8; font-size:12px;">Mr. / Mrs. Title</span>';
+  }
+
+  // 11. Body CSS Hook
+  document.body.classList.toggle('persona-mrs', isMrs);
+  document.body.classList.toggle('persona-mr', !isMrs);
+
+  // 12. Storage & Cloud Sync
+  if (updateStorage) {
+    try {
+      localStorage.setItem('mr_persona', currentPersona);
+    } catch(e) {}
+
+    if (window.supabaseClient) {
+      window.supabaseClient.auth.getSession().then(({ data: { session } }) => {
+        if (session && session.user) {
+          window.supabaseClient.auth.updateUser({
+            data: { persona: currentPersona }
+          }).catch(() => {});
+        }
+      });
+    }
+  }
+
+  if (notify) {
+    showAppToast(`PERSONA: ${mrText.toUpperCase()} ACTIVE`);
+  }
+}
+
+applyPersona(currentPersona, false, false);
+
+personaToggles.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const val = btn.getAttribute('data-persona');
+    applyPersona(val, true, true);
+  });
+});
+
+window.addEventListener('storage', (e) => {
+  if (e.key === 'mr_persona') {
+    applyPersona(e.newValue || 'mr', false, false);
+  }
+});
+
+/* ══ PERFORMANCE ENGINE ══ */
+const perfToggleCb = document.getElementById('perfToggleCb');
+let isLowPerfMode = false;
+try {
+  isLowPerfMode = localStorage.getItem('mr_low_perf') === 'on';
+} catch(e) {}
+
+function applyPerfMode(val, skipRender) {
+  isLowPerfMode = (val === 'on');
+  if (perfToggleCb) perfToggleCb.checked = isLowPerfMode;
+  if (!skipRender && catalog.length > 0) {
+    loadCatalog(catalog, cur); // re-render CURRENT catalog to apply covers
+  }
+}
+applyPerfMode(isLowPerfMode ? 'on' : 'off', true);
+
+if (perfToggleCb) {
+  perfToggleCb.addEventListener('change', async (e) => {
+    const val = e.target.checked ? 'on' : 'off';
+    try {
+      localStorage.setItem('mr_low_perf', val);
+    } catch(e) {}
+    applyPerfMode(val, false);
+    
+    if (window.supabaseClient) {
+      const { data: { session } } = await window.supabaseClient.auth.getSession();
+      if (session) {
+        await window.supabaseClient.auth.updateUser({
+          data: { low_perf_mode: (val === 'on') }
+        });
+      }
+    }
+  });
+}
+
+function getContentCdnUrl(relPath) {
+  if (!relPath) return '';
+  if (relPath.startsWith('http://') || relPath.startsWith('https://') || relPath.startsWith('data:')) {
+    return relPath;
+  }
+  const cdn = window.CONTENT_CDN || (window.appData && window.appData.contentCdn) || '';
+  const cleanPath = relPath.replace(/^\/+/, '');
+  if (cdn) {
+    return `${cdn.replace(/\/+$/, '')}/${cleanPath}`;
+  }
+  return `/${cleanPath}`;
+}
+
+let rawData = null;
+let navHistory = [];
+let catalog = [];
+let covers = [];
+let cur = 0;
+let cards = [];
+const cf = document.getElementById('cf');
+
+async function init() {
+  try {
+    if (window.appData && window.appData.semesters) {
+      try {
+        applyData(window.appData);
+      } catch(e) {
+        console.error("Stale appData ignored", e);
+      }
+    } else {
+      const res = await fetch('/data.js?t=' + Date.now());
+      if (res.ok) {
+        const text = await res.text();
+        const jsonStr = text.replace(/^window\.appData\s*=\s*/, '').replace(/;\s*$/, '');
+        applyData(JSON.parse(jsonStr));
+      }
+    }
+  } catch(e) {
+    console.error("Fallback to /api/content:", e);
+    try {
+      const res = await fetch('/api/content');
+      if (res.ok) {
+        const data = await res.json();
+        applyData(data);
+      }
+    } catch(err) {
+      console.error("Failed to load catalog from API:", err);
+    }
+  }
+}
+
+let isFlatMode = false;
+
+function applyData(data) {
+  rawData = data;
+  covers = data.covers || [];
+  
+  if (isFlatMode) {
+    navHistory = [];
+    document.getElementById('btnBack').style.display = 'none';
+    const topBack = document.getElementById('btnTopBack');
+    if (topBack) topBack.style.display = 'none';
+    document.getElementById('btnToggleMode').style.color = 'var(--bg-main)';
+    document.getElementById('btnToggleMode').style.background = 'var(--text-main)';
+    loadCatalog(data.files || []);
+  } else {
+    document.getElementById('btnToggleMode').style.color = 'var(--text-main)';
+    document.getElementById('btnToggleMode').style.background = 'transparent';
+    if (navHistory.length === 0) {
+      document.getElementById('btnBack').style.display = 'none';
+      const topBack = document.getElementById('btnTopBack');
+      if (topBack) topBack.style.display = 'none';
+      loadCatalog(data.semesters);
+    } else {
+      document.getElementById('btnBack').style.display = 'flex';
+      const topBack = document.getElementById('btnTopBack');
+      if (topBack) topBack.style.display = 'flex';
+      if (!catalog.length) loadCatalog(data.semesters);
+    }
+  }
+}
+
+async function backgroundSync() {
+  try {
+    const res = await fetch('/api/content');
+    if (res.ok) {
+      const freshData = await res.json();
+      rawData = freshData;
+      // Only build if we don't have anything shown yet
+      if (!catalog || catalog.length === 0) {
+        applyData(freshData);
+      }
+    }
+  } catch(e) {
+    console.log('Background sync skipped');
+  }
+}
+
+function loadCatalog(newCatalog, restoreIndex = -1) {
+  catalog = [...newCatalog];
+  catalog.sort((a,b) => a.title.localeCompare(b.title, undefined, { numeric: true, sensitivity: 'base' }));
+  
+  // Fisher-Yates shuffle for unbiased randomization
+  function shuffleArray(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+  let shuffledCovers = shuffleArray([...covers]);
+  let coverIndex = 0;
+
+  catalog.forEach(item => {
+    if (isLowPerfMode) {
+      item.cover = '';
+    } else if (covers.length > 0) {
+      item.cover = shuffledCovers[coverIndex];
+      coverIndex++;
+      if (coverIndex >= shuffledCovers.length) {
+        shuffledCovers = shuffleArray([...covers]);
+        coverIndex = 0;
+      }
+    } else {
+      item.cover = ''; 
+    }
+  });
+
+  buildCoverflow(restoreIndex);
+}
+
+function buildCoverflow(startIndex) {
+  cf.innerHTML = '';
+  cards = catalog.map((item, i) => {
+    const el = document.createElement('div');
+    el.className = 'card type-' + item.type;
+    
+    let metaText = '';
+    if (item.type === 'semester') metaText = `${item.blocks.length} Blocks`;
+    else if (item.type === 'block') metaText = `${item.categories.length} Categories`;
+    else if (item.type === 'category') metaText = `${item.files.length} Files`;
+    else if (item.type === 'file') metaText = "HTML File";
+
+    el.innerHTML = `
+      <div class="art">
+        ${item.cover ? `<img class="art-bg" src="${item.cover}" alt="cover">` : `<div class="art-dot-grid"></div>`}
+      </div>
+      <div class="card-label">
+        <div class="s">${item.title}</div>
+        <div class="a">${metaText}</div>
+      </div>`;
+    
+    el.addEventListener('click', () => { 
+      if(el._off !== 0) go(i); 
+      else diveIn(i); 
+    });
+    cf.appendChild(el);
+    return el;
+  });
+  
+  if (catalog.length > 0) {
+    if (startIndex >= 0 && startIndex < catalog.length) {
+      go(startIndex);
+    } else {
+      go(Math.floor(catalog.length / 2));
+    }
+  } else {
+    document.getElementById('nowSong').textContent = "No Content Found";
+    document.getElementById('nowArtist').textContent = "Empty directory";
+  }
+  
+  updateBackButton();
+}
+
+function updateBackButton() {
+  const btnBack = document.getElementById('btnBack');
+  const btnTopBack = document.getElementById('btnTopBack');
+  if (navHistory.length > 0) {
+    btnBack.style.opacity = '1';
+    btnBack.style.pointerEvents = 'auto';
+    if (btnTopBack) btnTopBack.style.display = 'flex';
+  } else {
+    btnBack.style.opacity = '0.2';
+    btnBack.style.pointerEvents = 'none';
+    if (btnTopBack) btnTopBack.style.display = 'none';
+  }
+}
+
+let isCurrentUserGuest = false;
+
+function openGuestLimitModal(title, subtitle) {
+  const iframe = document.getElementById('iframeViewer');
+  if (iframe) iframe.classList.remove('active');
+  const modal = document.getElementById('guestLimitModal');
+  const t = document.getElementById('guestLimitTitle');
+  const s = document.getElementById('guestLimitSubtitle');
+  if (t && title) t.textContent = title;
+  if (s && subtitle) s.textContent = subtitle;
+  if (modal) modal.classList.add('active');
+}
+
+function closeGuestLimitModal() {
+  const modal = document.getElementById('guestLimitModal');
+  if (modal) modal.classList.remove('active');
+}
+
+function bindGuestLimitListeners() {
+  const btnClose = document.getElementById('btnCloseGuestLimit');
+  if (btnClose) btnClose.addEventListener('click', closeGuestLimitModal);
+  const modal = document.getElementById('guestLimitModal');
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeGuestLimitModal();
+    });
+  }
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bindGuestLimitListeners);
+} else {
+  bindGuestLimitListeners();
+}
+
+function updateGuestBanner() {
+  const banner = document.getElementById('guestTopBanner');
+  const countEl = document.getElementById('guestBannerCount');
+  if (!isCurrentUserGuest) {
+    if (banner) banner.style.display = 'none';
+    return;
+  }
+  const views = parseInt(localStorage.getItem('mr_guest_views') || '0', 10);
+  if (countEl) countEl.textContent = views;
+  if (banner) banner.style.display = 'flex';
+}
+
+function setupGuestRestrictions(session) {
+  if (!session || !session.user) return;
+  const meta = session.user.user_metadata || {};
+  const isGuest = !!(meta.is_guest || (session.user.email && session.user.email.startsWith('guest_')));
+  isCurrentUserGuest = isGuest;
+
+  if (isGuest) {
+    // 1. Expiry check: 15 minutes max for guest session
+    let expiry = parseInt(localStorage.getItem('mr_guest_expiry') || '0', 10);
+    if (!expiry) {
+      expiry = Date.now() + 15 * 60 * 1000;
+      try { localStorage.setItem('mr_guest_expiry', expiry); } catch(e) {}
+    }
+    if (Date.now() > expiry) {
+      openGuestLimitModal('GUEST SESSION EXPIRED (15 MIN)', 'Your 15-minute guest preview session has ended. To continue reviewing modules and save your progress, please create a free student account.');
+      if (window.supabaseClient) window.supabaseClient.auth.signOut();
+      return;
+    }
+
+    if (!window._guestTimerInterval) {
+      window._guestTimerInterval = setInterval(() => {
+        if (isCurrentUserGuest) {
+          let exp = parseInt(localStorage.getItem('mr_guest_expiry') || '0', 10);
+          if (exp && Date.now() > exp) {
+            openGuestLimitModal('GUEST SESSION EXPIRED (15 MIN)', 'Your 15-minute guest preview session has ended. To continue reviewing modules and save your progress, please create a free student account.');
+            if (window.supabaseClient) window.supabaseClient.auth.signOut();
+          }
+        }
+      }, 30000);
+    }
+
+    // 2. Banner
+    updateGuestBanner();
+
+    // 3. Restrict Settings customizations
+    const nameInput = document.getElementById('authUsername');
+    const saveNameBtn = document.getElementById('btnSaveUsername');
+    const pwdInput = document.getElementById('settingsNewPassword');
+    const updatePwdBtn = document.getElementById('btnUpdatePassword');
+    if (nameInput) {
+      nameInput.disabled = true;
+      nameInput.value = 'GUEST (READ ONLY)';
+      nameInput.title = 'Guest accounts cannot be renamed';
+    }
+    if (saveNameBtn) saveNameBtn.style.display = 'none';
+    if (pwdInput) {
+      pwdInput.disabled = true;
+      pwdInput.placeholder = 'LOCKED IN GUEST MODE';
+    }
+    if (updatePwdBtn) updatePwdBtn.style.display = 'none';
+  } else {
+    isCurrentUserGuest = false;
+    updateGuestBanner();
+  }
+}
+
+function diveIn(index) {
+  const item = catalog[index];
+
+  // Guest restriction 1: Semester 3 archive lockdown
+  if (isCurrentUserGuest && item.type === 'semester' && (item.title.includes('3') || item.title.includes('Semester 3'))) {
+    openGuestLimitModal('ADVANCED ARCHIVE RESTRICTED', 'Semester 3 question banks and high-yield CBT modules are reserved for registered students. Please create a free student account to unlock the entire curriculum.');
+    return;
+  }
+  
+  if (item.type === 'file') {
+    // Guest restriction 2: Maximum 3 preview modules
+    if (isCurrentUserGuest) {
+      let views = parseInt(localStorage.getItem('mr_guest_views') || '0', 10);
+      if (views >= 3) {
+        openGuestLimitModal('GUEST PREVIEW QUOTA REACHED (3/3)', 'You have used all 3 module previews allowed in Guest Mode. Register for a free student account to enjoy unlimited access to all 1,600+ questions.');
+        return;
+      }
+      views++;
+      localStorage.setItem('mr_guest_views', views);
+      updateGuestBanner();
+    }
+    openFile(item.path, item.title, index);
+    return;
+  }
+  
+  let nextArray = null;
+  if (item.type === 'semester') nextArray = item.blocks;
+  else if (item.type === 'block') nextArray = item.categories;
+  else if (item.type === 'category') nextArray = item.files;
+
+  if (nextArray && nextArray.length > 0) {
+    navHistory.push({ array: catalog, index: cur });
+    loadCatalog(nextArray);
+  }
+}
+
+function goBack() {
+  if (navHistory.length > 0) {
+    const prev = navHistory.pop();
+    loadCatalog(prev.array, prev.index);
+  }
+}
+
+function slot(off){
+  const w = window.innerWidth;
+  
+  let x1, x2, tz1, tz2, ry1, ry2, sc1, sc2, op1, op2;
+  
+  if (w <= 440) {
+    // Compact mobile phones (iPhone SE, iPhone 12/13/14/15/16, Galaxy S, Pixel)
+    // Center card half-width = 108px, Screen half-width = ~180px - 215px
+    // x1 = ~125px reveals ~75px of Card 1 cleanly without overlapping Card 0
+    x1 = Math.round(w * 0.32);
+    x2 = Math.round(w * 0.58);
+    tz1 = -85;  tz2 = -230;
+    ry1 = 48;   ry2 = 64;
+    sc1 = 0.80; sc2 = 0.56;
+    op1 = 0.85; op2 = 0.38;
+  } else if (w <= 640) {
+    // Plus / Max phones & large mobile (441px - 640px)
+    x1 = Math.round(w * 0.30);
+    x2 = Math.round(w * 0.54);
+    tz1 = -85;  tz2 = -230;
+    ry1 = 46;   ry2 = 62;
+    sc1 = 0.82; sc2 = 0.60;
+    op1 = 0.86; op2 = 0.45;
+  } else if (w <= 1024) {
+    // iPad & Tablets (iPad Mini 768px, iPad 10th 820px, iPad Pro 834px/1024px)
+    // Center card half-width = 120px, Screen half-width = 384px - 512px
+    // x1 = ~184px, x2 = ~338px: perfectly contained within iPad viewport without collision
+    x1 = Math.round(Math.min(210, w * 0.24));
+    x2 = Math.round(Math.min(380, w * 0.44));
+    tz1 = -90;  tz2 = -230;
+    ry1 = 42;   ry2 = 56;
+    sc1 = 0.85; sc2 = 0.68;
+    op1 = 0.88; op2 = 0.55;
+  } else {
+    // Desktop & Large Screens (> 1024px)
+    // Center card half-width = 130px
+    x1 = 220;
+    x2 = 410;
+    tz1 = -90;  tz2 = -230;
+    ry1 = 38;   ry2 = 52;
+    sc1 = 0.86; sc2 = 0.70;
+    op1 = 0.88; op2 = 0.58;
+  }
+  
+  switch(off){
+    case  0: return {tx:0,    tz:0,    ry:0,     sc:1.00, op:1.00, zi:5};
+    case -1: return {tx:-x1,  tz:tz1,  ry:ry1,   sc:sc1,  op:op1,  zi:3};
+    case  1: return {tx: x1,  tz:tz1,  ry:-ry1,  sc:sc1,  op:op1,  zi:3};
+    case -2: return {tx:-x2,  tz:tz2,  ry:ry2,   sc:sc2,  op:op2,  zi:1};
+    case  2: return {tx: x2,  tz:tz2,  ry:-ry2,  sc:sc2,  op:op2,  zi:1};
+    default: return {tx:0,    tz:-450, ry:0,     sc:0.35, op:0.00, zi:0};
+  }
+}
+
+let scrollTimer = null;
+const wrap = document.getElementById('cfWrap');
+
+function triggerFastScrollAnim() {
+  if (wrap) wrap.classList.add('fast-scrolling');
+  clearTimeout(scrollTimer);
+  scrollTimer = setTimeout(() => {
+    if (wrap) wrap.classList.remove('fast-scrolling');
+    apply(true, 0);
+  }, 220);
+}
+
+function apply(anim, tiltZ = 0){
+  if(!catalog.length) return;
+  const N = catalog.length;
+  cards.forEach((el,i)=>{
+    let off = ((i - cur%N + N) % N);
+    if(off > Math.floor(N/2)) off -= N;
+    el._off = off;
+    const s = slot(off);
+    if(anim){
+      el.classList.add('animating');
+      el.addEventListener('transitionend',()=>el.classList.remove('animating'),{once:true});
+    }
+    const cardTilt = off === 0 ? tiltZ : (tiltZ * 0.45);
+    el.style.transform    = `translateX(${s.tx}px) translateZ(${s.tz}px) rotateY(${s.ry}deg) rotateZ(${cardTilt.toFixed(1)}deg) scale(${s.sc})`;
+    el.style.opacity      = s.op;
+    el.style.zIndex       = s.zi;
+    el.style.pointerEvents= Math.abs(off)<=2?'auto':'none';
+    el.classList.toggle('card-active', off===0);
+  });
+}
+
+function info(){
+  if(!catalog.length) return;
+  const item = catalog[cur];
+  const nowSong = document.getElementById('nowSong');
+  nowSong.textContent = item.title;
+  nowSong.setAttribute('data-text', item.title);
+  
+  let metaText = '';
+  if (item.type === 'semester') metaText = `${item.blocks ? item.blocks.length : 0} Blocks • ${item.totalFiles} Files`;
+  else if (item.type === 'block') metaText = `${item.categories ? item.categories.length : 0} Categories • ${item.totalFiles} Files`;
+  else if (item.type === 'category') metaText = `${item.files ? item.files.length : 0} Files`;
+  else if (item.type === 'file') metaText = "HTML Document";
+
+  document.getElementById('nowArtist').textContent = metaText;
+  
+  document.getElementById('mSong').textContent = item.title;
+  
+  let typeLabel = "SEMESTER";
+  if (item.type === 'block') typeLabel = "BLOCK";
+  if (item.type === 'category') typeLabel = "CATEGORY";
+  if (item.type === 'file') typeLabel = "FILE";
+  document.getElementById('mArtist').textContent = typeLabel;
+  
+  const mImg = document.getElementById('mImg');
+  if (item.cover) {
+    mImg.src = getContentCdnUrl(item.cover);
+    mImg.style.display = 'block';
+  } else {
+    mImg.style.display = 'none';
+  }
+}
+
+function go(i, velocity = 0){
+  if(!catalog.length) return;
+  cur = ((i%catalog.length)+catalog.length)%catalog.length;
+  
+  let tiltZ = 0;
+  if (velocity !== 0) {
+    // Dynamic tilt based on velocity direction & magnitude (clamped between -4.5deg and +4.5deg)
+    const sign = velocity < 0 ? -1 : 1;
+    const mag = Math.min(4.5, Math.max(1.8, Math.abs(velocity) * 2.5));
+    tiltZ = sign * mag;
+    triggerFastScrollAnim();
+  }
+  apply(true, tiltZ); info();
+}
+
+// Controls
+document.getElementById('btnToggleMode').addEventListener('click', () => {
+  isFlatMode = !isFlatMode;
+  if (rawData) {
+    applyData(rawData);
+  }
+});
+
+document.getElementById('btnPrev').addEventListener('click',()=>go(cur-1));
+document.getElementById('btnNext').addEventListener('click',()=>go(cur+1));
+document.getElementById('btnPlay').addEventListener('click',()=>diveIn(cur));
+document.getElementById('btnBack').addEventListener('click', goBack);
+const topBackBtn = document.getElementById('btnTopBack');
+if (topBackBtn) topBackBtn.addEventListener('click', goBack);
+
+document.addEventListener('keydown',e=>{
+  if (document.getElementById('iframeViewer').classList.contains('active')) return;
+  const tag = e.target.tagName.toLowerCase();
+  if (tag === 'input' || tag === 'textarea') return;
+
+  if(e.key==='ArrowLeft')  go(cur-1);
+  if(e.key==='ArrowRight') go(cur+1);
+  if(e.key===' ' || e.key==='Enter'){e.preventDefault(); diveIn(cur);}
+  if(e.key==='Backspace' || e.key==='Escape'){e.preventDefault(); goBack();}
+});
+
+let tx0 = 0, ty0 = 0, tt0 = 0;
+if (wrap) {
+  wrap.addEventListener('touchstart', e => {
+    if (!e.touches || !e.touches[0]) return;
+    tx0 = e.touches[0].clientX;
+    ty0 = e.touches[0].clientY;
+    tt0 = Date.now();
+  }, { passive: true });
+
+  wrap.addEventListener('touchend', e => {
+    if (!e.changedTouches || !e.changedTouches[0]) return;
+    const dx = e.changedTouches[0].clientX - tx0;
+    const dy = e.changedTouches[0].clientY - ty0;
+    const dt = Math.max(1, Date.now() - tt0);
+
+    // Direction angle protection: only swipe horizontally if dx dominates dy by at least 1.25x
+    if (Math.abs(dx) > 30 && Math.abs(dx) > Math.abs(dy) * 1.25) {
+      const velocity = dx / dt; // px per ms (negative = swipe left / next)
+      const isFast = Math.abs(velocity) > 0.4;
+      const step = (isFast && Math.abs(velocity) > 0.95) ? (dx < 0 ? 2 : -2) : (dx < 0 ? 1 : -1);
+      go(cur + step, velocity);
+    }
+  }, { passive: true });
+
+  // Mouse wheel / trackpad scroll support with kinetic tilt
+  let wheelTimeout = null;
+  let wheelAccum = 0;
+  let lastWheelTime = 0;
+  wrap.addEventListener('wheel', e => {
+    const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+    if (Math.abs(delta) < 8) return;
+
+    e.preventDefault();
+    const now = Date.now();
+    const dt = Math.max(1, now - lastWheelTime);
+    lastWheelTime = now;
+    wheelAccum += delta;
+
+    const threshold = 36;
+    if (Math.abs(wheelAccum) >= threshold) {
+      const dir = wheelAccum > 0 ? 1 : -1;
+      const velocity = -(wheelAccum / dt) * 0.15;
+      go(cur + dir, velocity);
+      wheelAccum = 0;
+    }
+
+    clearTimeout(wheelTimeout);
+    wheelTimeout = setTimeout(() => { wheelAccum = 0; }, 140);
+  }, { passive: false });
+}
+
+window.addEventListener('resize',()=>apply(false));
+
+/* ══ IFRAME LOGIC ══ */
+const iframeViewer = document.getElementById('iframeViewer');
+const viewerFrame = document.getElementById('viewerFrame');
+const iframeTitle = document.getElementById('iframeTitle');
+
+let currentViewerIndex = -1;
+
+function openFile(path, name, index = -1) {
+  if (isCurrentUserGuest) {
+    let views = parseInt(localStorage.getItem('mr_guest_views') || '0', 10);
+    if (views >= 3) {
+      openGuestLimitModal('GUEST PREVIEW QUOTA REACHED (3/3)', 'You have used all 3 module previews allowed in Guest Mode. Register for a free student account to enjoy unlimited access to all 1,600+ questions.');
+      return;
+    }
+  }
+  iframeTitle.textContent = name.toUpperCase();
+  viewerFrame.src = getContentCdnUrl(path);
+  iframeViewer.classList.add('active');
+  currentViewerIndex = index;
+  updateNextFileButton();
+}
+
+function updateNextFileButton() {
+  const btnNext = document.getElementById('btnIframeNext');
+  if (!btnNext) return;
+  
+  let nextIndex = -1;
+  if (currentViewerIndex >= 0) {
+    for (let i = currentViewerIndex + 1; i < catalog.length; i++) {
+      if (catalog[i].type === 'file') {
+        nextIndex = i;
+        break;
+      }
+    }
+  }
+  
+  if (nextIndex !== -1) {
+    btnNext.style.display = 'flex';
+    let t = catalog[nextIndex].title;
+    if (t.length > 25) t = t.substring(0, 22) + '...';
+    btnNext.innerHTML = '<span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width: 120px; display:inline-block;">NEXT: ' + t + '</span> <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:4px; flex-shrink:0;" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>';
+    btnNext.onclick = () => {
+      diveIn(nextIndex);
+    };
+  } else {
+    btnNext.style.display = 'none';
+  }
+}
+
+document.getElementById('btnIframeBack').addEventListener('click', () => {
+  iframeViewer.classList.remove('active');
+  viewerFrame.src = '';
+  if (document.fullscreenElement) document.exitFullscreen();
+});
+
+document.getElementById('btnIframeFullscreen').addEventListener('click', () => {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(err => console.log(err));
+  } else {
+    document.exitFullscreen();
+  }
+});
+
+// Boot
+init();
+
+/* ══ AUTH & TRACKING LOGIC ══ */
+try {
+  if (window.supabase) {
+    const supabaseUrl = 'https://hdhvrlkizorscvehttzd.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhkaHZybGtpem9yc2N2ZWh0dHpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyNjMwNzIsImV4cCI6MjA5MjgzOTA3Mn0.m6L3oEVAfyp2TjYmBCfDRo_30rdsWLEsGVZzRZIy3MU';
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+    window.supabaseClient = supabase; // Expose for admin-ui.js
+
+    // Handle PKCE code exchange or token hash from Supabase email verification links
+    const urlAuthParams = new URLSearchParams(window.location.search);
+    const authCode = urlAuthParams.get('code');
+    const tokenHash = urlAuthParams.get('token_hash');
+    const authType = urlAuthParams.get('type') || 'signup';
+
+    if (authCode) {
+      supabase.auth.exchangeCodeForSession(authCode).then(({ data, error }) => {
+        if (error) {
+          console.error('PKCE exchange error:', error);
+          alert('Email confirmation link is invalid or expired.');
+        } else {
+          window.history.replaceState({}, document.title, window.location.pathname);
+          window.location.reload();
+        }
+      });
+    } else if (tokenHash && authType) {
+      supabase.auth.verifyOtp({ token_hash: tokenHash, type: authType }).then(({ error }) => {
+        if (error) {
+          alert('Email link is invalid or expired.');
+        } else {
+          window.history.replaceState({}, document.title, window.location.pathname);
+          window.location.reload();
+        }
+      });
+    }
+
+    const authOverlay = document.getElementById('authOverlay');
+    const authForm = document.getElementById('authForm');
+    const authEmail = document.getElementById('authEmail');
+    const authPassword = document.getElementById('authPassword');
+    const btnSignIn = document.getElementById('btnSignIn');
+    const btnSignUp = document.getElementById('btnSignUp');
+    const btnForgotPwd = document.getElementById('btnForgotPwd');
+    const authMsg = document.getElementById('authMsg');
+
+    function getCookie(name) {
+      let match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+      if (match) return match[2];
+      return null;
+    }
+
+    function setCookie(name, value, days) {
+      let d = new Date();
+      d.setTime(d.getTime() + 24*60*60*1000*days);
+      document.cookie = name + "=" + value + ";path=/;expires=" + d.toGMTString();
+    }
+
+    // ── Device Recognition (v2 — stable, race-free) ──────────────────
+    // 1. Use localStorage-anchored ID for stability (survives FP churn)
+    // 2. FingerprintJS only seeds the FIRST ID; subsequent changes are ignored
+    // 3. syncDeviceId waits for fingerprint before upserting to DB
+    // 4. Always updates last_seen + device metadata on sync
+
+    let fpDeviceId = localStorage.getItem('capsules_device_id') || 
+                     sessionStorage.getItem('capsules_device_id') || 
+                     getCookie('capsules_device_id');
+
+    // Track whether stored ID is a real fingerprint or a random fallback
+    const hadStoredFingerprint = fpDeviceId && !fpDeviceId.startsWith('dev_');
+
+    if (!fpDeviceId) {
+      fpDeviceId = 'dev_' + Math.random().toString(36).substr(2, 9);
+    }
+
+    function syncToStorages(id) {
+      try { localStorage.setItem('capsules_device_id', id); } catch(e) {}
+      try { sessionStorage.setItem('capsules_device_id', id); } catch(e) {}
+      setCookie('capsules_device_id', id, 365);
+    }
+    // Only sync to storages immediately if we have a real fingerprint
+    // Don't persist fallback dev_ IDs to prevent ghost accumulation
+    if (hadStoredFingerprint) {
+      syncToStorages(fpDeviceId);
+    }
+
+    function getDeviceId() { return fpDeviceId; }
+
+    // Parse User-Agent into a human-readable device name
+    function getDeviceName() {
+      var ua = navigator.userAgent || '';
+      var browser = 'Unknown Browser';
+      var os = 'Unknown OS';
+      // Detect browser
+      if (/CriOS/i.test(ua)) browser = 'Chrome iOS';
+      else if (/FxiOS/i.test(ua)) browser = 'Firefox iOS';
+      else if (/EdgiOS/i.test(ua)) browser = 'Edge iOS';
+      else if (/OPiOS/i.test(ua)) browser = 'Opera iOS';
+      else if (/Edg\//i.test(ua)) { var m = ua.match(/Edg\/(\d+)/); browser = 'Edge' + (m ? ' ' + m[1] : ''); }
+      else if (/OPR\//i.test(ua)) { var m = ua.match(/OPR\/(\d+)/); browser = 'Opera' + (m ? ' ' + m[1] : ''); }
+      else if (/Chrome\//.test(ua) && !/Chromium/.test(ua)) { var m = ua.match(/Chrome\/(\d+)/); browser = 'Chrome' + (m ? ' ' + m[1] : ''); }
+      else if (/Safari\//.test(ua) && !/Chrome/.test(ua)) { var m = ua.match(/Version\/(\d+)/); browser = 'Safari' + (m ? ' ' + m[1] : ''); }
+      else if (/Firefox\//.test(ua)) { var m = ua.match(/Firefox\/(\d+)/); browser = 'Firefox' + (m ? ' ' + m[1] : ''); }
+      // Detect OS
+      if (/iPad/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)) os = 'iPad';
+      else if (/iPhone/.test(ua)) os = 'iPhone';
+      else if (/Android/.test(ua)) os = 'Android';
+      else if (/Mac OS X/.test(ua)) os = 'macOS';
+      else if (/Windows/.test(ua)) os = 'Windows';
+      else if (/Linux/.test(ua)) os = 'Linux';
+      else if (/CrOS/.test(ua)) os = 'ChromeOS';
+      return browser + ' / ' + os;
+    }
+
+    function showDeviceBanError() {
+      document.body.innerHTML = `
+        <div style="display:flex; height:100vh; width:100vw; background:var(--c1); color:var(--c3); justify-content:center; align-items:center; flex-direction:column; text-align:center; position:fixed; z-index:99999999; top:0; left:0;">
+          <h1 style="font-size:2.5rem; margin-bottom:16px; letter-spacing:1px; font-family:var(--font-sans);">ACCESS RESTRICTED</h1>
+          <p style="color:var(--text-muted); font-size:1.1rem;">This device has been blocked by the administrator.</p>
+        </div>
+      `;
+    }
+
+    // Promise that resolves when device ID is finalized (fingerprint or fallback timeout)
+    let _resolveDeviceReady;
+    const deviceIdReady = new Promise(resolve => { _resolveDeviceReady = resolve; });
+
+    // FingerprintJS: only update stored ID if we didn't have a stable one yet
+    const FP_TIMEOUT = 3000; // 3s max wait for fingerprint
+    let fpTimedOut = false;
+    const fpTimer = setTimeout(() => {
+      fpTimedOut = true;
+      // If we still have a dev_ fallback, persist it so at least something is stored
+      if (!hadStoredFingerprint) syncToStorages(fpDeviceId);
+      _resolveDeviceReady();
+    }, FP_TIMEOUT);
+
+    import('./fp.js').then(FingerprintJS => FingerprintJS.load()).then(fp => fp.get()).then(result => {
+      clearTimeout(fpTimer);
+      if (!hadStoredFingerprint) {
+        // First-time fingerprint: adopt it as the stable device ID
+        fpDeviceId = result.visitorId;
+        syncToStorages(fpDeviceId);
+      }
+      // If we already had a stored fingerprint, keep it (stability > accuracy)
+      if (!fpTimedOut) _resolveDeviceReady();
+      // Check ban with final ID
+      if (window.bannedDevicesList && window.bannedDevicesList.includes(fpDeviceId)) {
+        showDeviceBanError();
+      }
+    }).catch(err => {
+      clearTimeout(fpTimer);
+      console.warn("FingerprintJS couldn't load. Using fallback device ID.", err);
+      if (!hadStoredFingerprint) syncToStorages(fpDeviceId);
+      if (!fpTimedOut) _resolveDeviceReady();
+    });
+
+    async function syncDeviceId(session) {
+      if (!session || !session.user) return;
+      // Wait for device ID to be finalized (fingerprint or timeout)
+      await deviceIdReady;
+      const currentDev = getDeviceId();
+      const devName = getDeviceName();
+      const ua = (navigator.userAgent || '').substring(0, 512);
+      try {
+        // Upsert with metadata + always update last_seen
+        await supabase.from('user_devices').upsert([{
+          user_id: session.user.id,
+          device_id: currentDev,
+          device_name: devName,
+          user_agent: ua,
+          last_seen: new Date().toISOString()
+        }], { onConflict: 'user_id,device_id' }).select();
+
+        // Clean up any leftover dev_ ghost entries for this user
+        if (!currentDev.startsWith('dev_')) {
+          await supabase.from('user_devices')
+            .delete()
+            .eq('user_id', session.user.id)
+            .like('device_id', 'dev_%');
+        }
+      } catch (e) { /* ignore RLS errors */ }
+    }
+
+    let isSignupAllowed = true;
+    fetch('/api/config')
+      .then(r => r.json())
+      .then(async config => {
+        window.bannedDevicesList = config.bannedDevices || [];
+        // Wait for device fingerprint to be finalized before checking ban
+        await deviceIdReady;
+        const dId = getDeviceId();
+        if (window.bannedDevicesList.includes(dId)) {
+          showDeviceBanError();
+          return;
+        }
+
+        if (config.maintenanceMode) {
+          const mo = document.getElementById('maintenanceOverlay');
+          if(mo) mo.style.display = 'flex';
+        }
+        isSignupAllowed = config.allowSignup !== false;
+        if (!isSignupAllowed && btnSignUp) {
+          btnSignUp.textContent = 'REQUEST ACCESS (SIGN UP CLOSED)';
+          btnSignUp.style.opacity = '0.9';
+          btnSignUp.style.borderColor = 'var(--text-main)';
+          btnSignUp.title = 'Sign up is closed. Click to contact admin for access.';
+        }
+        const isGuestAllowed = config.allowGuest !== false;
+        const btnGuestEl = document.getElementById('btnGuest');
+        if (!isGuestAllowed && btnGuestEl) {
+          btnGuestEl.style.display = 'none';
+        }
+      }).catch(e => console.error('Failed to load config', e));
+    const btnLogout = document.getElementById('btnLogout');
+    
+    let isTracking = false;
+    let currentUsername = "user";
+    const greetingText = document.getElementById('greetingText');
+    const authUsername = document.getElementById('authUsername');
+    const btnSaveUsername = document.getElementById('btnSaveUsername');
+    const btnForceReload = document.getElementById('btnForceReload');
+
+    function updateGreeting() {
+      const hour = new Date().getHours();
+      let msg = '';
+      if (hour >= 5 && hour < 12) msg = `morning, ${currentUsername}`;
+      else if (hour >= 12 && hour < 15) msg = `what do u wanna learn, ${currentUsername}?`;
+      else if (hour >= 15 && hour < 18) msg = `sharp n focus, ${currentUsername}`;
+      else msg = `evening, ${currentUsername}`;
+      greetingText.textContent = msg;
+
+      if (currentUsername === 'alchemist4real') {
+        btnForceReload.style.display = 'block';
+      } else {
+        btnForceReload.style.display = 'none';
+      }
+    }
+    updateGreeting();
+
+    function showAuthMsg(msg, isError = false) {
+      authMsg.textContent = msg;
+      authMsg.style.display = 'block';
+      authMsg.style.color = isError ? 'var(--danger)' : 'var(--c3)';
+    }
+
+    function fmtTime(sec) {
+      sec = parseInt(sec, 10) || 0;
+      const d = Math.floor(sec / 86400);
+      const h = Math.floor((sec % 86400) / 3600).toString().padStart(2, '0');
+      const m = Math.floor((sec % 3600) / 60).toString().padStart(2, '0');
+      const s = (sec % 60).toString().padStart(2, '0');
+      if (d > 0) return `${d}d ${h}:${m}:${s}`;
+      return `${h}:${m}:${s}`;
+    }
+
+    let baseUptime = 0;
+    let sessionUptime = 0;
+    let localUptime = 0;
+
+    // Strict Onboarding Logic
+    window.checkOnboarding = async function(session) {
+      if (!session || !session.user || !session.user.user_metadata) return;
+      const meta = session.user.user_metadata;
+      
+      const st = document.getElementById('stage');
+      const usernameModal = document.getElementById('usernameSetupModal');
+      const divisionModal = document.getElementById('divisionSetupModal');
+      const interactionModal = document.getElementById('interactionModeModal');
+      
+      // Defer if onboarding modal DOM nodes have not finished loading
+      if (!usernameModal || !divisionModal || !interactionModal) {
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', () => window.checkOnboarding(session), { once: true });
+          return;
+        }
+      }
+      
+      // Close all onboarding modals first
+      if (usernameModal) usernameModal.classList.remove('active');
+      if (divisionModal) divisionModal.classList.remove('active');
+      if (interactionModal) interactionModal.classList.remove('active');
+      
+      // Guest users skip all onboarding
+      if (meta.is_guest) {
+        if (st) { st.style.opacity = '1'; st.style.pointerEvents = 'auto'; }
+        return;
+      }
+      
+      if (!meta.username) {
+        if (usernameModal) usernameModal.classList.add('active');
+        if (st) { st.style.opacity = '0'; st.style.pointerEvents = 'none'; }
+        return;
+      }
+      
+      if (!meta.division_selected) {
+        // Check if this is a legacy user who already has a division in DB
+        try {
+          const res = await fetch('/api/divisions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
+            body: JSON.stringify({ action: 'get_my_division' })
+          });
+          const data = await res.json();
+          if (res.ok && data.division) {
+            // Legacy user already has a division — auto-sync metadata
+            await supabase.auth.updateUser({ data: { division_selected: true } });
+            // Continue to next check (tour) instead of showing division modal
+          } else {
+            if (divisionModal) divisionModal.classList.add('active');
+            if (st) { st.style.opacity = '0'; st.style.pointerEvents = 'none'; }
+            return;
+          }
+        } catch(e) {
+          // On error, show division modal to be safe
+          if (divisionModal) divisionModal.classList.add('active');
+          if (st) { st.style.opacity = '0'; st.style.pointerEvents = 'none'; }
+          return;
+        }
+      }
+      
+      if (!meta.tour_completed) {
+        if (interactionModal) interactionModal.classList.add('active');
+        if (st) { st.style.opacity = '0'; st.style.pointerEvents = 'none'; }
+        return;
+      }
+      
+      // All onboarding complete
+      if (st) { st.style.opacity = '1'; st.style.pointerEvents = 'auto'; }
+    };
+    const checkOnboarding = window.checkOnboarding;
+
+    // Check initial session
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (session) {
+        if(session.user && ((session.user.user_metadata && session.user.user_metadata.banned) || (session.user.app_metadata && session.user.app_metadata.banned))) {
+          alert('YOUR ACCOUNT HAS BEEN SUSPENDED BY THE ADMINISTRATOR.');
+          await supabase.auth.signOut();
+          window.location.href = '/?logout=true';
+          return;
+        }
+
+        if(session.user) {
+          supabase.from('user_stats').select('total_uptime').eq('user_id', session.user.id).maybeSingle().then(({ data }) => {
+            if (data) {
+              baseUptime = data.total_uptime || 0;
+              localUptime = baseUptime + sessionUptime;
+              const vl = document.getElementById('valLocal');
+              if(vl) vl.textContent = fmtTime(localUptime);
+            }
+          });
+          
+          if(session.user.user_metadata) {
+            if (session.user.user_metadata.uptime !== undefined) {
+              // Legacy migration
+              baseUptime = Math.max(baseUptime, parseInt(session.user.user_metadata.uptime, 10) || 0);
+            }
+            if (session.user.user_metadata.username) {
+              currentUsername = session.user.user_metadata.username;
+              authUsername.value = currentUsername;
+              updateGreeting();
+            }
+            if (session.user.user_metadata.low_perf_mode !== undefined) {
+              const pref = session.user.user_metadata.low_perf_mode ? 'on' : 'off';
+              try { localStorage.setItem('mr_low_perf', pref); } catch(e) {}
+              if (isLowPerfMode !== session.user.user_metadata.low_perf_mode) {
+                applyPerfMode(pref, false);
+              }
+            }
+            if (session.user.user_metadata.persona !== undefined) {
+              const p = session.user.user_metadata.persona;
+              try { localStorage.setItem('mr_persona', p); } catch(e) {}
+              if (currentPersona !== p) {
+                applyPersona(p, false, false);
+              }
+            }
+          }
+        }
+        syncDeviceId(session);
+        setupGuestRestrictions(session);
+        authOverlay.classList.add('hidden');
+        await checkOnboarding(session);
+        startTracking();
+      } else {
+        // Redirect unauthenticated visitors to dedicated landing page auth portal
+        window.location.href = '/?auth=required';
+      }
+    });
+    
+    // Always start tracking, even for anonymous lock-screen visitors
+    // startTracking() moved to SIGNED_IN state
+
+    supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN') {
+        if(session && session.user && ((session.user.user_metadata && session.user.user_metadata.banned) || (session.user.app_metadata && session.user.app_metadata.banned))) {
+          alert('YOUR ACCOUNT HAS BEEN SUSPENDED BY THE ADMINISTRATOR.');
+          await supabase.auth.signOut();
+          window.location.href = '/?logout=true';
+          return;
+        }
+        if(session && session.user) {
+          try {
+             supabase.from('activity_logs').upsert({
+                log_id: 'online_' + session.user.email + '_' + Date.now(),
+                type: 'online',
+                time: new Date().toISOString(),
+                user_name: session.user.user_metadata?.username || session.user.email,
+                email: session.user.email,
+                dev_str: navigator.userAgent
+             }, { onConflict: 'log_id' }).then(() => {});
+          } catch(e) {}
+
+          supabase.from('user_stats').select('total_uptime').eq('user_id', session.user.id).maybeSingle().then(({ data }) => {
+            if (data) {
+              baseUptime = data.total_uptime || 0;
+              localUptime = baseUptime + sessionUptime;
+              const vl = document.getElementById('valLocal');
+              if(vl) vl.textContent = fmtTime(localUptime);
+            }
+          });
+          if(session.user.user_metadata) {
+            if (session.user.user_metadata.uptime !== undefined) {
+              baseUptime = Math.max(baseUptime, parseInt(session.user.user_metadata.uptime, 10) || 0);
+            }
+            if (session.user.user_metadata.username) {
+              currentUsername = session.user.user_metadata.username;
+              authUsername.value = currentUsername;
+              updateGreeting();
+            }
+            if (session.user.user_metadata.low_perf_mode !== undefined) {
+              const pref = session.user.user_metadata.low_perf_mode ? 'on' : 'off';
+              try { localStorage.setItem('mr_low_perf', pref); } catch(e) {}
+              if (isLowPerfMode !== session.user.user_metadata.low_perf_mode) {
+                applyPerfMode(pref, false);
+              }
+            }
+            if (session.user.user_metadata.persona !== undefined) {
+              const p = session.user.user_metadata.persona;
+              try { localStorage.setItem('mr_persona', p); } catch(e) {}
+              if (currentPersona !== p) {
+                applyPersona(p, false, false);
+              }
+            }
+          }
+          syncDeviceId(session);
+          setupGuestRestrictions(session);
+          startTracking();
+        }
+        authOverlay.classList.add('hidden');
+        await checkOnboarding(session);
+      } else if (event === 'SIGNED_OUT') {
+        window.location.href = '/?logout=true';
+      } else if (event === 'PASSWORD_RECOVERY') {
+        const modal = document.getElementById('resetPasswordModal');
+        if (modal) modal.classList.add('active');
+        
+        document.getElementById('btnSubmitNewPassword').onclick = async () => {
+          const newPassword = document.getElementById('newPasswordInput').value;
+          const msgEl = document.getElementById('resetPasswordMsg');
+          if (newPassword && newPassword.trim() !== '') {
+            msgEl.style.color = 'var(--text-main)';
+            msgEl.textContent = 'Updating...';
+            const { error } = await supabase.auth.updateUser({ password: newPassword });
+            if (error) {
+              msgEl.style.color = 'var(--danger)';
+              msgEl.textContent = "Error: " + error.message;
+            } else {
+              msgEl.style.color = 'var(--accent)';
+              msgEl.textContent = "Password updated successfully!";
+              setTimeout(() => {
+                modal.classList.remove('active');
+                window.location.reload();
+              }, 1500);
+            }
+          } else {
+            msgEl.style.color = 'var(--danger)';
+            msgEl.textContent = "Please enter a valid password.";
+          }
+        };
+        
+        document.getElementById('btnCancelNewPassword').onclick = () => {
+          if (modal) modal.classList.remove('active');
+        };
+      }
+    });
+
+    // Deferred: register onboarding handlers after DOM is fully parsed
+    // (modal HTML is defined after this script block, so elements don't exist yet)
+    document.addEventListener('DOMContentLoaded', () => {
+      const setupUsernameInput = document.getElementById('setupUsernameInput');
+      const btnSubmitSetupUsername = document.getElementById('btnSubmitSetupUsername');
+      const setupUsernameMsg = document.getElementById('setupUsernameMsg');
+
+      if (btnSubmitSetupUsername && setupUsernameInput) {
+        btnSubmitSetupUsername.addEventListener('click', async () => {
+          const val = setupUsernameInput.value.trim().toLowerCase();
+          if (val.length < 3 || !/^[a-z0-9_]+$/.test(val)) {
+            setupUsernameMsg.style.color = 'var(--danger)';
+            setupUsernameMsg.textContent = 'Minimum 3 chars, alphanumeric and underscores only.';
+            return;
+          }
+          btnSubmitSetupUsername.textContent = '...';
+          const { error } = await supabase.auth.updateUser({
+            data: { username: val }
+          });
+          if (!error) {
+            currentUsername = val;
+            authUsername.value = currentUsername;
+            updateGreeting();
+            document.getElementById('usernameSetupModal').classList.remove('active');
+            // Force session refresh to get updated metadata
+            const { data } = await supabase.auth.refreshSession();
+            if(data.session) await checkOnboarding(data.session);
+          } else {
+            btnSubmitSetupUsername.textContent = 'SAVE & CONTINUE';
+            setupUsernameMsg.style.color = 'var(--danger)';
+            setupUsernameMsg.textContent = error.message;
+          }
+        });
+      }
+
+      const btnSubmitSetupDivision = document.getElementById('btnSubmitSetupDivision');
+      const setupDivisionSelect = document.getElementById('setupDivisionSelect');
+      const setupWhatsappInput = document.getElementById('setupWhatsappInput');
+      const setupDivisionMsg = document.getElementById('setupDivisionMsg');
+
+      if (btnSubmitSetupDivision) {
+        btnSubmitSetupDivision.addEventListener('click', async () => {
+          const division_id = setupDivisionSelect.value;
+          const whatsapp = setupWhatsappInput.value.trim();
+          if (!division_id) {
+            setupDivisionMsg.style.color = 'var(--danger)';
+            setupDivisionMsg.textContent = 'Please select a division.';
+            return;
+          }
+          btnSubmitSetupDivision.textContent = '...';
+          
+          try {
+            const { data: { session } } = await supabase.auth.getSession();
+            const res = await fetch('/api/divisions', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
+              body: JSON.stringify({ action: 'join_division', division_id, whatsapp })
+            });
+            
+            const resData = await res.json();
+            if (!res.ok) throw new Error(resData.error || 'Failed to join division.');
+            
+            // Mark division as selected in user metadata
+            const { error } = await supabase.auth.updateUser({ data: { division_selected: true } });
+            if (error) throw error;
+            
+            document.getElementById('divisionSetupModal').classList.remove('active');
+            // Force session refresh to get updated metadata
+            const { data: refreshed } = await supabase.auth.refreshSession();
+            if(refreshed.session) await checkOnboarding(refreshed.session);
+          } catch(e) {
+            btnSubmitSetupDivision.textContent = 'SAVE & CONTINUE';
+            setupDivisionMsg.style.color = 'var(--danger)';
+            setupDivisionMsg.textContent = e.message;
+          }
+        });
+      }
+    });
+
+    btnSaveUsername.addEventListener('click', async () => {
+      const val = authUsername.value.trim().toLowerCase();
+      if (!val) return;
+      btnSaveUsername.textContent = '...';
+      const { error } = await supabase.auth.updateUser({
+        data: { username: val }
+      });
+      if (!error) {
+        currentUsername = val;
+        updateGreeting();
+        btnSaveUsername.textContent = 'SAVED';
+        setTimeout(() => btnSaveUsername.textContent = 'SAVE', 2000);
+      } else {
+        btnSaveUsername.textContent = 'ERROR';
+        console.error(error);
+        setTimeout(() => btnSaveUsername.textContent = 'SAVE', 2000);
+      }
+    });
+
+    const settingsNewPassword = document.getElementById('settingsNewPassword');
+    const btnUpdatePassword = document.getElementById('btnUpdatePassword');
+    if (btnUpdatePassword && settingsNewPassword) {
+      btnUpdatePassword.addEventListener('click', async () => {
+        const val = settingsNewPassword.value;
+        if (!val) return;
+        btnUpdatePassword.textContent = '...';
+        const { error } = await supabase.auth.updateUser({ password: val });
+        if (!error) {
+          settingsNewPassword.value = '';
+          btnUpdatePassword.textContent = 'UPDATED';
+          setTimeout(() => btnUpdatePassword.textContent = 'UPDATE', 2000);
+        } else {
+          btnUpdatePassword.textContent = 'ERROR';
+          console.error(error);
+          setTimeout(() => btnUpdatePassword.textContent = 'UPDATE', 2000);
+        }
+      });
+    }
+
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    btnSignIn.addEventListener('click', async () => {
+      const email = authEmail.value ? authEmail.value.trim().toLowerCase() : '';
+      const password = authPassword.value ? authPassword.value.trim() : '';
+      if (!email || !password) {
+        showAuthMsg("EMAIL AND PASSWORD REQUIRED", true);
+        return;
+      }
+      if (!isValidEmail(email)) {
+        showAuthMsg("INVALID EMAIL FORMAT", true);
+        return;
+      }
+      btnSignIn.textContent = '...';
+      btnSignIn.disabled = true;
+      const { error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
+      btnSignIn.textContent = 'LOG IN';
+      btnSignIn.disabled = false;
+      if (error) showAuthMsg(error.message, true);
+    });
+
+    btnSignUp.addEventListener('click', async () => {
+      if (!isSignupAllowed) {
+        showAuthMsg("Public registration is closed. Opening administrator contact options...", false);
+        openContactModal('request_access');
+        return;
+      }
+      const email = authEmail.value ? authEmail.value.trim().toLowerCase() : '';
+      const password = authPassword.value ? authPassword.value.trim() : '';
+      if (!email || !password) {
+        showAuthMsg("EMAIL AND PASSWORD REQUIRED", true);
+        return;
+      }
+      if (!isValidEmail(email)) {
+        showAuthMsg("INVALID EMAIL FORMAT", true);
+        return;
+      }
+      if (password.length < 6) {
+        showAuthMsg("PASSWORD MUST BE AT LEAST 6 CHARACTERS", true);
+        return;
+      }
+
+      btnSignUp.textContent = 'SIGNING UP...';
+      btnSignUp.disabled = true;
+      showAuthMsg("Signing up...", false);
+
+      try {
+        const defaultUsername = email.split('@')[0].replace(/[^a-zA-Z0-9_]/g, '_').toLowerCase();
+        const { data, error } = await supabase.auth.signUp({
+          email: email,
+          password: password,
+          options: {
+            data: {
+              username: defaultUsername
+            }
+          }
+        });
+
+        if (error) {
+          showAuthMsg(error.message, true);
+        } else {
+          if (data.user && data.user.identities && data.user.identities.length === 0) {
+            showAuthMsg("Email already in use. Please log in.", true);
+          } else if (data.session) {
+            showAuthMsg("Registration successful! Logging you in...", false);
+            authOverlay.classList.add('hidden');
+            if (window.checkOnboarding) await window.checkOnboarding(data.session);
+            window.location.reload();
+          } else {
+            showAuthMsg("Success! Please check your email for a confirmation link.", false);
+          }
+        }
+      } catch (err) {
+        showAuthMsg(err.message || "Registration error occurred.", true);
+      } finally {
+        btnSignUp.textContent = 'SIGN UP';
+        btnSignUp.disabled = false;
+      }
+    });
+
+    [authEmail, authPassword].forEach(input => {
+      if (input) {
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            btnSignIn.click();
+          }
+        });
+      }
+    });
+
+    const btnGuest = document.getElementById('btnGuest');
+    if (btnGuest) {
+      btnGuest.addEventListener('click', async () => {
+        btnGuest.textContent = 'GENERATING PASS...';
+        btnGuest.disabled = true;
+        
+        const randomId = Math.floor(Math.random() * 10000);
+        const email = `guest_${Date.now()}_${randomId}@mrcapsules.com`;
+        const password = 'GuestMode!2026';
+        
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              username: 'Guest_' + randomId,
+              division_selected: true,
+              tour_completed: true,
+              is_guest: true
+            }
+          }
+        });
+        
+        if (error) {
+          showAuthMsg("Guest Mode unavailable: " + error.message, true);
+          btnGuest.textContent = 'GUEST MODE';
+          btnGuest.disabled = false;
+          return;
+        }
+        
+        let activeSession = data.session;
+        
+        // If no session (email confirmation required), try direct sign-in
+        if (!activeSession) {
+          const { data: signInData, error: signInErr } = await supabase.auth.signInWithPassword({ email, password });
+          if (signInErr || !signInData.session) {
+            showAuthMsg("Guest Mode requires auto-confirm. Contact admin.", true);
+            btnGuest.textContent = 'GUEST MODE';
+            btnGuest.disabled = false;
+            return;
+          }
+          activeSession = signInData.session;
+          // Set metadata since signUp options.data may not have been applied
+          await supabase.auth.updateUser({
+            data: {
+              username: 'Guest_' + randomId,
+              division_selected: true,
+              tour_completed: true,
+              is_guest: true
+            }
+          });
+        }
+        
+        // Join the 'review' division via API
+        try {
+          await fetch('/api/divisions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${activeSession.access_token}` },
+            body: JSON.stringify({ action: 'join_division', division_id: 'review', whatsapp: '0000' })
+          });
+        } catch(e) {}
+        
+        window.location.reload();
+      });
+    }
+
+    // ── Forgot Password & Contact Admin Modal Engine ──
+    const forgotPasswordModal = document.getElementById('forgotPasswordModal');
+    const forgotModalEmail = document.getElementById('forgotModalEmail');
+    const contactModalTitle = document.getElementById('contactModalTitle');
+    const contactModalSubtitle = document.getElementById('contactModalSubtitle');
+    const autoResetSection = document.getElementById('autoResetSection');
+    const btnContactWa = document.getElementById('btnContactWa');
+    const btnContactWaText = document.getElementById('btnContactWaText');
+    const btnContactEmail = document.getElementById('btnContactEmail');
+    const btnCopyAdminWa = document.getElementById('btnCopyAdminWa');
+    const copyAdminWaText = document.getElementById('copyAdminWaText');
+    const btnCopyAdminEmail = document.getElementById('btnCopyAdminEmail');
+    const copyAdminEmailText = document.getElementById('copyAdminEmailText');
+    const btnSendResetLink = document.getElementById('btnSendResetLink');
+    const forgotModalMsg = document.getElementById('forgotModalMsg');
+    const btnCloseForgotModal = document.getElementById('btnCloseForgotModal');
+    const footerContactAdmin = document.getElementById('footerContactAdmin');
+
+    const ADMIN_WA_RAW = '081372406462';
+    const ADMIN_WA_INTL = '6281372406462';
+    const ADMIN_EMAIL_ADDR = 'muqorroben@gmail.com';
+
+    let currentContactMode = 'forgot_password'; // 'forgot_password' | 'request_access'
+
+    function updateContactLinks() {
+      const email = (forgotModalEmail ? forgotModalEmail.value : '').trim();
+      if (btnContactWa) {
+        let text = '';
+        if (currentContactMode === 'request_access') {
+          text = email 
+            ? `Hello Administrator, public registration is currently restricted. I would like to request registration access for MR-CAPSULES (${email}). Thank you.`
+            : `Hello Administrator, public registration is currently restricted. I would like to request registration access for MR-CAPSULES. Thank you.`;
+        } else {
+          text = email 
+            ? `Hello Administrator, I forgot the password for my MR-CAPSULES account (${email}). Please assist with resetting my password. Thank you.`
+            : `Hello Administrator, I forgot the password for my MR-CAPSULES account. Please assist with resetting my password. Thank you.`;
+        }
+        btnContactWa.href = `https://wa.me/${ADMIN_WA_INTL}?text=${encodeURIComponent(text)}`;
+      }
+      if (btnContactEmail) {
+        let subject = '';
+        let body = '';
+        if (currentContactMode === 'request_access') {
+          subject = `Access Request - MR-CAPSULES`;
+          body = email
+            ? `Hello Administrator,\n\nI would like to request registration access for MR-CAPSULES.\nEmail: ${email}\n\nThank you.`
+            : `Hello Administrator,\n\nI would like to request registration access for MR-CAPSULES.\n\nThank you.`;
+        } else {
+          subject = `Password Reset Request - MR-CAPSULES`;
+          body = email
+            ? `Hello Administrator,\n\nI forgot the password for my MR-CAPSULES account:\nEmail: ${email}\n\nPlease assist with resetting my password.\n\nThank you.`
+            : `Hello Administrator,\n\nI forgot the password for my MR-CAPSULES account.\nPlease assist with resetting my password.\n\nThank you.`;
+        }
+        btnContactEmail.href = `mailto:${ADMIN_EMAIL_ADDR}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      }
+    }
+
+    function openContactModal(mode = 'forgot_password') {
+      currentContactMode = mode;
+      if (!forgotPasswordModal) return;
+      if (forgotModalEmail && authEmail) {
+        forgotModalEmail.value = authEmail.value || '';
+      }
+      if (forgotModalMsg) {
+        forgotModalMsg.textContent = '';
+      }
+
+      if (mode === 'request_access') {
+        if (contactModalTitle) contactModalTitle.textContent = 'REQUEST ACCESS';
+        if (contactModalSubtitle) contactModalSubtitle.textContent = `Public registration is currently restricted. Contact the Administrator via WhatsApp (${ADMIN_WA_RAW}) or Email to request account access.`;
+        if (autoResetSection) autoResetSection.style.display = 'none';
+      } else {
+        if (contactModalTitle) contactModalTitle.textContent = 'ACCOUNT RECOVERY';
+        if (contactModalSubtitle) contactModalSubtitle.textContent = `Forgot your password? Contact the Administrator via WhatsApp (${ADMIN_WA_RAW}) or Email, or send an automated reset link to your email.`;
+        if (autoResetSection) autoResetSection.style.display = 'block';
+      }
+
+      updateContactLinks();
+      forgotPasswordModal.classList.add('active');
+    }
+
+    function closeForgotModal() {
+      if (forgotPasswordModal) {
+        forgotPasswordModal.classList.remove('active');
+      }
+    }
+
+    if (btnForgotPwd) {
+      btnForgotPwd.addEventListener('click', () => {
+        openContactModal('forgot_password');
+      });
+    }
+
+    if (footerContactAdmin) {
+      footerContactAdmin.addEventListener('click', (e) => {
+        e.preventDefault();
+        openContactModal(!isSignupAllowed ? 'request_access' : 'forgot_password');
+      });
+    }
+
+    if (btnCloseForgotModal) {
+      btnCloseForgotModal.addEventListener('click', () => {
+        closeForgotModal();
+      });
+    }
+
+    if (forgotPasswordModal) {
+      forgotPasswordModal.addEventListener('click', (e) => {
+        if (e.target === forgotPasswordModal) {
+          closeForgotModal();
+        }
+      });
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && forgotPasswordModal && forgotPasswordModal.classList.contains('active')) {
+        closeForgotModal();
+      }
+    });
+
+    if (forgotModalEmail) {
+      forgotModalEmail.addEventListener('input', () => {
+        updateContactLinks();
+        if (authEmail) authEmail.value = forgotModalEmail.value;
+      });
+    }
+
+    if (btnCopyAdminWa) {
+      btnCopyAdminWa.addEventListener('click', () => {
+        navigator.clipboard.writeText(ADMIN_WA_RAW).then(() => {
+          if (copyAdminWaText) {
+            const orig = copyAdminWaText.textContent;
+            copyAdminWaText.textContent = 'COPIED!';
+            setTimeout(() => {
+              copyAdminWaText.textContent = orig;
+            }, 2000);
+          }
+          if (forgotModalMsg) {
+            forgotModalMsg.style.color = 'var(--accent)';
+            forgotModalMsg.textContent = `Admin WhatsApp copied: ${ADMIN_WA_RAW}`;
+          }
+        }).catch(() => {
+          if (forgotModalMsg) {
+            forgotModalMsg.style.color = 'var(--text-main)';
+            forgotModalMsg.textContent = `Admin WhatsApp: ${ADMIN_WA_RAW}`;
+          }
+        });
+      });
+    }
+
+    if (btnCopyAdminEmail) {
+      btnCopyAdminEmail.addEventListener('click', () => {
+        navigator.clipboard.writeText(ADMIN_EMAIL_ADDR).then(() => {
+          if (copyAdminEmailText) {
+            const orig = copyAdminEmailText.textContent;
+            copyAdminEmailText.textContent = 'COPIED!';
+            setTimeout(() => {
+              copyAdminEmailText.textContent = orig;
+            }, 2000);
+          }
+          if (forgotModalMsg) {
+            forgotModalMsg.style.color = 'var(--accent)';
+            forgotModalMsg.textContent = `Admin email copied: ${ADMIN_EMAIL_ADDR}`;
+          }
+        }).catch(() => {
+          if (forgotModalMsg) {
+            forgotModalMsg.style.color = 'var(--text-main)';
+            forgotModalMsg.textContent = `Admin email: ${ADMIN_EMAIL_ADDR}`;
+          }
+        });
+      });
+    }
+
+    if (btnSendResetLink) {
+      btnSendResetLink.addEventListener('click', async () => {
+        const email = (forgotModalEmail ? forgotModalEmail.value : '').trim();
+        if (!email) {
+          if (forgotModalMsg) {
+            forgotModalMsg.style.color = 'var(--danger)';
+            forgotModalMsg.textContent = "PLEASE ENTER YOUR EMAIL ADDRESS";
+          }
+          return;
+        }
+        if (!isValidEmail(email)) {
+          if (forgotModalMsg) {
+            forgotModalMsg.style.color = 'var(--danger)';
+            forgotModalMsg.textContent = "INVALID EMAIL FORMAT";
+          }
+          return;
+        }
+        if (forgotModalMsg) {
+          forgotModalMsg.style.color = 'var(--text-main)';
+          forgotModalMsg.textContent = "Sending reset link...";
+        }
+        btnSendResetLink.disabled = true;
+        try {
+          const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: window.location.origin + window.location.pathname
+          });
+          if (error) {
+            if (forgotModalMsg) {
+              forgotModalMsg.style.color = 'var(--danger)';
+              forgotModalMsg.textContent = `${error.message}. Hubungi admin via WhatsApp (${ADMIN_WA_RAW}) / Email jika kendala berlanjut.`;
+            }
+          } else {
+            if (forgotModalMsg) {
+              forgotModalMsg.style.color = 'var(--accent)';
+              forgotModalMsg.textContent = "Password reset link sent! Check your inbox/spam or contact admin.";
+            }
+          }
+        } catch(e) {
+          if (forgotModalMsg) {
+            forgotModalMsg.style.color = 'var(--danger)';
+            forgotModalMsg.textContent = "Request failed. Please contact admin directly.";
+          }
+        } finally {
+          btnSendResetLink.disabled = false;
+        }
+      });
+    }
+    
+    
+    btnLogout.addEventListener('click', async () => {
+      try {
+         const { data: { session } } = await supabase.auth.getSession();
+         if (session && session.user) {
+            await supabase.from('activity_logs').upsert({
+               log_id: 'offline_' + session.user.email + '_' + Date.now(),
+               type: 'offline',
+               time: new Date().toISOString(),
+               user_name: session.user.user_metadata?.username || session.user.email,
+               email: session.user.email,
+               dev_str: navigator.userAgent
+            }, { onConflict: 'log_id' });
+         }
+      } catch(e) {}
+      supabase.auth.signOut();
+    });
+
+    const valLocal = document.getElementById('valLocal');
+    const valGlobal = document.getElementById('valGlobal');
+    const onlineCount = document.getElementById('onlineCount');
+    const settingsModal = document.getElementById('settingsModal');
+
+    document.getElementById('btnSettings').addEventListener('click', () => {
+      settingsModal.classList.add('active');
+    });
+    
+    document.getElementById('btnSettingsClose').addEventListener('click', () => {
+      settingsModal.classList.remove('active');
+    });
+
+    function startTracking() {
+      if(isTracking) return;
+      isTracking = true;
+
+      // Presence & Broadcast
+      const sessionRoom = supabase.channel('online-users', {
+        config: { broadcast: { self: true, ack: true } }
+      });
+      sessionRoom.on('presence', { event: 'sync' }, () => {
+        const state = sessionRoom.presenceState();
+        const count = Object.keys(state).length;
+        onlineCount.textContent = count;
+      }).on('broadcast', { event: 'force_reload' }, () => {
+        const ro = document.getElementById('reloadOverlay');
+        const rc = document.getElementById('reloadCountdown');
+        if (ro && rc) {
+          ro.style.display = 'flex';
+          let cnt = 3;
+          rc.textContent = cnt;
+          const iv = setInterval(() => {
+            cnt--;
+            if(cnt > 0) rc.textContent = cnt;
+            else {
+              clearInterval(iv);
+              window.location.href = window.location.href.split('?')[0] + '?t=' + new Date().getTime();
+            }
+          }, 1000);
+        } else {
+          window.location.href = window.location.href.split('?')[0] + '?t=' + new Date().getTime();
+        }
+      }).on('broadcast', { event: 'announcement' }, (payload) => {
+        const msg = payload.payload.message;
+        if(msg) {
+          const tContainer = document.getElementById('toastContainer');
+          if(tContainer) {
+            const toast = document.createElement('div');
+            toast.style.cssText = 'background:var(--bg-main); color:var(--text-main); border:var(--border-main); border-radius:var(--radius-card); padding:12px 24px; font-weight:bold; box-shadow:4px 4px 0 var(--border-medium); transform:translateY(-20px); opacity:0; transition:0.3s; pointer-events:auto; font-size:14px;';
+            // Use textContent to prevent XSS from broadcast payloads
+            toast.textContent = "[BROADCAST] " + String(msg);
+            tContainer.appendChild(toast);
+            requestAnimationFrame(() => { toast.style.transform = 'translateY(0)'; toast.style.opacity = '1'; });
+            setTimeout(() => {
+              toast.style.opacity = '0';
+              toast.style.transform = 'translateY(-20px)';
+              setTimeout(() => toast.remove(), 300);
+            }, 6000);
+          }
+        }
+      }).on('broadcast', { event: 'maintenance_on' }, () => {
+        const mo = document.getElementById('maintenanceOverlay');
+        if(mo) mo.style.display = 'flex';
+      }).on('broadcast', { event: 'maintenance_off' }, () => {
+        const mo = document.getElementById('maintenanceOverlay');
+        if(mo) mo.style.display = 'none';
+      }).on('broadcast', { event: 'ban_device' }, (payload) => {
+        if(payload.payload && payload.payload.deviceId === getDeviceId()) {
+          document.body.innerHTML = `
+            <div style="display:flex; height:100vh; width:100vw; background:var(--c1); color:var(--c4); justify-content:center; align-items:center; flex-direction:column; text-align:center; position:fixed; z-index:99999999; top:0; left:0;">
+              <h1 style="font-size:2.5rem; margin-bottom:16px; letter-spacing:1px; font-family:var(--font-sans);">ACCESS RESTRICTED</h1>
+              <p style="color:var(--text-muted); font-size:1.1rem;">This device has been blocked by the administrator.</p>
+            </div>
+          `;
+        }
+      }).on('broadcast', { event: 'unban_device' }, (payload) => {
+        if(payload.payload && payload.payload.deviceId === getDeviceId()) {
+          window.location.reload();
+        }
+      }).subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+           var trackEmail = '';
+           try { var sess = await supabase.auth.getSession(); trackEmail = sess.data.session.user.email || ''; } catch(e) {}
+           await sessionRoom.track({ user: 'auth-user', email: trackEmail, joined_at: new Date().toISOString() });
+        }
+      });
+
+      btnForceReload.addEventListener('click', async () => {
+        if (confirm("WARNING: This will reload MR CAPSULES on all active devices globally. Proceed?")) {
+          btnForceReload.textContent = "SENDING SGNL...";
+          await sessionRoom.send({
+            type: 'broadcast',
+            event: 'force_reload',
+            payload: {}
+          });
+          btnForceReload.textContent = "FORCE GLOBAL RELOAD";
+        }
+      });
+
+      // Uptime Tick - uses backend API to bypass RLS
+      var uptimeToken = '';
+      supabase.auth.getSession().then(s => {
+        if (s.data && s.data.session) uptimeToken = s.data.session.access_token;
+        
+        // Initial global uptime fetch
+        fetch('/api/uptime', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + uptimeToken },
+          body: JSON.stringify({ action: 'get' })
+        })
+        .then(res => res.json())
+        .then(initData => {
+          if (initData.success) valGlobal.textContent = fmtTime(initData.total_uptime);
+          else valGlobal.textContent = '00:00:00';
+        })
+        .catch(e => { valGlobal.textContent = '00:00:00'; });
+      }).catch(e => { valGlobal.textContent = '00:00:00'; });
+      
+      // Cache session token to avoid calling getSession() every 10s
+      let cachedUptimeToken = uptimeToken;
+      let cachedUserId = null;
+      supabase.auth.getSession().then(s => {
+        if (s.data && s.data.session) {
+          cachedUptimeToken = s.data.session.access_token;
+          cachedUserId = s.data.session.user?.id;
+        }
+      });
+      // Refresh cached token on auth state change
+      supabase.auth.onAuthStateChange((event, session) => {
+        if (session) {
+          cachedUptimeToken = session.access_token;
+          cachedUserId = session.user?.id;
+        }
+      });
+
+      setInterval(async () => {
+        sessionUptime += 10;
+        localUptime = baseUptime + sessionUptime;
+        valLocal.textContent = fmtTime(localUptime);
+        
+        // Save local uptime every 60s
+        if (sessionUptime % 60 === 0 && cachedUserId) {
+          supabase.from('user_stats').upsert({ user_id: cachedUserId, total_uptime: localUptime, last_updated: new Date().toISOString() })
+            .catch(e => console.log('Local uptime save error', e));
+        }
+        
+        // Global uptime sync using cached token
+        if (!cachedUptimeToken) return;
+        try {
+          var res = await fetch('/api/uptime', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + cachedUptimeToken },
+            body: JSON.stringify({ action: 'increment', seconds: 10 })
+          });
+          var data = await res.json();
+          if (data.success) {
+            valGlobal.textContent = fmtTime(data.total_uptime);
+          }
+        } catch(e) {
+          console.log('Global uptime sync error', e);
+        }
+      }, 10000);
+
+      // Cache session info for beforeunload (async calls get killed by browser)
+      let cachedSessionForUnload = null;
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        cachedSessionForUnload = session;
+      });
+      supabase.auth.onAuthStateChange((event, session) => {
+        cachedSessionForUnload = session;
+      });
+
+      window.addEventListener('beforeunload', () => {
+        const session = cachedSessionForUnload;
+        if (session && session.user) {
+          // Use sendBeacon for reliable delivery during page unload
+          const offlinePayload = JSON.stringify({
+            log_id: 'offline_' + session.user.email + '_' + Date.now(),
+            type: 'offline',
+            time: new Date().toISOString(),
+            user_name: session.user.user_metadata?.username || session.user.email,
+            email: session.user.email,
+            dev_str: navigator.userAgent
+          });
+          const beaconHeaders = new Blob([offlinePayload], { type: 'application/json' });
+          try {
+            navigator.sendBeacon(
+              `https://hdhvrlkizorscvehttzd.supabase.co/rest/v1/activity_logs`,
+              beaconHeaders
+            );
+          } catch(e) {
+            // Fallback: try supabase client (may or may not complete)
+            supabase.from('activity_logs').upsert(JSON.parse(offlinePayload), { onConflict: 'log_id' }).then(() => {});
+          }
+          if (sessionUptime % 60 !== 0 && cachedUserId) {
+            supabase.from('user_stats').upsert({ user_id: cachedUserId, total_uptime: localUptime, last_updated: new Date().toISOString() })
+              .catch(e => console.log('Local uptime save error', e));
+          }
+        }
+      });
+    }
+  }
+} catch (e) {
+  console.log("Auth & Tracking logic skipped:", e);
+}
+
+</script>
+<script>
+  // Admin button logic
+  function initAdminCheck() {
+    if (window.supabaseClient) {
+      window.supabaseClient.auth.getSession().then(({ data: { session } }) => {
+        if (session && session.access_token) {
+          checkAdmin(session.access_token);
+          checkContribution(session);
+          trackPresence(session);
+        }
+      }).catch(() => {
+        // Session check failed (iOS Safari ITP, network); retry after 2s
+        setTimeout(() => initAdminCheck(), 2000);
+      });
+      window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
+        if (session && session.access_token) {
+          checkAdmin(session.access_token);
+          checkContribution(session);
+          trackPresence(session);
+        } else {
+          const adminSec = document.getElementById('adminSection');
+          if(adminSec) adminSec.style.display = 'none';
+          hideContributionGate();
+        }
+      });
+    } else {
+      setTimeout(initAdminCheck, 500);
+    }
+  }
+  
+  async function checkAdmin(token) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      const res = await fetch('/api/admin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ action: 'check' }),
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+      const data = await res.json();
+      const adminSec = document.getElementById('adminSection');
+      if (res.ok && data.success && adminSec) {
+        adminSec.style.display = 'flex';
+      } else if (adminSec) {
+        adminSec.style.display = 'none';
+      }
+    } catch(e) {
+      // On timeout or network error, retry once after 3s
+      if (!checkAdmin._retried) {
+        checkAdmin._retried = true;
+        setTimeout(() => { checkAdmin._retried = false; checkAdmin(token); }, 3000);
+      }
+    }
+  }
+
+  async function checkContribution(session) {
+    // Guest users are immune — skip contribution check entirely
+    if (session.user && session.user.email && session.user.email.startsWith('guest_')) {
+      hideContributionGate();
+      return;
+    }
+    if (session.user && session.user.user_metadata && session.user.user_metadata.is_guest) {
+      hideContributionGate();
+      return;
+    }
+    // Don't show contribution gate if onboarding isn't complete
+    const meta = session.user && session.user.user_metadata;
+    if (meta && (!meta.username || !meta.division_selected || !meta.tour_completed)) {
+      hideContributionGate();
+      return;
+    }
+    try {
+      const res = await fetch('/api/contributions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
+        body: JSON.stringify({ action: 'check_contribution' })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        if (!data.has_contributed) {
+           showContributionGate();
+        } else {
+           hideContributionGate();
+        }
+      }
+    } catch(e) {}
+  }
+  
+  let _presenceTracked = false;
+  function trackPresence(session) {
+    // Presence is already tracked by startTracking() via the 'online-users' channel.
+    // This function was creating a DUPLICATE subscription to the same channel,
+    // causing conflicts and double event handlers. Now it's a no-op.
+    // All presence + broadcast handling is consolidated in startTracking().
+    return;
+  }
+  
+  function showContributionGate() {
+      let gate = document.getElementById('contributionGate');
+      if(!gate) {
+          gate = document.createElement('div');
+          gate.id = 'contributionGate';
+          gate.style.cssText = 'position:fixed; inset:0; z-index:99999; background:var(--scrim); backdrop-filter:blur(10px); display:flex; flex-direction:column; justify-content:center; align-items:center; color:var(--c3); text-align:center; padding:24px; ';
+          gate.innerHTML = `
+              <div style="background:var(--c2); padding:40px; border:1.5px solid var(--c3); border-radius:8px; max-width:500px; width:100%;">
+                  <h2 style="font-size:24px; margin-bottom:16px; color:var(--danger);">Akses Dibekukan</h2>
+                  <p style="font-size:14px; margin-bottom:24px; color:var(--text-muted); line-height:1.5;">Kamu belum berkontribusi selama 30 hari terakhir. Silakan berpartisipasi dalam pembuatan atau review konten melalui Admin Panel untuk membuka kembali akses.</p>
+                  <a href="/admin.html" style="display:inline-block; background:var(--accent); color:var(--c1); padding:12px 24px; text-decoration:none; border-radius:var(--radius-pill); font-weight:bold;">Buka Admin Panel</a>
+              </div>
+          `;
+          document.body.appendChild(gate);
+      }
+      gate.style.display = 'flex';
+  }
+  
+  function hideContributionGate() {
+      const gate = document.getElementById('contributionGate');
+      if(gate) gate.style.display = 'none';
+  }
+  
+  initAdminCheck();
+</script>
+
+<!-- Forgot Password / Contact Admin Modal -->
+<div id="forgotPasswordModal">
+  <div style="background:var(--bg-modal); border:1.5px solid var(--text-main); border-radius:var(--radius-card); padding:28px 24px; max-width:420px; width:90%; text-align:center; box-shadow: 0 10px 30px var(--border-light);">
+    <div id="contactModalTitle" style="font-size:22px; color:var(--text-main); margin-bottom:8px; font-family:var(--font-sans); letter-spacing:0.5px;">ACCOUNT RECOVERY</div>
+    <div id="contactModalSubtitle" style="font-size:13px; color:var(--text-muted); opacity:0.9; margin-bottom:18px; line-height:1.5; font-family:var(--font-mono);">
+      Forgot your password? Hubungi Admin via WhatsApp (081372406462) atau Email untuk bantuan akun Anda.
+    </div>
+    
+    <div style="display:flex; flex-direction:column; gap:10px; text-align:left;">
+      <div>
+        <label for="forgotModalEmail" style="font-size:12px; font-family:var(--font-sans); color:var(--text-main); margin-bottom:4px; display:block; letter-spacing:0.5px;">YOUR REGISTERED / TARGET EMAIL</label>
+        <input type="email" id="forgotModalEmail" class="auth-input" placeholder="ENTER YOUR EMAIL" style="width:100%;">
+      </div>
+      
+      <div style="display:flex; flex-direction:column; gap:8px; margin-top:4px;">
+        <a id="btnContactWa" href="https://wa.me/6281372406462?text=Halo%20Admin%20Mr.%20Capsules%2C%20saya%20lupa%20password%20akun%20saya.%20Mohon%20bantuan%20reset%20password." target="_blank" class="auth-btn" style="text-decoration:none; display:flex; align-items:center; justify-content:center; gap:8px; background:var(--text-main); color:var(--bg-main); font-family:var(--font-sans); font-size:12px; padding:10px; cursor:pointer;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2zm.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.44 0-2.85-.38-4.09-1.11l-.29-.17-3.04.8 1.01-2.96-.19-.3a8.21 8.21 0 0 1-1.26-4.5c0-4.54 3.69-8.24 8.24-8.24zm4.52 11.66c-.25-.12-1.47-.72-1.7-.81-.23-.08-.39-.12-.56.12-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.39-1.72-.14-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.12-.14.17-.25.25-.41.08-.17.04-.31-.02-.43s-.56-1.34-.76-1.84c-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1s.9 2.44 1.02 2.61c.12.17 1.77 2.7 4.28 3.79.6.26 1.07.41 1.43.53.6.19 1.15.16 1.58.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.11-.22-.18-.47-.3z"/></svg>
+          <span id="btnContactWaText">CONTACT ADMIN (WA: 081372406462)</span>
+        </a>
+        
+        <a id="btnContactEmail" href="mailto:muqorroben@gmail.com?subject=Password%20Reset%20Request%20-%20Mr.%20Capsules&body=Halo%20Admin%2C%0A%0ASaya%20lupa%20password%20untuk%20akun%20Mr.%20Capsules%20saya.%0AMohon%20bantuan%20reset%20password.%0ATerima%20kasih." class="auth-btn auth-btn-outline" style="text-decoration:none; display:flex; align-items:center; justify-content:center; gap:8px; font-family:var(--font-sans); font-size:12px; padding:10px; cursor:pointer;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          EMAIL ADMIN (muqorroben@gmail.com)
+        </a>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+          <button type="button" id="btnCopyAdminWa" class="auth-btn auth-btn-outline" style="display:flex; align-items:center; justify-content:center; gap:6px; font-family:var(--font-sans); font-size:12px; padding:10px 8px; min-height:38px; opacity:0.9; cursor:pointer;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            <span id="copyAdminWaText">COPY WA NUMBER</span>
+          </button>
+          
+          <button type="button" id="btnCopyAdminEmail" class="auth-btn auth-btn-outline" style="display:flex; align-items:center; justify-content:center; gap:6px; font-family:var(--font-sans); font-size:12px; padding:10px 8px; min-height:38px; opacity:0.9; cursor:pointer;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            <span id="copyAdminEmailText">COPY EMAIL</span>
+          </button>
+        </div>
+
+        <div id="autoResetSection">
+          <div style="margin: 4px 0; display:flex; align-items:center; gap:8px;">
+            <div style="flex:1; height:1px; background:var(--border-light);"></div>
+            <span style="font-size:11.5px; color:var(--text-muted); font-family:var(--font-sans); opacity:0.9;">OR AUTO-RESET LINK</span>
+            <div style="flex:1; height:1px; background:var(--border-light);"></div>
+          </div>
+
+          <button type="button" id="btnSendResetLink" class="auth-btn auth-btn-outline" style="display:flex; align-items:center; justify-content:center; gap:8px; font-family:var(--font-sans); font-size:12px; padding:10px; cursor:pointer; width:100%;">
+            SEND RESET LINK TO EMAIL
+          </button>
+        </div>
+      </div>
+      
+      <div id="forgotModalMsg" class="auth-msg" style="text-align:center; min-height:16px;"></div>
+      
+      <button type="button" id="btnCloseForgotModal" class="btn-text" style="font-size:12px; margin-top:4px; opacity:0.85; justify-content:center; width:100%; font-family:var(--font-sans); cursor:pointer;">
+        CANCEL / BACK TO LOGIN
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Reset Password Modal -->
+<div id="resetPasswordModal">
+  <div style="background:var(--bg-modal); border:1.5px solid var(--text-main); border-radius:var(--radius-card); padding:32px; max-width:400px; width:90%; text-align:center;">
+    <div style="font-size:24px; color:var(--text-main); margin-bottom:16px; font-family:var(--font-sans);">RESET PASSWORD</div>
+    <div style="font-size:14px; color:var(--text-muted); opacity:0.9; margin-bottom:24px; line-height:1.5;">Please enter your new password below.</div>
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <input type="password" id="newPasswordInput" class="auth-input" placeholder="NEW PASSWORD">
+      <button id="btnSubmitNewPassword" class="auth-btn" style="background:var(--text-main); color:var(--c1);">UPDATE PASSWORD</button>
+      <button id="btnCancelNewPassword" class="auth-btn" style="background:transparent; color:var(--text-main); border:1px solid var(--text-main);">CANCEL</button>
+      <div id="resetPasswordMsg" class="auth-msg" style="margin-top:8px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Guest Restriction / Upgrade Modal -->
+<div id="guestLimitModal">
+  <div style="background:var(--bg-modal); border:1.5px solid var(--c3); border-radius:var(--radius-card); padding:28px 24px; max-width:420px; width:90%; text-align:center; box-shadow: 0 10px 30px var(--border-light);">
+    <div style="width:46px; height:46px; border-radius:50%; background:color-mix(in srgb, var(--c4) 15%, transparent); border:1.5px solid var(--c4); color:var(--c4); display:flex; align-items:center; justify-content:center; margin:0 auto 12px; font-size:22px;">
+      ⚠️
+    </div>
+    <div id="guestLimitTitle" style="font-size:20px; color:var(--c3); margin-bottom:8px; font-family:var(--font-sans); letter-spacing:0.5px;">GUEST PREVIEW QUOTA REACHED</div>
+    <div id="guestLimitSubtitle" style="font-size:13px; color:var(--text-muted); opacity:0.95; margin-bottom:20px; line-height:1.5; font-family:var(--font-mono);">
+      You have used all 3 preview passes available in Guest Mode. To unlock unlimited access to all 1,600+ questions, past exam archives, and CBT modules, please create a free student account.
+    </div>
+    
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <a href="/?auth=signup" class="auth-btn" style="text-decoration:none; display:flex; align-items:center; justify-content:center; gap:8px; font-size:13px; padding:11px;">
+        CREATE FREE STUDENT ACCOUNT &rarr;
+      </a>
+      <a href="/?auth=login" class="auth-btn auth-btn-outline" style="text-decoration:none; display:flex; align-items:center; justify-content:center; gap:8px; font-size:12.5px; padding:11px; min-height:38px;">
+        LOG IN WITH EXISTING ACCOUNT
+      </a>
+      <button type="button" id="btnCloseGuestLimit" class="btn-text" style="font-size:12.5px; margin-top:4px; opacity:0.85; justify-content:center; width:100%; font-family:var(--font-mono); background:none; border:none; color:var(--c3); cursor:pointer; min-height:36px;">
+        CLOSE / RETURN TO CATALOG
+      </button>
+    </div>
+  </div>
+</div>
+<!-- Username Setup Modal -->
+<div id="usernameSetupModal">
+  <div style="background:var(--bg-modal); border:1.5px solid var(--text-main); border-radius:var(--radius-card); padding:32px; max-width:400px; width:90%; text-align:center;">
+    <div style="font-size:24px; color:var(--text-main); margin-bottom:16px; font-family:var(--font-sans);">SET YOUR USERNAME</div>
+    <div style="font-size:14px; color:var(--text-muted); opacity:0.9; margin-bottom:24px; line-height:1.5;">Welcome to MR-CAPSULES. Please choose a username to identify yourself on the platform.</div>
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <input type="text" id="setupUsernameInput" class="auth-input" placeholder="USERNAME (e.g. Neo)">
+      <button id="btnSubmitSetupUsername" class="auth-btn" style="background:var(--text-main); color:var(--bg-main);">SAVE & CONTINUE</button>
+      <div id="setupUsernameMsg" class="auth-msg" style="margin-top:8px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Division Setup Modal -->
+<div id="divisionSetupModal">
+  <div style="background:var(--bg-modal); border:1.5px solid var(--text-main); border-radius:var(--radius-card); padding:32px; max-width:400px; width:90%; text-align:center;">
+    <div style="font-size:24px; color:var(--text-main); margin-bottom:16px; font-family:var(--font-sans);">CHOOSE DIVISION</div>
+    <div style="font-size:14px; color:var(--text-muted); opacity:0.9; margin-bottom:24px; line-height:1.5;">Please select your primary division and provide your WhatsApp number for team communications.</div>
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <select id="setupDivisionSelect" class="auth-input" style="width:100%; padding:8px; background:transparent; color:var(--text-main); border:1px solid var(--border-medium);">
+        <option value="" disabled selected>Select Division...</option>
+        <option value="management">Management</option>
+        <option value="development">Development</option>
+        <option value="review">Review</option>
+      </select>
+      <input type="text" id="setupWhatsappInput" class="auth-input" placeholder="WHATSAPP NUMBER (e.g. 628...)">
+      <button id="btnSubmitSetupDivision" class="auth-btn" style="background:var(--text-main); color:var(--bg-main);">SAVE & CONTINUE</button>
+      <div id="setupDivisionMsg" class="auth-msg" style="margin-top:8px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Interaction Mode Intercept -->
+<div id="interactionModeModal">
+  <div style="background:var(--bg-modal); border:1.5px solid var(--text-main); border-radius:var(--radius-card); padding:32px; max-width:400px; width:90%; text-align:center;">
+    <div style="font-size:24px; color:var(--text-main); margin-bottom:16px; font-family:var(--font-sans);">WELCOME TO MR CAPSULES</div>
+    <div style="font-size:14px; color:var(--text-muted); opacity:0.9; margin-bottom:24px; line-height:1.5;">To personalize your guided tour, please select your primary interaction mode:</div>
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <button class="auth-btn" style="background:var(--text-main); color:var(--bg-main);" onclick="startGuide('keyboard')">[ KEYBOARD & MOUSE ]</button>
+      <button class="auth-btn" style="background:transparent; color:var(--text-main); border:1px solid var(--text-main);" onclick="startGuide('touch')">[ TOUCHSCREEN ]</button>
+    </div>
+  </div>
+</div>
+
+<!-- Guide Overlay -->
+<div id="guideOverlay">
+  <div class="guide-highlight" id="guideHighlight"></div>
+  <div class="guide-tooltip" id="guideTooltip">
+    <div class="guide-header" id="guideHeader"></div>
+    <div class="guide-body" id="guideBody"></div>
+    <div class="guide-footer">
+      <div class="guide-step-count" id="guideStepCount"></div>
+      <button class="auth-btn" style="padding:6px 12px; font-size:12px;" id="btnGuideNext">NEXT STEP</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ══ GUIDED TOUR ENGINE ══ */
+  let guideSteps = [];
+  let currentGuideStep = 0;
+  let originalIframeState = false;
+  
+  // skipGuide removed
+  
+  function startGuide(mode) {
+    originalIframeState = document.getElementById('iframeViewer').classList.contains('active');
+    document.getElementById('interactionModeModal').classList.remove('active');
+    
+    guideSteps = [
+      {
+        target: '#cfWrap',
+        title: 'The Coverflow',
+        text: mode === 'touch' ? 'Swipe left and right to browse your study modules.' : 'Use your Left/Right arrow keys or click and drag to browse your study modules.'
+      },
+      {
+        target: '#btnToggleMode',
+        title: 'View Toggle',
+        text: 'Switch between the immersive 3D Coverflow and a fast flat Grid View.'
+      },
+      {
+        target: '#btnPlay',
+        title: 'Dive In',
+        text: mode === 'touch' ? 'You can directly tap on any cover, or tap the Play button below, to open a folder or file.' : 'You can directly click on any cover, or press the Play button below, to open a folder or file.'
+      },
+      {
+        target: '#btnTopBack',
+        title: 'Navigation',
+        text: 'Use this back button to easily navigate back up your folder hierarchy when deep inside.'
+      },
+      {
+        target: '.iframe-header',
+        title: 'Document Reader',
+        text: 'When reading a file, use this top bar to navigate back, jump to the next file, or go fullscreen.',
+        action: 'show-iframe'
+      },
+      {
+        target: '#btnSettings',
+        title: 'Settings & Account',
+        text: "Manage your preferences, network status, and account here. Let's open settings now so you can set your Username!"
+      }
+    ];
+    
+    currentGuideStep = 0;
+    document.getElementById('guideOverlay').classList.add('active');
+    renderGuideStep();
+  }
+  
+  function renderGuideStep() {
+    if (currentGuideStep >= guideSteps.length) {
+      endGuide();
+      return;
+    }
+    
+    const step = guideSteps[currentGuideStep];
+    const targetEl = document.querySelector(step.target);
+    const hl = document.getElementById('guideHighlight');
+    const tooltip = document.getElementById('guideTooltip');
+    
+    document.getElementById('guideHeader').textContent = step.title;
+    document.getElementById('guideBody').textContent = step.text;
+    document.getElementById('guideStepCount').textContent = `STEP ${currentGuideStep + 1} OF ${guideSteps.length}`;
+    
+    if (currentGuideStep === guideSteps.length - 1) {
+      document.getElementById('btnGuideNext').textContent = 'FINISH';
+    } else {
+      document.getElementById('btnGuideNext').textContent = 'NEXT STEP';
+    }
+    
+    if (step.action === 'show-iframe') {
+      document.getElementById('iframeViewer').classList.add('active');
+    } else {
+      document.getElementById('iframeViewer').classList.remove('active');
+    }
+    
+    if (targetEl) {
+      if (step.target === '#btnTopBack') {
+        targetEl.style.display = 'flex'; 
+      }
+      
+      const rect = targetEl.getBoundingClientRect();
+      const pad = 8;
+      hl.style.left = (rect.left - pad) + 'px';
+      hl.style.top = (rect.top - pad) + 'px';
+      hl.style.width = (rect.width + pad*2) + 'px';
+      hl.style.height = (rect.height + pad*2) + 'px';
+      
+      // Dynamic responsive placement
+      const tooltipWidth = tooltip.offsetWidth || 300;
+      const tooltipHeight = tooltip.offsetHeight || 150;
+      
+      tooltip.style.left = Math.max(10, Math.min(rect.left, window.innerWidth - tooltipWidth - 20)) + 'px';
+      
+      if (rect.top > window.innerHeight / 2) {
+        tooltip.style.top = Math.max(10, rect.top - tooltipHeight - 20) + 'px';
+      } else {
+        tooltip.style.top = Math.min(window.innerHeight - tooltipHeight - 10, rect.bottom + 20) + 'px';
+      }
+      
+      tooltip.classList.add('visible');
+    } else {
+      hl.style.width = '0px';
+      tooltip.style.left = '50%';
+      tooltip.style.top = '50%';
+      tooltip.style.transform = 'translate(-50%, -50%)';
+    }
+  }
+  
+  window.addEventListener('resize', () => {
+    if (document.getElementById('guideOverlay').classList.contains('active')) {
+      renderGuideStep();
+    }
+  });
+  
+  document.getElementById('btnGuideNext').addEventListener('click', () => {
+    currentGuideStep++;
+    renderGuideStep();
+  });
+  
+  async function endGuide() {
+    document.getElementById('guideOverlay').classList.remove('active');
+    document.getElementById('guideTooltip').classList.remove('visible');
+    
+    if (originalIframeState) {
+      document.getElementById('iframeViewer').classList.add('active');
+    } else {
+      document.getElementById('iframeViewer').classList.remove('active');
+    }
+    
+    updateBackButton(); 
+    
+    document.getElementById('btnGuideNext').textContent = '...';
+    try {
+      await window.supabaseClient.auth.updateUser({ data: { tour_completed: true } });
+      const { data } = await window.supabaseClient.auth.refreshSession();
+      if(data.session && window.checkOnboarding) await window.checkOnboarding(data.session);
+    } catch(e) {}
+  }
+</script>
+</body>
+</html>
+
