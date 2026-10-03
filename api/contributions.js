@@ -257,16 +257,31 @@ export default async function handler(req, res) {
       let lastContributedAt = null;
       let hasActiveAccess = false;
 
+      let p1Points = 0;
+      let p2Points = 0;
+      let p1LastContributed = null;
+      let p2LastContributed = null;
+
       if (coupleIds.length > 0) {
         try {
-          const cRes = await fetch(`${supabaseUrl}/rest/v1/contributions?user_id=in.(${coupleIds.join(',')})&select=points,created_at&order=created_at.desc`, {
+          const cRes = await fetch(`${supabaseUrl}/rest/v1/contributions?user_id=in.(${coupleIds.join(',')})&select=points,created_at,user_id&order=created_at.desc`, {
             headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}`, 'Cache-Control': 'no-cache' },
             cache: 'no-store'
           });
           if (cRes.ok) {
             const cData = await cRes.json();
             if (Array.isArray(cData)) {
-              cData.forEach(c => { pooledPoints += (c.points || 0); });
+              cData.forEach(c => {
+                const pts = c.points || 0;
+                pooledPoints += pts;
+                if (c.user_id === p1Id) {
+                  p1Points += pts;
+                  if (!p1LastContributed) p1LastContributed = c.created_at;
+                } else if (c.user_id === p2Id) {
+                  p2Points += pts;
+                  if (!p2LastContributed) p2LastContributed = c.created_at;
+                }
+              });
               if (cData.length > 0) {
                 lastContributedAt = cData[0].created_at;
                 hasActiveAccess = new Date(lastContributedAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
@@ -291,13 +306,17 @@ export default async function handler(req, res) {
             id: p1Id,
             email: coupleConfig.partner1_email,
             username: p1?.user_metadata?.username || coupleConfig.partner1_email.split('@')[0],
-            full_name: p1?.user_metadata?.full_name || p1?.user_metadata?.name || ''
+            full_name: p1?.user_metadata?.full_name || p1?.user_metadata?.name || '',
+            points: p1Points,
+            last_contributed_at: p1LastContributed
           },
           {
             id: p2Id,
             email: coupleConfig.partner2_email,
             username: p2?.user_metadata?.username || coupleConfig.partner2_email.split('@')[0],
-            full_name: p2?.user_metadata?.full_name || p2?.user_metadata?.name || ''
+            full_name: p2?.user_metadata?.full_name || p2?.user_metadata?.name || '',
+            points: p2Points,
+            last_contributed_at: p2LastContributed
           }
         ]
       });

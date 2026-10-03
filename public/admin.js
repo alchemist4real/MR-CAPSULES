@@ -2538,24 +2538,164 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
 // COUPLE PACKAGE & CONTRIBUTIONS MODULE
 // ═══════════════════════════════════════════════════════════════
 
+window.switchCoupleModalTab = function(tabId) {
+  const tabs = [
+    { id: 'active', btn: document.getElementById('tabBtnCoupleActive'), pane: document.getElementById('coupleTabPaneActive') },
+    { id: 'new', btn: document.getElementById('tabBtnCoupleNew'), pane: document.getElementById('coupleTabPaneNew') },
+    { id: 'rules', btn: document.getElementById('tabBtnCoupleRules'), pane: document.getElementById('coupleTabPaneRules') }
+  ];
+  tabs.forEach(t => {
+    const isActive = t.id === tabId;
+    if (t.btn) t.btn.classList.toggle('active', isActive);
+    if (t.pane) t.pane.classList.toggle('active', isActive);
+  });
+};
+
+window.updateCoupleSelectionPreview = function() {
+  const p1Select = document.getElementById('selectCouplePartner1');
+  const p2Select = document.getElementById('selectCouplePartner2');
+  const p1Email = p1Select ? p1Select.value.trim() : '';
+  const p2Email = p2Select ? p2Select.value.trim() : '';
+
+  const users = (window.allUsersCache || window.lastLoadedUsers || []);
+  const u1 = users.find(u => (u.email || '').toLowerCase() === p1Email.toLowerCase());
+  const u2 = users.find(u => (u.email || '').toLowerCase() === p2Email.toLowerCase());
+
+  function getUserPoints(email) {
+    if (!email) return 0;
+    if (window.couplePackageConfig && Array.isArray(window.couplePackageConfig.couple)) {
+      const p = window.couplePackageConfig.couple.find(c => (c.email || '').toLowerCase() === email.toLowerCase());
+      if (p && typeof p.points === 'number') return p.points;
+    }
+    if (Array.isArray(window.latestLeaderboard)) {
+      const lb = window.latestLeaderboard.find(x => (x.email || '').toLowerCase() === email.toLowerCase());
+      if (lb && typeof lb.points === 'number') return lb.points;
+    }
+    return 0;
+  }
+
+  const p1Box = document.getElementById('previewPartner1');
+  const p2Box = document.getElementById('previewPartner2');
+  const projectedVal = document.getElementById('previewProjectedPointsValue');
+
+  let pts1 = 0;
+  let pts2 = 0;
+
+  if (p1Box) {
+    if (u1) {
+      const name = u1.user_metadata?.username || u1.email.split('@')[0];
+      const initial = (name.length >= 2 ? name.substring(0, 2) : name).toUpperCase();
+      pts1 = getUserPoints(u1.email);
+      p1Box.innerHTML = `
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div class="user-avatar-badge" style="width:32px; height:32px; min-width:32px; font-size:11px; font-weight:700;">${sanitize(initial)}</div>
+          <div style="min-width:0; flex:1;">
+            <div style="font-weight:700; color:var(--text-main); font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${sanitize(name)}</div>
+            <div style="font-size:11px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${sanitize(u1.email)}</div>
+            <div style="font-size:11px; font-weight:700; color:var(--accent); margin-top:2px;">${pts1} pts</div>
+          </div>
+        </div>
+      `;
+    } else {
+      p1Box.innerHTML = `<span style="color:var(--text-muted); font-size:11.5px;">Select user above</span>`;
+    }
+  }
+
+  if (p2Box) {
+    if (u2) {
+      const name = u2.user_metadata?.username || u2.email.split('@')[0];
+      const initial = (name.length >= 2 ? name.substring(0, 2) : name).toUpperCase();
+      pts2 = getUserPoints(u2.email);
+      p2Box.innerHTML = `
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div class="user-avatar-badge" style="width:32px; height:32px; min-width:32px; font-size:11px; font-weight:700;">${sanitize(initial)}</div>
+          <div style="min-width:0; flex:1;">
+            <div style="font-weight:700; color:var(--text-main); font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${sanitize(name)}</div>
+            <div style="font-size:11px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${sanitize(u2.email)}</div>
+            <div style="font-size:11px; font-weight:700; color:var(--accent); margin-top:2px;">${pts2} pts</div>
+          </div>
+        </div>
+      `;
+    } else {
+      p2Box.innerHTML = `<span style="color:var(--text-muted); font-size:11.5px;">Select user above</span>`;
+    }
+  }
+
+  if (projectedVal) {
+    projectedVal.textContent = `${pts1 + pts2} pts`;
+  }
+};
+
+window.swapCouplePartners = async function() {
+  if (!window.couplePackageConfig || !window.couplePackageConfig.enabled || !Array.isArray(window.couplePackageConfig.couple) || window.couplePackageConfig.couple.length !== 2) {
+    customAlert('Tidak ada couple aktif yang dapat ditukar posisinya.');
+    return;
+  }
+  const p1 = window.couplePackageConfig.couple[0];
+  const p2 = window.couplePackageConfig.couple[1];
+
+  const confirmed = await customConfirm(`Tukar posisi Partner 1 (${p1.username || p1.email}) dan Partner 2 (${p2.username || p2.email})?`);
+  if (!confirmed) return;
+
+  const token = sessionToken || window.sessionToken;
+  try {
+    const res = await fetch('/api/contributions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        action: 'set_couple_package',
+        partner1_email: p2.email,
+        partner2_email: p1.email
+      })
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      showToast('Posisi partner couple berhasil ditukar.', 'success');
+      await loadCouplePackageStatus();
+      if (typeof window.loadContributions === 'function') {
+        window.loadContributions();
+      }
+      if (window.lastLoadedUsers && window.lastBannedDevs && typeof renderUsers === 'function') {
+        renderUsers(window.lastLoadedUsers, window.lastBannedDevs);
+      }
+    } else {
+      showToast('Gagal menukar partner couple: ' + (data.error || 'Server error'), 'error');
+    }
+  } catch (err) {
+    showToast('Network error: ' + err.message, 'error');
+  }
+};
+
 async function loadCouplePackageStatus() {
   const token = sessionToken || window.sessionToken;
   if (!token) return;
+
+  const activeContainer = document.getElementById('coupleActiveCardContainer');
+  const emptyContainer = document.getElementById('coupleActiveEmptyContainer');
+  const quotaBadge = document.getElementById('modalCoupleQuotaBadge');
+  const p1Avatar = document.getElementById('modalP1Avatar');
+  const p1Name = document.getElementById('modalP1Name');
+  const p1Email = document.getElementById('modalP1Email');
+  const p1Points = document.getElementById('modalP1Points');
+  const p2Avatar = document.getElementById('modalP2Avatar');
+  const p2Name = document.getElementById('modalP2Name');
+  const p2Email = document.getElementById('modalP2Email');
+  const p2Points = document.getElementById('modalP2Points');
+  const pooledPointsEl = document.getElementById('modalCouplePooledPoints');
+  const summaryStatus = document.getElementById('modalSummaryStatus');
+  const summaryLastContrib = document.getElementById('modalSummaryLastContrib');
+  const summaryQuota = document.getElementById('modalSummaryQuota');
+
+  const p1Select = document.getElementById('selectCouplePartner1');
+  const p2Select = document.getElementById('selectCouplePartner2');
+
   const widget = document.getElementById('coupleSidebarWidget');
   const namesEl = document.getElementById('coupleSidebarNames');
   const statusEl = document.getElementById('coupleSidebarStatus');
   const modalStatusEl = document.getElementById('coupleCurrentStatusText');
-
-  // Dashboard Card Elements
-  const dashCard = document.getElementById('dashCoupleCard');
-  const p1Avatar = document.getElementById('dashCoupleP1Avatar');
-  const p1Name = document.getElementById('dashCoupleP1Name');
-  const p1Email = document.getElementById('dashCoupleP1Email');
-  const p2Avatar = document.getElementById('dashCoupleP2Avatar');
-  const p2Name = document.getElementById('dashCoupleP2Name');
-  const p2Email = document.getElementById('dashCoupleP2Email');
-  const dashPoints = document.getElementById('dashCouplePoints');
-  const dashBadge = document.getElementById('dashCoupleQuotaBadge');
 
   try {
     const res = await fetch('/api/contributions', {
@@ -2580,22 +2720,49 @@ async function loadCouplePackageStatus() {
       const init1 = (name1.length >= 2 ? name1.substring(0, 2) : name1).toUpperCase();
       const init2 = (name2.length >= 2 ? name2.substring(0, 2) : name2).toUpperCase();
       const pts = data.pooled_points || 0;
+      const pts1 = p1.points || 0;
+      const pts2 = p2.points || 0;
       const isActive = !!data.has_active_access;
+      const lastContribFormatted = data.last_contributed_at 
+        ? new Date(data.last_contributed_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' })
+        : 'Belum Ada';
 
-      if (dashCard) dashCard.style.display = 'block';
+      if (activeContainer) activeContainer.style.display = 'block';
+      if (emptyContainer) emptyContainer.style.display = 'none';
+
       if (p1Avatar) p1Avatar.textContent = init1;
       if (p1Name) p1Name.textContent = name1;
       if (p1Email) p1Email.textContent = email1;
+      if (p1Points) p1Points.textContent = `${pts1} pts`;
+
       if (p2Avatar) p2Avatar.textContent = init2;
       if (p2Name) p2Name.textContent = name2;
       if (p2Email) p2Email.textContent = email2;
-      if (dashPoints) dashPoints.textContent = `${pts} pts`;
-      if (dashBadge) {
-        dashBadge.textContent = isActive ? '30-DAY ACCESS ACTIVE' : 'ACCESS EXPIRED';
-        dashBadge.style.background = isActive ? 'color-mix(in srgb, var(--c2) 18%, transparent)' : 'color-mix(in srgb, var(--danger) 18%, transparent)';
-        dashBadge.style.color = isActive ? 'var(--c2)' : 'var(--danger)';
-        dashBadge.style.borderColor = isActive ? 'var(--c2)' : 'var(--danger)';
+      if (p2Points) p2Points.textContent = `${pts2} pts`;
+
+      if (pooledPointsEl) pooledPointsEl.textContent = `${pts} pts`;
+
+      if (quotaBadge) {
+        quotaBadge.textContent = isActive ? '30-DAY ACCESS ACTIVE' : 'ACCESS EXPIRED';
+        quotaBadge.style.background = isActive ? 'color-mix(in srgb, var(--c2) 18%, transparent)' : 'color-mix(in srgb, var(--danger) 18%, transparent)';
+        quotaBadge.style.color = isActive ? 'var(--c2)' : 'var(--danger)';
+        quotaBadge.style.border = `1px solid ${isActive ? 'var(--c2)' : 'var(--danger)'}`;
       }
+
+      if (summaryStatus) {
+        summaryStatus.textContent = isActive ? 'Active (Synced)' : 'Inactive';
+        summaryStatus.style.color = isActive ? 'var(--c2)' : 'var(--danger)';
+      }
+      if (summaryLastContrib) {
+        summaryLastContrib.textContent = lastContribFormatted;
+      }
+      if (summaryQuota) {
+        summaryQuota.textContent = isActive ? 'Shared 30-Day Granted' : 'Access Expired';
+        summaryQuota.style.color = isActive ? 'var(--c2)' : 'var(--text-muted)';
+      }
+
+      if (p1Select && (!p1Select.value || p1Select.value === email1)) p1Select.value = email1;
+      if (p2Select && (!p2Select.value || p2Select.value === email2)) p2Select.value = email2;
 
       if (widget) widget.style.display = 'none';
       if (namesEl) namesEl.textContent = `${name1} & ${name2}`;
@@ -2622,19 +2789,38 @@ async function loadCouplePackageStatus() {
           `</div>`;
       }
     } else {
-      if (dashCard) dashCard.style.display = 'block';
+      if (activeContainer) activeContainer.style.display = 'none';
+      if (emptyContainer) emptyContainer.style.display = 'block';
+
       if (p1Avatar) p1Avatar.textContent = '-';
       if (p1Name) p1Name.textContent = 'Unassigned';
-      if (p1Email) p1Email.textContent = 'No partner selected';
+      if (p1Email) p1Email.textContent = '-';
+      if (p1Points) p1Points.textContent = '0 pts';
+
       if (p2Avatar) p2Avatar.textContent = '-';
       if (p2Name) p2Name.textContent = 'Unassigned';
-      if (p2Email) p2Email.textContent = 'No partner selected';
-      if (dashPoints) dashPoints.textContent = '0 pts';
-      if (dashBadge) {
-        dashBadge.textContent = 'NOT CONFIGURED';
-        dashBadge.style.background = 'var(--border-light)';
-        dashBadge.style.color = 'var(--text-muted)';
-        dashBadge.style.borderColor = 'var(--border-light)';
+      if (p2Email) p2Email.textContent = '-';
+      if (p2Points) p2Points.textContent = '0 pts';
+
+      if (pooledPointsEl) pooledPointsEl.textContent = '0 pts';
+
+      if (quotaBadge) {
+        quotaBadge.textContent = 'NOT CONFIGURED';
+        quotaBadge.style.background = 'var(--border-light)';
+        quotaBadge.style.color = 'var(--text-muted)';
+        quotaBadge.style.border = '1px solid var(--border-light)';
+      }
+
+      if (summaryStatus) {
+        summaryStatus.textContent = 'Not Configured';
+        summaryStatus.style.color = 'var(--text-muted)';
+      }
+      if (summaryLastContrib) {
+        summaryLastContrib.textContent = '-';
+      }
+      if (summaryQuota) {
+        summaryQuota.textContent = 'Unlinked';
+        summaryQuota.style.color = 'var(--text-muted)';
       }
 
       if (widget) widget.style.display = 'none';
@@ -2647,6 +2833,8 @@ async function loadCouplePackageStatus() {
         modalStatusEl.innerHTML = `<div style="padding:10px 12px; background:var(--bg-surface); border:1px solid var(--border-light); border-radius:4px; color:var(--text-muted); text-align:center;">Belum ada pasangan yang dihubungkan. Silakan pilih Partner 1 &amp; Partner 2 di atas.</div>`;
       }
     }
+
+    window.updateCoupleSelectionPreview();
   } catch (err) {
     console.warn('Failed to load couple package status:', err);
   }
@@ -2704,6 +2892,15 @@ window.openManageCoupleModal = async function() {
 
   await loadCouplePackageStatus();
 
+  // If couple is active, switch to active tab, otherwise switch to new tab
+  if (window.couplePackageConfig && window.couplePackageConfig.enabled && Array.isArray(window.couplePackageConfig.couple) && window.couplePackageConfig.couple.length === 2) {
+    window.switchCoupleModalTab('active');
+  } else {
+    window.switchCoupleModalTab('new');
+  }
+
+  window.updateCoupleSelectionPreview();
+
   if (window.ModalManager) {
     window.ModalManager.open(modal);
   } else {
@@ -2749,17 +2946,12 @@ window.saveCouplePackage = async function() {
       if (res.ok && data.success) {
         showToast('Couple Package berhasil disimpan.', 'success');
         await loadCouplePackageStatus();
+        window.switchCoupleModalTab('active');
         if (typeof window.loadContributions === 'function') {
           window.loadContributions();
         }
         if (window.lastLoadedUsers && window.lastBannedDevs && typeof renderUsers === 'function') {
           renderUsers(window.lastLoadedUsers, window.lastBannedDevs);
-        }
-        const modal = document.getElementById('manageCoupleModal');
-        if (window.ModalManager) {
-          window.ModalManager.close(modal);
-        } else if (modal) {
-          modal.classList.remove('active');
         }
       } else {
         showToast('Gagal menyimpan couple package: ' + (data.error || 'Server error'), 'error');
@@ -2799,17 +2991,12 @@ window.unlinkCouplePackage = async function() {
     if (res.ok && data.success) {
       showToast('Couple Package berhasil dilepas.', 'success');
       await loadCouplePackageStatus();
+      window.switchCoupleModalTab('active');
       if (typeof window.loadContributions === 'function') {
         window.loadContributions();
       }
       if (window.lastLoadedUsers && window.lastBannedDevs && typeof renderUsers === 'function') {
         renderUsers(window.lastLoadedUsers, window.lastBannedDevs);
-      }
-      const modal = document.getElementById('manageCoupleModal');
-      if (window.ModalManager) {
-        window.ModalManager.close(modal);
-      } else if (modal) {
-        modal.classList.remove('active');
       }
     } else {
       showToast('Gagal melepas couple package: ' + (data.error || 'Server error'), 'error');
@@ -2873,8 +3060,10 @@ async function loadContributions() {
     });
     if (resLb.ok) {
       const dataLb = await resLb.json();
-      if (Array.isArray(dataLb)) {
-        window.renderLeaderboard(dataLb);
+      const list = dataLb.leaderboard || (Array.isArray(dataLb) ? dataLb : []);
+      window.latestLeaderboard = list;
+      if (Array.isArray(list)) {
+        window.renderLeaderboard(list);
       }
     }
 

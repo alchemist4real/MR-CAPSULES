@@ -1119,126 +1119,11 @@ window.submitAddMember = async function() {
     }
 };
 
-window.openManageCoupleModal = async function() {
-    const modal = document.getElementById('manageCoupleModal');
-    const p1Select = document.getElementById('selectCouplePartner1');
-    const p2Select = document.getElementById('selectCouplePartner2');
-    const statusText = document.getElementById('coupleCurrentStatusText');
-
-    if (!modal || !p1Select || !p2Select) return;
-
-    p1Select.innerHTML = '<option value="">Loading users...</option>';
-    p2Select.innerHTML = '<option value="">Loading users...</option>';
-
-    if (window.ModalManager) window.ModalManager.open(modal);
-    else modal.classList.add('active');
-
-    const [users, coupleRes] = await Promise.all([
-        getCachedOrFreshUsers(),
-        apiCall('contributions', { action: 'get_couple_package' })
-    ]);
-
-    const sortedUsers = [...users].sort((a, b) => {
-        const nameA = (a.user_metadata?.username || a.email || '').toLowerCase();
-        const nameB = (b.user_metadata?.username || b.email || '').toLowerCase();
-        return nameA.localeCompare(nameB);
-    });
-
-    p1Select.innerHTML = '<option value="">-- Pilih Partner 1 --</option>';
-    p2Select.innerHTML = '<option value="">-- Pilih Partner 2 --</option>';
-
-    sortedUsers.forEach(u => {
-        const username = u.user_metadata?.username || u.email.split('@')[0];
-        const text = `${username} (${u.email})`;
-
-        const opt1 = document.createElement('option');
-        opt1.value = u.email;
-        opt1.textContent = text;
-        p1Select.appendChild(opt1);
-
-        const opt2 = document.createElement('option');
-        opt2.value = u.email;
-        opt2.textContent = text;
-        p2Select.appendChild(opt2);
-    });
-
-    if (coupleRes && coupleRes.success && Array.isArray(coupleRes.couple) && coupleRes.couple.length >= 2) {
-        const p1 = coupleRes.couple[0];
-        const p2 = coupleRes.couple[1];
-        p1Select.value = p1.email;
-        p2Select.value = p2.email;
-        if (statusText) statusText.textContent = `${p1.username} (${p1.email}) & ${p2.username} (${p2.email})`;
-        const sidebarNames = document.getElementById('coupleSidebarNames');
-        if (sidebarNames) sidebarNames.textContent = `${p1.username} & ${p2.username}`;
-    } else {
-        p1Select.value = '';
-        p2Select.value = '';
-        if (statusText) statusText.textContent = 'Belum ada couple yang dikonfigurasi';
-    }
-};
-
 window.closeManageCoupleModal = function() {
     const modal = document.getElementById('manageCoupleModal');
     if (!modal) return;
     if (window.ModalManager) window.ModalManager.close(modal);
     else modal.classList.remove('active');
-};
-
-window.saveCouplePackage = async function() {
-    const p1Select = document.getElementById('selectCouplePartner1');
-    const p2Select = document.getElementById('selectCouplePartner2');
-
-    const email1 = p1Select ? p1Select.value.trim() : '';
-    const email2 = p2Select ? p2Select.value.trim() : '';
-
-    if (!email1 || !email2) return showToast('Pilih kedua partner couple', 'error');
-    if (email1.toLowerCase() === email2.toLowerCase()) return showToast('Partner 1 dan Partner 2 tidak boleh sama', 'error');
-
-    showToast('Saving couple package...');
-    const res = await apiCall('contributions', {
-        action: 'set_couple_package',
-        partner1_email: email1,
-        partner2_email: email2
-    });
-
-    if (res && res.success) {
-        showToast('Couple Package berhasil disimpan.', 'success');
-        window.closeManageCoupleModal();
-        if (typeof window.loadContributions === 'function') window.loadContributions();
-        if (typeof window.loadCouplePackageStatus === 'function') window.loadCouplePackageStatus();
-        const sidebarNames = document.getElementById('coupleSidebarNames');
-        if (sidebarNames && res.couple) {
-            sidebarNames.textContent = `${res.couple[0].username} & ${res.couple[1].username}`;
-        }
-        const statusText = document.getElementById('coupleCurrentStatusText');
-        if (statusText && res.couple) {
-            statusText.textContent = `${res.couple[0].username} (${res.couple[0].email}) & ${res.couple[1].username} (${res.couple[1].email})`;
-        }
-    } else {
-        showToast('Failed: ' + (res?.error || 'Unknown error'), 'error');
-    }
-};
-
-window.unlinkCouplePackage = async function() {
-    if (!await customConfirm('Apakah Anda yakin ingin memisahkan (unlink) akun couple ini?')) return;
-    showToast('Unlinking couple package...');
-    const res = await apiCall('contributions', {
-        action: 'set_couple_package',
-        unlink: true
-    });
-
-    if (res && res.success) {
-        showToast('Couple Package berhasil dilepas.', 'success');
-        window.closeManageCoupleModal();
-        if (typeof window.loadContributions === 'function') window.loadContributions();
-        if (typeof window.loadCouplePackageStatus === 'function') window.loadCouplePackageStatus();
-        const sidebarNames = document.getElementById('coupleSidebarNames');
-        if (sidebarNames) sidebarNames.textContent = 'None (Unlinked)';
-        const statusText = document.getElementById('coupleCurrentStatusText');
-        if (statusText) statusText.textContent = 'Belum ada couple yang dikonfigurasi';
-    } else {
-        showToast('Failed: ' + (res?.error || 'Unknown error'), 'error');
-    }
 };
 
 window.removeMember = async function(email, divId) {
@@ -1294,6 +1179,7 @@ window.loadContributions = async function() {
 
     const resLeader = await apiCall('contributions', { action: 'get_leaderboard' });
     if(resLeader.success) {
+        window.latestLeaderboard = resLeader.leaderboard || [];
         const list = document.getElementById('leaderboardList');
         list.innerHTML = '';
         if(!resLeader.leaderboard || resLeader.leaderboard.length === 0) {
@@ -1316,6 +1202,10 @@ window.loadContributions = async function() {
     } else {
         console.error('Failed to get leaderboard:', resLeader);
         showToast('Error getting leaderboard: ' + (resLeader.error || 'Unknown'), 'error');
+    }
+
+    if (typeof window.loadCouplePackageStatus === 'function') {
+        window.loadCouplePackageStatus();
     }
 }
 
