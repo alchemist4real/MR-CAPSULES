@@ -1463,6 +1463,8 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
       let processed = 0;
       statusText.textContent = `Uploading 0/${files.length}...`;
 
+      const basePath = currentPath ? (currentPath.endsWith('/') ? currentPath : currentPath + '/') : 'content/';
+
       for (const file of files) {
         const base64 = await new Promise((resolve) => {
           const reader = new FileReader();
@@ -1470,30 +1472,63 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
           reader.readAsDataURL(file);
         });
 
-        const path = currentPath + file.name;
+        const path = basePath + file.name;
         const existing = currentTree.find(i => i.path === path);
         
         await adminAction('upload', { path, contentBase64: base64, sha: existing ? existing.sha : null });
         processed++;
         statusText.textContent = `Uploaded ${processed}/${files.length}`;
       }
-      loadTree();
+      await loadTree();
     }
 
-    document.getElementById('btnUpload').onclick = () => fileInput.click();
+    const btnUpload = document.getElementById('btnUpload');
+    if (btnUpload) btnUpload.onclick = () => fileInput.click();
     fileInput.onchange = (e) => {
       if (e.target.files.length > 0) {
         uploadFilesSequential(Array.from(e.target.files));
       }
     };
 
-    document.getElementById('btnNewFolder').onclick = async () => {
-      const name = await customPrompt("Enter new folder name:");
-      if(name && name.trim()) {
-        const path = currentPath + name.trim() + '/.gitkeep';
-        const base64 = btoa(' '); 
-        adminAction('upload', { path, contentBase64: base64 });
-      }
+    const btnNewFile = document.getElementById('btnNewFile');
+    if (btnNewFile) {
+      btnNewFile.onclick = async () => {
+        const name = await customPrompt("Enter new file name (e.g. Topic_Name.html):");
+        if (name && name.trim()) {
+          let fileName = name.trim().replace(/^\/+/, '');
+          if (!fileName.includes('.')) {
+            fileName += '.html';
+          }
+          const basePath = currentPath ? (currentPath.endsWith('/') ? currentPath : currentPath + '/') : 'content/';
+          const path = basePath + fileName;
+          const defaultContent = `<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>${fileName.replace(/\.[^/.]+$/, '')}</title>\n</head>\n<body>\n  <h1>${fileName.replace(/\.[^/.]+$/, '')}</h1>\n  <p>New module content</p>\n</body>\n</html>\n`;
+          const base64 = utf8ToBase64(defaultContent);
+          statusText.textContent = `Creating ${fileName}...`;
+          await adminAction('create_file', { path, contentBase64: base64 });
+          statusText.textContent = `Created ${fileName}`;
+          await loadTree();
+
+          const createdItem = currentTree.find(i => i.path === path) || { name: fileName, path, sha: null };
+          openEditor(createdItem);
+        }
+      };
+    }
+
+    const btnNewFolder = document.getElementById('btnNewFolder');
+    if (btnNewFolder) {
+      btnNewFolder.onclick = async () => {
+        const name = await customPrompt("Enter new folder name:");
+        if (name && name.trim()) {
+          const folderName = name.trim().replace(/^\/+|\/+$/g, '');
+          const basePath = currentPath ? (currentPath.endsWith('/') ? currentPath : currentPath + '/') : 'content/';
+          const path = basePath + folderName + '/.gitkeep';
+          const base64 = btoa(' '); 
+          statusText.textContent = `Creating folder ${folderName}...`;
+          await adminAction('create_folder', { path, contentBase64: base64 });
+          statusText.textContent = `Folder ${folderName} created`;
+          await loadTree();
+        }
+      };
     };
 
     // Tabs Logic

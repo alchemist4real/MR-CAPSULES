@@ -436,7 +436,8 @@ function getContentCdnUrl(relPath) {
   if (relPath.startsWith('http://') || relPath.startsWith('https://') || relPath.startsWith('data:')) {
     return relPath;
   }
-  const cdn = window.CONTENT_CDN || (window.appData && window.appData.contentCdn) || '';
+  const defaultCdn = 'https://cdn.jsdelivr.net/gh/alchemist4real/MR-CAPSULES-CONTENT@main';
+  const cdn = window.CONTENT_CDN || (window.appData && window.appData.contentCdn) || defaultCdn;
   const cleanPath = relPath.replace(/^\/+/, '');
   if (cdn) {
     return `${cdn.replace(/\/+$/, '')}/${cleanPath}`;
@@ -576,7 +577,7 @@ function buildCoverflow(startIndex) {
 
     el.innerHTML = `
       <div class="art">
-        ${item.cover ? `<img class="art-bg" src="${item.cover}" alt="cover">` : `<div class="art-dot-grid"></div>`}
+        ${item.cover ? `<img class="art-bg" src="${getContentCdnUrl(item.cover)}" alt="cover" loading="lazy" onerror="if(!this.dataset.triedRaw){this.dataset.triedRaw='1';this.src='https://raw.githubusercontent.com/alchemist4real/MR-CAPSULES-CONTENT/main/'+encodeURI('${item.cover.replace(/^\/+/, '')}');}">` : `<div class="art-dot-grid"></div>`}
       </div>
       <div class="card-label">
         <div class="s">${item.title}</div>
@@ -876,7 +877,14 @@ function info(){
   
   const mImg = document.getElementById('mImg');
   if (item.cover) {
+    mImg.dataset.triedRaw = '';
     mImg.src = getContentCdnUrl(item.cover);
+    mImg.onerror = function() {
+      if (!this.dataset.triedRaw) {
+        this.dataset.triedRaw = '1';
+        this.src = 'https://raw.githubusercontent.com/alchemist4real/MR-CAPSULES-CONTENT/main/' + encodeURI(item.cover.replace(/^\/+/, ''));
+      }
+    };
     mImg.style.display = 'block';
   } else {
     mImg.style.display = 'none';

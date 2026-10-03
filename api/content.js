@@ -139,7 +139,7 @@ export default async function handler(req, res) {
       semesters: semesters,
       files: flatFiles,
       covers: covers,
-      contentCdn: process.env.CONTENT_CDN || ''
+      contentCdn: process.env.CONTENT_CDN || `https://cdn.jsdelivr.net/gh/${owner}/${contentRepo}@main`
     };
 
     // Cache for 5 minutes to reduce GitHub API rate limit consumption

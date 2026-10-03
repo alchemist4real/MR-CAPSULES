@@ -78,7 +78,8 @@ export default async function handler(req, res) {
   const queryAction = req.query?.action || urlObj.searchParams.get('action');
   const body = (typeof req.body === 'object' && req.body !== null) ? req.body : {};
   const action = body.action || queryAction;
-  const { path, contentBase64, sha } = body;
+  const rawPath = body.path || body.folder || body.filepath || body.filename || '';
+  const { contentBase64, sha } = body;
 
   if (action === 'check') {
     return res.status(200).json({ success: true, isSuperAdmin, isAdmin, hasDivision, email: email });
@@ -89,32 +90,49 @@ export default async function handler(req, res) {
   }
 
   // Destructive operations check
-  if (['delete', 'delete_files', 'rename_file', 'upload', 'update_config', 'add_admin', 'remove_admin', 'ban_user', 'cleanup_guests'].includes(action)) {
+  if (['delete', 'delete_files', 'rename_file', 'update_config', 'add_admin', 'remove_admin', 'ban_user', 'cleanup_guests'].includes(action)) {
     if (!isAdmin) {
       return res.status(403).json({ error: 'Forbidden. Admin privileges required.' });
     }
   }
 
-  if (path) {
-    if (path.includes('..') || path.startsWith('/')) {
+  // Content modification check: allowed for admins and division members
+  if (['upload', 'create_file', 'make_file', 'create_folder', 'make_folder'].includes(action)) {
+    if (!isAdmin && !hasDivision) {
+      return res.status(403).json({ error: 'Forbidden. Admin or division membership required.' });
+    }
+  }
+
+  let cleanPath = (rawPath || '').trim().replace(/\\/g, '/').replace(/^\/+/, '');
+  if (cleanPath) {
+    if (cleanPath.includes('..')) {
       return res.status(400).json({ error: 'Invalid path traversal detected.' });
     }
-    if (!path.startsWith('content/') && !path.startsWith('cover/')) {
-      return res.status(400).json({ error: 'Invalid path. Must be in content/ or cover/ directory.' });
+    if (!cleanPath.startsWith('content/') && !cleanPath.startsWith('cover/')) {
+      cleanPath = 'content/' + cleanPath;
     }
   }
 
   const { newPath } = req.body;
-  if (newPath) {
-    if (newPath.includes('..') || newPath.startsWith('/')) {
+  let cleanNewPath = (newPath || '').trim().replace(/\\/g, '/').replace(/^\/+/, '');
+  if (cleanNewPath) {
+    if (cleanNewPath.includes('..')) {
       return res.status(400).json({ error: 'Invalid newPath traversal detected.' });
     }
-    if (!newPath.startsWith('content/') && !newPath.startsWith('cover/')) {
-      return res.status(400).json({ error: 'Invalid newPath. Must be in content/ or cover/ directory.' });
+    if (!cleanNewPath.startsWith('content/') && !cleanNewPath.startsWith('cover/')) {
+      cleanNewPath = 'content/' + cleanNewPath;
     }
   }
 
-  if (contentBase64 && contentBase64.length > 10 * 1024 * 1024 * 1.34) { // approx 10MB in base64
+  let base64 = contentBase64;
+  if (!base64 && typeof body.content === 'string') {
+    base64 = Buffer.from(body.content, 'utf8').toString('base64');
+  }
+  if (!base64 && (action === 'create_folder' || action === 'make_folder' || (cleanPath && cleanPath.endsWith('/.gitkeep')))) {
+    base64 = Buffer.from(' ', 'utf8').toString('base64');
+  }
+
+  if (base64 && base64.length > 10 * 1024 * 1024 * 1.34) { // approx 10MB in base64
     return res.status(400).json({ error: 'Payload too large. Maximum size is 10MB.' });
   }
 
@@ -125,6 +143,7 @@ export default async function handler(req, res) {
       headers: {
         'Authorization': `Bearer ${githubToken}`,
         'Accept': 'application/vnd.github.v3+json',
+        'User-Agent': 'MR-CAPSULES-ADMIN',
         'Content-Type': 'application/json'
       },
       body: bodyObj ? JSON.stringify(bodyObj) : undefined
@@ -137,6 +156,7 @@ export default async function handler(req, res) {
         headers: {
           'Authorization': `Bearer ${githubToken}`,
           'Accept': 'application/vnd.github.v3+json',
+          'User-Agent': 'MR-CAPSULES-ADMIN',
           'Content-Type': 'application/json'
         },
         body: bodyObj ? JSON.stringify(bodyObj) : undefined
@@ -173,15 +193,18 @@ export default async function handler(req, res) {
   };
   const updateRef = async (newCommitSha) => {
     const res = await ghApi('PATCH', '/git/refs/heads/main', { sha: newCommitSha });
-    if (!res.ok) throw new Error(`Failed to update ref`);
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.message || `Failed to update ref (${res.status})`);
+    }
     return res.ok;
   };
 
   try {
     if (action === 'download') {
-      const { path } = req.body;
-      if (!path) return res.status(400).json({ error: 'Missing path' });
-      const encodedPath = path.split('/').map(s => encodeURIComponent(s)).join('/');
+      const targetPath = cleanPath;
+      if (!targetPath) return res.status(400).json({ error: 'Missing path' });
+      const encodedPath = targetPath.split('/').map(s => encodeURIComponent(s)).join('/');
       const fileRes = await ghApi('GET', `/contents/${encodedPath}`);
       if (!fileRes.ok) return res.status(404).json({ error: 'File not found on GitHub' });
       const fileData = await fileRes.json();
@@ -195,48 +218,139 @@ export default async function handler(req, res) {
       return res.status(200).json({ success: true, tree: data.tree });
     }
 
-    if (action === 'upload') {
-      const { path, contentBase64, sha } = req.body;
+    if (['upload', 'create_file', 'make_file', 'create_folder', 'make_folder'].includes(action)) {
+      let finalPath = cleanPath;
+      if (!finalPath) return res.status(400).json({ error: 'Missing path' });
+
+      // If action is create_folder or make_folder, or path ends with '/', ensure it ends with /.gitkeep
+      if (action === 'create_folder' || action === 'make_folder' || finalPath.endsWith('/') || body.isFolder) {
+        finalPath = finalPath.replace(/\/+$/, '') + '/.gitkeep';
+        if (!base64) {
+          base64 = Buffer.from(' ', 'utf8').toString('base64');
+        }
+      }
+
+      if ((action === 'create_file' || action === 'make_file') && !base64) {
+        base64 = Buffer.from('<!DOCTYPE html>\n<html><head><meta charset="utf-8"><title>New Module</title></head><body><h1>New Module</h1></body></html>\n', 'utf8').toString('base64');
+      }
+
+      if (base64 === undefined || base64 === null) {
+        base64 = '';
+      }
+
+      // Check SHA conflict if sha provided
       if (sha) {
-        const encodedPath = path.split('/').map(s => encodeURIComponent(s)).join('/');
+        const encodedPath = finalPath.split('/').map(s => encodeURIComponent(s)).join('/');
         const checkRes = await ghApi('GET', `/contents/${encodedPath}`);
         if (checkRes.ok) {
           const remoteFile = await checkRes.json();
-          if (remoteFile.sha !== sha) {
+          if (remoteFile.sha && remoteFile.sha !== sha) {
             return res.status(409).json({ error: '409 Conflict: File has been updated on GitHub by another user. Reload before saving.' });
           }
         }
       }
 
-      // 1. Create Blob
-      const blobRes = await ghApi('POST', '/git/blobs', { content: contentBase64, encoding: 'base64' });
-      const blobData = await blobRes.json();
-      if (!blobRes.ok) throw new Error(blobData.message);
-      
-      // 2. Update Tree
-      const treeItems = [{ path: path, mode: '100644', type: 'blob', sha: blobData.sha }];
-      const commitSha = await getBranchRef();
-      const parentCommit = await getCommit(commitSha);
-      const newTreeSha = await createTree(parentCommit.tree.sha, treeItems);
-      
-      // 3. Commit
-      const newCommitSha = await createCommit(`admin: upload ${path}`, newTreeSha, [commitSha]);
-      await updateRef(newCommitSha);
-      
-      await logAdminAction('upload', { path: path });
-      return res.status(200).json({ success: true });
+      // ATTEMPT 1: GitHub Contents API (Atomic single-call, handles parent folder creation automatically)
+      try {
+        const encodedPath = finalPath.split('/').map(s => encodeURIComponent(s)).join('/');
+        let existingSha = sha || null;
+        if (!existingSha) {
+          try {
+            const checkRes = await ghApi('GET', `/contents/${encodedPath}`);
+            if (checkRes.ok) {
+              const fileInfo = await checkRes.json();
+              existingSha = fileInfo.sha;
+            }
+          } catch (e) {}
+        }
+
+        const putBody = {
+          message: `admin: ${action.replace('_', ' ')} ${finalPath}`,
+          content: base64
+        };
+        if (existingSha) putBody.sha = existingSha;
+
+        const putRes = await ghApi('PUT', `/contents/${encodedPath}`, putBody);
+        if (putRes.ok) {
+          const putData = await putRes.json();
+          await logAdminAction(action, { path: finalPath });
+          return res.status(200).json({ success: true, path: finalPath, sha: putData.content?.sha || putData.commit?.sha });
+        } else {
+          const putErr = await putRes.json().catch(() => ({}));
+          console.warn(`[Admin API] Contents API upload returned ${putRes.status}:`, putErr.message || putErr);
+        }
+      } catch (err) {
+        console.warn('[Admin API] Contents API error, falling back to Git Data API:', err.message);
+      }
+
+      // ATTEMPT 2: Git Data API with Automatic Retries
+      let lastErr = null;
+      const maxRetries = 3;
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+          const blobRes = await ghApi('POST', '/git/blobs', { content: base64, encoding: 'base64' });
+          const blobData = await blobRes.json();
+          if (!blobRes.ok) throw new Error(blobData.message || 'Failed to create blob');
+
+          const commitSha = await getBranchRef();
+          const parentCommit = await getCommit(commitSha);
+          const treeItems = [{ path: finalPath, mode: '100644', type: 'blob', sha: blobData.sha }];
+          const newTreeSha = await createTree(parentCommit.tree.sha, treeItems);
+
+          const newCommitSha = await createCommit(`admin: ${action.replace('_', ' ')} ${finalPath}`, newTreeSha, [commitSha]);
+          await updateRef(newCommitSha);
+
+          await logAdminAction(action, { path: finalPath });
+          return res.status(200).json({ success: true, path: finalPath, sha: blobData.sha });
+        } catch (err) {
+          lastErr = err;
+          if (attempt < maxRetries) {
+            await new Promise(r => setTimeout(r, attempt * 500));
+          }
+        }
+      }
+
+      throw new Error(`Failed to upload ${finalPath} after ${maxRetries} attempts: ${lastErr?.message || 'Git conflict'}`);
     }
     
     if (action === 'delete') {
-      const treeItems = [{ path: path, mode: '100644', type: 'blob', sha: null }];
+      const targetPath = cleanPath;
+      if (!targetPath) return res.status(400).json({ error: 'Missing path' });
+
+      // Try Contents API delete first if file exists
+      try {
+        const encodedPath = targetPath.split('/').map(s => encodeURIComponent(s)).join('/');
+        let fileSha = sha;
+        if (!fileSha) {
+          const checkRes = await ghApi('GET', `/contents/${encodedPath}`);
+          if (checkRes.ok) {
+            const fileData = await checkRes.json();
+            fileSha = fileData.sha;
+          }
+        }
+        if (fileSha) {
+          const delRes = await ghApi('DELETE', `/contents/${encodedPath}`, {
+            message: `admin: delete ${targetPath}`,
+            sha: fileSha
+          });
+          if (delRes.ok) {
+            await logAdminAction('delete', { path: targetPath });
+            return res.status(200).json({ success: true });
+          }
+        }
+      } catch (err) {
+        console.warn('[Admin API] Contents API delete error, falling back to Git Data API:', err.message);
+      }
+
+      const treeItems = [{ path: targetPath, mode: '100644', type: 'blob', sha: null }];
       
       const commitSha = await getBranchRef();
       const parentCommit = await getCommit(commitSha);
       const newTreeSha = await createTree(parentCommit.tree.sha, treeItems);
-      const newCommitSha = await createCommit(`admin: delete ${path}`, newTreeSha, [commitSha]);
+      const newCommitSha = await createCommit(`admin: delete ${targetPath}`, newTreeSha, [commitSha]);
       await updateRef(newCommitSha);
       
-      await logAdminAction('delete', { path: path });
+      await logAdminAction('delete', { path: targetPath });
       return res.status(200).json({ success: true });
     }
 
@@ -244,24 +358,27 @@ export default async function handler(req, res) {
       const { files } = req.body; // Array of {path, sha}
       if (!files || !Array.isArray(files)) throw new Error("Missing files array");
       
+      const normalizedFiles = [];
       for (const f of files) {
-        if (f.path.includes('..') || f.path.startsWith('/')) {
+        let p = (f.path || '').trim().replace(/\\/g, '/').replace(/^\/+/, '');
+        if (p.includes('..')) {
           return res.status(400).json({ error: 'Invalid path traversal detected in bulk delete.' });
         }
-        if (!f.path.startsWith('content/') && !f.path.startsWith('cover/')) {
-          return res.status(400).json({ error: 'Invalid path. Must be in content/ or cover/ directory.' });
+        if (!p.startsWith('content/') && !p.startsWith('cover/')) {
+          p = 'content/' + p;
         }
+        normalizedFiles.push({ path: p, sha: f.sha });
       }
       
-      const treeItems = files.map(f => ({ path: f.path, mode: '100644', type: 'blob', sha: null }));
+      const treeItems = normalizedFiles.map(f => ({ path: f.path, mode: '100644', type: 'blob', sha: null }));
       
       const commitSha = await getBranchRef();
       const parentCommit = await getCommit(commitSha);
       const newTreeSha = await createTree(parentCommit.tree.sha, treeItems);
-      const newCommitSha = await createCommit(`admin: bulk delete ${files.length} files`, newTreeSha, [commitSha]);
+      const newCommitSha = await createCommit(`admin: bulk delete ${normalizedFiles.length} files`, newTreeSha, [commitSha]);
       await updateRef(newCommitSha);
       
-      await logAdminAction('delete_files', { count: files.length, files: files.map(f => f.path) });
+      await logAdminAction('delete_files', { count: normalizedFiles.length, files: normalizedFiles.map(f => f.path) });
       return res.status(200).json({ success: true });
     }
 

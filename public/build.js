@@ -150,7 +150,7 @@ function build() {
       semesters: semesters,
       files: flatFiles,
       covers: covers.map(c => `cover/${c}`),
-      contentCdn: process.env.CONTENT_CDN || ''
+      contentCdn: process.env.CONTENT_CDN || 'https://cdn.jsdelivr.net/gh/alchemist4real/MR-CAPSULES-CONTENT@main'
     };
 
     const jsContent = `window.appData = ${JSON.stringify(result)};`;
