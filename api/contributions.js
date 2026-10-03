@@ -248,18 +248,53 @@ export default async function handler(req, res) {
       const allUsers = await fetchAllAdminUsers(supabaseUrl, sbKey);
       const p1 = allUsers.find(u => (u.email || '').toLowerCase() === coupleConfig.partner1_email.toLowerCase());
       const p2 = allUsers.find(u => (u.email || '').toLowerCase() === coupleConfig.partner2_email.toLowerCase());
+
+      const p1Id = p1?.id || coupleConfig.partner1_user_id;
+      const p2Id = p2?.id || coupleConfig.partner2_user_id;
+      const coupleIds = [p1Id, p2Id].filter(Boolean);
+
+      let pooledPoints = 0;
+      let lastContributedAt = null;
+      let hasActiveAccess = false;
+
+      if (coupleIds.length > 0) {
+        try {
+          const cRes = await fetch(`${supabaseUrl}/rest/v1/contributions?user_id=in.(${coupleIds.join(',')})&select=points,created_at&order=created_at.desc`, {
+            headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}`, 'Cache-Control': 'no-cache' },
+            cache: 'no-store'
+          });
+          if (cRes.ok) {
+            const cData = await cRes.json();
+            if (Array.isArray(cData)) {
+              cData.forEach(c => { pooledPoints += (c.points || 0); });
+              if (cData.length > 0) {
+                lastContributedAt = cData[0].created_at;
+                hasActiveAccess = new Date(lastContributedAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+              }
+            }
+          }
+        } catch (err) {
+          console.warn('Error fetching couple contributions:', err);
+        }
+      }
+
       return res.status(200).json({
         success: true,
         enabled: true,
+        pooled_points: pooledPoints,
+        last_contributed_at: lastContributedAt,
+        has_active_access: hasActiveAccess,
+        updated_at: coupleConfig.updated_at,
+        created_at: coupleConfig.created_at,
         couple: [
           {
-            id: p1?.id || coupleConfig.partner1_user_id,
+            id: p1Id,
             email: coupleConfig.partner1_email,
             username: p1?.user_metadata?.username || coupleConfig.partner1_email.split('@')[0],
             full_name: p1?.user_metadata?.full_name || p1?.user_metadata?.name || ''
           },
           {
-            id: p2?.id || coupleConfig.partner2_user_id,
+            id: p2Id,
             email: coupleConfig.partner2_email,
             username: p2?.user_metadata?.username || coupleConfig.partner2_email.split('@')[0],
             full_name: p2?.user_metadata?.full_name || p2?.user_metadata?.name || ''
@@ -270,8 +305,10 @@ export default async function handler(req, res) {
 
     if (action === 'set_couple_package') {
       // Role check for admin actions
+      const username = userData.user_metadata?.username;
       const encEmail = encodeURIComponent(userData.email);
-      const roleRes = await fetch(`${supabaseUrl}/rest/v1/user_roles?identifier=eq.${encEmail}&select=role`, {
+      const identifierQuery = username ? `or=(identifier.eq.${encEmail},identifier.eq.${encodeURIComponent(username)})` : `identifier=eq.${encEmail}`;
+      const roleRes = await fetch(`${supabaseUrl}/rest/v1/user_roles?${identifierQuery}&select=role`, {
         headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}` }
       });
       let roleData = [];

@@ -668,6 +668,7 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
           if (typeof loadDivisions !== 'undefined') loadDivisions(); else if (window.loadDivisions) window.loadDivisions();
           if (typeof loadTasks !== 'undefined') loadTasks(); else if (window.loadTasks) window.loadTasks();
           if (window.loadContributions) window.loadContributions();
+          if (window.loadCouplePackageStatus) window.loadCouplePackageStatus();
           fetchHybridLogs();
           
           try {
@@ -1885,6 +1886,18 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
       });
     }
 
+    function isCoupleMember(user, coupleConfig) {
+      if (!user || !coupleConfig || !coupleConfig.enabled) return false;
+      const email = (user.email || '').toLowerCase();
+      const couple = coupleConfig.couple || [];
+      return couple.some(p => {
+        if (user.id && p.id && user.id === p.id) return true;
+        if (email && p.email && email === p.email.toLowerCase()) return true;
+        return false;
+      });
+    }
+    window.isCoupleMember = isCoupleMember;
+
     function renderUsers(users, bannedDevs) {
       bannedDevs = bannedDevs || [];
       const userBrowser = document.getElementById('userBrowser');
@@ -1927,6 +1940,7 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
         const isAdmin = u.role === 'admin';
         const division = meta.division || '';
         const isGuest = meta.is_guest === true || username.startsWith('guest_');
+        const isCoupleUser = window.couplePackageConfig && window.couplePackageConfig.enabled && isCoupleMember(u, window.couplePackageConfig);
 
         const devices = Array.isArray(meta.devices) ? meta.devices.slice() : [];
         if (typeof meta.deviceId === 'string' && !devices.some(d => d.id === meta.deviceId)) {
@@ -1939,6 +1953,7 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
         let badgesHtml = '';
         if (isAdmin) badgesHtml += '<span class="badge badge-admin">ADMIN</span>';
         else badgesHtml += '<span class="badge badge-member">MEMBER</span>';
+        if (isCoupleUser) badgesHtml += '<span class="badge badge-couple" style="background:linear-gradient(135deg, #ec4899 0%, #f43f5e 100%); color:#fff; font-weight:700; border:none; padding:2px 7px; border-radius:4px; font-size:10px; display:inline-flex; align-items:center; gap:3px;">💑 COUPLE</span>';
         if (division) badgesHtml += `<span class="badge badge-division">${sanitize(division.toUpperCase())}</span>`;
         if (isBanned) badgesHtml += '<span class="badge badge-banned">BANNED</span>';
         if (isGuest) badgesHtml += '<span class="badge badge-guest">GUEST</span>';
@@ -2070,7 +2085,7 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
             </td>
             <td><span class="user-email-text" style="font-size:13px;">${sanitize(email || '-')}</span></td>
             <td><span class="badge badge-division">${sanitize(division ? division.toUpperCase() : 'NONE')}</span></td>
-            <td>${isAdmin ? '<span class="badge badge-admin">ADMIN</span>' : '<span class="badge badge-member">MEMBER</span>'}</td>
+            <td>${isAdmin ? '<span class="badge badge-admin">ADMIN</span>' : '<span class="badge badge-member">MEMBER</span>'}${isCoupleUser ? ' <span class="badge badge-couple" style="background:linear-gradient(135deg, #ec4899 0%, #f43f5e 100%); color:#fff; font-weight:700; border:none; padding:2px 6px; border-radius:3px; font-size:10px; display:inline-flex; align-items:center; gap:2px;">💑 COUPLE</span>' : ''}</td>
             <td><span style="font-family:var(--font-secondary); font-size:12.5px;">${devices.length} Dev</span></td>
             <td><span style="font-family:var(--font-secondary); font-size:12px; color:var(--text-muted);">${joinedDate}</span></td>
             <td><div class="user-table-actions">${actionsHtml}</div></td>
@@ -2092,6 +2107,7 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
           if (window.fetchHybridLogs) await window.fetchHybridLogs();
           if (window.loadContributions) await window.loadContributions();
           if (window.loadUsers) await window.loadUsers();
+          if (window.loadCouplePackageStatus) await window.loadCouplePackageStatus();
           showToast('Dashboard analytics refreshed', 'success');
         }, 'Refreshing...');
       };
@@ -2452,6 +2468,328 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
             });
         }
     });
+
+// ═══════════════════════════════════════════════════════════════
+// COUPLE PACKAGE & CONTRIBUTIONS MODULE
+// ═══════════════════════════════════════════════════════════════
+
+async function loadCouplePackageStatus() {
+  const token = sessionToken || window.sessionToken;
+  if (!token) return;
+  const widget = document.getElementById('coupleSidebarWidget');
+  const namesEl = document.getElementById('coupleSidebarNames');
+  const statusEl = document.getElementById('coupleSidebarStatus');
+  const modalStatusEl = document.getElementById('coupleCurrentStatusText');
+
+  try {
+    const res = await fetch('/api/contributions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ action: 'get_couple_package' })
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    window.couplePackageConfig = data;
+
+    if (data.enabled && Array.isArray(data.couple) && data.couple.length === 2) {
+      const p1 = data.couple[0];
+      const p2 = data.couple[1];
+      const name1 = p1.username || p1.email.split('@')[0];
+      const name2 = p2.username || p2.email.split('@')[0];
+      const pts = data.pooled_points || 0;
+      const isActive = !!data.has_active_access;
+
+      if (widget) widget.style.display = 'block';
+      if (namesEl) namesEl.textContent = `${name1} & ${name2}`;
+      if (statusEl) {
+        statusEl.innerHTML = `<span id="coupleSidebarNames" style="font-weight:600; color:var(--text-main);">${sanitize(name1)} &amp; ${sanitize(name2)}</span><br>` +
+          `<span style="color:${isActive ? 'var(--c2)' : 'var(--text-muted)'}; font-weight:600;">${pts} pts • ${isActive ? 'Akses Aktif (30 Hari)' : 'Akses Expired'}</span>`;
+      }
+
+      if (modalStatusEl) {
+        modalStatusEl.innerHTML =
+          `Terhubung: <strong>${sanitize(name1)}</strong> (${sanitize(p1.email)}) &amp; <strong>${sanitize(name2)}</strong> (${sanitize(p2.email)})<br>` +
+          `Poin Gabungan: <strong>${pts} pts</strong> | Status Akses: <strong style="color:${isActive ? 'var(--c2)' : 'var(--danger)'};">${isActive ? 'AKTIF (30 Hari Terakhir)' : 'TIDAK AKTIF / EXPIRED'}</strong>`;
+      }
+    } else {
+      if (widget) widget.style.display = 'block';
+      if (namesEl) namesEl.textContent = 'Belum Dikonfigurasi';
+      if (statusEl) {
+        statusEl.innerHTML = `<span id="coupleSidebarNames" style="font-weight:600; color:var(--text-muted);">Belum Dikonfigurasi</span><br>` +
+          `<span style="color:var(--text-muted);">Klik Configure untuk menghubungkan</span>`;
+      }
+      if (modalStatusEl) {
+        modalStatusEl.innerHTML = `<span style="color:var(--text-muted);">Belum ada pasangan yang dihubungkan. Silakan pilih Partner 1 &amp; Partner 2 di atas.</span>`;
+      }
+    }
+  } catch (err) {
+    console.warn('Failed to load couple package status:', err);
+  }
+}
+window.loadCouplePackageStatus = loadCouplePackageStatus;
+
+window.openManageCoupleModal = async function() {
+  const modal = document.getElementById('manageCoupleModal');
+  if (!modal) return;
+
+  // Ensure user cache is populated
+  if (!window.allUsersCache || window.allUsersCache.length === 0) {
+    if (typeof loadUsers === 'function') {
+      try { await loadUsers(); } catch(e) {}
+    }
+  }
+
+  const p1Select = document.getElementById('selectCouplePartner1');
+  const p2Select = document.getElementById('selectCouplePartner2');
+
+  if (p1Select && p2Select) {
+    const rawUsers = (window.allUsersCache || window.lastLoadedUsers || []);
+    const users = rawUsers
+      .filter(u => !u.is_guest && !(u.user_metadata && u.user_metadata.is_guest) && u.email)
+      .slice()
+      .sort((a, b) => {
+        const nameA = (a.user_metadata?.username || a.email || '').toLowerCase();
+        const nameB = (b.user_metadata?.username || b.email || '').toLowerCase();
+        return nameA.localeCompare(nameB);
+      });
+
+    let opts1 = '<option value="">-- Pilih Partner 1 --</option>';
+    let opts2 = '<option value="">-- Pilih Partner 2 --</option>';
+
+    users.forEach(u => {
+      const email = u.email || '';
+      const name = u.user_metadata?.username || email.split('@')[0] || 'Unknown';
+      const optHtml = `<option value="${sanitize(email)}">${sanitize(name)} (${sanitize(email)})</option>`;
+      opts1 += optHtml;
+      opts2 += optHtml;
+    });
+
+    p1Select.innerHTML = opts1;
+    p2Select.innerHTML = opts2;
+
+    // Pre-select if couple is active
+    if (window.couplePackageConfig && window.couplePackageConfig.enabled && Array.isArray(window.couplePackageConfig.couple) && window.couplePackageConfig.couple.length === 2) {
+      p1Select.value = window.couplePackageConfig.couple[0].email || '';
+      p2Select.value = window.couplePackageConfig.couple[1].email || '';
+    } else {
+      p1Select.value = '';
+      p2Select.value = '';
+    }
+  }
+
+  await loadCouplePackageStatus();
+
+  if (window.ModalManager) {
+    window.ModalManager.open(modal);
+  } else {
+    modal.classList.add('active');
+  }
+};
+
+window.saveCouplePackage = async function() {
+  const token = sessionToken || window.sessionToken;
+  const p1Select = document.getElementById('selectCouplePartner1');
+  const p2Select = document.getElementById('selectCouplePartner2');
+  const btnSave = document.getElementById('btnSaveCouplePackage');
+
+  const p1Email = p1Select ? p1Select.value.trim() : '';
+  const p2Email = p2Select ? p2Select.value.trim() : '';
+
+  if (!p1Email || !p2Email) {
+    customAlert('Silakan pilih kedua partner terlebih dahulu.');
+    return;
+  }
+
+  if (p1Email.toLowerCase() === p2Email.toLowerCase()) {
+    customAlert('Partner 1 dan Partner 2 tidak boleh orang yang sama!');
+    return;
+  }
+
+  const saveAction = async () => {
+    try {
+      const res = await fetch('/api/contributions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          action: 'set_couple_package',
+          partner1_email: p1Email,
+          partner2_email: p2Email
+        })
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showToast('✓ Paket Couple berhasil disimpan!', 'success');
+        await loadCouplePackageStatus();
+        if (typeof window.loadContributions === 'function') {
+          window.loadContributions();
+        }
+        if (window.lastLoadedUsers && window.lastBannedDevs && typeof renderUsers === 'function') {
+          renderUsers(window.lastLoadedUsers, window.lastBannedDevs);
+        }
+        const modal = document.getElementById('manageCoupleModal');
+        if (window.ModalManager) {
+          window.ModalManager.close(modal);
+        } else if (modal) {
+          modal.classList.remove('active');
+        }
+      } else {
+        showToast('Gagal menyimpan couple package: ' + (data.error || 'Server error'), 'error');
+        customAlert(data.error || 'Gagal menyimpan couple package.');
+      }
+    } catch (err) {
+      showToast('Network error: ' + err.message, 'error');
+    }
+  };
+
+  if (typeof withButtonLoading === 'function' && btnSave) {
+    await withButtonLoading(btnSave, saveAction, 'Menyimpan...');
+  } else {
+    await saveAction();
+  }
+};
+
+window.unlinkCouplePackage = async function() {
+  const token = sessionToken || window.sessionToken;
+  const confirmed = await customConfirm('Yakin ingin melepas (unlink) Couple Package? Akses bersama dan penggabungan poin leaderboard akan dinonaktifkan.');
+  if (!confirmed) return;
+
+  try {
+    const res = await fetch('/api/contributions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        action: 'set_couple_package',
+        unlink: true
+      })
+    });
+
+    const data = await res.json();
+    if (res.ok && data.success) {
+      showToast('✓ Couple Package berhasil dilepas.', 'success');
+      await loadCouplePackageStatus();
+      if (typeof window.loadContributions === 'function') {
+        window.loadContributions();
+      }
+      if (window.lastLoadedUsers && window.lastBannedDevs && typeof renderUsers === 'function') {
+        renderUsers(window.lastLoadedUsers, window.lastBannedDevs);
+      }
+      const modal = document.getElementById('manageCoupleModal');
+      if (window.ModalManager) {
+        window.ModalManager.close(modal);
+      } else if (modal) {
+        modal.classList.remove('active');
+      }
+    } else {
+      showToast('Gagal melepas couple package: ' + (data.error || 'Server error'), 'error');
+    }
+  } catch (err) {
+    showToast('Network error: ' + err.message, 'error');
+  }
+};
+
+window.renderLeaderboard = function(list) {
+  const lbList = document.getElementById('leaderboardList');
+  if (!lbList) return;
+  lbList.innerHTML = '';
+  if (!Array.isArray(list) || list.length === 0) {
+    lbList.innerHTML = '<div style="padding:24px; color:var(--text-muted); text-align:center; font-size:13px;">Belum ada kontribusi tercatat.</div>';
+    return;
+  }
+  list.forEach(function(item, idx) {
+    const row = document.createElement('div');
+    row.style.padding = '10px 18px';
+    row.style.borderBottom = '1px solid var(--border-light)';
+    row.style.display = 'flex';
+    row.style.justifyContent = 'space-between';
+    row.style.alignItems = 'center';
+    row.style.animation = 'fadeIn 0.3s ease';
+
+    const rank = idx + 1;
+    const rankColor = rank === 1 ? '#f59e0b' : rank === 2 ? '#94a3b8' : rank === 3 ? '#b45309' : 'var(--text-muted)';
+    const isCouple = !!item.is_couple;
+
+    row.innerHTML =
+      '<div style="display:flex; align-items:center; gap:10px; min-width:0; flex:1;">' +
+        '<span style="font-weight:800; font-size:13px; color:' + rankColor + '; width:24px;">#' + rank + '</span>' +
+        '<div style="min-width:0; flex:1;">' +
+          '<div style="font-weight:700; font-size:13.5px; color:var(--text-main); display:flex; align-items:center; gap:6px; flex-wrap:wrap;">' +
+            (isCouple ? '<span style="background:linear-gradient(135deg, #ec4899 0%, #f43f5e 100%); color:#fff; font-size:10px; font-weight:700; padding:1px 6px; border-radius:3px;">💑 COUPLE</span>' : '') +
+            '<span>' + sanitize(item.username) + '</span>' +
+          '</div>' +
+          '<div style="font-size:11px; color:var(--text-muted); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">' + sanitize(item.email || '') + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="text-align:right; font-weight:800; font-size:14px; color:var(--c4); white-space:nowrap; margin-left:12px;">' +
+        (item.points || 0) + ' <span style="font-size:11px; font-weight:600; color:var(--text-muted);">pts</span>' +
+      '</div>';
+    lbList.appendChild(row);
+  });
+};
+
+async function loadContributions() {
+  const token = sessionToken || window.sessionToken;
+  if (!token) return;
+  try {
+    // 1. Fetch Leaderboard
+    const resLb = await fetch('/api/contributions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ action: 'get_leaderboard' })
+    });
+    if (resLb.ok) {
+      const dataLb = await resLb.json();
+      if (Array.isArray(dataLb)) {
+        window.renderLeaderboard(dataLb);
+      }
+    }
+
+    // 2. Fetch My Contributions
+    const resMy = await fetch('/api/contributions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ action: 'get_my_contributions' })
+    });
+    if (resMy.ok) {
+      const dataMy = await resMy.json();
+      const myPointsEl = document.getElementById('myPoints');
+      const contribStatusEl = document.getElementById('contributionStatus');
+      if (dataMy && Array.isArray(dataMy.contributions)) {
+        let totalPts = 0;
+        dataMy.contributions.forEach(c => totalPts += (c.points || 0));
+        if (myPointsEl) myPointsEl.textContent = totalPts;
+        if (contribStatusEl) {
+          if (dataMy.is_couple && dataMy.couple_package) {
+            contribStatusEl.innerHTML = `<span style="color:var(--c2); font-weight:700;">💑 ${sanitize(dataMy.couple_package)}</span>`;
+          } else {
+            contribStatusEl.textContent = 'Individual Account';
+          }
+        }
+      }
+    }
+
+    // 3. Keep couple status widget synced
+    await loadCouplePackageStatus();
+  } catch (err) {
+    console.warn('Failed to load contributions:', err);
+  }
+}
+window.loadContributions = loadContributions;
 
 // ═══════════════════════════════════════════════════════════════
 // API KEYS MODULE — appended to admin.js
