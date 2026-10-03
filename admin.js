@@ -681,22 +681,30 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
                 const count = Object.keys(state).length;
                 const el = document.getElementById('dashOnlineCount');
                 if (el) el.textContent = count;
-                // Mark online user cards
-                var cards = document.querySelectorAll('#userBrowser .user-card');
-                var emailMap = new Map();
-                cards.forEach(function(c) {
-                  c.setAttribute('data-online', 'false');
-                  var emailEl = c.querySelector('.user-email');
-                  if (emailEl) emailMap.set(emailEl.textContent, c);
-                });
+                // Track online user emails
+                window.onlineUserEmails = new Set();
                 Object.values(state).forEach(function(presences) {
                   presences.forEach(function(p) {
-                    if (p.user && p.email) {
-                      var card = emailMap.get(p.email);
-                      if (card) card.setAttribute('data-online', 'true');
-                    }
+                    if (p.email) window.onlineUserEmails.add(p.email.toLowerCase());
+                    if (p.user && p.user.includes('@')) window.onlineUserEmails.add(p.user.toLowerCase());
                   });
                 });
+
+                // Mark online on all cards and rows
+                var cards = document.querySelectorAll('#userBrowser .user-card');
+                var rows = document.querySelectorAll('#userTableBody .user-table-row');
+                cards.forEach(function(c) {
+                  var email = (c.getAttribute('data-email') || '').toLowerCase();
+                  c.setAttribute('data-online', email && window.onlineUserEmails.has(email) ? 'true' : 'false');
+                });
+                rows.forEach(function(r) {
+                  var email = (r.getAttribute('data-email') || '').toLowerCase();
+                  r.setAttribute('data-online', email && window.onlineUserEmails.has(email) ? 'true' : 'false');
+                });
+
+                if (window.currentFilter === 'online' && window.applyUserFilters) {
+                  window.applyUserFilters();
+                }
               }).on('presence', { event: 'join' }, ({ key, newPresences }) => {
                 newPresences.forEach(function(p) {
                   var name = (p.email || p.user || 'Unknown');
@@ -1599,21 +1607,36 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
 
     // Users Logic
     window.loadUsers = loadUsers;
-    async function loadUsers(divIdFilter = null) {
-      const filterToUse = (divIdFilter && divIdFilter !== 'all') ? divIdFilter : (window.currentDivisionId && window.currentDivisionId !== 'all' ? window.currentDivisionId : null);
-      const userBrowser = document.getElementById('userBrowser');
-      userBrowser.innerHTML = '<div style="padding:48px; color:var(--text-muted); text-align:center; font-size:18px;">Loading users... <div style="display:inline-block; width:20px; height:20px; border:3px solid var(--border-light); border-radius:50%; border-top-color:var(--text-main); animation:spin 1s ease-in-out infinite; margin-left:10px; vertical-align:middle;"></div></div>';
-        // Use cached banned devices to avoid redundant API calls on every loadUsers
-        let bannedDevs = window._cachedBannedDevices || [];
-        if (!window._cachedBannedDevices) {
-          try {
-             const cfgData = await adminAction('get_config');
-             if (cfgData && cfgData.success && cfgData.config) {
-               bannedDevs = cfgData.config.bannedDevices || [];
-               window._cachedBannedDevices = bannedDevs;
-             }
-          } catch(e) { console.error("Error fetching config for banned devs:", e); }
+    async function loadUsers(divIdFilter = null, forceRefresh = false) {
+      if (divIdFilter !== null) {
+        window.currentDivisionId = divIdFilter;
+      }
+
+      // Fast-path: Instant in-memory filter if cache already exists and not forcing a fresh fetch
+      if (!forceRefresh && Array.isArray(window.allUsersCache) && window.allUsersCache.length > 0) {
+        if (window.applyUserFilters) {
+          window.applyUserFilters();
         }
+        return;
+      }
+
+      const userBrowser = document.getElementById('userBrowser');
+      // Only show full loading spinner if cache is completely empty (first cold load)
+      if (!window.allUsersCache || window.allUsersCache.length === 0) {
+        userBrowser.innerHTML = '<div style="padding:48px; color:var(--text-muted); text-align:center; font-size:18px;">Loading users... <div style="display:inline-block; width:20px; height:20px; border:3px solid var(--border-light); border-radius:50%; border-top-color:var(--text-main); animation:spin 1s ease-in-out infinite; margin-left:10px; vertical-align:middle;"></div></div>';
+      }
+
+      // Use cached banned devices to avoid redundant API calls on every loadUsers
+      let bannedDevs = window._cachedBannedDevices || [];
+      if (!window._cachedBannedDevices) {
+        try {
+           const cfgData = await adminAction('get_config');
+           if (cfgData && cfgData.success && cfgData.config) {
+             bannedDevs = cfgData.config.bannedDevices || [];
+             window._cachedBannedDevices = bannedDevs;
+           }
+        } catch(e) { console.error("Error fetching config for banned devs:", e); }
+      }
 
       const userController = new AbortController();
       const userTimeoutId = setTimeout(() => userController.abort(), 30000);
@@ -1628,23 +1651,17 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
         const data = await res.json();
         if (data.success) {
           window.allUsersCache = data.users;
-          let displayUsers = data.users;
-          if (filterToUse && window.divisionData) {
-              const div = window.divisionData.find(d => d.id === filterToUse);
-              if (div && div.members) {
-                  const memberEmails = div.members.map(m => typeof m === 'string' ? m : m.email);
-                  displayUsers = displayUsers.filter(u => memberEmails.includes(u.email));
-              } else {
-                  displayUsers = [];
-              }
-          }
-          
-          window.lastLoadedUsers = displayUsers;
+          window.lastLoadedUsers = data.users;
           window.lastBannedDevs = bannedDevs;
-          renderUsers(displayUsers, bannedDevs);
+
+          renderUsers(data.users, bannedDevs);
           
           const dashTotalUsers = document.getElementById('dashTotalUsers');
-          if(dashTotalUsers) dashTotalUsers.textContent = data.users.length;
+          if (dashTotalUsers) dashTotalUsers.textContent = data.users.length;
+
+          if (window.applyUserFilters) {
+            window.applyUserFilters();
+          }
         } else {
           userBrowser.innerHTML = `<div style="padding:48px; color:var(--danger); text-align:center;">Failed to load users: ${data.error}</div>`;
         }
@@ -2021,14 +2038,20 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
           actionsHtml += `<button class="btn-card danger btn-del-user" data-id="${sanitize(u.id)}">Delete</button>`;
         }
 
+        const isOnline = window.onlineUserEmails ? window.onlineUserEmails.has(email.toLowerCase()) : false;
+        const searchKeywords = `${username.toLowerCase()} ${email.toLowerCase()} ${(division || '').toLowerCase()}`;
+
         // Render Card for Grid View
         if (userBrowser) {
           const card = document.createElement('div');
           card.className = 'user-card';
           card.setAttribute('data-banned', isBanned ? 'true' : 'false');
           card.setAttribute('data-admin', isAdmin ? 'true' : 'false');
-          card.setAttribute('data-online', 'false');
+          card.setAttribute('data-online', isOnline ? 'true' : 'false');
           card.setAttribute('data-guest', isGuest ? 'true' : 'false');
+          card.setAttribute('data-division', (division || '').toLowerCase());
+          card.setAttribute('data-email', email.toLowerCase());
+          card.setAttribute('data-search', searchKeywords);
 
           const joinedDate = u.created_at ? new Date(u.created_at).toLocaleDateString() : '-';
 
@@ -2071,8 +2094,11 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
           tr.className = 'user-table-row';
           tr.setAttribute('data-banned', isBanned ? 'true' : 'false');
           tr.setAttribute('data-admin', isAdmin ? 'true' : 'false');
-          tr.setAttribute('data-online', 'false');
+          tr.setAttribute('data-online', isOnline ? 'true' : 'false');
           tr.setAttribute('data-guest', isGuest ? 'true' : 'false');
+          tr.setAttribute('data-division', (division || '').toLowerCase());
+          tr.setAttribute('data-email', email.toLowerCase());
+          tr.setAttribute('data-search', searchKeywords);
 
           const joinedDate = u.created_at ? new Date(u.created_at).toLocaleDateString() : '-';
 
@@ -2153,25 +2179,47 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
     window.applyUserFilters = function() {
         const searchInput = document.getElementById('searchUsersInput');
         const val = searchInput ? searchInput.value.toLowerCase().trim() : '';
+        const currentDiv = (window.currentDivisionId || 'all').toLowerCase();
+        const currentFilter = window.currentFilter || 'all';
+
         const cards = document.querySelectorAll('#userBrowser .user-card');
         const rows = document.querySelectorAll('#userTableBody .user-table-row');
         
         let visibleCount = 0;
 
-        function checkMatch(el) {
-            let show = true;
-            if (window.currentFilter === 'banned') show = el.getAttribute('data-banned') === 'true';
-            else if (window.currentFilter === 'admin') show = el.getAttribute('data-admin') === 'true';
-            else if (window.currentFilter === 'online') show = el.getAttribute('data-online') === 'true';
-            else if (window.currentFilter === 'guest') show = el.getAttribute('data-guest') === 'true';
+        // Pre-compute division member emails set if a specific division is selected
+        let divMemberEmails = null;
+        if (currentDiv !== 'all' && window.divisionData) {
+            const divObj = window.divisionData.find(d => (d.id || '').toLowerCase() === currentDiv);
+            if (divObj && Array.isArray(divObj.members)) {
+                divMemberEmails = new Set(divObj.members.map(m => (typeof m === 'string' ? m : m.email || '').toLowerCase()));
+            }
+        }
 
-            if (show && val) {
-                const text = (el.textContent || '').toLowerCase();
-                if (!text.includes(val)) {
-                    show = false;
+        function checkMatch(el) {
+            // 1. Division / Category filter
+            if (currentDiv !== 'all') {
+                const elDiv = (el.getAttribute('data-division') || '').toLowerCase();
+                const elEmail = (el.getAttribute('data-email') || '').toLowerCase();
+                const matchesDiv = (elDiv === currentDiv) || (divMemberEmails && divMemberEmails.has(elEmail));
+                if (!matchesDiv) return false;
+            }
+
+            // 2. Status filter
+            if (currentFilter === 'banned' && el.getAttribute('data-banned') !== 'true') return false;
+            if (currentFilter === 'admin' && el.getAttribute('data-admin') !== 'true') return false;
+            if (currentFilter === 'online' && el.getAttribute('data-online') !== 'true') return false;
+            if (currentFilter === 'guest' && el.getAttribute('data-guest') !== 'true') return false;
+
+            // 3. Search query
+            if (val) {
+                const searchData = el.getAttribute('data-search') || '';
+                if (!searchData.includes(val)) {
+                    return false;
                 }
             }
-            return show;
+
+            return true;
         }
 
         cards.forEach(card => {
@@ -2187,15 +2235,36 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
 
         const counterEl = document.getElementById('userCountSummary');
         if (counterEl) {
-            const total = (window.lastLoadedUsers || []).length;
+            const total = (window.allUsersCache || window.lastLoadedUsers || []).length;
             counterEl.textContent = `Showing ${visibleCount}/${total} Members`;
+        }
+
+        // Show empty message if 0 visible
+        let emptyMsgEl = document.getElementById('userEmptyFilterMsg');
+        if (visibleCount === 0 && cards.length > 0) {
+            if (!emptyMsgEl) {
+                emptyMsgEl = document.createElement('div');
+                emptyMsgEl.id = 'userEmptyFilterMsg';
+                emptyMsgEl.style.cssText = 'grid-column: 1 / -1; padding: 48px 24px; color: var(--text-muted); text-align: center; font-family: var(--font-primary); font-size: 15px;';
+                emptyMsgEl.textContent = 'NO MEMBERS MATCH CURRENT FILTER OR DIVISION';
+                const userBrowser = document.getElementById('userBrowser');
+                if (userBrowser) userBrowser.appendChild(emptyMsgEl);
+            } else {
+                emptyMsgEl.style.display = '';
+            }
+        } else if (emptyMsgEl) {
+            emptyMsgEl.style.display = 'none';
         }
     };
 
     const searchUsersInputEl = document.getElementById('searchUsersInput');
     if (searchUsersInputEl) {
+      let searchDebounceTimer = null;
       searchUsersInputEl.addEventListener('input', () => {
-        if (window.applyUserFilters) window.applyUserFilters();
+        if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
+        searchDebounceTimer = setTimeout(() => {
+          if (window.applyUserFilters) window.applyUserFilters();
+        }, 80);
       });
     }
 
@@ -2460,14 +2529,6 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
 
     window.setButtonLoading = setButtonLoading;
     window.withButtonLoading = withButtonLoading;
-    document.addEventListener('DOMContentLoaded', () => {
-        const searchInput = document.getElementById('searchUsersInput');
-        if (searchInput) {
-            searchInput.addEventListener('input', () => {
-                if(window.applyUserFilters) window.applyUserFilters();
-            });
-        }
-    });
 
 // ═══════════════════════════════════════════════════════════════
 // COUPLE PACKAGE & CONTRIBUTIONS MODULE

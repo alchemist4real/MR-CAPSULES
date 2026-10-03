@@ -867,7 +867,10 @@ window.selectDivision = function(divId) {
         if(document.getElementById('btnAddDivisionMember')) document.getElementById('btnAddDivisionMember').style.display = 'inline-block';
     }
     
-    if(window.loadUsers) {
+    // Instant in-memory filter if users are already loaded, zero latency
+    if (window.allUsersCache && window.allUsersCache.length > 0 && window.applyUserFilters) {
+        window.applyUserFilters();
+    } else if (window.loadUsers) {
         window.loadUsers(divId);
     }
 };
