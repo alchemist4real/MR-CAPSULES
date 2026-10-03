@@ -185,11 +185,16 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
     document.getElementById('searchInput').addEventListener('input', (e) => {
       clearTimeout(searchTimeout);
       searchTimeout = setTimeout(() => {
-        const val = e.target.value.toLowerCase();
+        const val = e.target.value.toLowerCase().trim();
         document.querySelectorAll('.file-item').forEach(el => {
+          if (el.classList.contains('file-item-parent')) {
+            el.classList.toggle('hidden', val.length > 0);
+            return;
+          }
           const name = el.querySelector('.file-name')?.textContent.toLowerCase() || '';
           el.classList.toggle('hidden', !name.includes(val));
         });
+        updateBulkDeleteUI();
       }, 150);
     });
 
@@ -956,7 +961,9 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
         const data = await res.json();
         if (data.success && data.tree) {
           currentTree = data.tree.filter(i => i.path.startsWith('content/') || i.path.startsWith('cover/'));
+          selectedFiles.clear();
           renderBrowser();
+          updateBulkDeleteUI();
           statusText.textContent = 'Repository loaded.';
         } else {
           statusText.textContent = 'Failed to load tree: ' + data.error;
@@ -971,31 +978,36 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
     function renderBrowser() {
       fileBrowser.innerHTML = '';
       
-      // Breadcrumbs
+      // Touch-friendly Breadcrumbs with Pills
+      const pathRootEl = document.getElementById('pathRoot');
+      if (pathRootEl) {
+        pathRootEl.className = currentPath === '' ? 'path-current' : 'path-link';
+        pathRootEl.onclick = () => { currentPath = ''; renderBrowser(); };
+      }
+
       if (currentPath === '') {
         pathBreadcrumbs.innerHTML = '';
       } else {
-        const parts = currentPath.replace(/\/$/, '').split('/');
+        const parts = currentPath.replace(/\/+$/, '').split('/');
         let html = '';
         let buildPath = '';
         parts.forEach((p, i) => {
           buildPath += p + '/';
           const isLast = i === parts.length - 1;
-          html += `<span class="path-separator">/</span><span class="${isLast ? '' : 'path-link'}" data-path="${buildPath}">${p}</span>`;
+          html += `<span class="path-separator">/</span><span class="${isLast ? 'path-current' : 'path-link'}" data-path="${buildPath}">${sanitize(p)}</span>`;
         });
         pathBreadcrumbs.innerHTML = html;
         
-        document.querySelectorAll('.path-link').forEach(el => {
+        pathBreadcrumbs.querySelectorAll('.path-link').forEach(el => {
           el.addEventListener('click', (e) => {
-            currentPath = e.target.getAttribute('data-path');
+            e.stopPropagation();
+            currentPath = el.getAttribute('data-path');
             renderBrowser();
           });
         });
       }
 
-      document.getElementById('pathRoot').onclick = () => { currentPath = ''; renderBrowser(); };
-
-      // Map contents
+      // Map contents under current path
       let items = new Map();
       currentTree.forEach(item => {
         if (item.path.startsWith(currentPath)) {
@@ -1029,65 +1041,236 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
 
       itemCount.textContent = `${sortedItems.length} items`;
 
+      // Parent Directory Item ("..") when inside a subfolder
+      if (currentPath !== '') {
+        const parentDiv = document.createElement('div');
+        parentDiv.className = 'file-item file-item-parent';
+        parentDiv.title = 'Up to parent directory';
+        parentDiv.setAttribute('tabindex', '0');
+        parentDiv.setAttribute('role', 'button');
+        parentDiv.setAttribute('aria-label', 'Up to parent folder');
+
+        parentDiv.innerHTML = `
+          <div class="file-icon" style="color:var(--accent);">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </div>
+          <div class="file-name" style="font-weight:700; color:var(--text-main);">.. (Up to Parent Folder)</div>
+        `;
+
+        const goUp = () => {
+          const trimmed = currentPath.replace(/\/+$/, '');
+          const lastSlash = trimmed.lastIndexOf('/');
+          currentPath = lastSlash >= 0 ? trimmed.substring(0, lastSlash + 1) : '';
+          renderBrowser();
+        };
+
+        parentDiv.addEventListener('click', (e) => {
+          e.stopPropagation();
+          goUp();
+        });
+        parentDiv.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            goUp();
+          }
+        });
+
+        fileBrowser.appendChild(parentDiv);
+      }
+
+      // Empty folder display with large touch-friendly buttons
       if (sortedItems.length === 0 && currentPath !== '') {
-        fileBrowser.innerHTML = '<div style="padding:24px; color:var(--text-muted); text-align:center;">Folder is empty</div>';
+        const emptyDiv = document.createElement('div');
+        emptyDiv.className = 'file-browser-empty';
+        emptyDiv.style.gridColumn = '1 / -1';
+        emptyDiv.style.padding = '36px 16px';
+        emptyDiv.style.textAlign = 'center';
+        emptyDiv.style.color = 'var(--text-muted)';
+        emptyDiv.innerHTML = `
+          <div style="width:48px; height:48px; border-radius:50%; background:color-mix(in srgb, var(--c3) 15%, transparent); display:flex; align-items:center; justify-content:center; margin:0 auto 12px; color:var(--text-muted);">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+          </div>
+          <div style="font-size:14px; font-weight:700; color:var(--text-main); margin-bottom:4px;">Folder is Empty</div>
+          <div style="font-size:12px; margin-bottom:16px;">Folder ini kosong. Tarik file ke sini atau buat file/folder baru.</div>
+          <div style="display:flex; justify-content:center; gap:8px; flex-wrap:wrap;">
+            <button class="btn-unified primary" id="btnEmptyUpload">Upload File</button>
+            <button class="btn-unified" id="btnEmptyNewFile">New File</button>
+            <button class="btn-unified" id="btnEmptyNewFolder">New Folder</button>
+          </div>
+        `;
+        emptyDiv.querySelector('#btnEmptyUpload').onclick = () => document.getElementById('fileInput').click();
+        emptyDiv.querySelector('#btnEmptyNewFile').onclick = () => document.getElementById('btnNewFile').click();
+        emptyDiv.querySelector('#btnEmptyNewFolder').onclick = () => document.getElementById('btnNewFolder').click();
+        fileBrowser.appendChild(emptyDiv);
       }
 
       sortedItems.forEach(item => {
         const div = document.createElement('div');
-        div.className = 'file-item';
+        const isChecked = selectedFiles.has(item.path);
+        div.className = 'file-item' + (isChecked ? ' selected' : '');
+        div.setAttribute('tabindex', '0');
+        div.setAttribute('role', 'button');
+        div.setAttribute('data-path', item.path);
+        div.setAttribute('data-type', item.type);
+        div.setAttribute('aria-label', `${item.type === 'folder' ? 'Folder' : 'File'}: ${item.name}`);
         
         let icon = '';
         const isImg = item.name.match(/\.(jpg|jpeg|png|gif|webp)$/i);
         if (item.type === 'folder') {
-          icon = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>';
+          icon = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#f59e0b;"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>';
         } else if (isImg) {
-          icon = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>';
+          icon = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#06b6d4;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>';
+        } else if (item.name.endsWith('.html')) {
+          icon = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent);"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>';
         } else {
-          icon = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>';
+          icon = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>';
         }
         
         let cbHtml = '';
         if (item.type !== 'folder') {
-          cbHtml = `<input type="checkbox" class="file-checkbox" data-path="${item.path}" data-sha="${item.sha}" ${selectedFiles.has(item.path) ? 'checked' : ''}>`;
+          cbHtml = `
+            <div class="file-checkbox-wrap" title="Select item">
+              <input type="checkbox" class="file-checkbox" data-path="${item.path}" data-sha="${item.sha || ''}" ${isChecked ? 'checked' : ''} aria-label="Select ${sanitize(item.name)}">
+            </div>
+          `;
         }
         
         div.innerHTML = `
           ${cbHtml}
           <div class="file-icon">${icon}</div>
-          <div class="file-name" title="${item.name}">${item.name}</div>
+          <div class="file-name" title="${sanitize(item.name)}">${sanitize(item.name)}</div>
           <div class="file-actions">
-            ${item.type !== 'folder' ? `<button class="btn btn-actions" style="font-family:var(--font-mono); font-size:18px; min-width:36px; min-height:36px; display:inline-flex; align-items:center; justify-content:center; background:transparent; border:none; cursor:pointer; border-radius:4px;" data-json='${encodeURIComponent(JSON.stringify(item))}'>⋮</button>` : ''}
+            <button class="btn btn-actions" type="button" title="Actions" aria-label="Actions for ${sanitize(item.name)}" data-json='${encodeURIComponent(JSON.stringify(item))}'>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <circle cx="12" cy="5" r="2"></circle>
+                <circle cx="12" cy="12" r="2"></circle>
+                <circle cx="12" cy="19" r="2"></circle>
+              </svg>
+            </button>
           </div>
         `;
 
-        if (item.type === 'folder') {
-          div.querySelector('.file-name').onclick = () => {
+        const activateItem = () => {
+          if (item.type === 'folder') {
             currentPath = item.path;
             renderBrowser();
-          };
-        } else {
-          div.querySelector('.file-name').onclick = () => {
-             showPreview(item, isImg);
-          };
-        }
+          } else {
+            showPreview(item, isImg);
+          }
+        };
 
         const cb = div.querySelector('.file-checkbox');
+        const cbWrap = div.querySelector('.file-checkbox-wrap');
+        const toggleSelection = (e) => {
+          if (e) e.stopPropagation();
+          if (cb) {
+            const willCheck = !selectedFiles.has(item.path);
+            cb.checked = willCheck;
+            if (willCheck) selectedFiles.add(item.path);
+            else selectedFiles.delete(item.path);
+            div.classList.toggle('selected', willCheck);
+            updateBulkDeleteUI();
+          }
+        };
+
+        if (cbWrap) {
+          cbWrap.onclick = (e) => toggleSelection(e);
+        }
         if (cb) {
+          cb.onclick = (e) => e.stopPropagation();
           cb.onchange = (e) => {
+            e.stopPropagation();
             if (e.target.checked) selectedFiles.add(item.path);
             else selectedFiles.delete(item.path);
+            div.classList.toggle('selected', e.target.checked);
             updateBulkDeleteUI();
           };
         }
 
         const btnAct = div.querySelector('.btn-actions');
         if (btnAct) {
-          btnAct.onclick = () => openContextModal(item);
+          btnAct.onclick = (e) => {
+            e.stopPropagation();
+            openContextModal(item);
+          };
         }
+
+        // Touch Long-Press Handling (500ms hold triggers context menu)
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchTimer = null;
+        let isLongPress = false;
+
+        div.addEventListener('touchstart', (e) => {
+          if (e.target.closest('.file-checkbox-wrap') || e.target.closest('.btn-actions')) return;
+          isLongPress = false;
+          touchStartX = e.touches[0].clientX;
+          touchStartY = e.touches[0].clientY;
+          touchTimer = setTimeout(() => {
+            isLongPress = true;
+            if (navigator.vibrate) {
+              try { navigator.vibrate(40); } catch(ex) {}
+            }
+            openContextModal(item);
+          }, 500);
+        }, { passive: true });
+
+        div.addEventListener('touchmove', (e) => {
+          const moveX = Math.abs(e.touches[0].clientX - touchStartX);
+          const moveY = Math.abs(e.touches[0].clientY - touchStartY);
+          if (moveX > 10 || moveY > 10) {
+            clearTimeout(touchTimer);
+          }
+        }, { passive: true });
+
+        div.addEventListener('touchend', (e) => {
+          clearTimeout(touchTimer);
+          if (isLongPress) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+        });
+
+        div.addEventListener('touchcancel', () => {
+          clearTimeout(touchTimer);
+        });
+
+        // Mouse & General Click Handler (entire card/row is active!)
+        div.addEventListener('click', (e) => {
+          if (isLongPress) {
+            isLongPress = false;
+            return;
+          }
+          if (e.target.closest('.file-checkbox-wrap') || e.target.closest('.btn-actions')) {
+            return;
+          }
+          activateItem();
+        });
+
+        // Mouse Right-Click Context Menu
+        div.addEventListener('contextmenu', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          openContextModal(item);
+        });
+
+        // Keyboard Support (Enter to open, Space to select)
+        div.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            activateItem();
+          } else if (e.key === ' ') {
+            e.preventDefault();
+            toggleSelection(e);
+          }
+        });
 
         fileBrowser.appendChild(div);
       });
+
+      updateBulkDeleteUI();
     }
 
     function openContextModal(item) {
@@ -1096,7 +1279,16 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
       document.getElementById('contextTitle').textContent = item.name;
       
       let html = '';
-      if (item.type !== 'folder') {
+      if (item.type === 'folder') {
+        html += `<button class="btn-unified primary" id="ctxOpenFolder">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><polyline points="9 13 12 10 15 13"></polyline></svg>
+          <span>Open Folder</span>
+        </button>`;
+        html += `<button class="btn-unified" id="ctxRenameFolder">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+          <span>Rename Folder</span>
+        </button>`;
+      } else {
         if (item.name.endsWith('.html')) {
           html += `<button class="btn-unified primary" id="ctxPreview">
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
@@ -1126,7 +1318,7 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
       }
       html += `<button class="btn-unified danger" id="ctxDelete">
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-        <span>Delete</span>
+        <span>${item.type === 'folder' ? 'Delete Folder' : 'Delete'}</span>
       </button>`;
       container.innerHTML = html;
       
@@ -1137,6 +1329,31 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
         contextCancelBtn.onclick = () => ModalManager.close(modal);
       }
       
+      if (document.getElementById('ctxOpenFolder')) {
+        document.getElementById('ctxOpenFolder').onclick = () => {
+          ModalManager.close(modal);
+          currentPath = item.path;
+          renderBrowser();
+        };
+      }
+      if (document.getElementById('ctxRenameFolder')) {
+        document.getElementById('ctxRenameFolder').onclick = async () => {
+          ModalManager.close(modal);
+          const currentFolderName = item.name.replace(/\/$/, '');
+          const newName = await customPrompt("Enter new folder name:", currentFolderName);
+          if (!newName || newName.trim() === '' || newName.trim() === currentFolderName) return;
+          const cleanNewName = newName.trim().replace(/[\\/]/g, '');
+          const cleanPath = item.path.replace(/\/$/, '');
+          const lastSlash = cleanPath.lastIndexOf('/');
+          const parentDir = lastSlash >= 0 ? cleanPath.substring(0, lastSlash + 1) : '';
+          const newFolderPath = parentDir + cleanNewName + '/';
+
+          statusText.textContent = `Renaming folder to ${cleanNewName}...`;
+          adminAction('rename_folder', { oldPath: item.path, newPath: newFolderPath })
+            .then(() => loadTree())
+            .catch(e => showToast('Rename folder failed: ' + e.message, 'error'));
+        };
+      }
       if (document.getElementById('ctxPreview')) {
         document.getElementById('ctxPreview').onclick = async () => {
           ModalManager.close(modal);
@@ -1207,7 +1424,9 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
             if (!await customConfirm(`Delete folder "${item.name}" and all ${folderFiles.length} files inside? This cannot be undone.`)) return;
             const files = folderFiles.map(f => ({ path: f.path }));
             statusText.textContent = `Deleting ${files.length} files...`;
-            await adminAction('delete_files', { files });
+            adminAction('delete_files', { files })
+              .then(() => loadTree())
+              .catch(e => showToast('Delete folder failed: ' + e.message, 'error'));
             return;
           }
           if(await customConfirm('Delete ' + item.path + '?')) {
@@ -1264,25 +1483,64 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
 
     document.getElementById('btnBulkDelete').onclick = async () => {
       if (selectedFiles.size === 0) return;
-      if (!(await customConfirm(`Delete ${selectedFiles.size} selected files?`))) return;
+      if (!(await customConfirm(`Delete ${selectedFiles.size} selected items? This cannot be undone.`))) return;
       
       const filesToDelete = [];
       selectedFiles.forEach(path => {
         const item = currentTree.find(i => i.path === path);
         if (item && item.type !== 'folder') {
           filesToDelete.push({ path: item.path, sha: item.sha });
+        } else if (item && item.type === 'folder') {
+          const folderFiles = currentTree.filter(f => f.path.startsWith(item.path) && f.type === 'blob');
+          folderFiles.forEach(f => {
+            if (!filesToDelete.some(x => x.path === f.path)) {
+              filesToDelete.push({ path: f.path, sha: f.sha });
+            }
+          });
         }
       });
       
-      document.getElementById('btnBulkDelete').textContent = 'Deleting...';
-      adminAction('delete_files', { files: filesToDelete }).then(() => {
+      const btn = document.getElementById('btnBulkDelete');
+      const originalText = btn.innerHTML;
+      btn.textContent = 'Deleting...';
+      try {
+        await adminAction('delete_files', { files: filesToDelete });
         selectedFiles.clear();
         updateBulkDeleteUI();
-        loadTree();
-      }).catch(e => {
+        await loadTree();
+      } catch (e) {
         showToast('Bulk delete failed: ' + e.message, 'error');
-        document.getElementById('btnBulkDelete').textContent = 'Delete Selected';
-      });
+        btn.innerHTML = originalText;
+      }
+    };
+
+    const btnSelectAll = document.getElementById('btnSelectAll');
+    if (btnSelectAll) {
+      btnSelectAll.onclick = () => {
+        const visibleItems = Array.from(document.querySelectorAll('.file-item:not(.file-item-parent):not(.hidden)'));
+        if (visibleItems.length === 0) return;
+
+        const allSelected = visibleItems.every(el => {
+          const cb = el.querySelector('.file-checkbox');
+          return cb && cb.checked;
+        });
+
+        visibleItems.forEach(el => {
+          const path = el.getAttribute('data-path');
+          const cb = el.querySelector('.file-checkbox');
+          if (allSelected) {
+            if (path) selectedFiles.delete(path);
+            if (cb) cb.checked = false;
+            el.classList.remove('selected');
+          } else {
+            if (path) selectedFiles.add(path);
+            if (cb) cb.checked = true;
+            el.classList.add('selected');
+          }
+        });
+
+        updateBulkDeleteUI();
+      };
     };
 
     const viewFilesEl = document.getElementById('viewFiles');
@@ -1315,12 +1573,37 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
     };
 
     function updateBulkDeleteUI() {
-      const btn = document.getElementById('btnBulkDelete');
-      if (selectedFiles.size > 0) {
-        btn.style.display = 'flex';
-        document.getElementById('bulkCount').textContent = selectedFiles.size;
-      } else {
-        btn.style.display = 'none';
+      const btnBulk = document.getElementById('btnBulkDelete');
+      const btnAll = document.getElementById('btnSelectAll');
+      const selectAllText = document.getElementById('selectAllText');
+      const bulkCount = document.getElementById('bulkCount');
+
+      const visibleItems = Array.from(document.querySelectorAll('.file-item:not(.file-item-parent):not(.hidden)'));
+
+      if (btnAll) {
+        if (visibleItems.length > 0) {
+          btnAll.style.display = 'inline-flex';
+          const allSelected = visibleItems.every(el => {
+            const cb = el.querySelector('.file-checkbox');
+            return cb && cb.checked;
+          });
+          if (selectAllText) {
+            selectAllText.textContent = allSelected ? 'Deselect All' : 'Select All';
+          }
+        } else {
+          btnAll.style.display = 'none';
+        }
+      }
+
+      if (btnBulk) {
+        if (selectedFiles.size > 0) {
+          btnBulk.classList.remove('hidden');
+          btnBulk.style.display = 'inline-flex';
+          if (bulkCount) bulkCount.textContent = selectedFiles.size;
+        } else {
+          btnBulk.classList.add('hidden');
+          btnBulk.style.display = 'none';
+        }
       }
     }
 

@@ -90,7 +90,7 @@ export default async function handler(req, res) {
   }
 
   // Destructive operations check
-  if (['delete', 'delete_files', 'rename_file', 'update_config', 'add_admin', 'remove_admin', 'ban_user', 'cleanup_guests'].includes(action)) {
+  if (['delete', 'delete_files', 'rename_file', 'rename_folder', 'update_config', 'add_admin', 'remove_admin', 'ban_user', 'cleanup_guests'].includes(action)) {
     if (!isAdmin) {
       return res.status(403).json({ error: 'Forbidden. Admin privileges required.' });
     }
@@ -453,6 +453,43 @@ export default async function handler(req, res) {
       await updateRef(newCommitSha);
       
       await logAdminAction('rename_file', { old: path, new: newPath });
+      return res.status(200).json({ success: true });
+    }
+
+    if (action === 'rename_folder') {
+      const srcPath = (req.body.oldPath || cleanPath || '').trim().replace(/\\/g, '/').replace(/^\/+/, '');
+      const dstPath = (cleanNewPath || (req.body.newPath || '').trim().replace(/\\/g, '/').replace(/^\/+/, ''));
+      if (!srcPath || !dstPath) throw new Error("Missing oldPath or newPath");
+      if (srcPath.includes('..') || dstPath.includes('..')) {
+        return res.status(400).json({ error: 'Invalid path traversal detected.' });
+      }
+
+      const commitSha = await getBranchRef();
+      const parentCommit = await getCommit(commitSha);
+      const resTree = await ghApi('GET', `/git/trees/${parentCommit.tree.sha}?recursive=1`);
+      if (!resTree.ok) throw new Error("Failed to fetch repository tree");
+      const fullTree = await resTree.json();
+
+      let normOld = srcPath.startsWith('content/') || srcPath.startsWith('cover/') ? srcPath : 'content/' + srcPath;
+      let normNew = dstPath.startsWith('content/') || dstPath.startsWith('cover/') ? dstPath : 'content/' + dstPath;
+
+      if (!normOld.endsWith('/')) normOld += '/';
+      if (!normNew.endsWith('/')) normNew += '/';
+
+      const affectedFiles = (fullTree.tree || []).filter(item => item.type === 'blob' && item.path.startsWith(normOld));
+      if (affectedFiles.length === 0) throw new Error("No files found in folder to rename");
+
+      const treeItems = [];
+      for (const file of affectedFiles) {
+        treeItems.push({ path: file.path, mode: '100644', type: 'blob', sha: null });
+        const newFilePath = normNew + file.path.slice(normOld.length);
+        treeItems.push({ path: newFilePath, mode: '100644', type: 'blob', sha: file.sha });
+      }
+
+      const newTreeSha = await createTree(parentCommit.tree.sha, treeItems);
+      const newCommitSha = await createCommit(`admin: rename folder ${normOld} to ${normNew}`, newTreeSha, [commitSha]);
+      await updateRef(newCommitSha);
+      await logAdminAction('rename_folder', { old: normOld, new: normNew, count: affectedFiles.length });
       return res.status(200).json({ success: true });
     }
 
