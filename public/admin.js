@@ -591,14 +591,18 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
         mobileWaInput.value = session.user.user_metadata.whatsapp;
       }
 
+      window.openUserProfileModal = function() {
+        const modal = document.getElementById('mobileUserModal');
+        if (modal) {
+          if (window.ModalManager) window.ModalManager.open(modal);
+          else modal.classList.add('active');
+        }
+      };
+
       const btnMobileMenu = document.getElementById('btnMobileUserMenu');
       if (btnMobileMenu) {
         btnMobileMenu.onclick = () => {
-          const modal = document.getElementById('mobileUserModal');
-          if (modal) {
-            if (window.ModalManager) window.ModalManager.open(modal);
-            else modal.classList.add('active');
-          }
+          window.openUserProfileModal();
         };
       }
 
@@ -1970,7 +1974,7 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
         let badgesHtml = '';
         if (isAdmin) badgesHtml += '<span class="badge badge-admin">ADMIN</span>';
         else badgesHtml += '<span class="badge badge-member">MEMBER</span>';
-        if (isCoupleUser) badgesHtml += '<span class="badge badge-couple" style="background:linear-gradient(135deg, #ec4899 0%, #f43f5e 100%); color:#fff; font-weight:700; border:none; padding:2px 7px; border-radius:4px; font-size:10px; display:inline-flex; align-items:center; gap:3px;">💑 COUPLE</span>';
+        if (isCoupleUser) badgesHtml += '<span class="badge badge-couple"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>COUPLE</span>';
         if (division) badgesHtml += `<span class="badge badge-division">${sanitize(division.toUpperCase())}</span>`;
         if (isBanned) badgesHtml += '<span class="badge badge-banned">BANNED</span>';
         if (isGuest) badgesHtml += '<span class="badge badge-guest">GUEST</span>';
@@ -2111,7 +2115,7 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
             </td>
             <td><span class="user-email-text" style="font-size:13px;">${sanitize(email || '-')}</span></td>
             <td><span class="badge badge-division">${sanitize(division ? division.toUpperCase() : 'NONE')}</span></td>
-            <td>${isAdmin ? '<span class="badge badge-admin">ADMIN</span>' : '<span class="badge badge-member">MEMBER</span>'}${isCoupleUser ? ' <span class="badge badge-couple" style="background:linear-gradient(135deg, #ec4899 0%, #f43f5e 100%); color:#fff; font-weight:700; border:none; padding:2px 6px; border-radius:3px; font-size:10px; display:inline-flex; align-items:center; gap:2px;">💑 COUPLE</span>' : ''}</td>
+            <td>${isAdmin ? '<span class="badge badge-admin">ADMIN</span>' : '<span class="badge badge-member">MEMBER</span>'}${isCoupleUser ? ' <span class="badge badge-couple"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>COUPLE</span>' : ''}</td>
             <td><span style="font-family:var(--font-secondary); font-size:12.5px;">${devices.length} Dev</span></td>
             <td><span style="font-family:var(--font-secondary); font-size:12px; color:var(--text-muted);">${joinedDate}</span></td>
             <td><div class="user-table-actions">${actionsHtml}</div></td>
@@ -2542,6 +2546,17 @@ async function loadCouplePackageStatus() {
   const statusEl = document.getElementById('coupleSidebarStatus');
   const modalStatusEl = document.getElementById('coupleCurrentStatusText');
 
+  // Dashboard Card Elements
+  const dashCard = document.getElementById('dashCoupleCard');
+  const p1Avatar = document.getElementById('dashCoupleP1Avatar');
+  const p1Name = document.getElementById('dashCoupleP1Name');
+  const p1Email = document.getElementById('dashCoupleP1Email');
+  const p2Avatar = document.getElementById('dashCoupleP2Avatar');
+  const p2Name = document.getElementById('dashCoupleP2Name');
+  const p2Email = document.getElementById('dashCoupleP2Email');
+  const dashPoints = document.getElementById('dashCouplePoints');
+  const dashBadge = document.getElementById('dashCoupleQuotaBadge');
+
   try {
     const res = await fetch('/api/contributions', {
       method: 'POST',
@@ -2560,30 +2575,76 @@ async function loadCouplePackageStatus() {
       const p2 = data.couple[1];
       const name1 = p1.username || p1.email.split('@')[0];
       const name2 = p2.username || p2.email.split('@')[0];
+      const email1 = p1.email || '-';
+      const email2 = p2.email || '-';
+      const init1 = (name1.length >= 2 ? name1.substring(0, 2) : name1).toUpperCase();
+      const init2 = (name2.length >= 2 ? name2.substring(0, 2) : name2).toUpperCase();
       const pts = data.pooled_points || 0;
       const isActive = !!data.has_active_access;
 
-      if (widget) widget.style.display = 'block';
+      if (dashCard) dashCard.style.display = 'block';
+      if (p1Avatar) p1Avatar.textContent = init1;
+      if (p1Name) p1Name.textContent = name1;
+      if (p1Email) p1Email.textContent = email1;
+      if (p2Avatar) p2Avatar.textContent = init2;
+      if (p2Name) p2Name.textContent = name2;
+      if (p2Email) p2Email.textContent = email2;
+      if (dashPoints) dashPoints.textContent = `${pts} pts`;
+      if (dashBadge) {
+        dashBadge.textContent = isActive ? '30-DAY ACCESS ACTIVE' : 'ACCESS EXPIRED';
+        dashBadge.style.background = isActive ? 'color-mix(in srgb, var(--c2) 18%, transparent)' : 'color-mix(in srgb, var(--danger) 18%, transparent)';
+        dashBadge.style.color = isActive ? 'var(--c2)' : 'var(--danger)';
+        dashBadge.style.borderColor = isActive ? 'var(--c2)' : 'var(--danger)';
+      }
+
+      if (widget) widget.style.display = 'none';
       if (namesEl) namesEl.textContent = `${name1} & ${name2}`;
       if (statusEl) {
         statusEl.innerHTML = `<span id="coupleSidebarNames" style="font-weight:600; color:var(--text-main);">${sanitize(name1)} &amp; ${sanitize(name2)}</span><br>` +
-          `<span style="color:${isActive ? 'var(--c2)' : 'var(--text-muted)'}; font-weight:600;">${pts} pts • ${isActive ? 'Akses Aktif (30 Hari)' : 'Akses Expired'}</span>`;
+          `<span style="color:${isActive ? 'var(--c2)' : 'var(--text-muted)'}; font-weight:600;">${pts} pts • ${isActive ? 'Akses Aktif' : 'Expired'}</span>`;
       }
 
       if (modalStatusEl) {
         modalStatusEl.innerHTML =
-          `Terhubung: <strong>${sanitize(name1)}</strong> (${sanitize(p1.email)}) &amp; <strong>${sanitize(name2)}</strong> (${sanitize(p2.email)})<br>` +
-          `Poin Gabungan: <strong>${pts} pts</strong> | Status Akses: <strong style="color:${isActive ? 'var(--c2)' : 'var(--danger)'};">${isActive ? 'AKTIF (30 Hari Terakhir)' : 'TIDAK AKTIF / EXPIRED'}</strong>`;
+          `<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap:10px; margin-top:4px;">` +
+            `<div style="padding:10px 12px; background:var(--bg-surface); border:1px solid var(--border-light); border-radius:4px;">` +
+              `<div style="font-size:10px; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">PARTNERS</div>` +
+              `<div style="font-size:13px; font-weight:700; color:var(--text-main); margin-top:2px;">${sanitize(name1)} &amp; ${sanitize(name2)}</div>` +
+            `</div>` +
+            `<div style="padding:10px 12px; background:var(--bg-surface); border:1px solid var(--border-light); border-radius:4px;">` +
+              `<div style="font-size:10px; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">POOLED POINTS</div>` +
+              `<div style="font-size:13px; font-weight:800; color:var(--c4); margin-top:2px;">${pts} pts</div>` +
+            `</div>` +
+            `<div style="padding:10px 12px; background:var(--bg-surface); border:1px solid var(--border-light); border-radius:4px;">` +
+              `<div style="font-size:10px; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">30-DAY ACCESS</div>` +
+              `<div style="font-size:12px; font-weight:700; color:${isActive ? 'var(--c2)' : 'var(--danger)'}; margin-top:2px;">${isActive ? 'ACTIVE (SYNCED)' : 'EXPIRED'}</div>` +
+            `</div>` +
+          `</div>`;
       }
     } else {
-      if (widget) widget.style.display = 'block';
+      if (dashCard) dashCard.style.display = 'block';
+      if (p1Avatar) p1Avatar.textContent = '-';
+      if (p1Name) p1Name.textContent = 'Unassigned';
+      if (p1Email) p1Email.textContent = 'No partner selected';
+      if (p2Avatar) p2Avatar.textContent = '-';
+      if (p2Name) p2Name.textContent = 'Unassigned';
+      if (p2Email) p2Email.textContent = 'No partner selected';
+      if (dashPoints) dashPoints.textContent = '0 pts';
+      if (dashBadge) {
+        dashBadge.textContent = 'NOT CONFIGURED';
+        dashBadge.style.background = 'var(--border-light)';
+        dashBadge.style.color = 'var(--text-muted)';
+        dashBadge.style.borderColor = 'var(--border-light)';
+      }
+
+      if (widget) widget.style.display = 'none';
       if (namesEl) namesEl.textContent = 'Belum Dikonfigurasi';
       if (statusEl) {
         statusEl.innerHTML = `<span id="coupleSidebarNames" style="font-weight:600; color:var(--text-muted);">Belum Dikonfigurasi</span><br>` +
           `<span style="color:var(--text-muted);">Klik Configure untuk menghubungkan</span>`;
       }
       if (modalStatusEl) {
-        modalStatusEl.innerHTML = `<span style="color:var(--text-muted);">Belum ada pasangan yang dihubungkan. Silakan pilih Partner 1 &amp; Partner 2 di atas.</span>`;
+        modalStatusEl.innerHTML = `<div style="padding:10px 12px; background:var(--bg-surface); border:1px solid var(--border-light); border-radius:4px; color:var(--text-muted); text-align:center;">Belum ada pasangan yang dihubungkan. Silakan pilih Partner 1 &amp; Partner 2 di atas.</div>`;
       }
     }
   } catch (err) {
@@ -2686,7 +2747,7 @@ window.saveCouplePackage = async function() {
 
       const data = await res.json();
       if (res.ok && data.success) {
-        showToast('✓ Paket Couple berhasil disimpan!', 'success');
+        showToast('Couple Package berhasil disimpan.', 'success');
         await loadCouplePackageStatus();
         if (typeof window.loadContributions === 'function') {
           window.loadContributions();
@@ -2736,7 +2797,7 @@ window.unlinkCouplePackage = async function() {
 
     const data = await res.json();
     if (res.ok && data.success) {
-      showToast('✓ Couple Package berhasil dilepas.', 'success');
+      showToast('Couple Package berhasil dilepas.', 'success');
       await loadCouplePackageStatus();
       if (typeof window.loadContributions === 'function') {
         window.loadContributions();
@@ -2784,7 +2845,7 @@ window.renderLeaderboard = function(list) {
         '<span style="font-weight:800; font-size:13px; color:' + rankColor + '; width:24px;">#' + rank + '</span>' +
         '<div style="min-width:0; flex:1;">' +
           '<div style="font-weight:700; font-size:13.5px; color:var(--text-main); display:flex; align-items:center; gap:6px; flex-wrap:wrap;">' +
-            (isCouple ? '<span style="background:linear-gradient(135deg, #ec4899 0%, #f43f5e 100%); color:#fff; font-size:10px; font-weight:700; padding:1px 6px; border-radius:3px;">💑 COUPLE</span>' : '') +
+            (isCouple ? '<span class="badge badge-couple" style="font-size:9.5px; padding:1px 6px;"><svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>COUPLE</span>' : '') +
             '<span>' + sanitize(item.username) + '</span>' +
           '</div>' +
           '<div style="font-size:11px; color:var(--text-muted); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">' + sanitize(item.email || '') + '</div>' +
@@ -2836,7 +2897,7 @@ async function loadContributions() {
         if (myPointsEl) myPointsEl.textContent = totalPts;
         if (contribStatusEl) {
           if (dataMy.is_couple && dataMy.couple_package) {
-            contribStatusEl.innerHTML = `<span style="color:var(--c2); font-weight:700;">💑 ${sanitize(dataMy.couple_package)}</span>`;
+            contribStatusEl.innerHTML = `<span style="color:var(--c2); font-weight:700; display:inline-flex; align-items:center; gap:4px;"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>${sanitize(dataMy.couple_package)}</span>`;
           } else {
             contribStatusEl.textContent = 'Individual Account';
           }

@@ -108,7 +108,7 @@ async function initWorkflow() {
     
     if(divRes.success && divRes.division) {
         currentUserDivision = divRes.division.division_id;
-        const waInput = document.getElementById('myWaInput');
+        const waInput = document.getElementById('mobileWaInput') || document.getElementById('myWaInput');
         if (waInput && divRes.division.whatsapp) {
             waInput.value = divRes.division.whatsapp;
         }
@@ -1202,9 +1202,10 @@ window.saveCouplePackage = async function() {
     });
 
     if (res && res.success) {
-        showToast('Paket Contribution Couple berhasil disimpan!', 'success');
+        showToast('Couple Package berhasil disimpan.', 'success');
         window.closeManageCoupleModal();
         if (typeof window.loadContributions === 'function') window.loadContributions();
+        if (typeof window.loadCouplePackageStatus === 'function') window.loadCouplePackageStatus();
         const sidebarNames = document.getElementById('coupleSidebarNames');
         if (sidebarNames && res.couple) {
             sidebarNames.textContent = `${res.couple[0].username} & ${res.couple[1].username}`;
@@ -1227,9 +1228,10 @@ window.unlinkCouplePackage = async function() {
     });
 
     if (res && res.success) {
-        showToast('Couple package unlinked', 'success');
+        showToast('Couple Package berhasil dilepas.', 'success');
         window.closeManageCoupleModal();
         if (typeof window.loadContributions === 'function') window.loadContributions();
+        if (typeof window.loadCouplePackageStatus === 'function') window.loadCouplePackageStatus();
         const sidebarNames = document.getElementById('coupleSidebarNames');
         if (sidebarNames) sidebarNames.textContent = 'None (Unlinked)';
         const statusText = document.getElementById('coupleCurrentStatusText');
@@ -1276,12 +1278,12 @@ window.loadContributions = async function() {
         const isCouple = resMe.is_couple || resMe.couple_package;
         if(hasRecent || isAdminUser) {
             statusEl.innerHTML = isCouple 
-                ? '<span style="font-weight:bold; color:var(--text-main);">💑 Couple Package Active (Access Granted)</span>' 
+                ? '<span style="font-weight:bold; color:var(--text-main); display:inline-flex; align-items:center; gap:4px;"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c2);"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>Couple Package Active (Access Granted)</span>' 
                 : 'Active Contributor (Access Granted)';
             statusEl.style.color = 'var(--text-main)';
         } else {
             statusEl.textContent = isCouple
-                ? '💑 Couple Inactive for 30 days (Access Revoked)'
+                ? 'Couple Inactive for 30 days (Access Revoked)'
                 : 'Inactive for 30 days (Access Revoked)';
             statusEl.style.color = 'var(--danger)';
         }
@@ -1299,7 +1301,7 @@ window.loadContributions = async function() {
         } else {
             resLeader.leaderboard.forEach((u, i) => {
                 const medal = i === 0 ? '1st' : (i === 1 ? '2nd' : (i === 2 ? '3rd' : `${i+1}.`));
-                const coupleBadge = u.is_couple ? ` <span style="font-size:12px; vertical-align:middle;" title="${u.couple_label || 'Couple Package'}">💑</span>` : '';
+                const coupleBadge = u.is_couple ? ` <span class="badge badge-couple" style="font-size:9.5px; padding:1px 5px; vertical-align:middle;" title="${u.couple_label || 'Couple Package'}"><svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>COUPLE</span>` : '';
                 list.innerHTML += `
                     <li style="display:flex; justify-content:space-between; padding:12px 24px; border-bottom:1px solid var(--border-light); align-items:center; gap:12px; min-width:0;">
                         <div style="display:flex; gap:16px; align-items:center; min-width:0; flex:1;">
