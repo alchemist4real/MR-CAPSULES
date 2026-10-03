@@ -289,6 +289,16 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
         modalEl.classList.remove('active');
         if (modalEl.id === 'lightboxModal') {
           modalEl.classList.add('hidden');
+          const img = document.getElementById('lightboxImage');
+          const txt = document.getElementById('lightboxText');
+          const frame = document.getElementById('lightboxFrame');
+          if (img) img.classList.add('hidden');
+          if (txt) txt.classList.add('hidden');
+          if (frame) {
+            frame.classList.add('hidden');
+            frame.srcdoc = '';
+            frame.src = 'about:blank';
+          }
         }
         modalEl.style.zIndex = '';
         modalEl.removeAttribute('aria-modal');
@@ -1567,10 +1577,29 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
     document.getElementById('lightboxClose').onclick = () => {
       const lb = document.getElementById('lightboxModal');
       if (window.ModalManager) ModalManager.close(lb);
-      else lb.classList.add('hidden');
-      document.getElementById('lightboxImage').classList.add('hidden');
-      document.getElementById('lightboxText').classList.add('hidden');
+      else {
+        lb.classList.add('hidden');
+        document.getElementById('lightboxImage').classList.add('hidden');
+        document.getElementById('lightboxText').classList.add('hidden');
+        const frame = document.getElementById('lightboxFrame');
+        if (frame) {
+          frame.classList.add('hidden');
+          frame.srcdoc = '';
+          frame.src = 'about:blank';
+        }
+      }
     };
+
+    const lbWrapper = document.getElementById('lightboxContentWrapper');
+    if (lbWrapper) {
+      lbWrapper.addEventListener('click', (e) => {
+        if (e.target === lbWrapper) {
+          const lb = document.getElementById('lightboxModal');
+          if (window.ModalManager) ModalManager.close(lb);
+          else document.getElementById('lightboxClose').click();
+        }
+      });
+    }
 
     function updateBulkDeleteUI() {
       const btnBulk = document.getElementById('btnBulkDelete');

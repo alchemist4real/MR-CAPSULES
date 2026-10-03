@@ -881,58 +881,163 @@ a { color: var(--c4); text-decoration: none; }
     }
     #dragOverlay.drag-active { opacity: 1; pointer-events: all; }
     
-    /* Lightbox Modal */
+    /* Lightbox Modal (File Displayer) */
     #lightboxModal {
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: color-mix(in srgb, var(--c3) 65%, transparent);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: color-mix(in srgb, var(--c3) 75%, transparent);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       z-index: var(--z-overlay-base, 10000);
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      opacity: 1; pointer-events: auto; visibility: visible;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      opacity: 1;
+      pointer-events: auto;
+      visibility: visible;
       transition: opacity 0.2s ease, visibility 0.2s ease;
+      overflow: hidden;
     }
-    #lightboxModal.hidden { display: none !important; opacity: 0; pointer-events: none; visibility: hidden; }
+    #lightboxModal.hidden {
+      display: none !important;
+      opacity: 0;
+      pointer-events: none;
+      visibility: hidden;
+    }
+
+    /* Top Bar for File Displayer */
     #lightboxHeader {
-      position: absolute; top: 0; left: 0; right: 0;
-      padding: 14px 20px; background: var(--bg-card);
-      display: flex; justify-content: space-between; align-items: center;
-      color: var(--c3); font-family: var(--font-primary); font-size: 14px; font-weight: 700;
+      position: relative;
+      flex-shrink: 0;
+      width: 100%;
+      min-height: 52px;
+      height: 52px;
+      background: var(--c2);
       border-bottom: 1.5px solid var(--c3);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 16px;
+      padding-top: env(safe-area-inset-top, 0px);
+      color: var(--c3);
       gap: 12px;
-    }
-    #lightboxFilename {
-      flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-    }
-    .lightbox-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
-    .lightbox-btn {
-      background: var(--c1); color: var(--c3); border: 1.5px solid var(--c3);
-      padding: 6px 12px; font-family: var(--font-primary); font-size: 12px; font-weight: 700; cursor: pointer;
-      transition: background 0.15s ease, color 0.15s ease; display: inline-flex; align-items: center; gap: 6px; border-radius: var(--radius-pill);
-    }
-    .lightbox-btn:hover { background: var(--c3); color: var(--c1); }
-    .lightbox-btn:active { transform: scale(0.96); }
-    #lightboxClose {
-      background: transparent; color: var(--c3); border: none; font-size: 24px; cursor: pointer; line-height: 1;
-      padding: 4px 8px; border-radius: 6px; transition: background 0.15s ease;
-    }
-    #lightboxClose:hover { background: var(--border-light); color: var(--c4); }
-    #lightboxContentWrapper {
-      position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
-      padding-top: 60px; /* offset for header */
-      padding-bottom: 20px;
+      z-index: 100;
       box-sizing: border-box;
     }
+
+    .lightbox-header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      flex: 1;
+    }
+    .lightbox-header-left svg {
+      flex-shrink: 0;
+      color: var(--c3);
+    }
+    #lightboxFilename {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--c3);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      min-width: 0;
+    }
+
+    .lightbox-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .lightbox-actions .btn-unified {
+      min-height: 34px;
+      height: 34px;
+      padding: 0 12px;
+      font-size: 12px;
+    }
+
+    /* Content Area */
+    #lightboxContentWrapper {
+      position: relative;
+      flex: 1;
+      width: 100%;
+      min-height: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
+      box-sizing: border-box;
+      overflow: auto;
+    }
+
+    #lightboxFrame {
+      width: 100%;
+      max-width: 1280px;
+      height: 100%;
+      border: 1.5px solid var(--c3);
+      border-radius: var(--radius-card, 8px);
+      background: #ffffff;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+      box-sizing: border-box;
+      display: block;
+    }
+
     #lightboxImage {
-      max-width: 90vw; max-height: 80vh;
-      object-fit: contain; border-radius: 8px;
+      max-width: 94vw;
+      max-height: calc(100% - 10px);
+      object-fit: contain;
+      border-radius: 8px;
       border: 1.5px solid var(--c3);
       background: var(--c2);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
     }
+
     #lightboxText {
-      width: 85%; max-width: 900px; height: 80%; background: var(--c2); color: var(--c3);
-      padding: 20px; border-radius: 8px; overflow: auto; font-family: var(--font-mono); font-size: 13px;
-      border: 1.5px solid var(--c3); white-space: pre-wrap; word-break: break-word; line-height: 1.5;
+      width: 90%;
+      max-width: 960px;
+      height: 100%;
+      max-height: 100%;
+      background: var(--c2);
+      color: var(--c3);
+      padding: 24px;
+      border-radius: 8px;
+      overflow: auto;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      border: 1.5px solid var(--c3);
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.6;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+      box-sizing: border-box;
+    }
+
+    @media (max-width: 768px) {
+      #lightboxHeader {
+        height: 48px;
+        min-height: 48px;
+        padding: 0 10px;
+        padding-top: env(safe-area-inset-top, 0px);
+      }
+      #lightboxFilename {
+        font-size: 12px;
+      }
+      #lightboxContentWrapper {
+        padding: 8px;
+        padding-bottom: max(8px, env(safe-area-inset-bottom, 8px));
+      }
+      #lightboxFrame {
+        border-radius: 6px;
+      }
     }
 
     /* Tabs */
