@@ -1085,6 +1085,10 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
       let html = '';
       if (item.type !== 'folder') {
         if (item.name.endsWith('.html')) {
+          html += `<button class="btn-unified primary" id="ctxPreview">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            <span>Preview Module</span>
+          </button>`;
           html += `<button class="btn-unified" id="ctxEdit">
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
             <span>Edit Code</span>
@@ -1120,6 +1124,12 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
         contextCancelBtn.onclick = () => ModalManager.close(modal);
       }
       
+      if (document.getElementById('ctxPreview')) {
+        document.getElementById('ctxPreview').onclick = async () => {
+          ModalManager.close(modal);
+          showPreview(item, false);
+        };
+      }
       if (document.getElementById('ctxEdit')) {
         document.getElementById('ctxEdit').onclick = async () => {
           ModalManager.close(modal);
@@ -1303,7 +1313,7 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
 
     window.showPreview = showPreview;
     async function showPreview(item, isImg) {
-      if (!isImg && (item.name.endsWith('.html') || item.name.endsWith('.css') || item.name.endsWith('.js'))) {
+      if (!isImg && (item.name.endsWith('.css') || item.name.endsWith('.js'))) {
         openEditor(item);
         return;
       }
@@ -1311,9 +1321,11 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
       const modal = document.getElementById('lightboxModal');
       const img = document.getElementById('lightboxImage');
       const txt = document.getElementById('lightboxText');
+      const frame = document.getElementById('lightboxFrame');
       
       img.classList.add('hidden');
       txt.classList.add('hidden');
+      if (frame) frame.classList.add('hidden');
       ModalManager.open(modal);
 
       const rawUrl = `${GITHUB_RAW_BASE}/${encodeURI(item.path)}`;
@@ -1321,8 +1333,19 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
       // Update Header
       document.getElementById('lightboxFilename').textContent = item.name;
       
-      document.getElementById('lightboxBtnNewTab').onclick = () => {
-        window.open(rawUrl, '_blank');
+      document.getElementById('lightboxBtnNewTab').onclick = async () => {
+        if (item.name.endsWith('.html')) {
+          try {
+            const text = await fetchFileSecureText(item.path);
+            const blob = new Blob([text], { type: 'text/html;charset=utf-8' });
+            const blobUrl = window.URL.createObjectURL(blob);
+            window.open(blobUrl, '_blank');
+          } catch(e) {
+            window.open(rawUrl, '_blank');
+          }
+        } else {
+          window.open(rawUrl, '_blank');
+        }
       };
       document.getElementById('lightboxBtnDownload').onclick = async () => {
         try {
@@ -1341,6 +1364,19 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
       if (isImg) {
         img.src = rawUrl;
         img.classList.remove('hidden');
+      } else if (item.name.endsWith('.html')) {
+        if (frame) {
+          frame.classList.remove('hidden');
+          frame.srcdoc = '<!DOCTYPE html><html><body style="display:flex;align-items:center;justify-content:center;height:100vh;margin:0;font-family:sans-serif;color:#888;background:#161b2e;">Loading module preview...</body></html>';
+          try {
+            const text = await fetchFileSecureText(item.path);
+            frame.srcdoc = text;
+          } catch(e) {
+            frame.srcdoc = `<!DOCTYPE html><html><body style="padding:24px;color:#f85149;font-family:sans-serif;background:#161b2e;">Failed to load preview: ${e.message}</body></html>`;
+          }
+        } else {
+          openEditor(item);
+        }
       } else {
         txt.textContent = "Loading preview...";
         txt.classList.remove('hidden');

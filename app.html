@@ -250,6 +250,9 @@
     <div style="display:flex; align-items:center; gap:16px;">
       <button class="btn-text" id="btnIframeNext" style="display:none; color:var(--text-main); opacity:0.8;">
       </button>
+      <button class="btn-text" id="btnIframePopout" title="Open in new window" aria-label="Open in new window">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+      </button>
       <button class="btn-text" id="btnIframeFullscreen" title="Fullscreen" aria-label="Fullscreen">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
       </button>
@@ -991,8 +994,9 @@ const viewerFrame = document.getElementById('viewerFrame');
 const iframeTitle = document.getElementById('iframeTitle');
 
 let currentViewerIndex = -1;
+let activeModuleAbortController = null;
 
-function openFile(path, name, index = -1) {
+async function openFile(path, name, index = -1) {
   if (isCurrentUserGuest) {
     let views = parseInt(localStorage.getItem('mr_guest_views') || '0', 10);
     if (views >= 3) {
@@ -1000,11 +1004,88 @@ function openFile(path, name, index = -1) {
       return;
     }
   }
+
+  if (activeModuleAbortController) {
+    activeModuleAbortController.abort();
+  }
+  activeModuleAbortController = new AbortController();
+  const signal = activeModuleAbortController.signal;
+
   iframeTitle.textContent = name.toUpperCase();
-  viewerFrame.src = getContentCdnUrl(path);
   iframeViewer.classList.add('active');
   currentViewerIndex = index;
   updateNextFileButton();
+
+  // Reset frame and show interactive dark loader
+  viewerFrame.src = 'about:blank';
+  viewerFrame.srcdoc = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      background: #0f121d;
+      color: #94a3b8;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      gap: 14px;
+    }
+    .spin {
+      width: 32px;
+      height: 32px;
+      border: 3px solid rgba(255,255,255,0.08);
+      border-top-color: #38bdf8;
+      border-radius: 50%;
+      animation: s 0.8s linear infinite;
+    }
+    @keyframes s { to { transform: rotate(360deg); } }
+    .msg { font-size: 13px; font-weight: 600; letter-spacing: 1px; color: #cbd5e1; }
+  </style>
+</head>
+<body>
+  <div class="spin"></div>
+  <div class="msg">MEMUAT MODUL...</div>
+</body>
+</html>`;
+
+  const cdnUrl = getContentCdnUrl(path);
+  try {
+    let res = await fetch(cdnUrl, { signal });
+    if (!res.ok) {
+      const rawUrl = 'https://raw.githubusercontent.com/alchemist4real/MR-CAPSULES-CONTENT/main/' + path.replace(/^\/+/, '');
+      res = await fetch(rawUrl, { signal });
+    }
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    let htmlText = await res.text();
+
+    // Inject base tag so any relative assets resolve to the CDN folder
+    const baseUrl = cdnUrl.substring(0, cdnUrl.lastIndexOf('/') + 1);
+    if (!htmlText.includes('<base ') && !htmlText.includes('<base>')) {
+      if (/<head[^>]*>/i.test(htmlText)) {
+        htmlText = htmlText.replace(/(<head[^>]*>)/i, `$1\n  <base href="${baseUrl}">`);
+      } else {
+        htmlText = `<base href="${baseUrl}">\n` + htmlText;
+      }
+    }
+
+    viewerFrame.srcdoc = htmlText;
+  } catch (err) {
+    if (err.name === 'AbortError') return;
+    console.error("Failed to load module:", err);
+    viewerFrame.srcdoc = `<!DOCTYPE html>
+<html>
+<body style="background:#0f121d;color:#ef4444;font-family:sans-serif;padding:32px;line-height:1.6;">
+  <h3 style="margin-top:0;">Gagal Memuat Modul</h3>
+  <p style="color:#94a3b8;">${err.message}</p>
+  <button onclick="location.reload()" style="padding:8px 16px;background:#1e293b;color:#f1f5f9;border:1px solid #334155;border-radius:6px;cursor:pointer;">Muat Ulang</button>
+</body>
+</html>`;
+  }
 }
 
 function updateNextFileButton() {
@@ -1035,10 +1116,23 @@ function updateNextFileButton() {
 }
 
 document.getElementById('btnIframeBack').addEventListener('click', () => {
+  if (activeModuleAbortController) activeModuleAbortController.abort();
   iframeViewer.classList.remove('active');
-  viewerFrame.src = '';
+  viewerFrame.src = 'about:blank';
+  viewerFrame.srcdoc = '';
   if (document.fullscreenElement) document.exitFullscreen();
 });
+
+const btnIframePopout = document.getElementById('btnIframePopout');
+if (btnIframePopout) {
+  btnIframePopout.addEventListener('click', () => {
+    if (viewerFrame.srcdoc && viewerFrame.srcdoc.length > 50) {
+      const blob = new Blob([viewerFrame.srcdoc], { type: 'text/html;charset=utf-8' });
+      const blobUrl = URL.createObjectURL(blob);
+      window.open(blobUrl, '_blank');
+    }
+  });
+}
 
 document.getElementById('btnIframeFullscreen').addEventListener('click', () => {
   if (!document.fullscreenElement) {
