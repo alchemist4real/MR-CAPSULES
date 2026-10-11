@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="id" style="--h:310;--bl:26%">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Am I Elevated? — K13 Pemeriksaan Laboratorium Kelainan Kardiovaskuler</title>
+<style>
+:root{
+  --h:189;--bl:26%;
+  --bg:hsl(var(--h) 14% 96%);--surface:#fff;--sunk:hsl(var(--h) 12% 92%);--ink:hsl(var(--h) 35% 12%);--ink2:hsl(var(--h) 18% 27%);--mute:hsl(var(--h) 10% 39%);--line:hsl(var(--h) 12% 85%);
+  --brand:hsl(var(--h) 80% var(--bl));--brand-ink:#fff;--brand-soft:hsl(var(--h) 45% 92%);
+  --ok:#17723f;--ok-soft:#e2f3e8;--bad:#b0322c;--bad-soft:#fae6e4;--warn:#7d5200;--warn-soft:#fbefd4;
+  --r:12px;--head:56px;
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){
+  --bg:hsl(var(--h) 30% 8%);--surface:hsl(var(--h) 26% 13%);--sunk:hsl(var(--h) 30% 10%);--ink:hsl(var(--h) 15% 93%);--ink2:hsl(var(--h) 12% 78%);--mute:hsl(var(--h) 10% 64%);--line:hsl(var(--h) 18% 22%);
+  --brand:hsl(var(--h) 60% 68%);--brand-ink:hsl(var(--h) 70% 9%);--brand-soft:hsl(var(--h) 42% 18%);
+  --ok:#63d394;--ok-soft:#143325;--bad:#ff8f86;--bad-soft:#3a1c1a;--warn:#f1c466;--warn-soft:#3a2e12;
+  color-scheme:dark;}}
+:root[data-theme=dark]{
+  --bg:hsl(var(--h) 30% 8%);--surface:hsl(var(--h) 26% 13%);--sunk:hsl(var(--h) 30% 10%);--ink:hsl(var(--h) 15% 93%);--ink2:hsl(var(--h) 12% 78%);--mute:hsl(var(--h) 10% 64%);--line:hsl(var(--h) 18% 22%);
+  --brand:hsl(var(--h) 60% 68%);--brand-ink:hsl(var(--h) 70% 9%);--brand-soft:hsl(var(--h) 42% 18%);
+  --ok:#63d394;--ok-soft:#143325;--bad:#ff8f86;--bad-soft:#3a1c1a;--warn:#f1c466;--warn-soft:#3a2e12;
+  color-scheme:dark;}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:calc(var(--head) + 60px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 var(--font);min-height:100vh;overflow-x:hidden}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+[hidden]{display:none!important}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px;border-radius:6px}
+
+/* header */
+.top{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.top-in{max-width:1080px;margin:0 auto;height:var(--head);padding:0 16px;display:flex;align-items:center;gap:12px}
+.brand{font-weight:800;font-size:17px;letter-spacing:-.01em;margin:0;white-space:nowrap}
+.brand span{color:var(--brand)}
+.tabs{display:flex;gap:4px;background:var(--sunk);border-radius:10px;padding:4px;margin-left:auto}
+.tabs button{border:0;background:none;padding:0 16px;min-height:36px;border-radius:7px;font-weight:600;font-size:15px;color:var(--mute)}
+.tabs button[aria-selected=true]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.14)}
+.icon{border:1px solid var(--line);background:var(--surface);width:40px;height:40px;border-radius:10px;font-size:17px;line-height:1;flex:none}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+.credit{font-size:13px;color:var(--mute);margin:14px 0 0}
+
+/* materi */
+.materi{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
+.materi>*{min-width:0}
+.chnav{position:sticky;top:var(--head);z-index:10;background:var(--bg);margin:0 -16px;padding:10px 16px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--line)}
+.chnav::-webkit-scrollbar{display:none}
+.chnav button{flex:none;display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px 0 8px;border:1px solid var(--line);border-radius:22px;background:var(--surface);font-size:14px;font-weight:600;color:var(--ink2);white-space:nowrap}
+.chnav .no{width:26px;height:26px;border-radius:50%;background:var(--sunk);display:grid;place-items:center;font-size:13px;font-variant-numeric:tabular-nums}
+.chnav .pc{font-weight:500;font-size:12px;color:var(--mute);display:none}
+.chnav button.on{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.chnav button.on .no{background:rgba(255,255,255,.25);color:inherit}
+.ch{display:none;max-width:70ch;padding:22px 0 8px}
+.ch.on{display:block}
+.ch h2{font-size:clamp(24px,5vw,30px);line-height:1.2;letter-spacing:-.02em;margin:0 0 16px}
+.ch h3{font-size:19px;line-height:1.3;margin:36px 0 10px;padding-top:18px;border-top:1px solid var(--line)}
+.ch p,.ch ul,.ch ol{margin:0 0 12px;color:var(--ink2)}
+.ch ul,.ch ol:not(.flow){padding-left:22px}
+.ch li{margin-bottom:6px}
+.ch li ul{margin-top:6px}
+.ch strong{color:var(--ink)}
+.def,.awas,.klinis{border-left:4px solid var(--brand);background:var(--surface);padding:12px 14px;border-radius:0 var(--r) var(--r) 0;color:var(--ink)!important}
+.def::before,.awas::before,.klinis::before{display:block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px}
+.def::before{content:"Definisi";color:var(--brand)}
+.awas{border-color:var(--bad);background:var(--bad-soft)}
+.awas::before{content:"Perhatian";color:var(--bad)}
+.klinis{border-color:var(--ok);background:var(--ok-soft)}
+.klinis::before{content:"Contoh";color:var(--ok)}
+.ch figure{margin:0 0 14px}.ch figure img{display:block;max-width:100%;height:auto;border:1px solid var(--line);border-radius:var(--r);background:#fff}.ch figcaption{font-size:13px;color:var(--mute);margin-top:4px}
+.tw{overflow-x:auto;margin:0 0 14px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{padding:10px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+tr:last-child>*{border-bottom:0}
+td[rowspan]{border-right:1px solid var(--line)}
+th{font-size:13px;font-weight:700;color:var(--mute);background:var(--sunk)}
+th[scope=row]{background:none;color:var(--ink);font-size:14px;white-space:nowrap}
+.tw.wide table{min-width:620px}
+.flow{list-style:none;padding:0;margin:14px 0 16px;display:flex;flex-direction:column;gap:22px}
+.flow li{position:relative;margin:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-weight:600;color:var(--ink);text-align:center}
+.flow small{display:block;font-weight:400;font-size:13px;color:var(--mute)}
+.flow li+li::before{content:"↓";position:absolute;left:50%;top:-22px;height:22px;line-height:22px;transform:translateX(-50%);color:var(--brand);font-weight:700}
+.flow.rank{flex-direction:row;gap:26px;flex-wrap:nowrap}
+.flow.rank li{flex:1;padding:10px 4px;font-size:14px}
+.flow.rank li+li::before{content:">";left:-18px;top:50%;transform:translateY(-50%);width:10px}
+.chfoot{display:flex;flex-wrap:wrap;gap:10px;margin:32px 0 40px;padding-top:20px;border-top:1px solid var(--line)}
+
+/* tombol */
+.btn{min-height:48px;padding:0 18px;border-radius:var(--r);border:1px solid var(--line);background:var(--surface);font-weight:600;font-size:15px;color:var(--ink)}
+.btn:hover{border-color:var(--mute)}
+.btn.pri{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.btn.pri:hover{filter:brightness(1.08)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.sm{min-height:40px;padding:0 14px;font-size:14px}
+.link{white-space:nowrap;border:0;background:none;padding:6px 4px;min-height:36px;color:var(--brand);font-weight:600;font-size:14px;text-decoration:underline;text-underline-offset:3px}
+.chfoot .btn{flex:1 1 220px}
+
+/* quiz umum */
+.quiz{max-width:720px;margin:0 auto;padding-top:20px}
+.quiz h2{font-size:24px;letter-spacing:-.02em;margin:0 0 6px}
+.lead{color:var(--mute);margin:0 0 18px;font-size:15px}
+.bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--brand);border-radius:4px;transition:width .25s}
+fieldset{border:0;padding:0;margin:0 0 22px;min-width:0}
+legend{padding:0;margin:0 0 8px;font-weight:700;font-size:15px;display:flex;align-items:center;gap:8px;width:100%}
+legend .sp{margin-left:auto;display:flex;gap:6px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.resume{display:flex;flex-wrap:wrap;gap:10px;align-items:center;border-color:var(--brand);margin-bottom:20px}
+.resume p{margin:0;flex:1 1 200px}
+.overall{margin-bottom:22px}
+.overall .row{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;color:var(--mute);margin-top:4px}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pick{position:relative;display:block;border:2px solid var(--line);border-radius:var(--r);background:var(--surface);padding:12px 14px;cursor:pointer}
+.pick input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.pick b{display:block}
+.pick small{display:block;color:var(--mute);font-size:13px;line-height:1.4}
+.pick.on{border-color:var(--brand);background:var(--brand-soft)}
+.pick:focus-within{outline:3px solid var(--brand);outline-offset:2px}
+.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.chips .pick{padding:10px 12px 10px 44px;min-height:56px}
+.chips .pick::before{content:"";position:absolute;left:12px;top:50%;transform:translateY(-50%);width:22px;height:22px;border-radius:6px;border:2px solid var(--mute);background:var(--surface)}
+.chips .pick.on::before{content:"✓";border-color:var(--brand);background:var(--brand);color:var(--brand-ink);font-weight:800;font-size:15px;display:grid;place-items:center}
+.seg{display:flex;gap:8px}
+.seg .pick{flex:1;text-align:center;padding:10px 4px;font-weight:700}
+.check{display:flex;align-items:center;gap:10px;min-height:44px;margin-bottom:10px;cursor:pointer}
+.check input{width:22px;height:22px;accent-color:var(--brand);flex:none}
+.actbar{position:sticky;bottom:0;z-index:5;display:flex;gap:10px;align-items:center;margin:20px -16px 0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:var(--bg);border-top:1px solid var(--line)}
+.actbar .btn{flex:1}
+.actbar .btn.fit{flex:none}
+.actbar .hint{flex:1;color:var(--mute);font-size:14px;text-align:center}
+
+/* soal */
+.runhead{display:grid;grid-template-columns:1fr auto auto;gap:6px 12px;align-items:center;margin-bottom:14px}
+.runhead .bar{grid-column:1/-1}
+#rpos{font-size:16px}
+#rinfo{font-size:14px;color:var(--mute);font-variant-numeric:tabular-nums;font-weight:600}
+#rinfo.low{color:var(--bad)}
+.qcard{margin-bottom:12px}
+.scen{margin:0 0 10px;padding:12px 14px;background:var(--sunk);border-radius:10px;color:var(--ink2);font-size:15.5px}
+.scen::before{content:"Kasus";display:block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+.qtext{font-size:18px!important;line-height:1.45;font-weight:650;margin:0!important;letter-spacing:0!important}
+.opts{display:grid;gap:8px}
+.opt{display:flex;align-items:flex-start;gap:12px;width:100%;text-align:left;min-height:52px;padding:12px 14px;border:2px solid var(--line);border-radius:var(--r);background:var(--surface);font-size:16px;line-height:1.4}
+.opt:hover:not(:disabled){border-color:var(--brand)}
+.opt .key{flex:none;width:28px;height:28px;border-radius:8px;background:var(--sunk);display:grid;place-items:center;font-weight:700;font-size:14px;color:var(--ink2)}
+.opt .otx{flex:1;padding-top:2px}
+.opt .mk{flex:none;font-weight:800;padding-top:2px}
+.opt:disabled{cursor:default;color:var(--ink);opacity:1}
+.opt.sel{border-color:var(--brand);background:var(--brand-soft)}
+.opt.sel .key{background:var(--brand);color:var(--brand-ink)}
+.opt.ok{border-color:var(--ok);background:var(--ok-soft)}
+.opt.ok .key{background:var(--ok);color:var(--surface)}
+.opt.ok .mk{color:var(--ok)}
+.opt.no{border-color:var(--bad);background:var(--bad-soft)}
+.opt.no .key{background:var(--bad);color:var(--surface)}
+.opt.no .mk{color:var(--bad)}
+.opt.dim{opacity:.62}
+.fb{margin-top:12px;padding:14px;border-radius:var(--r);border-left:4px solid var(--ok);background:var(--ok-soft)}
+.fb.no{border-color:var(--bad);background:var(--bad-soft)}
+.fb b{display:block;font-size:17px;color:var(--ok)}
+.fb.no b{color:var(--bad)}
+.fb p{margin:4px 0 8px}
+.fb .src{font-size:13px;color:var(--mute)}
+.grid{margin-top:14px}
+.grid summary{cursor:pointer;font-weight:600;font-size:14px;min-height:40px;display:flex;align-items:center;color:var(--ink2)}
+#rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:6px;padding:6px 0}
+#rgrid button{position:relative;height:44px;border-radius:8px;border:1px solid var(--line);background:var(--surface);font-weight:600;font-variant-numeric:tabular-nums}
+#rgrid .done{background:var(--brand-soft);border-color:var(--brand)}
+#rgrid .cur{outline:3px solid var(--ink);outline-offset:1px}
+#rgrid .flag::after{content:"";position:absolute;top:4px;right:4px;width:8px;height:8px;border-radius:50%;background:var(--warn)}
+#flagbtn[aria-pressed=true]{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+
+/* hasil */
+.score{display:flex;align-items:center;gap:18px;margin-bottom:8px}
+.ring{--p:0;flex:none;width:112px;height:112px;border-radius:50%;background:conic-gradient(var(--brand) calc(var(--p)*1%),var(--line) 0);display:grid;place-items:center}
+.ring b{width:88px;height:88px;border-radius:50%;background:var(--bg);display:grid;place-items:center;font-size:28px;font-variant-numeric:tabular-nums}
+.score h2{margin:0 0 4px}
+.score p{margin:0;color:var(--ink2)}
+.quiz h3{font-size:17px;margin:28px 0 10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.quiz h3 .sp{margin-left:auto;display:flex;gap:6px}
+.chrow{display:grid;grid-template-columns:1fr auto;gap:2px 12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.chrow .bar{grid-column:1/-1}
+.chrow .nm{font-weight:600}
+.chrow .ct{font-variant-numeric:tabular-nums;color:var(--mute);font-size:14px}
+.chrow .bar i.low{background:var(--bad)}
+.chrow .more{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--mute)}
+.rv{border:1px solid var(--line);border-left:4px solid var(--ok);border-radius:10px;background:var(--surface);margin-bottom:8px}
+.rv.no{border-left-color:var(--bad)}
+.rv summary{cursor:pointer;display:flex;gap:10px;padding:12px 14px;list-style:none;min-height:48px}
+.rv summary::-webkit-details-marker{display:none}
+.rv .mk{flex:none;font-weight:800;color:var(--ok)}
+.rv.no .mk{color:var(--bad)}
+.rv .body{padding:0 14px 14px}
+.rv ol{list-style:upper-alpha;padding-left:24px;margin:8px 0;color:var(--ink2)}
+.rv li.ok{color:var(--ok);font-weight:600}
+.rv li.no{color:var(--bad);text-decoration:line-through}
+.rv li .you{font-size:13px;font-weight:600;text-decoration:none;display:inline-block;margin-left:6px}
+.rv p{margin:8px 0 0}
+.tog{border:1px solid var(--line);background:var(--surface);min-height:36px;padding:0 12px;border-radius:18px;font-size:13px;font-weight:600;color:var(--ink2)}
+.tog[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+dialog{border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--ink);padding:20px;max-width:min(420px,calc(100vw - 32px))}
+dialog::backdrop{background:rgba(0,0,0,.5)}
+dialog p{margin:0 0 18px;font-size:16px}
+dialog .row{display:flex;gap:10px}
+dialog .btn{flex:1}
+
+/* lebar */
+@media (min-width:560px){
+  .flow{flex-direction:row;gap:28px;align-items:stretch}
+  .flow li{flex:1;display:flex;flex-direction:column;justify-content:center}
+  .flow li+li::before{content:"→";left:-28px;top:50%;width:28px;height:auto;line-height:1;transform:translateY(-50%);text-align:center}
+}
+@media (max-width:559px){
+  .tabs button{padding:0 12px}
+  .modes{grid-template-columns:1fr}
+  .ring{width:92px;height:92px}.ring b{width:72px;height:72px;font-size:23px}
+}
+@media (min-width:960px){
+  .materi{grid-template-columns:240px minmax(0,1fr);gap:40px;align-items:start}
+  .chnav{top:calc(var(--head) + 20px);margin:22px 0 0;padding:0;flex-direction:column;gap:4px;overflow:visible;border:0;background:none}
+  .chnav button{border-color:transparent;background:none;border-radius:10px;justify-content:flex-start;white-space:normal;text-align:left;padding:6px 10px 6px 8px}
+  .chnav button:not(.on):hover{background:var(--sunk)}
+  .chnav .nm{flex:1}
+  .chnav .pc{display:block}
+  .chnav button.on .pc{color:inherit;opacity:.85}
+  .actbar{margin-left:0;margin-right:0;padding-left:0;padding-right:0}
+  .opt:hover:not(:disabled){background:var(--brand-soft)}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media print{
+  .top,.chnav,.chfoot,#v-quiz,.credit{display:none!important}
+  #v-materi{display:block!important}
+  .materi{display:block}
+  .ch{display:block!important;max-width:none;page-break-after:always}
+  body{background:#fff;font-size:11pt}
+  .tw{overflow:visible;border:0}
+}
+
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in">
+  <h1 class="brand">Am I <span>Elevated?</span></h1>
+  <div class="tabs" role="tablist" aria-label="Bagian">
+    <button role="tab" id="tab-materi" aria-selected="true" aria-controls="v-materi">Materi</button>
+    <button role="tab" id="tab-quiz" aria-selected="false" aria-controls="v-quiz">Latihan</button>
+  </div>
+  <button class="icon" id="theme" aria-label="Ganti tema terang/gelap" title="Tema terang/gelap">◐</button>
+</div></header>
+
+<main class="wrap">
+<div id="v-materi" role="tabpanel" aria-labelledby="tab-materi">
+  <p class="credit">K13 Pemeriksaan Laboratorium Kelainan Kardiovaskuler · Blok 3.2 — Modul Kardiovaskular &amp; Respirasi</p>
+  <div class="materi">
+    <nav class="chnav" id="chnav" role="tablist" aria-label="Bab materi"></nav>
+    <div>
+<section class="ch" data-ch="1">
+<h2>Aterotrombosis</h2>
+<p class="def">Stabilitas plak ateroma ditentukan oleh rasio <strong>sintesis kolagen oleh sel otot polos vaskular (VSMC)</strong> terhadap <strong>degradasi matriks oleh enzim sel radang</strong>. Plak rentan (<em>vulnerable plaque</em> / <em>thin-cap fibroatheroma</em>, TCFA) adalah plak bertudung fibrosa sangat tipis dengan inti nekrotik masif.</p>
+
+<h3>Inisiasi plak ateroma</h3>
+<p><strong>Disfungsi endotel awal</strong> dipicu oleh <em>shear stress</em> aliran turbulen (bifurkasio arteri), hipertensi, dislipidemia, dan radikal bebas rokok. Produksi <em>nitric oxide</em> (NO) anjlok sehingga vasodilatasi hilang, permeabilitas naik, dan molekul adhesi (<strong>VCAM-1, ICAM-1, P-selektin</strong>) melonjak.</p>
+<ol class="flow">
+<li>LDL masuk intima<small>merembes ke ruang subendotelial, terperangkap jala proteoglikan matriks</small></li>
+<li>ox-LDL<small>teroksidasi oleh ROS; sangat sitotoksik dan imunogenik</small></li>
+<li>Monosit → makrofag<small>ditarik kemokin MCP-1, menempel pada adhesin endotel, bermigrasi ke intima</small></li>
+<li>Sel busa<small>melahap ox-LDL via <em>scavenger receptor</em> SR-A &amp; CD36 tanpa <em>negative feedback</em></small></li>
+<li>Fatty streak<small>timbunan sel busa: lesi makroskopis awal</small></li>
+</ol>
+<p>Karena ambilan lewat <em>scavenger receptor</em> tidak punya umpan balik negatif, sitoplasma makrofag dipenuhi vakuola kolesterol dan berubah menjadi <strong>sel busa (<em>foam cell</em>)</strong>.</p>
+
+<h3>Progresi menjadi fibroateroma</h3>
+<ul>
+<li><strong>Migrasi VSMC</strong>: makrofag dan sel busa mensekresi faktor pertumbuhan <strong>PDGF dan TGF-β</strong>, merangsang VSMC bermigrasi dari tunika media menembus lamina elastika interna ke intima.</li>
+<li><strong>Tudung fibrosa (<em>fibrous cap</em>)</strong>: di intima fenotipe VSMC beralih dari kontraktil ke sintetis, memproduksi kolagen tipe I &amp; III serta elastin. Matriks ini mengisolasi inti lipid trombogenik dari aliran darah luminal.</li>
+<li><strong>Inti nekrotik</strong>: sel busa sentral mengalami apoptosis dan nekrosis sekunder akibat lipotoksisitas. Pembersihan sel mati gagal (<em>defective efferocytosis</em>), sel busa hancur melepaskan kolesterol bebas dan debris, membentuk inti nekrotik yang kaya <strong>faktor jaringan (<em>tissue factor</em>, TF)</strong>.</li>
+</ul>
+
+<h3>Plak stabil dan plak rentan</h3>
+<table>
+<tr><th>Ciri</th><th>Plak stabil</th><th>Plak rentan (TCFA)</th></tr>
+<tr><th scope="row">Tudung fibrosa</th><td>Tebal, kaya kolagen; sel otot polos utuh</td><td>Sangat tipis, <strong>&lt; 65 µm</strong>; mudah jebol oleh stres pulsasi darah</td></tr>
+<tr><th scope="row">Inti nekrotik</th><td>Kecil, &lt; 30% lesi</td><td>Masif, <strong>&gt; 40% volume plak</strong>; sarat kolesterol cair dan debris sitotoksik</td></tr>
+<tr><th scope="row">Radang</th><td>Minimal</td><td>Padat di <strong>daerah bahu plak</strong> (<em>shoulder region</em>, titik stres mekanik tertinggi): makrofag dan sel T</td></tr>
+<tr><th scope="row">Pembuluh baru</th><td>—</td><td>Neovaskularisasi rapuh dari <em>vasa vasorum</em>, mudah pecah → perdarahan intraplak</td></tr>
+<tr><th scope="row">Klinis</th><td>Lumen menyempit bertahap; iskemia hanya saat aktivitas fisik (<strong>angina pektoris stabil</strong>)</td><td>Ruptur dan aterotrombosis akut</td></tr>
+</table>
+
+<h3>Ruptur dan erosi plak</h3>
+<p>Limfosit T (Th1) dalam plak melepas <strong>IFN-γ</strong>, menyebabkan apoptosis VSMC dan terhentinya sintesis kolagen baru. Makrofag aktif melepaskan <em>matrix metalloproteinase</em> (MMP):</p>
+<table>
+<tr><th>Kelompok</th><th>Anggota</th><th>Kerja</th></tr>
+<tr><td>Kolagenase</td><td>MMP-1, MMP-8, MMP-13</td><td>Memotong kolagen tipe I &amp; III yang utuh</td></tr>
+<tr><td>Gelatinase</td><td>MMP-2, MMP-9</td><td>Menghancurkan fragmen kolagen dan lamina basalis</td></tr>
+</table>
+<p>Penipisan ekstrem membuat tudung robek mendadak (<strong>ruptur plak</strong>).</p>
+<p class="awas"><strong>Erosi plak</strong> terjadi pada ~30% kasus ACS: endotel di atas plak meluruh (deskuamasi) <strong>tanpa</strong> robeknya tudung fibrosa. Sering pada plak kaya proteoglikan/hialuronan, dipicu apoptosis endotel dan perangkap neutrofil (NETosis).</p>
+
+<h3>Kaskade trombogenesis akut</h3>
+<ol class="flow">
+<li>Paparan TF<small>robekan plak memaparkan <em>tissue factor</em> inti nekrotik ke darah</small></li>
+<li>Koagulasi<small>TF + faktor VIIa → trombin melonjak → fibrinogen menjadi jala fibrin stabil</small></li>
+<li>Adhesi platelet<small>kolagen subendotel – GP Ib/IX melalui <em>von Willebrand factor</em></small></li>
+<li>Agregasi<small>ADP &amp; tromboksan A2 mengaktifkan GP IIb/IIIa; fibrinogen menjembatani antar-trombosit</small></li>
+<li>Oklusi koroner<small>total → STEMI; parsial/subtotal → NSTEMI / UAP</small></li>
+</ol>
+</section>
+
+<section class="ch" data-ch="2">
+<h2>Kematian Miosit</h2>
+<p class="def">Iskemia miokard berjalan dari <strong>fase reversibel</strong> (0–20 menit pasca oklusi) menuju <strong>fase ireversibel</strong> (<em>point of no return</em>, &gt; 20–30 menit), saat membran robek permanen dan protein intraseluler bocor ke darah sebagai biomarker nekrosis.</p>
+
+<h3>Fase reversibel (0–20 menit)</h3>
+<table>
+<tr><th>Waktu</th><th>Peristiwa</th></tr>
+<tr><th scope="row">0–10 detik</th><td>Aliran koroner berhenti → PO<sub>2</sub> anjlok → fosforilasi oksidatif mitokondria mati → sintesis ATP terhenti</td></tr>
+<tr><th scope="row">10–60 detik</th><td>Glikolisis anaerobik → glikogen terkuras → asam laktat menumpuk → asidosis intraseluler (pH &lt; 6,5) → inhibisi aktin-miosin → <strong>kontraksi berhenti total dalam 60 detik</strong></td></tr>
+<tr><th scope="row">2–10 menit</th><td>Penurunan ATP melumpuhkan transpor ion:<br>• Na<sup>+</sup>/K<sup>+</sup> ATPase mati → retensi Na<sup>+</sup> intraseluler → edema seluler dan pembengkakan mitokondria<br>• Ca<sup>2+</sup> ATPase (SERCA) mati → kalsium bocor ke sitosol → <strong><em>calcium overload</em></strong></td></tr>
+</table>
+
+<h3>Fase ireversibel (&gt; 20–30 menit)</h3>
+<ol class="flow">
+<li>Calcium overload<small>mengaktifkan enzim degradatif</small></li>
+<li>Kalpain, fosfolipase, endonuklease<small>fosfolipase melisiskan sarkolema dan membran mitokondria</small></li>
+<li>Membran robek permanen<small>nekrosis miosit</small></li>
+<li>Protein bocor<small>makromolekul intraseluler ke interstisial dan kapiler darah</small></li>
+</ol>
+
+<h3>Kompartemen biomarker dalam kardiomiosit</h3>
+<table>
+<tr><th>Kompartemen</th><th>Isi</th><th>Pola pelepasan</th></tr>
+<tr><td><strong>Fraksi sitosolik bebas</strong> (terlarut di sitoplasma)</td><td>Mioglobin 100%, CK-MB ~97%, cTnI 3–4%, cTnT 6–8%</td><td>Cepat bocor ke sirkulasi saat pori sarkolema rusak awal pada fase hiperakut</td></tr>
+<tr><td><strong>Fraksi struktural miofibriler</strong> (terikat filamen kontraktil sarkomer)</td><td>cTnI 96–97%, cTnT 92–94%</td><td>Perlu degradasi proteolitik bertahap; bocor perlahan berhari-hari → kurva eliminasi panjang</td></tr>
+</table>
+</section>
+
+<section class="ch" data-ch="3">
+<h2>Biomarker Infark</h2>
+<p class="def">Troponin jantung (cTnI / cTnT) adalah baku emas (<em>gold standard</em>) universal infark miokard, dengan batas keputusan pada <strong>persentil ke-99 batas rujukan atas (<em>99th percentile URL</em>)</strong>.</p>
+
+<h3>Profil kinetika</h3>
+<table>
+<tr><th>Biomarker</th><th>Mulai naik</th><th>Puncak</th><th>Kembali normal</th></tr>
+<tr><th scope="row">Mioglobin</th><td>1–3 jam</td><td>6–8 jam</td><td>18–24 jam</td></tr>
+<tr><th scope="row">Troponin (cTnI / cTnT)</th><td>2–4 jam<br>(hs-cTn &lt; 1 jam)</td><td>12–24 jam</td><td>cTnI 5–10 hari<br>cTnT 10–14 hari</td></tr>
+<tr><th scope="row">CK-MB</th><td>4–6 jam</td><td>18–24 jam</td><td>48–72 jam (2–3 hari)</td></tr>
+</table>
+<p>Urutan mulai naik: mioglobin → troponin → CK-MB. Kurva troponin mendatar lama setelah puncak sehingga paling lambat kembali normal. Tabel rangkuman bahan menuliskan awal kenaikan hs-cTnI dan hs-cTnT sebagai 1–2 jam.</p>
+
+<h3>Mioglobin</h3>
+<ul>
+<li>Hemoprotein sitosolik sangat kecil (<strong>17 kDa</strong>, monomer heme) penyimpan oksigen; cepat normal karena filtrasi ginjal cepat.</li>
+<li>Biomarker <strong>paling awal naik</strong>; berguna untuk <em>rule-out</em> cepat di UGD bila pasien datang &lt; 6 jam dari onset.</li>
+</ul>
+<p class="awas">Mioglobin <strong>tidak spesifik jantung</strong> karena terdapat di seluruh otot rangka. Trauma otot, rhabdomyolysis, suntikan IM, atau gagal ginjal memberi hasil positif palsu. Saat ini perannya digantikan hs-cTn.</p>
+
+<h3>CK-MB</h3>
+<ul>
+<li>Isoenzim sitosolik dimerik (<strong>86 kDa</strong>). Otot jantung mengandung 15–20% CK-MB (sisanya CK-MM); otot rangka hanya 1–3%.</li>
+<li><strong>Pilihan utama mendeteksi reinfark pada hari ke 3–7.</strong> Troponin tetap positif hingga 10–14 hari pasca infark primer sehingga tidak dapat membedakan nekrosis baru dari sisa infark lama. CK-MB sudah normal pada hari ke-3; lonjakan ulang CK-MB <strong>&gt; 50% di atas nadir</strong> memastikan reinfark.</li>
+<li>Juga penanda reperfusi dini.</li>
+<li>Positif palsu pada trauma otot rangka luas; konfirmasi asal jantung dengan <em>relative index</em>.</li>
+</ul>
+<table>
+<tr><th>Relative index (RI) = CK-MB mass (ng/mL) ÷ total CK (U/L) × 100</th><th>Arti</th></tr>
+<tr><td>RI &gt; 2,5–3%</td><td>Nekrosis berasal dari miokardium</td></tr>
+<tr><td>RI &lt; 2,5%</td><td>Sumber lonjakan dari kerusakan otot rangka (rhabdomyolysis)</td></tr>
+</table>
+
+<h3>Troponin jantung</h3>
+<table>
+<tr><th>Ciri</th><th>cTnI</th><th>cTnT</th></tr>
+<tr><th scope="row">Berat molekul</th><td>24 kDa</td><td>37 kDa</td></tr>
+<tr><th scope="row">Fungsi</th><td>Inhibisi aktin-miosin saat diastol</td><td>Melekatkan kompleks troponin ke tropomiosin</td></tr>
+<tr><th scope="row">Spesifisitas</th><td><strong>100% spesifik jantung</strong> (tidak ada isoform di otot rangka manusia dewasa)</td><td>~99%; dapat terekspresi minor pada miopati skeletal berat</td></tr>
+<tr><th scope="row">Utilitas (tabel rangkuman)</th><td>Baku emas infark miokard akut; triase cepat UGD 0j/1j</td><td>Baku emas alternatif; penilaian luas infark dan stratifikasi prognosis</td></tr>
+<tr><th scope="row">Jebakan</th><td>Tidak bisa mendeteksi reinfark hari ke 3–7; nilai delta absolut untuk membedakan dari kenaikan kronis</td><td>Positif palsu ringan pada penyakit regenerasi otot rangka berat atau penyakit ginjal stadium akhir</td></tr>
+</table>
+
+<h3>Protokol hs-cTn 0 jam / 1 jam (ESC)</h3>
+<p>Assay <em>high-sensitivity</em> troponin mengukur troponin dengan presisi tinggi (<strong>CV ≤ 10%</strong>) pada persentil ke-99 URL dan terdeteksi pada <strong>&gt; 50% orang sehat</strong>.</p>
+<table>
+<tr><th>Zona</th><th>Kriteria</th><th>Tindak lanjut</th></tr>
+<tr><th scope="row">Rule-out</th><td>Kadar 0 jam sangat rendah (misal hs-cTnI &lt; 2–4 ng/L dengan onset &gt; 3 jam), ATAU kadar 0 jam rendah dan delta 1 jam sangat minimal</td><td>Infark disingkirkan dengan NPV &gt; 99%; pasien aman dipulangkan</td></tr>
+<tr><th scope="row">Rule-in</th><td>Kadar 0 jam langsung melampaui cut-off rule-in, ATAU delta absolut 1 jam ≥ cut-off rule-in (misal Δ ≥ 5 ng/L)</td><td>Konfirmasi cedera miokard akut; konsul kardiologi dan siapkan kateterisasi segera</td></tr>
+<tr><th scope="row">Observasi</th><td>Nilai di antara batas rule-out dan rule-in</td><td>Periksa ulang hs-cTn jam ke-3 + ekokardiografi</td></tr>
+</table>
+<p class="awas">Protokol hs-cTn wajib memakai <strong>delta absolut (Δ dalam ng/L)</strong>, bukan persentase. Pasien penyakit ginjal kronik (CKD) sering memiliki troponin basal tinggi yang stabil; ketiadaan delta absolut membuktikan kadar tinggi itu kronis, bukan infark miokard akut.</p>
+</section>
+
+<section class="ch" data-ch="4">
+<h2>Biomarker Gagal Jantung</h2>
+<p class="def">Peptida natriuretik tipe-B disintesis oleh <strong>kardiomiosit ventrikel</strong> akibat peregangan dinding miokard (<em>myocardial wall stress</em>) karena beban volume atau tekanan.</p>
+
+<h3>Biogenesis</h3>
+<ol class="flow">
+<li>Peregangan ventrikel</li>
+<li>Pre-proBNP<small>134 asam amino</small></li>
+<li>ProBNP<sub>1–108</sub><small>108 aa, setelah peptida sinyal lepas</small></li>
+<li>Pembelahan<small>oleh corin (membran) dan furin (intraseluler)</small></li>
+<li>BNP + NT-proBNP<small>BNP<sub>77–108</sub> 32 aa aktif; NT-proBNP<sub>1–76</sub> 76 aa inaktif</small></li>
+</ol>
+<ul>
+<li><strong>Corin</strong>: serin protease transmembran di permukaan sarkolema yang membelah proBNP.</li>
+<li><strong>Furin</strong>: endoprotease aparatus Golgi yang memotong proBNP intraseluler sebelum disekresi.</li>
+</ul>
+
+<h3>BNP dan NT-proBNP</h3>
+<table>
+<tr><th>Parameter</th><th>BNP</th><th>NT-proBNP</th></tr>
+<tr><th scope="row">Struktur</th><td>Cincin 32 asam amino (3,5 kDa); tersimpan di granula ventrikel</td><td>Rantai linier 76 asam amino (8,5 kDa)</td></tr>
+<tr><th scope="row">Aktivitas</th><td><strong>Aktif</strong>: mengikat reseptor NPR-A → cGMP naik → vasodilatasi, natriuresis, supresi RAAS</td><td><strong>Inaktif biologis</strong> (fragmen sisa)</td></tr>
+<tr><th scope="row">Waktu paruh</th><td>Pendek (~20 menit): mencerminkan hemodinamik <em>real-time</em></td><td>Lebih panjang (~60–120 menit): stabil, variasi biologis rendah</td></tr>
+<tr><th scope="row">Eliminasi</th><td>Diinternalisasi reseptor <strong>NPR-C</strong> dan dipecah enzim <strong>neprilysin</strong>; ekskresi ginjal minor</td><td>Hampir murni lewat <strong>filtrasi glomerulus</strong></td></tr>
+<tr><th scope="row">Fungsi ginjal</th><td>Dipengaruhi moderat</td><td>Sangat sensitif terhadap penurunan eGFR (retensi masif pada gagal ginjal kronik)</td></tr>
+<tr><th scope="row">Stabilitas sampel</th><td>Kurang stabil (&lt; 4 jam pada suhu ruang, tabung EDTA)</td><td>Sangat stabil (&gt; 48 jam pada suhu ruang, tabung serum)</td></tr>
+<tr><th scope="row">Utilitas</th><td>Diagnosis &amp; stratifikasi gagal jantung akut/kronis; evaluasi respons hemodinamik jangka pendek</td><td>Diagnosis, pemantauan terapi (termasuk ARNI), stratifikasi risiko mortalitas</td></tr>
+</table>
+
+<h3>Terapi ARNI (sacubitril/valsartan)</h3>
+<p class="awas"><strong>BNP tidak valid untuk memantau gagal jantung pada pengguna ARNI.</strong> ARNI menggabungkan ARB (valsartan) dengan penghambat neprilysin (sacubitril). Neprilysin adalah pemecah fisiologis BNP aktif, sehingga hambatannya membuat kadar BNP melonjak secara farmakologis, terlepas dari apakah klinis membaik. <strong>Wajib memakai NT-proBNP</strong>: bukan substrat neprilysin, kadarnya murni mencerminkan penurunan regangan ventrikel dan respons terapi.</p>
+
+<h3>Cut-off diagnostik (panduan ESC)</h3>
+<p>Peptida natriuretik mempunyai nilai duga negatif (NPV) sangat tinggi (&gt; 95–98%), sehingga menjadi tes utama untuk <strong>menyingkirkan</strong> gagal jantung.</p>
+<table>
+<tr><th>Situasi</th><th>BNP (pg/mL)</th><th>NT-proBNP (pg/mL)</th></tr>
+<tr><th scope="row">UGD, rule-out</th><td>&lt; 100</td><td>&lt; 300 (semua umur)</td></tr>
+<tr><th scope="row">UGD, rule-in</th><td>≥ 400<br>(100–400 = <em>gray zone</em>)</td><td>Menurut usia (kriteria PRIDE):<br>&lt; 50 tahun: ≥ 450<br>50–75 tahun: ≥ 900<br>&gt; 75 tahun: ≥ 1800</td></tr>
+<tr><th scope="row">Rawat jalan, rule-out</th><td>&lt; 35</td><td>&lt; 125</td></tr>
+</table>
+
+<h3>Paradoks obesitas</h3>
+<p>Pasien gagal jantung dengan obesitas (IMT ≥ 30 kg/m²) secara konsisten menunjukkan kadar BNP dan NT-proBNP <strong>30–50% lebih rendah</strong> dibanding non-obesitas pada keparahan yang sama. Penyebabnya:</p>
+<ol>
+<li><strong>Klirens meningkat</strong>: jaringan adiposa berlebih mengekspresikan reseptor klirens NPR-C sangat banyak → degradasi BNP dipercepat.</li>
+<li><strong>Supresi transkripsi</strong>: hiperinsulinemia dan adipokin menekan sintesis gen <em>NPPB</em> di ventrikel.</li>
+<li><strong>Tegangan dinding lebih rendah</strong>: dinding ventrikel yang lebih tebal meredam <em>wall stress</em> diastolik.</li>
+</ol>
+<p class="klinis">Ambang <em>rule-out</em> BNP pada pasien obesitas di UGD diturunkan 50% (misal BNP &lt; 50 pg/mL) untuk mencegah diagnosis terlewat (<em>false negative</em>).</p>
+</section>
+
+<section class="ch" data-ch="5">
+<h2>Faktor Risiko</h2>
+<p class="def">Faktor risiko kunci kardiovaskular yang dibahas: hipertensi, obesitas dan sindrom metabolik, serta merokok (nikotin, karbon monoksida, stres oksidatif). Penanda risiko laboratoriumnya adalah hs-CRP.</p>
+
+<h3>Hipertensi</h3>
+<p><strong>Disfungsi endotel</strong>: tekanan darah tinggi menimbulkan <em>shear stress</em> abnormal dan cedera mikroarsitektur endotel, memicu produksi berlebih ROS via <strong>NADPH oksidase</strong>. ROS menetralkan NO menjadi <strong>peroksinitrit (ONOO⁻)</strong> → bioavailabilitas NO anjlok → vasokonstriksi basal menetap dan aterogenesis dipercepat.</p>
+<ol class="flow">
+<li>SVR naik<small>afterload ventrikel kiri meningkat</small></li>
+<li>Hukum Laplace<small>stress = P × r ÷ 2h; miosit menambah sarkomer paralel</small></li>
+<li>LVH konsentrik</li>
+<li>Dinding kaku<small>relaksasi diastolik terganggu, tekanan pengisian naik</small></li>
+<li>HFpEF<small>gagal jantung dengan fraksi ejeksi terpreservasi</small></li>
+</ol>
+<p>Rasio kapiler terhadap massa miosit menurun → cadangan aliran koroner anjlok → iskemia subendokardial.</p>
+
+<h3>Obesitas dan sindrom metabolik</h3>
+<ul>
+<li><strong>Inflamasi sistemik kronis derajat rendah</strong>: ekspansi adiposa viseral memicu hipoksia jaringan → infiltrasi makrofag M1 membentuk <em>crown-like structures</em>. Sitokin proinflamasi berlebih: <strong>TNF-α, IL-6, PAI-1</strong> (penghambat fibrinolisis). Sekresi <strong>adiponektin</strong> (kardioprotektif, antiaterogenik) anjlok.</li>
+<li><strong>Lipotoksisitas miokardial</strong>: lipolisis masif melepaskan asam lemak bebas (FFA) berlebih, melampaui kapasitas oksidasi mitokondria → akumulasi <strong>diasilgliserol dan seramid</strong> → stres retikulum endoplasma, disfungsi mitokondria, dan apoptosis kardiomiosit.</li>
+<li><strong>Hiperinsulinemia dan beban hemodinamik</strong>: resistensi insulin → hiperinsulinemia → retensi Na<sup>+</sup> dan air di ginjal → hipervolemia. Tonus simpatis meningkat → <strong>hipertrofi eksentrik ventrikel kiri</strong> dan dilatasi atrium kiri.</li>
+</ul>
+
+<h3>Merokok dan karbon monoksida</h3>
+<table>
+<tr><th>Jalur</th><th>Mekanisme</th><th>Akibat</th></tr>
+<tr><td><strong>Nikotin</strong></td><td>Menstimulasi reseptor asetilkolin nikotinik di medula adrenal → pelepasan masif katekolamin (epinefrin, norepinefrin)</td><td>Takikardia, vasokonstriksi sistemik, tekanan darah melonjak → MVO<sub>2</sub> naik tajam; vasokonstriksi arteri koroner secara paradoks</td></tr>
+<tr><td><strong>Karbon monoksida</strong></td><td>Mengikat heme Hb <strong>200–250 kali</strong> lebih kuat dibanding O<sub>2</sub> → karboksihemoglobin (CO-Hb); mengikat sitokrom c oksidase (Kompleks IV)</td><td>Kapasitas angkut O<sub>2</sub> turun; kurva disosiasi bergeser ke kiri sehingga pelepasan O<sub>2</sub> ke miosit terhambat; sintesis ATP aerobik lumpuh</td></tr>
+<tr><td><strong>Stres oksidatif &amp; protrombotik</strong></td><td>Tar dan gas rokok memasok radikal bebas oksidan tiap hisapan</td><td>ox-LDL dan cedera endotel luas; aktivasi &amp; agregasi trombosit, fibrinogen naik, t-PA endotel tertekan → protrombotik dan hiperkoagulan</td></tr>
+</table>
+
+<h3>hs-CRP</h3>
+<p>Reaktan fase akut hati golongan pentraxin (115 kDa), waktu paruh ~19 jam, kinetika lambat. Dipakai untuk stratifikasi risiko kardiovaskular primer pada orang asimtomatik.</p>
+<table>
+<tr><th>hs-CRP (mg/L)</th><th>Risiko</th></tr>
+<tr><td>&lt; 1</td><td>Rendah</td></tr>
+<tr><td>1–3</td><td>Sedang</td></tr>
+<tr><td>&gt; 3</td><td>Tinggi</td></tr>
+</table>
+<p class="awas">hs-CRP bukan penanda spesifik jantung: melonjak pada infeksi sistemik, inflamasi kronis, atau trauma jaringan.</p>
+</section>
+
+    </div>
+  </div>
+</div>
+
+<div id="v-quiz" role="tabpanel" aria-labelledby="tab-quiz" hidden>
+ <div class="quiz">
+  <div id="setup"></div>
+
+  <div id="run" hidden>
+    <div class="runhead">
+      <strong id="rpos"></strong><span id="rinfo" aria-live="off"></span>
+      <button class="btn sm" id="endbtn">Akhiri</button>
+      <div class="bar" id="rbarwrap" role="progressbar" aria-valuemin="0" aria-label="Soal terjawab"><i id="rbar"></i></div>
+    </div>
+    <div class="qcard">
+      <p class="scen" id="rscen" hidden></p>
+      <h2 class="qtext" id="rq" tabindex="-1"></h2>
+    </div>
+    <div class="opts" id="ropts" role="group" aria-label="Pilihan jawaban"></div>
+    <div class="fb" id="rfb" role="status" aria-live="polite" hidden></div>
+    <details class="grid" id="rgridwrap" hidden><summary>Daftar soal (titik kuning = ragu)</summary><div id="rgrid"></div></details>
+    <div class="actbar">
+      <button class="btn fit" id="prevbtn" aria-label="Soal sebelumnya">←</button>
+      <button class="btn fit" id="flagbtn" aria-pressed="false">Ragu</button>
+      <span class="hint" id="rhint">Pilih satu jawaban</span>
+      <button class="btn pri" id="nextbtn">Berikutnya →</button>
+    </div>
+  </div>
+
+  <div id="result" hidden></div>
+ </div>
+</div>
+</main>
+
+<dialog id="dlg" aria-labelledby="dlgmsg"><p id="dlgmsg"></p><div class="row"><button class="btn" value="no">Batal</button><button class="btn pri" value="yes" id="dlgok">Ya</button></div></dialog>
+
+<script>
+const META={id:'b32-k13',bab:['Aterotrombosis','Kematian Miosit','Biomarker Infark','Biomarker Gagal Jantung','Faktor Risiko']};
+// [bab, pertanyaan, [BENAR, pengecoh×4], pembahasan, skenario atau '', [id butir]]
+const QRAW=[
+/* ===== BAB 1 ===== */
+[1,'Lokasi arteri yang paling rentan mengalami disfungsi endotel akibat shear stress aliran turbulen adalah…',['Bifurkasio arteri','Segmen lurus arteri','Vasa vasorum adventisia','Kapiler miokard','Lamina elastika interna'],'Aliran turbulen terjadi di percabangan (bifurkasio). Pemicu lain disfungsi endotel awal menurut bahan: hipertensi, dislipidemia, dan radikal bebas rokok.','',['1.01']],
+[1,'Akibat langsung anjloknya produksi NO pada endotel yang mengalami disfungsi adalah…',['Vasodilatasi hilang, permeabilitas naik, molekul adhesi melonjak','Vasodilatasi hilang, permeabilitas turun, molekul adhesi menurun','Vasodilatasi naik, permeabilitas naik, molekul adhesi melonjak','Vasodilatasi naik, permeabilitas turun, molekul adhesi menurun','Vasodilatasi hilang, permeabilitas turun, molekul adhesi melonjak'],'NO menjaga vasodilatasi dan endotel yang tidak lengket. Bila NO turun, ketiganya berubah ke arah aterogenik: dinding lebih bocor dan lebih mudah ditempeli leukosit.','',['1.02']],
+[1,'Molekul adhesi yang ekspresinya melonjak pada endotel disfungsional adalah…',['VCAM-1, ICAM-1, P-selektin','MCP-1, PDGF, TGF-β','SR-A, CD36, NPR-C','MMP-1, MMP-8, MMP-13','GP Ib/IX, GP IIb/IIIa, vWF'],'VCAM-1, ICAM-1, dan P-selektin adalah adhesin endotel. MCP-1 adalah kemokin penarik monosit, bukan molekul adhesi; SR-A dan CD36 adalah reseptor pada makrofag.','',['1.02']],
+[1,'Setelah merembes ke ruang subendotelial tunika intima, partikel LDL tertahan karena terperangkap oleh…',['Jala proteoglikan matriks','Jala fibrin stabil','Kolagen tipe I dan III','Lamina elastika interna','Reseptor GP Ib/IX'],'LDL terperangkap jala proteoglikan matriks intima, lalu terpapar ROS dan teroksidasi. Jala fibrin baru terbentuk pada trombogenesis setelah plak robek.','',['1.03']],
+[1,'Sifat ox-LDL yang terbentuk setelah LDL terpapar reactive oxygen species adalah…',['Sangat sitotoksik dan imunogenik','Kardioprotektif dan antiaterogenik','Inaktif biologis dan stabil','Vasodilator dan natriuretik','Antiinflamasi dan fibrinolitik'],'ox-LDL sangat sitotoksik dan imunogenik sehingga mengundang respons makrofag. Kardioprotektif dan antiaterogenik adalah sifat adiponektin.','',['1.04']],
+[1,'Kemokin yang menarik monosit menuju endotel sebelum bermigrasi ke intima dan menjadi makrofag adalah…',['MCP-1','PDGF','IFN-γ','TGF-β','PAI-1'],'MCP-1 menarik monosit. PDGF dan TGF-β adalah faktor pertumbuhan yang memanggil sel otot polos, sedangkan IFN-γ dilepas limfosit Th1 dan menghentikan sintesis kolagen.','',['1.05']],
+[1,'Makrofag di intima mengambil ox-LDL melalui reseptor…',['SR-A dan CD36','NPR-A dan NPR-C','GP Ib/IX dan GP IIb/IIIa','VCAM-1 dan ICAM-1','Corin dan furin'],'Scavenger receptor SR-A dan CD36 adalah jalur ambilan ox-LDL oleh makrofag. NPR-A dan NPR-C adalah reseptor peptida natriuretik; GP adalah reseptor trombosit.','',['1.06']],
+[1,'Makrofag terus menimbun kolesterol hingga menjadi sel busa. Dasar mekanismenya adalah…',['Ambilan via scavenger receptor tanpa negative feedback','Ambilan via reseptor LDL yang terus bertambah','Kegagalan lisosom mencerna kolagen tipe I dan III','Hambatan neprilysin oleh lipid teroksidasi','Aktivasi kalpain oleh calcium overload sitosol'],'Scavenger receptor tidak dikendalikan umpan balik negatif, sehingga ox-LDL terus masuk dan sitoplasma dipenuhi vakuola kolesterol. Kalpain dan calcium overload termasuk kaskade kematian miosit, bukan pembentukan sel busa.','',['1.06']],
+[1,'Lesi makroskopis paling awal aterosklerosis, berupa timbunan sel busa, disebut…',['Fatty streak','Fibroateroma','Thin-cap fibroatheroma','Inti nekrotik','Erosi plak'],'Fatty streak (bercak perlemakan) adalah lesi makroskopis awal. Fibroateroma baru terbentuk setelah sel otot polos membangun tudung fibrosa.','',['1.07']],
+[1,'Faktor pertumbuhan dari makrofag dan sel busa yang merangsang migrasi sel otot polos vaskular adalah…',['PDGF dan TGF-β','MCP-1 dan IFN-γ','TNF-α dan IL-6','ADP dan tromboksan A2','MMP-2 dan MMP-9'],'PDGF dan TGF-β memanggil VSMC ke intima. TNF-α dan IL-6 disebut bahan sebagai sitokin proinflamasi jaringan adiposa; ADP dan tromboksan A2 dilepas platelet.','',['1.08']],
+[1,'Jalur migrasi sel otot polos vaskular pada pembentukan fibroateroma adalah…',['Dari tunika media ke intima, menembus lamina elastika interna','Dari tunika intima ke media, menembus lamina elastika interna','Dari tunika adventisia ke intima, melalui vasa vasorum','Dari lumen ke intima, menembus endotel yang meluruh','Dari tunika media ke adventisia, menembus lamina basalis'],'VSMC berasal dari tunika media dan menembus lamina elastika interna menuju intima. Yang masuk dari lumen menembus endotel adalah monosit.','',['1.08']],
+[1,'Di intima, sel otot polos vaskular membentuk tudung fibrosa setelah…',['Beralih dari fenotipe kontraktil ke sintetis dan membuat kolagen I & III serta elastin','Beralih dari fenotipe sintetis ke kontraktil dan membuat kolagen I & III serta elastin','Beralih menjadi sel busa dan melepaskan kolesterol bebas serta debris sel','Beralih menjadi makrofag M1 dan melepaskan MMP kolagenase serta gelatinase','Beralih dari fenotipe kontraktil ke sintetis dan membuat proteoglikan serta hialuronan'],'Peralihan kontraktil ke sintetis membuat VSMC memproduksi kolagen tipe I dan III serta elastin, bahan tudung fibrosa. Proteoglikan/hialuronan disebut bahan sebagai ciri plak yang mengalami erosi.','',['1.09']],
+[1,'Fungsi utama tudung fibrosa pada fibroateroma adalah…',['Mengisolasi inti lipid trombogenik dari darah lumen','Menghasilkan tissue factor untuk kaskade koagulasi','Memasok pembuluh mikro baru dari vasa vasorum','Menarik monosit melalui kemokin MCP-1','Mengoksidasi LDL yang terperangkap di intima'],'Tudung fibrosa memisahkan inti lipid yang trombogenik dari aliran darah. Tissue factor justru berada di inti nekrotik dan baru terpapar bila tudung robek.','',['1.09']],
+[1,'Istilah defective efferocytosis pada pembentukan inti nekrotik berarti…',['Kegagalan membersihkan sel mati','Kegagalan mengoksidasi LDL','Kegagalan migrasi sel otot polos','Kegagalan sintesis kolagen','Kegagalan agregasi trombosit'],'Sel busa yang mati tidak dibersihkan, lalu hancur dan melepaskan kolesterol bebas serta debris yang membentuk inti nekrotik.','',['1.10']],
+[1,'Komponen inti nekrotik yang membuatnya sangat trombogenik adalah…',['Tissue factor','Kolagen tipe I','Elastin','Proteoglikan','Adiponektin'],'Inti nekrotik kaya faktor jaringan (tissue factor) yang memicu koagulasi bila terpapar darah. Kolagen dan elastin adalah komponen tudung fibrosa.','',['1.10']],
+[1,'Stabilitas plak ateroma bergantung pada rasio antara…',['Sintesis kolagen oleh VSMC dan degradasi matriks oleh enzim sel radang','Sintesis kolagen oleh makrofag dan degradasi matriks oleh enzim VSMC','Ambilan ox-LDL oleh makrofag dan pelepasan NO oleh endotel','Kadar fibrinogen plasma dan aktivitas t-PA endotel','Produksi trombin di lumen dan jumlah reseptor GP IIb/IIIa'],'VSMC adalah pembuat kolagen, sedangkan sel radang (makrofag) melepas enzim perusak matriks. Bila degradasi menang, tudung menipis dan plak menjadi rentan.','',['1.11']],
+[1,'Gambaran plak yang paling sesuai dengan keluhan pasien ini adalah…',['Tudung tebal kaya kolagen, inti nekrotik <30%, radang minimal','Tudung tipis <65 µm, inti nekrotik >40%, radang padat di bahu plak','Tudung utuh dengan endotel meluruh dan trombus di permukaannya','Tudung robek dengan trombus oklusif total di lumen','Tudung tipis dengan perdarahan intraplak dari vasa vasorum'],'Nyeri hanya saat aktivitas dan hilang dengan istirahat adalah angina pektoris stabil, akibat plak stabil yang menyempitkan lumen bertahap. Opsi lain menggambarkan plak rentan, erosi, atau ruptur.','Laki-laki 58 tahun mengeluh nyeri dada tiap kali naik tangga dua lantai; nyeri hilang dalam beberapa menit setelah beristirahat. Pola ini tetap selama setahun.',['1.12']],
+[1,'Ketebalan tudung fibrosa yang menjadi ciri kritis plak rentan (thin-cap fibroatheroma) adalah…',['< 65 µm','< 30 µm','< 100 µm','< 125 µm','< 400 µm'],'Batas yang diberikan bahan adalah <65 µm. Angka 30 (dan 40) pada bahan adalah persentase inti nekrotik, bukan ketebalan tudung.','',['1.13']],
+[1,'Plak tersebut paling tepat digolongkan sebagai…',['Plak rentan (thin-cap fibroatheroma)','Plak stabil bertudung tebal kaya kolagen','Fatty streak (bercak perlemakan)','Erosi plak dengan deskuamasi endotel','Plak yang sudah mengalami ruptur'],'Tudung <65 µm dan inti nekrotik >40% adalah ciri TCFA. Belum ada robekan atau trombus, jadi belum ruptur; endotel juga tidak disebut meluruh.','Pencitraan intrakoroner pada seorang pasien menunjukkan plak dengan tudung fibrosa setebal 50 µm dan inti nekrotik yang menempati 45% volume plak. Tudung masih utuh dan tidak tampak trombus.',['1.13','1.14']],
+[1,'Proporsi inti nekrotik terhadap total volume plak pada plak rentan adalah…',['> 40%','< 30%','> 30%','> 50%','> 65%'],'Plak rentan memiliki inti nekrotik masif >40% volume plak; plak stabil <30%. Angka 65 adalah batas ketebalan tudung dalam µm.','',['1.14']],
+[1,'Bagian plak rentan yang menjadi titik stres mekanik tertinggi dan dipadati makrofag serta sel T adalah…',['Daerah bahu plak','Pusat inti nekrotik','Dasar plak di tunika media','Puncak tengah tudung fibrosa','Lamina elastika interna'],'Shoulder region (bahu plak) adalah titik stres mekanik tertinggi dan tempat radang padat, sehingga menjadi lokasi yang mudah robek.','',['1.15']],
+[1,'Perdarahan intraplak pada plak rentan berasal dari…',['Pembuluh mikro imatur dari vasa vasorum','Robekan lamina elastika interna','Erosi endotel di permukaan plak','Arteri koroner epikardial cabang','Kapiler subendokardial yang iskemik'],'Neovaskularisasi dari vasa vasorum bersifat imatur dan rapuh sehingga mudah pecah ke dalam plak.','',['1.16']],
+[1,'Efek IFN-γ yang dilepaskan limfosit Th1 di dalam plak adalah…',['Apoptosis VSMC dan sintesis kolagen baru terhenti','Migrasi VSMC dan sintesis kolagen baru meningkat','Aktivasi GP IIb/IIIa dan agregasi trombosit','Oksidasi LDL dan pembentukan sel busa','Deskuamasi endotel dan pembentukan NET'],'IFN-γ mematikan VSMC, satu-satunya pembuat kolagen tudung, sehingga perbaikan tudung berhenti. Migrasi VSMC dirangsang PDGF dan TGF-β, bukan IFN-γ.','',['1.17']],
+[1,'Kelompok MMP yang tergolong kolagenase, yaitu pemotong kolagen tipe I dan III yang masih utuh, adalah…',['MMP-1, MMP-8, MMP-13','MMP-2, MMP-9, MMP-13','MMP-1, MMP-2, MMP-9','MMP-2, MMP-8, MMP-9','MMP-1, MMP-9, MMP-13'],'Kolagenase: MMP-1, -8, -13. MMP-2 dan MMP-9 adalah gelatinase.','',['1.18']],
+[1,'Kerja gelatinase (MMP-2 dan MMP-9) pada tudung fibrosa adalah…',['Menghancurkan fragmen kolagen dan lamina basalis','Memotong kolagen tipe I dan III yang masih utuh','Mengoksidasi LDL di ruang subendotelial','Memecah BNP aktif di sirkulasi','Melisiskan sarkolema dan membran mitokondria'],'Gelatinase melanjutkan kerja kolagenase dengan menghancurkan fragmen kolagen dan lamina basalis. Memotong kolagen utuh adalah tugas kolagenase (MMP-1, -8, -13).','',['1.18']],
+[1,'Mekanisme yang paling sesuai dengan temuan tersebut adalah…',['Erosi plak','Ruptur plak','Perdarahan intraplak','Fatty streak','Plak stabil'],'Peluruhan endotel di atas plak tanpa robeknya tudung adalah erosi plak, yang menurut bahan terjadi pada sekitar 30% kasus ACS, sering pada plak kaya proteoglikan/hialuronan.','Perempuan 44 tahun perokok datang dengan sindrom koroner akut. Pemeriksaan intrakoroner menunjukkan trombus di atas plak yang tudung fibrosanya utuh; lapisan endotel di atasnya meluruh.',['1.19']],
+[1,'Pemicu erosi plak yang disebutkan dalam bahan adalah…',['Apoptosis endotel dan NETosis','Apoptosis VSMC dan kolagenase','Lipotoksisitas dan efferocytosis gagal','Calcium overload dan fosfolipase','Neovaskularisasi dan perdarahan'],'Erosi dipicu apoptosis endotel dan perangkap neutrofil (NETosis). Apoptosis VSMC dan kolagenase adalah jalur menuju ruptur plak.','',['1.19']],
+[1,'Tissue factor yang terpapar ke darah memulai kaskade koagulasi dengan berikatan pada…',['Faktor VIIa','Fibrinogen','von Willebrand factor','GP IIb/IIIa','Tromboksan A2'],'TF + faktor VIIa mengaktifkan kaskade koagulasi sehingga trombin melonjak. vWF dan GP berperan pada adhesi dan agregasi platelet, bukan aktivasi koagulasi oleh TF.','Seorang pasien mengalami ruptur plak koroner. Isi inti nekrotik yang kaya tissue factor kini berkontak langsung dengan darah.',['1.20','1.10']],
+[1,'Akibat lonjakan trombin pada kaskade trombogenesis luminal adalah…',['Polimerisasi fibrinogen menjadi jala fibrin stabil','Pemecahan jala fibrin menjadi fragmen terlarut','Pengikatan kolagen subendotel pada GP Ib/IX','Oksidasi LDL menjadi ox-LDL di intima','Pelepasan tissue factor dari inti nekrotik'],'Trombin mengubah fibrinogen menjadi jala fibrin stabil. Pengikatan kolagen pada GP Ib/IX adalah langkah adhesi platelet lewat vWF.','',['1.20']],
+[1,'Adhesi awal trombosit pada kolagen subendotel yang terpapar terjadi melalui…',['Reseptor GP Ib/IX dengan perantara vWF','Reseptor GP IIb/IIIa dengan perantara fibrinogen','Reseptor SR-A dengan perantara ox-LDL','Reseptor NPR-C dengan perantara neprilysin','Reseptor CD36 dengan perantara tissue factor'],'Adhesi: kolagen – vWF – GP Ib/IX. GP IIb/IIIa dengan fibrinogen adalah tahap agregasi antar-trombosit, bukan adhesi awal.','',['1.21']],
+[1,'Molekul yang menjembatani reseptor GP IIb/IIIa antar-trombosit sehingga terbentuk agregat masif adalah…',['Fibrinogen','von Willebrand factor','Kolagen subendotel','Tissue factor','Trombin'],'Setelah ADP dan tromboksan A2 mengaktifkan GP IIb/IIIa, fibrinogen menjadi jembatan antar-trombosit. vWF menjembatani kolagen dengan GP Ib/IX pada tahap adhesi.','',['1.22']],
+[1,'Zat yang dilepas platelet teraktivasi untuk mengaktifkan reseptor GP IIb/IIIa adalah…',['ADP dan tromboksan A2','PDGF dan TGF-β','Trombin dan faktor VIIa','MCP-1 dan P-selektin','Epinefrin dan norepinefrin'],'ADP dan tromboksan A2 dari platelet mengaktifkan GP IIb/IIIa. Faktor VIIa bekerja bersama tissue factor pada jalur koagulasi.','',['1.22']],
+[1,'Trombus yang menyumbat lumen arteri koroner secara total menimbulkan…',['STEMI','NSTEMI','Unstable angina pectoris','Angina pektoris stabil','HFpEF'],'Oklusi total → STEMI; oklusi parsial/subtotal → NSTEMI atau UAP. Angina stabil berasal dari plak stabil tanpa trombus akut.','',['1.23']],
+[1,'Berdasarkan derajat oklusi, sindrom yang paling sesuai adalah…',['NSTEMI / UAP','STEMI','Angina pektoris stabil','Erosi plak tanpa trombus','Fatty streak'],'Trombus yang hanya menyumbat sebagian (parsial/subtotal) memberi NSTEMI atau UAP. STEMI terjadi bila trombus oklusif total.','Laki-laki 62 tahun datang dengan nyeri dada saat istirahat sejak 2 jam. Angiografi menunjukkan trombus di atas plak yang robek; lumen tersumbat subtotal dan masih ada aliran.',['1.23']],
+
+/* ===== BAB 2 ===== */
+[2,'Fase reversibel iskemia kardiomiosit berlangsung selama…',['0–20 menit pasca oklusi','0–60 detik pasca oklusi','0–10 menit pasca oklusi','0–60 menit pasca oklusi','0–6 jam pasca oklusi'],'Fase reversibel 0–20 menit; setelah >20–30 menit tercapai point of no return. Enam puluh detik adalah waktu berhentinya kontraksi, bukan batas reversibilitas.','',['2.01']],
+[2,'Peristiwa yang terjadi dalam 0–10 detik pertama setelah aliran koroner berhenti adalah…',['Fosforilasi oksidatif mitokondria berhenti','Asidosis intraseluler mencapai pH < 6,5','Na+/K+ ATPase berhenti bekerja','Fosfolipase melisiskan sarkolema','Troponin lepas dari sarkomer'],'Dalam 10 detik PO2 anjlok, fosforilasi oksidatif mati, dan sintesis ATP terhenti. Asidosis muncul pada 10–60 detik; pompa ion lumpuh pada 2–10 menit.','',['2.02']],
+[2,'Kontraksi miokard di daerah iskemik berhenti total dalam waktu…',['60 detik','10 detik','10 menit','20 menit','30 menit'],'Kontraksi berhenti total dalam 60 detik, jauh sebelum sel mati (ireversibel baru setelah >20–30 menit).','',['2.03']],
+[2,'Mekanisme berhentinya kontraksi miokard pada 10–60 detik pertama iskemia adalah…',['Asidosis intraseluler menghambat interaksi aktin-miosin','Calcium overload mengaktifkan kalpain dan endonuklease','Retensi natrium menyebabkan edema seluler','Fosfolipase melisiskan membran mitokondria','Troponin I bocor dari fraksi sitosolik'],'Glikolisis anaerob menumpuk laktat, pH turun <6,5, dan interaksi aktin-miosin terhambat. Calcium overload dan fosfolipase baru berperan pada tahap lebih lanjut.','',['2.03']],
+[2,'Akibat matinya Na+/K+ ATPase pada menit ke-2 sampai ke-10 iskemia adalah…',['Retensi Na+ intraseluler dan edema seluler','Kebocoran Ca2+ ke sitosol dan aktivasi kalpain','Penumpukan asam laktat dan asidosis','Penurunan PO2 dan henti fosforilasi oksidatif','Pelepasan troponin dan CK-MB ke darah'],'Na+ tertahan di dalam sel, menarik air: edema seluler dan pembengkakan mitokondria. Kebocoran kalsium ke sitosol adalah akibat matinya SERCA.','',['2.04']],
+[2,'Calcium overload sitosol pada iskemia terjadi karena lumpuhnya…',['Ca2+ ATPase (SERCA)','Na+/K+ ATPase','Sitokrom c oksidase','NADPH oksidase','Kreatin kinase'],'SERCA yang mati membuat kalsium bocor ke sitosol. Na+/K+ ATPase yang mati menyebabkan retensi natrium dan edema.','',['2.05']],
+[2,'Batas waktu point of no return (awal fase ireversibel) kardiomiosit iskemik adalah…',['> 20–30 menit','> 60 detik','> 2–10 menit','> 1–3 jam','> 4–6 jam'],'Setelah >20–30 menit kerusakan menjadi ireversibel. Angka 1–3 jam dan 4–6 jam adalah awal kenaikan mioglobin dan CK-MB di darah.','',['2.06']],
+[2,'Keadaan kardiomiosit di wilayah arteri tersebut paling mungkin…',['Ireversibel: membran robek permanen dan terjadi nekrosis','Reversibel: hanya kontraksi yang berhenti sementara','Reversibel: hanya edema seluler tanpa kebocoran kalsium','Reversibel: hanya asidosis laktat tanpa kerusakan membran','Belum terpengaruh karena cadangan glikogen masih cukup'],'Oklusi 45 menit sudah melewati point of no return (>20–30 menit): enzim degradatif merobek membran dan protein intrasel bocor ke darah.','Laki-laki 60 tahun mengalami oklusi total arteri koroner yang berlangsung 45 menit tanpa reperfusi.',['2.06']],
+[2,'Enzim degradatif yang diaktifkan calcium overload pada fase ireversibel adalah…',['Kalpain, fosfolipase, endonuklease','Kolagenase, gelatinase, elastase','Corin, furin, neprilysin','NADPH oksidase, sitokrom c oksidase, SERCA','Kreatin kinase, kalpain, neprilysin'],'Kalpain, fosfolipase, dan endonuklease diaktifkan kalsium. Kolagenase dan gelatinase (MMP) bekerja pada tudung plak; corin dan furin memproses proBNP.','',['2.07']],
+[2,'Peran fosfolipase dalam nekrosis kardiomiosit adalah…',['Melisiskan sarkolema dan membran mitokondria','Memotong kolagen tipe I dan III yang utuh','Menghambat interaksi aktin dan miosin','Membelah proBNP menjadi BNP dan NT-proBNP','Menetralkan NO menjadi peroksinitrit'],'Fosfolipase merusak fosfolipid membran plasma (sarkolema) dan mitokondria sehingga membran robek permanen dan protein makromolekul bocor.','',['2.08']],
+[2,'Biomarker yang seluruhnya (100%) berada di fraksi sitosolik bebas kardiomiosit adalah…',['Mioglobin','CK-MB','cTnI','cTnT','NT-proBNP'],'Mioglobin 100% sitosolik; CK-MB ~97%. Troponin hanya 3–8% sitosolik, sisanya terikat sarkomer.','',['2.09']],
+[2,'Protein yang paling dahulu bocor ke sirkulasi pada keadaan ini adalah…',['Fraksi sitosolik bebas, misalnya mioglobin dan CK-MB','Fraksi struktural sarkomer, misalnya troponin terikat','Fragmen kolagen tudung fibrosa plak','Peptida natriuretik dari granula ventrikel','Protein fase akut dari hati, misalnya CRP'],'Protein yang terlarut bebas di sitoplasma langsung keluar begitu pori sarkolema rusak. Troponin yang terikat sarkomer perlu proteolisis bertahap dahulu.','Pada fase hiperakut infark miokard, sarkolema kardiomiosit baru mulai berpori sementara filamen kontraktil belum terdegradasi.',['2.09']],
+[2,'Persentase cTnI yang terikat pada filamen kontraktil (fraksi struktural sarkomer) adalah…',['96–97%','3–4%','6–8%','92–94%','15–20%'],'cTnI: 96–97% sarkomer dan 3–4% sitosol. cTnT: 92–94% sarkomer dan 6–8% sitosol. Angka 15–20% adalah proporsi CK-MB di otot jantung.','',['2.10']],
+[2,'Penjelasan paling tepat untuk temuan tersebut adalah…',['Sebagian besar troponin terikat sarkomer dan lepas lewat proteolisis bertahap','Sebagian besar troponin berada di sitosol dan terus disintesis ulang','Troponin dieliminasi murni lewat filtrasi glomerulus yang lambat','Troponin dipecah neprilysin yang jenuh setelah infark','Troponin diikat reseptor NPR-C sehingga tertahan di plasma'],'Lebih dari 90% troponin adalah fraksi struktural yang bocor perlahan selama berhari-hari, memberi kurva eliminasi panjang. Neprilysin dan NPR-C adalah jalur eliminasi BNP.','Seorang pasien infark miokard diperiksa ulang pada hari ke-6. CK-MB dan mioglobin sudah normal, tetapi troponin masih meningkat.',['2.10']],
+
+/* ===== BAB 3 ===== */
+[3,'Deskripsi yang tepat untuk mioglobin adalah…',['Hemoprotein sitosolik 17 kDa penyimpan oksigen','Isoenzim sitosolik dimerik 86 kDa','Protein kontraktil 24 kDa penghambat aktin-miosin','Protein 37 kDa pelekat troponin ke tropomiosin','Pentraxin 115 kDa reaktan fase akut hati'],'Mioglobin: hemoprotein kecil 17 kDa. Opsi lain berturut-turut menggambarkan CK-MB, cTnI, cTnT, dan hs-CRP.','',['3.01']],
+[3,'Profil kinetika mioglobin setelah infark miokard adalah…',['Naik 1–3 jam, puncak 6–8 jam, normal 18–24 jam','Naik 2–4 jam, puncak 12–24 jam, normal 5–10 hari','Naik 4–6 jam, puncak 18–24 jam, normal 48–72 jam','Naik 1–3 jam, puncak 18–24 jam, normal 48–72 jam','Naik 4–6 jam, puncak 6–8 jam, normal 18–24 jam'],'Mioglobin naik dan turun paling cepat. Opsi kedua adalah kinetika troponin (cTnI), opsi ketiga CK-MB.','',['3.02']],
+[3,'Mioglobin kembali normal dalam 18–24 jam terutama karena…',['Filtrasi ginjal yang cepat','Pemecahan oleh neprilysin','Internalisasi oleh reseptor NPR-C','Ikatan kuat pada sarkomer','Proteolisis oleh kalpain'],'Molekul 17 kDa ini cepat difiltrasi ginjal. Itu pula sebabnya gagal ginjal dapat membuat mioglobin tinggi palsu.','',['3.02']],
+[3,'Di antara biomarker nekrosis berikut, yang menurut bahan paling awal naik di darah adalah…',['Mioglobin','CK-MB','CK total','cTnT konvensional','cTnI konvensional'],'Mioglobin naik 1–3 jam setelah onset, sehingga dipakai untuk rule-out cepat bila pasien datang <6 jam. Troponin konvensional 2–4 jam dan CK-MB 4–6 jam.','Laki-laki 50 tahun tiba di UGD 2 jam setelah awitan nyeri dada. Dokter jaga ingin mengetahui penanda nekrosis mana yang paling mungkin sudah meningkat.',['3.03']],
+[3,'Interpretasi paling tepat atas hasil mioglobin tersebut adalah…',['Positif palsu karena mioglobin juga berasal dari otot rangka','Infark miokard akut karena mioglobin baku emas diagnosis','Reinfark dini karena mioglobin melonjak di atas nadir','Gagal jantung akut karena mioglobin naik bila ventrikel teregang','Risiko kardiovaskular tinggi karena mioglobin penanda inflamasi'],'Mioglobin terdapat di seluruh otot rangka, sehingga trauma otot dan rhabdomyolysis menaikkannya tanpa cedera jantung. Baku emas infark adalah troponin.','Laki-laki 25 tahun dirawat setelah kecelakaan lalu lintas dengan cedera remuk otot paha. Ia tidak mengeluh nyeri dada dan EKG normal, tetapi kadar mioglobin sangat tinggi.',['3.04']],
+[3,'Semua keadaan berikut disebut bahan dapat memberi hasil mioglobin positif palsu, KECUALI…',['Terapi sacubitril/valsartan','Trauma otot','Rhabdomyolysis','Suntikan intramuskular','Gagal ginjal'],'Sacubitril menghambat neprilysin dan menaikkan BNP, bukan mioglobin. Empat lainnya tercantum sebagai penyebab positif palsu mioglobin.','',['3.04']],
+[3,'Proporsi CK-MB terhadap kreatin kinase di otot jantung adalah…',['15–20%','1–3%','3–4%','6–8%','~97%'],'Otot jantung 15–20% CK-MB (sisanya CK-MM), otot rangka hanya 1–3%. Perbedaan ini mendasari penggunaan relative index.','',['3.05']],
+[3,'Profil kinetika CK-MB setelah infark miokard adalah…',['Naik 4–6 jam, puncak 18–24 jam, normal 48–72 jam','Naik 1–3 jam, puncak 6–8 jam, normal 18–24 jam','Naik 2–4 jam, puncak 12–24 jam, normal 10–14 hari','Naik 4–6 jam, puncak 12–24 jam, normal 5–10 hari','Naik 2–4 jam, puncak 18–24 jam, normal 18–24 jam'],'CK-MB sudah normal pada hari ke-2 sampai ke-3, dan sifat inilah yang membuatnya berguna untuk mendeteksi reinfark.','',['3.06']],
+[3,'Biomarker pilihan utama untuk memastikan dugaan pada pasien ini adalah…',['CK-MB','hs-cTnI','hs-cTnT','Mioglobin','NT-proBNP'],'Dugaan reinfark pada hari ke 3–7: CK-MB sudah kembali normal sehingga lonjakan ulang bermakna, sedangkan troponin masih positif dari infark pertama.','Laki-laki 64 tahun dirawat karena STEMI. Pada hari ke-5 perawatan ia kembali mengalami nyeri dada hebat dengan perubahan EKG baru.',['3.07']],
+[3,'Alasan troponin kurang dapat diandalkan untuk mendeteksi reinfark pada hari ke 3–7 adalah…',['Masih positif hingga 10–14 hari dari infark primer','Baru mulai naik 4–6 jam setelah infark kedua','Sudah kembali normal dalam 18–24 jam','Kurang spesifik jantung dibanding CK-MB','Dipecah neprilysin sehingga kadarnya turun'],'Troponin dari infark pertama masih tinggi sehingga nekrosis baru tidak dapat dibedakan dari sisa infark lama. Spesifisitas troponin justru lebih baik daripada CK-MB.','',['3.07']],
+[3,'Kriteria laboratorium yang memastikan reinfark menurut bahan adalah…',['CK-MB naik ulang > 50% di atas nadir','CK-MB naik ulang > 10% di atas nadir','Troponin naik ulang > 50% di atas nadir','Mioglobin naik ulang > 50% di atas nadir','Relative index turun < 2,5% dari nadir'],'Lonjakan ulang CK-MB >50% di atas nadir memastikan reinfark.','',['3.07']],
+[3,'Relative index (RI) dan interpretasinya pada pasien ini adalah…',['5%; nekrosis berasal dari miokardium','5%; lonjakan berasal dari otot rangka','2%; nekrosis berasal dari miokardium','2%; lonjakan berasal dari otot rangka','20%; nekrosis berasal dari miokardium'],'RI = CK-MB mass ÷ total CK × 100 = 10 ÷ 200 × 100 = 5%. RI >2,5–3% menunjukkan asal miokardium.','Seorang pasien nyeri dada memiliki CK-MB mass 10 ng/mL dan total CK 200 U/L.',['3.08']],
+[3,'Interpretasi paling tepat atas kenaikan CK-MB pada orang ini adalah…',['RI 1%: sumbernya kerusakan otot rangka','RI 1%: sumbernya nekrosis miokardium','RI 10%: sumbernya kerusakan otot rangka','RI 10%: sumbernya nekrosis miokardium','RI 100%: sumbernya nekrosis miokardium'],'RI = 20 ÷ 2000 × 100 = 1%, di bawah 2,5%, sehingga lonjakan berasal dari otot rangka (rhabdomyolysis), bukan jantung.','Seorang pelari maraton diperiksa setelah lomba karena nyeri otot hebat. Total CK 2000 U/L dan CK-MB mass 20 ng/mL.',['3.08']],
+[3,'Fungsi cTnI dalam aparatus kontraktil jantung adalah…',['Menghambat interaksi aktin-miosin saat diastol','Melekatkan kompleks troponin ke tropomiosin','Menyimpan oksigen di sitosol kardiomiosit','Memindahkan fosfat berenergi tinggi ke ADP','Memompa kalsium kembali ke retikulum sarkoplasma'],'cTnI (24 kDa) bersifat inhibitorik saat diastol. Melekatkan kompleks ke tropomiosin adalah fungsi cTnT; menyimpan oksigen adalah fungsi mioglobin.','',['3.09']],
+[3,'Biomarker yang menurut bahan 100% spesifik jantung karena tidak memiliki isoform di otot rangka manusia dewasa adalah…',['cTnI','cTnT','CK-MB','Mioglobin','hs-CRP'],'cTnI 100% spesifik jantung. cTnT ~99% karena dapat terekspresi minor pada miopati skeletal berat; CK-MB masih ada 1–3% di otot rangka.','',['3.09']],
+[3,'Pernyataan yang tepat mengenai cTnT adalah…',['37 kDa; melekatkan kompleks troponin ke tropomiosin','24 kDa; menghambat aktin-miosin saat diastol','17 kDa; menyimpan oksigen di sitosol','86 kDa; isoenzim dimerik di sitosol','8,5 kDa; fragmen inaktif rantai linier'],'cTnT berukuran 37 kDa dan menambatkan kompleks troponin pada tropomiosin. Opsi lain berturut-turut: cTnI, mioglobin, CK-MB, NT-proBNP.','',['3.10']],
+[3,'Keadaan di luar jantung yang dapat membuat cTnT terekspresi minor menurut bahan adalah…',['Miopati skeletal berat','Suntikan intramuskular','Obesitas dengan IMT ≥ 30','Terapi penghambat neprilysin','Infeksi sistemik akut'],'cTnT ~99% spesifik jantung; ekspresi minor terjadi pada miopati skeletal berat. Suntikan IM disebut bahan sebagai penyebab positif palsu mioglobin.','',['3.10']],
+[3,'Waktu mulai naik dan puncak troponin jantung konvensional setelah infark adalah…',['Naik 2–4 jam, puncak 12–24 jam','Naik 1–3 jam, puncak 6–8 jam','Naik 4–6 jam, puncak 18–24 jam','Naik 2–4 jam, puncak 6–8 jam','Naik 4–6 jam, puncak 12–24 jam'],'Troponin: mulai 2–4 jam (assay hs lebih awal, <1 jam di teks dan 1–2 jam di tabel rangkuman bahan), puncak 12–24 jam.','',['3.11']],
+[3,'Lama waktu hingga cTnT kembali normal setelah infark miokard adalah…',['10–14 hari','5–10 hari','3–7 hari','48–72 jam','18–24 jam'],'cTnT 10–14 hari, cTnI 5–10 hari. Angka 3–7 hari adalah jendela reinfark dini yang dideteksi CK-MB.','',['3.11']],
+[3,'Batas keputusan troponin sebagai baku emas infark miokard adalah…',['Persentil ke-99 URL','Persentil ke-95 URL','Persentil ke-50 URL','Dua kali nilai URL','Relative index > 2,5%'],'Baku emas universal infark miokard adalah troponin di atas persentil ke-99 batas rujukan atas (99th percentile URL). Relative index dipakai untuk CK-MB.','',['3.12']],
+[3,'Biomarker yang berstatus baku emas universal untuk menegakkan infark miokard pada pasien ini adalah…',['Troponin jantung (cTnI/cTnT)','CK-MB','Mioglobin','Total CK','hs-CRP'],'Troponin jantung adalah baku emas. Mioglobin tidak spesifik dan CK-MB kini terutama dipakai untuk reinfark dini; hs-CRP hanya penanda risiko.','Perempuan 58 tahun dengan diabetes datang 6 jam setelah awitan nyeri ulu hati dan keringat dingin. EKG tidak khas.',['3.12']],
+[3,'Ciri yang mendefinisikan assay high-sensitivity troponin adalah…',['CV ≤ 10% pada persentil ke-99 dan terdeteksi pada > 50% orang sehat','CV ≤ 20% pada persentil ke-99 dan terdeteksi pada > 99% orang sehat','CV ≤ 10% pada persentil ke-50 dan terdeteksi pada < 50% orang sehat','CV ≤ 50% pada persentil ke-99 dan terdeteksi pada > 10% orang sehat','CV ≤ 10% pada persentil ke-95 dan terdeteksi hanya pada pasien infark'],'Assay hs-cTn presisi (CV ≤10%) pada persentil ke-99 URL dan cukup peka untuk mendeteksi troponin pada lebih dari separuh orang sehat.','',['3.13']],
+[3,'Langkah yang sesuai dengan algoritma ESC 0 jam/1 jam untuk pasien ini adalah…',['Infark disingkirkan; pasien aman dipulangkan','Infark dikonfirmasi; siapkan kateterisasi segera','Zona observasi; ulang hs-cTn pada jam ke-3','Belum dapat dinilai; periksa CK-MB dan mioglobin','Belum dapat dinilai; periksa NT-proBNP'],'Kadar 0 jam yang sangat rendah dengan onset >3 jam memenuhi aturan rule-out (NPV >99%), sehingga pasien aman dipulangkan.','Laki-laki 45 tahun datang dengan nyeri dada sejak 5 jam. hs-cTnI saat datang (0 jam) sangat rendah, di bawah batas rule-out assay yang dipakai.',['3.14']],
+[3,'Nilai duga negatif (NPV) aturan rule-out protokol hs-cTn 0 jam/1 jam adalah…',['> 99%','> 95–98%','> 90%','> 65%','> 50%'],'Rule-out hs-cTn memiliki NPV >99%. Angka >95–98% adalah NPV peptida natriuretik untuk menyingkirkan gagal jantung.','',['3.14']],
+[3,'Agar satu kadar hs-cTnI 0 jam yang sangat rendah (misal < 2–4 ng/L) boleh dipakai untuk rule-out, onset nyeri harus…',['> 3 jam','< 1 jam','> 1 jam','< 6 jam','> 20 menit'],'Syaratnya onset >3 jam, agar troponin sempat naik bila memang ada infark. Bila belum terpenuhi, dipakai kombinasi kadar 0 jam rendah dan delta 1 jam minimal.','',['3.14']],
+[3,'Tindakan yang sesuai dengan hasil tersebut adalah…',['Konsul kardiologi dan siapkan kateterisasi segera','Pulangkan pasien karena infark tersingkir','Ulang hs-cTn pada jam ke-3 dan ekokardiografi','Ganti pemeriksaan dengan CK-MB dan relative index','Tunggu 10–14 hari lalu ulang troponin'],'Delta absolut 1 jam yang melampaui cut-off rule-in mengonfirmasi cedera miokard akut: konsul kardiologi dan siapkan kateterisasi.','Perempuan 66 tahun dengan nyeri dada khas. hs-cTn 0 jam berada di zona tengah. Satu jam kemudian kadarnya naik 9 ng/L; cut-off delta rule-in assay tersebut 5 ng/L.',['3.15']],
+[3,'Tindak lanjut untuk pasien yang nilai hs-cTn-nya berada di antara batas rule-out dan rule-in adalah…',['Ulang hs-cTn jam ke-3 dan ekokardiografi','Ulang hs-cTn hari ke-3 dan periksa CK-MB','Pulangkan dengan kontrol poliklinik','Kateterisasi segera tanpa pemeriksaan ulang','Periksa mioglobin dan relative index'],'Zona observasi: periksa ulang hs-cTn pada jam ke-3 ditambah ekokardiografi.','',['3.16']],
+[3,'Besaran perubahan troponin yang wajib dipakai dalam protokol hs-cTn adalah…',['Delta absolut dalam ng/L','Delta relatif dalam persen','Rasio terhadap total CK','Rasio terhadap persentil ke-99','Kelipatan terhadap nilai nadir'],'Protokol hs-cTn memakai delta absolut (ng/L), bukan persentase. Rasio terhadap total CK adalah relative index CK-MB.','',['3.17']],
+[3,'Interpretasi paling tepat atas hasil troponin pasien ini adalah…',['Kenaikan kronis, bukan infark miokard akut','Infark miokard akut yang terkonfirmasi','Reinfark dini pada hari ke 3–7','Positif palsu akibat hambatan neprilysin','Hasil tidak valid; ganti dengan mioglobin'],'Pasien CKD sering mempunyai troponin basal tinggi yang stabil. Tidak adanya delta absolut menunjukkan kadar itu kronis.','Laki-laki 70 tahun dengan penyakit ginjal kronik datang karena rasa tidak nyaman di dada. hs-cTn 0 jam di atas persentil ke-99; satu jam kemudian nilainya sama.',['3.18']],
+[3,'Menurut tabel rangkuman, positif palsu ringan hs-cTnT dapat ditemukan pada…',['Penyakit ginjal stadium akhir','Terapi ARNI (sacubitril)','Obesitas dengan IMT ≥ 30','Infeksi sistemik akut','Suntikan intramuskular'],'hs-cTnT dapat positif palsu ringan pada penyakit regenerasi otot rangka berat atau penyakit ginjal stadium akhir. ARNI memengaruhi BNP, obesitas menurunkan peptida natriuretik.','',['3.19']],
+[3,'Selain mendeteksi reinfark dini, CK-MB disebut bahan berguna sebagai…',['Penanda reperfusi dini','Penanda luas infark dan prognosis','Penanda risiko kardiovaskular primer','Penanda respons hemodinamik jangka pendek','Penanda rule-out fase hiperakut'],'Tabel rangkuman menyebut CK-MB sebagai penanda reperfusi dini. Luas infark dan prognosis dinilai dengan hs-cTnT; rule-out hiperakut adalah peran mioglobin.','',['3.20','3.19']],
+[3,'Urutan biomarker dari yang paling awal mulai naik setelah infark miokard adalah…',['Mioglobin → troponin → CK-MB','Mioglobin → CK-MB → troponin','Troponin → mioglobin → CK-MB','CK-MB → mioglobin → troponin','Troponin → CK-MB → mioglobin'],'Mioglobin 1–3 jam, troponin 2–4 jam, CK-MB 4–6 jam. CK-MB sering disangka lebih awal daripada troponin, padahal mulainya paling lambat.','',['3.21']],
+[3,'Biomarker nekrosis yang kurvanya mendatar lama setelah puncak sehingga paling lambat kembali normal adalah…',['Troponin jantung','CK-MB','Mioglobin','Total CK','CK-MM'],'Troponin bertahan 5–14 hari karena lepas bertahap dari sarkomer. CK-MB normal dalam 48–72 jam dan mioglobin dalam 18–24 jam.','',['3.21']],
+
+/* ===== BAB 4 ===== */
+[4,'Rangsang utama sintesis peptida natriuretik tipe-B adalah…',['Peregangan dinding ventrikel akibat beban volume atau tekanan','Nekrosis kardiomiosit akibat oklusi koroner total','Inflamasi sistemik derajat rendah dari adiposa viseral','Hipoksia jaringan akibat karboksihemoglobin','Penurunan filtrasi glomerulus pada penyakit ginjal'],'BNP dilepas sebagai respons terhadap wall stress miokard. Penurunan filtrasi ginjal menaikkan kadar NT-proBNP lewat retensi, bukan lewat rangsang sintesis.','',['4.01']],
+[4,'Sel yang mensintesis peptida natriuretik tipe-B menurut bahan adalah…',['Kardiomiosit ventrikel','Sel otot polos vaskular','Hepatosit','Adiposit viseral','Makrofag plak'],'BNP berasal dari kardiomiosit ventrikel yang teregang. Hepatosit menghasilkan CRP; adiposit justru membersihkan BNP lewat NPR-C.','',['4.01']],
+[4,'Panjang prekursor awal pre-proBNP adalah…',['134 asam amino','108 asam amino','76 asam amino','32 asam amino','86 asam amino'],'Pre-proBNP 134 aa → (lepas sinyal) proBNP 108 aa → BNP 32 aa + NT-proBNP 76 aa.','',['4.02']],
+[4,'Pembelahan proBNP (108 asam amino) menghasilkan…',['BNP 32 aa yang aktif dan NT-proBNP 76 aa yang inaktif','BNP 76 aa yang aktif dan NT-proBNP 32 aa yang inaktif','BNP 32 aa yang inaktif dan NT-proBNP 76 aa yang aktif','BNP 32 aa dan NT-proBNP 76 aa yang sama-sama aktif','BNP 76 aa dan NT-proBNP 32 aa yang sama-sama inaktif'],'BNP (residu 77–108, 32 aa) adalah hormon aktif; NT-proBNP (residu 1–76, 76 aa) adalah fragmen inaktif.','',['4.02']],
+[4,'Pasangan enzim pemroses proBNP dan lokasinya yang benar adalah…',['Corin di permukaan sarkolema; furin di aparatus Golgi','Corin di aparatus Golgi; furin di permukaan sarkolema','Corin di mitokondria; furin di retikulum sarkoplasma','Neprilysin di sarkolema; furin di aparatus Golgi','Corin di permukaan sarkolema; kalpain di sitosol'],'Corin adalah serin protease transmembran di sarkolema; furin adalah endoprotease Golgi yang bekerja intraseluler. Neprilysin memecah BNP aktif di sirkulasi, bukan memproses proBNP.','',['4.03']],
+[4,'Struktur molekul NT-proBNP adalah…',['Rantai linier 76 asam amino, 8,5 kDa','Cincin 32 asam amino, 3,5 kDa','Rantai linier 32 asam amino, 3,5 kDa','Cincin 76 asam amino, 8,5 kDa','Rantai linier 108 asam amino, 17 kDa'],'NT-proBNP: rantai linier 76 aa (8,5 kDa). BNP: cincin 32 aa (3,5 kDa).','',['4.04']],
+[4,'BNP aktif bekerja dengan mengikat reseptor…',['NPR-A sehingga cGMP naik','NPR-C sehingga cGMP naik','NPR-A sehingga cAMP turun','NPR-C sehingga cAMP naik','CD36 sehingga cGMP turun'],'BNP → NPR-A → cGMP naik → vasodilatasi, natriuresis, supresi RAAS. NPR-C adalah reseptor klirens yang menginternalisasi BNP.','',['4.05']],
+[4,'Efek biologis BNP aktif adalah…',['Vasodilatasi, natriuresis, supresi RAAS','Vasokonstriksi, natriuresis, aktivasi RAAS','Vasodilatasi, retensi natrium, supresi RAAS','Vasokonstriksi, retensi natrium, aktivasi RAAS','Vasodilatasi, natriuresis, aktivasi RAAS'],'Ketiga efek BNP mengurangi beban jantung. NT-proBNP tidak memiliki efek ini karena inaktif biologis.','',['4.05']],
+[4,'Waktu paruh BNP dalam sirkulasi adalah…',['~20 menit','~60–120 menit','~4 jam','~19 jam','~48 jam'],'BNP ~20 menit; NT-proBNP ~60–120 menit. Angka ~19 jam adalah waktu paruh hs-CRP.','',['4.06']],
+[4,'Peptida natriuretik yang paling mencerminkan perubahan cepat tersebut adalah…',['BNP, karena waktu paruhnya pendek (~20 menit)','NT-proBNP, karena waktu paruhnya pendek (~20 menit)','BNP, karena waktu paruhnya panjang (~60–120 menit)','NT-proBNP, karena variasi biologisnya tinggi','BNP, karena stabil > 48 jam di suhu ruang'],'Waktu paruh BNP yang pendek membuatnya mencerminkan hemodinamik real-time. NT-proBNP lebih stabil dengan variasi biologis rendah.','Seorang pasien gagal jantung akut (tidak memakai ARNI) baru mendapat terapi dekongesti. Dokter ingin menilai respons hemodinamik jangka pendek dalam beberapa jam.',['4.06','4.19']],
+[4,'Jalur eliminasi utama BNP adalah…',['Internalisasi reseptor NPR-C dan pemecahan oleh neprilysin','Filtrasi glomerulus ginjal yang hampir murni','Pemecahan oleh corin dan furin di sarkolema','Ambilan scavenger receptor SR-A dan CD36','Degradasi oleh kolagenase dan gelatinase'],'BNP dibersihkan lewat NPR-C dan neprilysin, dengan ekskresi ginjal minor. Filtrasi glomerulus hampir murni adalah jalur NT-proBNP.','',['4.07']],
+[4,'Faktor yang paling perlu diperhitungkan saat menafsirkan kadar tersebut adalah…',['Retensi NT-proBNP karena eliminasinya hampir murni lewat filtrasi glomerulus','Lonjakan NT-proBNP karena pemecahannya oleh neprilysin terhambat','Penurunan NT-proBNP karena klirens NPR-C di ginjal meningkat','Ketidakstabilan NT-proBNP pada suhu ruang dalam tabung serum','Penurunan sintesis NT-proBNP karena supresi gen NPPB oleh ureum'],'NT-proBNP sangat sensitif terhadap penurunan eGFR dan tertahan masif pada gagal ginjal kronik. NT-proBNP bukan substrat neprilysin dan justru sangat stabil in vitro.','Perempuan 68 tahun dengan gagal ginjal kronik (eGFR sangat rendah) diperiksa NT-proBNP karena sesak. Hasilnya sangat tinggi.',['4.07','4.08']],
+[4,'Penilaian paling tepat terhadap permintaan pemeriksaan tersebut adalah…',['Hasil BNP kurang andal; BNP stabil < 4 jam di suhu ruang','Hasil BNP tetap andal; BNP stabil > 48 jam di suhu ruang','Hasil BNP akan tinggi palsu karena hemolisis EDTA','Hasil BNP tetap andal asalkan dihitung relative index','Hasil BNP akan tinggi palsu karena neprilysin tabung'],'BNP kurang stabil in vitro (<4 jam pada suhu ruang di tabung EDTA). Yang stabil >48 jam adalah NT-proBNP di tabung serum.','Sampel darah EDTA seorang pasien tertinggal 6 jam di meja pada suhu ruang sebelum sampai di laboratorium. Dokter meminta pemeriksaan BNP dari sampel itu.',['4.09']],
+[4,'Penjelasan paling tepat untuk kenaikan BNP pada pasien ini adalah…',['Kenaikan farmakologis karena degradasi BNP oleh neprilysin terhambat','Perburukan gagal jantung yang belum tampak secara klinis','Retensi BNP karena filtrasi glomerulus menurun oleh valsartan','Kesalahan praanalitik karena sampel serum terlalu stabil','Peningkatan sintesis gen NPPB akibat hiperinsulinemia'],'Sacubitril menghambat neprilysin, pemecah fisiologis BNP, sehingga BNP naik terlepas dari kondisi klinis. BNP tidak valid untuk pemantauan pada pengguna ARNI.','Laki-laki 59 tahun dengan gagal jantung mulai memakai sacubitril/valsartan 2 bulan lalu. Sesaknya berkurang dan edema hilang, tetapi kadar BNP lebih tinggi daripada sebelum terapi.',['4.10']],
+[4,'Biomarker yang wajib dipakai untuk memantau gagal jantung pada pengguna ARNI, beserta alasannya, adalah…',['NT-proBNP; bukan substrat neprilysin','NT-proBNP; waktu paruhnya lebih pendek','BNP; mencerminkan hemodinamik real-time','BNP; tidak dipengaruhi fungsi ginjal','hs-cTnT; menilai prognosis jangka panjang'],'NT-proBNP tidak dipecah neprilysin sehingga kadarnya murni mencerminkan regangan ventrikel dan respons terapi.','',['4.10']],
+[4,'Enzim yang dihambat sacubitril adalah…',['Neprilysin','Corin','Furin','Kalpain','NADPH oksidase'],'Sacubitril adalah penghambat neprilysin; valsartan adalah ARB. Corin dan furin memproses proBNP dan tidak dihambat ARNI.','',['4.10']],
+[4,'Peptida natriuretik terutama dipakai untuk menyingkirkan gagal jantung karena…',['Nilai duga negatifnya sangat tinggi (> 95–98%)','Nilai duga positifnya sangat tinggi (> 95–98%)','Spesifisitasnya terhadap ventrikel kiri 100%','Kadarnya tidak dipengaruhi usia dan fungsi ginjal','Waktu paruhnya lebih panjang daripada troponin'],'NPV >95–98% membuat hasil rendah sangat meyakinkan untuk menyingkirkan gagal jantung. Kadarnya justru dipengaruhi usia, ginjal, dan obesitas.','',['4.11']],
+[4,'Interpretasi hasil BNP pasien ini adalah…',['Gagal jantung akut disingkirkan (BNP < 100 pg/mL)','Gagal jantung akut dikonfirmasi (BNP ≥ 35 pg/mL)','Gray zone; perlu pemeriksaan lain (BNP 35–100 pg/mL)','Gagal jantung akut dikonfirmasi (BNP ≥ 50 pg/mL)','Hasil tidak valid; BNP dilarang dipakai di UGD'],'Di UGD ambang rule-out BNP adalah <100 pg/mL. Ambang 35 pg/mL berlaku untuk rawat jalan; 50 pg/mL hanya untuk pasien obesitas.','Laki-laki 55 tahun dengan IMT 23 kg/m² datang ke UGD karena sesak akut. Ia tidak memakai ARNI. BNP 60 pg/mL.',['4.12']],
+[4,'Hasil tersebut tergolong…',['Gray zone','Rule-out gagal jantung akut','Rule-in gagal jantung akut','Zona observasi hs-cTn','Positif palsu farmakologis'],'BNP UGD: <100 rule-out, ≥400 rule-in, dan 100–400 pg/mL adalah gray zone.','Perempuan 63 tahun, tidak obesitas dan tidak memakai ARNI, datang ke UGD dengan sesak akut. BNP 250 pg/mL.',['4.12']],
+[4,'Ambang rule-out NT-proBNP di UGD yang berlaku untuk semua umur adalah…',['< 300 pg/mL','< 125 pg/mL','< 100 pg/mL','< 450 pg/mL','< 35 pg/mL'],'UGD: NT-proBNP <300 pg/mL untuk semua umur. Angka 125 adalah ambang rawat jalan; 100 dan 35 adalah ambang BNP.','',['4.13']],
+[4,'Ambang rule-in NT-proBNP di UGD untuk pasien berusia 50–75 tahun adalah…',['≥ 900 pg/mL','≥ 300 pg/mL','≥ 400 pg/mL','≥ 450 pg/mL','≥ 1800 pg/mL'],'Kriteria PRIDE: <50 tahun ≥450; 50–75 tahun ≥900; >75 tahun ≥1800 pg/mL. Angka 400 adalah rule-in BNP.','',['4.14']],
+[4,'Interpretasi NT-proBNP pasien ini adalah…',['Di atas rule-out tetapi belum mencapai rule-in untuk usianya','Rule-in gagal jantung akut karena ≥ 900 pg/mL','Rule-in gagal jantung akut karena ≥ 450 pg/mL','Gagal jantung disingkirkan karena < 1800 pg/mL','Tidak valid karena NT-proBNP dilarang pada usia lanjut'],'Usia >75 tahun memerlukan ≥1800 pg/mL untuk rule-in. Nilai 1200 di atas ambang rule-out 300, jadi tidak tersingkir tetapi belum terkonfirmasi.','Laki-laki 80 tahun datang ke UGD dengan sesak akut. NT-proBNP 1200 pg/mL.',['4.14']],
+[4,'Interpretasi NT-proBNP pasien ini adalah…',['Rule-in gagal jantung akut (ambang usianya ≥ 450 pg/mL)','Belum rule-in (ambang usianya ≥ 900 pg/mL)','Belum rule-in (ambang usianya ≥ 1800 pg/mL)','Gagal jantung disingkirkan (< 900 pg/mL)','Gray zone (300–900 pg/mL)'],'Untuk usia <50 tahun ambang rule-in adalah ≥450 pg/mL, sehingga 600 pg/mL sudah memenuhi.','Perempuan 40 tahun datang ke UGD dengan sesak akut dan edema tungkai. NT-proBNP 600 pg/mL.',['4.14']],
+[4,'Interpretasi hasil tersebut adalah…',['Gagal jantung kronis disingkirkan (ambang rawat jalan < 125 pg/mL)','Belum dapat disingkirkan (ambang rawat jalan < 35 pg/mL)','Gagal jantung kronis dikonfirmasi (ambang rawat jalan ≥ 100 pg/mL)','Belum dapat disingkirkan (ambang rawat jalan < 50 pg/mL)','Gray zone (ambang rawat jalan 35–125 pg/mL)'],'Rawat jalan: NT-proBNP <125 pg/mL menyingkirkan gagal jantung. Ambang 35 pg/mL adalah untuk BNP.','Laki-laki 60 tahun, fungsi ginjal normal dan tidak obesitas, datang ke poliklinik dengan mudah lelah sejak 3 bulan. NT-proBNP 100 pg/mL.',['4.15']],
+[4,'Ambang rule-out BNP untuk pasien rawat jalan yang dicurigai gagal jantung kronis adalah…',['< 35 pg/mL','< 50 pg/mL','< 100 pg/mL','< 125 pg/mL','< 300 pg/mL'],'Rawat jalan: BNP <35 dan NT-proBNP <125 pg/mL. Ambang 100 (BNP) dan 300 (NT-proBNP) dipakai di UGD.','',['4.15']],
+[4,'Pada pasien gagal jantung dengan obesitas (IMT ≥ 30), kadar peptida natriuretik dibanding pasien non-obesitas dengan keparahan sama adalah…',['30–50% lebih rendah','30–50% lebih tinggi','10–20% lebih rendah','Dua kali lebih tinggi','Tidak berbeda bermakna'],'Paradoks obesitas: BNP dan NT-proBNP 30–50% lebih rendah, sehingga berisiko negatif palsu.','',['4.16']],
+[4,'Mekanisme yang menjelaskan rendahnya kadar peptida natriuretik pada obesitas adalah…',['Klirens lewat reseptor NPR-C jaringan adiposa meningkat','Filtrasi glomerulus NT-proBNP oleh ginjal meningkat','Aktivitas neprilysin dihambat oleh jaringan adiposa','Tegangan dinding ventrikel lebih tinggi daripada normal','Sintesis gen NPPB dirangsang oleh hiperinsulinemia'],'Adiposa mengekspresikan banyak NPR-C sehingga degradasi BNP dipercepat. Dua penyebab lain di bahan: hiperinsulinemia/adipokin menekan gen NPPB, dan wall stress lebih rendah karena dinding lebih tebal.','',['4.17']],
+[4,'Penilaian paling tepat terhadap hasil BNP pasien ini adalah…',['Gagal jantung belum tersingkir; ambang rule-out obesitas sekitar < 50 pg/mL','Gagal jantung tersingkir; ambang rule-out tetap < 100 pg/mL','Gagal jantung terkonfirmasi; ambang rule-in obesitas ≥ 50 pg/mL','Gagal jantung tersingkir; obesitas menaikkan kadar BNP','Hasil tidak valid; BNP dilarang dipakai pada obesitas'],'Pada obesitas ambang rule-out BNP diturunkan 50% (misal <50 pg/mL) untuk mencegah negatif palsu. Nilai 70 belum menyingkirkan gagal jantung, tetapi juga belum mengonfirmasi.','Perempuan 52 tahun dengan IMT 36 kg/m² datang ke UGD dengan sesak akut dan ortopnea. BNP 70 pg/mL.',['4.18','4.16']],
+[4,'Selain diagnosis dan pemantauan terapi, tabel rangkuman menyebut NT-proBNP berguna untuk…',['Stratifikasi risiko mortalitas','Deteksi reinfark dini','Penilaian luas infark','Penanda reperfusi dini','Stratifikasi risiko primer asimtomatik'],'NT-proBNP dipakai untuk stratifikasi risiko mortalitas. Reinfark dan reperfusi dinilai dengan CK-MB; risiko primer asimtomatik dengan hs-CRP.','',['4.19']],
+
+/* ===== BAB 5 ===== */
+[5,'Enzim yang menjadi sumber produksi ROS berlebih pada endotel pasien hipertensi adalah…',['NADPH oksidase','Sitokrom c oksidase','Neprilysin','Fosfolipase','Kreatin kinase'],'Shear stress abnormal memicu ROS via NADPH oksidase. Sitokrom c oksidase adalah Kompleks IV yang dihambat CO.','',['5.01']],
+[5,'Pada hipertensi, ROS menurunkan bioavailabilitas NO dengan mengubahnya menjadi…',['Peroksinitrit','Karboksihemoglobin','Seramid','Diasilgliserol','Asam laktat'],'ROS menetralkan NO menjadi peroksinitrit (ONOO⁻), sehingga vasokonstriksi basal menetap dan aterogenesis dipercepat.','',['5.01']],
+[5,'Peningkatan resistensi vaskular sistemik pada hipertensi terutama menaikkan…',['Afterload ventrikel kiri','Preload ventrikel kiri','Preload ventrikel kanan','Afterload ventrikel kanan','Volume sekuncup ventrikel kiri'],'SVR yang tinggi adalah beban akhir (afterload) ventrikel kiri. Beban volume (hipervolemia) lebih khas pada obesitas dengan hiperinsulinemia.','',['5.02']],
+[5,'Perubahan struktur ventrikel kiri yang paling sesuai pada pasien ini adalah…',['Hipertrofi konsentrik akibat penambahan sarkomer paralel','Hipertrofi eksentrik akibat hipervolemia dan tonus simpatis','Dilatasi ventrikel akibat lipotoksisitas miokardial','Penipisan dinding akibat apoptosis kardiomiosit','Dilatasi atrium kiri tanpa perubahan ventrikel'],'Afterload tinggi menaikkan tegangan dinding (hukum Laplace); miosit menambah sarkomer paralel sehingga dinding menebal: LVH konsentrik. Hipertrofi eksentrik dikaitkan bahan dengan obesitas.','Laki-laki 57 tahun dengan hipertensi tidak terkontrol selama 15 tahun. Ekokardiografi menunjukkan dinding ventrikel kiri menebal merata.',['5.02']],
+[5,'Mekanisme hipertensi menimbulkan gagal jantung dengan fraksi ejeksi terpreservasi (HFpEF) adalah…',['Dinding kaku mengganggu relaksasi diastolik dan menaikkan tekanan pengisian','Dinding tipis menurunkan kontraksi sistolik dan menaikkan volume akhir sistol','Hipervolemia melebarkan ventrikel dan menurunkan fraksi ejeksi','Oklusi koroner total menimbulkan nekrosis transmural','Calcium overload mengaktifkan kalpain dan fosfolipase'],'LVH konsentrik membuat dinding kaku: relaksasi diastolik terganggu dan tekanan pengisian naik, sementara fraksi ejeksi masih terpelihara.','',['5.03']],
+[5,'Iskemia subendokardial pada jantung hipertrofi akibat hipertensi terjadi karena…',['Rasio kapiler terhadap massa miosit menurun','Rasio CK-MB terhadap total CK menurun','Kurva disosiasi oksihemoglobin bergeser ke kiri','Tudung fibrosa plak menipis < 65 µm','Reseptor NPR-C jaringan adiposa meningkat'],'Massa miosit bertambah tanpa diimbangi kapiler sehingga cadangan aliran koroner anjlok. Pergeseran kurva disosiasi adalah efek CO.','',['5.04']],
+[5,'Crown-like structures pada jaringan adiposa viseral pasien obesitas dibentuk oleh…',['Makrofag M1 yang menginfiltrasi adiposa hipoksia','Sel busa yang menimbun ox-LDL di intima','Limfosit Th1 yang melepas IFN-γ di bahu plak','Neutrofil yang membentuk perangkap ekstrasel','Sel otot polos berfenotipe sintetis'],'Ekspansi adiposa viseral menimbulkan hipoksia jaringan dan infiltrasi makrofag M1 yang membentuk crown-like structures.','',['5.05']],
+[5,'Mediator dari jaringan adiposa yang disebut bahan sebagai penghambat fibrinolisis adalah…',['PAI-1','TNF-α','IL-6','Adiponektin','MCP-1'],'Tiga mediator proinflamasi yang berlebih: TNF-α, IL-6, dan PAI-1; hanya PAI-1 yang disebut sebagai penghambat fibrinolisis.','',['5.06']],
+[5,'Adipokin kardioprotektif dan antiaterogenik yang sekresinya anjlok pada obesitas adalah…',['Adiponektin','TNF-α','IL-6','PAI-1','PDGF'],'Adiponektin turun drastis, sedangkan TNF-α, IL-6, dan PAI-1 justru meningkat.','',['5.07']],
+[5,'Zat intermediat toksik yang menumpuk pada lipotoksisitas miokardial adalah…',['Diasilgliserol dan seramid','Peroksinitrit dan superoksida','Asam laktat dan ion hidrogen','Kolesterol bebas dan debris sel','Karboksihemoglobin dan tar'],'FFA yang melebihi kapasitas oksidasi mitokondria menumpuk sebagai diasilgliserol dan seramid, lalu memicu stres retikulum endoplasma, disfungsi mitokondria, dan apoptosis.','',['5.08']],
+[5,'Akibat hiperinsulinemia pada ginjal yang menambah beban hemodinamik jantung adalah…',['Retensi Na+ dan air sehingga terjadi hipervolemia','Natriuresis dan diuresis sehingga terjadi hipovolemia','Filtrasi NT-proBNP meningkat sehingga kadarnya turun','Sekresi renin tertekan sehingga tekanan darah turun','Ekskresi mioglobin terhambat sehingga kadarnya naik'],'Hiperinsulinemia menahan natrium dan air: hipervolemia. Bersama tonus simpatis yang meningkat, ini memicu hipertrofi eksentrik.','',['5.09']],
+[5,'Mekanisme yang mendasari temuan ekokardiografi tersebut menurut bahan adalah…',['Hipervolemia dan tonus simpatis tinggi memicu hipertrofi eksentrik','Afterload tinggi dan sarkomer paralel memicu hipertrofi konsentrik','Ruptur plak dan oklusi total memicu nekrosis transmural','Karboksihemoglobin dan hipoksia memicu dilatasi ventrikel','Hambatan neprilysin dan BNP tinggi memicu dilatasi atrium'],'Pada obesitas dan sindrom metabolik, retensi natrium-air serta tonus simpatis memicu hipertrofi eksentrik ventrikel kiri dan dilatasi atrium kiri.','Perempuan 48 tahun dengan obesitas sentral dan resistensi insulin, tekanan darah normal. Ekokardiografi menunjukkan ventrikel kiri melebar dengan massa bertambah serta atrium kiri membesar.',['5.09']],
+[5,'Nikotin memicu pelepasan masif katekolamin dengan menstimulasi…',['Reseptor asetilkolin nikotinik di medula adrenal','Reseptor asetilkolin muskarinik di nodus sinoatrial','Reseptor beta-adrenergik di miokard ventrikel','Reseptor NPR-A di otot polos pembuluh darah','Scavenger receptor di makrofag intima'],'Rangsang reseptor nikotinik medula adrenal melepaskan epinefrin dan norepinefrin.','',['5.10']],
+[5,'Penjelasan paling tepat untuk timbulnya nyeri dada tersebut adalah…',['Katekolamin menaikkan MVO2 sementara koroner bervasokonstriksi','Katekolamin menurunkan MVO2 sementara koroner bervasodilatasi','Nikotin menghambat neprilysin sehingga BNP melonjak','Nikotin mengikat heme hemoglobin 200–250 kali lebih kuat','Nikotin menggeser kurva disosiasi oksigen ke kiri'],'Nikotin → katekolamin → takikardia, vasokonstriksi, tekanan darah naik → MVO2 melonjak, disertai vasokonstriksi koroner paradoks. Ikatan pada heme dan pergeseran kurva adalah efek CO.','Laki-laki 52 tahun dengan angina stabil merasakan nyeri dada beberapa menit setelah merokok. Nadi 110 kali/menit dan tekanan darah lebih tinggi daripada biasanya.',['5.10','5.11']],
+[5,'Efek nikotin pada arteri koroner yang disebut paradoks dalam bahan adalah…',['Vasokonstriksi','Vasodilatasi','Neovaskularisasi','Ruptur plak','Deskuamasi endotel'],'Saat kebutuhan oksigen miokard naik, koroner seharusnya melebar; nikotin justru menginduksi vasokonstriksi koroner.','',['5.11']],
+[5,'Afinitas karbon monoksida terhadap heme hemoglobin dibanding oksigen adalah…',['200–250 kali lebih kuat','20–25 kali lebih kuat','30–50 kali lebih kuat','2–3 kali lebih kuat','1000 kali lebih kuat'],'CO mengikat heme 200–250 kali lebih kuat daripada O2 dan membentuk karboksihemoglobin.','',['5.12']],
+[5,'Senyawa yang terbentuk dan menurunkan kapasitas angkut oksigen darah pada orang ini adalah…',['Karboksihemoglobin','Peroksinitrit','Methemoglobin','Oksimioglobin','Deoksihemoglobin'],'CO dari asap rokok mengikat heme membentuk karboksihemoglobin (CO-Hb), sehingga fraksi Hb pengangkut O2 merosot.','Laki-laki 45 tahun merokok dua bungkus sehari. Ia cepat lelah saat beraktivitas walaupun kadar hemoglobin totalnya normal.',['5.12']],
+[5,'Pengaruh CO terhadap kurva disosiasi oksihemoglobin menurut bahan adalah…',['Bergeser ke kiri; pelepasan O2 ke miosit terhambat','Bergeser ke kanan; pelepasan O2 ke miosit terhambat','Bergeser ke kiri; pelepasan O2 ke miosit meningkat','Bergeser ke kanan; pelepasan O2 ke miosit meningkat','Tidak bergeser; hanya kapasitas angkut yang turun'],'Kurva bergeser ke kiri: ikatan O2–Hb terlalu kuat sehingga O2 sulit dilepas ke jaringan, di samping kapasitas angkut yang turun.','',['5.13']],
+[5,'Komponen rantai transpor elektron mitokondria yang diikat CO sehingga sintesis ATP aerobik lumpuh adalah…',['Sitokrom c oksidase (Kompleks IV)','NADH dehidrogenase (Kompleks I)','Suksinat dehidrogenase (Kompleks II)','Sitokrom bc1 (Kompleks III)','ATP sintase (Kompleks V)'],'CO mengikat sitokrom c oksidase (Kompleks IV), sehingga selain hipoksia transpor terjadi pula hambatan respirasi sel.','',['5.14']],
+[5,'Perubahan hemostasis akibat asap rokok yang membuat lingkungan vaskular protrombotik adalah…',['Agregasi trombosit naik, fibrinogen naik, t-PA endotel turun','Agregasi trombosit naik, fibrinogen turun, t-PA endotel naik','Agregasi trombosit turun, fibrinogen naik, t-PA endotel naik','Agregasi trombosit turun, fibrinogen turun, t-PA endotel turun','Agregasi trombosit naik, fibrinogen turun, t-PA endotel turun'],'Rokok memacu aktivasi dan agregasi trombosit, menaikkan fibrinogen, dan menekan t-PA (fibrinolisis), selain mengoksidasi LDL dan mencederai endotel.','',['5.15']],
+[5,'Deskripsi yang tepat untuk hs-CRP adalah…',['Pentraxin 115 kDa, reaktan fase akut dari hati','Hemoprotein 17 kDa, penyimpan oksigen di sitosol','Isoenzim dimerik 86 kDa dari sitosol miosit','Peptida cincin 3,5 kDa dari granula ventrikel','Protein 37 kDa, pelekat troponin ke tropomiosin'],'hs-CRP adalah pentraxin 115 kDa buatan hati. Opsi lain berturut-turut: mioglobin, CK-MB, BNP, cTnT.','',['5.16']],
+[5,'Waktu paruh hs-CRP menurut tabel rangkuman adalah…',['~19 jam','~20 menit','~60–120 menit','~48 jam','~10–14 hari'],'hs-CRP berkinetika lambat dengan waktu paruh ~19 jam. Angka ~20 menit dan ~60–120 menit adalah waktu paruh BNP dan NT-proBNP.','',['5.16']],
+[5,'Kategori risiko kardiovaskular orang ini berdasarkan hs-CRP adalah…',['Tinggi','Sedang','Rendah','Sangat rendah','Tidak dapat ditentukan'],'hs-CRP <1 mg/L rendah, 1–3 mg/L sedang, >3 mg/L tinggi. Nilai 4 mg/L pada orang asimtomatik tanpa infeksi termasuk risiko tinggi.','Laki-laki 46 tahun tanpa keluhan menjalani pemeriksaan kesehatan berkala. Ia tidak sedang sakit atau cedera. hs-CRP 4 mg/L.',['5.17']],
+[5,'Penilaian paling tepat terhadap hasil hs-CRP tersebut adalah…',['Belum dapat dipakai menilai risiko karena hs-CRP melonjak pada infeksi','Menunjukkan risiko kardiovaskular tinggi karena > 3 mg/L','Mengonfirmasi infark miokard akut karena di atas persentil ke-99','Menunjukkan gagal jantung akut karena melampaui ambang rule-in','Menunjukkan reinfark karena naik > 50% di atas nadir'],'hs-CRP bukan penanda spesifik jantung: infeksi sistemik, inflamasi kronis, atau trauma jaringan menaikkannya, sehingga nilai saat pneumonia tidak mencerminkan risiko kardiovaskular.','Perempuan 50 tahun sedang dirawat karena pneumonia dengan demam tinggi. Pada panel laboratorium tercantum hs-CRP 12 mg/L, dan keluarga bertanya apakah itu berarti risiko jantungnya tinggi.',['5.17']],
+];
+
+(function(){
+'use strict';
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const shuf=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={
+  get(k,d){try{const v=localStorage.getItem(META.id+'.'+k);return v==null?d:JSON.parse(v);}catch(e){return d;}},
+  set(k,v){try{localStorage.setItem(META.id+'.'+k,JSON.stringify(v));}catch(e){}},
+  del(k){try{localStorage.removeItem(META.id+'.'+k);}catch(e){}}
+};
+const CH=META.bab.map((n,i)=>({id:i+1,n}));
+const KEYS='ABCDE', SEC_PER_Q=60;
+const Q=[],QB={},cnt={};
+QRAW.forEach(r=>{cnt[r[0]]=(cnt[r[0]]||0)+1;const q={id:r[0]+'-'+cnt[r[0]],c:r[0],q:r[1],o:r[2],e:r[3],s:r[4]||''};Q.push(q);QB[q.id]=q;});
+let M=store.get('m',{});            // id -> 1 benar / 0 salah (jawaban terakhir)
+let cfg=Object.assign({mode:'latihan',n:20,ch:CH.map(c=>c.id),kasus:false},store.get('cfg',{}));
+let S=null, R=null, timer=null, rvFilter='salah';
+const chName=c=>CH.find(x=>x.id===c).n;
+const chStat=c=>{const qs=Q.filter(q=>q.c===c);return{n:qs.length,ok:qs.filter(q=>M[q.id]===1).length};};
+const wrongIds=()=>Q.filter(q=>M[q.id]===0).map(q=>q.id);
+
+/* tema */
+const root=document.documentElement;
+{const t=store.get('theme','');if(t)root.dataset.theme=t;}
+$('#theme').onclick=()=>{const dark=root.dataset.theme?root.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;root.dataset.theme=dark?'light':'dark';store.set('theme',root.dataset.theme);};
+
+/* dialog konfirmasi */
+function ask(msg,ok){return new Promise(res=>{const d=$('#dlg');if(!d.showModal){res(confirm(msg));return;}
+  $('#dlgmsg').textContent=msg;$('#dlgok').textContent=ok;d.returnValue='no';d.onclose=()=>res(d.returnValue==='yes');d.showModal();});}
+$$('#dlg button').forEach(b=>b.onclick=()=>$('#dlg').close(b.value));
+
+/* tab utama */
+function go(v){['materi','quiz'].forEach(x=>{$('#v-'+x).hidden=x!==v;$('#tab-'+x).setAttribute('aria-selected',x===v);});
+  if(v==='quiz'&&!S&&!R)renderSetup();window.scrollTo(0,0);}
+$('#tab-materi').onclick=()=>go('materi');
+$('#tab-quiz').onclick=()=>go('quiz');
+
+/* materi */
+$$('.ch table').forEach(t=>{const w=document.createElement('div');w.className='tw'+(t.rows[0].cells.length>=5?' wide':'');t.replaceWith(w);w.appendChild(t);});
+function buildNav(){$('#chnav').innerHTML=CH.map(c=>{const s=chStat(c.id);return `<button role="tab" data-ch="${c.id}"><span class="no">${c.id}</span><span class="nm">${esc(c.n)}</span><span class="pc">${s.ok}/${s.n}</span></button>`;}).join('');}
+function openCh(c,scroll){
+  if(!CH.some(x=>x.id===c))c=1;
+  $$('.ch').forEach(s=>s.classList.toggle('on',+s.dataset.ch===c));
+  $$('#chnav button').forEach(b=>{const on=+b.dataset.ch===c;b.classList.toggle('on',on);b.setAttribute('aria-selected',on);
+    if(on){const n=$('#chnav');if(n.scrollWidth>n.clientWidth)n.scrollLeft=b.offsetLeft-(n.clientWidth-b.offsetWidth)/2;}});
+  store.set('ch',c);if(scroll)window.scrollTo(0,0);
+}
+$('#chnav').onclick=e=>{const b=e.target.closest('button');if(b)openCh(+b.dataset.ch,true);};
+$$('.ch').forEach(s=>{const c=+s.dataset.ch,nx=CH.find(x=>x.id===c+1),f=document.createElement('div');f.className='chfoot';
+  f.innerHTML=`<button class="btn pri" data-quiz="${c}">Latihan bab ini · ${chStat(c).n} soal</button>`+(nx?`<button class="btn" data-next="${nx.id}">Lanjut: ${esc(nx.n)} →</button>`:`<button class="btn" data-quiz="0">Latihan semua bab →</button>`);
+  s.appendChild(f);});
+$('#v-materi').addEventListener('click',e=>{const b=e.target.closest('[data-next],[data-quiz]');if(!b)return;
+  if(b.dataset.next){openCh(+b.dataset.next,true);return;}
+  const c=+b.dataset.quiz;cfg.ch=c?[c]:CH.map(x=>x.id);cfg.kasus=false;store.set('cfg',cfg);
+  if(S){go('quiz');return;}R=null;go('quiz');renderSetup();});
+
+/* layar quiz */
+function screen(n){['setup','run','result'].forEach(x=>$('#'+x).hidden=x!==n);}
+
+function pool(){return Q.filter(q=>cfg.ch.includes(q.c)&&(!cfg.kasus||q.s));}
+function renderSetup(){
+  clearInterval(timer);screen('setup');
+  const saved=S||store.get('s',null), tot=Q.length, ok=Q.filter(q=>M[q.id]===1).length, wr=wrongIds().length;
+  const nk=Q.filter(q=>q.s).length;
+  $('#setup').innerHTML=
+  (saved&&saved.items?`<div class="card resume"><p><strong>Ada sesi yang belum selesai.</strong><br>${saved.mode==='ujian'?'Ujian':'Latihan'} · soal ${Math.min(saved.i+1,saved.items.length)} dari ${saved.items.length}</p><button class="btn pri sm" id="resume">Lanjutkan</button><button class="btn sm" id="discard">Buang</button></div>`:'')+
+  `<h2>Latihan soal</h2><p class="lead">${tot} soal, ${nk} di antaranya berbasis kasus. Soal yang belum pernah muncul dan yang pernah salah didahulukan.</p>
+  <div class="overall"><div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="${tot}" aria-valuenow="${ok}" aria-label="Soal dikuasai"><i style="width:${ok/tot*100}%"></i></div>
+    <div class="row"><span><strong>${ok}</strong> dari ${tot} soal dikuasai</span>${Object.keys(M).length?'<button class="link" id="reset">Reset progres</button>':''}</div></div>
+  <fieldset><legend>Mode</legend><div class="modes">
+    <label class="pick"><input type="radio" name="mode" value="latihan"><b>Latihan</b><small>Pembahasan muncul setelah tiap jawaban.</small></label>
+    <label class="pick"><input type="radio" name="mode" value="ujian"><b>Ujian</b><small>Berwaktu 1 menit per soal. Pembahasan di akhir.</small></label></div></fieldset>
+  <fieldset><legend>Bab <span class="sp"><button type="button" class="link" id="all">Semua</button><button type="button" class="link" id="none">Kosongkan</button></span></legend>
+    <div class="chips">${CH.map(c=>{const s=chStat(c.id);return `<label class="pick"><input type="checkbox" name="ch" value="${c.id}"><b>${esc(c.n)}</b><small>${s.ok}/${s.n} dikuasai</small></label>`;}).join('')}</div></fieldset>
+  <fieldset><legend>Jumlah soal</legend><div class="seg">${[10,20,40,0].map(n=>`<label class="pick"><input type="radio" name="n" value="${n}">${n||'Semua'}</label>`).join('')}</div></fieldset>
+  <label class="check"><input type="checkbox" id="kasus"> Hanya soal berbasis kasus</label>
+  <div class="actbar">${wr?`<button class="btn fit" id="redo">Ulangi ${wr} yang salah</button>`:''}<button class="btn pri" id="start"></button></div>`;
+  $$('#setup input[name=mode]').forEach(i=>i.checked=i.value===cfg.mode);
+  $$('#setup input[name=ch]').forEach(i=>i.checked=cfg.ch.includes(+i.value));
+  $$('#setup input[name=n]').forEach(i=>i.checked=+i.value===cfg.n);
+  $('#kasus').checked=cfg.kasus;
+  syncSetup();
+}
+function syncSetup(){
+  const m=$('#setup input[name=mode]:checked'),n=$('#setup input[name=n]:checked');
+  cfg.mode=m?m.value:'latihan';cfg.n=n?+n.value:20;
+  cfg.ch=$$('#setup input[name=ch]:checked').map(i=>+i.value);cfg.kasus=$('#kasus').checked;store.set('cfg',cfg);
+  $$('#setup .pick').forEach(l=>l.classList.toggle('on',$('input',l).checked));
+  const av=pool().length,k=cfg.n?Math.min(cfg.n,av):av,b=$('#start');
+  b.disabled=!k;b.textContent=!cfg.ch.length?'Pilih minimal satu bab':!k?'Tidak ada soal yang cocok':`Mulai ${cfg.mode==='ujian'?'ujian':'latihan'} · ${k} soal`;
+}
+$('#setup').addEventListener('change',syncSetup);
+$('#setup').addEventListener('click',async e=>{const id=e.target.id;
+  if(id==='all'||id==='none'){$$('#setup input[name=ch]').forEach(i=>i.checked=id==='all');syncSetup();}
+  else if(id==='start'){const p=pool(),rank=q=>M[q.id]===undefined?0:M[q.id]===0?1:2;
+    const pick=shuf(p).sort((a,b)=>rank(a)-rank(b)).slice(0,cfg.n||p.length);begin(shuf(pick).map(q=>q.id),cfg.mode);}
+  else if(id==='redo')begin(shuf(wrongIds()),'latihan');
+  else if(id==='resume'){S=S||store.get('s',null);startRun();}
+  else if(id==='discard'){S=null;store.del('s');renderSetup();}
+  else if(id==='reset'&&await ask('Hapus seluruh catatan soal yang dikuasai dan yang salah?','Hapus')){M={};store.set('m',M);buildNav();openCh(store.get('ch',1));renderSetup();}
+});
+
+/* sesi */
+function begin(ids,mode){S={mode,items:ids.map(id=>({id,ord:shuf([0,1,2,3,4]),pick:null,flag:false})),i:0,left:ids.length*SEC_PER_Q,total:ids.length*SEC_PER_Q};R=null;save();startRun();}
+function save(){if(S)store.set('s',S);}
+function startRun(){
+  if(!S||!S.items||!S.items.every(it=>QB[it.id])){S=null;store.del('s');renderSetup();return;}
+  screen('run');clearInterval(timer);
+  if(S.mode==='ujian')timer=setInterval(()=>{S.left--;drawInfo();if(S.left%5===0)save();if(S.left<=0)finish();},1000);
+  renderRun();window.scrollTo(0,0);
+}
+const answered=()=>S.items.filter(it=>it.pick!==null).length;
+function drawInfo(){const el=$('#rinfo');
+  if(S.mode==='ujian'){const t=Math.max(0,S.left);el.textContent='⏱ '+Math.floor(t/60)+':'+String(t%60).padStart(2,'0');el.classList.toggle('low',t<=60);}
+  else{el.classList.remove('low');el.textContent=S.items.filter(it=>it.pick===0).length+' benar';}}
+function renderRun(){
+  const it=S.items[S.i],q=QB[it.id],ex=S.mode==='ujian',ans=it.pick!==null,rev=!ex&&ans,last=S.i===S.items.length-1,n=S.items.length;
+  $('#rpos').textContent=`Soal ${S.i+1} dari ${n}`;drawInfo();
+  $('#rbar').style.width=answered()/n*100+'%';$('#rbarwrap').setAttribute('aria-valuenow',answered());$('#rbarwrap').setAttribute('aria-valuemax',n);
+  $('#rscen').hidden=!q.s;$('#rscen').textContent=q.s;$('#rq').textContent=q.q;
+  $('#ropts').innerHTML=it.ord.map((oi,k)=>{let c='',mk='';
+    if(rev){if(oi===0){c=' ok';mk='✓';}else if(oi===it.pick){c=' no';mk='✗';}else c=' dim';}else if(oi===it.pick)c=' sel';
+    return `<button class="opt${c}" data-k="${k}"${rev?' disabled':''}${ex?` aria-pressed="${oi===it.pick}"`:''}><span class="key">${KEYS[k]}</span><span class="otx">${esc(q.o[oi])}</span><span class="mk" aria-hidden="true">${mk}</span></button>`;}).join('');
+  const fb=$('#rfb');fb.hidden=!rev;
+  if(rev){const ok=it.pick===0;fb.className='fb'+(ok?'':' no');
+    fb.innerHTML=`<b>${ok?'✓ Benar':'✗ Belum tepat'}</b>${ok?'':`<p>Jawaban: <strong>${KEYS[it.ord.indexOf(0)]}. ${esc(q.o[0])}</strong></p>`}<p>${esc(q.e)}</p><span class="src">Bab ${q.c} · ${esc(chName(q.c))}</span>`;}
+  $('#prevbtn').hidden=!ex;$('#prevbtn').disabled=S.i===0;
+  $('#flagbtn').hidden=!ex;$('#flagbtn').setAttribute('aria-pressed',it.flag);
+  const nb=$('#nextbtn');nb.hidden=!ex&&!ans;nb.textContent=last?(ex?'Kumpulkan':'Lihat hasil'):'Berikutnya →';nb.classList.toggle('pri',!ex||last||ans);
+  $('#rhint').hidden=ex||ans;
+  $('#endbtn').textContent=ex?'Kumpulkan':'Akhiri';
+  $('#rgridwrap').hidden=!ex;
+  if(ex)$('#rgrid').innerHTML=S.items.map((x,k)=>`<button data-go="${k}" class="${x.pick!==null?'done':''}${k===S.i?' cur':''}${x.flag?' flag':''}" aria-label="Soal ${k+1}${x.pick!==null?', terjawab':''}${x.flag?', ragu':''}">${k+1}</button>`).join('');
+}
+function choose(k){const it=S.items[S.i];if(!it||k>4)return;
+  if(S.mode==='latihan'){if(it.pick!==null)return;it.pick=it.ord[k];M[it.id]=it.pick===0?1:0;store.set('m',M);save();renderRun();
+    const fb=$('#rfb');if(fb.getBoundingClientRect().bottom>innerHeight-80)fb.scrollIntoView({block:'center',behavior:'smooth'});$('#nextbtn').focus({preventScroll:true});}
+  else{it.pick=it.pick===it.ord[k]?null:it.ord[k];save();renderRun();const b=$(`#ropts [data-k="${k}"]`);if(b)b.focus({preventScroll:true});}
+}
+function move(d){const j=S.i+d;if(j<0)return;if(j>=S.items.length){S.mode==='ujian'?tryEnd():finish();return;}S.i=j;save();renderRun();window.scrollTo(0,0);$('#rq').focus({preventScroll:true});}
+async function tryEnd(){const n=S.items.length,a=answered();
+  const msg=S.mode==='ujian'?(a<n?`${n-a} soal belum dijawab dan akan dihitung salah. Kumpulkan sekarang?`:'Semua soal sudah dijawab. Kumpulkan sekarang?')
+    :(a?`Akhiri sesi? ${a} dari ${n} soal sudah dijawab; sisanya tidak dihitung.`:'Akhiri sesi? Belum ada soal yang dijawab.');
+  if(await ask(msg,S.mode==='ujian'?'Kumpulkan':'Akhiri'))finish();}
+function finish(){
+  if(!S)return;
+  clearInterval(timer);if($('#dlg').open)$('#dlg').close('no');
+  const ex=S.mode==='ujian',items=ex?S.items:S.items.filter(it=>it.pick!==null);
+  if(ex){items.forEach(it=>{if(it.pick!==null)M[it.id]=it.pick===0?1:0;});store.set('m',M);}
+  store.del('s');const used=ex?S.total-Math.max(0,S.left):0;const mode=S.mode;S=null;buildNav();openCh(store.get('ch',1));
+  if(!items.length){renderSetup();return;}
+  R={mode,items,used};rvFilter=items.some(it=>it.pick!==0)?'salah':'semua';renderResult();window.scrollTo(0,0);
+}
+$('#ropts').onclick=e=>{const b=e.target.closest('.opt');if(b&&!b.disabled)choose(+b.dataset.k);};
+$('#nextbtn').onclick=()=>move(1);$('#prevbtn').onclick=()=>move(-1);$('#endbtn').onclick=tryEnd;
+$('#flagbtn').onclick=()=>{const it=S.items[S.i];it.flag=!it.flag;save();renderRun();};
+$('#rgrid').onclick=e=>{const b=e.target.closest('[data-go]');if(b){S.i=+b.dataset.go;save();renderRun();window.scrollTo(0,0);}};
+document.addEventListener('keydown',e=>{
+  if(!S||$('#run').hidden||$('#v-quiz').hidden||$('#dlg').open||e.ctrlKey||e.metaKey||e.altKey)return;
+  const k=e.key.toLowerCase(),i='12345'.indexOf(k)>=0?'12345'.indexOf(k):'abcde'.indexOf(k);
+  if(k.length===1&&i>=0){e.preventDefault();choose(i);return;}
+  const onBtn=e.target.tagName==='BUTTON'||e.target.tagName==='SUMMARY';
+  if((k==='enter'&&!onBtn)||k==='arrowright'){if(!$('#nextbtn').hidden){e.preventDefault();move(1);}}
+  else if(k==='arrowleft'&&S.mode==='ujian'){e.preventDefault();move(-1);}
+  else if(k==='r'&&S.mode==='ujian'){e.preventDefault();$('#flagbtn').click();}
+});
+
+/* hasil */
+function renderResult(){
+  screen('result');
+  const it=R.items,n=it.length,ok=it.filter(x=>x.pick===0).length,pct=Math.round(ok/n*100),wrong=it.filter(x=>x.pick!==0);
+  const by={};it.forEach(x=>{const c=QB[x.id].c;by[c]=by[c]||{n:0,ok:0};by[c].n++;if(x.pick===0)by[c].ok++;});
+  const rows=Object.keys(by).map(c=>({c:+c,n:by[c].n,ok:by[c].ok,p:by[c].ok/by[c].n})).sort((a,b)=>a.c-b.c);
+  const weak=rows.filter(r=>r.p<1).sort((a,b)=>a.p-b.p||b.n-a.n)[0];
+  const verdict=pct>=85?(R.mode==='ujian'?'Kuat. Pertahankan dengan mengulang soal kasus secara berkala.':'Kuat. Naikkan tantangan: coba mode Ujian atau hanya soal berbasis kasus.')
+    :pct>=65?'Sudah di jalur. Tinjau soal yang salah di bawah, lalu ulangi.'
+    :`Belum aman. Baca ulang bab ${weak?esc(chName(weak.c)):''} dahulu, lalu ulangi soal yang salah.`;
+  const tm=R.mode==='ujian'?` · waktu ${Math.floor(R.used/60)} mnt ${R.used%60} dtk`:'';
+  const list=rvFilter==='salah'?wrong:it;
+  $('#result').innerHTML=`
+  <div class="score"><div class="ring" style="--p:${pct}" role="img" aria-label="Skor ${pct} persen"><b>${pct}%</b></div>
+    <div><h2 tabindex="-1" id="rtitle">${ok} dari ${n} benar</h2><p>${verdict}</p><p class="lead" style="margin:4px 0 0">${R.mode==='ujian'?'Ujian':'Latihan'}${tm}</p></div></div>
+  <h3>Per bab</h3>
+  ${rows.map(r=>`<div class="chrow"><span class="nm">${esc(chName(r.c))}</span><span class="ct">${r.ok}/${r.n}</span>
+    <div class="bar"><i class="${r.p<.65?'low':''}" style="width:${r.p*100}%"></i></div>
+    ${r.p<1||r.n<3?`<div class="more"><span>${r.n<3?'Sampel kecil, belum cukup untuk menilai bab ini.':''}</span>${r.p<1?`<button class="link" data-read="${r.c}">Baca bab</button>`:''}</div>`:''}</div>`).join('')}
+  <h3>Tinjau jawaban <span class="sp">${wrong.length?`<button class="tog" data-f="salah" aria-pressed="${rvFilter==='salah'}">Salah (${wrong.length})</button>`:''}<button class="tog" data-f="semua" aria-pressed="${rvFilter==='semua'}">Semua (${n})</button></span></h3>
+  ${list.map(x=>{const q=QB[x.id],good=x.pick===0;return `<details class="rv${good?'':' no'}"${good?'':' open'}><summary><span class="mk">${good?'✓':'✗'}</span><span>${q.s?esc(q.s)+' ':''}<strong>${esc(q.q)}</strong></span></summary>
+    <div class="body"><ol>${x.ord.map(oi=>`<li class="${oi===0?'ok':oi===x.pick?'no':''}">${esc(q.o[oi])}${oi===x.pick?`<span class="you">← jawabanmu</span>`:''}</li>`).join('')}</ol>
+    ${x.pick===null?'<p><em>Tidak dijawab.</em></p>':''}<p>${esc(q.e)}</p></div></details>`;}).join('')}
+  <div class="actbar">${wrong.length?`<button class="btn pri" id="again">Ulangi ${wrong.length} yang salah</button>`:''}<button class="btn${wrong.length?'':' pri'}" id="fresh">Sesi baru</button></div>`;
+}
+$('#result').addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;
+  if(t.dataset.f){rvFilter=t.dataset.f;renderResult();}
+  else if(t.dataset.read){openCh(+t.dataset.read);go('materi');}
+  else if(t.id==='again')begin(shuf(R.items.filter(x=>x.pick!==0).map(x=>x.id)),'latihan');
+  else if(t.id==='fresh'){R=null;renderSetup();window.scrollTo(0,0);}
+});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)save();});
+
+/* mulai */
+buildNav();openCh(store.get('ch',1));
+})();
+
+</script>
+</body>
+</html>

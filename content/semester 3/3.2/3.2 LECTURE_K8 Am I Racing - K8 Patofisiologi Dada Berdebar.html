@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="id" style="--h:290;--bl:26%">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Am I Racing? — K8 Patofisiologi Dada Berdebar</title>
+<style>
+:root{
+  --h:189;--bl:26%;
+  --bg:hsl(var(--h) 14% 96%);--surface:#fff;--sunk:hsl(var(--h) 12% 92%);--ink:hsl(var(--h) 35% 12%);--ink2:hsl(var(--h) 18% 27%);--mute:hsl(var(--h) 10% 39%);--line:hsl(var(--h) 12% 85%);
+  --brand:hsl(var(--h) 80% var(--bl));--brand-ink:#fff;--brand-soft:hsl(var(--h) 45% 92%);
+  --ok:#17723f;--ok-soft:#e2f3e8;--bad:#b0322c;--bad-soft:#fae6e4;--warn:#7d5200;--warn-soft:#fbefd4;
+  --r:12px;--head:56px;
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){
+  --bg:hsl(var(--h) 30% 8%);--surface:hsl(var(--h) 26% 13%);--sunk:hsl(var(--h) 30% 10%);--ink:hsl(var(--h) 15% 93%);--ink2:hsl(var(--h) 12% 78%);--mute:hsl(var(--h) 10% 64%);--line:hsl(var(--h) 18% 22%);
+  --brand:hsl(var(--h) 60% 68%);--brand-ink:hsl(var(--h) 70% 9%);--brand-soft:hsl(var(--h) 42% 18%);
+  --ok:#63d394;--ok-soft:#143325;--bad:#ff8f86;--bad-soft:#3a1c1a;--warn:#f1c466;--warn-soft:#3a2e12;
+  color-scheme:dark;}}
+:root[data-theme=dark]{
+  --bg:hsl(var(--h) 30% 8%);--surface:hsl(var(--h) 26% 13%);--sunk:hsl(var(--h) 30% 10%);--ink:hsl(var(--h) 15% 93%);--ink2:hsl(var(--h) 12% 78%);--mute:hsl(var(--h) 10% 64%);--line:hsl(var(--h) 18% 22%);
+  --brand:hsl(var(--h) 60% 68%);--brand-ink:hsl(var(--h) 70% 9%);--brand-soft:hsl(var(--h) 42% 18%);
+  --ok:#63d394;--ok-soft:#143325;--bad:#ff8f86;--bad-soft:#3a1c1a;--warn:#f1c466;--warn-soft:#3a2e12;
+  color-scheme:dark;}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:calc(var(--head) + 60px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 var(--font);min-height:100vh;overflow-x:hidden}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+[hidden]{display:none!important}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px;border-radius:6px}
+
+/* header */
+.top{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.top-in{max-width:1080px;margin:0 auto;height:var(--head);padding:0 16px;display:flex;align-items:center;gap:12px}
+.brand{font-weight:800;font-size:17px;letter-spacing:-.01em;margin:0;white-space:nowrap}
+.brand span{color:var(--brand)}
+.tabs{display:flex;gap:4px;background:var(--sunk);border-radius:10px;padding:4px;margin-left:auto}
+.tabs button{border:0;background:none;padding:0 16px;min-height:36px;border-radius:7px;font-weight:600;font-size:15px;color:var(--mute)}
+.tabs button[aria-selected=true]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.14)}
+.icon{border:1px solid var(--line);background:var(--surface);width:40px;height:40px;border-radius:10px;font-size:17px;line-height:1;flex:none}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+.credit{font-size:13px;color:var(--mute);margin:14px 0 0}
+
+/* materi */
+.materi{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
+.materi>*{min-width:0}
+.chnav{position:sticky;top:var(--head);z-index:10;background:var(--bg);margin:0 -16px;padding:10px 16px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--line)}
+.chnav::-webkit-scrollbar{display:none}
+.chnav button{flex:none;display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px 0 8px;border:1px solid var(--line);border-radius:22px;background:var(--surface);font-size:14px;font-weight:600;color:var(--ink2);white-space:nowrap}
+.chnav .no{width:26px;height:26px;border-radius:50%;background:var(--sunk);display:grid;place-items:center;font-size:13px;font-variant-numeric:tabular-nums}
+.chnav .pc{font-weight:500;font-size:12px;color:var(--mute);display:none}
+.chnav button.on{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.chnav button.on .no{background:rgba(255,255,255,.25);color:inherit}
+.ch{display:none;max-width:70ch;padding:22px 0 8px}
+.ch.on{display:block}
+.ch h2{font-size:clamp(24px,5vw,30px);line-height:1.2;letter-spacing:-.02em;margin:0 0 16px}
+.ch h3{font-size:19px;line-height:1.3;margin:36px 0 10px;padding-top:18px;border-top:1px solid var(--line)}
+.ch p,.ch ul,.ch ol{margin:0 0 12px;color:var(--ink2)}
+.ch ul,.ch ol:not(.flow){padding-left:22px}
+.ch li{margin-bottom:6px}
+.ch li ul{margin-top:6px}
+.ch strong{color:var(--ink)}
+.def,.awas,.klinis{border-left:4px solid var(--brand);background:var(--surface);padding:12px 14px;border-radius:0 var(--r) var(--r) 0;color:var(--ink)!important}
+.def::before,.awas::before,.klinis::before{display:block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px}
+.def::before{content:"Definisi";color:var(--brand)}
+.awas{border-color:var(--bad);background:var(--bad-soft)}
+.awas::before{content:"Perhatian";color:var(--bad)}
+.klinis{border-color:var(--ok);background:var(--ok-soft)}
+.klinis::before{content:"Contoh";color:var(--ok)}
+.ch figure{margin:0 0 14px}.ch figure img{display:block;max-width:100%;height:auto;border:1px solid var(--line);border-radius:var(--r);background:#fff}.ch figcaption{font-size:13px;color:var(--mute);margin-top:4px}
+.tw{overflow-x:auto;margin:0 0 14px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{padding:10px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+tr:last-child>*{border-bottom:0}
+td[rowspan]{border-right:1px solid var(--line)}
+th{font-size:13px;font-weight:700;color:var(--mute);background:var(--sunk)}
+th[scope=row]{background:none;color:var(--ink);font-size:14px;white-space:nowrap}
+.tw.wide table{min-width:620px}
+.flow{list-style:none;padding:0;margin:14px 0 16px;display:flex;flex-direction:column;gap:22px}
+.flow li{position:relative;margin:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-weight:600;color:var(--ink);text-align:center}
+.flow small{display:block;font-weight:400;font-size:13px;color:var(--mute)}
+.flow li+li::before{content:"↓";position:absolute;left:50%;top:-22px;height:22px;line-height:22px;transform:translateX(-50%);color:var(--brand);font-weight:700}
+.flow.rank{flex-direction:row;gap:26px;flex-wrap:nowrap}
+.flow.rank li{flex:1;padding:10px 4px;font-size:14px}
+.flow.rank li+li::before{content:">";left:-18px;top:50%;transform:translateY(-50%);width:10px}
+.chfoot{display:flex;flex-wrap:wrap;gap:10px;margin:32px 0 40px;padding-top:20px;border-top:1px solid var(--line)}
+
+/* tombol */
+.btn{min-height:48px;padding:0 18px;border-radius:var(--r);border:1px solid var(--line);background:var(--surface);font-weight:600;font-size:15px;color:var(--ink)}
+.btn:hover{border-color:var(--mute)}
+.btn.pri{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.btn.pri:hover{filter:brightness(1.08)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.sm{min-height:40px;padding:0 14px;font-size:14px}
+.link{white-space:nowrap;border:0;background:none;padding:6px 4px;min-height:36px;color:var(--brand);font-weight:600;font-size:14px;text-decoration:underline;text-underline-offset:3px}
+.chfoot .btn{flex:1 1 220px}
+
+/* quiz umum */
+.quiz{max-width:720px;margin:0 auto;padding-top:20px}
+.quiz h2{font-size:24px;letter-spacing:-.02em;margin:0 0 6px}
+.lead{color:var(--mute);margin:0 0 18px;font-size:15px}
+.bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--brand);border-radius:4px;transition:width .25s}
+fieldset{border:0;padding:0;margin:0 0 22px;min-width:0}
+legend{padding:0;margin:0 0 8px;font-weight:700;font-size:15px;display:flex;align-items:center;gap:8px;width:100%}
+legend .sp{margin-left:auto;display:flex;gap:6px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.resume{display:flex;flex-wrap:wrap;gap:10px;align-items:center;border-color:var(--brand);margin-bottom:20px}
+.resume p{margin:0;flex:1 1 200px}
+.overall{margin-bottom:22px}
+.overall .row{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;color:var(--mute);margin-top:4px}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pick{position:relative;display:block;border:2px solid var(--line);border-radius:var(--r);background:var(--surface);padding:12px 14px;cursor:pointer}
+.pick input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.pick b{display:block}
+.pick small{display:block;color:var(--mute);font-size:13px;line-height:1.4}
+.pick.on{border-color:var(--brand);background:var(--brand-soft)}
+.pick:focus-within{outline:3px solid var(--brand);outline-offset:2px}
+.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.chips .pick{padding:10px 12px 10px 44px;min-height:56px}
+.chips .pick::before{content:"";position:absolute;left:12px;top:50%;transform:translateY(-50%);width:22px;height:22px;border-radius:6px;border:2px solid var(--mute);background:var(--surface)}
+.chips .pick.on::before{content:"✓";border-color:var(--brand);background:var(--brand);color:var(--brand-ink);font-weight:800;font-size:15px;display:grid;place-items:center}
+.seg{display:flex;gap:8px}
+.seg .pick{flex:1;text-align:center;padding:10px 4px;font-weight:700}
+.check{display:flex;align-items:center;gap:10px;min-height:44px;margin-bottom:10px;cursor:pointer}
+.check input{width:22px;height:22px;accent-color:var(--brand);flex:none}
+.actbar{position:sticky;bottom:0;z-index:5;display:flex;gap:10px;align-items:center;margin:20px -16px 0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:var(--bg);border-top:1px solid var(--line)}
+.actbar .btn{flex:1}
+.actbar .btn.fit{flex:none}
+.actbar .hint{flex:1;color:var(--mute);font-size:14px;text-align:center}
+
+/* soal */
+.runhead{display:grid;grid-template-columns:1fr auto auto;gap:6px 12px;align-items:center;margin-bottom:14px}
+.runhead .bar{grid-column:1/-1}
+#rpos{font-size:16px}
+#rinfo{font-size:14px;color:var(--mute);font-variant-numeric:tabular-nums;font-weight:600}
+#rinfo.low{color:var(--bad)}
+.qcard{margin-bottom:12px}
+.scen{margin:0 0 10px;padding:12px 14px;background:var(--sunk);border-radius:10px;color:var(--ink2);font-size:15.5px}
+.scen::before{content:"Kasus";display:block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+.qtext{font-size:18px!important;line-height:1.45;font-weight:650;margin:0!important;letter-spacing:0!important}
+.opts{display:grid;gap:8px}
+.opt{display:flex;align-items:flex-start;gap:12px;width:100%;text-align:left;min-height:52px;padding:12px 14px;border:2px solid var(--line);border-radius:var(--r);background:var(--surface);font-size:16px;line-height:1.4}
+.opt:hover:not(:disabled){border-color:var(--brand)}
+.opt .key{flex:none;width:28px;height:28px;border-radius:8px;background:var(--sunk);display:grid;place-items:center;font-weight:700;font-size:14px;color:var(--ink2)}
+.opt .otx{flex:1;padding-top:2px}
+.opt .mk{flex:none;font-weight:800;padding-top:2px}
+.opt:disabled{cursor:default;color:var(--ink);opacity:1}
+.opt.sel{border-color:var(--brand);background:var(--brand-soft)}
+.opt.sel .key{background:var(--brand);color:var(--brand-ink)}
+.opt.ok{border-color:var(--ok);background:var(--ok-soft)}
+.opt.ok .key{background:var(--ok);color:var(--surface)}
+.opt.ok .mk{color:var(--ok)}
+.opt.no{border-color:var(--bad);background:var(--bad-soft)}
+.opt.no .key{background:var(--bad);color:var(--surface)}
+.opt.no .mk{color:var(--bad)}
+.opt.dim{opacity:.62}
+.fb{margin-top:12px;padding:14px;border-radius:var(--r);border-left:4px solid var(--ok);background:var(--ok-soft)}
+.fb.no{border-color:var(--bad);background:var(--bad-soft)}
+.fb b{display:block;font-size:17px;color:var(--ok)}
+.fb.no b{color:var(--bad)}
+.fb p{margin:4px 0 8px}
+.fb .src{font-size:13px;color:var(--mute)}
+.grid{margin-top:14px}
+.grid summary{cursor:pointer;font-weight:600;font-size:14px;min-height:40px;display:flex;align-items:center;color:var(--ink2)}
+#rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:6px;padding:6px 0}
+#rgrid button{position:relative;height:44px;border-radius:8px;border:1px solid var(--line);background:var(--surface);font-weight:600;font-variant-numeric:tabular-nums}
+#rgrid .done{background:var(--brand-soft);border-color:var(--brand)}
+#rgrid .cur{outline:3px solid var(--ink);outline-offset:1px}
+#rgrid .flag::after{content:"";position:absolute;top:4px;right:4px;width:8px;height:8px;border-radius:50%;background:var(--warn)}
+#flagbtn[aria-pressed=true]{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+
+/* hasil */
+.score{display:flex;align-items:center;gap:18px;margin-bottom:8px}
+.ring{--p:0;flex:none;width:112px;height:112px;border-radius:50%;background:conic-gradient(var(--brand) calc(var(--p)*1%),var(--line) 0);display:grid;place-items:center}
+.ring b{width:88px;height:88px;border-radius:50%;background:var(--bg);display:grid;place-items:center;font-size:28px;font-variant-numeric:tabular-nums}
+.score h2{margin:0 0 4px}
+.score p{margin:0;color:var(--ink2)}
+.quiz h3{font-size:17px;margin:28px 0 10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.quiz h3 .sp{margin-left:auto;display:flex;gap:6px}
+.chrow{display:grid;grid-template-columns:1fr auto;gap:2px 12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.chrow .bar{grid-column:1/-1}
+.chrow .nm{font-weight:600}
+.chrow .ct{font-variant-numeric:tabular-nums;color:var(--mute);font-size:14px}
+.chrow .bar i.low{background:var(--bad)}
+.chrow .more{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--mute)}
+.rv{border:1px solid var(--line);border-left:4px solid var(--ok);border-radius:10px;background:var(--surface);margin-bottom:8px}
+.rv.no{border-left-color:var(--bad)}
+.rv summary{cursor:pointer;display:flex;gap:10px;padding:12px 14px;list-style:none;min-height:48px}
+.rv summary::-webkit-details-marker{display:none}
+.rv .mk{flex:none;font-weight:800;color:var(--ok)}
+.rv.no .mk{color:var(--bad)}
+.rv .body{padding:0 14px 14px}
+.rv ol{list-style:upper-alpha;padding-left:24px;margin:8px 0;color:var(--ink2)}
+.rv li.ok{color:var(--ok);font-weight:600}
+.rv li.no{color:var(--bad);text-decoration:line-through}
+.rv li .you{font-size:13px;font-weight:600;text-decoration:none;display:inline-block;margin-left:6px}
+.rv p{margin:8px 0 0}
+.tog{border:1px solid var(--line);background:var(--surface);min-height:36px;padding:0 12px;border-radius:18px;font-size:13px;font-weight:600;color:var(--ink2)}
+.tog[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+dialog{border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--ink);padding:20px;max-width:min(420px,calc(100vw - 32px))}
+dialog::backdrop{background:rgba(0,0,0,.5)}
+dialog p{margin:0 0 18px;font-size:16px}
+dialog .row{display:flex;gap:10px}
+dialog .btn{flex:1}
+
+/* lebar */
+@media (min-width:560px){
+  .flow{flex-direction:row;gap:28px;align-items:stretch}
+  .flow li{flex:1;display:flex;flex-direction:column;justify-content:center}
+  .flow li+li::before{content:"→";left:-28px;top:50%;width:28px;height:auto;line-height:1;transform:translateY(-50%);text-align:center}
+}
+@media (max-width:559px){
+  .tabs button{padding:0 12px}
+  .modes{grid-template-columns:1fr}
+  .ring{width:92px;height:92px}.ring b{width:72px;height:72px;font-size:23px}
+}
+@media (min-width:960px){
+  .materi{grid-template-columns:240px minmax(0,1fr);gap:40px;align-items:start}
+  .chnav{top:calc(var(--head) + 20px);margin:22px 0 0;padding:0;flex-direction:column;gap:4px;overflow:visible;border:0;background:none}
+  .chnav button{border-color:transparent;background:none;border-radius:10px;justify-content:flex-start;white-space:normal;text-align:left;padding:6px 10px 6px 8px}
+  .chnav button:not(.on):hover{background:var(--sunk)}
+  .chnav .nm{flex:1}
+  .chnav .pc{display:block}
+  .chnav button.on .pc{color:inherit;opacity:.85}
+  .actbar{margin-left:0;margin-right:0;padding-left:0;padding-right:0}
+  .opt:hover:not(:disabled){background:var(--brand-soft)}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media print{
+  .top,.chnav,.chfoot,#v-quiz,.credit{display:none!important}
+  #v-materi{display:block!important}
+  .materi{display:block}
+  .ch{display:block!important;max-width:none;page-break-after:always}
+  body{background:#fff;font-size:11pt}
+  .tw{overflow:visible;border:0}
+}
+
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in">
+  <h1 class="brand">Am I <span>Racing?</span></h1>
+  <div class="tabs" role="tablist" aria-label="Bagian">
+    <button role="tab" id="tab-materi" aria-selected="true" aria-controls="v-materi">Materi</button>
+    <button role="tab" id="tab-quiz" aria-selected="false" aria-controls="v-quiz">Latihan</button>
+  </div>
+  <button class="icon" id="theme" aria-label="Ganti tema terang/gelap" title="Tema terang/gelap">◐</button>
+</div></header>
+
+<main class="wrap">
+<div id="v-materi" role="tabpanel" aria-labelledby="tab-materi">
+  <p class="credit">K8 Patofisiologi Dada Berdebar · Blok 3.2 — Modul Kardiovaskular &amp; Respirasi</p>
+  <div class="materi">
+    <nav class="chnav" id="chnav" role="tablist" aria-label="Bab materi"></nav>
+    <div>
+<section class="ch" data-ch="1">
+<h2>Konduksi &amp; Irama</h2>
+<p class="def"><strong>Irama sinus normal (NSR)</strong>: seluruh impuls berasal dari nodus SA, laju 60–100 denyut/menit, reguler (jarak R-R konstan), setiap gelombang P positif di sadapan II dan selalu diikuti QRS (rasio 1:1), interval PR 0,12–0,20 s, kompleks QRS sempit (&lt;0,12 s).</p>
+
+<h3>Sistem konduksi intrakardiak</h3>
+<table>
+<tr><th>Komponen</th><th>Letak / peran</th><th>Sifat listrik</th><th>Makna</th></tr>
+<tr><td><strong>Nodus SA</strong></td><td>Pemacu alami utama (<em>pacemaker</em>) di muara vena kava superior, atrium kanan</td><td>Laju otomatisitas intrinsik tercepat: 60–100 denyut/menit. Fase 4 (depolarisasi diastolik spontan) paling curam akibat aliran masuk natrium lambat via kanal <em>funny current</em> (I<sub>f</sub>)</td><td>Menekan fokus pacu laten di bawahnya karena mencapai ambang letup lebih dulu: <strong>supresi pacu dominan (<em>overdrive suppression</em>)</strong></td></tr>
+<tr><td><strong>Nodus AV</strong></td><td>Satu-satunya gerbang listrik atrium ke ventrikel; menembus <em>anulus fibrosus</em> yang bersifat isolator</td><td>Konduksi sengaja diperlambat (0,05 m/s): didominasi kanal kalsium tipe-L yang lambat dan sedikit <em>gap junction</em></td><td>Jeda fisiologis ini (interval PR di EKG) memberi waktu atrium menyelesaikan kontraksi untuk mengisi ventrikel sebelum sistol ventrikel</td></tr>
+<tr><td><strong>His–Purkinje</strong></td><td>Berkas His menerobos septum ventrikel, bercabang ke kanan (RBB) dan kiri (LBB), berakhir di anyaman Purkinje</td><td>Hantaran sangat cepat (2–4 m/s) lewat sel berdensitas <em>gap junction</em> tinggi</td><td>Impuls menyebar dari endokardium ke epikardium; kedua ventrikel memompa serempak dari apeks menuju basis</td></tr>
+</table>
+
+<h3>Irama dasar</h3>
+<table>
+<tr><th>Irama</th><th>Ciri</th><th>Penyebab / mekanisme</th></tr>
+<tr><td><strong>Sinus takikardia</strong></td><td>Laju nodus SA &gt;100 denyut/menit</td><td>Respons fisiologis stimulasi simpatis: demam, olahraga, nyeri, cemas, anemia, hipertiroid</td></tr>
+<tr><td><strong>Sinus bradikardia</strong></td><td>Laju nodus SA &lt;60 denyut/menit</td><td>Tonus vagus tinggi (atlet) atau patologis (<em>sick sinus syndrome</em>, beta-blocker)</td></tr>
+<tr><td><strong><em>Irregularly irregular</em></strong></td><td>Irama ventrikel acak total tanpa pola, tanpa gelombang P diskret</td><td>Khas <strong>fibrilasi atrium (AF)</strong>: ratusan mikro-reentry acak di atrium (350–600 denyut/menit) yang disaring acak oleh nodus AV</td></tr>
+</table>
+</section>
+
+<section class="ch" data-ch="2">
+<h2>Sensasi Berdebar</h2>
+<p class="def"><strong>Palpitasi</strong> adalah kesadaran sensorik subjektif atas denyut jantung sendiri akibat perubahan laju denyut, keteraturan irama, atau kekuatan kontraksi (inotropi).</p>
+
+<h3>Tiga karakter sensasi</h3>
+<table>
+<tr><th>Sensasi</th><th>Pemicu</th><th>Mekanisme</th></tr>
+<tr><td><strong>Denyut terlewat (<em>skipped beat</em>)</strong></td><td>Denyut prematur atrium (PAC) atau ventrikel (PVC)</td><td>Denyut prematur tiba terlalu dini → miokardium atau nodus SA refrakter saat impuls normal tiba → impuls sinus terhambat → <strong>jeda kompensasi</strong>, dirasakan sebagai denyut yang hilang atau berhenti sejenak</td></tr>
+<tr><td><strong>Dentuman keras (<em>pounding</em>)</strong></td><td>Denyut pertama pasca-ekstrasistol</td><td><strong>Potensiasi pasca-ekstrasistol</strong>: jeda diastol panjang → pengisian ventrikel melimpah + cadangan Ca<sup>2+</sup> retikulum sarkoplasma bertumpuk → hukum Frank-Starling → kontraksi jauh lebih kuat dengan volume sekuncup masif</td></tr>
+<tr><td><strong>Kepakan cepat (<em>fluttering</em>)</strong></td><td>Takiaritmia paroksismal mendadak berkecepatan tinggi</td><td>PSVT, flutter atrium</td></tr>
+</table>
+
+<h3>Poliuria pasca-PSVT</h3>
+<ol class="flow">
+<li>Takikardia ekstrem<small>150–250 denyut/menit</small></li>
+<li>Atrium berkontraksi saat katup AV tertutup</li>
+<li>Tekanan intra-atrial melonjak<small>dinding atrium teregang</small></li>
+<li>Pelepasan ANP<small>Atrial Natriuretic Peptide</small></li>
+<li>Diuresis dan natriuresis<small>membuang air dan natrium</small></li>
+</ol>
+
+<h3>Sinkop pasca-takikardia</h3>
+<ol class="flow">
+<li>Takikardia menekan nodus SA<small>overdrive suppression</small></li>
+<li>Takiaritmia berhenti tiba-tiba</li>
+<li>Jeda henti sinus<small>nodus SA lumpuh sesaat</small></li>
+<li>Curah jantung terhenti<small>perfusi otak anjlok</small></li>
+<li>Sinkop<small>pingsan</small></li>
+</ol>
+</section>
+
+<section class="ch" data-ch="3">
+<h2>Mekanisme Aritmia</h2>
+<p class="def"><strong>Aritmia</strong> timbul dari gangguan pembentukan impuls, gangguan konduksi, atau kombinasi keduanya. Tiga mekanisme utama aritmogenesis: otomatisitas abnormal, sirkuit re-entry, dan aktivitas terpicu.</p>
+
+<h3>1. Otomatisitas abnormal</h3>
+<p>Sel miokardium kerja normalnya berpotensial istirahat stabil di −90 mV, dipertahankan arus kalium I<sub>K1</sub> (fase 4 mendatar pasif). Pada <strong>iskemia akut</strong>, asidosis, atau disfungsi pompa Na<sup>+</sup>/K<sup>+</sup>, membran mengalami <strong>hipopolarisasi</strong> (bergeser kurang negatif, misal −60 mV).</p>
+<ol class="flow">
+<li>Hipopolarisasi<small>misal −60 mV</small></li>
+<li>Arus IK1 teredam</li>
+<li>Kebocoran kation masuk</li>
+<li>Fase 4 mendaki sendiri<small>depolarisasi diastolik spontan</small></li>
+<li>Ambang letup −40 mV<small>kanal kalsium tipe-L → potensial aksi sendiri</small></li>
+</ol>
+<ul>
+<li><strong>Karakteristik</strong>: bersifat <strong>mandiri</strong> (<em>self-originating</em>, tanpa butuh denyut pemicu); mengambil alih ritme bila lajunya mengalahkan nodus SA.</li>
+<li><strong>Contoh klinis</strong>: kontraksi prematur (PAC/PVC), takikardia atrial otomatis, ritme idioventrikular terakselerasi (AIVR pasca-reperfusi infark).</li>
+</ul>
+
+<h3>2. Sirkuit re-entry</h3>
+<p>Mekanisme tersering pada takiaritmia klinis berkelanjutan. Impuls tidak padam, melainkan berputar balik mengaktivasi jaringan yang sama secara siklik.</p>
+<table>
+<tr><th>Trias syarat mutlak</th><th>Isi</th></tr>
+<tr><td><strong>Jalur ganda paralel</strong></td><td>Jalur cepat (konduksi cepat, refrakter panjang) dan jalur lambat (konduksi lambat, refrakter pendek)</td></tr>
+<tr><td><strong>Blok searah</strong></td><td>Impuls terhambat pada jalur cepat (masih refrakter), tetapi lolos menyusuri jalur lambat</td></tr>
+<tr><td><strong>Konduksi lambat</strong></td><td>Impuls merambat sangat lambat di jalur lambat; saat mencapai ujung distal dan berbalik mundur (<em>retrograde</em>), jalur cepat sudah pulih dari refrakter → sirkuit tertutup berputar terus-menerus</td></tr>
+</table>
+<p class="awas">Re-entry <strong>wajib dipicu denyut prematur</strong> (PAC/PVC) yang jatuh pada jendela rentan (<em>vulnerable window</em>), berbeda dari otomatisitas abnormal yang mandiri. Re-entry responsif terhadap pemanjangan refrakter (manuver vagal, adenosin).</p>
+<table>
+<tr><th>Contoh klinis</th><th>Sirkuit</th></tr>
+<tr><td><strong>PSVT</strong></td><td>AVNRT: re-entry mikro di nodus AV. AVRT: re-entry makro via berkas Kent pada sindrom WPW</td></tr>
+<tr><td><strong>VT berbasis parut</strong></td><td>Pulau fibrosis pasca-infark menjadi rintangan anatomis konduksi lambat</td></tr>
+<tr><td><strong>Flutter atrium &amp; AF</strong></td><td>Flutter: makro re-entry di ismus kavotrikuspid. AF: ratusan mikro-reentry acak</td></tr>
+</table>
+
+<h3>3. Aktivitas terpicu</h3>
+<p>Potensial aksi abnormal akibat osilasi voltase membran (<em>afterdepolarization</em>) yang menumpang pada potensial aksi sebelumnya.</p>
+<table>
+<tr><th></th><th>Early afterdepolarization (EAD)</th><th>Delayed afterdepolarization (DAD)</th></tr>
+<tr><td><strong>Fase</strong></td><td><strong>Selama repolarisasi berlangsung</strong>: fase 2 (<em>plateau</em>) atau fase 3</td><td><strong>Setelah repolarisasi tuntas</strong>: awal fase 4 (diastol)</td></tr>
+<tr><td><strong>Mekanisme</strong></td><td>Potensial aksi memanjang (interval QT panjang) → arus kalium keluar (I<sub>Kr</sub>/I<sub>Ks</sub>) terhambat → kanal kalsium tipe-L pulih dan teraktivasi kembali (<em>window current</em>) → arus masuk Ca<sup>2+</sup> memicu depolarisasi sekunder</td><td>Ca<sup>2+</sup> <em>overload</em> intraseluler → kebocoran kalsium dari retikulum sarkoplasma via RyR2 saat diastol → penukar natrium-kalsium (NCX) membuang 1 Ca<sup>2+</sup> dan memasukkan 3 Na<sup>+</sup> → arus masuk transien (I<sub>ti</sub>) → potensial aksi sekunder</td></tr>
+<tr><td><strong>Pencetus</strong></td><td>Bradikardia berat, <strong>hipokalemia</strong>, <strong>hipomagnesemia</strong>, sindrom Long QT (LQTS), obat pemanjang QT (antiaritmia IA/III, antibiotik makrolida/kuinolon, antipsikotik)</td><td><strong>Intoksikasi digoksin</strong> (hambatan pompa Na<sup>+</sup>/K<sup>+</sup> membuat kalsium menumpuk), badai katekolamin/adrenergik, takikardia frekuensi tinggi, CPVT</td></tr>
+<tr><td><strong>Akibat</strong></td><td><strong>Torsades de Pointes (TdP)</strong>: VT polimorfik dengan puncak QRS berpilin, sangat mudah kolaps menjadi fibrilasi ventrikel fatal</td><td>Aritmia toksisitas digitalis: PVC berpasangan, takikardia atrial dengan blok AV, <em>bidirectional VT</em></td></tr>
+</table>
+</section>
+
+<section class="ch" data-ch="4">
+<h2>Etiologi</h2>
+<p>Penyebab dada berdebar dibagi tiga: masalah kardiak primer (kelainan pada jantung sendiri), masalah non-kardiak sistemik (jantung normal terbebani dari luar), serta zat stimulan eksogen dan kondisi psikis.</p>
+
+<h3>Kardiak primer</h3>
+<table>
+<tr><th>Kelompok</th><th>Entitas</th><th>Mekanisme</th></tr>
+<tr><td><strong>Aritmia primer</strong></td><td>Supraventrikular (PSVT, AF, flutter), ventrikular (PVC sering, VT), bradiaritmia berat (blok AV Mobitz II/total)</td><td>Lihat bab Mekanisme Aritmia</td></tr>
+<tr><td rowspan="3"><strong>Penyakit jantung struktural</strong></td><td>Prolaps katup mitral (MVP)</td><td>Daun katup melengkung ke atrium kiri saat sistol → regangan korda tendinea memicu denyut ektopik ventrikel</td></tr>
+<tr><td>Kardiomiopati hipertrofik (HCM)</td><td>Penebalan asimetris septum ventrikel + susunan serat otot kacau (<em>myocyte disarray</em>) → iskemia subendokardial dan risiko VT fatal saat olahraga</td></tr>
+<tr><td>Gagal jantung &amp; kardiomiopati dilatasi</td><td>Peregangan dinding bilik memperlebar dispersi refrakter miokard</td></tr>
+<tr><td><strong>Penyakit jantung iskemik</strong></td><td>Sindrom koroner akut (ACS); jaringan parut fibrosis</td><td>ACS: instabilitas membran peri-infark. Parut: substrat re-entry VT</td></tr>
+</table>
+
+<h3>Non-kardiak sistemik</h3>
+<table>
+<tr><th>Kelompok</th><th>Entitas</th><th>Mekanisme</th></tr>
+<tr><td rowspan="2"><strong>Endokrin</strong></td><td>Hipertiroidisme</td><td>Hormon T<sub>3</sub> meningkatkan jumlah reseptor beta-1 adrenergik miokard → takikardia istirahat, kontraktilitas tinggi, resistensi perifer turun (<strong>sirkulasi hiperdinamik</strong>), risiko tinggi AF</td></tr>
+<tr><td>Feokromositoma</td><td>Tumor medula adrenal menyekresi katekolamin paroksismal. <strong>Trias klasik</strong>: palpitasi paroksismal hebat + sakit kepala berdenyut + keringat dingin mengucur (<em>diaforesis</em>), dibarengi krisis hipertensi</td></tr>
+<tr><td rowspan="2"><strong>Sirkulasi hiperdinamik</strong></td><td>Anemia berat</td><td>Penurunan daya angkut oksigen → vasodilatasi perifer dan lonjakan curah jantung kompensasi → pulsasi dentuman keras (<em>pounding</em>)</td></tr>
+<tr><td>Hipovolemia / dehidrasi</td><td>Penurunan volume intravaskular (<em>preload</em>) → refleks baroreseptor simpatis → takikardia kompensasi</td></tr>
+<tr><td rowspan="2"><strong>Metabolik</strong></td><td>Hipoglikemia</td><td>Lonjakan epinefrin reaktif → takikardia, tremor, cemas, keringat dingin</td></tr>
+<tr><td>Gangguan elektrolit</td><td>Hipokalemia dan hipomagnesemia mendestabilisasi repolarisasi ventrikel (pemicu EAD dan TdP)</td></tr>
+</table>
+
+<h3>Stimulan eksogen</h3>
+<table>
+<tr><th>Zat</th><th>Mekanisme</th><th>Akibat</th></tr>
+<tr><td><strong>Kafein</strong></td><td>Menghambat adenosin dan enzim fosfodiesterase → cAMP intraseluler naik</td><td>Pacu nodus SA dan fokus ektopik meningkat</td></tr>
+<tr><td><strong>Alkohol</strong></td><td>Konsumsi berlebih dalam waktu singkat (saat pesta) → pelepasan katekolamin dan refrakter atrium memendek</td><td><em>Holiday heart syndrome</em>: AF paroksismal akut pada orang muda sehat</td></tr>
+<tr><td><strong>Nikotin &amp; narkotika simpatomimetik</strong></td><td>Nikotin merangsang ganglion simpatis; kokain dan amfetamin menghambat <em>reuptake</em> katekolamin</td><td>Badai adrenergik ekstrem, spasme koroner, dan VT maligna</td></tr>
+<tr><td><strong>Dekongestan oral</strong></td><td>Pseudoefedrin, fenilefrin (kandungan obat flu bebas) memacu reseptor adrenergik</td><td>Takikardia dan vasokonstriksi</td></tr>
+</table>
+
+<h3>Serangan panik</h3>
+<ol class="flow">
+<li>Lonjakan simpatis mendadak<small>hiperventilasi</small></li>
+<li>Hipokapnia<small>CO<sub>2</sub> terbuang berlebih</small></li>
+<li>Alkalosis respiratorik<small>darah terlalu basa</small></li>
+<li>Hipokalsemia ionik<small>kalsium ionik bebas turun</small></li>
+<li>Gejala<small>dada terhimpit kaku, berdebar kencang, parestesia bibir dan jari</small></li>
+</ol>
+</section>
+
+<section class="ch" data-ch="5">
+<h2>Red Flag &amp; Diagnostik</h2>
+<p class="def"><strong>Tanda bahaya (<em>red flags</em>)</strong> pada dada berdebar: kehadiran <strong>salah satu</strong> tanda berikut menuntut evaluasi gawat darurat segera.</p>
+
+<h3>Empat red flag</h3>
+<table>
+<tr><th>Red flag</th><th>Arti</th></tr>
+<tr><td><strong>Sinkop / presinkop</strong></td><td>Pingsan atau nyaris pingsan: hipoperfusi otak akut akibat anjloknya curah jantung; curiga kuat VT berkelanjutan, blok AV total, atau henti sinus panjang</td></tr>
+<tr><td><strong>Nyeri dada iskemik</strong></td><td>Rasa tertindih beban berat menjalar ke rahang/lengan; iskemia miokard akut (primer atau akibat takikardia ekstrem)</td></tr>
+<tr><td><strong>Sesak napas berat</strong></td><td>Gagal pompa ventrikel kiri akut → tekanan diastol melonjak balik ke kapiler paru → edema paru kardiogenik</td></tr>
+<tr><td><strong>Riwayat keluarga</strong></td><td>Kematian jantung mendadak usia muda (&lt;40 tahun) dalam keluarga: curiga kelainan kanal ion genetik (<strong>kanalopati</strong>) atau kardiomiopati bawaan</td></tr>
+</table>
+
+<h3>Kanalopati &amp; kardiomiopati bawaan</h3>
+<table>
+<tr><th>Kelainan</th><th>Dasar</th><th>Rentan</th></tr>
+<tr><td><strong>Sindrom Brugada</strong></td><td>Disfungsi kanal natrium (<em>SCN5A</em>)</td><td>VF saat tidur atau demam</td></tr>
+<tr><td><strong>Sindrom Long QT (LQTS)</strong></td><td>Mutasi kanal K<sup>+</sup>/Na<sup>+</sup></td><td>TdP saat olahraga, stres, atau terkejut</td></tr>
+<tr><td><strong>CPVT</strong></td><td>Mutasi reseptor ryanodine (RyR2)</td><td>VT polimorfik fatal saat olahraga atau emosi</td></tr>
+<tr><td><strong>HCM</strong></td><td>Kardiomiopati hipertrofik</td><td>VT fatal saat olahraga (lihat bab Etiologi)</td></tr>
+</table>
+
+<h3>EKG 12-sadapan istirahat</h3>
+<p>Pemeriksaan <strong>lini pertama wajib</strong>.</p>
+<table>
+<tr><th>Unsur</th><th>Temuan</th><th>Arti</th></tr>
+<tr><td rowspan="2"><strong>Gelombang P</strong></td><td>Absen</td><td>AF</td></tr>
+<tr><td>Pola gigi gergaji (<em>sawtooth</em>)</td><td>Flutter</td></tr>
+<tr><td rowspan="2"><strong>Interval PR</strong> (normal 0,12–0,20 s)</td><td>Memendek (&lt;0,12 s) + gelombang delta</td><td>Sindrom Wolff-Parkinson-White (WPW)</td></tr>
+<tr><td>Memanjang (&gt;0,20 s)</td><td>Blok AV derajat satu</td></tr>
+<tr><td rowspan="2"><strong>Kompleks QRS</strong> (normal &lt;0,12 s)</td><td>Sempit</td><td>Supraventrikular</td></tr>
+<tr><td>Lebar (≥0,12 s)</td><td>Wajib curiga takikardia ventrikel (VT) sampai terbukti sebaliknya</td></tr>
+<tr><td><strong>Interval QTc</strong></td><td>Memanjang: &gt;450 ms pria, &gt;460 ms wanita (formula Bazett)</td><td>Risiko tinggi EAD dan <em>Torsades de Pointes</em></td></tr>
+<tr><td><strong>Sadapan V1–V2</strong></td><td>Elevasi ST tipe kubah (<em>coved</em> ≥2 mm) + T negatif</td><td>Sindrom Brugada tipe 1</td></tr>
+</table>
+
+<h3>Pemeriksaan lanjutan</h3>
+<table>
+<tr><th>Pemeriksaan</th><th>Kapan / apa yang dinilai</th></tr>
+<tr><td><strong>Holter 24–48 jam</strong></td><td>EKG normal tetapi gejala timbul harian; korelasi objektif buku harian gejala (<em>symptom diary</em>) dengan irama jantung</td></tr>
+<tr><td><strong>Event / loop recorder</strong></td><td>Keluhan timbul sangat jarang (mingguan atau bulanan)</td></tr>
+<tr><td><strong>Ekokardiografi transtorakal (TTE)</strong></td><td>Fraksi ejeksi (fungsi pompa), ketebalan septum miokard (skrining HCM), morfologi katup (MVP)</td></tr>
+<tr><td><strong>Laboratorium darah</strong></td><td>Panel tiroid (TSH, FT4), elektrolit serum (K<sup>+</sup>, Mg<sup>2+</sup>, Ca<sup>2+</sup>), hemoglobin (anemia), glukosa darah sewaktu (hipoglikemia)</td></tr>
+</table>
+</section>
+
+<section class="ch" data-ch="6">
+<h2>Rangkuman Entitas</h2>
+<p>Tabel rangkuman cepat sebelas entitas palpitasi: karakter sensasi, mekanisme, temuan khas, dan catatan kritis. Geser tabel ke samping pada layar sempit.</p>
+
+<h3>Aritmia</h3>
+<table>
+<tr><th>Entitas</th><th>Karakter sensasi</th><th>Mekanisme &amp; pencetus</th><th>Temuan khas (EKG / fisik)</th><th>Catatan kritis / red flag</th></tr>
+<tr><td><strong>Ekstrasistol (PAC / PVC)</strong></td><td>Denyut melompat (<em>skipped beat</em>) lalu dentuman keras</td><td>Otomatisitas abnormal atau DAD pada fokus ektopik atrium/ventrikel</td><td>Denyut prematur + jeda kompensasi; QRS sempit (PAC) atau lebar (PVC)</td><td>Mayoritas jinak; waspada bila PVC sering (&gt;10–15%), multiform, atau saat aktivitas</td></tr>
+<tr><td><strong>PSVT (AVNRT / AVRT)</strong></td><td>Kepakan cepat teratur mendadak (<em>fluttering</em>), laju 150–250 bpm</td><td>Mikro re-entry di nodus AV atau makro re-entry via berkas Kent</td><td>Takikardia reguler QRS sempit, gelombang P terbenam/retrograd</td><td>Khas memicu poliuria pasca-serangan (ANP); reda dengan manuver vagal/adenosin</td></tr>
+<tr><td><strong>Fibrilasi atrium (AF)</strong></td><td>Getaran kacau tidak teratur di dada, denyut nadi berubah-ubah</td><td>Ratusan sirkuit mikro re-entry acak di atrium (vena pulmonalis)</td><td>Irama <em>irregularly irregular</em> (R-R acak total), tanpa gelombang P diskret</td><td>Risiko tinggi stroke kardioemboli (skor CHA₂DS₂-VASc); memperberat gagal jantung</td></tr>
+<tr><td><strong>Takikardia ventrikel (VT)</strong></td><td>Berdebar kencang, terhantam berat, lemas, pusing melayang/pingsan</td><td>Re-entry di sekitar parut infark atau otomatisitas ventrikel</td><td>Takikardia reguler QRS lebar (≥0,12 s), ada disosiasi AV / <em>capture beats</em></td><td><strong>Red flag darurat.</strong> Cepat kolaps ke henti sirkulasi dan fibrilasi ventrikel</td></tr>
+<tr><td><strong>Torsades de Pointes (TdP)</strong></td><td>Berdebar paroksismal kacau, pusing melayang, sinkop berulang</td><td>Aktivitas terpicu: EAD akibat potensial aksi memanjang</td><td>VT polimorfik dengan puncak QRS memilin garis isoelektrik; QTc memanjang</td><td><strong>Red flag darurat.</strong> Dipicu hipokalemia, hipomagnesemia, obat pemanjang QT; terapi: MgSO<sub>4</sub> IV</td></tr>
+<tr><td><strong>Sindrom WPW</strong></td><td>Episode berdebar sangat cepat mendadak sejak usia muda</td><td>Jalur aksesori bawaan (berkas Kent) memotong anulus AV</td><td>Interval PR pendek (&lt;0,12 s) + gelombang delta + QRS agak lebar</td><td>Sangat berbahaya bila terjadi AF via berkas Kent → bisa degenerasi ke VF; hindari pemblok AV murni</td></tr>
+<tr><td><strong>Sindrom Brugada</strong></td><td>Palpitasi paroksismal atau pingsan saat tidur malam / demam</td><td>Kanalopati natrium bawaan (<em>SCN5A</em>) memicu dispersi repolarisasi</td><td>Elevasi ST tipe kubah (<em>coved</em> ≥2 mm) + T negatif di V1–V2</td><td><strong>Red flag kematian mendadak.</strong> Riwayat keluarga mati muda; pencegahan memerlukan ICD</td></tr>
+</table>
+
+<h3>Penyebab non-kardiak</h3>
+<table>
+<tr><th>Entitas</th><th>Karakter sensasi</th><th>Mekanisme &amp; pencetus</th><th>Temuan khas (EKG / fisik)</th><th>Catatan kritis</th></tr>
+<tr><td><strong>Hipertiroidisme</strong></td><td>Berdebar kencang konstan saat istirahat, dada berdentum</td><td>Hormon T<sub>3</sub> meningkatkan densitas reseptor beta-1 miokard</td><td>Sinus takikardia persisten (&gt;100 bpm), rentan berkembang menjadi AF</td><td>Penurunan BB, tremor halus, intoleransi panas, keringat; TSH turun, FT4 naik</td></tr>
+<tr><td><strong>Feokromositoma</strong></td><td>Episode berdebar paroksismal hebat yang datang mendadak</td><td>Tumor medula adrenal menyekresi lonjakan masif katekolamin</td><td>Sinus takikardia paroksismal, aritmia ektopik, voltase LVH</td><td>Trias klasik: berdebar + sakit kepala berdenyut + keringat mengucur, disertai krisis hipertensi</td></tr>
+<tr><td><strong>Serangan panik</strong></td><td>Berdebar mendadak + dada terhimpit kaku dan rasa tercekik</td><td>Lonjakan tonus adrenergik akut via aktivasi poros simpatis</td><td>Sinus takikardia tanpa kelainan konduksi struktural</td><td>Hiperventilasi membuat kalsium bebas turun → kesemutan bibir dan jari (parestesia); EKG normal</td></tr>
+<tr><td><strong>Holiday heart syndrome</strong></td><td>Berdebar tak teratur beberapa jam pasca minum alkohol berlebih</td><td>Toksisitas alkohol akut memperpendek refrakter atrium</td><td>AF paroksismal akut pada usia muda tanpa riwayat sakit jantung</td><td>Membaik spontan dalam 24–48 jam pasca hidrasi, koreksi elektrolit, dan bebas alkohol</td></tr>
+</table>
+</section>
+
+    </div>
+  </div>
+</div>
+
+<div id="v-quiz" role="tabpanel" aria-labelledby="tab-quiz" hidden>
+ <div class="quiz">
+  <div id="setup"></div>
+
+  <div id="run" hidden>
+    <div class="runhead">
+      <strong id="rpos"></strong><span id="rinfo" aria-live="off"></span>
+      <button class="btn sm" id="endbtn">Akhiri</button>
+      <div class="bar" id="rbarwrap" role="progressbar" aria-valuemin="0" aria-label="Soal terjawab"><i id="rbar"></i></div>
+    </div>
+    <div class="qcard">
+      <p class="scen" id="rscen" hidden></p>
+      <h2 class="qtext" id="rq" tabindex="-1"></h2>
+    </div>
+    <div class="opts" id="ropts" role="group" aria-label="Pilihan jawaban"></div>
+    <div class="fb" id="rfb" role="status" aria-live="polite" hidden></div>
+    <details class="grid" id="rgridwrap" hidden><summary>Daftar soal (titik kuning = ragu)</summary><div id="rgrid"></div></details>
+    <div class="actbar">
+      <button class="btn fit" id="prevbtn" aria-label="Soal sebelumnya">←</button>
+      <button class="btn fit" id="flagbtn" aria-pressed="false">Ragu</button>
+      <span class="hint" id="rhint">Pilih satu jawaban</span>
+      <button class="btn pri" id="nextbtn">Berikutnya →</button>
+    </div>
+  </div>
+
+  <div id="result" hidden></div>
+ </div>
+</div>
+</main>
+
+<dialog id="dlg" aria-labelledby="dlgmsg"><p id="dlgmsg"></p><div class="row"><button class="btn" value="no">Batal</button><button class="btn pri" value="yes" id="dlgok">Ya</button></div></dialog>
+
+<script>
+const META={id:'b32-k8',bab:['Konduksi & Irama','Sensasi Berdebar','Mekanisme Aritmia','Etiologi','Red Flag & Diagnostik','Rangkuman Entitas']};
+// [bab, pertanyaan, [BENAR, pengecoh×4], pembahasan, skenario atau '', [id butir]]
+const QRAW=[
+/* ===== Bab 1 ===== */
+[1,"Pemacu alami utama jantung (nodus SA) terletak di…",["Muara vena kava superior di atrium kanan","Muara sinus koronarius di atrium kanan","Muara vena pulmonalis di atrium kiri","Dasar septum interatrial dekat katup AV","Bagian atas septum interventrikular"],"Nodus SA berada di muara vena kava superior atrium kanan. Vena pulmonalis di bahan ini dikaitkan dengan mikro re-entry fibrilasi atrium, bukan dengan pemacu normal.","",["1.01"]],
+[1,"Laju otomatisitas intrinsik nodus SA adalah…",["60–100 denyut/menit","40–60 denyut/menit","100–150 denyut/menit","150–250 denyut/menit","350–600 denyut/menit"],"Nodus SA memiliki laju intrinsik tercepat, 60–100 denyut/menit. Angka 150–250 adalah laju PSVT dan 350–600 adalah laju aktivitas atrium pada fibrilasi atrium.","",["1.02"]],
+[1,"Fase 4 (depolarisasi diastolik spontan) nodus SA paling curam karena…",["Aliran masuk natrium lambat melalui kanal funny current (If)","Aliran masuk kalsium melalui kanal kalsium tipe-L yang lambat","Aliran keluar kalium melalui arus IK1 yang sedang menguat","Arus masuk transien (Iti) akibat kerja penukar natrium-kalsium","Reaktivasi kanal kalsium tipe-L sebagai window current"],"Kecuraman fase 4 nodus SA berasal dari arus natrium lambat lewat kanal funny current. Kanal kalsium tipe-L menjelaskan lambatnya konduksi nodus AV, sedangkan Iti dan window current adalah mekanisme DAD dan EAD.","",["1.03"]],
+[1,"Supresi pacu dominan (overdrive suppression) terjadi karena nodus SA…",["Mencapai ambang letup lebih dulu daripada fokus pacu laten","Memiliki masa refrakter lebih panjang daripada fokus laten","Menghantarkan impuls lebih cepat daripada serat Purkinje","Melepaskan hormon ANP yang menekan fokus pacu laten","Memperlambat hantaran impuls pada nodus atrioventrikular"],"Karena laju intrinsiknya tercepat, nodus SA mencapai ambang letup lebih dulu sehingga fokus pacu laten di bawahnya tertekan. Ini soal siapa yang lebih dulu meletup, bukan soal masa refrakter atau kecepatan hantaran.","",["1.04"]],
+[1,"Struktur isolator listrik yang membuat nodus AV menjadi satu-satunya gerbang impuls dari atrium ke ventrikel adalah…",["Anulus fibrosus","Korda tendinea","Ismus kavotrikuspid","Septum ventrikel","Retikulum sarkoplasma"],"Anulus fibrosus bersifat isolator, sehingga impuls hanya dapat menyeberang lewat nodus AV. Ismus kavotrikuspid adalah lokasi makro re-entry flutter atrium.","",["1.05"]],
+[1,"Konduksi di nodus AV sengaja lambat (0,05 m/s) karena…",["Dominasi kanal kalsium tipe-L dan sedikit gap junction","Dominasi kanal kalsium tipe-L dan banyak gap junction","Dominasi kanal funny current dan sedikit gap junction","Dominasi arus kalium IK1 dan banyak gap junction","Dominasi kanal funny current dan banyak gap junction"],"Nodus AV didominasi kanal kalsium tipe-L yang lambat dan hanya memiliki sedikit gap junction. Gap junction berdensitas tinggi justru ciri serat Purkinje yang menghantar cepat.","",["1.06"]],
+[1,"Jeda fisiologis di nodus AV, yang tampak sebagai interval PR di EKG, berfungsi untuk…",["Memberi waktu atrium selesai berkontraksi mengisi ventrikel","Memberi waktu ventrikel selesai repolarisasi sebelum diastol","Memberi waktu nodus SA pulih dari masa refrakternya","Menyaring impuls atrium agar ventrikel berdenyut acak","Memastikan ventrikel memompa dari apeks menuju basis"],"Perlambatan di nodus AV memberi waktu atrium menyelesaikan kontraksi untuk pengisian ventrikel sebelum sistol ventrikel. Pemompaan dari apeks ke basis adalah peran sistem His–Purkinje.","",["1.07"]],
+[1,"Pernyataan yang tepat tentang berkas His dan serat Purkinje adalah…",["Bercabang menjadi RBB dan LBB dengan hantaran 2–4 m/s","Bercabang menjadi RBB dan LBB dengan hantaran 0,05 m/s","Berjalan tanpa cabang dengan hantaran sekitar 2–4 m/s","Bercabang di atrium kanan dengan hantaran 0,05 m/s","Bercabang menjadi berkas Kent dengan hantaran 2–4 m/s"],"Berkas His menerobos septum ventrikel, bercabang menjadi RBB dan LBB, lalu berakhir di anyaman Purkinje dengan hantaran sangat cepat 2–4 m/s. Angka 0,05 m/s adalah kecepatan nodus AV.","",["1.08","1.09"]],
+[1,"Arah penyebaran impuls dan arah pemompaan ventrikel yang benar adalah…",["Endokardium ke epikardium; memompa dari apeks ke basis","Epikardium ke endokardium; memompa dari apeks ke basis","Endokardium ke epikardium; memompa dari basis ke apeks","Epikardium ke endokardium; memompa dari basis ke apeks","Septum ke atrium; memompa dari basis menuju apeks"],"Anyaman Purkinje menyebarkan impuls dari endokardium ke epikardium sehingga kedua ventrikel memompa serempak dari apeks menuju basis.","",["1.10"]],
+[1,"Nilai interval PR dan lebar QRS pada irama sinus normal adalah…",["PR 0,12–0,20 s dan QRS <0,12 s","PR 0,12–0,20 s dan QRS ≥0,12 s","PR <0,12 s dan QRS <0,12 s","PR >0,20 s dan QRS <0,12 s","PR 0,20–0,40 s dan QRS <0,20 s"],"Irama sinus normal memiliki PR 0,12–0,20 s dan QRS sempit <0,12 s. PR <0,12 s mengarah ke WPW bila disertai gelombang delta, dan PR >0,20 s berarti blok AV derajat satu.","",["1.11"]],
+[1,"Irama pada EKG ini paling tepat disebut…",["Irama sinus normal","Sinus takikardia","Sinus bradikardia","Blok AV derajat satu","Fibrilasi atrium"],"Semua kriteria terpenuhi: laju 60–100, reguler, P positif di sadapan II dengan rasio 1:1, PR 0,12–0,20 s, QRS <0,12 s. PR 0,16 s masih normal sehingga bukan blok AV derajat satu.","Seorang mahasiswa 20 tahun diperiksa EKG untuk skrining. Laju 78 denyut/menit, jarak R-R konstan, gelombang P positif di sadapan II dan selalu diikuti QRS, interval PR 0,16 s, QRS 0,08 s.",["1.11"]],
+[1,"Mekanisme takikardia yang paling sesuai pada pasien ini adalah…",["Respons fisiologis nodus SA terhadap stimulasi simpatis","Sirkuit mikro re-entry yang berputar di dalam nodus AV","Otomatisitas abnormal fokus ektopik di dalam ventrikel","Aktivitas terpicu akibat penumpukan kalsium di dalam sel","Makro re-entry melalui jalur aksesori berkas Kent"],"Laju >100 dengan gelombang P sinus yang diikuti QRS adalah sinus takikardia, respons fisiologis terhadap stimulasi simpatis; demam termasuk pemicunya. Re-entry nodus AV akan memberi takikardia mendadak dengan P terbenam atau retrograd.","Seorang perempuan 26 tahun demam 39 °C. Nadi 118 kali/menit, teratur. EKG: gelombang P positif di sadapan II, masing-masing diikuti QRS sempit.",["1.12"]],
+[1,"Batas laju sinus bradikardia dan salah satu penyebab patologisnya adalah…",["<60 denyut/menit; sick sinus syndrome","<60 denyut/menit; hipertiroidisme","<50 denyut/menit; anemia berat","<40 denyut/menit; sick sinus syndrome","<100 denyut/menit; beta-blocker"],"Sinus bradikardia adalah laju nodus SA <60 denyut/menit, akibat tonus vagus tinggi (atlet) atau patologis seperti sick sinus syndrome dan beta-blocker. Hipertiroidisme dan anemia justru penyebab sinus takikardia.","",["1.13"]],
+[1,"Laju aktivitas listrik atrium pada fibrilasi atrium adalah…",["350–600 denyut/menit","150–250 denyut/menit","100–150 denyut/menit","60–100 denyut/menit","250–350 denyut/menit"],"Fibrilasi atrium berasal dari ratusan mikro-reentry acak di atrium berlaju 350–600 denyut/menit. Rentang 150–250 adalah laju PSVT.","",["1.14"]],
+[1,"Dasar irama ventrikel yang acak total pada pasien ini adalah…",["Ratusan mikro-reentry atrium yang disaring acak nodus AV","Makro re-entry tunggal di ismus kavotrikuspid atrium","Denyut prematur ventrikel dengan jeda kompensasi","Henti sinus berulang akibat overdrive suppression","Blok searah pada jalur cepat di dalam nodus AV"],"Irama irregularly irregular tanpa gelombang P diskret khas fibrilasi atrium: ratusan mikro-reentry acak di atrium disaring secara acak oleh nodus AV. Makro re-entry ismus kavotrikuspid adalah flutter, yang memberi pola gigi gergaji.","Seorang laki-laki 68 tahun mengeluh dada bergetar tidak teratur. Nadi teraba berubah-ubah. EKG: jarak R-R acak total tanpa pola dan tidak tampak gelombang P yang jelas.",["1.14"]],
+
+/* ===== Bab 2 ===== */
+[2,"Palpitasi didefinisikan sebagai…",["Kesadaran sensorik subjektif atas denyut jantung sendiri","Peningkatan laju nodus SA di atas 100 denyut per menit","Irama ventrikel yang acak total tanpa pola tertentu","Nyeri dada tertindih yang menjalar ke rahang atau lengan","Hilangnya kesadaran sesaat akibat hipoperfusi otak"],"Palpitasi adalah sensasi subjektif menyadari denyut jantung sendiri akibat perubahan laju, keteraturan irama, atau kekuatan kontraksi. Sinus takikardia hanyalah salah satu penyebabnya, bukan definisinya.","",["2.01"]],
+[2,"Sensasi denyut yang hilang atau berhenti sejenak setelah PAC/PVC berasal dari…",["Jeda kompensasi karena impuls sinus berikutnya terhambat","Jeda henti sinus setelah takiaritmia berhenti mendadak","Kontraksi atrium ketika katup AV sedang tertutup","Pengisian ventrikel berlebih selama diastol yang panjang","Konduksi yang diperlambat fisiologis di nodus AV"],"Denyut prematur membuat miokardium atau nodus SA masih refrakter saat impuls sinus normal tiba, sehingga impuls itu terhambat dan terbentuk jeda kompensasi. Jeda henti sinus adalah mekanisme sinkop pasca-takikardia, bukan skipped beat.","",["2.02"]],
+[2,"Dentuman keras setelah jeda pada pasien ini dijelaskan oleh…",["Potensiasi pasca-ekstrasistol melalui hukum Frank-Starling","Pelepasan ANP akibat regangan dinding atrium yang tinggi","Jeda henti sinus akibat overdrive suppression nodus SA","Hipokalsemia ionik akibat alkalosis respiratorik akut","Sirkulasi hiperdinamik akibat resistensi perifer menurun"],"Jeda kompensasi (yang terasa sebagai denyut hilang) memperpanjang diastol, sehingga denyut pertama sesudahnya jauh lebih kuat: potensiasi pasca-ekstrasistol. ANP menjelaskan poliuria pasca-PSVT, bukan dentuman.","Seorang mahasiswa 21 tahun mengeluh sesekali jantungnya terasa berhenti sejenak lalu disusul satu dentuman keras di dada. Monitor menunjukkan denyut prematur yang diikuti jeda.",["2.02","2.03"]],
+[2,"Dua hal yang bertambah selama jeda diastol panjang sehingga denyut pasca-ekstrasistol lebih kuat adalah…",["Pengisian ventrikel dan cadangan Ca2+ retikulum sarkoplasma","Pengisian atrium dan cadangan Na+ di dalam sitoplasma sel","Tekanan intra-atrial dan kadar ANP di dalam sirkulasi","Tonus simpatis dan kadar katekolamin di dalam sirkulasi","Masa refrakter jalur cepat dan jalur lambat nodus AV"],"Diastol yang panjang membuat pengisian ventrikel melimpah dan cadangan Ca2+ retikulum sarkoplasma bertumpuk; hukum Frank-Starling lalu menghasilkan volume sekuncup masif.","",["2.03"]],
+[2,"Sensasi kepakan cepat (fluttering) khas ditimbulkan oleh…",["Takiaritmia paroksismal seperti PSVT dan flutter atrium","Denyut prematur atrium dengan jeda kompensasi penuh","Sinus bradikardia pada atlet dengan tonus vagus tinggi","Blok AV derajat satu dengan interval PR memanjang","Anemia berat dengan lonjakan curah jantung kompensasi"],"Fluttering timbul dari takiaritmia paroksismal mendadak berkecepatan tinggi (PSVT, flutter atrium). Denyut prematur memberi skipped beat, dan anemia berat memberi pounding.","",["2.04"]],
+[2,"Zat yang menjelaskan keluhan berkemih banyak pada pasien ini adalah…",["Atrial natriuretic peptide","Epinefrin","Hormon T3","Katekolamin","Adenosin"],"Pada takikardia 150–250/menit dinding atrium teregang dan melepaskan ANP, yang membuang air dan natrium. Epinefrin dan katekolamin menjelaskan berdebar pada hipoglikemia atau feokromositoma, bukan poliuria.","Seorang perempuan 24 tahun mengalami berdebar sangat cepat (sekitar 200 kali/menit) yang datang mendadak selama 30 menit. Setelah serangan reda, ia berkemih banyak berulang kali.",["2.05"]],
+[2,"Pelepasan ANP pada PSVT dipicu oleh…",["Atrium berkontraksi saat katup AV tertutup sehingga tekanannya naik","Ventrikel berkontraksi saat katup AV terbuka sehingga volumenya turun","Nodus SA tertekan selama takikardia sehingga curah jantung terhenti","Volume intravaskular turun sehingga refleks baroreseptor teraktivasi","Hiperventilasi membuang CO2 berlebih sehingga darah menjadi basa"],"Pada takikardia ekstrem atrium berkontraksi ketika katup AV tertutup, tekanan intra-atrial melonjak, dan regangan dindingnya memicu pelepasan ANP.","",["2.05"]],
+[2,"Penyebab pingsan pada pasien ini yang paling sesuai adalah…",["Jeda henti sinus karena nodus SA tertekan selama takikardia","Jeda kompensasi karena miokardium refrakter pasca-PVC","Diuresis berlebihan akibat pelepasan ANP dari atrium","Potensiasi pasca-ekstrasistol dengan volume sekuncup besar","Hipokapnia akibat hiperventilasi pada serangan panik"],"Takikardia menekan nodus SA (overdrive suppression); ketika takiaritmia berhenti tiba-tiba, nodus SA lumpuh sesaat sehingga curah jantung terhenti dan perfusi otak anjlok. Jeda kompensasi pasca-PVC hanya memberi sensasi denyut terlewat.","Seorang laki-laki 45 tahun berdebar sangat cepat selama beberapa menit. Tepat ketika debaran itu berhenti mendadak, ia pingsan sesaat lalu sadar kembali.",["2.06","1.04"]],
+
+/* ===== Bab 3 ===== */
+[3,"Menurut bahan, aritmia timbul dari…",["Gangguan pembentukan impuls, konduksi, atau keduanya","Gangguan pengisian ventrikel, kontraksi, atau keduanya","Gangguan katup, miokardium, atau perikardium jantung","Gangguan preload, afterload, atau kontraktilitas","Gangguan endokrin, metabolik, atau kondisi psikis"],"Aritmia berasal dari gangguan pembentukan impuls, gangguan konduksi, atau kombinasinya, yang diwujudkan dalam tiga mekanisme: otomatisitas abnormal, re-entry, dan aktivitas terpicu.","",["3.01"]],
+[3,"Potensial istirahat sel miokardium kerja dan arus yang mempertahankannya adalah…",["−90 mV oleh arus kalium IK1","−60 mV oleh arus kalium IK1","−90 mV oleh funny current If","−40 mV oleh kanal kalsium tipe-L","−60 mV oleh arus transien Iti"],"Sel miokardium kerja stabil di −90 mV berkat arus kalium IK1, dengan fase 4 mendatar. Nilai −60 mV adalah contoh hipopolarisasi dan −40 mV adalah ambang letup.","",["3.02"]],
+[3,"Pergeseran potensial istirahat seperti ini disebut…",["Hipopolarisasi","Hiperpolarisasi","Repolarisasi","Afterdepolarization","Overdrive suppression"],"Pada iskemia akut, asidosis, atau disfungsi pompa Na+/K+, membran bergeser menjadi kurang negatif (misal −60 mV): hipopolarisasi. Ini awal otomatisitas abnormal, berbeda dari afterdepolarization yang menumpang pada potensial aksi sebelumnya.","Pada seorang pasien iskemia miokard akut, sel miokardium kerja di daerah iskemik memiliki potensial istirahat −60 mV, tidak lagi −90 mV.",["3.03"]],
+[3,"Urutan kejadian setelah membran sel miokardium kerja mengalami hipopolarisasi adalah…",["IK1 teredam → kation bocor masuk → fase 4 mendaki → ambang −40 mV","IK1 menguat → kation bocor keluar → fase 4 mendatar → ambang −90 mV","IKr terhambat → kanal Ca pulih → letupan fase 2 → Torsades de Pointes","Ca2+ menumpuk → bocor via RyR2 → NCX aktif → arus transien Iti","Blok searah → konduksi lambat → impuls berbalik → sirkuit tertutup"],"Voltase yang kurang negatif meredam IK1, kation bocor masuk, fase 4 mendaki sendiri sampai ambang −40 mV (kanal kalsium tipe-L) dan sel menembakkan potensial aksi. Pilihan lain adalah urutan EAD, DAD, dan re-entry.","",["3.04"]],
+[3,"Ciri otomatisitas abnormal yang membedakannya dari re-entry adalah…",["Bersifat mandiri, tanpa memerlukan denyut pemicu","Wajib dipicu denyut prematur pada jendela rentan","Menumpang pada potensial aksi yang mendahuluinya","Memerlukan dua jalur konduksi paralel yang berbeda","Berhenti dengan manuver vagal atau adenosin"],"Otomatisitas abnormal bersifat self-originating dan mengambil alih ritme bila lajunya mengalahkan nodus SA. Kebutuhan akan denyut prematur pemicu dan respons terhadap manuver vagal adalah ciri re-entry.","",["3.05"]],
+[3,"Mekanisme irama ini menurut bahan adalah…",["Otomatisitas abnormal","Sirkuit re-entry mikro","Early afterdepolarization","Delayed afterdepolarization","Sirkuit re-entry makro"],"AIVR pasca-reperfusi infark dicantumkan sebagai contoh otomatisitas abnormal, bersama PAC/PVC dan takikardia atrial otomatis.","Seorang laki-laki 58 tahun baru menjalani reperfusi infark miokard. Monitor menunjukkan ritme idioventrikular terakselerasi (AIVR).",["3.06"]],
+[3,"Mekanisme tersering pada takiaritmia klinis yang berkelanjutan adalah…",["Sirkuit re-entry","Otomatisitas abnormal","Early afterdepolarization","Delayed afterdepolarization","Overdrive suppression"],"Re-entry adalah mekanisme tersering takiaritmia klinis berkelanjutan: impuls tidak padam, melainkan berputar balik mengaktivasi jaringan yang sama secara siklik.","",["3.07"]],
+[3,"Sifat jalur cepat pada sirkuit re-entry adalah…",["Konduksi cepat dengan masa refrakter panjang","Konduksi cepat dengan masa refrakter pendek","Konduksi lambat dengan masa refrakter panjang","Konduksi lambat dengan masa refrakter pendek","Konduksi cepat tanpa masa refrakter berarti"],"Jalur cepat menghantar cepat tetapi refrakternya panjang; jalur lambat sebaliknya. Karena refrakternya panjang, jalur cepatlah yang terblok ketika denyut prematur datang.","",["3.08"]],
+[3,"Trias syarat mutlak terjadinya re-entry adalah…",["Jalur ganda paralel, blok searah, konduksi lambat","Jalur ganda paralel, blok dua arah, konduksi cepat","Jalur tunggal, blok searah, konduksi sangat lambat","Hipopolarisasi, kebocoran kation, depolarisasi fase 4","Ca2+ overload, kebocoran RyR2, arus masuk transien"],"Re-entry memerlukan dua jalur paralel, blok searah di salah satunya, dan konduksi lambat di jalur lainnya. Blok dua arah akan memadamkan impuls; dua pilihan terakhir adalah urutan otomatisitas abnormal dan DAD.","",["3.08"]],
+[3,"Sirkuit re-entry dapat menutup karena saat impuls dari jalur lambat tiba di ujung distal…",["Jalur cepat sudah pulih dari refrakter sehingga dilalui mundur","Jalur cepat masih refrakter sehingga impuls padam di sana","Jalur lambat masih refrakter sehingga impuls berhenti total","Nodus SA sudah pulih sehingga mengambil alih ritme jantung","Kanal kalsium tipe-L pulih sehingga timbul letupan sekunder"],"Impuls mula-mula terblok di jalur cepat yang masih refrakter dan lolos lewat jalur lambat. Karena rambatannya lambat, jalur cepat sempat pulih sehingga impuls dapat berbalik retrograd dan sirkuit tertutup.","",["3.09"]],
+[3,"Pemicu yang wajib ada untuk memulai sirkuit re-entry adalah…",["Denyut prematur yang jatuh pada jendela rentan","Hipopolarisasi membran akibat iskemia akut","Penumpukan kalsium intraseluler yang masif","Pemanjangan potensial aksi dan interval QT","Stimulasi simpatis fisiologis pada nodus SA"],"Re-entry wajib dipicu denyut prematur (PAC/PVC) yang jatuh pada vulnerable window. Hipopolarisasi memulai otomatisitas abnormal, kalsium menumpuk memulai DAD, dan QT panjang memulai EAD.","",["3.10"]],
+[3,"Manuver vagal efektif pada pasien ini karena…",["Memperpanjang refrakter sehingga sirkuit re-entry terputus","Menekan depolarisasi fase 4 spontan pada fokus ektopik","Mengurangi penumpukan kalsium di retikulum sarkoplasma","Memperpendek potensial aksi sehingga interval QT normal","Menurunkan pelepasan ANP dari dinding atrium yang regang"],"Takikardia reguler QRS sempit yang mulai mendadak dengan P terbenam adalah gambaran PSVT, suatu re-entry. Re-entry responsif terhadap pemanjangan refrakter oleh manuver vagal atau adenosin.","Seorang perempuan 22 tahun berdebar sangat cepat yang mulai mendadak. EKG: takikardia reguler 190 kali/menit, QRS sempit, gelombang P tidak tampak jelas. Keluhan berhenti seketika setelah manuver vagal.",["3.10","6.02"]],
+[3,"AVRT pada sindrom WPW berbeda dari AVNRT karena sirkuitnya…",["Makro re-entry yang melalui berkas Kent","Mikro re-entry di dalam nodus AV","Makro re-entry di ismus kavotrikuspid","Mikro re-entry acak di kedua atrium","Re-entry di sekitar parut pasca-infark"],"AVNRT adalah re-entry mikro di dalam nodus AV, sedangkan AVRT adalah re-entry makro yang memakai jalur aksesori (berkas Kent) pada WPW.","",["3.11"]],
+[3,"Substrat aritmia yang paling sesuai pada pasien ini adalah…",["Pulau fibrosis sebagai rintangan konduksi lambat","Jalur aksesori bawaan yang memotong anulus AV","Ismus kavotrikuspid di dasar atrium kanan","Muara vena pulmonalis pada dinding atrium kiri","Korda tendinea yang teregang oleh daun katup"],"Pada VT berbasis parut, pulau fibrosis pasca-infark menjadi rintangan anatomis dengan konduksi lambat tempat impuls berputar. Berkas Kent adalah substrat AVRT dan ismus kavotrikuspid substrat flutter.","Seorang laki-laki 60 tahun dengan riwayat infark miokard dua tahun lalu datang dengan takikardia ventrikel berkelanjutan.",["3.12"]],
+[3,"Makro re-entry pada flutter atrium berlokasi di…",["Ismus kavotrikuspid","Nodus atrioventrikular","Berkas Kent","Anulus fibrosus","Septum ventrikel"],"Flutter atrium memakai makro re-entry di ismus kavotrikuspid, sedangkan fibrilasi atrium melibatkan ratusan mikro-reentry acak.","",["3.13"]],
+[3,"Aktivitas terpicu (triggered activity) adalah potensial aksi abnormal akibat…",["Osilasi voltase membran yang menumpang potensial aksi sebelumnya","Depolarisasi fase 4 spontan yang muncul tanpa denyut pendahulu","Impuls yang berputar balik mengaktivasi jaringan yang sama","Hambatan impuls sinus oleh miokardium yang masih refrakter","Perlambatan fisiologis impuls ketika melintasi nodus AV"],"Aktivitas terpicu berasal dari afterdepolarization, yaitu osilasi voltase yang menumpang pada potensial aksi sebelumnya. Depolarisasi fase 4 yang mandiri adalah otomatisitas abnormal.","",["3.14"]],
+[3,"Delayed afterdepolarization (DAD) terjadi pada…",["Awal fase 4, setelah repolarisasi tuntas","Fase 2 plateau, selama repolarisasi","Fase 3 cepat, selama repolarisasi","Fase 0, saat depolarisasi cepat","Fase 1, saat repolarisasi awal"],"DAD muncul setelah repolarisasi selesai, pada awal fase 4 (diastol). Osilasi pada fase 2 atau fase 3 adalah EAD.","",["3.15"]],
+[3,"Fenomena listrik ini paling tepat disebut…",["Early afterdepolarization","Delayed afterdepolarization","Otomatisitas abnormal","Sirkuit re-entry mikro","Overdrive suppression"],"Osilasi yang muncul selama repolarisasi (fase 2 atau fase 3) pada potensial aksi yang memanjang adalah EAD. DAD baru muncul setelah repolarisasi tuntas, pada awal fase 4.","Pada rekaman potensial aksi sel ventrikel seorang pasien dengan interval QT panjang, tampak letupan depolarisasi tambahan ketika sel masih berada di fase plateau.",["3.15"]],
+[3,"Arus yang memicu letupan depolarisasi sekunder pada EAD adalah…",["Arus masuk Ca2+ lewat kanal kalsium tipe-L yang aktif kembali","Arus masuk Na+ lewat penukar NCX saat membuang Ca2+ keluar","Arus masuk Na+ lambat lewat kanal funny current (If)","Arus keluar K+ lewat IK1 yang menguat pada saat diastol","Arus masuk transien (Iti) akibat kebocoran lewat RyR2"],"Pada EAD potensial aksi memanjang karena IKr/IKs terhambat, sehingga kanal kalsium tipe-L sempat pulih dan teraktivasi kembali (window current). NCX dan Iti adalah mekanisme DAD.","",["3.16"]],
+[3,"Semua berikut adalah pencetus early afterdepolarization, KECUALI…",["Intoksikasi digoksin","Hipokalemia","Hipomagnesemia","Bradikardia berat","Antibiotik makrolida"],"Intoksikasi digoksin adalah pencetus DAD melalui Ca2+ overload. Hipokalemia, hipomagnesemia, bradikardia berat, dan obat pemanjang QT seperti makrolida semuanya pencetus EAD.","",["3.17"]],
+[3,"Aritmia dan mekanisme yang paling sesuai pada pasien ini adalah…",["Torsades de Pointes akibat early afterdepolarization","Torsades de Pointes akibat delayed afterdepolarization","Bidirectional VT akibat delayed afterdepolarization","VT berbasis parut akibat sirkuit re-entry menetap","AIVR akibat otomatisitas abnormal pasca-reperfusi"],"Obat pemanjang QT (antiaritmia kelas III) ditambah hipokalemia memicu EAD, yang berbahaya karena mencetuskan Torsades de Pointes: VT polimorfik dengan puncak QRS berpilin. DAD berkaitan dengan digoksin dan bidirectional VT.","Seorang perempuan 58 tahun yang mendapat antiaritmia kelas III mengalami diare beberapa hari; kalium serum 2,9 mEq/L. Ia pingsan berulang. EKG: interval QT memanjang, lalu takikardia ventrikel polimorfik dengan puncak QRS berpilin.",["3.17","3.18"]],
+[3,"Bahaya utama Torsades de Pointes adalah…",["Mudah kolaps menjadi fibrilasi ventrikel","Mudah berubah menjadi fibrilasi atrium","Memicu stroke kardioemboli dari atrium","Memicu poliuria akibat pelepasan ANP","Menetap sebagai blok AV derajat satu"],"TdP sangat mudah kolaps menjadi fibrilasi ventrikel yang fatal. Stroke kardioemboli adalah risiko fibrilasi atrium, dan poliuria pasca-serangan khas PSVT.","",["3.18"]],
+[3,"Pada DAD, setelah Ca2+ bocor dari retikulum sarkoplasma melalui RyR2, penukar NCX menghasilkan arus masuk transien (Iti) karena…",["Mengeluarkan 1 Ca2+ dan memasukkan 3 Na+","Mengeluarkan 3 Ca2+ dan memasukkan 1 Na+","Mengeluarkan 3 Na+ dan memasukkan 2 K+","Mengeluarkan 1 Na+ dan memasukkan 3 Ca2+","Mengeluarkan 2 K+ dan memasukkan 3 Na+"],"NCX menukar 1 Ca2+ (dua muatan positif keluar) dengan 3 Na+ (tiga muatan positif masuk), sehingga ada surplus satu muatan positif masuk: arus masuk transien yang memicu potensial aksi sekunder.","",["3.19"]],
+[3,"Mekanisme aritmia yang paling sesuai pada pasien ini adalah…",["DAD akibat Ca2+ overload karena pompa Na+/K+ terhambat","EAD akibat potensial aksi dan interval QT yang memanjang","Re-entry mikro melalui jalur cepat-lambat di nodus AV","Otomatisitas abnormal akibat hipopolarisasi sel iskemik","Re-entry makro melalui jalur aksesori berkas Kent"],"Digoksin menghambat pompa Na+/K+ sehingga kalsium menumpuk dan memicu DAD. PVC berpasangan, takikardia atrial dengan blok AV, dan bidirectional VT adalah manifestasi toksisitas digitalis.","Seorang laki-laki 70 tahun dengan gagal jantung rutin minum digoksin. Ia mual dan berdebar. EKG: PVC berpasangan diselingi bidirectional VT.",["3.20","3.21"]],
+[3,"Selain intoksikasi digoksin, pencetus delayed afterdepolarization menurut bahan adalah…",["Badai katekolamin dan CPVT","Hipokalemia dan hipomagnesemia","Bradikardia berat dan LQTS","Antipsikotik dan kuinolon","Iskemia akut dan asidosis"],"Pencetus DAD: intoksikasi digoksin, badai katekolamin/adrenergik, takikardia frekuensi tinggi, dan CPVT. Hipokalemia, bradikardia berat, LQTS, dan obat pemanjang QT adalah pencetus EAD; iskemia dan asidosis memicu otomatisitas abnormal.","",["3.20"]],
+
+/* ===== Bab 4 ===== */
+[4,"Bradiaritmia berat yang termasuk penyebab kardiak primer dada berdebar adalah…",["Blok AV Mobitz II atau blok AV total","Blok AV derajat satu dengan PR panjang","Sinus bradikardia pada atlet terlatih","Jeda kompensasi pasca-denyut prematur","Jeda henti sinus pasca-takikardia"],"Aritmia primer mencakup supraventrikular (PSVT, AF, flutter), ventrikular (PVC sering, VT), dan bradiaritmia berat yaitu blok AV Mobitz II atau total.","",["4.01"]],
+[4,"Mekanisme timbulnya denyut ektopik pada prolaps katup mitral adalah…",["Regangan korda tendinea memicu denyut ektopik ventrikel","Peregangan dinding bilik memperlebar dispersi refrakter","Susunan serat otot kacau memicu iskemia subendokardial","Jaringan parut fibrosis menjadi substrat sirkuit re-entry","Kenaikan reseptor beta-1 memicu takikardia saat istirahat"],"Pada MVP daun katup melengkung ke atrium kiri saat sistol, dan regangan korda tendinea memicu denyut ektopik ventrikel. Dispersi refrakter adalah mekanisme gagal jantung dan kardiomiopati dilatasi.","",["4.02"]],
+[4,"Dasar aritmia fatal pada kelainan ini adalah…",["Myocyte disarray dan iskemia subendokardial pemicu VT","Regangan korda tendinea pemicu denyut ektopik ventrikel","Dilatasi bilik jantung yang memperlebar dispersi refrakter","Jalur aksesori bawaan yang memintas nodus atrioventrikular","Pemendekan refrakter atrium yang mencetuskan AF akut"],"Septum yang menebal asimetris adalah ciri kardiomiopati hipertrofik: susunan serat otot kacau (myocyte disarray) menimbulkan iskemia subendokardial dan risiko VT fatal saat olahraga.","Seorang atlet 19 tahun kolaps saat bertanding. Ekokardiografi menunjukkan penebalan asimetris septum ventrikel.",["4.03"]],
+[4,"Pada gagal jantung dan kardiomiopati dilatasi, aritmia dipermudah oleh…",["Peregangan dinding bilik yang memperlebar dispersi refrakter","Penebalan septum asimetris dengan susunan serat otot kacau","Instabilitas membran sel di daerah sekitar infark akut","Lengkungan daun katup mitral ke atrium kiri saat sistol","Pemendekan masa refrakter atrium oleh alkohol berlebih"],"Peregangan dinding bilik memperlebar dispersi refrakter miokard. Pilihan lain adalah mekanisme HCM, sindrom koroner akut, MVP, dan holiday heart syndrome.","",["4.04"]],
+[4,"Pada sindrom koroner akut, aritmia timbul terutama karena…",["Instabilitas membran di daerah peri-infark","Jaringan parut fibrosis yang telah terbentuk","Dispersi refrakter akibat bilik yang teregang","Regangan korda tendinea selama fase sistol","Kenaikan jumlah reseptor beta-1 miokard"],"Bahan membedakan dua keadaan iskemik: pada ACS masalahnya instabilitas membran peri-infark, sedangkan jaringan parut fibrosis (setelah infark) menjadi substrat re-entry VT.","",["4.05"]],
+[4,"Hormon T3 menimbulkan takikardia pada hipertiroidisme dengan cara…",["Meningkatkan jumlah reseptor beta-1 adrenergik miokard","Menghambat adenosin dan enzim fosfodiesterase miokard","Menghambat reuptake katekolamin di ujung saraf simpatis","Merangsang ganglion simpatis dan sekresi medula adrenal","Memperpendek masa refrakter atrium secara langsung"],"T3 meningkatkan jumlah reseptor beta-1 adrenergik miokard, menghasilkan takikardia istirahat, kontraktilitas tinggi, resistensi perifer turun (sirkulasi hiperdinamik), dan risiko tinggi AF. Hambatan adenosin dan fosfodiesterase adalah kerja kafein.","",["4.06"]],
+[4,"Hasil laboratorium yang diharapkan pada pasien ini adalah…",["TSH turun dan FT4 naik","TSH naik dan FT4 turun","TSH naik dan FT4 naik","TSH turun dan FT4 turun","TSH normal dan FT4 normal"],"Berdebar konstan saat istirahat dengan penurunan berat badan, tremor halus, dan intoleransi panas mengarah ke hipertiroidisme: TSH turun dan FT4 naik, dengan sinus takikardia persisten yang rentan berkembang menjadi AF.","Seorang perempuan 30 tahun mengeluh berdebar kencang terus-menerus bahkan saat istirahat. Berat badan turun, tangan gemetar halus, tidak tahan panas, dan banyak berkeringat. Nadi 112 kali/menit, teratur.",["4.06","6.06"]],
+[4,"Trias klasik feokromositoma adalah…",["Palpitasi, sakit kepala berdenyut, diaforesis","Palpitasi, penurunan berat badan, tremor halus","Palpitasi, kesemutan bibir, dada terhimpit","Palpitasi, tremor, cemas, keringat dingin","Palpitasi, sesak napas berat, nyeri dada"],"Trias feokromositoma: palpitasi paroksismal hebat, sakit kepala berdenyut, dan keringat mengucur (diaforesis), dibarengi krisis hipertensi. Pilihan lain adalah gambaran hipertiroidisme, serangan panik, dan hipoglikemia.","",["4.07"]],
+[4,"Sumber keluhan yang paling sesuai pada pasien ini adalah…",["Tumor medula adrenal yang menyekresi katekolamin","Kelenjar tiroid yang menyekresi T3 berlebihan","Dinding atrium teregang yang menyekresi ANP","Fokus ektopik atrium dengan otomatisitas abnormal","Lonjakan simpatis akibat serangan panik akut"],"Serangan paroksismal berdebar hebat, sakit kepala berdenyut, dan diaforesis yang dibarengi krisis hipertensi adalah gambaran feokromositoma. Serangan panik tidak disertai krisis hipertensi dan khas dengan kesemutan bibir serta jari.","Seorang laki-laki 40 tahun mengalami serangan berulang berupa berdebar hebat mendadak, sakit kepala berdenyut, dan keringat mengucur. Saat serangan tekanan darahnya 220/130 mmHg.",["4.07"]],
+[4,"Anemia berat menimbulkan pulsasi dentuman keras (pounding) melalui…",["Vasodilatasi perifer dan lonjakan curah jantung kompensasi","Penurunan preload dan refleks baroreseptor simpatis","Lonjakan epinefrin reaktif akibat glukosa darah rendah","Kenaikan cAMP akibat hambatan enzim fosfodiesterase","Hipokapnia dan alkalosis akibat hiperventilasi akut"],"Penurunan daya angkut oksigen memicu vasodilatasi perifer dan lonjakan curah jantung kompensasi (sirkulasi hiperdinamik). Penurunan preload dengan refleks baroreseptor adalah mekanisme hipovolemia.","",["4.08"]],
+[4,"Mekanisme takikardia yang paling sesuai pada pasien ini adalah…",["Preload turun memicu refleks baroreseptor simpatis","Daya angkut oksigen turun memicu vasodilatasi perifer","Glukosa darah turun memicu lonjakan epinefrin reaktif","Hormon T3 meningkatkan jumlah reseptor beta-1 miokard","Kalium turun mendestabilisasi repolarisasi ventrikel"],"Pada hipovolemia atau dehidrasi, volume intravaskular (preload) turun dan refleks baroreseptor simpatis memacu takikardia kompensasi.","Seorang laki-laki 23 tahun muntah dan diare sejak kemarin. Mukosa mulut kering, nadi 128 kali/menit teratur, dan ia mengeluh berdebar.",["4.09"]],
+[4,"Mediator utama gejala pada pasien ini adalah…",["Lonjakan epinefrin reaktif","Lonjakan hormon T3 bebas","Pelepasan hormon ANP","Penurunan kalsium ionik","Hambatan fosfodiesterase"],"Hipoglikemia memicu lonjakan epinefrin reaktif yang menimbulkan takikardia, tremor, cemas, dan keringat dingin. Penurunan kalsium ionik terjadi pada hiperventilasi serangan panik.","Seorang perempuan 50 tahun pengguna insulin melewatkan makan siang. Ia berdebar, gemetar, cemas, dan berkeringat dingin. Glukosa darah sewaktu rendah.",["4.10"]],
+[4,"Gangguan elektrolit yang mendestabilisasi repolarisasi ventrikel sehingga memicu EAD dan Torsades de Pointes adalah…",["Hipokalemia dan hipomagnesemia","Hiperkalemia dan hipermagnesemia","Hipokalsemia dan hiponatremia","Hiperkalsemia dan hipernatremia","Hipokalemia dan hipernatremia"],"Hipokalemia dan hipomagnesemia adalah gangguan elektrolit yang disebut bahan sebagai pemicu EAD dan TdP; karena itu kalium dan magnesium masuk panel laboratorium evaluasi palpitasi.","",["4.11"]],
+[4,"Kafein meningkatkan pacu nodus SA dan fokus ektopik melalui…",["Hambatan adenosin dan fosfodiesterase sehingga cAMP naik","Hambatan reuptake katekolamin sehingga timbul badai adrenergik","Rangsangan ganglion simpatis sehingga katekolamin dilepaskan","Pemendekan refrakter atrium sehingga timbul AF paroksismal","Rangsangan langsung reseptor adrenergik dan vasokonstriksi"],"Kafein menghambat adenosin dan enzim fosfodiesterase sehingga cAMP intraseluler naik. Hambatan reuptake katekolamin adalah kerja kokain dan amfetamin; rangsangan ganglion simpatis adalah kerja nikotin.","",["4.12"]],
+[4,"Mekanisme aritmia yang paling sesuai pada pasien ini adalah…",["Pelepasan katekolamin dan pemendekan refrakter atrium","Hambatan adenosin dan kenaikan cAMP intraseluler","Hambatan reuptake katekolamin dan spasme koroner","Kenaikan reseptor beta-1 dan sirkulasi hiperdinamik","Hipokapnia dan penurunan kalsium ionik bebas darah"],"Ini holiday heart syndrome: konsumsi alkohol berlebih dalam waktu singkat memicu pelepasan katekolamin dan memperpendek refrakter atrium, sehingga mencetuskan AF paroksismal akut pada orang muda sehat.","Seorang laki-laki 25 tahun tanpa riwayat sakit jantung berdebar tidak teratur beberapa jam setelah pesta dengan minum alkohol dalam jumlah banyak. EKG: fibrilasi atrium.",["4.13"]],
+[4,"Kokain dan amfetamin menimbulkan badai adrenergik, spasme koroner, dan VT maligna dengan cara…",["Menghambat reuptake katekolamin","Merangsang ganglion simpatis","Menghambat enzim fosfodiesterase","Menghambat reseptor adenosin","Memperpendek refrakter atrium"],"Kokain dan amfetamin menghambat reuptake katekolamin. Merangsang ganglion simpatis adalah kerja nikotin, sedangkan menghambat adenosin dan fosfodiesterase adalah kerja kafein.","",["4.14"]],
+[4,"Kandungan obat yang paling mungkin menjadi penyebab keluhan pasien ini adalah…",["Dekongestan oral seperti pseudoefedrin","Antibiotik makrolida pemanjang QT","Beta-blocker penekan laju nodus SA","Digoksin penghambat pompa Na+/K+","Adenosin pemanjang refrakter nodus AV"],"Dekongestan oral (pseudoefedrin, fenilefrin) adalah kandungan obat flu bebas yang memacu reseptor adrenergik sehingga timbul takikardia dan vasokonstriksi.","Seorang mahasiswa 20 tahun berdebar sejak minum obat flu yang dibeli bebas untuk hidung tersumbat. Nadi 110 kali/menit teratur dan tekanan darah sedikit meningkat.",["4.15"]],
+[4,"Urutan kejadian pada serangan panik adalah…",["Hiperventilasi → hipokapnia → alkalosis respiratorik → hipokalsemia ionik","Hiperventilasi → hiperkapnia → asidosis respiratorik → hipokalsemia ionik","Hiperventilasi → hipokapnia → asidosis respiratorik → hiperkalsemia ionik","Hipoventilasi → hiperkapnia → alkalosis respiratorik → hipokalemia berat","Hipoventilasi → hipokapnia → alkalosis metabolik → hipomagnesemia berat"],"Lonjakan simpatis memicu hiperventilasi, CO2 terbuang berlebih (hipokapnia), darah menjadi terlalu basa (alkalosis respiratorik), dan kalsium ionik bebas turun.","",["4.16"]],
+[4,"Kesemutan pada bibir dan jari pasien ini disebabkan oleh…",["Penurunan kalsium ionik bebas darah","Penurunan kalium serum secara akut","Penurunan glukosa darah sewaktu","Penurunan magnesium serum akut","Penurunan kadar hemoglobin darah"],"Pada serangan panik, hiperventilasi menyebabkan hipokapnia dan alkalosis respiratorik yang menurunkan kalsium ionik bebas, sehingga timbul parestesia bibir dan jari. EKG-nya hanya sinus takikardia tanpa kelainan konduksi.","Seorang perempuan 21 tahun menjelang ujian mendadak berdebar kencang, dada terasa terhimpit dan tercekik, napas cepat, serta bibir dan jari kesemutan. EKG: sinus takikardia tanpa kelainan lain.",["4.16","6.08"]],
+
+/* ===== Bab 5 ===== */
+[5,"Manakah yang BUKAN termasuk red flag pada keluhan dada berdebar?",["Poliuria setelah serangan berdebar","Sinkop atau presinkop","Nyeri dada iskemik","Sesak napas berat","Keluarga mati mendadak usia muda"],"Empat red flag: sinkop/presinkop, nyeri dada iskemik, sesak napas berat, dan riwayat kematian jantung mendadak usia muda dalam keluarga. Poliuria pasca-serangan adalah fenomena khas PSVT akibat ANP, tidak tercantum sebagai red flag.","",["5.01"]],
+[5,"Penilaian yang tepat terhadap keluhan pasien ini adalah…",["Red flag; perlu evaluasi gawat darurat segera","Bukan red flag; cukup Holter rawat jalan 24 jam","Bukan red flag; cukup event recorder bulanan","Red flag hanya bila disertai nyeri dada iskemik","Red flag hanya bila ada riwayat keluarga"],"Sinkop adalah red flag, dan kehadiran salah satu red flag saja sudah menuntut evaluasi gawat darurat segera; tidak perlu menunggu tanda bahaya lain.","Seorang laki-laki 55 tahun berdebar kencang lalu pingsan sesaat di rumah. Saat tiba di IGD ia sudah sadar dan tidak mengeluh nyeri dada maupun sesak.",["5.01","5.02"]],
+[5,"Sinkop atau presinkop pada pasien berdebar terutama mencurigakan…",["VT berkelanjutan, blok AV total, atau henti sinus panjang","PAC jarang, sinus takikardia, atau blok AV derajat satu","AVNRT, PVC tunggal, atau denyut prematur atrium jinak","Sinus takikardia, PVC tunggal, atau bradikardia atlet","Flutter atrium, PAC berpasangan, atau irama sinus normal"],"Sinkop menandakan hipoperfusi otak akut akibat curah jantung anjlok, sehingga dicurigai kuat VT berkelanjutan, blok AV total, atau henti sinus panjang.","",["5.02"]],
+[5,"Keluhan penyerta ini menunjukkan…",["Iskemia miokard akut","Edema paru kardiogenik","Hipoperfusi otak akut","Alkalosis respiratorik","Kanalopati bawaan"],"Rasa tertindih beban berat yang menjalar ke rahang atau lengan adalah nyeri dada iskemik, menandakan iskemia miokard akut yang dapat primer atau akibat takikardia ekstrem.","Seorang laki-laki 59 tahun berdebar sangat cepat disertai rasa dada tertindih beban berat yang menjalar ke rahang dan lengan kiri.",["5.03"]],
+[5,"Sesak napas berat sebagai red flag menandakan…",["Gagal pompa ventrikel kiri akut dengan edema paru kardiogenik","Hiperventilasi dengan alkalosis respiratorik dan hipokapnia","Iskemia miokard akut dengan nyeri yang menjalar ke rahang","Hipoperfusi otak akut akibat curah jantung yang anjlok","Sirkulasi hiperdinamik akibat resistensi perifer menurun"],"Sesak berat menandakan gagal pompa ventrikel kiri akut: tekanan diastol melonjak balik ke kapiler paru dan terjadi edema paru kardiogenik.","",["5.04"]],
+[5,"Riwayat kematian jantung mendadak pada anggota keluarga berusia <40 tahun mengarahkan kecurigaan pada…",["Kanalopati genetik atau kardiomiopati bawaan","Penyakit jantung iskemik atau parut infark","Hipertiroidisme atau feokromositoma","Prolaps katup mitral atau gagal jantung","Serangan panik atau gangguan cemas"],"Kematian jantung mendadak usia muda (<40 tahun) dalam keluarga mencurigakan kanalopati (Brugada, LQTS, CPVT) atau kardiomiopati bawaan seperti HCM.","",["5.05"]],
+[5,"Diagnosis dan dasar kelainan yang paling sesuai pada pasien ini adalah…",["Sindrom Brugada; disfungsi kanal natrium SCN5A","Sindrom Long QT; mutasi kanal kalium/natrium","CPVT; mutasi reseptor ryanodine tipe RyR2","Sindrom WPW; jalur aksesori berkas Kent","Kardiomiopati hipertrofik; myocyte disarray"],"Elevasi ST tipe kubah (coved ≥2 mm) dengan T negatif di V1–V2 adalah Sindrom Brugada tipe 1, suatu disfungsi kanal natrium SCN5A yang rentan VF saat tidur atau demam. LQTS dan CPVT dicetuskan olahraga, stres, atau emosi.","Seorang laki-laki 32 tahun pingsan saat tidur malam ketika sedang demam. Ayahnya meninggal mendadak pada usia 35 tahun. EKG: elevasi ST tipe kubah 2 mm dengan gelombang T negatif di V1–V2.",["5.06","5.14"]],
+[5,"Kelainan bawaan yang rentan Torsades de Pointes saat olahraga, stres, atau terkejut adalah…",["Sindrom Long QT","Sindrom Brugada","CPVT","Sindrom WPW","Kardiomiopati hipertrofik"],"LQTS (mutasi kanal K+/Na+) rentan TdP saat olahraga, stres, atau terkejut. CPVT juga dicetuskan olahraga atau emosi tetapi berupa VT polimorfik; Brugada rentan VF saat tidur atau demam.","",["5.07"]],
+[5,"Mutasi yang mendasari CPVT mengenai…",["Reseptor ryanodine (RyR2)","Kanal natrium (SCN5A)","Kanal kalium IKr/IKs","Kanal funny current (If)","Penukar natrium-kalsium (NCX)"],"CPVT disebabkan mutasi reseptor ryanodine (RyR2) dan rentan VT polimorfik fatal saat olahraga atau emosi. SCN5A adalah gen pada Sindrom Brugada.","",["5.08"]],
+[5,"Pemeriksaan lini pertama yang wajib pada keluhan dada berdebar adalah…",["EKG 12-sadapan saat istirahat","Holter monitoring 24–48 jam","Ekokardiografi transtorakal","Event atau loop recorder","Panel tiroid dan elektrolit"],"EKG 12-sadapan istirahat adalah lini pertama wajib. Holter dan event recorder baru dipakai bila EKG normal dan gejala hilang-timbul.","",["5.09"]],
+[5,"Pola gigi gergaji (sawtooth) pada gelombang atrium menunjukkan…",["Flutter atrium","Fibrilasi atrium","Sindrom Brugada","Sindrom WPW","Blok AV derajat satu"],"Sawtooth khas flutter atrium. Pada fibrilasi atrium gelombang P justru absen.","",["5.10"]],
+[5,"Temuan EKG ini mengarah ke…",["Sindrom Wolff-Parkinson-White","Blok AV derajat satu","Sindrom Brugada tipe 1","Sindrom Long QT bawaan","Fibrilasi atrium paroksismal"],"PR memendek (<0,12 s) disertai gelombang delta adalah WPW. Sebaliknya, PR memanjang (>0,20 s) menunjukkan blok AV derajat satu.","Seorang perempuan 18 tahun mengalami episode berdebar sangat cepat sejak kecil. EKG saat tanpa keluhan: interval PR 0,10 s dengan gelombang delta.",["5.11"]],
+[5,"Kompleks QRS disebut lebar bila durasinya…",["≥0,12 s","≥0,10 s","≥0,20 s","≥0,08 s","≥0,16 s"],"QRS normal <0,12 s. QRS sempit berarti asal supraventrikular; QRS ≥0,12 s pada takikardia wajib dicurigai VT.","",["5.12"]],
+[5,"Sikap yang tepat terhadap takikardia pada pasien ini adalah…",["Dianggap VT sampai terbukti sebaliknya","Dianggap PSVT sampai terbukti sebaliknya","Dianggap sinus takikardia fisiologis biasa","Dianggap AF dengan respons ventrikel cepat","Dianggap flutter atrium dengan konduksi 2:1"],"Takikardia QRS lebar (≥0,12 s) wajib dicurigai VT sampai terbukti sebaliknya; disosiasi AV memperkuatnya. VT adalah red flag darurat karena cepat kolaps ke henti sirkulasi dan fibrilasi ventrikel.","Seorang laki-laki 62 tahun dengan riwayat infark miokard berdebar kencang, lemas, dan pusing melayang. EKG: takikardia reguler dengan QRS 0,16 s dan disosiasi AV.",["5.12","6.04"]],
+[5,"Interval QTc (formula Bazett) disebut memanjang bila…",[">450 ms pada pria, >460 ms pada wanita",">460 ms pada pria, >450 ms pada wanita",">400 ms pada pria, >420 ms pada wanita",">500 ms pada pria, >520 ms pada wanita",">350 ms pada pria, >360 ms pada wanita"],"Batas menurut bahan: >450 ms pada pria dan >460 ms pada wanita. QTc memanjang berarti risiko tinggi EAD dan Torsades de Pointes.","",["5.13"]],
+[5,"Pemeriksaan berikutnya yang paling tepat untuk pasien ini adalah…",["Holter 24–48 jam dengan buku harian gejala","Event atau loop recorder selama berbulan-bulan","Ekokardiografi transtorakal untuk fraksi ejeksi","Panel tiroid, elektrolit, dan hemoglobin darah","Pengulangan EKG 12-sadapan saat istirahat"],"Bila EKG normal tetapi gejala timbul harian, Holter 24–48 jam dipakai untuk mengorelasikan buku harian gejala dengan irama jantung. Event/loop recorder dipilih bila keluhan sangat jarang.","Seorang perempuan 35 tahun berdebar hampir setiap hari, tiap kali beberapa menit. EKG 12-sadapan saat istirahat normal.",["5.15"]],
+[5,"Alat pemantauan irama yang paling sesuai untuk pasien ini adalah…",["Event atau loop recorder","Holter monitoring 24 jam","Holter monitoring 48 jam","EKG 12-sadapan ulangan","Ekokardiografi transtorakal"],"Keluhan yang sangat jarang (mingguan atau bulanan) kemungkinan besar tidak tertangkap Holter 24–48 jam, sehingga dipakai event/loop recorder.","Seorang laki-laki 40 tahun berdebar hanya sekitar sebulan sekali. EKG istirahat normal.",["5.16"]],
+[5,"Kelainan yang diskrining ekokardiografi transtorakal melalui pengukuran ketebalan septum miokard adalah…",["Kardiomiopati hipertrofik","Prolaps katup mitral","Sindrom Brugada","Sindrom Long QT","Sindrom WPW"],"TTE menilai fraksi ejeksi (fungsi pompa), ketebalan septum (skrining HCM), dan morfologi katup (MVP). Brugada, LQTS, dan WPW adalah diagnosis EKG.","",["5.17"]],
+[5,"Pasangan pemeriksaan laboratorium dan penyebab palpitasi yang dicari yang tepat adalah…",["Hemoglobin untuk anemia; glukosa sewaktu untuk hipoglikemia","Hemoglobin untuk hipoglikemia; glukosa sewaktu untuk anemia","TSH dan FT4 untuk anemia; elektrolit untuk gangguan tiroid","Elektrolit untuk gangguan tiroid; hemoglobin untuk dehidrasi","Glukosa sewaktu untuk gangguan tiroid; TSH untuk hipoglikemia"],"Panel laboratorium: tiroid (TSH, FT4), elektrolit serum (K, Mg, Ca), hemoglobin untuk anemia, dan glukosa darah sewaktu untuk hipoglikemia.","",["5.18"]],
+
+/* ===== Bab 6 ===== */
+[6,"Penilaian yang tepat terhadap temuan Holter ini adalah…",["Perlu diwaspadai: PVC sering, multiform, saat aktivitas","Jinak karena mayoritas ekstrasistol tidak berbahaya","Jinak karena PVC masih di bawah 20% seluruh denyut","Jinak karena PVC hanya muncul ketika beraktivitas","Perlu diwaspadai hanya jika QRS-nya tampak sempit"],"Ekstrasistol mayoritas jinak, tetapi perlu diwaspadai bila PVC sering (>10–15%), multiform, atau muncul saat aktivitas; ketiganya ada pada pasien ini.","Seorang laki-laki 48 tahun mengeluh denyut melompat lalu berdentum. Holter: PVC 18% dari seluruh denyut, bentuknya beragam (multiform), dan bertambah saat beraktivitas.",["6.01"]],
+[6,"Denyut prematur dengan QRS lebar yang diikuti jeda kompensasi adalah…",["Denyut prematur ventrikel (PVC)","Denyut prematur atrium (PAC)","Capture beat pada VT","Gelombang delta pada WPW","Denyut sinus pasca-jeda"],"Pada ekstrasistol, QRS sempit menunjukkan PAC dan QRS lebar menunjukkan PVC; keduanya diikuti jeda kompensasi.","",["6.01"]],
+[6,"Gambaran EKG khas PSVT adalah…",["Takikardia reguler QRS sempit, P terbenam/retrograd","Takikardia reguler QRS lebar dengan disosiasi AV","Irama irregularly irregular tanpa gelombang P","VT polimorfik dengan puncak QRS yang memilin","Sinus takikardia dengan P positif di sadapan II"],"PSVT (AVNRT/AVRT) tampak sebagai takikardia reguler QRS sempit 150–250 bpm dengan gelombang P terbenam atau retrograd, dan reda dengan manuver vagal atau adenosin.","",["6.02"]],
+[6,"Risiko utama fibrilasi atrium dan skor yang disebut bahan untuk menilainya adalah…",["Stroke kardioemboli; skor CHA₂DS₂-VASc","Fibrilasi ventrikel; formula Bazett","Edema paru kardiogenik; fraksi ejeksi","Henti sinus panjang; buku harian gejala","Krisis hipertensi; panel tiroid lengkap"],"AF berisiko tinggi stroke kardioemboli (skor CHA₂DS₂-VASc) dan memperberat gagal jantung. Formula Bazett dipakai untuk QTc.","",["6.03"]],
+[6,"Sirkuit mikro re-entry pada fibrilasi atrium menurut tabel rangkuman berkaitan dengan…",["Vena pulmonalis","Ismus kavotrikuspid","Nodus atrioventrikular","Berkas Kent","Parut pasca-infark"],"Tabel rangkuman menyebut ratusan sirkuit mikro re-entry acak di atrium (vena pulmonalis). Ismus kavotrikuspid adalah lokasi makro re-entry flutter.","",["6.03"]],
+[6,"Pada takikardia QRS lebar, temuan EKG yang khas takikardia ventrikel adalah…",["Disosiasi AV atau capture beats","Gelombang delta dan PR pendek","Gelombang P terbenam/retrograd","Pola gigi gergaji gelombang atrium","Elevasi ST tipe kubah di V1–V2"],"VT tampak sebagai takikardia reguler QRS lebar (≥0,12 s) dengan disosiasi AV atau capture beats. P terbenam/retrograd adalah gambaran PSVT.","",["6.04"]],
+[6,"Terapi yang disebut bahan untuk aritmia ini adalah…",["MgSO4 intravena","Adenosin intravena","Manuver vagal","Pemasangan ICD","Digoksin intravena"],"Torsades de Pointes dipicu hipokalemia, hipomagnesemia, dan obat pemanjang QT; terapinya MgSO4 IV. Manuver vagal dan adenosin adalah penghenti PSVT.","Seorang perempuan 60 tahun dengan kalium serum rendah pingsan berulang. EKG: QTc 520 ms, lalu VT polimorfik dengan puncak QRS memilin garis isoelektrik.",["6.05"]],
+[6,"Temuan EKG yang dapat menyertai feokromositoma menurut tabel rangkuman adalah…",["Sinus takikardia paroksismal dan voltase LVH","Interval PR pendek disertai gelombang delta","Elevasi ST tipe kubah di sadapan V1–V2","Irama irregularly irregular tanpa gelombang P","Pola gigi gergaji pada gelombang atrium"],"Feokromositoma: sinus takikardia paroksismal, aritmia ektopik, dan voltase LVH. Pilihan lain adalah gambaran WPW, Brugada, AF, dan flutter.","",["6.07"]],
+[6,"Gambaran EKG saat serangan panik adalah…",["Sinus takikardia tanpa kelainan konduksi","Takikardia reguler QRS sempit, P retrograd","Fibrilasi atrium paroksismal yang akut","Interval QTc memanjang disertai EAD","Denyut prematur ventrikel multiform"],"Serangan panik hanya memberi sinus takikardia tanpa kelainan konduksi atau struktural, disertai dada terhimpit, rasa tercekik, dan parestesia.","",["6.08"]],
+[6,"Perjalanan holiday heart syndrome menurut bahan adalah…",["Membaik spontan dalam 24–48 jam","Membaik spontan dalam 7–14 hari","Menetap sampai dipasang ICD","Membaik hanya dengan MgSO4 IV","Memburuk menjadi blok AV total"],"AF pada holiday heart syndrome membaik spontan dalam 24–48 jam setelah hidrasi, koreksi elektrolit, dan bebas alkohol.","",["6.09"]],
+[6,"Tiga temuan EKG khas sindrom WPW adalah…",["PR pendek, gelombang delta, QRS agak lebar","PR panjang, gelombang delta, QRS sempit","PR pendek, gelombang P absen, QRS sempit","PR normal, ST kubah di V1–V2, T negatif","PR pendek, QTc memanjang, QRS memilin"],"WPW: PR pendek (<0,12 s), gelombang delta, dan QRS agak lebar, karena jalur aksesori bawaan (berkas Kent) memotong anulus AV.","",["6.10"]],
+[6,"Keadaan ini sangat berbahaya karena…",["AF dihantarkan lewat berkas Kent dan dapat menjadi VF","AF memicu pelepasan ANP sehingga timbul dehidrasi","AF menekan nodus SA sehingga terjadi henti sinus","AF memperpanjang QT sehingga terjadi Torsades","AF memicu Ca2+ overload sehingga timbul DAD"],"Pada WPW, AF yang dihantarkan melalui berkas Kent dapat berdegenerasi menjadi fibrilasi ventrikel; karena itu pemblok AV murni harus dihindari.","Seorang laki-laki 20 tahun yang diketahui memiliki sindrom WPW datang dengan fibrilasi atrium berlaju ventrikel sangat cepat.",["6.10"]],
+[6,"Golongan obat yang harus dihindari pada sindrom WPW menurut bahan adalah…",["Pemblok nodus AV murni","Antiaritmia pemanjang QT","Dekongestan oral bebas","Antibiotik makrolida","Magnesium sulfat IV"],"Bahan menyebut pemblok AV murni harus dihindari pada WPW karena bahaya AF yang dihantarkan lewat berkas Kent dan berdegenerasi menjadi VF.","",["6.10"]],
+[6,"Pencegahan kematian mendadak pada Sindrom Brugada memerlukan…",["Pemasangan ICD","Pemberian MgSO4 IV","Manuver vagal rutin","Koreksi elektrolit","Hidrasi dan bebas alkohol"],"Sindrom Brugada adalah red flag kematian mendadak; pencegahannya memerlukan ICD. Hidrasi dan bebas alkohol adalah penanganan holiday heart syndrome.","",["6.11"]],
+];
+
+(function(){
+'use strict';
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const shuf=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={
+  get(k,d){try{const v=localStorage.getItem(META.id+'.'+k);return v==null?d:JSON.parse(v);}catch(e){return d;}},
+  set(k,v){try{localStorage.setItem(META.id+'.'+k,JSON.stringify(v));}catch(e){}},
+  del(k){try{localStorage.removeItem(META.id+'.'+k);}catch(e){}}
+};
+const CH=META.bab.map((n,i)=>({id:i+1,n}));
+const KEYS='ABCDE', SEC_PER_Q=60;
+const Q=[],QB={},cnt={};
+QRAW.forEach(r=>{cnt[r[0]]=(cnt[r[0]]||0)+1;const q={id:r[0]+'-'+cnt[r[0]],c:r[0],q:r[1],o:r[2],e:r[3],s:r[4]||''};Q.push(q);QB[q.id]=q;});
+let M=store.get('m',{});            // id -> 1 benar / 0 salah (jawaban terakhir)
+let cfg=Object.assign({mode:'latihan',n:20,ch:CH.map(c=>c.id),kasus:false},store.get('cfg',{}));
+let S=null, R=null, timer=null, rvFilter='salah';
+const chName=c=>CH.find(x=>x.id===c).n;
+const chStat=c=>{const qs=Q.filter(q=>q.c===c);return{n:qs.length,ok:qs.filter(q=>M[q.id]===1).length};};
+const wrongIds=()=>Q.filter(q=>M[q.id]===0).map(q=>q.id);
+
+/* tema */
+const root=document.documentElement;
+{const t=store.get('theme','');if(t)root.dataset.theme=t;}
+$('#theme').onclick=()=>{const dark=root.dataset.theme?root.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;root.dataset.theme=dark?'light':'dark';store.set('theme',root.dataset.theme);};
+
+/* dialog konfirmasi */
+function ask(msg,ok){return new Promise(res=>{const d=$('#dlg');if(!d.showModal){res(confirm(msg));return;}
+  $('#dlgmsg').textContent=msg;$('#dlgok').textContent=ok;d.returnValue='no';d.onclose=()=>res(d.returnValue==='yes');d.showModal();});}
+$$('#dlg button').forEach(b=>b.onclick=()=>$('#dlg').close(b.value));
+
+/* tab utama */
+function go(v){['materi','quiz'].forEach(x=>{$('#v-'+x).hidden=x!==v;$('#tab-'+x).setAttribute('aria-selected',x===v);});
+  if(v==='quiz'&&!S&&!R)renderSetup();window.scrollTo(0,0);}
+$('#tab-materi').onclick=()=>go('materi');
+$('#tab-quiz').onclick=()=>go('quiz');
+
+/* materi */
+$$('.ch table').forEach(t=>{const w=document.createElement('div');w.className='tw'+(t.rows[0].cells.length>=5?' wide':'');t.replaceWith(w);w.appendChild(t);});
+function buildNav(){$('#chnav').innerHTML=CH.map(c=>{const s=chStat(c.id);return `<button role="tab" data-ch="${c.id}"><span class="no">${c.id}</span><span class="nm">${esc(c.n)}</span><span class="pc">${s.ok}/${s.n}</span></button>`;}).join('');}
+function openCh(c,scroll){
+  if(!CH.some(x=>x.id===c))c=1;
+  $$('.ch').forEach(s=>s.classList.toggle('on',+s.dataset.ch===c));
+  $$('#chnav button').forEach(b=>{const on=+b.dataset.ch===c;b.classList.toggle('on',on);b.setAttribute('aria-selected',on);
+    if(on){const n=$('#chnav');if(n.scrollWidth>n.clientWidth)n.scrollLeft=b.offsetLeft-(n.clientWidth-b.offsetWidth)/2;}});
+  store.set('ch',c);if(scroll)window.scrollTo(0,0);
+}
+$('#chnav').onclick=e=>{const b=e.target.closest('button');if(b)openCh(+b.dataset.ch,true);};
+$$('.ch').forEach(s=>{const c=+s.dataset.ch,nx=CH.find(x=>x.id===c+1),f=document.createElement('div');f.className='chfoot';
+  f.innerHTML=`<button class="btn pri" data-quiz="${c}">Latihan bab ini · ${chStat(c).n} soal</button>`+(nx?`<button class="btn" data-next="${nx.id}">Lanjut: ${esc(nx.n)} →</button>`:`<button class="btn" data-quiz="0">Latihan semua bab →</button>`);
+  s.appendChild(f);});
+$('#v-materi').addEventListener('click',e=>{const b=e.target.closest('[data-next],[data-quiz]');if(!b)return;
+  if(b.dataset.next){openCh(+b.dataset.next,true);return;}
+  const c=+b.dataset.quiz;cfg.ch=c?[c]:CH.map(x=>x.id);cfg.kasus=false;store.set('cfg',cfg);
+  if(S){go('quiz');return;}R=null;go('quiz');renderSetup();});
+
+/* layar quiz */
+function screen(n){['setup','run','result'].forEach(x=>$('#'+x).hidden=x!==n);}
+
+function pool(){return Q.filter(q=>cfg.ch.includes(q.c)&&(!cfg.kasus||q.s));}
+function renderSetup(){
+  clearInterval(timer);screen('setup');
+  const saved=S||store.get('s',null), tot=Q.length, ok=Q.filter(q=>M[q.id]===1).length, wr=wrongIds().length;
+  const nk=Q.filter(q=>q.s).length;
+  $('#setup').innerHTML=
+  (saved&&saved.items?`<div class="card resume"><p><strong>Ada sesi yang belum selesai.</strong><br>${saved.mode==='ujian'?'Ujian':'Latihan'} · soal ${Math.min(saved.i+1,saved.items.length)} dari ${saved.items.length}</p><button class="btn pri sm" id="resume">Lanjutkan</button><button class="btn sm" id="discard">Buang</button></div>`:'')+
+  `<h2>Latihan soal</h2><p class="lead">${tot} soal, ${nk} di antaranya berbasis kasus. Soal yang belum pernah muncul dan yang pernah salah didahulukan.</p>
+  <div class="overall"><div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="${tot}" aria-valuenow="${ok}" aria-label="Soal dikuasai"><i style="width:${ok/tot*100}%"></i></div>
+    <div class="row"><span><strong>${ok}</strong> dari ${tot} soal dikuasai</span>${Object.keys(M).length?'<button class="link" id="reset">Reset progres</button>':''}</div></div>
+  <fieldset><legend>Mode</legend><div class="modes">
+    <label class="pick"><input type="radio" name="mode" value="latihan"><b>Latihan</b><small>Pembahasan muncul setelah tiap jawaban.</small></label>
+    <label class="pick"><input type="radio" name="mode" value="ujian"><b>Ujian</b><small>Berwaktu 1 menit per soal. Pembahasan di akhir.</small></label></div></fieldset>
+  <fieldset><legend>Bab <span class="sp"><button type="button" class="link" id="all">Semua</button><button type="button" class="link" id="none">Kosongkan</button></span></legend>
+    <div class="chips">${CH.map(c=>{const s=chStat(c.id);return `<label class="pick"><input type="checkbox" name="ch" value="${c.id}"><b>${esc(c.n)}</b><small>${s.ok}/${s.n} dikuasai</small></label>`;}).join('')}</div></fieldset>
+  <fieldset><legend>Jumlah soal</legend><div class="seg">${[10,20,40,0].map(n=>`<label class="pick"><input type="radio" name="n" value="${n}">${n||'Semua'}</label>`).join('')}</div></fieldset>
+  <label class="check"><input type="checkbox" id="kasus"> Hanya soal berbasis kasus</label>
+  <div class="actbar">${wr?`<button class="btn fit" id="redo">Ulangi ${wr} yang salah</button>`:''}<button class="btn pri" id="start"></button></div>`;
+  $$('#setup input[name=mode]').forEach(i=>i.checked=i.value===cfg.mode);
+  $$('#setup input[name=ch]').forEach(i=>i.checked=cfg.ch.includes(+i.value));
+  $$('#setup input[name=n]').forEach(i=>i.checked=+i.value===cfg.n);
+  $('#kasus').checked=cfg.kasus;
+  syncSetup();
+}
+function syncSetup(){
+  const m=$('#setup input[name=mode]:checked'),n=$('#setup input[name=n]:checked');
+  cfg.mode=m?m.value:'latihan';cfg.n=n?+n.value:20;
+  cfg.ch=$$('#setup input[name=ch]:checked').map(i=>+i.value);cfg.kasus=$('#kasus').checked;store.set('cfg',cfg);
+  $$('#setup .pick').forEach(l=>l.classList.toggle('on',$('input',l).checked));
+  const av=pool().length,k=cfg.n?Math.min(cfg.n,av):av,b=$('#start');
+  b.disabled=!k;b.textContent=!cfg.ch.length?'Pilih minimal satu bab':!k?'Tidak ada soal yang cocok':`Mulai ${cfg.mode==='ujian'?'ujian':'latihan'} · ${k} soal`;
+}
+$('#setup').addEventListener('change',syncSetup);
+$('#setup').addEventListener('click',async e=>{const id=e.target.id;
+  if(id==='all'||id==='none'){$$('#setup input[name=ch]').forEach(i=>i.checked=id==='all');syncSetup();}
+  else if(id==='start'){const p=pool(),rank=q=>M[q.id]===undefined?0:M[q.id]===0?1:2;
+    const pick=shuf(p).sort((a,b)=>rank(a)-rank(b)).slice(0,cfg.n||p.length);begin(shuf(pick).map(q=>q.id),cfg.mode);}
+  else if(id==='redo')begin(shuf(wrongIds()),'latihan');
+  else if(id==='resume'){S=S||store.get('s',null);startRun();}
+  else if(id==='discard'){S=null;store.del('s');renderSetup();}
+  else if(id==='reset'&&await ask('Hapus seluruh catatan soal yang dikuasai dan yang salah?','Hapus')){M={};store.set('m',M);buildNav();openCh(store.get('ch',1));renderSetup();}
+});
+
+/* sesi */
+function begin(ids,mode){S={mode,items:ids.map(id=>({id,ord:shuf([0,1,2,3,4]),pick:null,flag:false})),i:0,left:ids.length*SEC_PER_Q,total:ids.length*SEC_PER_Q};R=null;save();startRun();}
+function save(){if(S)store.set('s',S);}
+function startRun(){
+  if(!S||!S.items||!S.items.every(it=>QB[it.id])){S=null;store.del('s');renderSetup();return;}
+  screen('run');clearInterval(timer);
+  if(S.mode==='ujian')timer=setInterval(()=>{S.left--;drawInfo();if(S.left%5===0)save();if(S.left<=0)finish();},1000);
+  renderRun();window.scrollTo(0,0);
+}
+const answered=()=>S.items.filter(it=>it.pick!==null).length;
+function drawInfo(){const el=$('#rinfo');
+  if(S.mode==='ujian'){const t=Math.max(0,S.left);el.textContent='⏱ '+Math.floor(t/60)+':'+String(t%60).padStart(2,'0');el.classList.toggle('low',t<=60);}
+  else{el.classList.remove('low');el.textContent=S.items.filter(it=>it.pick===0).length+' benar';}}
+function renderRun(){
+  const it=S.items[S.i],q=QB[it.id],ex=S.mode==='ujian',ans=it.pick!==null,rev=!ex&&ans,last=S.i===S.items.length-1,n=S.items.length;
+  $('#rpos').textContent=`Soal ${S.i+1} dari ${n}`;drawInfo();
+  $('#rbar').style.width=answered()/n*100+'%';$('#rbarwrap').setAttribute('aria-valuenow',answered());$('#rbarwrap').setAttribute('aria-valuemax',n);
+  $('#rscen').hidden=!q.s;$('#rscen').textContent=q.s;$('#rq').textContent=q.q;
+  $('#ropts').innerHTML=it.ord.map((oi,k)=>{let c='',mk='';
+    if(rev){if(oi===0){c=' ok';mk='✓';}else if(oi===it.pick){c=' no';mk='✗';}else c=' dim';}else if(oi===it.pick)c=' sel';
+    return `<button class="opt${c}" data-k="${k}"${rev?' disabled':''}${ex?` aria-pressed="${oi===it.pick}"`:''}><span class="key">${KEYS[k]}</span><span class="otx">${esc(q.o[oi])}</span><span class="mk" aria-hidden="true">${mk}</span></button>`;}).join('');
+  const fb=$('#rfb');fb.hidden=!rev;
+  if(rev){const ok=it.pick===0;fb.className='fb'+(ok?'':' no');
+    fb.innerHTML=`<b>${ok?'✓ Benar':'✗ Belum tepat'}</b>${ok?'':`<p>Jawaban: <strong>${KEYS[it.ord.indexOf(0)]}. ${esc(q.o[0])}</strong></p>`}<p>${esc(q.e)}</p><span class="src">Bab ${q.c} · ${esc(chName(q.c))}</span>`;}
+  $('#prevbtn').hidden=!ex;$('#prevbtn').disabled=S.i===0;
+  $('#flagbtn').hidden=!ex;$('#flagbtn').setAttribute('aria-pressed',it.flag);
+  const nb=$('#nextbtn');nb.hidden=!ex&&!ans;nb.textContent=last?(ex?'Kumpulkan':'Lihat hasil'):'Berikutnya →';nb.classList.toggle('pri',!ex||last||ans);
+  $('#rhint').hidden=ex||ans;
+  $('#endbtn').textContent=ex?'Kumpulkan':'Akhiri';
+  $('#rgridwrap').hidden=!ex;
+  if(ex)$('#rgrid').innerHTML=S.items.map((x,k)=>`<button data-go="${k}" class="${x.pick!==null?'done':''}${k===S.i?' cur':''}${x.flag?' flag':''}" aria-label="Soal ${k+1}${x.pick!==null?', terjawab':''}${x.flag?', ragu':''}">${k+1}</button>`).join('');
+}
+function choose(k){const it=S.items[S.i];if(!it||k>4)return;
+  if(S.mode==='latihan'){if(it.pick!==null)return;it.pick=it.ord[k];M[it.id]=it.pick===0?1:0;store.set('m',M);save();renderRun();
+    const fb=$('#rfb');if(fb.getBoundingClientRect().bottom>innerHeight-80)fb.scrollIntoView({block:'center',behavior:'smooth'});$('#nextbtn').focus({preventScroll:true});}
+  else{it.pick=it.pick===it.ord[k]?null:it.ord[k];save();renderRun();const b=$(`#ropts [data-k="${k}"]`);if(b)b.focus({preventScroll:true});}
+}
+function move(d){const j=S.i+d;if(j<0)return;if(j>=S.items.length){S.mode==='ujian'?tryEnd():finish();return;}S.i=j;save();renderRun();window.scrollTo(0,0);$('#rq').focus({preventScroll:true});}
+async function tryEnd(){const n=S.items.length,a=answered();
+  const msg=S.mode==='ujian'?(a<n?`${n-a} soal belum dijawab dan akan dihitung salah. Kumpulkan sekarang?`:'Semua soal sudah dijawab. Kumpulkan sekarang?')
+    :(a?`Akhiri sesi? ${a} dari ${n} soal sudah dijawab; sisanya tidak dihitung.`:'Akhiri sesi? Belum ada soal yang dijawab.');
+  if(await ask(msg,S.mode==='ujian'?'Kumpulkan':'Akhiri'))finish();}
+function finish(){
+  if(!S)return;
+  clearInterval(timer);if($('#dlg').open)$('#dlg').close('no');
+  const ex=S.mode==='ujian',items=ex?S.items:S.items.filter(it=>it.pick!==null);
+  if(ex){items.forEach(it=>{if(it.pick!==null)M[it.id]=it.pick===0?1:0;});store.set('m',M);}
+  store.del('s');const used=ex?S.total-Math.max(0,S.left):0;const mode=S.mode;S=null;buildNav();openCh(store.get('ch',1));
+  if(!items.length){renderSetup();return;}
+  R={mode,items,used};rvFilter=items.some(it=>it.pick!==0)?'salah':'semua';renderResult();window.scrollTo(0,0);
+}
+$('#ropts').onclick=e=>{const b=e.target.closest('.opt');if(b&&!b.disabled)choose(+b.dataset.k);};
+$('#nextbtn').onclick=()=>move(1);$('#prevbtn').onclick=()=>move(-1);$('#endbtn').onclick=tryEnd;
+$('#flagbtn').onclick=()=>{const it=S.items[S.i];it.flag=!it.flag;save();renderRun();};
+$('#rgrid').onclick=e=>{const b=e.target.closest('[data-go]');if(b){S.i=+b.dataset.go;save();renderRun();window.scrollTo(0,0);}};
+document.addEventListener('keydown',e=>{
+  if(!S||$('#run').hidden||$('#v-quiz').hidden||$('#dlg').open||e.ctrlKey||e.metaKey||e.altKey)return;
+  const k=e.key.toLowerCase(),i='12345'.indexOf(k)>=0?'12345'.indexOf(k):'abcde'.indexOf(k);
+  if(k.length===1&&i>=0){e.preventDefault();choose(i);return;}
+  const onBtn=e.target.tagName==='BUTTON'||e.target.tagName==='SUMMARY';
+  if((k==='enter'&&!onBtn)||k==='arrowright'){if(!$('#nextbtn').hidden){e.preventDefault();move(1);}}
+  else if(k==='arrowleft'&&S.mode==='ujian'){e.preventDefault();move(-1);}
+  else if(k==='r'&&S.mode==='ujian'){e.preventDefault();$('#flagbtn').click();}
+});
+
+/* hasil */
+function renderResult(){
+  screen('result');
+  const it=R.items,n=it.length,ok=it.filter(x=>x.pick===0).length,pct=Math.round(ok/n*100),wrong=it.filter(x=>x.pick!==0);
+  const by={};it.forEach(x=>{const c=QB[x.id].c;by[c]=by[c]||{n:0,ok:0};by[c].n++;if(x.pick===0)by[c].ok++;});
+  const rows=Object.keys(by).map(c=>({c:+c,n:by[c].n,ok:by[c].ok,p:by[c].ok/by[c].n})).sort((a,b)=>a.c-b.c);
+  const weak=rows.filter(r=>r.p<1).sort((a,b)=>a.p-b.p||b.n-a.n)[0];
+  const verdict=pct>=85?(R.mode==='ujian'?'Kuat. Pertahankan dengan mengulang soal kasus secara berkala.':'Kuat. Naikkan tantangan: coba mode Ujian atau hanya soal berbasis kasus.')
+    :pct>=65?'Sudah di jalur. Tinjau soal yang salah di bawah, lalu ulangi.'
+    :`Belum aman. Baca ulang bab ${weak?esc(chName(weak.c)):''} dahulu, lalu ulangi soal yang salah.`;
+  const tm=R.mode==='ujian'?` · waktu ${Math.floor(R.used/60)} mnt ${R.used%60} dtk`:'';
+  const list=rvFilter==='salah'?wrong:it;
+  $('#result').innerHTML=`
+  <div class="score"><div class="ring" style="--p:${pct}" role="img" aria-label="Skor ${pct} persen"><b>${pct}%</b></div>
+    <div><h2 tabindex="-1" id="rtitle">${ok} dari ${n} benar</h2><p>${verdict}</p><p class="lead" style="margin:4px 0 0">${R.mode==='ujian'?'Ujian':'Latihan'}${tm}</p></div></div>
+  <h3>Per bab</h3>
+  ${rows.map(r=>`<div class="chrow"><span class="nm">${esc(chName(r.c))}</span><span class="ct">${r.ok}/${r.n}</span>
+    <div class="bar"><i class="${r.p<.65?'low':''}" style="width:${r.p*100}%"></i></div>
+    ${r.p<1||r.n<3?`<div class="more"><span>${r.n<3?'Sampel kecil, belum cukup untuk menilai bab ini.':''}</span>${r.p<1?`<button class="link" data-read="${r.c}">Baca bab</button>`:''}</div>`:''}</div>`).join('')}
+  <h3>Tinjau jawaban <span class="sp">${wrong.length?`<button class="tog" data-f="salah" aria-pressed="${rvFilter==='salah'}">Salah (${wrong.length})</button>`:''}<button class="tog" data-f="semua" aria-pressed="${rvFilter==='semua'}">Semua (${n})</button></span></h3>
+  ${list.map(x=>{const q=QB[x.id],good=x.pick===0;return `<details class="rv${good?'':' no'}"${good?'':' open'}><summary><span class="mk">${good?'✓':'✗'}</span><span>${q.s?esc(q.s)+' ':''}<strong>${esc(q.q)}</strong></span></summary>
+    <div class="body"><ol>${x.ord.map(oi=>`<li class="${oi===0?'ok':oi===x.pick?'no':''}">${esc(q.o[oi])}${oi===x.pick?`<span class="you">← jawabanmu</span>`:''}</li>`).join('')}</ol>
+    ${x.pick===null?'<p><em>Tidak dijawab.</em></p>':''}<p>${esc(q.e)}</p></div></details>`;}).join('')}
+  <div class="actbar">${wrong.length?`<button class="btn pri" id="again">Ulangi ${wrong.length} yang salah</button>`:''}<button class="btn${wrong.length?'':' pri'}" id="fresh">Sesi baru</button></div>`;
+}
+$('#result').addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;
+  if(t.dataset.f){rvFilter=t.dataset.f;renderResult();}
+  else if(t.dataset.read){openCh(+t.dataset.read);go('materi');}
+  else if(t.id==='again')begin(shuf(R.items.filter(x=>x.pick!==0).map(x=>x.id)),'latihan');
+  else if(t.id==='fresh'){R=null;renderSetup();window.scrollTo(0,0);}
+});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)save();});
+
+/* mulai */
+buildNav();openCh(store.get('ch',1));
+})();
+
+</script>
+</body>
+</html>

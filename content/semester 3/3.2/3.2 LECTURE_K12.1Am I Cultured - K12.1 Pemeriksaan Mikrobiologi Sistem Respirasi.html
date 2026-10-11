@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="id" style="--h:170;--bl:26%">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Am I Cultured? — K12.1 Pemeriksaan Mikrobiologi Sistem Respirasi</title>
+<style>
+:root{
+  --h:189;--bl:26%;
+  --bg:hsl(var(--h) 14% 96%);--surface:#fff;--sunk:hsl(var(--h) 12% 92%);--ink:hsl(var(--h) 35% 12%);--ink2:hsl(var(--h) 18% 27%);--mute:hsl(var(--h) 10% 39%);--line:hsl(var(--h) 12% 85%);
+  --brand:hsl(var(--h) 80% var(--bl));--brand-ink:#fff;--brand-soft:hsl(var(--h) 45% 92%);
+  --ok:#17723f;--ok-soft:#e2f3e8;--bad:#b0322c;--bad-soft:#fae6e4;--warn:#7d5200;--warn-soft:#fbefd4;
+  --r:12px;--head:56px;
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){
+  --bg:hsl(var(--h) 30% 8%);--surface:hsl(var(--h) 26% 13%);--sunk:hsl(var(--h) 30% 10%);--ink:hsl(var(--h) 15% 93%);--ink2:hsl(var(--h) 12% 78%);--mute:hsl(var(--h) 10% 64%);--line:hsl(var(--h) 18% 22%);
+  --brand:hsl(var(--h) 60% 68%);--brand-ink:hsl(var(--h) 70% 9%);--brand-soft:hsl(var(--h) 42% 18%);
+  --ok:#63d394;--ok-soft:#143325;--bad:#ff8f86;--bad-soft:#3a1c1a;--warn:#f1c466;--warn-soft:#3a2e12;
+  color-scheme:dark;}}
+:root[data-theme=dark]{
+  --bg:hsl(var(--h) 30% 8%);--surface:hsl(var(--h) 26% 13%);--sunk:hsl(var(--h) 30% 10%);--ink:hsl(var(--h) 15% 93%);--ink2:hsl(var(--h) 12% 78%);--mute:hsl(var(--h) 10% 64%);--line:hsl(var(--h) 18% 22%);
+  --brand:hsl(var(--h) 60% 68%);--brand-ink:hsl(var(--h) 70% 9%);--brand-soft:hsl(var(--h) 42% 18%);
+  --ok:#63d394;--ok-soft:#143325;--bad:#ff8f86;--bad-soft:#3a1c1a;--warn:#f1c466;--warn-soft:#3a2e12;
+  color-scheme:dark;}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:calc(var(--head) + 60px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 var(--font);min-height:100vh;overflow-x:hidden}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+[hidden]{display:none!important}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px;border-radius:6px}
+
+/* header */
+.top{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.top-in{max-width:1080px;margin:0 auto;height:var(--head);padding:0 16px;display:flex;align-items:center;gap:12px}
+.brand{font-weight:800;font-size:17px;letter-spacing:-.01em;margin:0;white-space:nowrap}
+.brand span{color:var(--brand)}
+.tabs{display:flex;gap:4px;background:var(--sunk);border-radius:10px;padding:4px;margin-left:auto}
+.tabs button{border:0;background:none;padding:0 16px;min-height:36px;border-radius:7px;font-weight:600;font-size:15px;color:var(--mute)}
+.tabs button[aria-selected=true]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.14)}
+.icon{border:1px solid var(--line);background:var(--surface);width:40px;height:40px;border-radius:10px;font-size:17px;line-height:1;flex:none}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+.credit{font-size:13px;color:var(--mute);margin:14px 0 0}
+
+/* materi */
+.materi{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
+.materi>*{min-width:0}
+.chnav{position:sticky;top:var(--head);z-index:10;background:var(--bg);margin:0 -16px;padding:10px 16px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--line)}
+.chnav::-webkit-scrollbar{display:none}
+.chnav button{flex:none;display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px 0 8px;border:1px solid var(--line);border-radius:22px;background:var(--surface);font-size:14px;font-weight:600;color:var(--ink2);white-space:nowrap}
+.chnav .no{width:26px;height:26px;border-radius:50%;background:var(--sunk);display:grid;place-items:center;font-size:13px;font-variant-numeric:tabular-nums}
+.chnav .pc{font-weight:500;font-size:12px;color:var(--mute);display:none}
+.chnav button.on{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.chnav button.on .no{background:rgba(255,255,255,.25);color:inherit}
+.ch{display:none;max-width:70ch;padding:22px 0 8px}
+.ch.on{display:block}
+.ch h2{font-size:clamp(24px,5vw,30px);line-height:1.2;letter-spacing:-.02em;margin:0 0 16px}
+.ch h3{font-size:19px;line-height:1.3;margin:36px 0 10px;padding-top:18px;border-top:1px solid var(--line)}
+.ch p,.ch ul,.ch ol{margin:0 0 12px;color:var(--ink2)}
+.ch ul,.ch ol:not(.flow){padding-left:22px}
+.ch li{margin-bottom:6px}
+.ch li ul{margin-top:6px}
+.ch strong{color:var(--ink)}
+.def,.awas,.klinis{border-left:4px solid var(--brand);background:var(--surface);padding:12px 14px;border-radius:0 var(--r) var(--r) 0;color:var(--ink)!important}
+.def::before,.awas::before,.klinis::before{display:block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px}
+.def::before{content:"Definisi";color:var(--brand)}
+.awas{border-color:var(--bad);background:var(--bad-soft)}
+.awas::before{content:"Perhatian";color:var(--bad)}
+.klinis{border-color:var(--ok);background:var(--ok-soft)}
+.klinis::before{content:"Contoh";color:var(--ok)}
+.ch figure{margin:0 0 14px}.ch figure img{display:block;max-width:100%;height:auto;border:1px solid var(--line);border-radius:var(--r);background:#fff}.ch figcaption{font-size:13px;color:var(--mute);margin-top:4px}
+.tw{overflow-x:auto;margin:0 0 14px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{padding:10px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+tr:last-child>*{border-bottom:0}
+td[rowspan]{border-right:1px solid var(--line)}
+th{font-size:13px;font-weight:700;color:var(--mute);background:var(--sunk)}
+th[scope=row]{background:none;color:var(--ink);font-size:14px;white-space:nowrap}
+.tw.wide table{min-width:620px}
+.flow{list-style:none;padding:0;margin:14px 0 16px;display:flex;flex-direction:column;gap:22px}
+.flow li{position:relative;margin:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-weight:600;color:var(--ink);text-align:center}
+.flow small{display:block;font-weight:400;font-size:13px;color:var(--mute)}
+.flow li+li::before{content:"↓";position:absolute;left:50%;top:-22px;height:22px;line-height:22px;transform:translateX(-50%);color:var(--brand);font-weight:700}
+.flow.rank{flex-direction:row;gap:26px;flex-wrap:nowrap}
+.flow.rank li{flex:1;padding:10px 4px;font-size:14px}
+.flow.rank li+li::before{content:">";left:-18px;top:50%;transform:translateY(-50%);width:10px}
+.chfoot{display:flex;flex-wrap:wrap;gap:10px;margin:32px 0 40px;padding-top:20px;border-top:1px solid var(--line)}
+
+/* tombol */
+.btn{min-height:48px;padding:0 18px;border-radius:var(--r);border:1px solid var(--line);background:var(--surface);font-weight:600;font-size:15px;color:var(--ink)}
+.btn:hover{border-color:var(--mute)}
+.btn.pri{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.btn.pri:hover{filter:brightness(1.08)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.sm{min-height:40px;padding:0 14px;font-size:14px}
+.link{white-space:nowrap;border:0;background:none;padding:6px 4px;min-height:36px;color:var(--brand);font-weight:600;font-size:14px;text-decoration:underline;text-underline-offset:3px}
+.chfoot .btn{flex:1 1 220px}
+
+/* quiz umum */
+.quiz{max-width:720px;margin:0 auto;padding-top:20px}
+.quiz h2{font-size:24px;letter-spacing:-.02em;margin:0 0 6px}
+.lead{color:var(--mute);margin:0 0 18px;font-size:15px}
+.bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--brand);border-radius:4px;transition:width .25s}
+fieldset{border:0;padding:0;margin:0 0 22px;min-width:0}
+legend{padding:0;margin:0 0 8px;font-weight:700;font-size:15px;display:flex;align-items:center;gap:8px;width:100%}
+legend .sp{margin-left:auto;display:flex;gap:6px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.resume{display:flex;flex-wrap:wrap;gap:10px;align-items:center;border-color:var(--brand);margin-bottom:20px}
+.resume p{margin:0;flex:1 1 200px}
+.overall{margin-bottom:22px}
+.overall .row{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;color:var(--mute);margin-top:4px}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pick{position:relative;display:block;border:2px solid var(--line);border-radius:var(--r);background:var(--surface);padding:12px 14px;cursor:pointer}
+.pick input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.pick b{display:block}
+.pick small{display:block;color:var(--mute);font-size:13px;line-height:1.4}
+.pick.on{border-color:var(--brand);background:var(--brand-soft)}
+.pick:focus-within{outline:3px solid var(--brand);outline-offset:2px}
+.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.chips .pick{padding:10px 12px 10px 44px;min-height:56px}
+.chips .pick::before{content:"";position:absolute;left:12px;top:50%;transform:translateY(-50%);width:22px;height:22px;border-radius:6px;border:2px solid var(--mute);background:var(--surface)}
+.chips .pick.on::before{content:"✓";border-color:var(--brand);background:var(--brand);color:var(--brand-ink);font-weight:800;font-size:15px;display:grid;place-items:center}
+.seg{display:flex;gap:8px}
+.seg .pick{flex:1;text-align:center;padding:10px 4px;font-weight:700}
+.check{display:flex;align-items:center;gap:10px;min-height:44px;margin-bottom:10px;cursor:pointer}
+.check input{width:22px;height:22px;accent-color:var(--brand);flex:none}
+.actbar{position:sticky;bottom:0;z-index:5;display:flex;gap:10px;align-items:center;margin:20px -16px 0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:var(--bg);border-top:1px solid var(--line)}
+.actbar .btn{flex:1}
+.actbar .btn.fit{flex:none}
+.actbar .hint{flex:1;color:var(--mute);font-size:14px;text-align:center}
+
+/* soal */
+.runhead{display:grid;grid-template-columns:1fr auto auto;gap:6px 12px;align-items:center;margin-bottom:14px}
+.runhead .bar{grid-column:1/-1}
+#rpos{font-size:16px}
+#rinfo{font-size:14px;color:var(--mute);font-variant-numeric:tabular-nums;font-weight:600}
+#rinfo.low{color:var(--bad)}
+.qcard{margin-bottom:12px}
+.scen{margin:0 0 10px;padding:12px 14px;background:var(--sunk);border-radius:10px;color:var(--ink2);font-size:15.5px}
+.scen::before{content:"Kasus";display:block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+.qtext{font-size:18px!important;line-height:1.45;font-weight:650;margin:0!important;letter-spacing:0!important}
+.opts{display:grid;gap:8px}
+.opt{display:flex;align-items:flex-start;gap:12px;width:100%;text-align:left;min-height:52px;padding:12px 14px;border:2px solid var(--line);border-radius:var(--r);background:var(--surface);font-size:16px;line-height:1.4}
+.opt:hover:not(:disabled){border-color:var(--brand)}
+.opt .key{flex:none;width:28px;height:28px;border-radius:8px;background:var(--sunk);display:grid;place-items:center;font-weight:700;font-size:14px;color:var(--ink2)}
+.opt .otx{flex:1;padding-top:2px}
+.opt .mk{flex:none;font-weight:800;padding-top:2px}
+.opt:disabled{cursor:default;color:var(--ink);opacity:1}
+.opt.sel{border-color:var(--brand);background:var(--brand-soft)}
+.opt.sel .key{background:var(--brand);color:var(--brand-ink)}
+.opt.ok{border-color:var(--ok);background:var(--ok-soft)}
+.opt.ok .key{background:var(--ok);color:var(--surface)}
+.opt.ok .mk{color:var(--ok)}
+.opt.no{border-color:var(--bad);background:var(--bad-soft)}
+.opt.no .key{background:var(--bad);color:var(--surface)}
+.opt.no .mk{color:var(--bad)}
+.opt.dim{opacity:.62}
+.fb{margin-top:12px;padding:14px;border-radius:var(--r);border-left:4px solid var(--ok);background:var(--ok-soft)}
+.fb.no{border-color:var(--bad);background:var(--bad-soft)}
+.fb b{display:block;font-size:17px;color:var(--ok)}
+.fb.no b{color:var(--bad)}
+.fb p{margin:4px 0 8px}
+.fb .src{font-size:13px;color:var(--mute)}
+.grid{margin-top:14px}
+.grid summary{cursor:pointer;font-weight:600;font-size:14px;min-height:40px;display:flex;align-items:center;color:var(--ink2)}
+#rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:6px;padding:6px 0}
+#rgrid button{position:relative;height:44px;border-radius:8px;border:1px solid var(--line);background:var(--surface);font-weight:600;font-variant-numeric:tabular-nums}
+#rgrid .done{background:var(--brand-soft);border-color:var(--brand)}
+#rgrid .cur{outline:3px solid var(--ink);outline-offset:1px}
+#rgrid .flag::after{content:"";position:absolute;top:4px;right:4px;width:8px;height:8px;border-radius:50%;background:var(--warn)}
+#flagbtn[aria-pressed=true]{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+
+/* hasil */
+.score{display:flex;align-items:center;gap:18px;margin-bottom:8px}
+.ring{--p:0;flex:none;width:112px;height:112px;border-radius:50%;background:conic-gradient(var(--brand) calc(var(--p)*1%),var(--line) 0);display:grid;place-items:center}
+.ring b{width:88px;height:88px;border-radius:50%;background:var(--bg);display:grid;place-items:center;font-size:28px;font-variant-numeric:tabular-nums}
+.score h2{margin:0 0 4px}
+.score p{margin:0;color:var(--ink2)}
+.quiz h3{font-size:17px;margin:28px 0 10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.quiz h3 .sp{margin-left:auto;display:flex;gap:6px}
+.chrow{display:grid;grid-template-columns:1fr auto;gap:2px 12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.chrow .bar{grid-column:1/-1}
+.chrow .nm{font-weight:600}
+.chrow .ct{font-variant-numeric:tabular-nums;color:var(--mute);font-size:14px}
+.chrow .bar i.low{background:var(--bad)}
+.chrow .more{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--mute)}
+.rv{border:1px solid var(--line);border-left:4px solid var(--ok);border-radius:10px;background:var(--surface);margin-bottom:8px}
+.rv.no{border-left-color:var(--bad)}
+.rv summary{cursor:pointer;display:flex;gap:10px;padding:12px 14px;list-style:none;min-height:48px}
+.rv summary::-webkit-details-marker{display:none}
+.rv .mk{flex:none;font-weight:800;color:var(--ok)}
+.rv.no .mk{color:var(--bad)}
+.rv .body{padding:0 14px 14px}
+.rv ol{list-style:upper-alpha;padding-left:24px;margin:8px 0;color:var(--ink2)}
+.rv li.ok{color:var(--ok);font-weight:600}
+.rv li.no{color:var(--bad);text-decoration:line-through}
+.rv li .you{font-size:13px;font-weight:600;text-decoration:none;display:inline-block;margin-left:6px}
+.rv p{margin:8px 0 0}
+.tog{border:1px solid var(--line);background:var(--surface);min-height:36px;padding:0 12px;border-radius:18px;font-size:13px;font-weight:600;color:var(--ink2)}
+.tog[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+dialog{border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--ink);padding:20px;max-width:min(420px,calc(100vw - 32px))}
+dialog::backdrop{background:rgba(0,0,0,.5)}
+dialog p{margin:0 0 18px;font-size:16px}
+dialog .row{display:flex;gap:10px}
+dialog .btn{flex:1}
+
+/* lebar */
+@media (min-width:560px){
+  .flow{flex-direction:row;gap:28px;align-items:stretch}
+  .flow li{flex:1;display:flex;flex-direction:column;justify-content:center}
+  .flow li+li::before{content:"→";left:-28px;top:50%;width:28px;height:auto;line-height:1;transform:translateY(-50%);text-align:center}
+}
+@media (max-width:559px){
+  .tabs button{padding:0 12px}
+  .modes{grid-template-columns:1fr}
+  .ring{width:92px;height:92px}.ring b{width:72px;height:72px;font-size:23px}
+}
+@media (min-width:960px){
+  .materi{grid-template-columns:240px minmax(0,1fr);gap:40px;align-items:start}
+  .chnav{top:calc(var(--head) + 20px);margin:22px 0 0;padding:0;flex-direction:column;gap:4px;overflow:visible;border:0;background:none}
+  .chnav button{border-color:transparent;background:none;border-radius:10px;justify-content:flex-start;white-space:normal;text-align:left;padding:6px 10px 6px 8px}
+  .chnav button:not(.on):hover{background:var(--sunk)}
+  .chnav .nm{flex:1}
+  .chnav .pc{display:block}
+  .chnav button.on .pc{color:inherit;opacity:.85}
+  .actbar{margin-left:0;margin-right:0;padding-left:0;padding-right:0}
+  .opt:hover:not(:disabled){background:var(--brand-soft)}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media print{
+  .top,.chnav,.chfoot,#v-quiz,.credit{display:none!important}
+  #v-materi{display:block!important}
+  .materi{display:block}
+  .ch{display:block!important;max-width:none;page-break-after:always}
+  body{background:#fff;font-size:11pt}
+  .tw{overflow:visible;border:0}
+}
+
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in">
+  <h1 class="brand">Am I <span>Cultured?</span></h1>
+  <div class="tabs" role="tablist" aria-label="Bagian">
+    <button role="tab" id="tab-materi" aria-selected="true" aria-controls="v-materi">Materi</button>
+    <button role="tab" id="tab-quiz" aria-selected="false" aria-controls="v-quiz">Latihan</button>
+  </div>
+  <button class="icon" id="theme" aria-label="Ganti tema terang/gelap" title="Tema terang/gelap">◐</button>
+</div></header>
+
+<main class="wrap">
+<div id="v-materi" role="tabpanel" aria-labelledby="tab-materi">
+  <p class="credit">K12.1 Pemeriksaan Mikrobiologi Sistem Respirasi · Blok 3.2 — Modul Kardiovaskular &amp; Respirasi</p>
+  <div class="materi">
+    <nav class="chnav" id="chnav" role="tablist" aria-label="Bab materi"></nav>
+    <div>
+<section class="ch" data-ch="1">
+<h2>Mutu Spesimen</h2>
+<p class="def">Tahap pra-analitik adalah tahap sebelum sampel masuk ke mesin. Kualitas hasil biakan ditentukan sepenuhnya pada tahap ini: sampel yang buruk menghasilkan keputusan klinis yang menyesatkan (<em>garbage in, garbage out</em>).</p>
+
+<h3>Kaidah emas pengambilan spesimen</h3>
+<table>
+<tr><th>Prinsip</th><th>Isi</th><th>Catatan</th></tr>
+<tr><td><strong>Representativitas</strong></td><td>Sampel wajib diambil langsung dari fokus infeksi aktif, bukan dari area sehat di dekatnya.</td><td>Faringitis: usap tenggorok. Radang paru: sekret saluran napas bawah (sputum atau cairan bilasan bronkoalveolar), bukan saliva.</td></tr>
+<tr><td><strong>Pra-antimikroba</strong></td><td>Spesimen diambil <strong>sebelum dosis pertama antibiotik</strong>.</td><td>Satu dosis antibiotik dapat melumpuhkan atau mematikan kuman di cawan biakan sehingga hasil negatif palsu.</td></tr>
+<tr><td><strong>Minimalisasi kontaminasi</strong></td><td>Rongga mulut dan hidung dihuni miliaran flora komensal normal (<em>Streptococcus viridans</em>, <em>Neisseria</em> non-patogen).</td><td>Saat mengusap tenggorok, ujung swab dilarang menyentuh lidah, mukosa pipi dalam, uvula, atau saliva. Gunakan wadah steril dan segera kirim ke laboratorium.</td></tr>
+</table>
+<p class="awas">Pengecualian prinsip pra-antimikroba: pada syok sepsis atau gagal napas akut, resusitasi kritis dan antibiotik darurat tidak boleh tertunda demi menunggu sampel.</p>
+
+<h3>Menilai mutu sputum: Kriteria Bartlett</h3>
+<p>Banyak pasien tidak bisa membedakan dahak sejati (sputum, dari saluran napas bawah) dengan air liur (saliva, dari kelenjar ludah mulut). Skrining dilakukan secara mikroskopis pada pembesaran kecil (objektif 10x).</p>
+<p><strong>Skor total = skor neutrofil (PMN) + skor sel epitel skuamosa (SEC) + bonus mukus</strong></p>
+<table>
+<tr><th>Komponen</th><th>Makna</th><th>Temuan per lapang pandang (LPK)</th><th>Skor</th></tr>
+<tr><td rowspan="3"><strong>Neutrofil / leukosit PMN</strong></td><td rowspan="3">Mencerminkan respons pertahanan aktif tubuh melawan infeksi di paru</td><td>&lt; 10 sel</td><td>0</td></tr>
+<tr><td>10–25 sel</td><td>+1</td></tr>
+<tr><td>&gt; 25 sel</td><td>+2</td></tr>
+<tr><td rowspan="2"><strong>Sel epitel skuamosa (SEC)</strong></td><td rowspan="2">Berasal dari mukosa rongga mulut; makin banyak, makin tercemar air liur</td><td>10–25 sel</td><td>−1</td></tr>
+<tr><td>&gt; 25 sel</td><td>−2</td></tr>
+<tr><td><strong>Bonus mukus</strong></td><td>Preparat didominasi untaian lendir kental (<em>mucus strands</em>)</td><td>Ada</td><td>+1</td></tr>
+</table>
+<table>
+<tr><th>Skor total</th><th>Arti</th><th>Kebijakan laboratorium</th></tr>
+<tr><td><strong>≥ +1</strong></td><td>Dahak berkualitas baik (representatif)</td><td>Layak diproses: pewarnaan Gram, biakan kuman, uji kepekaan</td></tr>
+<tr><td><strong>≤ 0</strong> (terutama bila epitel skuamosa &gt; 25/LPK)</td><td>Sampel didominasi air liur</td><td><strong>Wajib ditolak</strong>; minta pengambilan ulang dengan edukasi teknik batuk dalam yang benar</td></tr>
+</table>
+
+<h3>Tiga status mikroba</h3>
+<p>Kuman yang tumbuh di cawan biakan wajib ditafsirkan dengan penalaran klinis.</p>
+<table>
+<tr><th>Status</th><th>Apa yang terjadi</th><th>Petunjuk dan contoh</th><th>Tindakan</th></tr>
+<tr><td><strong>Infeksi sejati</strong></td><td>Kuman menginvasi jaringan, merusak sel, memicu peradangan pejamu</td><td>Leukosit PMN melimpah, demam, sesak napas, infiltrat baru pada rontgen toraks</td><td><strong>Wajib</strong> antibiotik definitif</td></tr>
+<tr><td><strong>Kolonisasi</strong></td><td>Kuman menumpang hidup dan bermultiplikasi di permukaan mukosa tanpa melukai jaringan dan tanpa respons radang</td><td>PMN minimal atau nihil. Sering pada pasien paru kronis (PPOK, bronkiektasis) yang dihuni <em>Pseudomonas aeruginosa</em> atau <em>Staphylococcus aureus</em></td><td><strong>Dilarang</strong> diobati antibiotik</td></tr>
+<tr><td><strong>Kontaminasi</strong></td><td>Kuman luar atau flora normal kulit/mulut masuk ke wadah secara tidak sengaja saat pengambilan atau pemrosesan</td><td><em>Staphylococcus epidermidis</em> kulit masuk ke biakan darah; <em>Streptococcus viridans</em> air liur masuk ke dahak</td><td>Abaikan hasil atau ambil sampel ulang</td></tr>
+</table>
+<p class="awas">Mengobati kolonisasi dengan antibiotik hanya membunuh flora pelindung dan memicu resistensi obat.</p>
+</section>
+
+<section class="ch" data-ch="2">
+<h2>Mikroskopis</h2>
+<p class="def">Pewarnaan Gram adalah pemeriksaan lini pertama yang memberi petunjuk kelompok kuman dalam hitungan menit, sebelum hasil biakan keluar.</p>
+
+<h3>Pewarnaan Gram: arsitektur dinding sel</h3>
+<table>
+<tr><th>Sifat</th><th>Gram positif</th><th>Gram negatif</th></tr>
+<tr><td><strong>Warna</strong></td><td>Ungu pekat</td><td>Merah muda</td></tr>
+<tr><td><strong>Peptidoglikan</strong></td><td>Sangat tebal (20–80 nm)</td><td>Sangat tipis (2–7 nm), terbungkus membran luar kaya lipid (lipopolisakarida)</td></tr>
+<tr><td><strong>Saat dibilas alkohol</strong></td><td>Kompleks kristal violet-iodin terperangkap kuat, tidak luntur</td><td>Alkohol melarutkan lipid dan melunturkan kristal violet; dinding sel lalu mengikat zat warna tandingan safranin</td></tr>
+</table>
+
+<h3>Morfologi khas patogen respirasi</h3>
+<table>
+<tr><th>Gambaran Gram</th><th>Dugaan kuman</th></tr>
+<tr><td>Diplokokus Gram positif berpasangan, bentuk tombak/lanset</td><td><em>Streptococcus pneumoniae</em> (dugaan kuat)</td></tr>
+<tr><td>Kokus Gram positif bergerombol seperti anggur</td><td><em>Staphylococcus aureus</em></td></tr>
+<tr><td>Kokus Gram positif berderet panjang seperti rantai</td><td><em>Streptococcus pyogenes</em></td></tr>
+<tr><td>Batang Gram negatif gemuk berkapsul tebal</td><td><em>Klebsiella pneumoniae</em>; khas dahak merah kental seperti jeli (<em>currant jelly sputum</em>)</td></tr>
+<tr><td>Batang Gram negatif langsing</td><td><em>Pseudomonas aeruginosa</em> atau kuman enterik</td></tr>
+<tr><td>Kokobasil Gram negatif kecil pleomorfik</td><td><em>Haemophilus influenzae</em></td></tr>
+</table>
+
+<h3>Basil tahan asam (BTA): Ziehl-Neelsen dan auramin</h3>
+<p>Dinding kuman genus <em>Mycobacterium</em> (seperti <em>M. tuberculosis</em>) mengandung asam lemak rantai panjang yang sangat berlilin, yaitu <strong>asam mikolat</strong>. Lapisan lilin ini kedap air dan tidak dapat ditembus zat warna Gram biasa.</p>
+<ol class="flow">
+<li>Karbol fuksin merah<small>dengan pemanasan uap agar meresap ke dinding asam mikolat</small></li>
+<li>Bilas asam-alkohol pekat<small>kuman TB mempertahankan warna merah (tahan asam)</small></li>
+<li>Biru metilen<small>sel pejamu dan kuman non-BTA yang luntur mengikat pewarna tandingan</small></li>
+<li>Hasil<small>batang merah ramping, latar belakang biru</small></li>
+</ol>
+<table>
+<tr><th>Metode</th><th>Zat warna dan alat</th><th>Gambaran</th><th>Catatan</th></tr>
+<tr><td><strong>Ziehl-Neelsen (ZN)</strong></td><td>Karbol fuksin + pemanasan uap; tandingan biru metilen</td><td>Batang merah ramping, latar biru</td><td>Metode pembanding</td></tr>
+<tr><td><strong>Fluorokrom auramin-O</strong></td><td>Zat warna fluoresen; iluminasi mikroskop LED</td><td>Pendaran kuning kehijauan di atas latar gelap</td><td>Pemindaian sediaan lebih cepat dan lebih sensitif dibanding ZN</td></tr>
+</table>
+<p class="awas">Batas deteksi: mikroskopis BTA baru positif bila jumlah kuman di dahak minimal <strong>5.000–10.000 kuman/mL</strong>. Muatan kuman di bawah ambang ini dapat memberi hasil negatif palsu.</p>
+
+<h3>Preparat basah KOH (mikroskopis jamur)</h3>
+<p>Larutan kalium hidroksida (KOH 10–20%) melarutkan protein sel inang, sel epitel skuamosa, dan untaian lendir sputum yang menghalangi pandangan. Dinding sel jamur yang kaya polisakarida <strong>kitin</strong> tahan terhadap basa kuat, sehingga struktur jamur tetap utuh dan tampak kontras.</p>
+<table>
+<tr><th>Bentuk yang terlihat</th><th>Jamur</th></tr>
+<tr><td>Hifa bersekat (<em>septate hyphae</em>) dengan percabangan sudut lancip 45°</td><td><em>Aspergillus</em> spp.; dapat membentuk bola jamur (aspergilloma) di rongga kavitas paru</td></tr>
+<tr><td>Sel ragi bertunas lonjong (blastospora) dengan pseudohifa</td><td><em>Candida albicans</em></td></tr>
+</table>
+</section>
+
+<section class="ch" data-ch="3">
+<h2>Biakan &amp; Uji Kepekaan</h2>
+<p class="def">Kultur mengisolasi koloni kuman murni untuk identifikasi spesies dan uji kepekaan obat. Uji kepekaan antimikroba (<em>antimicrobial susceptibility testing</em>, AST) menentukan antibiotik mana yang masih mampu mematikan kuman itu.</p>
+
+<h3>Agar darah (BAP)</h3>
+<p>Media dasar kaya nutrisi yang dicampur darah domba steril 5%. Sekaligus media <strong>diferensial</strong> untuk mengamati kemampuan kuman memecah eritrosit (hemolisis).</p>
+<table>
+<tr><th>Hemolisis</th><th>Lisis eritrosit</th><th>Tampilan sekeliling koloni</th><th>Khas pada</th></tr>
+<tr><td><strong>Alfa (α)</strong></td><td>Parsial</td><td>Zona keruh kehijauan</td><td><em>Streptococcus pneumoniae</em>, <em>Streptococcus viridans</em></td></tr>
+<tr><td><strong>Beta (β)</strong></td><td>Total dan sempurna</td><td>Zona bening transparan</td><td><em>Streptococcus pyogenes</em> (GAS), <em>Staphylococcus aureus</em></td></tr>
+<tr><td><strong>Gama (γ)</strong></td><td>Tidak ada</td><td>Media tetap merah darah utuh</td><td>(tidak disebut)</td></tr>
+</table>
+
+<h3>Agar cokelat (CAP)</h3>
+<ul>
+<li>Agar darah yang dipanaskan perlahan hingga eritrositnya lisis, sehingga warna media menjadi cokelat tua.</li>
+<li>Pemanasan melepaskan dua faktor tumbuh esensial: <strong>faktor X</strong> (hemin) dan <strong>faktor V</strong> (koenzim nikotinamida adenin dinukleotida, NAD), sekaligus melumpuhkan enzim penghambat alami (NADase).</li>
+<li>Dibuat khusus untuk bakteri manja nutrisi (<em>fastidious</em>), terutama <em>Haemophilus influenzae</em> dan <em>Neisseria meningitidis</em>, yang tidak mampu tumbuh pada agar darah biasa.</li>
+</ul>
+
+<h3>Agar MacConkey</h3>
+<p>Media bersifat ganda, <strong>selektif</strong> sekaligus <strong>diferensial</strong>, untuk basil Gram negatif.</p>
+<table>
+<tr><th>Sifat</th><th>Kandungan</th><th>Akibat</th></tr>
+<tr><td><strong>Selektif</strong></td><td>Garam empedu (<em>bile salts</em>) dan kristal violet</td><td>Menghambat pertumbuhan seluruh bakteri Gram positif</td></tr>
+<tr><td><strong>Diferensial</strong></td><td>Gula laktosa dan indikator pH merah netral (<em>neutral red</em>)</td><td>Membedakan fermenter dan non-fermenter laktosa</td></tr>
+</table>
+<table>
+<tr><th>Kelompok</th><th>Yang terjadi</th><th>Koloni</th><th>Contoh</th></tr>
+<tr><td><strong>Fermenter laktosa</strong></td><td>Meragikan laktosa menjadi asam</td><td>Merah muda keunguan pekat</td><td><em>Klebsiella pneumoniae</em>, <em>Escherichia coli</em></td></tr>
+<tr><td><strong>Non-fermenter laktosa</strong></td><td>Tidak meragikan laktosa</td><td>Pucat transparan atau berwarna jerami</td><td><em>Pseudomonas aeruginosa</em></td></tr>
+</table>
+
+<h3>Uji kepekaan antimikroba (AST)</h3>
+<p>Biakan menjawab "kuman apa penyebab infeksinya?", sedangkan AST menjawab "antibiotik mana yang masih mampu mematikannya?".</p>
+<table>
+<tr><th>Metode</th><th>Cara</th><th>Yang dibaca</th></tr>
+<tr><td><strong>Difusi cakram Kirby-Bauer</strong></td><td>Kuman dioleskan merata pada agar Mueller-Hinton, lalu ditempeli cakram kertas berisi antibiotik</td><td><strong>Zona hambat</strong>: daerah jernih di sekitar cakram tempat kuman tidak tumbuh. Makin lebar diameternya, makin peka kuman</td></tr>
+<tr><td><strong>Kadar hambat minimum (MIC)</strong></td><td>Strip E-test atau alat otomatis mikrodilusi kaldu</td><td>Konsentrasi antibiotik terendah (µg/mL) yang sanggup menghentikan pertumbuhan kasat mata kuman</td></tr>
+</table>
+<table>
+<tr><th>Kategori (CLSI / EUCAST)</th><th>Makna</th></tr>
+<tr><td><strong>Sensitif / rentan (S)</strong></td><td>Kuman dapat dihambat tuntas oleh antibiotik pada dosis terapi standar</td></tr>
+<tr><td><strong>Intermediet (I)</strong></td><td>Keberhasilan klinis meragukan; butuh dosis maksimal atau tempat infeksi yang mampu mengonsentrasikan obat tinggi</td></tr>
+<tr><td><strong>Resisten (R)</strong></td><td>Kuman kebal; antibiotik tidak efektif pada dosis klinis yang aman</td></tr>
+</table>
+<p class="klinis">De-eskalasi antibiotik: begitu hasil AST keluar, dokter wajib menghentikan antibiotik empiris spektrum luas dan beralih ke antibiotik spektrum sempit yang terbukti peka, demi menekan angka resistensi dan biaya terapi.</p>
+</section>
+
+<section class="ch" data-ch="4">
+<h2>Diagnostik Khusus</h2>
+<p class="def">Tes Cepat Molekuler (TCM) / GeneXpert MTB/RIF adalah uji amplifikasi genetik otomatis (<em>real-time PCR</em> sistem tertutup) dalam katrij sekali pakai, dikerjakan langsung dari sampel dahak.</p>
+
+<h3>TCM / GeneXpert MTB/RIF</h3>
+<p>Memberi dua jawaban dalam waktu kurang dari 2 jam:</p>
+<ol>
+<li>Mengonfirmasi DNA kompleks <em>Mycobacterium tuberculosis</em> dengan sensitivitas sangat tinggi: mampu mendeteksi muatan kuman serendah ~100 kuman/mL dahak, jauh melampaui mikroskopis BTA.</li>
+<li>Mendeteksi mutasi pada gen <strong><em>rpoB</em></strong> (penyandi subunit beta enzim RNA polimerase), penanda genetik utama resistensi terhadap <strong>rifampisin</strong> (skrining dini TB-MDR).</li>
+</ol>
+<p>Kedudukan klinis: lini pertama diagnosis TB paru menurut standar WHO dan Kemenkes RI.</p>
+
+<h3>Usap tenggorok vs usap nasofaring</h3>
+<table>
+<tr><th>Parameter</th><th>Usap tenggorok (<em>throat swab</em>)</th><th>Usap nasofaring (<em>nasopharyngeal swab</em>)</th></tr>
+<tr><td><strong>Lokasi target</strong></td><td>Kedua fosa tonsilaris dan dinding belakang orofaring</td><td>Dinding posterior mukosa nasofaring (epitel bersilia)</td></tr>
+<tr><td><strong>Indikasi</strong></td><td>Faringitis akut / kecurigaan <em>Streptococcus pyogenes</em> (GAS)</td><td>Batuk rejan (<em>Bordetella pertussis</em>) dan virus pernapasan (Influenza, RSV, SARS-CoV-2)</td></tr>
+<tr><td><strong>Alat swab</strong></td><td>Lidi kapas steril / dakron + penekan lidah (spatula)</td><td>Kawat lentur aluminium atau plastik fleksibel dengan ujung serat sintetis <strong>dakron / nilon flok</strong></td></tr>
+<tr><td><strong>Larangan</strong></td><td>Jangan sentuh lidah, bibir, pipi dalam, atau uvula. Dilarang memakai sputum</td><td><strong>Dilarang kapas biasa (<em>cotton</em>) atau kalsium alginat</strong>: asam lemak meracuni bakteri, alginat menghambat enzim PCR</td></tr>
+<tr><td><strong>Arah masuk</strong></td><td>Menghadap orofaring langsung saat pasien berucap "Aah"</td><td>Didorong mendatar menyusuri <strong>dasar rongga hidung</strong> (sejajar langit-langit mulut), bukan ke atas</td></tr>
+<tr><td><strong>Media transport</strong></td><td>Tabung steril kering atau media transport bakteri biasa</td><td>Tabung <em>viral transport medium</em> (VTM) atau media arang Regan-Lowe, dingin (2–8°C)</td></tr>
+</table>
+
+<h3>Uji deteksi antigen urin (UAT)</h3>
+<p>Pemeriksaan imunokromatografi cepat (hasil dalam 15 menit) yang mendeteksi fragmen antigen larut yang disaring ginjal ke dalam air kemih.</p>
+<table>
+<tr><th>Antigen</th><th>Kapan paling berguna</th></tr>
+<tr><td>Polisakarida kapsul pneumokokus (<em>Streptococcus pneumoniae</em>)</td><td>Pasien lansia, pasien dehidrasi yang sulit membatukkan dahak, atau pasien yang <strong>sudah terlanjur diberi antibiotik</strong>: antigen polisakarida tetap diekskresikan di urin selama berminggu-minggu meski bakteri di paru sudah mati</td></tr>
+<tr><td><em>Legionella pneumophila</em> (serogrup 1)</td><td>Pilihan utama pada pneumonia berat atau kluster wabah yang dicurigai berkaitan dengan paparan air menara pendingin atau pendingin ruangan sentral (AC sentral)</td></tr>
+</table>
+
+<h3>Serologi dan jebakan ASTO</h3>
+<p class="awas">Titer antibodi Anti-Streptolisin O (ASTO) <strong>bukan alat untuk mendiagnosis faringitis akut yang sedang diderita pasien hari ini</strong>. Antibodi ASTO baru terbentuk 1 sampai 3 minggu setelah infeksi awal <em>Streptococcus pyogenes</em>.</p>
+<p>Peran sejatinya: ASTO adalah bukti retrospektif bahwa pasien pernah terpapar infeksi streptokokus di masa lalu. Pemeriksaan ini dipakai saat menginvestigasi komplikasi autoimun nonsupuratif lanjut, terutama <strong>demam rematik akut</strong> (dengan peradangan katup jantung) atau <strong>glomerulonefritis akut pascastreptokokus / GNAPS</strong> (radang glomerulus ginjal).</p>
+</section>
+
+<section class="ch" data-ch="5">
+<h2>Alur per Penyakit</h2>
+<p>Bab ini merangkai spesimen, uji cepat, dan uji konfirmasi untuk empat entitas penyakit respirasi.</p>
+
+<h3>Faringitis akut</h3>
+<table>
+<tr><th>Aspek</th><th>Isi</th></tr>
+<tr><td><strong>Patogen dan fokus</strong></td><td><em>Streptococcus pyogenes</em> (GAS / grup A) pada tonsil dan orofaring</td></tr>
+<tr><td><strong>Spesimen</strong></td><td>Usap tenggorok pada kedua fosa tonsil dan dinding faring posterior</td></tr>
+<tr><td><strong>Uji cepat</strong></td><td><strong>Uji cepat antigen Strep A (RADT)</strong>: imunokromatografi 15 menit, spesifisitas &gt;95%</td></tr>
+<tr><td><strong>Baku emas</strong></td><td>Kultur agar darah (BAP): koloni beta hemolisis jernih yang sensitif cakram basitrasin</td></tr>
+<tr><td><strong>Jebakan</strong></td><td>Dilarang memakai sputum: dahak mengangkut flora mulut dan mengaburkan kuman GAS. ASTO tidak berguna untuk kasus akut</td></tr>
+</table>
+
+<h3>Infeksi nasofaring (pertusis / virus)</h3>
+<table>
+<tr><th>Aspek</th><th>Isi</th></tr>
+<tr><td><strong>Patogen dan fokus</strong></td><td><em>Bordetella pertussis</em>, Influenza A/B, RSV, SARS-CoV-2 pada epitel silia nasofaring</td></tr>
+<tr><td><strong>Spesimen</strong></td><td>Usap nasofaring menyusuri dasar rongga hidung; simpan di VTM / media arang</td></tr>
+<tr><td><strong>Uji cepat</strong></td><td>Uji cepat antigen virus / RT-PCR cepat</td></tr>
+<tr><td><strong>Konfirmasi</strong></td><td>RT-PCR / biakan media arang Regan-Lowe untuk <em>B. pertussis</em></td></tr>
+<tr><td><strong>Jebakan</strong></td><td>Dilarang kapas biasa dan alginat. Swab dangkal di cuping hidung memicu negatif palsu</td></tr>
+</table>
+
+<h3>Pneumonia komunitas (CAP)</h3>
+<table>
+<tr><th>Aspek</th><th>Isi</th></tr>
+<tr><td><strong>Patogen</strong></td><td><em>S. pneumoniae</em> (nomor 1), <em>H. influenzae</em>, <em>K. pneumoniae</em>, bakteri atipikal</td></tr>
+<tr><td><strong>Spesimen</strong></td><td><strong>Triad spesimen (pra-antibiotik)</strong>: sputum batuk dalam, kultur darah 2 set, urin sewaktu</td></tr>
+<tr><td><strong>Uji cepat</strong></td><td>Pewarnaan Gram dahak + antigen urin (UAT) pneumokokus dan Legionella (15 menit)</td></tr>
+<tr><td><strong>Konfirmasi</strong></td><td>Kultur sputum dan darah (BAP, CAP, MacConkey) + uji kepekaan (AST/MIC)</td></tr>
+<tr><td><strong>Jebakan</strong></td><td>Sputum wajib diskrining Kriteria Bartlett (epitel &gt;25/LPK = saliva, tolak). Kultur darah negatif tidak menyingkirkan pneumonia</td></tr>
+</table>
+
+<h3>Tuberkulosis paru</h3>
+<table>
+<tr><th>Aspek</th><th>Isi</th></tr>
+<tr><td><strong>Patogen dan fokus</strong></td><td><em>Mycobacterium tuberculosis</em> pada parenkim paru (apeks/kavitas)</td></tr>
+<tr><td><strong>Spesimen</strong></td><td>Sputum batuk dalam 3–5 mL, pot berulir kedap bocor (skema Sewaktu-Pagi)</td></tr>
+<tr><td><strong>Uji cepat</strong></td><td>Tes Cepat Molekuler (TCM GeneXpert MTB/RIF), kurang dari 2 jam</td></tr>
+<tr><td><strong>Baku emas</strong></td><td>Kultur kuman TB (media Lowenstein-Jensen / cair MGIT) untuk uji DST fenotipik</td></tr>
+<tr><td><strong>Jebakan</strong></td><td>BTA butuh ≥ 5.000–10.000 kuman/mL (rawan negatif palsu bila kuman sedikit). Dilarang swab tenggorok atau serologi darah</td></tr>
+</table>
+</section>
+
+    </div>
+  </div>
+</div>
+
+<div id="v-quiz" role="tabpanel" aria-labelledby="tab-quiz" hidden>
+ <div class="quiz">
+  <div id="setup"></div>
+
+  <div id="run" hidden>
+    <div class="runhead">
+      <strong id="rpos"></strong><span id="rinfo" aria-live="off"></span>
+      <button class="btn sm" id="endbtn">Akhiri</button>
+      <div class="bar" id="rbarwrap" role="progressbar" aria-valuemin="0" aria-label="Soal terjawab"><i id="rbar"></i></div>
+    </div>
+    <div class="qcard">
+      <p class="scen" id="rscen" hidden></p>
+      <h2 class="qtext" id="rq" tabindex="-1"></h2>
+    </div>
+    <div class="opts" id="ropts" role="group" aria-label="Pilihan jawaban"></div>
+    <div class="fb" id="rfb" role="status" aria-live="polite" hidden></div>
+    <details class="grid" id="rgridwrap" hidden><summary>Daftar soal (titik kuning = ragu)</summary><div id="rgrid"></div></details>
+    <div class="actbar">
+      <button class="btn fit" id="prevbtn" aria-label="Soal sebelumnya">←</button>
+      <button class="btn fit" id="flagbtn" aria-pressed="false">Ragu</button>
+      <span class="hint" id="rhint">Pilih satu jawaban</span>
+      <button class="btn pri" id="nextbtn">Berikutnya →</button>
+    </div>
+  </div>
+
+  <div id="result" hidden></div>
+ </div>
+</div>
+</main>
+
+<dialog id="dlg" aria-labelledby="dlgmsg"><p id="dlgmsg"></p><div class="row"><button class="btn" value="no">Batal</button><button class="btn pri" value="yes" id="dlgok">Ya</button></div></dialog>
+
+<script>
+const META={id:'b32-k12-1',bab:['Mutu Spesimen','Mikroskopis','Biakan & Uji Kepekaan','Diagnostik Khusus','Alur per Penyakit']};
+// [bab, pertanyaan, [BENAR, pengecoh×4], pembahasan, skenario atau '', [id butir]]
+const QRAW=[
+/* ===== Bab 1 ===== */
+[1,'Tahap yang menentukan sepenuhnya kualitas hasil biakan adalah…',['Tahap pra-analitik','Tahap analitik','Tahap pasca-analitik','Tahap inkubasi','Tahap pelaporan'],'Mutu ditentukan sebelum sampel masuk ke mesin: sampel buruk memberi keputusan klinis menyesatkan (garbage in, garbage out), sebaik apa pun tahap sesudahnya.','',['1.01']],
+[1,'Spesimen yang paling representatif untuk pasien ini adalah…',['Sekret saluran napas bawah','Saliva yang ditampung pagi','Usap kedua fosa tonsilaris','Usap mukosa pipi dalam','Usap dinding nasofaring'],'Sampel harus berasal dari fokus infeksi aktif. Radang paru membutuhkan sputum atau cairan bilasan bronkoalveolar; saliva hanya mewakili rongga mulut.','Seorang pasien demam dan batuk berdahak dengan infiltrat di lobus bawah paru kanan. Dokter hendak mengirim spesimen untuk biakan.',['1.02']],
+[1,'Waktu pengambilan spesimen mikrobiologi yang benar adalah…',['Sebelum dosis pertama antibiotik','Setelah dosis pertama antibiotik','Setelah antibiotik hari ketiga','Setelah demam pasien turun','Setelah hasil rontgen keluar'],'Prinsip pra-antimikroba: satu dosis antibiotik saja sudah dapat melumpuhkan kuman di cawan biakan.','',['1.03']],
+[1,'Penjelasan yang paling mungkin untuk hasil biakan tersebut adalah…',['Negatif palsu akibat antibiotik','Positif palsu akibat antibiotik','Kontaminasi oleh flora mulut','Kolonisasi tanpa peradangan','Sampel terlalu banyak mukus'],'Paparan satu dosis antibiotik dapat melumpuhkan atau mematikan kuman sehingga biakan tidak tumbuh walau infeksi ada. Kontaminasi justru membuat kuman lain tumbuh.','Pasien pneumonia mendapat satu dosis antibiotik di IGD, baru kemudian dahaknya dikirim. Biakan dahak tidak menumbuhkan kuman.',['1.03']],
+[1,'Sikap yang sesuai dengan bahan adalah…',['Antibiotik darurat tidak ditunda','Antibiotik ditunda sampai dahak ada','Antibiotik ditunda sampai biakan tumbuh','Resusitasi ditunda sampai sampel ada','Antibiotik ditunda sampai Gram keluar'],'Syok sepsis dan gagal napas akut adalah pengecualian prinsip pra-antimikroba: resusitasi kritis dan antibiotik darurat tidak boleh tertunda demi menunggu sampel.','Seorang pasien datang dengan syok sepsis dan dugaan pneumonia. Ia tidak mampu membatukkan dahak.',['1.04']],
+[1,'Flora komensal normal rongga mulut dan hidung yang disebut dalam bahan adalah…',['Streptococcus viridans','Streptococcus pyogenes','Klebsiella pneumoniae','Bordetella pertussis','Legionella pneumophila'],'Bahan menyebut Streptococcus viridans dan Neisseria non-patogen sebagai flora komensal; keempat lainnya dibahas sebagai patogen.','',['1.05']],
+[1,'Saat mengusap tenggorok, ujung swab dilarang menyentuh struktur berikut, KECUALI…',['Fosa tonsilaris','Lidah','Uvula','Mukosa pipi dalam','Saliva'],'Fosa tonsilaris justru lokasi target. Lidah, mukosa pipi dalam, uvula, dan saliva membawa flora komensal yang mencemari spesimen.','',['1.05']],
+[1,'Skrining mutu sputum dengan Kriteria Bartlett dikerjakan pada…',['Objektif 10x','Objektif 40x','Objektif 100x imersi','Mikroskop LED fluoresen','Objektif 4x'],'Bartlett adalah skrining mikroskopis pembesaran kecil (objektif 10x). Mikroskop LED fluoresen dipakai untuk auramin-O.','',['1.06']],
+[1,'Tiga komponen penyusun skor total Bartlett adalah…',['Neutrofil, epitel skuamosa, mukus','Neutrofil, eritrosit, mukus','Limfosit, epitel skuamosa, mukus','Neutrofil, epitel bersilia, bakteri','Makrofag, epitel skuamosa, bakteri'],'Skor total = skor neutrofil (PMN) + skor sel epitel skuamosa (SEC) + bonus mukus.','',['1.06','1.09']],
+[1,'Sputum dengan lebih dari 25 neutrofil per lapang pandang mendapat skor PMN…',['+2','+1','0','−1','−2'],'PMN <10 = 0; 10–25 = +1; >25 = +2. Skor negatif hanya dimiliki sel epitel skuamosa.','',['1.07']],
+[1,'Sel epitel skuamosa 10–25 per lapang pandang diberi skor…',['−1','−2','0','+1','+2'],'SEC 10–25 = -1 dan >25 = -2. Angka batasnya sama dengan PMN, tetapi tandanya berlawanan.','',['1.08']],
+[1,'Banyaknya sel epitel skuamosa pada sediaan sputum menandakan…',['Cemaran air liur','Respons radang paru','Infeksi jamur paru','Kerusakan alveolus','Perdarahan bronkus'],'Sel epitel skuamosa berasal dari mukosa rongga mulut. Respons radang paru ditandai neutrofil (PMN), bukan epitel.','',['1.08']],
+[1,'Skor total Bartlett dan tindak lanjutnya adalah…',['−1, spesimen ditolak','−1, spesimen diproses','+1, spesimen diproses','0, spesimen diproses','+1, spesimen ditolak'],'PMN 10–25 = +1; SEC >25 = -2; tanpa mukus = 0. Total +1 - 2 + 0 = -1. Skor ≤ 0 berarti dominan saliva sehingga wajib ditolak.','Sediaan dahak menunjukkan neutrofil 15 per lapang pandang, sel epitel skuamosa lebih dari 25 per lapang pandang, tanpa untaian mukus.',['1.10','1.07']],
+[1,'Skor total Bartlett sediaan ini adalah…',['+2','+1','0','+3','−1'],'PMN >25 = +2; SEC 10–25 = -1; bonus mukus = +1. Total +2 - 1 + 1 = +2, sehingga dahak layak diproses.','Sediaan dahak menunjukkan neutrofil lebih dari 25 per lapang pandang, sel epitel skuamosa 10–25 per lapang pandang, dan didominasi untaian lendir kental.',['1.09','1.08']],
+[1,'Tindakan laboratorium terhadap sputum dengan skor total ≤ 0 adalah…',['Menolak dan meminta ulang','Memproses dengan catatan','Mengencerkan lalu membiak','Mewarnai ulang dengan ZN','Mengirim ke uji molekuler'],'Skor ≤ 0 berarti sampel didominasi air liur. Laboratorium wajib menolak dan meminta pengambilan ulang dengan edukasi teknik batuk dalam.','',['1.10']],
+[1,'Temuan yang mendukung infeksi sejati, bukan kolonisasi, adalah…',['PMN melimpah dan infiltrat baru','PMN nihil dan rontgen tak berubah','Epitel skuamosa yang melimpah','Koloni tumbuh tanpa gejala klinis','Flora kulit pada biakan darah'],'Infeksi sejati memicu peradangan pejamu: PMN melimpah, demam, sesak, infiltrat baru. PMN minimal atau nihil justru ciri kolonisasi.','',['1.11']],
+[1,'Status mikroba dan tindakan yang tepat adalah…',['Kolonisasi, tanpa antibiotik','Kolonisasi, beri antibiotik','Infeksi sejati, beri antibiotik','Kontaminasi, beri antibiotik','Infeksi sejati, tanpa antibiotik'],'Kuman tumbuh tanpa respons radang (PMN minimal, tanpa demam) pada pasien paru kronis adalah kolonisasi, dan kolonisasi dilarang diobati antibiotik.','Pasien PPOK stabil tanpa demam dan tanpa perburukan sesak. Biakan dahaknya menumbuhkan Pseudomonas aeruginosa, dengan PMN minimal pada mikroskopis.',['1.12']],
+[1,'Akibat memberi antibiotik pada kolonisasi menurut bahan adalah…',['Flora pelindung mati, resistensi','Kuman hilang, radang mereda','Biakan menjadi positif palsu','Peptidoglikan kuman menebal','Antigen urin menjadi negatif'],'Antibiotik pada kolonisasi hanya membunuh flora pelindung dan memicu resistensi obat; tidak ada radang yang perlu diredakan.','',['1.12']],
+[1,'Interpretasi yang paling tepat adalah…',['Kontaminasi flora kulit','Kolonisasi mukosa napas','Infeksi sejati jaringan','Infeksi sejati aliran darah','Kolonisasi paru kronis'],'Staphylococcus epidermidis adalah flora kulit yang dapat masuk ke botol saat pengambilan. Tanpa tanda infeksi, hasil ini kontaminasi.','Biakan darah seorang pasien tanpa demam dan tanpa tanda infeksi menumbuhkan Staphylococcus epidermidis.',['1.13']],
+[1,'Tindakan terhadap hasil biakan yang dinilai sebagai kontaminasi adalah…',['Abaikan atau ambil ulang','Terapi antibiotik definitif','De-eskalasi antibiotik','Lanjutkan uji kepekaan','Naikkan dosis antibiotik'],'Kontaminan bukan penyebab penyakit, jadi hasil diabaikan atau sampel diambil ulang. Antibiotik definitif hanya untuk infeksi sejati.','',['1.13']],
+/* ===== Bab 2 ===== */
+[2,'Keunggulan pewarnaan Gram sebagai pemeriksaan lini pertama adalah…',['Petunjuk kuman dalam hitungan menit','Identifikasi spesies secara pasti','Menentukan kadar hambat minimum','Mendeteksi mutasi gen resistensi','Menggantikan seluruh biakan kuman'],'Gram memberi petunjuk kelompok kuman dalam hitungan menit sebelum hasil biakan keluar; ia memberi dugaan, bukan identifikasi pasti.','',['2.01']],
+[2,'Tebal lapisan peptidoglikan bakteri Gram positif adalah…',['20–80 nm','2–7 nm','10–25 nm','5–10 nm','100–200 nm'],'Gram positif 20–80 nm; 2–7 nm adalah tebal peptidoglikan Gram negatif.','',['2.02']],
+[2,'Bakteri Gram positif tetap ungu setelah dekolorisasi karena…',['Kristal violet-iodin terperangkap','Safranin terikat membran luar','Karbol fuksin meresap ke lilin','Lipid membran luarnya larut','Kitin tahan terhadap alkohol'],'Peptidoglikan tebal memerangkap kompleks kristal violet-iodin sehingga tidak luntur oleh alkohol. Larutnya lipid membran luar terjadi pada Gram negatif.','',['2.02']],
+[2,'Zat warna tandingan yang membuat bakteri Gram negatif tampak merah muda adalah…',['Safranin','Biru metilen','Karbol fuksin','Auramin-O','Merah netral'],'Setelah kristal violet luntur, Gram negatif mengikat safranin. Biru metilen adalah pewarna tandingan Ziehl-Neelsen.','',['2.03']],
+[2,'Pada bakteri Gram negatif, alkohol melunturkan kristal violet karena…',['Melarutkan lipid membran luar','Menebalkan lapisan peptidoglikan','Mengikat asam mikolat dinding','Melisiskan kapsul polisakarida','Mengendapkan kompleks iodin'],'Gram negatif punya peptidoglikan tipis terbungkus membran luar kaya lipid (lipopolisakarida); alkohol melarutkan lipid itu.','',['2.03']],
+[2,'Kuman yang paling kuat diduga adalah…',['Streptococcus pneumoniae','Staphylococcus aureus','Streptococcus pyogenes','Haemophilus influenzae','Klebsiella pneumoniae'],'Diplokokus Gram positif berbentuk tombak/lanset adalah dugaan kuat S. pneumoniae. S. aureus bergerombol, S. pyogenes berderet seperti rantai.','Pewarnaan Gram dahak seorang pasien pneumonia memperlihatkan kokus Gram positif berpasangan berbentuk lanset.',['2.04']],
+[2,'Kokus Gram positif yang bergerombol seperti anggur mengarah ke…',['Staphylococcus aureus','Streptococcus pyogenes','Streptococcus pneumoniae','Streptococcus viridans','Haemophilus influenzae'],'Susunan bergerombol seperti anggur khas Staphylococcus aureus; streptokokus tersusun berpasangan atau berderet.','',['2.05']],
+[2,'Kokus Gram positif yang berderet panjang seperti rantai mengarah ke…',['Streptococcus pyogenes','Staphylococcus aureus','Streptococcus pneumoniae','Klebsiella pneumoniae','Pseudomonas aeruginosa'],'Rantai panjang mengarah ke Streptococcus pyogenes. S. pneumoniae tampak sebagai diplokokus lanset.','',['2.06']],
+[2,'Kuman yang paling mungkin adalah…',['Klebsiella pneumoniae','Pseudomonas aeruginosa','Haemophilus influenzae','Streptococcus pneumoniae','Staphylococcus aureus'],'Batang Gram negatif gemuk berkapsul tebal dengan dahak merah kental seperti jeli (currant jelly sputum) khas Klebsiella pneumoniae. Pseudomonas berupa batang langsing.','Seorang pasien batuk dengan dahak merah kental seperti jeli. Pewarnaan Gram menunjukkan batang Gram negatif gemuk berkapsul tebal.',['2.07']],
+[2,'Batang Gram negatif langsing pada sediaan dahak mengarah ke…',['Pseudomonas aeruginosa','Klebsiella pneumoniae','Haemophilus influenzae','Staphylococcus aureus','Streptococcus pyogenes'],'Batang Gram negatif langsing mengarah ke Pseudomonas aeruginosa atau kuman enterik. Klebsiella gemuk berkapsul, Haemophilus berupa kokobasil kecil.','',['2.08']],
+[2,'Kokobasil Gram negatif kecil pleomorfik mengarah ke…',['Haemophilus influenzae','Pseudomonas aeruginosa','Klebsiella pneumoniae','Streptococcus pneumoniae','Staphylococcus aureus'],'Kokobasil kecil pleomorfik adalah gambaran Haemophilus influenzae; dua batang Gram negatif lain berukuran lebih besar (gemuk berkapsul atau langsing).','',['2.09']],
+[2,'Komponen dinding sel Mycobacterium yang membuatnya tidak tertembus zat warna Gram adalah…',['Asam mikolat','Lipopolisakarida','Peptidoglikan','Kitin','Hemin'],'Asam mikolat adalah asam lemak rantai panjang berlilin yang kedap air. Lipopolisakarida milik Gram negatif, kitin milik jamur.','',['2.10']],
+[2,'Zat warna utama Ziehl-Neelsen dan cara memasukkannya ke dinding kuman adalah…',['Karbol fuksin dengan pemanasan','Kristal violet dengan iodin','Auramin-O dengan lampu LED','Biru metilen dengan pemanasan','Safranin dengan alkohol'],'Karbol fuksin merah dibantu pemanasan uap agar meresap ke dinding asam mikolat. Biru metilen hanya pewarna tandingan.','',['2.11']],
+[2,'Gambaran BTA positif pada pewarnaan Ziehl-Neelsen adalah…',['Batang merah, latar biru','Batang biru, latar merah','Batang ungu, latar merah muda','Pendaran kuning, latar gelap','Batang merah, latar gelap'],'Kuman tahan asam mempertahankan karbol fuksin (merah) saat dibilas asam-alkohol, sedangkan latar mengikat biru metilen. Pendaran kuning adalah gambaran auramin-O.','',['2.11']],
+[2,'Kelebihan pewarnaan auramin-O dibanding Ziehl-Neelsen adalah…',['Pemindaian lebih cepat dan sensitif','Tidak memerlukan mikroskop khusus','Membedakan spesies Mycobacterium','Mendeteksi resistensi rifampisin','Membedakan kuman hidup dan mati'],'Fluorokrom memungkinkan petugas memindai sediaan lebih cepat dan sensitif. Ia tetap butuh mikroskop LED, dan deteksi resistensi rifampisin adalah tugas TCM.','',['2.12']],
+[2,'Pada pewarnaan auramin-O, kuman TB tampak sebagai…',['Kuning kehijauan, latar gelap','Merah ramping, latar biru','Ungu pekat, latar merah muda','Biru terang, latar gelap','Merah muda, latar kehijauan'],'Zat warna fluoresen di bawah iluminasi LED memberi pendaran kuning kehijauan di atas latar gelap. Merah berlatar biru adalah Ziehl-Neelsen.','',['2.12']],
+[2,'Jumlah kuman minimal di dahak agar mikroskopis BTA positif adalah…',['5.000–10.000 kuman/mL','100–500 kuman/mL','500–1.000 kuman/mL','50.000–100.000 kuman/mL','10–50 kuman/mL'],'Ambang mikroskopis BTA 5.000–10.000 kuman/mL. Angka sekitar 100 kuman/mL adalah batas deteksi TCM.','',['2.13']],
+[2,'Kesimpulan yang tepat adalah…',['TB belum tersingkir; kuman mungkin sedikit','TB sudah tersingkir; cari penyebab lain','TB sudah tersingkir; lanjut periksa ASTO','Hasil menandakan dahak tercemar liur','Hasil menandakan resistensi rifampisin'],'Di bawah 5.000–10.000 kuman/mL mikroskopis BTA dapat negatif palsu, sehingga hasil negatif tidak menyingkirkan TB.','Seorang pasien batuk tiga minggu dengan gambaran klinis mengarah ke TB paru. Mikroskopis BTA dahaknya negatif.',['2.13']],
+[2,'Fungsi larutan KOH 10–20% pada preparat basah adalah…',['Melarutkan sel inang dan lendir','Mewarnai dinding sel jamur','Mematikan bakteri pencemar','Melarutkan kitin dinding jamur','Memfiksasi hifa pada kaca'],'KOH melarutkan protein sel inang, epitel skuamosa, dan untaian lendir yang menghalangi pandangan. Kitin justru tahan terhadap KOH.','',['2.14']],
+[2,'Struktur jamur tetap utuh dalam KOH karena dinding selnya kaya…',['Kitin','Asam mikolat','Peptidoglikan','Lipopolisakarida','Hemin'],'Polisakarida kitin tahan terhadap basa kuat. Asam mikolat adalah ciri Mycobacterium, bukan jamur.','',['2.14']],
+[2,'Jamur yang paling mungkin adalah…',['Aspergillus spp.','Candida albicans','Mycobacterium tuberculosis','Klebsiella pneumoniae','Haemophilus influenzae'],'Hifa bersekat dengan percabangan sudut lancip 45° khas Aspergillus, yang dapat membentuk bola jamur (aspergilloma) di kavitas. Candida berupa sel ragi bertunas dengan pseudohifa.','Seorang pasien memiliki kavitas paru. Preparat KOH sputumnya menunjukkan hifa bersekat dengan percabangan bersudut lancip 45°.',['2.15']],
+[2,'Sel ragi bertunas lonjong (blastospora) dengan pseudohifa khas untuk…',['Candida albicans','Aspergillus spp.','Streptococcus pneumoniae','Staphylococcus aureus','Pseudomonas aeruginosa'],'Blastospora dengan pseudohifa adalah gambaran Candida albicans; Aspergillus tampak sebagai hifa bersekat sejati.','',['2.16']],
+/* ===== Bab 3 ===== */
+[3,'Tujuan kultur menurut bahan adalah…',['Mengisolasi koloni kuman murni','Menghitung neutrofil per lapang','Mendeteksi antigen dalam urin','Mengamplifikasi DNA kuman','Menilai titer antibodi serum'],'Kultur mengisolasi koloni murni untuk identifikasi spesies dan uji kepekaan. Amplifikasi DNA adalah prinsip TCM.','',['3.01']],
+[3,'Agar darah dibuat dengan mencampur media dasar kaya nutrisi dengan…',['Darah domba steril 5%','Darah domba steril 20%','Darah manusia steril 5%','Garam empedu dan laktosa','Hemin dan NAD murni'],'BAP memakai darah domba steril 5%. Garam empedu dan laktosa adalah kandungan MacConkey.','',['3.02']],
+[3,'Zona keruh kehijauan di sekeliling koloni pada agar darah menunjukkan hemolisis…',['Alfa, lisis parsial','Beta, lisis total','Gama, tanpa lisis','Alfa, lisis total','Beta, lisis parsial'],'Alfa = lisis parsial dengan zona keruh kehijauan. Beta = lisis total dengan zona bening.','',['3.03']],
+[3,'Kuman yang khas memberi hemolisis alfa pada agar darah adalah…',['Streptococcus pneumoniae','Streptococcus pyogenes','Staphylococcus aureus','Klebsiella pneumoniae','Haemophilus influenzae'],'Alfa hemolisis khas S. pneumoniae dan S. viridans. S. pyogenes dan S. aureus memberi beta hemolisis.','',['3.03']],
+[3,'Jenis hemolisis dan kuman yang paling sesuai adalah…',['Beta – Streptococcus pyogenes','Alfa – Streptococcus pyogenes','Beta – Streptococcus viridans','Alfa – Streptococcus pneumoniae','Gama – Staphylococcus aureus'],'Zona bening transparan berarti lisis total (beta), khas S. pyogenes pada faringitis. S. viridans dan S. pneumoniae memberi zona kehijauan (alfa).','Usap tenggorok seorang anak dengan faringitis ditanam pada agar darah. Tumbuh koloni yang dikelilingi zona bening transparan.',['3.04']],
+[3,'Media di sekeliling koloni tetap merah darah utuh pada hemolisis…',['Gama','Alfa','Beta','Alfa dan beta','Beta dan gama'],'Gama berarti tidak ada pemecahan eritrosit. Alfa memberi zona kehijauan, beta zona bening.','',['3.05']],
+[3,'Agar cokelat dibuat dengan cara…',['Memanaskan agar darah perlahan','Menambahkan merah netral ke agar','Menambahkan garam empedu ke agar','Mendinginkan agar darah 2–8°C','Menambahkan arang ke agar darah'],'Pemanasan perlahan melisiskan eritrosit sehingga media menjadi cokelat tua. Tidak ada bahan pewarna yang ditambahkan.','',['3.06']],
+[3,'Faktor X dan faktor V yang dilepaskan pada agar cokelat berturut-turut adalah…',['Hemin dan NAD','NAD dan hemin','Hemin dan NADase','Laktosa dan NAD','Hemin dan kitin'],'Faktor X = hemin; faktor V = NAD. NADase adalah enzim penghambat yang justru dilumpuhkan oleh pemanasan.','',['3.07']],
+[3,'Selain melepaskan faktor tumbuh, pemanasan pada pembuatan agar cokelat juga…',['Melumpuhkan NADase','Mengaktifkan NADase','Menghambat Gram positif','Meragikan laktosa','Melarutkan kitin'],'Pemanasan melumpuhkan enzim penghambat alami NADase sehingga NAD tersedia. Menghambat Gram positif adalah sifat MacConkey.','',['3.07']],
+[3,'Media yang perlu ditambahkan agar kuman ini tumbuh adalah…',['Agar cokelat','Agar MacConkey','Agar Mueller-Hinton','Media Lowenstein-Jensen','Media arang Regan-Lowe'],'Kokobasil Gram negatif kecil pleomorfik mengarah ke Haemophilus influenzae, bakteri fastidious yang membutuhkan faktor X dan V pada agar cokelat.','Pewarnaan Gram dahak menunjukkan kokobasil Gram negatif kecil pleomorfik, tetapi tidak ada pertumbuhan pada agar darah biasa.',['3.08']],
+[3,'Kandungan agar MacConkey yang menghambat bakteri Gram positif adalah…',['Garam empedu dan kristal violet','Laktosa dan indikator merah netral','Hemin dan koenzim NAD','Darah domba dan hemin','Safranin dan larutan iodin'],'Garam empedu dan kristal violet memberi sifat selektif. Laktosa dan merah netral memberi sifat diferensial.','',['3.09']],
+[3,'Agar MacConkey bersifat selektif sekaligus diferensial untuk…',['Basil Gram negatif','Kokus Gram positif','Bakteri tahan asam','Jamur berhifa','Bakteri fastidious'],'MacConkey menumbuhkan dan membedakan basil Gram negatif. Bakteri fastidious ditumbuhkan pada agar cokelat.','',['3.09']],
+[3,'Kuman yang paling sesuai dengan gambaran koloni tersebut adalah…',['Pseudomonas aeruginosa','Klebsiella pneumoniae','Escherichia coli','Staphylococcus aureus','Streptococcus pneumoniae'],'Koloni pucat transparan berarti non-fermenter laktosa, contohnya Pseudomonas. Klebsiella dan E. coli memberi koloni merah muda keunguan; Gram positif terhambat di MacConkey.','Dahak seorang pasien bronkiektasis ditanam pada agar MacConkey. Tumbuh koloni pucat transparan.',['3.10']],
+[3,'Koloni fermenter laktosa pada agar MacConkey tampak…',['Merah muda keunguan','Pucat transparan jerami','Kuning kehijauan','Cokelat tua','Bening berzona'],'Laktosa diragikan menjadi asam sehingga indikator merah netral mewarnai koloni merah muda keunguan pekat. Pucat transparan adalah non-fermenter.','',['3.10']],
+[3,'Pertanyaan klinis yang dijawab oleh uji kepekaan (AST) adalah…',['Antibiotik mana yang masih ampuh','Kuman apa penyebab infeksinya','Apakah dahak layak diproses','Apakah pasien pernah terinfeksi','Berapa muatan kuman di dahak'],'Biakan menjawab kuman apa penyebabnya; AST menjawab antibiotik mana yang masih mampu mematikannya.','',['3.11']],
+[3,'Metode difusi cakram dan media yang dipakainya adalah…',['Kirby-Bauer pada Mueller-Hinton','Kirby-Bauer pada MacConkey','E-test pada agar cokelat','Mikrodilusi pada agar darah','Bartlett pada Mueller-Hinton'],'Pada Kirby-Bauer kuman dioleskan merata di agar Mueller-Hinton lalu ditempeli cakram antibiotik. E-test dan mikrodilusi dipakai untuk mengukur MIC.','',['3.12']],
+[3,'Tafsiran yang tepat adalah…',['Kuman lebih peka terhadap A','Kuman lebih peka terhadap B','Kuman kebal terhadap keduanya','Kuman peka terhadap keduanya','Kuman lebih kebal terhadap A'],'Zona hambat adalah daerah jernih tempat kuman tidak tumbuh; makin lebar diameternya, makin peka kuman terhadap obat itu.','Pada uji difusi cakram, cakram antibiotik A dikelilingi zona jernih yang lebar, sedangkan kuman tumbuh sampai tepi cakram antibiotik B.',['3.12']],
+[3,'Kadar hambat minimum (MIC) adalah…',['Kadar terendah yang menghentikan tumbuh','Kadar tertinggi yang masih aman','Kadar terendah yang mematikan pejamu','Diameter zona hambat terkecil','Dosis harian terkecil antibiotik'],'MIC adalah konsentrasi antibiotik terendah (µg/mL) yang menghentikan pertumbuhan kasat mata kuman. Diameter zona hambat adalah bacaan Kirby-Bauer.','',['3.13']],
+[3,'Alat yang dipakai untuk mengukur MIC adalah…',['Strip E-test','Cakram Kirby-Bauer','Katrij GeneXpert','Strip antigen urin','Preparat basah KOH'],'MIC diukur dengan strip E-test atau alat otomatis mikrodilusi kaldu. Cakram Kirby-Bauer memberi diameter zona hambat, bukan kadar.','',['3.13']],
+[3,'Makna hasil tersebut adalah…',['Keberhasilan meragukan; perlu dosis maksimal','Kuman terhambat tuntas pada dosis standar','Kuman kebal; obat tak efektif pada dosis aman','Kuman hanya mengolonisasi mukosa pasien','Kuman merupakan kontaminan pada sampel'],'Intermediet: keberhasilan klinis meragukan, butuh dosis maksimal atau lokasi infeksi yang mengonsentrasikan obat tinggi. Terhambat tuntas pada dosis standar adalah kategori sensitif.','Laporan uji kepekaan menyebut kuman penyebab berkategori intermediet (I) terhadap antibiotik yang sedang dipakai.',['3.14']],
+[3,'Standar yang dipakai untuk kategori Sensitif, Intermediet, dan Resisten adalah…',['CLSI / EUCAST','WHO / Kemenkes RI','Kriteria Bartlett','Kirby-Bauer','Ziehl-Neelsen'],'Kategori S/I/R mengikuti standar CLSI atau EUCAST. WHO dan Kemenkes disebut bahan untuk kedudukan TCM.','',['3.14']],
+[3,'Langkah yang tepat adalah…',['Beralih ke spektrum sempit yang peka','Lanjutkan spektrum luas sampai tuntas','Tambah antibiotik spektrum luas kedua','Hentikan semua antibiotik saat itu','Ulangi biakan sebelum mengubah obat'],'De-eskalasi: begitu AST keluar, antibiotik empiris spektrum luas dihentikan dan diganti antibiotik spektrum sempit yang terbukti peka.','Pasien pneumonia mendapat antibiotik empiris spektrum luas. Pada hari ketiga hasil AST keluar: kuman peka terhadap sebuah antibiotik spektrum sempit.',['3.15']],
+[3,'Tujuan de-eskalasi antibiotik adalah…',['Menekan resistensi dan biaya','Mempercepat tumbuhnya biakan','Memperluas spektrum terapi','Menaikkan kadar hambat minimum','Mencegah kontaminasi sampel'],'De-eskalasi menyempitkan spektrum, bukan memperluasnya, untuk menekan angka resistensi dan biaya terapi.','',['3.15']],
+/* ===== Bab 4 ===== */
+[4,'Prinsip kerja TCM / GeneXpert MTB/RIF adalah…',['Real-time PCR sistem tertutup','Imunokromatografi antigen','Mikroskopi fluoresen LED','Biakan media cair otomatis','Difusi cakram antibiotik'],'TCM adalah uji amplifikasi genetik otomatis dalam katrij sekali pakai, langsung dari dahak. Imunokromatografi adalah prinsip UAT dan RADT.','',['4.01']],
+[4,'Hasil TCM / GeneXpert tersedia dalam waktu…',['Kurang dari 2 jam','Sekitar 15 menit','1 sampai 3 minggu','Kurang dari 2 hari','Sekitar 2 menit'],'TCM memberi dua jawaban dalam <2 jam. Lima belas menit adalah waktu uji imunokromatografi (UAT, RADT).','',['4.01']],
+[4,'Muatan kuman terendah yang masih dapat dideteksi TCM adalah sekitar…',['100 kuman/mL','1.000 kuman/mL','5.000 kuman/mL','10.000 kuman/mL','50.000 kuman/mL'],'TCM mendeteksi hingga ~100 kuman/mL, jauh melampaui mikroskopis BTA yang butuh 5.000–10.000 kuman/mL.','',['4.02']],
+[4,'Mutasi gen rpoB yang dideteksi TCM menandai resistensi terhadap…',['Rifampisin','Isoniazid','Pirazinamid','Etambutol','Streptomisin'],'Mutasi rpoB adalah penanda genetik utama resistensi rifampisin dan dipakai sebagai skrining dini TB-MDR.','',['4.03']],
+[4,'Gen rpoB menyandi…',['Subunit beta RNA polimerase','Subunit beta DNA polimerase','Enzim penghambat NADase','Enzim sintesis asam mikolat','Polisakarida kapsul kuman'],'rpoB menyandi subunit beta enzim RNA polimerase; mutasinya menjadi penanda resistensi rifampisin.','',['4.03']],
+[4,'Makna hasil tersebut adalah…',['TB dengan dugaan resisten rifampisin','TB yang masih peka terhadap rifampisin','Kolonisasi tanpa penyakit TB','Kontaminasi oleh flora mulut','TB dengan negatif palsu BTA'],'TCM menjawab dua hal: DNA M. tuberculosis terkonfirmasi, dan mutasi rpoB menandai resistensi rifampisin (skrining dini TB-MDR).','Hasil TCM dahak seorang pasien: DNA Mycobacterium tuberculosis terdeteksi dan mutasi gen rpoB terdeteksi.',['4.03']],
+[4,'Kedudukan TCM menurut standar WHO dan Kemenkes RI adalah…',['Lini pertama diagnosis TB paru','Konfirmasi setelah BTA positif','Baku emas uji kepekaan fenotipik','Pilihan bila kultur gagal tumbuh','Pemantauan akhir pengobatan TB'],'TCM adalah lini pertama diagnosis TB paru. Baku emas untuk uji kepekaan fenotipik adalah kultur (Lowenstein-Jensen / MGIT).','',['4.04']],
+[4,'Lokasi target usap tenggorok adalah…',['Fosa tonsilaris dan orofaring posterior','Dinding posterior nasofaring bersilia','Dasar rongga hidung bagian depan','Mukosa pipi dalam dan dasar lidah','Uvula dan langit-langit lunak'],'Usap tenggorok menyasar kedua fosa tonsilaris dan dinding belakang orofaring. Pipi, lidah, dan uvula justru tidak boleh tersentuh.','',['4.05']],
+[4,'Media transport yang sesuai untuk usap tenggorok adalah…',['Tabung steril kering','Viral transport medium','Media arang Regan-Lowe','Pot berulir kedap bocor','Botol kultur darah'],'Usap tenggorok dikirim dalam tabung steril kering atau media transport bakteri biasa. VTM dan Regan-Lowe dipakai untuk usap nasofaring.','',['4.06']],
+[4,'Spesimen yang tepat untuk pasien ini adalah…',['Usap nasofaring','Usap tenggorok','Sputum batuk dalam','Urin sewaktu','Serum untuk ASTO'],'Batuk rejan (Bordetella pertussis) diperiksa dari usap nasofaring, karena kuman berada di epitel bersilia nasofaring.','Seorang anak dicurigai menderita batuk rejan (pertusis).',['4.07']],
+[4,'Usap nasofaring diindikasikan untuk mencari kuman berikut, KECUALI…',['Streptococcus pyogenes','Bordetella pertussis','Virus influenza','RSV','SARS-CoV-2'],'S. pyogenes (faringitis akut) dicari dengan usap tenggorok. Empat lainnya adalah indikasi usap nasofaring.','',['4.07']],
+[4,'Swab yang harus dipilih adalah…',['Nilon flok bertangkai fleksibel','Lidi kapas biasa bertangkai kayu','Kalsium alginat bertangkai kawat','Lidi kapas dengan penekan lidah','Kalsium alginat bertangkai plastik'],'Usap nasofaring memakai tangkai lentur dengan ujung serat sintetis dakron atau nilon flok. Kapas biasa dan kalsium alginat dilarang.','Petugas hendak mengambil usap nasofaring untuk pemeriksaan PCR. Tersedia lidi kapas biasa, swab kalsium alginat, dan swab nilon flok.',['4.08']],
+[4,'Alasan swab kalsium alginat dilarang untuk usap nasofaring adalah…',['Alginat menghambat enzim PCR','Alginat meracuni sel pejamu','Alginat melarutkan kitin jamur','Alginat menyerap media transport','Alginat memicu hemolisis beta'],'Alginat menghambat enzim PCR; kapas biasa dilarang karena asam lemaknya meracuni bakteri.','',['4.08']],
+[4,'Arah memasukkan swab nasofaring yang benar adalah…',['Mendatar menyusuri dasar rongga hidung','Ke atas menuju pangkal hidung dan dahi','Miring ke arah sudut mata bagian dalam','Melalui mulut saat pasien berucap "Aah"','Dangkal hanya sebatas cuping hidung'],'Swab didorong mendatar menyusuri dasar rongga hidung, sejajar langit-langit mulut, bukan ke atas. Swab dangkal di cuping memicu negatif palsu.','',['4.09']],
+[4,'Media transport untuk usap nasofaring adalah…',['VTM atau Regan-Lowe dingin','Tabung steril kering biasa','Pot dahak berulir kedap bocor','Botol kultur darah dua set','Lempeng agar MacConkey'],'Usap nasofaring disimpan dalam viral transport medium atau media arang Regan-Lowe pada suhu dingin 2–8°C.','',['4.10']],
+[4,'Prinsip dan lama pemeriksaan uji antigen urin (UAT) adalah…',['Imunokromatografi, 15 menit','Real-time PCR, kurang dari 2 jam','Biakan urin, sekitar 2 hari','Mikroskopi sedimen, 15 menit','Serologi antibodi, 1–3 minggu'],'UAT adalah imunokromatografi cepat yang mendeteksi antigen larut yang disaring ginjal; hasil keluar dalam 15 menit.','',['4.11']],
+[4,'Pemeriksaan yang masih bernilai pada pasien ini adalah…',['Antigen pneumokokus urin','Titer ASTO serum','Biakan usap tenggorok','Preparat basah KOH','Uji cepat antigen Strep A'],'Antigen polisakarida pneumokokus tetap diekskresikan di urin berminggu-minggu walau bakteri di paru sudah mati, dan tidak membutuhkan dahak.','Seorang lansia dengan pneumonia sudah minum antibiotik dua hari dan tidak mampu membatukkan dahak.',['4.12']],
+[4,'Uji antigen urin pneumokokus tetap dapat positif setelah antibiotik diberikan karena…',['Antigen diekskresi berminggu-minggu','Bakteri tetap hidup di dalam urin','Antibodi baru muncul terlambat','DNA kuman tahan pemanasan uap','Kapsul menghambat kerja antibiotik'],'Yang dideteksi adalah antigen polisakarida kapsul, bukan kuman hidup; antigen ini tetap diekskresikan selama berminggu-minggu.','',['4.12']],
+[4,'Pemeriksaan pilihan utama pada situasi ini adalah…',['Antigen Legionella urin','Antigen pneumokokus urin','Titer ASTO serum','Uji cepat antigen Strep A','Pewarnaan Ziehl-Neelsen'],'Pneumonia berat atau kluster wabah terkait menara pendingin atau AC sentral mengarah ke Legionella pneumophila (serogrup 1), yang dicari dengan antigen urin.','Beberapa karyawan satu gedung perkantoran berpendingin ruangan sentral menderita pneumonia berat dalam waktu berdekatan.',['4.13']],
+[4,'Sikap yang sesuai dengan bahan adalah…',['ASTO tidak dipakai untuk fase akut','ASTO dipakai sebagai uji lini pertama','ASTO menggantikan usap tenggorok','ASTO diperiksa lalu diulang esok hari','ASTO dipakai bila uji cepat positif'],'Antibodi ASTO baru terbentuk 1–3 minggu setelah infeksi, sehingga bukan alat diagnosis faringitis yang sedang berlangsung.','Seorang anak mengalami nyeri telan dan demam sejak kemarin. Orang tuanya meminta pemeriksaan ASTO untuk memastikan radang tenggorok.',['4.14']],
+[4,'Antibodi ASTO baru terbentuk … setelah infeksi awal Streptococcus pyogenes.',['1–3 minggu','1–3 hari','12–24 jam','1–3 bulan','6–12 bulan'],'ASTO terbentuk 1 sampai 3 minggu setelah infeksi awal; karena itu ia hanya bukti retrospektif.','',['4.14']],
+[4,'Pemeriksaan ASTO dipakai saat menginvestigasi…',['Demam rematik akut','Faringitis akut','Pneumonia komunitas','Tuberkulosis paru','Batuk rejan'],'ASTO adalah bukti retrospektif infeksi streptokokus, dipakai pada komplikasi autoimun nonsupuratif lanjut: demam rematik akut dan GNAPS.','',['4.15']],
+/* ===== Bab 5 ===== */
+[5,'Uji cepat lini pertama untuk faringitis akut adalah…',['Uji cepat antigen Strep A','Antigen pneumokokus urin','TCM GeneXpert MTB/RIF','Titer ASTO serum','Pewarnaan Ziehl-Neelsen'],'RADT adalah imunokromatografi 15 menit dari usap tenggorok. ASTO tidak berguna untuk kasus akut.','',['5.01']],
+[5,'Spesifisitas uji cepat antigen Strep A (RADT) menurut bahan adalah…',['Lebih dari 95%','Kurang dari 50%','Antara 50–65%','Antara 65–80%','Antara 80–90%'],'Bahan menyebut RADT sebagai imunokromatografi 15 menit dengan spesifisitas >95%.','',['5.01']],
+[5,'Ciri koloni pada baku emas diagnosis faringitis GAS adalah…',['Beta hemolisis, sensitif basitrasin','Alfa hemolisis, sensitif basitrasin','Beta hemolisis, resisten basitrasin','Gama hemolisis, fermenter laktosa','Alfa hemolisis, butuh faktor X'],'Baku emas: kultur agar darah dengan koloni beta hemolisis jernih yang sensitif cakram basitrasin.','',['5.02']],
+[5,'Alasan pengiriman spesimen tersebut keliru adalah…',['Flora mulut dalam dahak mengaburkan GAS','Dahak hanya cocok untuk pemeriksaan virus','Dahak mematikan GAS selama transport','Dahak menghambat kerja enzim PCR','Dahak wajib disimpan dalam VTM'],'Faringitis memerlukan usap tenggorok dari fosa tonsil dan faring posterior. Dahak mengangkut flora mulut dan mengaburkan kuman GAS.','Untuk seorang pasien faringitis akut, petugas mengirim pot berisi dahak ke laboratorium.',['5.03']],
+[5,'Biakan konfirmasi untuk Bordetella pertussis memakai…',['Media arang Regan-Lowe','Media Lowenstein-Jensen','Agar MacConkey','Media cair MGIT','Agar Mueller-Hinton'],'Konfirmasi infeksi nasofaring: RT-PCR atau biakan media arang Regan-Lowe. Lowenstein-Jensen dan MGIT untuk kuman TB.','',['5.04']],
+[5,'Penjelasan yang paling mungkin adalah…',['Negatif palsu akibat swab dangkal','Negatif sejati, infeksi tersingkir','Positif palsu akibat kontaminasi','Kolonisasi tanpa peradangan','Negatif palsu akibat antibiotik'],'Swab dangkal di cuping hidung tidak mencapai epitel bersilia nasofaring sehingga memicu negatif palsu.','Saat pengambilan usap nasofaring, swab hanya dimasukkan sebatas cuping hidung. Hasil pemeriksaan negatif walau gambaran klinis khas.',['5.05']],
+[5,'Patogen nomor satu pneumonia komunitas (CAP) adalah…',['Streptococcus pneumoniae','Haemophilus influenzae','Klebsiella pneumoniae','Legionella pneumophila','Staphylococcus aureus'],'Urutan dalam bahan: S. pneumoniae (nomor 1), lalu H. influenzae, K. pneumoniae, dan bakteri atipikal.','',['5.06']],
+[5,'Triad spesimen pada pneumonia komunitas adalah…',['Sputum, kultur darah 2 set, urin','Sputum, usap tenggorok, urin','Sputum, kultur darah 1 set, serum','Usap nasofaring, darah, urin','Sputum, cairan pleura, serum'],'Triad pra-antibiotik: sputum batuk dalam, kultur darah 2 set, dan urin sewaktu (untuk antigen urin).','',['5.07']],
+[5,'Urutan tindakan yang tepat adalah…',['Ambil triad spesimen, lalu antibiotik','Antibiotik dahulu, lalu triad spesimen','Antibiotik dahulu, spesimen bila gagal','Tunggu hasil kultur, lalu antibiotik','Ambil sputum saja, lalu antibiotik'],'Triad spesimen diambil pra-antibiotik. Pada pasien stabil tidak ada alasan mendahulukan antibiotik; pengecualian hanya syok sepsis atau gagal napas akut.','Pasien pneumonia komunitas baru masuk rawat inap dalam keadaan stabil. Antibiotik belum diberikan.',['5.07']],
+[5,'Uji cepat / lini pertama pada pneumonia komunitas adalah…',['Gram dahak dan antigen urin','Gram dahak dan titer ASTO','TCM dan antigen Strep A','Preparat KOH dan antigen urin','Ziehl-Neelsen dan RADT'],'Lini pertama CAP: pewarnaan Gram dahak ditambah antigen urin pneumokokus dan Legionella (15 menit).','',['5.08']],
+[5,'Uji konfirmasi pneumonia komunitas mencakup yang berikut, KECUALI…',['Biakan Lowenstein-Jensen','Biakan agar darah','Biakan agar cokelat','Biakan agar MacConkey','Uji kepekaan (AST/MIC)'],'Konfirmasi CAP: kultur sputum dan darah pada BAP, CAP, MacConkey serta AST/MIC. Lowenstein-Jensen adalah media kultur kuman TB.','',['5.08']],
+[5,'Kesimpulan yang tepat adalah…',['Pneumonia belum tersingkir','Pneumonia sudah tersingkir','Kuman hanya mengolonisasi','Sampel darah terkontaminasi','Pasien menderita TB paru'],'Bahan menegaskan kultur darah negatif tidak menyingkirkan pneumonia; klinis dan infiltrat baru tetap menunjukkan infeksi.','Seorang pasien demam dan sesak dengan infiltrat baru pada rontgen toraks. Kultur darah dua set negatif.',['5.09']],
+[5,'Volume dan skema pengumpulan sputum untuk TB paru adalah…',['3–5 mL, Sewaktu-Pagi','1–2 mL, Sewaktu-Pagi','3–5 mL, Pagi-Pagi','10–15 mL, Sewaktu-Sewaktu','1–2 mL, Pagi-Pagi'],'Sputum batuk dalam 3–5 mL ditampung dalam pot berulir kedap bocor dengan skema Sewaktu-Pagi.','',['5.10']],
+[5,'Media kultur kuman TB untuk uji kepekaan (DST) fenotipik adalah…',['Lowenstein-Jensen atau MGIT cair','Agar darah atau agar cokelat','MacConkey atau Mueller-Hinton','Regan-Lowe atau VTM','Agar cokelat atau MacConkey'],'Baku emas TB: kultur pada media Lowenstein-Jensen atau media cair MGIT untuk DST fenotipik.','',['5.11']],
+[5,'Jawaban yang sesuai dengan bahan adalah…',['Keduanya dilarang untuk diagnosis TB','Usap tenggorok boleh, serologi dilarang','Serologi boleh, usap tenggorok dilarang','Keduanya boleh sebagai pengganti dahak','Keduanya boleh bila BTA negatif'],'Untuk TB paru, swab tenggorok dan serologi darah dilarang; spesimennya sputum batuk dalam dan uji lini pertamanya TCM.','Keluarga seorang tersangka TB paru mengusulkan usap tenggorok atau tes serologi darah sebagai pengganti pemeriksaan dahak.',['5.12']],
+];
+
+(function(){
+'use strict';
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const shuf=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={
+  get(k,d){try{const v=localStorage.getItem(META.id+'.'+k);return v==null?d:JSON.parse(v);}catch(e){return d;}},
+  set(k,v){try{localStorage.setItem(META.id+'.'+k,JSON.stringify(v));}catch(e){}},
+  del(k){try{localStorage.removeItem(META.id+'.'+k);}catch(e){}}
+};
+const CH=META.bab.map((n,i)=>({id:i+1,n}));
+const KEYS='ABCDE', SEC_PER_Q=60;
+const Q=[],QB={},cnt={};
+QRAW.forEach(r=>{cnt[r[0]]=(cnt[r[0]]||0)+1;const q={id:r[0]+'-'+cnt[r[0]],c:r[0],q:r[1],o:r[2],e:r[3],s:r[4]||''};Q.push(q);QB[q.id]=q;});
+let M=store.get('m',{});            // id -> 1 benar / 0 salah (jawaban terakhir)
+let cfg=Object.assign({mode:'latihan',n:20,ch:CH.map(c=>c.id),kasus:false},store.get('cfg',{}));
+let S=null, R=null, timer=null, rvFilter='salah';
+const chName=c=>CH.find(x=>x.id===c).n;
+const chStat=c=>{const qs=Q.filter(q=>q.c===c);return{n:qs.length,ok:qs.filter(q=>M[q.id]===1).length};};
+const wrongIds=()=>Q.filter(q=>M[q.id]===0).map(q=>q.id);
+
+/* tema */
+const root=document.documentElement;
+{const t=store.get('theme','');if(t)root.dataset.theme=t;}
+$('#theme').onclick=()=>{const dark=root.dataset.theme?root.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;root.dataset.theme=dark?'light':'dark';store.set('theme',root.dataset.theme);};
+
+/* dialog konfirmasi */
+function ask(msg,ok){return new Promise(res=>{const d=$('#dlg');if(!d.showModal){res(confirm(msg));return;}
+  $('#dlgmsg').textContent=msg;$('#dlgok').textContent=ok;d.returnValue='no';d.onclose=()=>res(d.returnValue==='yes');d.showModal();});}
+$$('#dlg button').forEach(b=>b.onclick=()=>$('#dlg').close(b.value));
+
+/* tab utama */
+function go(v){['materi','quiz'].forEach(x=>{$('#v-'+x).hidden=x!==v;$('#tab-'+x).setAttribute('aria-selected',x===v);});
+  if(v==='quiz'&&!S&&!R)renderSetup();window.scrollTo(0,0);}
+$('#tab-materi').onclick=()=>go('materi');
+$('#tab-quiz').onclick=()=>go('quiz');
+
+/* materi */
+$$('.ch table').forEach(t=>{const w=document.createElement('div');w.className='tw'+(t.rows[0].cells.length>=5?' wide':'');t.replaceWith(w);w.appendChild(t);});
+function buildNav(){$('#chnav').innerHTML=CH.map(c=>{const s=chStat(c.id);return `<button role="tab" data-ch="${c.id}"><span class="no">${c.id}</span><span class="nm">${esc(c.n)}</span><span class="pc">${s.ok}/${s.n}</span></button>`;}).join('');}
+function openCh(c,scroll){
+  if(!CH.some(x=>x.id===c))c=1;
+  $$('.ch').forEach(s=>s.classList.toggle('on',+s.dataset.ch===c));
+  $$('#chnav button').forEach(b=>{const on=+b.dataset.ch===c;b.classList.toggle('on',on);b.setAttribute('aria-selected',on);
+    if(on){const n=$('#chnav');if(n.scrollWidth>n.clientWidth)n.scrollLeft=b.offsetLeft-(n.clientWidth-b.offsetWidth)/2;}});
+  store.set('ch',c);if(scroll)window.scrollTo(0,0);
+}
+$('#chnav').onclick=e=>{const b=e.target.closest('button');if(b)openCh(+b.dataset.ch,true);};
+$$('.ch').forEach(s=>{const c=+s.dataset.ch,nx=CH.find(x=>x.id===c+1),f=document.createElement('div');f.className='chfoot';
+  f.innerHTML=`<button class="btn pri" data-quiz="${c}">Latihan bab ini · ${chStat(c).n} soal</button>`+(nx?`<button class="btn" data-next="${nx.id}">Lanjut: ${esc(nx.n)} →</button>`:`<button class="btn" data-quiz="0">Latihan semua bab →</button>`);
+  s.appendChild(f);});
+$('#v-materi').addEventListener('click',e=>{const b=e.target.closest('[data-next],[data-quiz]');if(!b)return;
+  if(b.dataset.next){openCh(+b.dataset.next,true);return;}
+  const c=+b.dataset.quiz;cfg.ch=c?[c]:CH.map(x=>x.id);cfg.kasus=false;store.set('cfg',cfg);
+  if(S){go('quiz');return;}R=null;go('quiz');renderSetup();});
+
+/* layar quiz */
+function screen(n){['setup','run','result'].forEach(x=>$('#'+x).hidden=x!==n);}
+
+function pool(){return Q.filter(q=>cfg.ch.includes(q.c)&&(!cfg.kasus||q.s));}
+function renderSetup(){
+  clearInterval(timer);screen('setup');
+  const saved=S||store.get('s',null), tot=Q.length, ok=Q.filter(q=>M[q.id]===1).length, wr=wrongIds().length;
+  const nk=Q.filter(q=>q.s).length;
+  $('#setup').innerHTML=
+  (saved&&saved.items?`<div class="card resume"><p><strong>Ada sesi yang belum selesai.</strong><br>${saved.mode==='ujian'?'Ujian':'Latihan'} · soal ${Math.min(saved.i+1,saved.items.length)} dari ${saved.items.length}</p><button class="btn pri sm" id="resume">Lanjutkan</button><button class="btn sm" id="discard">Buang</button></div>`:'')+
+  `<h2>Latihan soal</h2><p class="lead">${tot} soal, ${nk} di antaranya berbasis kasus. Soal yang belum pernah muncul dan yang pernah salah didahulukan.</p>
+  <div class="overall"><div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="${tot}" aria-valuenow="${ok}" aria-label="Soal dikuasai"><i style="width:${ok/tot*100}%"></i></div>
+    <div class="row"><span><strong>${ok}</strong> dari ${tot} soal dikuasai</span>${Object.keys(M).length?'<button class="link" id="reset">Reset progres</button>':''}</div></div>
+  <fieldset><legend>Mode</legend><div class="modes">
+    <label class="pick"><input type="radio" name="mode" value="latihan"><b>Latihan</b><small>Pembahasan muncul setelah tiap jawaban.</small></label>
+    <label class="pick"><input type="radio" name="mode" value="ujian"><b>Ujian</b><small>Berwaktu 1 menit per soal. Pembahasan di akhir.</small></label></div></fieldset>
+  <fieldset><legend>Bab <span class="sp"><button type="button" class="link" id="all">Semua</button><button type="button" class="link" id="none">Kosongkan</button></span></legend>
+    <div class="chips">${CH.map(c=>{const s=chStat(c.id);return `<label class="pick"><input type="checkbox" name="ch" value="${c.id}"><b>${esc(c.n)}</b><small>${s.ok}/${s.n} dikuasai</small></label>`;}).join('')}</div></fieldset>
+  <fieldset><legend>Jumlah soal</legend><div class="seg">${[10,20,40,0].map(n=>`<label class="pick"><input type="radio" name="n" value="${n}">${n||'Semua'}</label>`).join('')}</div></fieldset>
+  <label class="check"><input type="checkbox" id="kasus"> Hanya soal berbasis kasus</label>
+  <div class="actbar">${wr?`<button class="btn fit" id="redo">Ulangi ${wr} yang salah</button>`:''}<button class="btn pri" id="start"></button></div>`;
+  $$('#setup input[name=mode]').forEach(i=>i.checked=i.value===cfg.mode);
+  $$('#setup input[name=ch]').forEach(i=>i.checked=cfg.ch.includes(+i.value));
+  $$('#setup input[name=n]').forEach(i=>i.checked=+i.value===cfg.n);
+  $('#kasus').checked=cfg.kasus;
+  syncSetup();
+}
+function syncSetup(){
+  const m=$('#setup input[name=mode]:checked'),n=$('#setup input[name=n]:checked');
+  cfg.mode=m?m.value:'latihan';cfg.n=n?+n.value:20;
+  cfg.ch=$$('#setup input[name=ch]:checked').map(i=>+i.value);cfg.kasus=$('#kasus').checked;store.set('cfg',cfg);
+  $$('#setup .pick').forEach(l=>l.classList.toggle('on',$('input',l).checked));
+  const av=pool().length,k=cfg.n?Math.min(cfg.n,av):av,b=$('#start');
+  b.disabled=!k;b.textContent=!cfg.ch.length?'Pilih minimal satu bab':!k?'Tidak ada soal yang cocok':`Mulai ${cfg.mode==='ujian'?'ujian':'latihan'} · ${k} soal`;
+}
+$('#setup').addEventListener('change',syncSetup);
+$('#setup').addEventListener('click',async e=>{const id=e.target.id;
+  if(id==='all'||id==='none'){$$('#setup input[name=ch]').forEach(i=>i.checked=id==='all');syncSetup();}
+  else if(id==='start'){const p=pool(),rank=q=>M[q.id]===undefined?0:M[q.id]===0?1:2;
+    const pick=shuf(p).sort((a,b)=>rank(a)-rank(b)).slice(0,cfg.n||p.length);begin(shuf(pick).map(q=>q.id),cfg.mode);}
+  else if(id==='redo')begin(shuf(wrongIds()),'latihan');
+  else if(id==='resume'){S=S||store.get('s',null);startRun();}
+  else if(id==='discard'){S=null;store.del('s');renderSetup();}
+  else if(id==='reset'&&await ask('Hapus seluruh catatan soal yang dikuasai dan yang salah?','Hapus')){M={};store.set('m',M);buildNav();openCh(store.get('ch',1));renderSetup();}
+});
+
+/* sesi */
+function begin(ids,mode){S={mode,items:ids.map(id=>({id,ord:shuf([0,1,2,3,4]),pick:null,flag:false})),i:0,left:ids.length*SEC_PER_Q,total:ids.length*SEC_PER_Q};R=null;save();startRun();}
+function save(){if(S)store.set('s',S);}
+function startRun(){
+  if(!S||!S.items||!S.items.every(it=>QB[it.id])){S=null;store.del('s');renderSetup();return;}
+  screen('run');clearInterval(timer);
+  if(S.mode==='ujian')timer=setInterval(()=>{S.left--;drawInfo();if(S.left%5===0)save();if(S.left<=0)finish();},1000);
+  renderRun();window.scrollTo(0,0);
+}
+const answered=()=>S.items.filter(it=>it.pick!==null).length;
+function drawInfo(){const el=$('#rinfo');
+  if(S.mode==='ujian'){const t=Math.max(0,S.left);el.textContent='⏱ '+Math.floor(t/60)+':'+String(t%60).padStart(2,'0');el.classList.toggle('low',t<=60);}
+  else{el.classList.remove('low');el.textContent=S.items.filter(it=>it.pick===0).length+' benar';}}
+function renderRun(){
+  const it=S.items[S.i],q=QB[it.id],ex=S.mode==='ujian',ans=it.pick!==null,rev=!ex&&ans,last=S.i===S.items.length-1,n=S.items.length;
+  $('#rpos').textContent=`Soal ${S.i+1} dari ${n}`;drawInfo();
+  $('#rbar').style.width=answered()/n*100+'%';$('#rbarwrap').setAttribute('aria-valuenow',answered());$('#rbarwrap').setAttribute('aria-valuemax',n);
+  $('#rscen').hidden=!q.s;$('#rscen').textContent=q.s;$('#rq').textContent=q.q;
+  $('#ropts').innerHTML=it.ord.map((oi,k)=>{let c='',mk='';
+    if(rev){if(oi===0){c=' ok';mk='✓';}else if(oi===it.pick){c=' no';mk='✗';}else c=' dim';}else if(oi===it.pick)c=' sel';
+    return `<button class="opt${c}" data-k="${k}"${rev?' disabled':''}${ex?` aria-pressed="${oi===it.pick}"`:''}><span class="key">${KEYS[k]}</span><span class="otx">${esc(q.o[oi])}</span><span class="mk" aria-hidden="true">${mk}</span></button>`;}).join('');
+  const fb=$('#rfb');fb.hidden=!rev;
+  if(rev){const ok=it.pick===0;fb.className='fb'+(ok?'':' no');
+    fb.innerHTML=`<b>${ok?'✓ Benar':'✗ Belum tepat'}</b>${ok?'':`<p>Jawaban: <strong>${KEYS[it.ord.indexOf(0)]}. ${esc(q.o[0])}</strong></p>`}<p>${esc(q.e)}</p><span class="src">Bab ${q.c} · ${esc(chName(q.c))}</span>`;}
+  $('#prevbtn').hidden=!ex;$('#prevbtn').disabled=S.i===0;
+  $('#flagbtn').hidden=!ex;$('#flagbtn').setAttribute('aria-pressed',it.flag);
+  const nb=$('#nextbtn');nb.hidden=!ex&&!ans;nb.textContent=last?(ex?'Kumpulkan':'Lihat hasil'):'Berikutnya →';nb.classList.toggle('pri',!ex||last||ans);
+  $('#rhint').hidden=ex||ans;
+  $('#endbtn').textContent=ex?'Kumpulkan':'Akhiri';
+  $('#rgridwrap').hidden=!ex;
+  if(ex)$('#rgrid').innerHTML=S.items.map((x,k)=>`<button data-go="${k}" class="${x.pick!==null?'done':''}${k===S.i?' cur':''}${x.flag?' flag':''}" aria-label="Soal ${k+1}${x.pick!==null?', terjawab':''}${x.flag?', ragu':''}">${k+1}</button>`).join('');
+}
+function choose(k){const it=S.items[S.i];if(!it||k>4)return;
+  if(S.mode==='latihan'){if(it.pick!==null)return;it.pick=it.ord[k];M[it.id]=it.pick===0?1:0;store.set('m',M);save();renderRun();
+    const fb=$('#rfb');if(fb.getBoundingClientRect().bottom>innerHeight-80)fb.scrollIntoView({block:'center',behavior:'smooth'});$('#nextbtn').focus({preventScroll:true});}
+  else{it.pick=it.pick===it.ord[k]?null:it.ord[k];save();renderRun();const b=$(`#ropts [data-k="${k}"]`);if(b)b.focus({preventScroll:true});}
+}
+function move(d){const j=S.i+d;if(j<0)return;if(j>=S.items.length){S.mode==='ujian'?tryEnd():finish();return;}S.i=j;save();renderRun();window.scrollTo(0,0);$('#rq').focus({preventScroll:true});}
+async function tryEnd(){const n=S.items.length,a=answered();
+  const msg=S.mode==='ujian'?(a<n?`${n-a} soal belum dijawab dan akan dihitung salah. Kumpulkan sekarang?`:'Semua soal sudah dijawab. Kumpulkan sekarang?')
+    :(a?`Akhiri sesi? ${a} dari ${n} soal sudah dijawab; sisanya tidak dihitung.`:'Akhiri sesi? Belum ada soal yang dijawab.');
+  if(await ask(msg,S.mode==='ujian'?'Kumpulkan':'Akhiri'))finish();}
+function finish(){
+  if(!S)return;
+  clearInterval(timer);if($('#dlg').open)$('#dlg').close('no');
+  const ex=S.mode==='ujian',items=ex?S.items:S.items.filter(it=>it.pick!==null);
+  if(ex){items.forEach(it=>{if(it.pick!==null)M[it.id]=it.pick===0?1:0;});store.set('m',M);}
+  store.del('s');const used=ex?S.total-Math.max(0,S.left):0;const mode=S.mode;S=null;buildNav();openCh(store.get('ch',1));
+  if(!items.length){renderSetup();return;}
+  R={mode,items,used};rvFilter=items.some(it=>it.pick!==0)?'salah':'semua';renderResult();window.scrollTo(0,0);
+}
+$('#ropts').onclick=e=>{const b=e.target.closest('.opt');if(b&&!b.disabled)choose(+b.dataset.k);};
+$('#nextbtn').onclick=()=>move(1);$('#prevbtn').onclick=()=>move(-1);$('#endbtn').onclick=tryEnd;
+$('#flagbtn').onclick=()=>{const it=S.items[S.i];it.flag=!it.flag;save();renderRun();};
+$('#rgrid').onclick=e=>{const b=e.target.closest('[data-go]');if(b){S.i=+b.dataset.go;save();renderRun();window.scrollTo(0,0);}};
+document.addEventListener('keydown',e=>{
+  if(!S||$('#run').hidden||$('#v-quiz').hidden||$('#dlg').open||e.ctrlKey||e.metaKey||e.altKey)return;
+  const k=e.key.toLowerCase(),i='12345'.indexOf(k)>=0?'12345'.indexOf(k):'abcde'.indexOf(k);
+  if(k.length===1&&i>=0){e.preventDefault();choose(i);return;}
+  const onBtn=e.target.tagName==='BUTTON'||e.target.tagName==='SUMMARY';
+  if((k==='enter'&&!onBtn)||k==='arrowright'){if(!$('#nextbtn').hidden){e.preventDefault();move(1);}}
+  else if(k==='arrowleft'&&S.mode==='ujian'){e.preventDefault();move(-1);}
+  else if(k==='r'&&S.mode==='ujian'){e.preventDefault();$('#flagbtn').click();}
+});
+
+/* hasil */
+function renderResult(){
+  screen('result');
+  const it=R.items,n=it.length,ok=it.filter(x=>x.pick===0).length,pct=Math.round(ok/n*100),wrong=it.filter(x=>x.pick!==0);
+  const by={};it.forEach(x=>{const c=QB[x.id].c;by[c]=by[c]||{n:0,ok:0};by[c].n++;if(x.pick===0)by[c].ok++;});
+  const rows=Object.keys(by).map(c=>({c:+c,n:by[c].n,ok:by[c].ok,p:by[c].ok/by[c].n})).sort((a,b)=>a.c-b.c);
+  const weak=rows.filter(r=>r.p<1).sort((a,b)=>a.p-b.p||b.n-a.n)[0];
+  const verdict=pct>=85?(R.mode==='ujian'?'Kuat. Pertahankan dengan mengulang soal kasus secara berkala.':'Kuat. Naikkan tantangan: coba mode Ujian atau hanya soal berbasis kasus.')
+    :pct>=65?'Sudah di jalur. Tinjau soal yang salah di bawah, lalu ulangi.'
+    :`Belum aman. Baca ulang bab ${weak?esc(chName(weak.c)):''} dahulu, lalu ulangi soal yang salah.`;
+  const tm=R.mode==='ujian'?` · waktu ${Math.floor(R.used/60)} mnt ${R.used%60} dtk`:'';
+  const list=rvFilter==='salah'?wrong:it;
+  $('#result').innerHTML=`
+  <div class="score"><div class="ring" style="--p:${pct}" role="img" aria-label="Skor ${pct} persen"><b>${pct}%</b></div>
+    <div><h2 tabindex="-1" id="rtitle">${ok} dari ${n} benar</h2><p>${verdict}</p><p class="lead" style="margin:4px 0 0">${R.mode==='ujian'?'Ujian':'Latihan'}${tm}</p></div></div>
+  <h3>Per bab</h3>
+  ${rows.map(r=>`<div class="chrow"><span class="nm">${esc(chName(r.c))}</span><span class="ct">${r.ok}/${r.n}</span>
+    <div class="bar"><i class="${r.p<.65?'low':''}" style="width:${r.p*100}%"></i></div>
+    ${r.p<1||r.n<3?`<div class="more"><span>${r.n<3?'Sampel kecil, belum cukup untuk menilai bab ini.':''}</span>${r.p<1?`<button class="link" data-read="${r.c}">Baca bab</button>`:''}</div>`:''}</div>`).join('')}
+  <h3>Tinjau jawaban <span class="sp">${wrong.length?`<button class="tog" data-f="salah" aria-pressed="${rvFilter==='salah'}">Salah (${wrong.length})</button>`:''}<button class="tog" data-f="semua" aria-pressed="${rvFilter==='semua'}">Semua (${n})</button></span></h3>
+  ${list.map(x=>{const q=QB[x.id],good=x.pick===0;return `<details class="rv${good?'':' no'}"${good?'':' open'}><summary><span class="mk">${good?'✓':'✗'}</span><span>${q.s?esc(q.s)+' ':''}<strong>${esc(q.q)}</strong></span></summary>
+    <div class="body"><ol>${x.ord.map(oi=>`<li class="${oi===0?'ok':oi===x.pick?'no':''}">${esc(q.o[oi])}${oi===x.pick?`<span class="you">← jawabanmu</span>`:''}</li>`).join('')}</ol>
+    ${x.pick===null?'<p><em>Tidak dijawab.</em></p>':''}<p>${esc(q.e)}</p></div></details>`;}).join('')}
+  <div class="actbar">${wrong.length?`<button class="btn pri" id="again">Ulangi ${wrong.length} yang salah</button>`:''}<button class="btn${wrong.length?'':' pri'}" id="fresh">Sesi baru</button></div>`;
+}
+$('#result').addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;
+  if(t.dataset.f){rvFilter=t.dataset.f;renderResult();}
+  else if(t.dataset.read){openCh(+t.dataset.read);go('materi');}
+  else if(t.id==='again')begin(shuf(R.items.filter(x=>x.pick!==0).map(x=>x.id)),'latihan');
+  else if(t.id==='fresh'){R=null;renderSetup();window.scrollTo(0,0);}
+});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)save();});
+
+/* mulai */
+buildNav();openCh(store.get('ch',1));
+})();
+
+</script>
+</body>
+</html>

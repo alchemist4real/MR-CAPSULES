@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="id" style="--h:215;--bl:26%">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Am I Saturated? — K14 Pemeriksaan Laboratorium Sistem Respirasi</title>
+<style>
+:root{
+  --h:189;--bl:26%;
+  --bg:hsl(var(--h) 14% 96%);--surface:#fff;--sunk:hsl(var(--h) 12% 92%);--ink:hsl(var(--h) 35% 12%);--ink2:hsl(var(--h) 18% 27%);--mute:hsl(var(--h) 10% 39%);--line:hsl(var(--h) 12% 85%);
+  --brand:hsl(var(--h) 80% var(--bl));--brand-ink:#fff;--brand-soft:hsl(var(--h) 45% 92%);
+  --ok:#17723f;--ok-soft:#e2f3e8;--bad:#b0322c;--bad-soft:#fae6e4;--warn:#7d5200;--warn-soft:#fbefd4;
+  --r:12px;--head:56px;
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){
+  --bg:hsl(var(--h) 30% 8%);--surface:hsl(var(--h) 26% 13%);--sunk:hsl(var(--h) 30% 10%);--ink:hsl(var(--h) 15% 93%);--ink2:hsl(var(--h) 12% 78%);--mute:hsl(var(--h) 10% 64%);--line:hsl(var(--h) 18% 22%);
+  --brand:hsl(var(--h) 60% 68%);--brand-ink:hsl(var(--h) 70% 9%);--brand-soft:hsl(var(--h) 42% 18%);
+  --ok:#63d394;--ok-soft:#143325;--bad:#ff8f86;--bad-soft:#3a1c1a;--warn:#f1c466;--warn-soft:#3a2e12;
+  color-scheme:dark;}}
+:root[data-theme=dark]{
+  --bg:hsl(var(--h) 30% 8%);--surface:hsl(var(--h) 26% 13%);--sunk:hsl(var(--h) 30% 10%);--ink:hsl(var(--h) 15% 93%);--ink2:hsl(var(--h) 12% 78%);--mute:hsl(var(--h) 10% 64%);--line:hsl(var(--h) 18% 22%);
+  --brand:hsl(var(--h) 60% 68%);--brand-ink:hsl(var(--h) 70% 9%);--brand-soft:hsl(var(--h) 42% 18%);
+  --ok:#63d394;--ok-soft:#143325;--bad:#ff8f86;--bad-soft:#3a1c1a;--warn:#f1c466;--warn-soft:#3a2e12;
+  color-scheme:dark;}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:calc(var(--head) + 60px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 var(--font);min-height:100vh;overflow-x:hidden}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+[hidden]{display:none!important}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px;border-radius:6px}
+
+/* header */
+.top{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.top-in{max-width:1080px;margin:0 auto;height:var(--head);padding:0 16px;display:flex;align-items:center;gap:12px}
+.brand{font-weight:800;font-size:17px;letter-spacing:-.01em;margin:0;white-space:nowrap}
+.brand span{color:var(--brand)}
+.tabs{display:flex;gap:4px;background:var(--sunk);border-radius:10px;padding:4px;margin-left:auto}
+.tabs button{border:0;background:none;padding:0 16px;min-height:36px;border-radius:7px;font-weight:600;font-size:15px;color:var(--mute)}
+.tabs button[aria-selected=true]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.14)}
+.icon{border:1px solid var(--line);background:var(--surface);width:40px;height:40px;border-radius:10px;font-size:17px;line-height:1;flex:none}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+.credit{font-size:13px;color:var(--mute);margin:14px 0 0}
+
+/* materi */
+.materi{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
+.materi>*{min-width:0}
+.chnav{position:sticky;top:var(--head);z-index:10;background:var(--bg);margin:0 -16px;padding:10px 16px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--line)}
+.chnav::-webkit-scrollbar{display:none}
+.chnav button{flex:none;display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px 0 8px;border:1px solid var(--line);border-radius:22px;background:var(--surface);font-size:14px;font-weight:600;color:var(--ink2);white-space:nowrap}
+.chnav .no{width:26px;height:26px;border-radius:50%;background:var(--sunk);display:grid;place-items:center;font-size:13px;font-variant-numeric:tabular-nums}
+.chnav .pc{font-weight:500;font-size:12px;color:var(--mute);display:none}
+.chnav button.on{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.chnav button.on .no{background:rgba(255,255,255,.25);color:inherit}
+.ch{display:none;max-width:70ch;padding:22px 0 8px}
+.ch.on{display:block}
+.ch h2{font-size:clamp(24px,5vw,30px);line-height:1.2;letter-spacing:-.02em;margin:0 0 16px}
+.ch h3{font-size:19px;line-height:1.3;margin:36px 0 10px;padding-top:18px;border-top:1px solid var(--line)}
+.ch p,.ch ul,.ch ol{margin:0 0 12px;color:var(--ink2)}
+.ch ul,.ch ol:not(.flow){padding-left:22px}
+.ch li{margin-bottom:6px}
+.ch li ul{margin-top:6px}
+.ch strong{color:var(--ink)}
+.def,.awas,.klinis{border-left:4px solid var(--brand);background:var(--surface);padding:12px 14px;border-radius:0 var(--r) var(--r) 0;color:var(--ink)!important}
+.def::before,.awas::before,.klinis::before{display:block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px}
+.def::before{content:"Definisi";color:var(--brand)}
+.awas{border-color:var(--bad);background:var(--bad-soft)}
+.awas::before{content:"Perhatian";color:var(--bad)}
+.klinis{border-color:var(--ok);background:var(--ok-soft)}
+.klinis::before{content:"Contoh";color:var(--ok)}
+.ch figure{margin:0 0 14px}.ch figure img{display:block;max-width:100%;height:auto;border:1px solid var(--line);border-radius:var(--r);background:#fff}.ch figcaption{font-size:13px;color:var(--mute);margin-top:4px}
+.tw{overflow-x:auto;margin:0 0 14px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{padding:10px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+tr:last-child>*{border-bottom:0}
+td[rowspan]{border-right:1px solid var(--line)}
+th{font-size:13px;font-weight:700;color:var(--mute);background:var(--sunk)}
+th[scope=row]{background:none;color:var(--ink);font-size:14px;white-space:nowrap}
+.tw.wide table{min-width:620px}
+.flow{list-style:none;padding:0;margin:14px 0 16px;display:flex;flex-direction:column;gap:22px}
+.flow li{position:relative;margin:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-weight:600;color:var(--ink);text-align:center}
+.flow small{display:block;font-weight:400;font-size:13px;color:var(--mute)}
+.flow li+li::before{content:"↓";position:absolute;left:50%;top:-22px;height:22px;line-height:22px;transform:translateX(-50%);color:var(--brand);font-weight:700}
+.flow.rank{flex-direction:row;gap:26px;flex-wrap:nowrap}
+.flow.rank li{flex:1;padding:10px 4px;font-size:14px}
+.flow.rank li+li::before{content:">";left:-18px;top:50%;transform:translateY(-50%);width:10px}
+.chfoot{display:flex;flex-wrap:wrap;gap:10px;margin:32px 0 40px;padding-top:20px;border-top:1px solid var(--line)}
+
+/* tombol */
+.btn{min-height:48px;padding:0 18px;border-radius:var(--r);border:1px solid var(--line);background:var(--surface);font-weight:600;font-size:15px;color:var(--ink)}
+.btn:hover{border-color:var(--mute)}
+.btn.pri{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.btn.pri:hover{filter:brightness(1.08)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.sm{min-height:40px;padding:0 14px;font-size:14px}
+.link{white-space:nowrap;border:0;background:none;padding:6px 4px;min-height:36px;color:var(--brand);font-weight:600;font-size:14px;text-decoration:underline;text-underline-offset:3px}
+.chfoot .btn{flex:1 1 220px}
+
+/* quiz umum */
+.quiz{max-width:720px;margin:0 auto;padding-top:20px}
+.quiz h2{font-size:24px;letter-spacing:-.02em;margin:0 0 6px}
+.lead{color:var(--mute);margin:0 0 18px;font-size:15px}
+.bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--brand);border-radius:4px;transition:width .25s}
+fieldset{border:0;padding:0;margin:0 0 22px;min-width:0}
+legend{padding:0;margin:0 0 8px;font-weight:700;font-size:15px;display:flex;align-items:center;gap:8px;width:100%}
+legend .sp{margin-left:auto;display:flex;gap:6px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.resume{display:flex;flex-wrap:wrap;gap:10px;align-items:center;border-color:var(--brand);margin-bottom:20px}
+.resume p{margin:0;flex:1 1 200px}
+.overall{margin-bottom:22px}
+.overall .row{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;color:var(--mute);margin-top:4px}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pick{position:relative;display:block;border:2px solid var(--line);border-radius:var(--r);background:var(--surface);padding:12px 14px;cursor:pointer}
+.pick input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.pick b{display:block}
+.pick small{display:block;color:var(--mute);font-size:13px;line-height:1.4}
+.pick.on{border-color:var(--brand);background:var(--brand-soft)}
+.pick:focus-within{outline:3px solid var(--brand);outline-offset:2px}
+.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.chips .pick{padding:10px 12px 10px 44px;min-height:56px}
+.chips .pick::before{content:"";position:absolute;left:12px;top:50%;transform:translateY(-50%);width:22px;height:22px;border-radius:6px;border:2px solid var(--mute);background:var(--surface)}
+.chips .pick.on::before{content:"✓";border-color:var(--brand);background:var(--brand);color:var(--brand-ink);font-weight:800;font-size:15px;display:grid;place-items:center}
+.seg{display:flex;gap:8px}
+.seg .pick{flex:1;text-align:center;padding:10px 4px;font-weight:700}
+.check{display:flex;align-items:center;gap:10px;min-height:44px;margin-bottom:10px;cursor:pointer}
+.check input{width:22px;height:22px;accent-color:var(--brand);flex:none}
+.actbar{position:sticky;bottom:0;z-index:5;display:flex;gap:10px;align-items:center;margin:20px -16px 0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:var(--bg);border-top:1px solid var(--line)}
+.actbar .btn{flex:1}
+.actbar .btn.fit{flex:none}
+.actbar .hint{flex:1;color:var(--mute);font-size:14px;text-align:center}
+
+/* soal */
+.runhead{display:grid;grid-template-columns:1fr auto auto;gap:6px 12px;align-items:center;margin-bottom:14px}
+.runhead .bar{grid-column:1/-1}
+#rpos{font-size:16px}
+#rinfo{font-size:14px;color:var(--mute);font-variant-numeric:tabular-nums;font-weight:600}
+#rinfo.low{color:var(--bad)}
+.qcard{margin-bottom:12px}
+.scen{margin:0 0 10px;padding:12px 14px;background:var(--sunk);border-radius:10px;color:var(--ink2);font-size:15.5px}
+.scen::before{content:"Kasus";display:block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+.qtext{font-size:18px!important;line-height:1.45;font-weight:650;margin:0!important;letter-spacing:0!important}
+.opts{display:grid;gap:8px}
+.opt{display:flex;align-items:flex-start;gap:12px;width:100%;text-align:left;min-height:52px;padding:12px 14px;border:2px solid var(--line);border-radius:var(--r);background:var(--surface);font-size:16px;line-height:1.4}
+.opt:hover:not(:disabled){border-color:var(--brand)}
+.opt .key{flex:none;width:28px;height:28px;border-radius:8px;background:var(--sunk);display:grid;place-items:center;font-weight:700;font-size:14px;color:var(--ink2)}
+.opt .otx{flex:1;padding-top:2px}
+.opt .mk{flex:none;font-weight:800;padding-top:2px}
+.opt:disabled{cursor:default;color:var(--ink);opacity:1}
+.opt.sel{border-color:var(--brand);background:var(--brand-soft)}
+.opt.sel .key{background:var(--brand);color:var(--brand-ink)}
+.opt.ok{border-color:var(--ok);background:var(--ok-soft)}
+.opt.ok .key{background:var(--ok);color:var(--surface)}
+.opt.ok .mk{color:var(--ok)}
+.opt.no{border-color:var(--bad);background:var(--bad-soft)}
+.opt.no .key{background:var(--bad);color:var(--surface)}
+.opt.no .mk{color:var(--bad)}
+.opt.dim{opacity:.62}
+.fb{margin-top:12px;padding:14px;border-radius:var(--r);border-left:4px solid var(--ok);background:var(--ok-soft)}
+.fb.no{border-color:var(--bad);background:var(--bad-soft)}
+.fb b{display:block;font-size:17px;color:var(--ok)}
+.fb.no b{color:var(--bad)}
+.fb p{margin:4px 0 8px}
+.fb .src{font-size:13px;color:var(--mute)}
+.grid{margin-top:14px}
+.grid summary{cursor:pointer;font-weight:600;font-size:14px;min-height:40px;display:flex;align-items:center;color:var(--ink2)}
+#rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:6px;padding:6px 0}
+#rgrid button{position:relative;height:44px;border-radius:8px;border:1px solid var(--line);background:var(--surface);font-weight:600;font-variant-numeric:tabular-nums}
+#rgrid .done{background:var(--brand-soft);border-color:var(--brand)}
+#rgrid .cur{outline:3px solid var(--ink);outline-offset:1px}
+#rgrid .flag::after{content:"";position:absolute;top:4px;right:4px;width:8px;height:8px;border-radius:50%;background:var(--warn)}
+#flagbtn[aria-pressed=true]{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+
+/* hasil */
+.score{display:flex;align-items:center;gap:18px;margin-bottom:8px}
+.ring{--p:0;flex:none;width:112px;height:112px;border-radius:50%;background:conic-gradient(var(--brand) calc(var(--p)*1%),var(--line) 0);display:grid;place-items:center}
+.ring b{width:88px;height:88px;border-radius:50%;background:var(--bg);display:grid;place-items:center;font-size:28px;font-variant-numeric:tabular-nums}
+.score h2{margin:0 0 4px}
+.score p{margin:0;color:var(--ink2)}
+.quiz h3{font-size:17px;margin:28px 0 10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.quiz h3 .sp{margin-left:auto;display:flex;gap:6px}
+.chrow{display:grid;grid-template-columns:1fr auto;gap:2px 12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.chrow .bar{grid-column:1/-1}
+.chrow .nm{font-weight:600}
+.chrow .ct{font-variant-numeric:tabular-nums;color:var(--mute);font-size:14px}
+.chrow .bar i.low{background:var(--bad)}
+.chrow .more{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--mute)}
+.rv{border:1px solid var(--line);border-left:4px solid var(--ok);border-radius:10px;background:var(--surface);margin-bottom:8px}
+.rv.no{border-left-color:var(--bad)}
+.rv summary{cursor:pointer;display:flex;gap:10px;padding:12px 14px;list-style:none;min-height:48px}
+.rv summary::-webkit-details-marker{display:none}
+.rv .mk{flex:none;font-weight:800;color:var(--ok)}
+.rv.no .mk{color:var(--bad)}
+.rv .body{padding:0 14px 14px}
+.rv ol{list-style:upper-alpha;padding-left:24px;margin:8px 0;color:var(--ink2)}
+.rv li.ok{color:var(--ok);font-weight:600}
+.rv li.no{color:var(--bad);text-decoration:line-through}
+.rv li .you{font-size:13px;font-weight:600;text-decoration:none;display:inline-block;margin-left:6px}
+.rv p{margin:8px 0 0}
+.tog{border:1px solid var(--line);background:var(--surface);min-height:36px;padding:0 12px;border-radius:18px;font-size:13px;font-weight:600;color:var(--ink2)}
+.tog[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+dialog{border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--ink);padding:20px;max-width:min(420px,calc(100vw - 32px))}
+dialog::backdrop{background:rgba(0,0,0,.5)}
+dialog p{margin:0 0 18px;font-size:16px}
+dialog .row{display:flex;gap:10px}
+dialog .btn{flex:1}
+
+/* lebar */
+@media (min-width:560px){
+  .flow{flex-direction:row;gap:28px;align-items:stretch}
+  .flow li{flex:1;display:flex;flex-direction:column;justify-content:center}
+  .flow li+li::before{content:"→";left:-28px;top:50%;width:28px;height:auto;line-height:1;transform:translateY(-50%);text-align:center}
+}
+@media (max-width:559px){
+  .tabs button{padding:0 12px}
+  .modes{grid-template-columns:1fr}
+  .ring{width:92px;height:92px}.ring b{width:72px;height:72px;font-size:23px}
+}
+@media (min-width:960px){
+  .materi{grid-template-columns:240px minmax(0,1fr);gap:40px;align-items:start}
+  .chnav{top:calc(var(--head) + 20px);margin:22px 0 0;padding:0;flex-direction:column;gap:4px;overflow:visible;border:0;background:none}
+  .chnav button{border-color:transparent;background:none;border-radius:10px;justify-content:flex-start;white-space:normal;text-align:left;padding:6px 10px 6px 8px}
+  .chnav button:not(.on):hover{background:var(--sunk)}
+  .chnav .nm{flex:1}
+  .chnav .pc{display:block}
+  .chnav button.on .pc{color:inherit;opacity:.85}
+  .actbar{margin-left:0;margin-right:0;padding-left:0;padding-right:0}
+  .opt:hover:not(:disabled){background:var(--brand-soft)}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media print{
+  .top,.chnav,.chfoot,#v-quiz,.credit{display:none!important}
+  #v-materi{display:block!important}
+  .materi{display:block}
+  .ch{display:block!important;max-width:none;page-break-after:always}
+  body{background:#fff;font-size:11pt}
+  .tw{overflow:visible;border:0}
+}
+
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in">
+  <h1 class="brand">Am I <span>Saturated?</span></h1>
+  <div class="tabs" role="tablist" aria-label="Bagian">
+    <button role="tab" id="tab-materi" aria-selected="true" aria-controls="v-materi">Materi</button>
+    <button role="tab" id="tab-quiz" aria-selected="false" aria-controls="v-quiz">Latihan</button>
+  </div>
+  <button class="icon" id="theme" aria-label="Ganti tema terang/gelap" title="Tema terang/gelap">◐</button>
+</div></header>
+
+<main class="wrap">
+<div id="v-materi" role="tabpanel" aria-labelledby="tab-materi">
+  <p class="credit">K14 Pemeriksaan Laboratorium Sistem Respirasi · Blok 3.2 — Modul Kardiovaskular &amp; Respirasi</p>
+  <div class="materi">
+    <nav class="chnav" id="chnav" role="tablist" aria-label="Bab materi"></nav>
+    <div>
+<section class="ch" data-ch="1">
+<h2>Analisis Gas Darah</h2>
+<p class="def">Analisis gas darah (AGD/BGA) menjawab dua pertanyaan respirasi mendasar: apakah transfer oksigen cukup (<strong>oksigenasi</strong>) dan apakah pompa napas berhasil membuang CO₂ sisa metabolisme (<strong>ventilasi alveolar</strong>).</p>
+
+<h3>Mengapa kerusakan dinding paru memicu kurang oksigen lebih dulu</h3>
+<ul>
+<li>CO₂ memiliki daya larut dan kecepatan menembus membran <strong>20 kali</strong> lebih besar dibanding O₂.</li>
+<li>Bila membran menebal atau terendam cairan (misalnya edema paru atau radang interstisial), O₂ langsung terhambat masuk sehingga terjadi <strong>hipoksemia</strong> (PaO₂ &lt;80 mmHg), sedangkan CO₂ masih lolos keluar dengan mudah.</li>
+<li>Retensi CO₂ baru terjadi bila pasien sudah <strong>kelelahan bernapas</strong>.</li>
+</ul>
+
+<h3>Tiga nilai patokan darah arteri</h3>
+<table>
+<tr><th>Parameter</th><th>Rentang normal</th><th>Mencerminkan</th></tr>
+<tr><td>pH</td><td>7,35–7,45</td><td>&lt;7,35 = asam (asidemia); &gt;7,45 = basa (alkalemia)</td></tr>
+<tr><td>PaCO₂</td><td>35–45 mmHg</td><td>Murni komponen pernapasan</td></tr>
+<tr><td>HCO₃⁻</td><td>22–26 mEq/L</td><td>Komponen ginjal/metabolik</td></tr>
+</table>
+
+<h3>Cara praktis tiga langkah</h3>
+<ol class="flow">
+<li>Lihat pH<small>arah utama: asidosis atau alkalosis</small></li>
+<li>Cari biang keladinya<small>siapa yang abnormal searah dengan pH</small></li>
+<li>Cek kompensasi<small>komponen lain bergerak mengimbangi</small></li>
+</ol>
+<ul>
+<li>PaCO₂ abnormal searah pH → masalah primer di <strong>pernapasan (respiratorik)</strong>.</li>
+<li>HCO₃⁻ abnormal searah pH → masalah primer di <strong>metabolisme/ginjal (metabolik)</strong>.</li>
+<li>Komponen lainnya akan bergerak ke arah yang sama untuk mengimbangi.</li>
+</ul>
+<table>
+<tr><th>Tingkat kompensasi</th><th>Nilai penyeimbang</th><th>pH</th><th>Khas pada</th></tr>
+<tr><td>Belum berjalan</td><td>Masih normal</td><td>Abnormal</td><td>Kasus akut</td></tr>
+<tr><td>Sebagian</td><td>Sudah bergerak naik/turun</td><td>Belum normal</td><td>—</td></tr>
+<tr><td>Penuh</td><td>Sudah bergerak</td><td>Kembali ke 7,35–7,45</td><td>Gangguan kronis menahun</td></tr>
+</table>
+<p class="awas">Kompensasi alami tubuh tidak melompati batas tengah pH <strong>7,40</strong>. Bila pH melompat melewatinya, berarti ada dua gangguan asam-basa berbeda yang bertumpuk (<strong>gangguan campuran</strong>).</p>
+
+<h3>Jebakan asma: pseudonormalisasi PaCO₂</h3>
+<ul>
+<li><strong>Perjalanan normal serangan:</strong> pasien bernapas cepat (hiperventilasi), CO₂ tertiup keluar berlebihan sehingga PaCO₂ turun (&lt;35 mmHg) dan terjadi alkalosis respiratorik.</li>
+<li><strong>Tanda bahaya:</strong> pada pasien asma yang masih tampak sesak berat, PaCO₂ yang tiba-tiba "normal" (40 mmHg; 35–45 mmHg) atau mulai naik <strong>bukan</strong> tanda perbaikan.</li>
+<li><strong>Makna:</strong> otot pernapasan kehabisan tenaga (<em>respiratory muscle fatigue</em>); pompa napas di ambang kegagalan (<em>near-fatal asthma</em>), ancaman henti napas dalam hitungan menit.</li>
+</ul>
+<p class="klinis">Asma masih sesak berat dengan PaCO₂ 40 mmHg: perlakukan sebagai alarm gagal napas; pasien butuh intubasi segera di ICU.</p>
+</section>
+
+<section class="ch" data-ch="2">
+<h2>Infeksi &amp; Biomarker</h2>
+<p class="def">Sistem lampu lalu lintas (<em>traffic light system</em>) memadukan <strong>leukosit, CRP, dan prokalsitonin (PCT)</strong> untuk memilah infeksi saluran napas yang butuh antibiotik dan mencegah pemborosan antibiotik.</p>
+
+<h3>Bronkitis akut vs bronkiolitis</h3>
+<table>
+<tr><th>Hal</th><th>Bronkitis akut</th><th>Bronkiolitis akut</th></tr>
+<tr><td>Lokasi</td><td>Saluran napas besar berkartilago (bronkus)</td><td>Saluran napas kecil tanpa kartilago (bronkiolus &lt;2 mm)</td></tr>
+<tr><td>Usia</td><td>Dewasa/anak besar</td><td>Bayi usia &lt;2 tahun</td></tr>
+<tr><td>Penyebab</td><td>90% virus (Influenza, Rhinovirus)</td><td>Paling sering virus RSV</td></tr>
+<tr><td>Gambaran</td><td>Batuk berdahak 1–3 minggu, sembuh sendiri (<em>self-limiting</em>)</td><td>Napas cuping hidung, retraksi dada, mengi (<em>wheezing</em>)</td></tr>
+<tr><td>Antibiotik</td><td>Tidak butuh antibiotik rutin</td><td>—</td></tr>
+</table>
+<p><strong>Mengapa bayi sangat rentan sesak berat?</strong> Menurut Hukum Poiseuille, tahanan aliran udara berbanding terbalik dengan jari-jari lumen pangkat empat (R ∝ 1/r⁴). Pembengkakan dinding saluran napas setebal 1 mm saja pada bayi melipatgandakan hambatan napas hingga <strong>16 kali</strong>.</p>
+
+<h3>Dahak hijau bukan berarti bakteri</h3>
+<ul>
+<li>Warna kuning atau hijau berasal dari pigmen enzim <strong>mieloperoksidase (MPO)</strong> yang dilepaskan neutrofil saat membersihkan sel yang rusak.</li>
+<li>Dahak hijau mencerminkan peradangan aktif, bukan bukti ada bakteri yang tumbuh.</li>
+</ul>
+<p class="awas">Jangan meresepkan antibiotik hanya karena dahak pasien berwarna hijau.</p>
+
+<h3>Tiga zona biomarker</h3>
+<table>
+<tr><th>Zona</th><th>Leukosit</th><th>CRP</th><th>PCT</th><th>Tindakan</th></tr>
+<tr><td><strong>Hijau</strong><br>curiga kuat virus / radang ringan</td><td>Normal / limfositosis relatif</td><td>&lt;20 mg/L</td><td>&lt;0,25 ng/mL</td><td>Pereda gejala dan cairan; tanpa antibiotik</td></tr>
+<tr><td><strong>Kuning</strong><br>abu-abu / perlu waspada</td><td>Naik sedang</td><td>20–50 mg/L</td><td>0,25–0,5 ng/mL</td><td>Pantau ketat kondisi fisik; tunda antibiotik kecuali memburuk</td></tr>
+<tr><td><strong>Merah</strong><br>bakteri invasif / sepsis berat</td><td>Melonjak tinggi, <em>left shift</em> (batang &gt;5%)</td><td>&gt;50–100 mg/L</td><td>&gt;0,5–2,0 ng/mL</td><td>Segera kultur dan antibiotik terarah</td></tr>
+</table>
+<ul>
+<li><strong>Mengapa PCT rendah pada virus?</strong> Sitokin pertahanan virus, interferon-gamma (IFN-γ), memblokir pembuatan prokalsitonin di seluruh sel tubuh.</li>
+<li><strong>Evaluasi serial di zona merah:</strong> antibiotik bisa dihentikan bila PCT turun <strong>&gt;80%</strong> dari nilai puncak.</li>
+<li>PCT adalah panduan <em>antibiotic stewardship</em>: membedakan radang virus murni dari infeksi bakteri.</li>
+</ul>
+</section>
+
+<section class="ch" data-ch="3">
+<h2>Pneumonia &amp; Sepsis</h2>
+<p class="def"><strong>Pirau sejati</strong> (<em>true shunt</em>, pirau intrapulmoner kanan-ke-kiri): darah mengalir melintasi alveolus yang tertutup tanpa pernah bersentuhan dengan udara segar, sehingga darah kotor langsung kembali ke jantung kiri.</p>
+
+<h3>Alveolus terkonsolidasi</h3>
+<ol class="flow">
+<li>Bakteri merusak pneumosit<small>sel dinding alveolus</small></li>
+<li>Konsolidasi<small>alveolus penuh cairan radang, nanah, bekuan fibrin</small></li>
+<li>Pirau sejati<small>darah tidak kontak udara</small></li>
+<li>Hipoksemia berat<small>refrakter terhadap oksigen</small></li>
+</ol>
+<p><strong>Tanda khas:</strong> kekurangan oksigen berat yang sulit membaik meski diberi oksigen dosis tinggi, karena oksigen yang dihirup tidak bisa menembus alveolus yang terisi nanah padat.</p>
+
+<h3>Progresi menuju sepsis</h3>
+<p>Terjadi bila kuman dan racunnya (<strong>endotoksin</strong>) menembus pembuluh kapiler paru.</p>
+<table>
+<tr><th>Organ / sistem</th><th>Yang terjadi</th><th>Penanda laboratorium</th></tr>
+<tr><td>Paru (ARDS)</td><td>Dinding kapiler paru bocor; cairan merembes ke jaringan paru (non-kardiogenik)</td><td>Rasio PaO₂/FiO₂ (P/F) &lt;300 = ARDS ringan; &lt;100 = ARDS berat</td></tr>
+<tr><td>Perfusi jaringan</td><td>Sel kekurangan oksigen → glikolisis anaerob</td><td>Laktat &gt;2 mmol/L; &gt;4 mmol/L = syok septik</td></tr>
+<tr><td>Pembekuan darah (DIC)</td><td>Ribuan gumpalan darah mikro; keping darah habis terpakai</td><td>Trombosit &lt;100.000/µL, D-dimer melonjak tajam</td></tr>
+<tr><td>Ginjal (AKI)</td><td>Kekurangan aliran darah dan serangan sitokin</td><td>Kreatinin darah melonjak cepat</td></tr>
+</table>
+</section>
+
+<section class="ch" data-ch="4">
+<h2>Tuberkulosis &amp; Pleura</h2>
+<p class="def"><strong>Basil tahan asam (BTA):</strong> dinding lemak kuman TB mengikat zat warna merah karbol fuksin dan tidak luntur meski dibilas asam-alkohol.</p>
+
+<h3>Mengapa TB membentuk sarang "keju"</h3>
+<ol class="flow">
+<li>Asam mikolat<small>dinding lemak tebal; makrofag gagal mencerna</small></li>
+<li>Th1 → IFN-γ<small>makrofag melebur jadi sel datia Langhans</small></li>
+<li>Nekrosis kaseosa<small>pusat kepungan kekurangan oksigen</small></li>
+<li>Likuifaksi → kavitas<small>saat daya tahan turun, jebol ke saluran napas</small></li>
+<li>Hemoptisis<small>batuk berdarah</small></li>
+</ol>
+
+<h3>Tiga pilar diagnostik dahak</h3>
+<table>
+<tr><th>Pemeriksaan</th><th>Prinsip</th><th>Batas deteksi / waktu</th><th>Peran</th></tr>
+<tr><td>Mikroskopis BTA (Ziehl-Neelsen / fluoresens Auramin-O)</td><td>Batang merah cerah dengan latar belakang biru</td><td>Minimal 5.000 kuman/mL dahak</td><td>Melihat kuman langsung</td></tr>
+<tr><td>TCM GeneXpert MTB/RIF</td><td>Mesin otomatis menggandakan gen <em>rpoB</em></td><td>Cukup 130 kuman/mL; kurang dari 2 jam</td><td>Baku emas awal rekomendasi WHO; sekaligus mendeteksi mutasi resistensi <strong>rifampisin</strong></td></tr>
+<tr><td>Biakan / kultur</td><td>Media padat Lowenstein-Jensen (koloni kasar krem seperti kembang kol) atau media cair otomatis MGIT</td><td>LJ 4–8 minggu; MGIT 1–3 minggu</td><td>Baku emas kepastian kuman hidup; wajib untuk uji kepekaan obat lini kedua pada MDR-TB</td></tr>
+</table>
+
+<h3>Uji IGRA</h3>
+<ul>
+<li><strong>Cara kerja:</strong> darah pasien dicampur antigen khusus kuman TB (<strong>ESAT-6</strong> dan <strong>CFP-10</strong>). Bila pernah terinfeksi, sel darah putih memori mengenalinya dan mengeluarkan interferon-gamma yang kadarnya diukur.</li>
+<li><strong>Keunggulan dibanding tes kulit Mantoux:</strong> antigen IGRA tidak dimiliki kuman vaksin BCG, sehingga hasilnya tidak positif palsu akibat riwayat vaksin BCG.</li>
+</ul>
+<p class="awas">IGRA tidak bisa membedakan <strong>TB laten</strong> dari <strong>TB aktif</strong>. Dilarang mendiagnosis sakit TB aktif hanya dari IGRA positif tanpa gejala fisik, kelainan foto rontgen, atau bukti kuman di dahak.</p>
+
+<h3>Cairan pleura: kriteria Light, efusi TB, dan ADA</h3>
+<p><strong>Kriteria Light</strong> membedakan cairan radang (<strong>eksudat</strong>) dari cairan bocor akibat tekanan fisik (<strong>transudat</strong>). Cukup <strong>1 dari 3</strong> kriteria terpenuhi untuk menetapkan eksudat:</p>
+<ul>
+<li>Protein pleura/serum &gt;0,5</li>
+<li>LDH pleura/serum &gt;0,6</li>
+<li>LDH &gt;2/3 batas normal</li>
+</ul>
+<table>
+<tr><th>Efusi pleura TB</th><th>Temuan</th></tr>
+<tr><td>Jenis cairan</td><td>Eksudat (kaya protein)</td></tr>
+<tr><td>Sel</td><td>Limfosit &gt;50%; sel dinding pleura minimal (&lt;5%)</td></tr>
+<tr><td>Enzim ADA</td><td>Dilepaskan limfosit T saat aktif melawan infeksi; aktivitas &gt;35–40 U/L sangat menyokong pleuritis tuberkulosa di daerah endemis seperti Indonesia</td></tr>
+</table>
+<p>Uji ADA bernilai suportif kuat, bukan bukti mutlak tunggal (bukan patognomonik), karena <strong>empiema bakteri</strong> atau <strong>limfoma</strong> juga bisa menaikkan ADA.</p>
+</section>
+
+<section class="ch" data-ch="5">
+<h2>PPOK</h2>
+<p class="def">PPOK bukan sekadar penyempitan saluran napas, melainkan <strong>penyakit radang sistemik kronis</strong> dengan tiga cabang pemantauan laboratorium: penanda radang, eosinofil darah, dan kompensasi kurang oksigen menahun.</p>
+
+<h3>Tiga pilar laboratorium</h3>
+<table>
+<tr><th>Pilar</th><th>Pemeriksaan</th><th>Makna</th></tr>
+<tr><td>Radang aktif</td><td>CRP</td><td>Membedakan PPOK tenang stabil dari kambuh mendadak yang butuh perawatan (eksaserbasi akut)</td></tr>
+<tr><td rowspan="2">Panduan inhaler steroid (ICS), konsensus GOLD</td><td>Eosinofil ≥300 sel/µL</td><td>Respons sangat bagus; ICS efektif menurunkan frekuensi kambuh</td></tr>
+<tr><td>Eosinofil &lt;100 sel/µL</td><td>Jangan beri ICS: tanpa manfaat klinis dan menaikkan risiko pneumonia</td></tr>
+<tr><td rowspan="2">Kompensasi hipoksia menahun</td><td>Hemoglobin &gt;16,5–18,5 g/dL</td><td>Polisitemia sekunder</td></tr>
+<tr><td>HCO₃⁻ &gt;26–30 mEq/L</td><td>Ginjal menahan bikarbonat agar pH tetap normal di tengah retensi CO₂ menahun</td></tr>
+</table>
+<ol class="flow">
+<li>Oksigen darah rendah menahun</li>
+<li>Ginjal: EPO berlebih<small>eritropoietin</small></li>
+<li>Polisitemia sekunder<small>darah mengental</small></li>
+<li>Kor pulmonale<small>jantung kanan bengkak dan gagal memompa</small></li>
+</ol>
+
+<h3>Defisiensi alfa-1 antitripsin (AAT)</h3>
+<ul>
+<li><strong>Normal:</strong> AAT dihasilkan hati untuk melindungi jaringan lentur paru dari enzim perusak <strong>elastase neutrofil</strong>.</li>
+<li><strong>Kelainan:</strong> gen <em>SERPINA1</em> alel <strong>Pi*ZZ</strong> membuat AAT gagal keluar dari hati; kadar serum &lt;50–80 mg/dL.</li>
+<li><strong>Akibat:</strong> paru kehilangan daya lentur dan dinding kantung udara hancur (<strong>emfisema</strong>).</li>
+</ul>
+<p class="awas">Curigai bila emfisema parah muncul pada <strong>usia muda (&lt;45 tahun)</strong>, terutama di bagian bawah paru (basal), dan pada pasien <strong>tanpa riwayat merokok berat</strong>. Wajib skrining kadar AAT serum.</p>
+</section>
+
+<section class="ch" data-ch="6">
+<h2>Kanker Paru</h2>
+<p class="def"><strong>Petanda tumor</strong> bukan alat skrining awal populasi sehat (radang biasa juga bisa menaikkan kadarnya). Fungsi utamanya menilai keberhasilan kemoterapi dan mendeteksi kekambuhan dini.</p>
+
+<h3>Petanda tumor per jenis</h3>
+<table>
+<tr><th>Petanda</th><th>Jenis kanker paru</th></tr>
+<tr><td>CYFRA 21-1, SCC</td><td>Karsinoma sel skuamosa (sangat khas)</td></tr>
+<tr><td>CEA</td><td>Adenokarsinoma (dominan meningkat)</td></tr>
+<tr><td>NSE, ProGRP</td><td>Kanker paru sel kecil (SCLC), berasal dari sel saraf endokrin (sangat spesifik)</td></tr>
+</table>
+
+<h3>Sindrom paraneoplastik</h3>
+<table>
+<tr><th>Sindrom</th><th>Mekanisme</th><th>Temuan</th></tr>
+<tr><td>Hiperkalsemia malignansi</td><td>Sel kanker skuamosa melepas hormon tiruan PTHrP (<em>parathyroid hormone-related protein</em>) yang mengikis kalsium tulang ke darah</td><td>Kalsium darah tinggi; hormon paratiroid asli tersupresi rendah</td></tr>
+<tr><td>Sindrom Trousseau</td><td>Sel kanker melepas zat pemicu bekuan darah</td><td>DVT tungkai atau emboli paru berulang tanpa sebab jelas</td></tr>
+</table>
+
+<h3>Onkologi presisi</h3>
+<p>Jaringan tumor atau serpihan DNA tumor bebas di darah (<strong><em>liquid biopsy</em></strong>) diperiksa profil genetiknya untuk memilih obat minum tertarget.</p>
+<table>
+<tr><th>Temuan</th><th>Terapi</th></tr>
+<tr><td>Mutasi gen EGFR</td><td>Penghambat tirosin kinase: osimertinib, gefitinib</td></tr>
+<tr><td>Fusi gen ALK / ROS1</td><td>Penghambat ALK: alectinib, crizotinib</td></tr>
+<tr><td>Protein PD-L1 (pewarnaan jaringan), skor sel tumor &gt;50%</td><td>Imunoterapi antibodi pembrolizumab; respons sangat baik tanpa perlu kemoterapi konvensional</td></tr>
+</table>
+</section>
+
+<section class="ch" data-ch="7">
+<h2>COVID-19</h2>
+<p class="def">Pada kasus berat, SARS-CoV-2 memicu kerusakan dinding pembuluh darah (<strong>endotelitis</strong>) dan badai zat radang sistemik (hiperinflamasi) yang terbaca lewat empat pilar laboratorium.</p>
+
+<h3>Empat pilar badai hiperinflamasi</h3>
+<table>
+<tr><th>Pilar</th><th>Nilai</th><th>Makna</th></tr>
+<tr><td>Limfopenia dan NLR</td><td>Limfosit &lt;1.000/µL; rasio neutrofil/limfosit (NLR) melambung</td><td>Limfosit dirusak virus dan terbunuh badai sitokin; NLR tinggi = alarm dini pasien akan jatuh kritis</td></tr>
+<tr><td>Feritin (sindrom hiperferitinemia)</td><td>&gt;1.000–2.000 ng/mL</td><td>Bukan sekadar penanda zat besi: makrofag melepas feritin masif; peradangan ganas mirip sindrom badai sitokin (<em>MAS-like</em>)</td></tr>
+<tr><td>D-dimer</td><td>Melonjak tajam</td><td>Kaskade bekuan darah aktif di sirkulasi paru (<strong>imunotrombosis</strong>) yang memicu sumbatan pembuluh darah mendadak</td></tr>
+<tr><td>Prokalsitonin</td><td>Tetap rendah, &lt;0,25 ng/mL</td><td>Khas infeksi murni COVID-19</td></tr>
+</table>
+<p class="awas">Bila PCT tiba-tiba melonjak (<strong>&gt;0,5–2,0 ng/mL</strong>) pada COVID-19 atau bronkitis virus, itu tanda tumpangan <strong>infeksi bakteri sekunder</strong> (superinfeksi), misalnya pneumonia kuman rumah sakit pada pasien terpasang ventilator.</p>
+</section>
+
+    </div>
+  </div>
+</div>
+
+<div id="v-quiz" role="tabpanel" aria-labelledby="tab-quiz" hidden>
+ <div class="quiz">
+  <div id="setup"></div>
+
+  <div id="run" hidden>
+    <div class="runhead">
+      <strong id="rpos"></strong><span id="rinfo" aria-live="off"></span>
+      <button class="btn sm" id="endbtn">Akhiri</button>
+      <div class="bar" id="rbarwrap" role="progressbar" aria-valuemin="0" aria-label="Soal terjawab"><i id="rbar"></i></div>
+    </div>
+    <div class="qcard">
+      <p class="scen" id="rscen" hidden></p>
+      <h2 class="qtext" id="rq" tabindex="-1"></h2>
+    </div>
+    <div class="opts" id="ropts" role="group" aria-label="Pilihan jawaban"></div>
+    <div class="fb" id="rfb" role="status" aria-live="polite" hidden></div>
+    <details class="grid" id="rgridwrap" hidden><summary>Daftar soal (titik kuning = ragu)</summary><div id="rgrid"></div></details>
+    <div class="actbar">
+      <button class="btn fit" id="prevbtn" aria-label="Soal sebelumnya">←</button>
+      <button class="btn fit" id="flagbtn" aria-pressed="false">Ragu</button>
+      <span class="hint" id="rhint">Pilih satu jawaban</span>
+      <button class="btn pri" id="nextbtn">Berikutnya →</button>
+    </div>
+  </div>
+
+  <div id="result" hidden></div>
+ </div>
+</div>
+</main>
+
+<dialog id="dlg" aria-labelledby="dlgmsg"><p id="dlgmsg"></p><div class="row"><button class="btn" value="no">Batal</button><button class="btn pri" value="yes" id="dlgok">Ya</button></div></dialog>
+
+<script>
+const META={id:'b32-k14',bab:['Analisis Gas Darah','Infeksi & Biomarker','Pneumonia & Sepsis','Tuberkulosis & Pleura','PPOK','Kanker Paru','COVID-19']};
+// [bab, pertanyaan, [BENAR, pengecoh×4], pembahasan, skenario atau '', [id butir]]
+const QRAW=[
+/* ===== Bab 1 ===== */
+[1,'Dua pertanyaan respirasi mendasar yang dijawab pemeriksaan AGD adalah…',['Oksigenasi dan ventilasi alveolar','Oksigenasi dan perfusi jaringan','Ventilasi alveolar dan kadar laktat','Perfusi paru dan fungsi ginjal','Difusi membran dan curah jantung'],'AGD menilai apakah transfer oksigen cukup (oksigenasi) dan apakah CO₂ berhasil dibuang (ventilasi alveolar). Perfusi jaringan dinilai dengan laktat, bukan inti pertanyaan AGD di bahan.','',['1.01']],
+[1,'Dibanding O₂, daya larut dan kecepatan CO₂ menembus membran alveolus adalah…',['20 kali lebih besar','2 kali lebih besar','4 kali lebih besar','16 kali lebih besar','20 kali lebih kecil'],'CO₂ 20 kali lebih gesit menembus membran daripada O₂. Angka 16 kali adalah kenaikan hambatan napas pada Hukum Poiseuille, bukan soal difusi gas.','',['1.02']],
+[1,'Bila membran alveolus menebal atau terendam cairan, kelainan gas darah yang muncul lebih dulu adalah…',['Hipoksemia dengan PaCO₂ belum naik','Hiperkapnia dengan PaO₂ masih normal','Hipoksemia bersama hiperkapnia sejak awal','Alkalosis metabolik dengan PaO₂ normal','Asidosis metabolik dengan PaCO₂ tinggi'],'O₂ langsung terhambat masuk (PaO₂ <80 mmHg), sedangkan CO₂ yang jauh lebih mudah berdifusi masih lolos keluar. Hiperkapnia baru muncul belakangan.','',['1.03']],
+[1,'Penjelasan paling tepat mengapa PaCO₂ pasien ini masih normal adalah…',['CO₂ jauh lebih mudah berdifusi melewati membran','CO₂ dibuang lewat ginjal sebagai bikarbonat','O₂ tambahan menekan produksi CO₂ jaringan','Membran yang basah menahan O₂ dan CO₂ setara','Pasien sudah mengalami kelelahan otot napas'],'CO₂ menembus membran 20 kali lebih cepat daripada O₂ sehingga masih lolos walau membran terendam cairan. Kelelahan otot napas justru akan menaikkan PaCO₂.','Seorang pasien edema paru tampak sesak. AGD: PaO₂ 58 mmHg, PaCO₂ 38 mmHg.',['1.03','1.02']],
+[1,'Pada penyakit yang merusak membran alveolus, retensi CO₂ baru terjadi ketika…',['Pasien sudah kelelahan bernapas','PaO₂ turun di bawah 80 mmHg','Ginjal mulai menahan bikarbonat','Pasien mulai diberi oksigen','pH melewati batas tengah 7,40'],'Selama pompa napas masih kuat, CO₂ tetap terbuang. Retensi CO₂ menandakan pasien sudah kelelahan bernapas, bukan sekadar hipoksemia.','',['1.03']],
+[1,'pH darah arteri 7,48 disebut…',['Alkalemia','Asidemia','pH normal','Kompensasi penuh','Gangguan campuran'],'Rentang normal pH 7,35–7,45; di atas 7,45 disebut basa/alkalemia, di bawah 7,35 asidemia.','',['1.04']],
+[1,'Rentang normal PaCO₂ darah arteri adalah…',['35–45 mmHg','22–26 mmHg','45–55 mmHg','25–35 mmHg','80–100 mmHg'],'PaCO₂ normal 35–45 mmHg dan mencerminkan komponen pernapasan. Angka 22–26 adalah rentang HCO₃⁻ dalam mEq/L.','',['1.05']],
+[1,'Parameter AGD yang mencerminkan komponen ginjal/metabolik beserta rentang normalnya adalah…',['HCO₃⁻ 22–26 mEq/L','HCO₃⁻ 35–45 mEq/L','PaCO₂ 22–26 mmHg','PaCO₂ 35–45 mmHg','pH 7,35–7,45'],'HCO₃⁻ (22–26 mEq/L) adalah komponen ginjal/metabolik. PaCO₂ 35–45 mmHg mencerminkan komponen pernapasan.','',['1.06']],
+[1,'Urutan cara praktis tiga langkah membaca AGD adalah…',['pH → komponen searah pH → kompensasi','pH → kompensasi → komponen searah pH','PaCO₂ → HCO₃⁻ → pH lalu kompensasi','Kompensasi → pH → komponen searah pH','HCO₃⁻ → PaCO₂ → pH lalu kompensasi'],'Mulai dari pH untuk menentukan arah, lalu cari komponen yang abnormal searah pH (biang keladi), terakhir nilai kompensasi oleh komponen lainnya.','',['1.07']],
+[1,'Gangguan asam-basa primer pada pasien ini adalah…',['Asidosis respiratorik','Asidosis metabolik','Alkalosis respiratorik','Alkalosis metabolik','Gangguan campuran'],'pH <7,35 berarti asidosis. Yang abnormal searah dengan pH adalah PaCO₂ (tinggi), sedangkan HCO₃⁻ masih normal, sehingga masalah primernya respiratorik dan kompensasi belum berjalan.','AGD seorang pasien sesak akut: pH 7,30; PaCO₂ 58 mmHg; HCO₃⁻ 24 mEq/L.',['1.07']],
+[1,'Interpretasi AGD yang paling tepat adalah…',['Asidosis metabolik terkompensasi sebagian','Asidosis metabolik belum terkompensasi','Asidosis respiratorik terkompensasi sebagian','Asidosis respiratorik terkompensasi penuh','Alkalosis respiratorik terkompensasi sebagian'],'pH asam dan HCO₃⁻ rendah searah dengan pH, jadi primer metabolik. PaCO₂ sudah turun untuk mengimbangi tetapi pH belum normal, sehingga kompensasi baru sebagian.','AGD: pH 7,28; PaCO₂ 30 mmHg; HCO₃⁻ 14 mEq/L.',['1.07','1.08']],
+[1,'Interpretasi AGD yang paling tepat adalah…',['Asidosis respiratorik terkompensasi penuh','Asidosis respiratorik terkompensasi sebagian','Alkalosis metabolik terkompensasi penuh','Asidosis respiratorik belum terkompensasi','Alkalosis metabolik terkompensasi sebagian'],'PaCO₂ tinggi dengan HCO₃⁻ yang sudah naik dan pH kembali ke 7,35–7,45 adalah kompensasi penuh, khas gangguan kronis. pH masih di sisi asam dari 7,40, jadi primernya asidosis, bukan alkalosis metabolik.','Pasien penyakit paru menahun, kondisi stabil. AGD: pH 7,37; PaCO₂ 58 mmHg; HCO₃⁻ 33 mEq/L.',['1.08']],
+[1,'Kompensasi yang "belum berjalan" dikenali dari…',['Nilai penyeimbang masih normal','Nilai penyeimbang berubah, pH belum normal','Nilai penyeimbang berubah, pH sudah normal','pH melewati batas tengah 7,40','Kedua komponen normal, pH abnormal'],'Bila komponen penyeimbang masih normal, kompensasi belum berjalan (biasanya kasus akut). Penyeimbang berubah dengan pH belum normal adalah kompensasi sebagian.','',['1.08']],
+[1,'Kesimpulan paling tepat menurut kaidah kompensasi adalah…',['Ada gangguan campuran, bukan kompensasi','Kompensasi penuh asidosis respiratorik','Kompensasi sebagian asidosis respiratorik','Kompensasi belum berjalan pada kasus akut','Nilai normal tanpa gangguan asam-basa'],'Kompensasi alami tidak melompati batas tengah 7,40. PaCO₂ tinggi seharusnya menarik pH ke sisi asam; pH yang malah melewati 7,40 ke sisi basa menandakan dua gangguan bertumpuk.','Pasien dengan retensi CO₂ menahun. AGD: pH 7,47; PaCO₂ 60 mmHg; HCO₃⁻ 42 mEq/L.',['1.09']],
+[1,'Pada awal serangan asma, gambaran AGD yang diharapkan adalah…',['PaCO₂ <35 mmHg, alkalosis respiratorik','PaCO₂ >45 mmHg, asidosis respiratorik','PaCO₂ 40 mmHg, pH dalam rentang normal','HCO₃⁻ <22 mEq/L, asidosis metabolik','HCO₃⁻ >26 mEq/L, alkalosis metabolik'],'Di awal serangan pasien hiperventilasi sehingga CO₂ tertiup keluar berlebihan. PaCO₂ 40 mmHg pada pasien yang masih sesak berat justru tanda bahaya.','',['1.10']],
+[1,'Makna perubahan PaCO₂ tersebut adalah…',['Kelelahan otot napas, ancaman gagal napas','Perbaikan ventilasi setelah bronkodilator','Kompensasi ginjal mulai bekerja penuh','Hiperventilasi berlanjut akibat cemas','Difusi CO₂ terhambat oleh edema dinding'],'Pada asma yang masih sesak berat, PaCO₂ yang kembali "normal" atau naik berarti otot napas kehabisan tenaga (pseudonormalisasi), bukan perbaikan. Perbaikan sejati disertai sesak yang mereda.','Pasien asma datang dengan serangan berat. AGD awal: PaCO₂ 30 mmHg. Dua jam kemudian pasien masih sesak berat dan sulit bicara; PaCO₂ kini 40 mmHg.',['1.11']],
+[1,'Tindakan yang dibutuhkan pasien ini adalah…',['Intubasi segera dan perawatan di ICU','Observasi karena PaCO₂ sudah normal','Pulang dengan inhaler pelega napas','Antibiotik empiris dan kultur dahak','Pemberian bikarbonat lewat infus'],'PaCO₂ "normal" pada asma yang masih sesak berat adalah near-fatal asthma dengan ancaman henti napas dalam hitungan menit; pasien butuh intubasi segera di ICU.','Pasien asma masih tampak sesak berat setelah terapi awal. PaCO₂ yang semula 31 mmHg kini 42 mmHg dan cenderung naik.',['1.11']],
+[1,'Istilah untuk PaCO₂ yang tampak normal pada asma berat yang masih sesak adalah…',['Pseudonormalisasi','Kompensasi penuh','Gangguan campuran','Pirau sejati','Alkalemia'],'Disebut pseudonormalisasi karena angka 35–45 mmHg tampak normal padahal menandakan kelelahan otot napas. Ini bukan kompensasi ginjal.','',['1.11']],
+
+/* ===== Bab 2 ===== */
+[2,'Penyebab bronkitis akut menurut bahan adalah…',['Virus pada sekitar 90% kasus','Bakteri pada sekitar 90% kasus','Virus pada sekitar 50% kasus','Jamur pada sekitar 20% kasus','Bakteri pada sekitar 50% kasus'],'Sekitar 90% bronkitis akut dipicu virus (Influenza, Rhinovirus), sehingga bersifat sembuh sendiri.','',['2.01']],
+[2,'Tata laksana yang paling sesuai adalah…',['Obat simtomatik tanpa antibiotik rutin','Antibiotik spektrum luas selama 7 hari','Kultur dahak lalu antibiotik terarah','Inhaler kortikosteroid jangka panjang','Rujuk ke ICU untuk intubasi segera'],'Gambaran ini sesuai bronkitis akut: batuk berdahak 1–3 minggu, 90% virus, self-limiting, sehingga tidak butuh antibiotik rutin.','Seorang mahasiswa 22 tahun batuk berdahak sejak 10 hari, diawali pilek. Tidak sesak, tanda vital stabil.',['2.01']],
+[2,'Bronkiolitis akut khas mengenai…',['Bronkiolus <2 mm pada bayi <2 tahun','Bronkus berkartilago pada bayi <2 tahun','Bronkiolus <2 mm pada anak >5 tahun','Bronkus berkartilago pada dewasa muda','Alveolus pada bayi kurang dari 2 bulan'],'Bronkiolitis mengenai saluran napas kecil tanpa kartilago (diameter <2 mm) pada bayi di bawah 2 tahun. Bronkus berkartilago adalah lokasi bronkitis akut.','',['2.02']],
+[2,'Virus penyebab tersering bronkiolitis akut pada bayi adalah…',['RSV','Rhinovirus','Influenza','SARS-CoV-2','Virus campak'],'Bronkiolitis paling sering akibat RSV. Influenza dan Rhinovirus disebut bahan sebagai pemicu bronkitis akut.','',['2.02']],
+[2,'Menurut Hukum Poiseuille, tahanan aliran udara…',['Berbanding terbalik dengan r pangkat empat','Berbanding lurus dengan r pangkat empat','Berbanding terbalik dengan r pangkat dua','Berbanding lurus dengan r pangkat dua','Berbanding terbalik dengan r pangkat satu'],'R ∝ 1/r⁴: sedikit penyempitan jari-jari lumen menaikkan tahanan sangat besar.','',['2.03']],
+[2,'Alasan pembengkakan dinding saluran napas yang tipis berakibat begitu berat pada bayi ini adalah…',['Hambatan napas naik hingga 16 kali lipat','Hambatan napas naik hingga 4 kali lipat','Hambatan napas naik hingga 2 kali lipat','Difusi CO₂ turun hingga 20 kali lipat','Difusi O₂ turun hingga 16 kali lipat'],'Karena R ∝ 1/r⁴, edema 1 mm saja pada saluran napas bayi yang sempit melipatgandakan hambatan hingga 16 kali, memunculkan napas cuping hidung, retraksi, dan mengi. Masalahnya aliran udara, bukan difusi gas.','Bayi 6 bulan pilek 3 hari, lalu sesak dengan napas cuping hidung, retraksi dada, dan mengi.',['2.03']],
+[2,'Bila jari-jari lumen saluran napas menyempit menjadi setengahnya, tahanan aliran udara menjadi…',['16 kali semula','2 kali semula','4 kali semula','8 kali semula','32 kali semula'],'R ∝ 1/r⁴. Jari-jari menjadi ½, maka (½)⁴ = 1/16, sehingga tahanan naik 16 kali. Jawaban 4 kali baru benar bila pangkatnya dua.','',['2.03']],
+[2,'Warna kuning atau hijau pada dahak berasal dari…',['Mieloperoksidase dari neutrofil','Elastase dari neutrofil','Asam mikolat dari dinding kuman','Feritin dari makrofag','Adenosine deaminase dari limfosit T'],'Pigmen enzim mieloperoksidase (MPO) dilepaskan neutrofil saat membersihkan sel rusak. Elastase neutrofil terkait emfisema, bukan warna dahak.','',['2.04']],
+[2,'Sikap yang paling tepat terhadap pasien ini adalah…',['Tanpa antibiotik; dahak hijau tanda radang','Antibiotik; dahak hijau tanda bakteri','Antibiotik; PCT 0,1 menandakan sepsis','Kultur dahak dulu lalu antibiotik terarah','Tunda antibiotik sambil kultur darah serial'],'Dahak hijau hanya mencerminkan radang aktif (MPO neutrofil), bukan bukti bakteri. Leukosit normal, CRP <20 mg/L, dan PCT <0,25 ng/mL menempatkan pasien di zona hijau: cukup pereda gejala dan cairan.','Pasien 30 tahun batuk 5 hari dengan dahak hijau dan meminta antibiotik. Leukosit normal, CRP 8 mg/L, PCT 0,1 ng/mL.',['2.04','2.06']],
+[2,'Tiga pemeriksaan yang dipadukan dalam sistem lampu lalu lintas biomarker infeksi adalah…',['Leukosit, CRP, prokalsitonin','Leukosit, laktat, D-dimer','CRP, feritin, D-dimer','Leukosit, CRP, eosinofil','Prokalsitonin, laktat, kreatinin'],'Traffic light system memakai leukosit, CRP, dan PCT untuk mencegah pemborosan antibiotik. Laktat, D-dimer, dan kreatinin adalah penanda kerusakan organ pada sepsis.','',['2.05']],
+[2,'Kriteria CRP dan PCT untuk zona hijau adalah…',['CRP <20 mg/L dan PCT <0,25 ng/mL','CRP <50 mg/L dan PCT <0,5 ng/mL','CRP <20 mg/L dan PCT <0,5 ng/mL','CRP <100 mg/L dan PCT <2,0 ng/mL','CRP <50 mg/L dan PCT <0,25 ng/mL'],'Zona hijau: CRP rendah (<20 mg/L) dan PCT sangat rendah (<0,25 ng/mL). CRP 20–50 dan PCT 0,25–0,5 sudah masuk zona kuning.','',['2.06']],
+[2,'Prokalsitonin tetap rendah pada infeksi virus karena…',['IFN-γ memblokir pembuatan prokalsitonin','IFN-γ mempercepat pemecahan prokalsitonin','Virus merusak sel penghasil prokalsitonin','Neutrofil menghabiskan prokalsitonin','Ginjal membuang prokalsitonin lebih cepat'],'Sitokin pertahanan virus, interferon-gamma, memblokir pembuatan prokalsitonin di seluruh sel tubuh; jadi produksinya yang ditekan, bukan pemecahannya yang dipercepat.','',['2.07']],
+[2,'Zona dan tindakan yang sesuai adalah…',['Kuning: pantau ketat, tunda antibiotik','Kuning: mulai antibiotik terarah segera','Hijau: obat simtomatik dan cairan saja','Merah: kultur dan antibiotik terarah','Merah: pantau ketat, tunda antibiotik'],'CRP 20–50 mg/L dan PCT 0,25–0,5 ng/mL dengan leukosit naik sedang adalah zona kuning: pantau ketat kondisi fisik dan tunda antibiotik kecuali pasien memburuk.','Pasien batuk dan demam 4 hari, kondisi umum stabil. Leukosit naik sedang, CRP 35 mg/L, PCT 0,4 ng/mL.',['2.08']],
+[2,'Yang dimaksud left shift pada zona merah adalah…',['Neutrofil batang >5%','Neutrofil batang >50%','Limfosit <1.000/µL','Eosinofil ≥300 sel/µL','Trombosit <100.000/µL'],'Left shift berarti sel muda neutrofil (batang) meningkat >5%. Limfosit <1.000/µL adalah limfopenia pada COVID-19 berat.','',['2.09']],
+[2,'Tindakan yang paling tepat adalah…',['Ambil kultur, mulai antibiotik terarah','Pantau ketat, tunda antibiotik dulu','Obat simtomatik dan cairan saja','Ulang PCT besok sebelum memutuskan','Inhaler kortikosteroid dosis tinggi'],'Leukosit melonjak dengan batang >5%, CRP >50–100 mg/L, dan PCT >0,5–2,0 ng/mL adalah zona merah (bakteri invasif/sepsis berat): segera kultur dan antibiotik terarah. Menunda hanya berlaku di zona kuning.','Pasien demam tinggi dan sesak. Leukosit 22.000/µL dengan batang 9%, CRP 140 mg/L, PCT 3,1 ng/mL.',['2.09','2.10']],
+[2,'Keputusan yang sesuai dengan evaluasi serial PCT adalah…',['Antibiotik dapat dihentikan','Antibiotik dilanjutkan sampai PCT nol','Antibiotik diganti ke lini kedua','Kultur diulang karena PCT masih >0,5','Dosis antibiotik dinaikkan dua kali'],'Penurunan = (10 − 1,5)/10 = 85%, melebihi batas >80% dari nilai puncak, sehingga antibiotik bisa dihentikan. Yang dinilai adalah persentase penurunan, bukan angka mutlak PCT.','Pasien pneumonia bakteri membaik dengan antibiotik. PCT puncak 10 ng/mL, kini 1,5 ng/mL.',['2.10']],
+
+/* ===== Bab 3 ===== */
+[3,'Isi alveolus pada konsolidasi pneumonia adalah…',['Cairan radang, nanah, dan bekuan fibrin','Cairan transudat, udara, dan surfaktan','Darah segar, udara, dan sel datia','Nekrosis kaseosa dan sel datia Langhans','Udara terperangkap dan dinding yang hancur'],'Setelah bakteri merusak pneumosit, alveolus terisi penuh cairan radang, nanah, dan bekuan fibrin. Nekrosis kaseosa adalah ciri TB; dinding hancur adalah emfisema.','',['3.01']],
+[3,'Pirau sejati (true shunt) pada pneumonia berarti…',['Darah melewati alveolus tanpa kontak udara','Udara masuk alveolus tanpa aliran darah','Darah mengalir dari jantung kiri ke kanan','Membran alveolus menebal dan difusi melambat','Udara terperangkap di bronkiolus yang sempit'],'Darah tetap mengalir melewati alveolus yang tertutup konsolidasi tetapi tidak bertemu udara segar, lalu kembali ke jantung kiri dalam keadaan kotor.','',['3.02']],
+[3,'Jenis pirau yang terjadi pada alveolus terkonsolidasi adalah…',['Intrapulmoner, kanan-ke-kiri','Intrapulmoner, kiri-ke-kanan','Intrakardiak, kanan-ke-kiri','Intrakardiak, kiri-ke-kanan','Ekstrapulmoner, kiri-ke-kanan'],'Pirau terjadi di dalam paru: darah dari sirkulasi kanan sampai ke jantung kiri tanpa teroksigenasi, jadi intrapulmoner kanan-ke-kiri.','',['3.02']],
+[3,'Mekanisme yang paling menjelaskan hipoksemia pasien ini adalah…',['Pirau sejati pada alveolus terkonsolidasi','Hipoventilasi akibat kelelahan otot napas','Penebalan ringan pada membran difusi','Polisitemia sekunder yang mengentalkan darah','Bronkospasme difus di saluran napas kecil'],'Hipoksemia berat yang sulit membaik dengan oksigen dosis tinggi adalah tanda khas pirau sejati: darah melewati alveolus berisi nanah tanpa bersentuhan dengan udara.','Pasien pneumonia dengan konsolidasi luas. Saturasi tetap 84% walau sudah diberi oksigen dosis tinggi.',['3.02','3.03']],
+[3,'Hipoksemia pada pirau sejati refrakter terhadap oksigen karena…',['O₂ tak dapat menembus alveolus berisi nanah','O₂ diikat berlebihan oleh hemoglobin','O₂ terbuang lewat bronkus yang melebar','CO₂ menghalangi ikatan O₂ di kapiler','O₂ dosis tinggi menekan pusat napas'],'Oksigen yang dihirup tidak pernah sampai ke darah yang melintasi alveolus terisi nanah padat, sehingga menaikkan dosis oksigen tidak menolong.','',['3.03']],
+[3,'Pneumonia berkembang menjadi sepsis ketika…',['Kuman dan endotoksin menembus kapiler paru','Kuman menetap di lumen bronkus besar','Dahak berubah warna menjadi hijau','Sarang kaseosa mencair ke saluran napas','Feritin dilepas masif oleh makrofag'],'Sepsis dan kerusakan organ lain dimulai saat kuman dan racunnya (endotoksin) jebol menembus pembuluh kapiler paru.','',['3.04']],
+[3,'Rasio P/F dan klasifikasinya adalah…',['P/F 75, ARDS berat','P/F 75, ARDS ringan','P/F 48, ARDS berat','P/F 140, ARDS ringan','P/F 480, bukan ARDS'],'P/F = PaO₂ : FiO₂ = 60 : 0,8 = 75. Nilai <100 termasuk ARDS berat; <300 saja baru ARDS ringan.','Pasien sepsis paru dengan ventilator: PaO₂ 60 mmHg pada FiO₂ 0,8.',['3.05']],
+[3,'Cairan di jaringan paru pada ARDS berasal dari…',['Kapiler paru yang bocor (non-kardiogenik)','Gagal jantung kiri (kardiogenik)','Gagal jantung kanan (kor pulmonale)','Sumbatan aliran limfe (non-kardiogenik)','Tekanan onkotik rendah (transudat)'],'Pada ARDS seluruh dinding kapiler paru bocor sehingga cairan merembes ke jaringan paru; penyebabnya bukan jantung (non-kardiogenik).','',['3.05']],
+[3,'Kondisi pasien ini menurut kadar laktatnya adalah…',['Syok septik','Hipoperfusi ringan','DIC','ARDS berat','Gagal ginjal akut'],'Laktat >2 mmol/L sudah melonjak, dan bila >4 mmol/L pasien masuk syok septik. Laktat menilai perfusi jaringan, bukan pembekuan (DIC) atau ginjal (AKI).','Pasien pneumonia berat dengan sepsis. Laktat darah 5,2 mmol/L.',['3.06']],
+[3,'Laktat darah meningkat pada sepsis karena…',['Glikolisis anaerob di sel yang kurang O₂','Ginjal gagal membuang asam laktat','Hati memproduksi laktat berlebihan','Bakteri melepaskan laktat ke darah','Hiperventilasi membuang CO₂ berlebihan'],'Sel yang kekurangan pasokan oksigen beralih membakar glukosa tanpa oksigen (glikolisis anaerob) sehingga laktat melonjak.','',['3.06']],
+[3,'Komplikasi yang paling sesuai adalah…',['DIC','Sindrom Trousseau','Polisitemia sekunder','Imunotrombosis','Hiperkalsemia'],'Trombosit <100.000/µL bersama D-dimer yang melonjak pada sepsis menandakan DIC: gumpalan mikro terbentuk di seluruh tubuh hingga keping darah habis terpakai. Sindrom Trousseau terkait kanker.','Pasien sepsis paru: trombosit turun menjadi 60.000/µL dan D-dimer melonjak tajam.',['3.07']],
+[3,'Penanda gagal ginjal akut (AKI) pada sepsis paru adalah…',['Kreatinin darah melonjak cepat','Laktat darah melonjak cepat','D-dimer melonjak tajam','Trombosit anjlok drastis','Bikarbonat darah meningkat'],'AKI ditandai kreatinin yang melonjak cepat akibat kurang aliran darah dan serangan sitokin. Laktat menandai perfusi jaringan; D-dimer dan trombosit menandai DIC.','',['3.08']],
+
+/* ===== Bab 4 ===== */
+[4,'Komponen dinding Mycobacterium tuberculosis yang membuat makrofag gagal mencernanya adalah…',['Asam mikolat','Karbol fuksin','ESAT-6','Mieloperoksidase','Endotoksin'],'Dinding berlapis lemak tebal (asam mikolat) melindungi kuman dari pencernaan makrofag. Karbol fuksin adalah zat warna, bukan komponen kuman.','',['4.01']],
+[4,'Sel datia Langhans terbentuk dari…',['Peleburan makrofag atas rangsang IFN-γ','Peleburan neutrofil atas rangsang IFN-γ','Pembelahan limfosit T atas rangsang ADA','Peleburan pneumosit atas rangsang endotoksin','Pembelahan makrofag atas rangsang PTHrP'],'Sel T (Th1) melepaskan interferon-gamma untuk mengepung kuman, memicu makrofag melebur menjadi sel raksasa berinti banyak.','',['4.02']],
+[4,'Nekrosis kaseosa terbentuk karena…',['Bagian tengah kepungan kekurangan oksigen','Bagian tepi kepungan diserang neutrofil','Kuman melepaskan endotoksin ke kapiler','Elastase neutrofil menghancurkan alveolus','Bekuan mikro menyumbat kapiler paru'],'Area tengah kepungan sel imun kekurangan oksigen sehingga sel-selnya mati menjadi gumpalan rapuh keputihan mirip keju.','',['4.03']],
+[4,'Urutan kejadian pada sarang kaseosa saat daya tahan tubuh turun adalah…',['Likuifaksi → kavitas → hemoptisis','Kavitas → likuifaksi → hemoptisis','Hemoptisis → kavitas → likuifaksi','Konsolidasi → pirau → hemoptisis','Likuifaksi → konsolidasi → kavitas'],'Sarang keju mencair (likuifaksi), jebol ke saluran napas dan meninggalkan lubang (kavitas), lalu pasien mulai batuk berdarah.','',['4.04']],
+[4,'Gambaran kuman TB pada pewarnaan Ziehl-Neelsen adalah…',['Batang merah, latar belakang biru','Batang biru, latar belakang merah','Batang ungu, latar belakang merah','Kokus merah, latar belakang biru','Batang hijau, latar belakang gelap'],'Kuman menahan karbol fuksin sehingga tampak sebagai batang merah cerah dengan latar belakang biru.','',['4.05']],
+[4,'Kuman TB disebut basil tahan asam karena…',['Karbol fuksin bertahan saat dibilas asam-alkohol','Kuman tetap hidup di dalam dahak yang asam','Auramin-O luntur saat dibilas asam-alkohol','Dinding kuman menolak semua zat warna merah','Kuman tumbuh pada media bersuasana asam'],'Dinding lemak kuman mengikat karbol fuksin dan warnanya tidak luntur meski dibilas asam-alkohol. "Tahan asam" merujuk pada sifat pewarnaan, bukan daya hidup kuman.','',['4.05']],
+[4,'Jumlah kuman minimal agar terlihat pada mikroskopis BTA adalah…',['5.000 kuman/mL dahak','130 kuman/mL dahak','500 kuman/mL dahak','1.000 kuman/mL dahak','50.000 kuman/mL dahak'],'Mikroskopis BTA butuh minimal 5.000 kuman/mL; angka 130 kuman/mL adalah batas deteksi TCM GeneXpert yang jauh lebih peka.','',['4.06']],
+[4,'Hasil pemeriksaan yang paling mungkin diperoleh adalah…',['BTA negatif, TCM positif','BTA positif, TCM negatif','BTA positif, TCM positif','BTA negatif, TCM negatif','BTA positif, kultur negatif'],'800 kuman/mL berada di bawah ambang mikroskop (5.000/mL) tetapi di atas ambang TCM (130/mL), sehingga BTA bisa negatif sementara TCM mendeteksi kuman.','Dahak seorang pasien suspek TB diperkirakan mengandung sekitar 800 kuman per mL.',['4.06','4.08']],
+[4,'Gen kuman TB yang digandakan pada TCM GeneXpert MTB/RIF adalah…',['rpoB','SERPINA1','EGFR','ALK','ROS1'],'GeneXpert menggandakan materi genetik gen rpoB dan sekaligus mendeteksi mutasi resistensi rifampisin. SERPINA1 terkait defisiensi AAT; EGFR, ALK, ROS1 terkait kanker paru.','',['4.07']],
+[4,'Pemeriksaan dahak yang paling sesuai adalah…',['TCM GeneXpert MTB/RIF','Mikroskopis BTA Ziehl-Neelsen','Kultur Lowenstein-Jensen','Kultur media cair MGIT','Mikroskopis fluoresens Auramin-O'],'TCM memberi hasil dalam <2 jam dan sekaligus mendeteksi mutasi resistensi rifampisin. Mikroskop tidak menilai resistensi, dan kultur butuh berminggu-minggu.','Pasien suspek TB paru. Dokter membutuhkan hasil di hari yang sama dan ingin langsung tahu ada tidaknya resistensi rifampisin.',['4.07']],
+[4,'Waktu yang dibutuhkan TCM GeneXpert untuk memberi hasil adalah…',['Kurang dari 2 jam','Kurang dari 2 hari','1–3 minggu','4–8 minggu','Kurang dari 2 menit'],'TCM selesai dalam waktu kurang dari 2 jam. Angka 1–3 minggu adalah MGIT dan 4–8 minggu adalah Lowenstein-Jensen.','',['4.07']],
+[4,'Lama biakan kuman TB pada media Lowenstein-Jensen (LJ) dan MGIT adalah…',['LJ 4–8 minggu, MGIT 1–3 minggu','LJ 1–3 minggu, MGIT 4–8 minggu','LJ 2 jam, MGIT 1–3 minggu','LJ 4–8 minggu, MGIT 2 jam','LJ 1–3 hari, MGIT 4–8 hari'],'Media padat LJ lama (4–8 minggu, koloni kasar krem seperti kembang kol), sedangkan media cair otomatis MGIT lebih cepat (1–3 minggu).','',['4.09']],
+[4,'Pemeriksaan yang wajib dikerjakan untuk kebutuhan tersebut adalah…',['Biakan/kultur kuman','Mikroskopis BTA','Uji IGRA darah','Uji ADA pleura','Tes kulit Mantoux'],'Kultur adalah baku emas kepastian kuman hidup dan wajib untuk uji kepekaan obat lini kedua pada kasus kebal obat (MDR-TB).','Pasien TB dengan hasil TCM menunjukkan resistensi rifampisin. Tim perlu mengetahui kepekaan kuman terhadap obat lini kedua.',['4.09']],
+[4,'Antigen khusus kuman TB yang dipakai pada uji IGRA adalah…',['ESAT-6 dan CFP-10','CYFRA 21-1 dan SCC','NSE dan ProGRP','rpoB dan SERPINA1','CEA dan PD-L1'],'Darah dicampur antigen ESAT-6 dan CFP-10. Pilihan lain adalah petanda tumor paru atau nama gen.','',['4.10']],
+[4,'Zat yang kadarnya diukur pada uji IGRA adalah…',['Interferon-gamma dari sel memori','Adenosine deaminase dari limfosit T','Prokalsitonin dari sel tubuh','Antibodi terhadap kuman vaksin BCG','Materi genetik gen rpoB kuman TB'],'Sel darah putih memori yang mengenali antigen TB mengeluarkan interferon-gamma, dan kadar inilah yang diukur. ADA diukur pada cairan pleura.','',['4.10']],
+[4,'Pemeriksaan yang paling sesuai beserta alasannya adalah…',['IGRA; antigennya tak dimiliki kuman BCG','IGRA; karena mengukur kadar enzim ADA','Mantoux ulang; lebih spesifik dari IGRA','BTA dahak; mampu mendeteksi TB laten','Kultur MGIT; hasil keluar dalam 2 jam'],'Antigen IGRA (ESAT-6, CFP-10) tidak dimiliki kuman vaksin BCG, sehingga hasilnya tidak positif palsu akibat riwayat vaksin, berbeda dari tes kulit Mantoux.','Seorang perawat dengan riwayat vaksin BCG saat kecil memiliki tes Mantoux positif. Dokter ingin bukti infeksi kuman TB yang tidak dipengaruhi riwayat vaksin.',['4.11']],
+[4,'Kesimpulan yang paling tepat adalah…',['Belum dapat disebut sakit TB aktif','Sakit TB aktif, mulai obat anti-TB','TB kebal rifampisin (MDR-TB)','Positif palsu akibat vaksin BCG','Pleuritis tuberkulosa'],'IGRA hanya membuktikan pernah terinfeksi kuman TB dan tidak bisa membedakan TB laten dari TB aktif. Tanpa gejala, kelainan rontgen, atau bukti kuman di dahak, diagnosis TB aktif tidak boleh ditegakkan. BCG tidak membuat IGRA positif palsu.','Karyawan 28 tahun menjalani pemeriksaan kesehatan. Tanpa keluhan, foto rontgen dada normal, dahak tidak ada. Hasil IGRA positif.',['4.12']],
+[4,'Keterbatasan utama uji IGRA adalah…',['Tak membedakan TB laten dari TB aktif','Positif palsu akibat riwayat vaksin BCG','Butuh minimal 5.000 kuman per mL dahak','Hasil baru keluar setelah 4–8 minggu','Hanya bisa dikerjakan pada cairan pleura'],'IGRA tidak dapat membedakan kuman TB yang "tidur" (laten) dari yang sedang menimbulkan sakit (aktif). Bebas pengaruh BCG justru keunggulannya.','',['4.12']],
+[4,'Karakteristik cairan efusi pleura TB adalah…',['Eksudat, limfosit >50%, sel pleura <5%','Eksudat, neutrofil >50%, sel pleura <5%','Transudat, limfosit >50%, sel pleura <5%','Transudat, neutrofil >50%, sel pleura >5%','Eksudat, limfosit <5%, sel pleura >50%'],'Efusi TB adalah eksudat kaya protein yang dipadati limfosit (>50%) dengan sel dinding pleura minimal (<5%).','',['4.13']],
+[4,'Makna hasil ADA tersebut adalah…',['Sangat menyokong pleuritis tuberkulosa','Memastikan pleuritis TB tanpa uji lain','Menyingkirkan pleuritis tuberkulosa','Menandakan cairan bersifat transudat','Menandakan keganasan sel skuamosa'],'ADA pleura >35–40 U/L sangat menyokong pleuritis TB di daerah endemis, tetapi bersifat penunjang kuat, bukan bukti mutlak tunggal.','Pasien di Indonesia dengan efusi pleura eksudat dominan limfosit. Aktivitas ADA cairan pleura 52 U/L.',['4.14']],
+[4,'Enzim ADA pada cairan pleura dilepaskan oleh…',['Limfosit T yang aktif','Neutrofil yang aktif','Makrofag yang melebur','Sel dinding pleura','Sel datia Langhans'],'ADA dilepaskan limfosit T saat aktif melawan infeksi, sehingga tinggi pada efusi TB yang dipadati limfosit.','',['4.14']],
+[4,'Selain TB, keadaan yang juga dapat menaikkan ADA cairan pleura adalah…',['Empiema bakteri dan limfoma','Gagal jantung dan sirosis hati','Asma dan bronkitis akut','Emboli paru dan DVT','PPOK dan emfisema'],'Empiema bakteri dan limfoma juga bisa menaikkan ADA, sehingga ADA bukan patognomonik untuk TB.','',['4.15']],
+[4,'Jumlah kriteria Light yang harus terpenuhi untuk menetapkan cairan pleura sebagai eksudat adalah…',['1 dari 3 kriteria','2 dari 3 kriteria','3 dari 3 kriteria','2 dari 4 kriteria','1 dari 2 kriteria'],'Cukup satu dari tiga kriteria (protein pleura/serum >0,5; LDH pleura/serum >0,6; LDH >2/3 batas normal) untuk menetapkan eksudat.','',['4.16']],
+[4,'Jenis cairan pleura menurut kriteria Light adalah…',['Eksudat, sebab rasio protein >0,5','Transudat, sebab rasio LDH <0,6','Transudat, sebab baru 1 kriteria','Eksudat, sebab rasio LDH >0,6','Transudat, sebab rasio protein <0,5'],'Rasio protein = 4 : 6 ≈ 0,67 (>0,5), sedangkan rasio LDH 0,4 (<0,6). Satu kriteria terpenuhi sudah cukup untuk eksudat.','Cairan pleura: protein 4 g/dL dengan protein serum 6 g/dL; rasio LDH pleura/serum 0,4.',['4.16']],
+
+/* ===== Bab 5 ===== */
+[5,'Menurut bahan, PPOK paling tepat dipandang sebagai…',['Penyakit radang sistemik kronis','Penyakit infeksi bakteri kronis','Penyempitan saluran napas saja','Penyakit autoimun pembuluh darah','Kelainan genetik enzim hati'],'PPOK bukan sekadar penyempitan saluran napas, melainkan penyakit radang sistemik kronis dengan tiga cabang pemantauan lab.','',['5.01']],
+[5,'Peran CRP pada pemantauan PPOK adalah…',['Membedakan PPOK stabil dari eksaserbasi','Menentukan pemberian inhaler steroid','Menyaring defisiensi alfa-1 antitripsin','Menilai beratnya polisitemia sekunder','Membedakan emfisema dari bronkitis'],'CRP adalah penanda radang aktif yang membantu membedakan kondisi stabil dari eksaserbasi akut. Keputusan inhaler steroid memakai eosinofil darah.','',['5.02']],
+[5,'Kadar eosinofil darah yang menandakan respons sangat baik terhadap inhaler steroid pada PPOK adalah…',['≥300 sel/µL','≥100 sel/µL','≥1.000 sel/µL','≥30 sel/µL','≥3.000 sel/µL'],'Menurut konsensus GOLD, eosinofil ≥300 sel/µL menandakan ICS efektif menurunkan frekuensi kambuh; <100 sel/µL justru tidak boleh diberi.','',['5.03']],
+[5,'Langkah yang didukung hasil eosinofil tersebut adalah…',['Menambahkan inhaler kortikosteroid','Menghindari inhaler kortikosteroid','Memulai antibiotik jangka panjang','Skrining kadar AAT serum','Memeriksa petanda tumor paru'],'Eosinofil ≥300 sel/µL menandakan respons sangat bagus: inhaler kombinasi kortikosteroid terbukti menurunkan frekuensi kambuh.','Pasien PPOK sering mengalami eksaserbasi. Eosinofil darah 420 sel/µL.',['5.03']],
+[5,'Penilaian yang tepat atas rencana tersebut adalah…',['Tanpa manfaat dan menaikkan risiko pneumonia','Bermanfaat menurunkan frekuensi kambuh','Bermanfaat tetapi menaikkan hemoglobin','Tanpa manfaat tetapi aman dari infeksi','Bermanfaat bila kadar CRP juga rendah'],'Pada eosinofil <100 sel/µL inhaler steroid tidak memberi manfaat klinis dan justru meningkatkan risiko pneumonia.','Pasien PPOK dengan eosinofil darah 60 sel/µL. Dokter muda berencana menambahkan inhaler kortikosteroid.',['5.04']],
+[5,'Risiko yang meningkat bila inhaler steroid diberikan pada pasien PPOK dengan eosinofil <100 sel/µL adalah…',['Pneumonia','Kor pulmonale','Polisitemia','Emfisema basal','Hiperkalsemia'],'ICS pada eosinofil rendah menaikkan risiko infeksi paru (pneumonia) tanpa manfaat klinis.','',['5.04']],
+[5,'Hormon yang menyebabkan polisitemia sekunder pada PPOK adalah…',['Eritropoietin dari ginjal','Eritropoietin dari hati','PTHrP dari sel tumor','Alfa-1 antitripsin dari hati','Prokalsitonin dari sel tubuh'],'Oksigen darah yang terus rendah membuat ginjal memproduksi eritropoietin (EPO) berlebihan sehingga sel darah merah melimpah.','',['5.05']],
+[5,'Kadar hemoglobin pada polisitemia sekunder menurut bahan adalah…',['>16,5–18,5 g/dL','>12,5–13,5 g/dL','>10,0–12,0 g/dL','>26,0–30,0 g/dL','>22,0–26,0 g/dL'],'Polisitemia sekunder ditandai hemoglobin >16,5–18,5 g/dL. Angka >26–30 adalah HCO₃⁻ (mEq/L) pada kompensasi ginjal.','',['5.05']],
+[5,'Akibat darah yang mengental pada PPOK terhadap jantung adalah…',['Kor pulmonale','Gagal jantung kiri','Sindrom Trousseau','Endotelitis','Syok septik'],'Darah kental memperberat kerja jantung kanan hingga bengkak dan gagal memompa (kor pulmonale).','',['5.06']],
+[5,'Penjelasan paling tepat untuk kadar HCO₃⁻ pasien ini adalah…',['Ginjal menahan bikarbonat untuk menjaga pH','Paru membuang bikarbonat lebih lambat','Hati memproduksi bikarbonat berlebihan','Polisitemia menaikkan bikarbonat darah','Steroid inhalasi menahan bikarbonat'],'Pada retensi CO₂ menahun ginjal menahan bikarbonat (HCO₃⁻ >26–30 mEq/L) agar pH tetap normal; ini kompensasi, bukan gangguan baru.','Pasien PPOK lama dalam kondisi stabil. AGD: pH 7,38; PaCO₂ 56 mmHg; HCO₃⁻ 31 mEq/L.',['5.07']],
+[5,'Fungsi normal alfa-1 antitripsin adalah…',['Melindungi paru dari elastase neutrofil','Melindungi paru dari mieloperoksidase','Memecah asam mikolat dinding kuman','Menghambat tirosin kinase sel tumor','Menekan pelepasan eritropoietin ginjal'],'AAT dihasilkan hati untuk melindungi jaringan lentur paru dari enzim perusak elastase neutrofil. Tanpa AAT, dinding alveolus hancur menjadi emfisema.','',['5.08']],
+[5,'Akibat kelainan gen SERPINA1 alel Pi*ZZ terhadap alfa-1 antitripsin adalah…',['AAT gagal keluar dari hati','AAT dipecah cepat di paru','AAT gagal dibuat oleh ginjal','AAT terbuang lewat urine','AAT diikat oleh elastase'],'Pada alel Pi*ZZ enzim tetap dibuat di hati tetapi gagal keluar, sehingga kadar serum rendah dan paru tidak terlindungi.','',['5.08']],
+[5,'Pemeriksaan yang wajib dilakukan pada pasien ini adalah…',['Kadar alfa-1 antitripsin serum','Eosinofil darah tepi','Uji IGRA darah','Petanda tumor CEA','Aktivitas ADA pleura'],'Emfisema parah pada usia <45 tahun, dominan di basal, tanpa riwayat merokok berat adalah kunci kecurigaan defisiensi AAT dan wajib diskrining kadar AAT serum.','Pria 38 tahun, tidak pernah merokok berat, didiagnosis emfisema parah yang dominan di bagian bawah paru.',['5.09']],
+[5,'Gambaran yang paling memicu kecurigaan defisiensi alfa-1 antitripsin adalah…',['Emfisema basal pada usia <45 tahun','Emfisema apeks pada usia >65 tahun','Bronkitis akut pada usia <2 tahun','Kavitas apeks pada usia <45 tahun','Emfisema basal pada usia >65 tahun'],'Kecurigaan kunci: emfisema parah di usia muda (<45 tahun), terutama bagian bawah paru, tanpa riwayat merokok berat.','',['5.09']],
+[5,'Kadar alfa-1 antitripsin serum pada defisiensi (alel Pi*ZZ) menurut bahan adalah…',['<50–80 mg/dL','<150–200 mg/dL','<5–8 mg/dL','<300–400 mg/dL','<500–800 mg/dL'],'Tabel ringkas bahan mencantumkan kadar serum <50–80 mg/dL pada defisiensi AAT.','',['5.10']],
+
+/* ===== Bab 6 ===== */
+[6,'Fungsi utama petanda tumor pada kanker paru adalah…',['Menilai respons kemoterapi dan kekambuhan','Skrining awal pada populasi sehat','Menegakkan diagnosis pasti kanker paru','Menentukan stadium tumor secara tunggal','Memilih obat tertarget sesuai mutasi'],'Petanda tumor dipakai untuk menilai keberhasilan kemoterapi dan mendeteksi kekambuhan dini. Pemilihan obat tertarget memakai profil genetik, bukan petanda tumor.','',['6.01']],
+[6,'Tanggapan yang paling tepat atas permintaan tersebut adalah…',['Kurang tepat; radang biasa pun menaikkannya','Tepat; CEA spesifik untuk kanker paru','Tepat; asalkan digabung dengan NSE','Kurang tepat; CEA hanya naik pada SCLC','Kurang tepat; skrining harus memakai PD-L1'],'Petanda tumor bukan alat skrining populasi sehat karena radang kronis non-kanker dapat memberi hasil positif palsu. CEA dominan pada adenokarsinoma, bukan SCLC.','Pria 45 tahun tanpa keluhan meminta pemeriksaan CEA untuk "memastikan tidak ada kanker paru".',['6.01']],
+[6,'Petanda tumor yang sangat khas untuk karsinoma sel skuamosa paru adalah…',['CYFRA 21-1 dan SCC','NSE dan ProGRP','CEA dan ProGRP','CEA dan NSE','ESAT-6 dan CFP-10'],'CYFRA 21-1 dan SCC khas skuamosa; NSE dan ProGRP untuk sel kecil; CEA untuk adenokarsinoma.','',['6.02']],
+[6,'CEA dominan meningkat pada…',['Adenokarsinoma paru','Karsinoma sel skuamosa','Kanker paru sel kecil','Limfoma','Empiema bakteri'],'CEA dominan meningkat pada adenokarsinoma paru. Skuamosa ditandai CYFRA 21-1 dan SCC.','',['6.03']],
+[6,'Jenis kanker paru yang paling sesuai dengan petanda tersebut adalah…',['Kanker paru sel kecil','Adenokarsinoma paru','Karsinoma sel skuamosa','Limfoma paru','Tumor dinding pleura'],'NSE dan ProGRP sangat spesifik untuk kanker paru sel kecil (SCLC).','Pasien dengan massa paru menjalani kemoterapi; yang dipantau berkala adalah kadar NSE dan ProGRP yang tinggi saat diagnosis.',['6.04']],
+[6,'Kanker paru sel kecil (SCLC) berasal dari…',['Sel saraf endokrin','Sel skuamosa bronkus','Sel kelenjar bronkus','Pneumosit alveolus','Makrofag alveolus'],'SCLC berasal dari sel saraf endokrin, sehingga petandanya NSE dan ProGRP.','',['6.04']],
+[6,'Penyebab kelainan kalsium pada pasien ini adalah…',['PTHrP yang dilepas sel kanker','PTH dari kelenjar paratiroid','Eritropoietin dari ginjal','Feritin dari makrofag','Elastase dari neutrofil'],'Sel kanker skuamosa melepaskan hormon tiruan PTHrP yang mengikis kalsium tulang ke darah. PTH asli justru tersupresi rendah, sehingga bukan paratiroid penyebabnya.','Pasien karsinoma sel skuamosa paru: kalsium darah sangat tinggi, hormon paratiroid (PTH) rendah.',['6.05']],
+[6,'Profil laboratorium hiperkalsemia malignansi adalah…',['Kalsium tinggi, PTH rendah','Kalsium tinggi, PTH tinggi','Kalsium rendah, PTH tinggi','Kalsium rendah, PTH rendah','Kalsium normal, PTH tinggi'],'Kalsium melonjak akibat PTHrP dari tumor, sementara hormon paratiroid asli tubuh tersupresi rendah.','',['6.05']],
+[6,'Sindrom paraneoplastik yang paling sesuai adalah…',['Sindrom Trousseau','DIC akibat sepsis','Imunotrombosis','Polisitemia sekunder','Hiperkalsemia malignansi'],'Sel kanker melepas zat pemicu bekuan sehingga terjadi DVT atau emboli paru berulang tanpa sebab jelas (sindrom Trousseau). DIC di bahan terkait sepsis; imunotrombosis terkait COVID-19.','Wanita 58 tahun mengalami DVT tungkai berulang tanpa faktor pencetus jelas; pemeriksaan lanjutan menemukan massa paru.',['6.06']],
+[6,'Yang diperiksa pada liquid biopsy adalah…',['Serpihan DNA tumor bebas di darah','Sel tumor utuh di dalam dahak','Protein PD-L1 pada jaringan tumor','Petanda tumor CEA di dalam serum','Antigen ESAT-6 dalam darah pasien'],'Liquid biopsy memeriksa profil genetik dari serpihan DNA tumor bebas di darah, sebagai alternatif jaringan tumor, untuk memilih obat tertarget.','',['6.07']],
+[6,'Obat tertarget untuk kanker paru dengan mutasi gen EGFR adalah…',['Osimertinib atau gefitinib','Alectinib atau crizotinib','Pembrolizumab atau gefitinib','Alectinib atau osimertinib','Crizotinib atau pembrolizumab'],'Mutasi EGFR diterapi penghambat tirosin kinase (osimertinib, gefitinib). Alectinib dan crizotinib untuk fusi ALK/ROS1; pembrolizumab untuk PD-L1 tinggi.','',['6.08']],
+[6,'Obat tertarget yang sesuai adalah…',['Alectinib','Osimertinib','Gefitinib','Pembrolizumab','Rifampisin'],'Fusi gen ALK/ROS1 diberi penghambat ALK (alectinib, crizotinib). Osimertinib dan gefitinib untuk mutasi EGFR.','Pemeriksaan genetik jaringan tumor paru seorang pasien menunjukkan fusi gen ALK.',['6.09']],
+[6,'Terapi yang paling sesuai adalah…',['Pembrolizumab tanpa kemoterapi','Osimertinib tanpa kemoterapi','Crizotinib tanpa kemoterapi','Kemoterapi tanpa imunoterapi','Gefitinib bersama kemoterapi'],'Skor PD-L1 sel tumor >50% merespons sangat baik terhadap imunoterapi antibodi pembrolizumab tanpa perlu kemoterapi konvensional.','Pasien kanker paru tanpa mutasi EGFR maupun fusi ALK/ROS1. Skor PD-L1 sel tumor 70%.',['6.10']],
+[6,'Protein PD-L1 pada tumor paru diperiksa dengan…',['Pewarnaan jaringan','Liquid biopsy','Kultur jaringan','Petanda tumor serum','Analisis gas darah'],'PD-L1 diperiksa dengan pewarnaan jaringan tumor; batas respons sangat baik terhadap pembrolizumab adalah skor sel tumor >50%.','',['6.10']],
+
+/* ===== Bab 7 ===== */
+[7,'Kerusakan yang dipicu SARS-CoV-2 pada kasus berat adalah…',['Endotelitis dan badai radang sistemik','Konsolidasi dan nekrosis kaseosa','Emfisema dan polisitemia sekunder','Bronkiolitis dan retraksi dada','Kavitas dan hemoptisis masif'],'Pada kasus berat virus memicu kerusakan dinding pembuluh darah (endotelitis) dan badai zat radang sistemik.','',['7.01']],
+[7,'Batas limfopenia pada COVID-19 berat menurut bahan adalah…',['<1.000/µL','<100/µL','<300/µL','<5.000/µL','<100.000/µL'],'Limfosit turun drastis (<1.000/µL) karena dirusak virus dan terbunuh badai sitokin. Angka <100.000/µL adalah batas trombosit pada DIC.','',['7.02']],
+[7,'Makna perubahan NLR tersebut adalah…',['Alarm dini pasien akan jatuh kritis','Tanda awal fase penyembuhan','Bukti infeksi bakteri sekunder','Tanda kekurangan zat besi','Tanda bekuan darah di paru'],'Rasio neutrofil terhadap limfosit (NLR) yang melambung tinggi adalah alarm dini pasien akan jatuh kritis. Superinfeksi bakteri dinilai dari PCT; bekuan dari D-dimer.','Pasien COVID-19 hari ke-7 perawatan: limfosit terus turun dan rasio neutrofil/limfosit (NLR) melambung tinggi.',['7.03']],
+[7,'Feritin yang meroket pada COVID-19 berat mencerminkan…',['Peradangan ganas mirip badai sitokin','Kelebihan zat besi dari makanan','Infeksi bakteri sekunder di paru','Bekuan darah aktif di sirkulasi paru','Kerusakan ginjal akibat hipoperfusi'],'Feritin bukan sekadar penanda zat besi: pada badai sitokin, makrofag melepaskan feritin secara masif (MAS-like).','',['7.04']],
+[7,'Kadar feritin pada sindrom hiperferitinemia COVID-19 adalah…',['>1.000–2.000 ng/mL','>100–200 ng/mL','>0,5–2,0 ng/mL','>35–40 ng/mL','>20–50 ng/mL'],'Feritin dilepas masif hingga >1.000–2.000 ng/mL. Rentang >0,5–2,0 ng/mL adalah lonjakan PCT pada infeksi bakteri.','',['7.04']],
+[7,'Lonjakan tajam D-dimer pada COVID-19 berat menandakan…',['Imunotrombosis di sirkulasi paru','Pirau sejati di alveolus','Superinfeksi bakteri sekunder','Polisitemia sekunder','Kelelahan otot pernapasan'],'D-dimer yang melonjak menandakan kaskade bekuan darah aktif di sirkulasi paru (imunotrombosis) yang memicu sumbatan pembuluh mendadak.','',['7.05']],
+[7,'Kadar prokalsitonin pada infeksi murni COVID-19 adalah…',['Tetap rendah, <0,25 ng/mL','Naik sedang, 0,25–0,5 ng/mL','Naik tajam, >0,5–2,0 ng/mL','Naik masif, >1.000 ng/mL','Naik turun, 2–10 ng/mL'],'Pada infeksi murni virus, PCT tetap tenang di bawah 0,25 ng/mL; lonjakan >0,5–2,0 ng/mL berarti ada tumpangan bakteri.','',['7.06']],
+[7,'Penjelasan paling mungkin atas perubahan PCT tersebut adalah…',['Infeksi bakteri sekunder','Badai sitokin memuncak','Imunotrombosis paru','Perjalanan wajar COVID-19','Sindrom hiperferitinemia'],'PCT pada COVID-19 murni tetap rendah. Lonjakan mendadak >0,5–2,0 ng/mL adalah tanda tumpangan infeksi bakteri, misalnya pneumonia kuman rumah sakit pada pasien berventilator. Badai sitokin tercermin pada feritin, bukan PCT.','Pasien COVID-19 berat terpasang ventilator sejak 9 hari. PCT yang semula 0,1 ng/mL kini 3,2 ng/mL, disertai demam baru.',['7.07']],
+[7,'Biomarker yang lonjakan mendadaknya menandakan superinfeksi bakteri pada COVID-19 adalah…',['Prokalsitonin','Feritin','D-dimer','NLR','Laktat'],'Prokalsitonin tetap rendah pada infeksi virus murni, sehingga lonjakannya mengarah ke tumpangan bakteri. Feritin, D-dimer, dan NLR memang sudah naik oleh hiperinflamasi COVID-19 itu sendiri.','',['7.07']],
+[7,'Interpretasi yang paling tepat adalah…',['Hiperinflamasi tanpa tanda tumpangan bakteri','Hiperinflamasi dengan tumpangan bakteri','Infeksi bakteri tanpa hiperinflamasi','Infeksi virus ringan tanpa hiperinflamasi','Defisiensi besi dengan infeksi bakteri'],'Limfopenia <1.000/µL, feritin >1.000–2.000 ng/mL, dan D-dimer tinggi adalah pilar badai hiperinflamasi. PCT yang tetap <0,25 ng/mL sesuai infeksi murni COVID-19, belum ada tanda superinfeksi bakteri.','Pasien COVID-19 berat: limfosit 600/µL, feritin 2.400 ng/mL, D-dimer melonjak tajam, PCT 0,1 ng/mL.',['7.02','7.06']],
+];
+
+(function(){
+'use strict';
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const shuf=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={
+  get(k,d){try{const v=localStorage.getItem(META.id+'.'+k);return v==null?d:JSON.parse(v);}catch(e){return d;}},
+  set(k,v){try{localStorage.setItem(META.id+'.'+k,JSON.stringify(v));}catch(e){}},
+  del(k){try{localStorage.removeItem(META.id+'.'+k);}catch(e){}}
+};
+const CH=META.bab.map((n,i)=>({id:i+1,n}));
+const KEYS='ABCDE', SEC_PER_Q=60;
+const Q=[],QB={},cnt={};
+QRAW.forEach(r=>{cnt[r[0]]=(cnt[r[0]]||0)+1;const q={id:r[0]+'-'+cnt[r[0]],c:r[0],q:r[1],o:r[2],e:r[3],s:r[4]||''};Q.push(q);QB[q.id]=q;});
+let M=store.get('m',{});            // id -> 1 benar / 0 salah (jawaban terakhir)
+let cfg=Object.assign({mode:'latihan',n:20,ch:CH.map(c=>c.id),kasus:false},store.get('cfg',{}));
+let S=null, R=null, timer=null, rvFilter='salah';
+const chName=c=>CH.find(x=>x.id===c).n;
+const chStat=c=>{const qs=Q.filter(q=>q.c===c);return{n:qs.length,ok:qs.filter(q=>M[q.id]===1).length};};
+const wrongIds=()=>Q.filter(q=>M[q.id]===0).map(q=>q.id);
+
+/* tema */
+const root=document.documentElement;
+{const t=store.get('theme','');if(t)root.dataset.theme=t;}
+$('#theme').onclick=()=>{const dark=root.dataset.theme?root.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;root.dataset.theme=dark?'light':'dark';store.set('theme',root.dataset.theme);};
+
+/* dialog konfirmasi */
+function ask(msg,ok){return new Promise(res=>{const d=$('#dlg');if(!d.showModal){res(confirm(msg));return;}
+  $('#dlgmsg').textContent=msg;$('#dlgok').textContent=ok;d.returnValue='no';d.onclose=()=>res(d.returnValue==='yes');d.showModal();});}
+$$('#dlg button').forEach(b=>b.onclick=()=>$('#dlg').close(b.value));
+
+/* tab utama */
+function go(v){['materi','quiz'].forEach(x=>{$('#v-'+x).hidden=x!==v;$('#tab-'+x).setAttribute('aria-selected',x===v);});
+  if(v==='quiz'&&!S&&!R)renderSetup();window.scrollTo(0,0);}
+$('#tab-materi').onclick=()=>go('materi');
+$('#tab-quiz').onclick=()=>go('quiz');
+
+/* materi */
+$$('.ch table').forEach(t=>{const w=document.createElement('div');w.className='tw'+(t.rows[0].cells.length>=5?' wide':'');t.replaceWith(w);w.appendChild(t);});
+function buildNav(){$('#chnav').innerHTML=CH.map(c=>{const s=chStat(c.id);return `<button role="tab" data-ch="${c.id}"><span class="no">${c.id}</span><span class="nm">${esc(c.n)}</span><span class="pc">${s.ok}/${s.n}</span></button>`;}).join('');}
+function openCh(c,scroll){
+  if(!CH.some(x=>x.id===c))c=1;
+  $$('.ch').forEach(s=>s.classList.toggle('on',+s.dataset.ch===c));
+  $$('#chnav button').forEach(b=>{const on=+b.dataset.ch===c;b.classList.toggle('on',on);b.setAttribute('aria-selected',on);
+    if(on){const n=$('#chnav');if(n.scrollWidth>n.clientWidth)n.scrollLeft=b.offsetLeft-(n.clientWidth-b.offsetWidth)/2;}});
+  store.set('ch',c);if(scroll)window.scrollTo(0,0);
+}
+$('#chnav').onclick=e=>{const b=e.target.closest('button');if(b)openCh(+b.dataset.ch,true);};
+$$('.ch').forEach(s=>{const c=+s.dataset.ch,nx=CH.find(x=>x.id===c+1),f=document.createElement('div');f.className='chfoot';
+  f.innerHTML=`<button class="btn pri" data-quiz="${c}">Latihan bab ini · ${chStat(c).n} soal</button>`+(nx?`<button class="btn" data-next="${nx.id}">Lanjut: ${esc(nx.n)} →</button>`:`<button class="btn" data-quiz="0">Latihan semua bab →</button>`);
+  s.appendChild(f);});
+$('#v-materi').addEventListener('click',e=>{const b=e.target.closest('[data-next],[data-quiz]');if(!b)return;
+  if(b.dataset.next){openCh(+b.dataset.next,true);return;}
+  const c=+b.dataset.quiz;cfg.ch=c?[c]:CH.map(x=>x.id);cfg.kasus=false;store.set('cfg',cfg);
+  if(S){go('quiz');return;}R=null;go('quiz');renderSetup();});
+
+/* layar quiz */
+function screen(n){['setup','run','result'].forEach(x=>$('#'+x).hidden=x!==n);}
+
+function pool(){return Q.filter(q=>cfg.ch.includes(q.c)&&(!cfg.kasus||q.s));}
+function renderSetup(){
+  clearInterval(timer);screen('setup');
+  const saved=S||store.get('s',null), tot=Q.length, ok=Q.filter(q=>M[q.id]===1).length, wr=wrongIds().length;
+  const nk=Q.filter(q=>q.s).length;
+  $('#setup').innerHTML=
+  (saved&&saved.items?`<div class="card resume"><p><strong>Ada sesi yang belum selesai.</strong><br>${saved.mode==='ujian'?'Ujian':'Latihan'} · soal ${Math.min(saved.i+1,saved.items.length)} dari ${saved.items.length}</p><button class="btn pri sm" id="resume">Lanjutkan</button><button class="btn sm" id="discard">Buang</button></div>`:'')+
+  `<h2>Latihan soal</h2><p class="lead">${tot} soal, ${nk} di antaranya berbasis kasus. Soal yang belum pernah muncul dan yang pernah salah didahulukan.</p>
+  <div class="overall"><div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="${tot}" aria-valuenow="${ok}" aria-label="Soal dikuasai"><i style="width:${ok/tot*100}%"></i></div>
+    <div class="row"><span><strong>${ok}</strong> dari ${tot} soal dikuasai</span>${Object.keys(M).length?'<button class="link" id="reset">Reset progres</button>':''}</div></div>
+  <fieldset><legend>Mode</legend><div class="modes">
+    <label class="pick"><input type="radio" name="mode" value="latihan"><b>Latihan</b><small>Pembahasan muncul setelah tiap jawaban.</small></label>
+    <label class="pick"><input type="radio" name="mode" value="ujian"><b>Ujian</b><small>Berwaktu 1 menit per soal. Pembahasan di akhir.</small></label></div></fieldset>
+  <fieldset><legend>Bab <span class="sp"><button type="button" class="link" id="all">Semua</button><button type="button" class="link" id="none">Kosongkan</button></span></legend>
+    <div class="chips">${CH.map(c=>{const s=chStat(c.id);return `<label class="pick"><input type="checkbox" name="ch" value="${c.id}"><b>${esc(c.n)}</b><small>${s.ok}/${s.n} dikuasai</small></label>`;}).join('')}</div></fieldset>
+  <fieldset><legend>Jumlah soal</legend><div class="seg">${[10,20,40,0].map(n=>`<label class="pick"><input type="radio" name="n" value="${n}">${n||'Semua'}</label>`).join('')}</div></fieldset>
+  <label class="check"><input type="checkbox" id="kasus"> Hanya soal berbasis kasus</label>
+  <div class="actbar">${wr?`<button class="btn fit" id="redo">Ulangi ${wr} yang salah</button>`:''}<button class="btn pri" id="start"></button></div>`;
+  $$('#setup input[name=mode]').forEach(i=>i.checked=i.value===cfg.mode);
+  $$('#setup input[name=ch]').forEach(i=>i.checked=cfg.ch.includes(+i.value));
+  $$('#setup input[name=n]').forEach(i=>i.checked=+i.value===cfg.n);
+  $('#kasus').checked=cfg.kasus;
+  syncSetup();
+}
+function syncSetup(){
+  const m=$('#setup input[name=mode]:checked'),n=$('#setup input[name=n]:checked');
+  cfg.mode=m?m.value:'latihan';cfg.n=n?+n.value:20;
+  cfg.ch=$$('#setup input[name=ch]:checked').map(i=>+i.value);cfg.kasus=$('#kasus').checked;store.set('cfg',cfg);
+  $$('#setup .pick').forEach(l=>l.classList.toggle('on',$('input',l).checked));
+  const av=pool().length,k=cfg.n?Math.min(cfg.n,av):av,b=$('#start');
+  b.disabled=!k;b.textContent=!cfg.ch.length?'Pilih minimal satu bab':!k?'Tidak ada soal yang cocok':`Mulai ${cfg.mode==='ujian'?'ujian':'latihan'} · ${k} soal`;
+}
+$('#setup').addEventListener('change',syncSetup);
+$('#setup').addEventListener('click',async e=>{const id=e.target.id;
+  if(id==='all'||id==='none'){$$('#setup input[name=ch]').forEach(i=>i.checked=id==='all');syncSetup();}
+  else if(id==='start'){const p=pool(),rank=q=>M[q.id]===undefined?0:M[q.id]===0?1:2;
+    const pick=shuf(p).sort((a,b)=>rank(a)-rank(b)).slice(0,cfg.n||p.length);begin(shuf(pick).map(q=>q.id),cfg.mode);}
+  else if(id==='redo')begin(shuf(wrongIds()),'latihan');
+  else if(id==='resume'){S=S||store.get('s',null);startRun();}
+  else if(id==='discard'){S=null;store.del('s');renderSetup();}
+  else if(id==='reset'&&await ask('Hapus seluruh catatan soal yang dikuasai dan yang salah?','Hapus')){M={};store.set('m',M);buildNav();openCh(store.get('ch',1));renderSetup();}
+});
+
+/* sesi */
+function begin(ids,mode){S={mode,items:ids.map(id=>({id,ord:shuf([0,1,2,3,4]),pick:null,flag:false})),i:0,left:ids.length*SEC_PER_Q,total:ids.length*SEC_PER_Q};R=null;save();startRun();}
+function save(){if(S)store.set('s',S);}
+function startRun(){
+  if(!S||!S.items||!S.items.every(it=>QB[it.id])){S=null;store.del('s');renderSetup();return;}
+  screen('run');clearInterval(timer);
+  if(S.mode==='ujian')timer=setInterval(()=>{S.left--;drawInfo();if(S.left%5===0)save();if(S.left<=0)finish();},1000);
+  renderRun();window.scrollTo(0,0);
+}
+const answered=()=>S.items.filter(it=>it.pick!==null).length;
+function drawInfo(){const el=$('#rinfo');
+  if(S.mode==='ujian'){const t=Math.max(0,S.left);el.textContent='⏱ '+Math.floor(t/60)+':'+String(t%60).padStart(2,'0');el.classList.toggle('low',t<=60);}
+  else{el.classList.remove('low');el.textContent=S.items.filter(it=>it.pick===0).length+' benar';}}
+function renderRun(){
+  const it=S.items[S.i],q=QB[it.id],ex=S.mode==='ujian',ans=it.pick!==null,rev=!ex&&ans,last=S.i===S.items.length-1,n=S.items.length;
+  $('#rpos').textContent=`Soal ${S.i+1} dari ${n}`;drawInfo();
+  $('#rbar').style.width=answered()/n*100+'%';$('#rbarwrap').setAttribute('aria-valuenow',answered());$('#rbarwrap').setAttribute('aria-valuemax',n);
+  $('#rscen').hidden=!q.s;$('#rscen').textContent=q.s;$('#rq').textContent=q.q;
+  $('#ropts').innerHTML=it.ord.map((oi,k)=>{let c='',mk='';
+    if(rev){if(oi===0){c=' ok';mk='✓';}else if(oi===it.pick){c=' no';mk='✗';}else c=' dim';}else if(oi===it.pick)c=' sel';
+    return `<button class="opt${c}" data-k="${k}"${rev?' disabled':''}${ex?` aria-pressed="${oi===it.pick}"`:''}><span class="key">${KEYS[k]}</span><span class="otx">${esc(q.o[oi])}</span><span class="mk" aria-hidden="true">${mk}</span></button>`;}).join('');
+  const fb=$('#rfb');fb.hidden=!rev;
+  if(rev){const ok=it.pick===0;fb.className='fb'+(ok?'':' no');
+    fb.innerHTML=`<b>${ok?'✓ Benar':'✗ Belum tepat'}</b>${ok?'':`<p>Jawaban: <strong>${KEYS[it.ord.indexOf(0)]}. ${esc(q.o[0])}</strong></p>`}<p>${esc(q.e)}</p><span class="src">Bab ${q.c} · ${esc(chName(q.c))}</span>`;}
+  $('#prevbtn').hidden=!ex;$('#prevbtn').disabled=S.i===0;
+  $('#flagbtn').hidden=!ex;$('#flagbtn').setAttribute('aria-pressed',it.flag);
+  const nb=$('#nextbtn');nb.hidden=!ex&&!ans;nb.textContent=last?(ex?'Kumpulkan':'Lihat hasil'):'Berikutnya →';nb.classList.toggle('pri',!ex||last||ans);
+  $('#rhint').hidden=ex||ans;
+  $('#endbtn').textContent=ex?'Kumpulkan':'Akhiri';
+  $('#rgridwrap').hidden=!ex;
+  if(ex)$('#rgrid').innerHTML=S.items.map((x,k)=>`<button data-go="${k}" class="${x.pick!==null?'done':''}${k===S.i?' cur':''}${x.flag?' flag':''}" aria-label="Soal ${k+1}${x.pick!==null?', terjawab':''}${x.flag?', ragu':''}">${k+1}</button>`).join('');
+}
+function choose(k){const it=S.items[S.i];if(!it||k>4)return;
+  if(S.mode==='latihan'){if(it.pick!==null)return;it.pick=it.ord[k];M[it.id]=it.pick===0?1:0;store.set('m',M);save();renderRun();
+    const fb=$('#rfb');if(fb.getBoundingClientRect().bottom>innerHeight-80)fb.scrollIntoView({block:'center',behavior:'smooth'});$('#nextbtn').focus({preventScroll:true});}
+  else{it.pick=it.pick===it.ord[k]?null:it.ord[k];save();renderRun();const b=$(`#ropts [data-k="${k}"]`);if(b)b.focus({preventScroll:true});}
+}
+function move(d){const j=S.i+d;if(j<0)return;if(j>=S.items.length){S.mode==='ujian'?tryEnd():finish();return;}S.i=j;save();renderRun();window.scrollTo(0,0);$('#rq').focus({preventScroll:true});}
+async function tryEnd(){const n=S.items.length,a=answered();
+  const msg=S.mode==='ujian'?(a<n?`${n-a} soal belum dijawab dan akan dihitung salah. Kumpulkan sekarang?`:'Semua soal sudah dijawab. Kumpulkan sekarang?')
+    :(a?`Akhiri sesi? ${a} dari ${n} soal sudah dijawab; sisanya tidak dihitung.`:'Akhiri sesi? Belum ada soal yang dijawab.');
+  if(await ask(msg,S.mode==='ujian'?'Kumpulkan':'Akhiri'))finish();}
+function finish(){
+  if(!S)return;
+  clearInterval(timer);if($('#dlg').open)$('#dlg').close('no');
+  const ex=S.mode==='ujian',items=ex?S.items:S.items.filter(it=>it.pick!==null);
+  if(ex){items.forEach(it=>{if(it.pick!==null)M[it.id]=it.pick===0?1:0;});store.set('m',M);}
+  store.del('s');const used=ex?S.total-Math.max(0,S.left):0;const mode=S.mode;S=null;buildNav();openCh(store.get('ch',1));
+  if(!items.length){renderSetup();return;}
+  R={mode,items,used};rvFilter=items.some(it=>it.pick!==0)?'salah':'semua';renderResult();window.scrollTo(0,0);
+}
+$('#ropts').onclick=e=>{const b=e.target.closest('.opt');if(b&&!b.disabled)choose(+b.dataset.k);};
+$('#nextbtn').onclick=()=>move(1);$('#prevbtn').onclick=()=>move(-1);$('#endbtn').onclick=tryEnd;
+$('#flagbtn').onclick=()=>{const it=S.items[S.i];it.flag=!it.flag;save();renderRun();};
+$('#rgrid').onclick=e=>{const b=e.target.closest('[data-go]');if(b){S.i=+b.dataset.go;save();renderRun();window.scrollTo(0,0);}};
+document.addEventListener('keydown',e=>{
+  if(!S||$('#run').hidden||$('#v-quiz').hidden||$('#dlg').open||e.ctrlKey||e.metaKey||e.altKey)return;
+  const k=e.key.toLowerCase(),i='12345'.indexOf(k)>=0?'12345'.indexOf(k):'abcde'.indexOf(k);
+  if(k.length===1&&i>=0){e.preventDefault();choose(i);return;}
+  const onBtn=e.target.tagName==='BUTTON'||e.target.tagName==='SUMMARY';
+  if((k==='enter'&&!onBtn)||k==='arrowright'){if(!$('#nextbtn').hidden){e.preventDefault();move(1);}}
+  else if(k==='arrowleft'&&S.mode==='ujian'){e.preventDefault();move(-1);}
+  else if(k==='r'&&S.mode==='ujian'){e.preventDefault();$('#flagbtn').click();}
+});
+
+/* hasil */
+function renderResult(){
+  screen('result');
+  const it=R.items,n=it.length,ok=it.filter(x=>x.pick===0).length,pct=Math.round(ok/n*100),wrong=it.filter(x=>x.pick!==0);
+  const by={};it.forEach(x=>{const c=QB[x.id].c;by[c]=by[c]||{n:0,ok:0};by[c].n++;if(x.pick===0)by[c].ok++;});
+  const rows=Object.keys(by).map(c=>({c:+c,n:by[c].n,ok:by[c].ok,p:by[c].ok/by[c].n})).sort((a,b)=>a.c-b.c);
+  const weak=rows.filter(r=>r.p<1).sort((a,b)=>a.p-b.p||b.n-a.n)[0];
+  const verdict=pct>=85?(R.mode==='ujian'?'Kuat. Pertahankan dengan mengulang soal kasus secara berkala.':'Kuat. Naikkan tantangan: coba mode Ujian atau hanya soal berbasis kasus.')
+    :pct>=65?'Sudah di jalur. Tinjau soal yang salah di bawah, lalu ulangi.'
+    :`Belum aman. Baca ulang bab ${weak?esc(chName(weak.c)):''} dahulu, lalu ulangi soal yang salah.`;
+  const tm=R.mode==='ujian'?` · waktu ${Math.floor(R.used/60)} mnt ${R.used%60} dtk`:'';
+  const list=rvFilter==='salah'?wrong:it;
+  $('#result').innerHTML=`
+  <div class="score"><div class="ring" style="--p:${pct}" role="img" aria-label="Skor ${pct} persen"><b>${pct}%</b></div>
+    <div><h2 tabindex="-1" id="rtitle">${ok} dari ${n} benar</h2><p>${verdict}</p><p class="lead" style="margin:4px 0 0">${R.mode==='ujian'?'Ujian':'Latihan'}${tm}</p></div></div>
+  <h3>Per bab</h3>
+  ${rows.map(r=>`<div class="chrow"><span class="nm">${esc(chName(r.c))}</span><span class="ct">${r.ok}/${r.n}</span>
+    <div class="bar"><i class="${r.p<.65?'low':''}" style="width:${r.p*100}%"></i></div>
+    ${r.p<1||r.n<3?`<div class="more"><span>${r.n<3?'Sampel kecil, belum cukup untuk menilai bab ini.':''}</span>${r.p<1?`<button class="link" data-read="${r.c}">Baca bab</button>`:''}</div>`:''}</div>`).join('')}
+  <h3>Tinjau jawaban <span class="sp">${wrong.length?`<button class="tog" data-f="salah" aria-pressed="${rvFilter==='salah'}">Salah (${wrong.length})</button>`:''}<button class="tog" data-f="semua" aria-pressed="${rvFilter==='semua'}">Semua (${n})</button></span></h3>
+  ${list.map(x=>{const q=QB[x.id],good=x.pick===0;return `<details class="rv${good?'':' no'}"${good?'':' open'}><summary><span class="mk">${good?'✓':'✗'}</span><span>${q.s?esc(q.s)+' ':''}<strong>${esc(q.q)}</strong></span></summary>
+    <div class="body"><ol>${x.ord.map(oi=>`<li class="${oi===0?'ok':oi===x.pick?'no':''}">${esc(q.o[oi])}${oi===x.pick?`<span class="you">← jawabanmu</span>`:''}</li>`).join('')}</ol>
+    ${x.pick===null?'<p><em>Tidak dijawab.</em></p>':''}<p>${esc(q.e)}</p></div></details>`;}).join('')}
+  <div class="actbar">${wrong.length?`<button class="btn pri" id="again">Ulangi ${wrong.length} yang salah</button>`:''}<button class="btn${wrong.length?'':' pri'}" id="fresh">Sesi baru</button></div>`;
+}
+$('#result').addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;
+  if(t.dataset.f){rvFilter=t.dataset.f;renderResult();}
+  else if(t.dataset.read){openCh(+t.dataset.read);go('materi');}
+  else if(t.id==='again')begin(shuf(R.items.filter(x=>x.pick!==0).map(x=>x.id)),'latihan');
+  else if(t.id==='fresh'){R=null;renderSetup();window.scrollTo(0,0);}
+});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)save();});
+
+/* mulai */
+buildNav();openCh(store.get('ch',1));
+})();
+
+</script>
+</body>
+</html>

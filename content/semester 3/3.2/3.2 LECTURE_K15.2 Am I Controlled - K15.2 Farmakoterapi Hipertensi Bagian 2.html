@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="id" style="--h:255;--bl:26%">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Am I Controlled? — K15.2 Farmakoterapi Hipertensi Bagian 2</title>
+<style>
+:root{
+  --h:189;--bl:26%;
+  --bg:hsl(var(--h) 14% 96%);--surface:#fff;--sunk:hsl(var(--h) 12% 92%);--ink:hsl(var(--h) 35% 12%);--ink2:hsl(var(--h) 18% 27%);--mute:hsl(var(--h) 10% 39%);--line:hsl(var(--h) 12% 85%);
+  --brand:hsl(var(--h) 80% var(--bl));--brand-ink:#fff;--brand-soft:hsl(var(--h) 45% 92%);
+  --ok:#17723f;--ok-soft:#e2f3e8;--bad:#b0322c;--bad-soft:#fae6e4;--warn:#7d5200;--warn-soft:#fbefd4;
+  --r:12px;--head:56px;
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){
+  --bg:hsl(var(--h) 30% 8%);--surface:hsl(var(--h) 26% 13%);--sunk:hsl(var(--h) 30% 10%);--ink:hsl(var(--h) 15% 93%);--ink2:hsl(var(--h) 12% 78%);--mute:hsl(var(--h) 10% 64%);--line:hsl(var(--h) 18% 22%);
+  --brand:hsl(var(--h) 60% 68%);--brand-ink:hsl(var(--h) 70% 9%);--brand-soft:hsl(var(--h) 42% 18%);
+  --ok:#63d394;--ok-soft:#143325;--bad:#ff8f86;--bad-soft:#3a1c1a;--warn:#f1c466;--warn-soft:#3a2e12;
+  color-scheme:dark;}}
+:root[data-theme=dark]{
+  --bg:hsl(var(--h) 30% 8%);--surface:hsl(var(--h) 26% 13%);--sunk:hsl(var(--h) 30% 10%);--ink:hsl(var(--h) 15% 93%);--ink2:hsl(var(--h) 12% 78%);--mute:hsl(var(--h) 10% 64%);--line:hsl(var(--h) 18% 22%);
+  --brand:hsl(var(--h) 60% 68%);--brand-ink:hsl(var(--h) 70% 9%);--brand-soft:hsl(var(--h) 42% 18%);
+  --ok:#63d394;--ok-soft:#143325;--bad:#ff8f86;--bad-soft:#3a1c1a;--warn:#f1c466;--warn-soft:#3a2e12;
+  color-scheme:dark;}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:calc(var(--head) + 60px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 var(--font);min-height:100vh;overflow-x:hidden}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+[hidden]{display:none!important}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px;border-radius:6px}
+
+/* header */
+.top{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.top-in{max-width:1080px;margin:0 auto;height:var(--head);padding:0 16px;display:flex;align-items:center;gap:12px}
+.brand{font-weight:800;font-size:17px;letter-spacing:-.01em;margin:0;white-space:nowrap}
+.brand span{color:var(--brand)}
+.tabs{display:flex;gap:4px;background:var(--sunk);border-radius:10px;padding:4px;margin-left:auto}
+.tabs button{border:0;background:none;padding:0 16px;min-height:36px;border-radius:7px;font-weight:600;font-size:15px;color:var(--mute)}
+.tabs button[aria-selected=true]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.14)}
+.icon{border:1px solid var(--line);background:var(--surface);width:40px;height:40px;border-radius:10px;font-size:17px;line-height:1;flex:none}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+.credit{font-size:13px;color:var(--mute);margin:14px 0 0}
+
+/* materi */
+.materi{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
+.materi>*{min-width:0}
+.chnav{position:sticky;top:var(--head);z-index:10;background:var(--bg);margin:0 -16px;padding:10px 16px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--line)}
+.chnav::-webkit-scrollbar{display:none}
+.chnav button{flex:none;display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px 0 8px;border:1px solid var(--line);border-radius:22px;background:var(--surface);font-size:14px;font-weight:600;color:var(--ink2);white-space:nowrap}
+.chnav .no{width:26px;height:26px;border-radius:50%;background:var(--sunk);display:grid;place-items:center;font-size:13px;font-variant-numeric:tabular-nums}
+.chnav .pc{font-weight:500;font-size:12px;color:var(--mute);display:none}
+.chnav button.on{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.chnav button.on .no{background:rgba(255,255,255,.25);color:inherit}
+.ch{display:none;max-width:70ch;padding:22px 0 8px}
+.ch.on{display:block}
+.ch h2{font-size:clamp(24px,5vw,30px);line-height:1.2;letter-spacing:-.02em;margin:0 0 16px}
+.ch h3{font-size:19px;line-height:1.3;margin:36px 0 10px;padding-top:18px;border-top:1px solid var(--line)}
+.ch p,.ch ul,.ch ol{margin:0 0 12px;color:var(--ink2)}
+.ch ul,.ch ol:not(.flow){padding-left:22px}
+.ch li{margin-bottom:6px}
+.ch li ul{margin-top:6px}
+.ch strong{color:var(--ink)}
+.def,.awas,.klinis{border-left:4px solid var(--brand);background:var(--surface);padding:12px 14px;border-radius:0 var(--r) var(--r) 0;color:var(--ink)!important}
+.def::before,.awas::before,.klinis::before{display:block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px}
+.def::before{content:"Definisi";color:var(--brand)}
+.awas{border-color:var(--bad);background:var(--bad-soft)}
+.awas::before{content:"Perhatian";color:var(--bad)}
+.klinis{border-color:var(--ok);background:var(--ok-soft)}
+.klinis::before{content:"Contoh";color:var(--ok)}
+.ch figure{margin:0 0 14px}.ch figure img{display:block;max-width:100%;height:auto;border:1px solid var(--line);border-radius:var(--r);background:#fff}.ch figcaption{font-size:13px;color:var(--mute);margin-top:4px}
+.tw{overflow-x:auto;margin:0 0 14px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{padding:10px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+tr:last-child>*{border-bottom:0}
+td[rowspan]{border-right:1px solid var(--line)}
+th{font-size:13px;font-weight:700;color:var(--mute);background:var(--sunk)}
+th[scope=row]{background:none;color:var(--ink);font-size:14px;white-space:nowrap}
+.tw.wide table{min-width:620px}
+.flow{list-style:none;padding:0;margin:14px 0 16px;display:flex;flex-direction:column;gap:22px}
+.flow li{position:relative;margin:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-weight:600;color:var(--ink);text-align:center}
+.flow small{display:block;font-weight:400;font-size:13px;color:var(--mute)}
+.flow li+li::before{content:"↓";position:absolute;left:50%;top:-22px;height:22px;line-height:22px;transform:translateX(-50%);color:var(--brand);font-weight:700}
+.flow.rank{flex-direction:row;gap:26px;flex-wrap:nowrap}
+.flow.rank li{flex:1;padding:10px 4px;font-size:14px}
+.flow.rank li+li::before{content:">";left:-18px;top:50%;transform:translateY(-50%);width:10px}
+.chfoot{display:flex;flex-wrap:wrap;gap:10px;margin:32px 0 40px;padding-top:20px;border-top:1px solid var(--line)}
+
+/* tombol */
+.btn{min-height:48px;padding:0 18px;border-radius:var(--r);border:1px solid var(--line);background:var(--surface);font-weight:600;font-size:15px;color:var(--ink)}
+.btn:hover{border-color:var(--mute)}
+.btn.pri{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.btn.pri:hover{filter:brightness(1.08)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.sm{min-height:40px;padding:0 14px;font-size:14px}
+.link{white-space:nowrap;border:0;background:none;padding:6px 4px;min-height:36px;color:var(--brand);font-weight:600;font-size:14px;text-decoration:underline;text-underline-offset:3px}
+.chfoot .btn{flex:1 1 220px}
+
+/* quiz umum */
+.quiz{max-width:720px;margin:0 auto;padding-top:20px}
+.quiz h2{font-size:24px;letter-spacing:-.02em;margin:0 0 6px}
+.lead{color:var(--mute);margin:0 0 18px;font-size:15px}
+.bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--brand);border-radius:4px;transition:width .25s}
+fieldset{border:0;padding:0;margin:0 0 22px;min-width:0}
+legend{padding:0;margin:0 0 8px;font-weight:700;font-size:15px;display:flex;align-items:center;gap:8px;width:100%}
+legend .sp{margin-left:auto;display:flex;gap:6px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.resume{display:flex;flex-wrap:wrap;gap:10px;align-items:center;border-color:var(--brand);margin-bottom:20px}
+.resume p{margin:0;flex:1 1 200px}
+.overall{margin-bottom:22px}
+.overall .row{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;color:var(--mute);margin-top:4px}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pick{position:relative;display:block;border:2px solid var(--line);border-radius:var(--r);background:var(--surface);padding:12px 14px;cursor:pointer}
+.pick input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.pick b{display:block}
+.pick small{display:block;color:var(--mute);font-size:13px;line-height:1.4}
+.pick.on{border-color:var(--brand);background:var(--brand-soft)}
+.pick:focus-within{outline:3px solid var(--brand);outline-offset:2px}
+.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.chips .pick{padding:10px 12px 10px 44px;min-height:56px}
+.chips .pick::before{content:"";position:absolute;left:12px;top:50%;transform:translateY(-50%);width:22px;height:22px;border-radius:6px;border:2px solid var(--mute);background:var(--surface)}
+.chips .pick.on::before{content:"✓";border-color:var(--brand);background:var(--brand);color:var(--brand-ink);font-weight:800;font-size:15px;display:grid;place-items:center}
+.seg{display:flex;gap:8px}
+.seg .pick{flex:1;text-align:center;padding:10px 4px;font-weight:700}
+.check{display:flex;align-items:center;gap:10px;min-height:44px;margin-bottom:10px;cursor:pointer}
+.check input{width:22px;height:22px;accent-color:var(--brand);flex:none}
+.actbar{position:sticky;bottom:0;z-index:5;display:flex;gap:10px;align-items:center;margin:20px -16px 0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:var(--bg);border-top:1px solid var(--line)}
+.actbar .btn{flex:1}
+.actbar .btn.fit{flex:none}
+.actbar .hint{flex:1;color:var(--mute);font-size:14px;text-align:center}
+
+/* soal */
+.runhead{display:grid;grid-template-columns:1fr auto auto;gap:6px 12px;align-items:center;margin-bottom:14px}
+.runhead .bar{grid-column:1/-1}
+#rpos{font-size:16px}
+#rinfo{font-size:14px;color:var(--mute);font-variant-numeric:tabular-nums;font-weight:600}
+#rinfo.low{color:var(--bad)}
+.qcard{margin-bottom:12px}
+.scen{margin:0 0 10px;padding:12px 14px;background:var(--sunk);border-radius:10px;color:var(--ink2);font-size:15.5px}
+.scen::before{content:"Kasus";display:block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+.qtext{font-size:18px!important;line-height:1.45;font-weight:650;margin:0!important;letter-spacing:0!important}
+.opts{display:grid;gap:8px}
+.opt{display:flex;align-items:flex-start;gap:12px;width:100%;text-align:left;min-height:52px;padding:12px 14px;border:2px solid var(--line);border-radius:var(--r);background:var(--surface);font-size:16px;line-height:1.4}
+.opt:hover:not(:disabled){border-color:var(--brand)}
+.opt .key{flex:none;width:28px;height:28px;border-radius:8px;background:var(--sunk);display:grid;place-items:center;font-weight:700;font-size:14px;color:var(--ink2)}
+.opt .otx{flex:1;padding-top:2px}
+.opt .mk{flex:none;font-weight:800;padding-top:2px}
+.opt:disabled{cursor:default;color:var(--ink);opacity:1}
+.opt.sel{border-color:var(--brand);background:var(--brand-soft)}
+.opt.sel .key{background:var(--brand);color:var(--brand-ink)}
+.opt.ok{border-color:var(--ok);background:var(--ok-soft)}
+.opt.ok .key{background:var(--ok);color:var(--surface)}
+.opt.ok .mk{color:var(--ok)}
+.opt.no{border-color:var(--bad);background:var(--bad-soft)}
+.opt.no .key{background:var(--bad);color:var(--surface)}
+.opt.no .mk{color:var(--bad)}
+.opt.dim{opacity:.62}
+.fb{margin-top:12px;padding:14px;border-radius:var(--r);border-left:4px solid var(--ok);background:var(--ok-soft)}
+.fb.no{border-color:var(--bad);background:var(--bad-soft)}
+.fb b{display:block;font-size:17px;color:var(--ok)}
+.fb.no b{color:var(--bad)}
+.fb p{margin:4px 0 8px}
+.fb .src{font-size:13px;color:var(--mute)}
+.grid{margin-top:14px}
+.grid summary{cursor:pointer;font-weight:600;font-size:14px;min-height:40px;display:flex;align-items:center;color:var(--ink2)}
+#rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:6px;padding:6px 0}
+#rgrid button{position:relative;height:44px;border-radius:8px;border:1px solid var(--line);background:var(--surface);font-weight:600;font-variant-numeric:tabular-nums}
+#rgrid .done{background:var(--brand-soft);border-color:var(--brand)}
+#rgrid .cur{outline:3px solid var(--ink);outline-offset:1px}
+#rgrid .flag::after{content:"";position:absolute;top:4px;right:4px;width:8px;height:8px;border-radius:50%;background:var(--warn)}
+#flagbtn[aria-pressed=true]{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+
+/* hasil */
+.score{display:flex;align-items:center;gap:18px;margin-bottom:8px}
+.ring{--p:0;flex:none;width:112px;height:112px;border-radius:50%;background:conic-gradient(var(--brand) calc(var(--p)*1%),var(--line) 0);display:grid;place-items:center}
+.ring b{width:88px;height:88px;border-radius:50%;background:var(--bg);display:grid;place-items:center;font-size:28px;font-variant-numeric:tabular-nums}
+.score h2{margin:0 0 4px}
+.score p{margin:0;color:var(--ink2)}
+.quiz h3{font-size:17px;margin:28px 0 10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.quiz h3 .sp{margin-left:auto;display:flex;gap:6px}
+.chrow{display:grid;grid-template-columns:1fr auto;gap:2px 12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.chrow .bar{grid-column:1/-1}
+.chrow .nm{font-weight:600}
+.chrow .ct{font-variant-numeric:tabular-nums;color:var(--mute);font-size:14px}
+.chrow .bar i.low{background:var(--bad)}
+.chrow .more{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--mute)}
+.rv{border:1px solid var(--line);border-left:4px solid var(--ok);border-radius:10px;background:var(--surface);margin-bottom:8px}
+.rv.no{border-left-color:var(--bad)}
+.rv summary{cursor:pointer;display:flex;gap:10px;padding:12px 14px;list-style:none;min-height:48px}
+.rv summary::-webkit-details-marker{display:none}
+.rv .mk{flex:none;font-weight:800;color:var(--ok)}
+.rv.no .mk{color:var(--bad)}
+.rv .body{padding:0 14px 14px}
+.rv ol{list-style:upper-alpha;padding-left:24px;margin:8px 0;color:var(--ink2)}
+.rv li.ok{color:var(--ok);font-weight:600}
+.rv li.no{color:var(--bad);text-decoration:line-through}
+.rv li .you{font-size:13px;font-weight:600;text-decoration:none;display:inline-block;margin-left:6px}
+.rv p{margin:8px 0 0}
+.tog{border:1px solid var(--line);background:var(--surface);min-height:36px;padding:0 12px;border-radius:18px;font-size:13px;font-weight:600;color:var(--ink2)}
+.tog[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+dialog{border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--ink);padding:20px;max-width:min(420px,calc(100vw - 32px))}
+dialog::backdrop{background:rgba(0,0,0,.5)}
+dialog p{margin:0 0 18px;font-size:16px}
+dialog .row{display:flex;gap:10px}
+dialog .btn{flex:1}
+
+/* lebar */
+@media (min-width:560px){
+  .flow{flex-direction:row;gap:28px;align-items:stretch}
+  .flow li{flex:1;display:flex;flex-direction:column;justify-content:center}
+  .flow li+li::before{content:"→";left:-28px;top:50%;width:28px;height:auto;line-height:1;transform:translateY(-50%);text-align:center}
+}
+@media (max-width:559px){
+  .tabs button{padding:0 12px}
+  .modes{grid-template-columns:1fr}
+  .ring{width:92px;height:92px}.ring b{width:72px;height:72px;font-size:23px}
+}
+@media (min-width:960px){
+  .materi{grid-template-columns:240px minmax(0,1fr);gap:40px;align-items:start}
+  .chnav{top:calc(var(--head) + 20px);margin:22px 0 0;padding:0;flex-direction:column;gap:4px;overflow:visible;border:0;background:none}
+  .chnav button{border-color:transparent;background:none;border-radius:10px;justify-content:flex-start;white-space:normal;text-align:left;padding:6px 10px 6px 8px}
+  .chnav button:not(.on):hover{background:var(--sunk)}
+  .chnav .nm{flex:1}
+  .chnav .pc{display:block}
+  .chnav button.on .pc{color:inherit;opacity:.85}
+  .actbar{margin-left:0;margin-right:0;padding-left:0;padding-right:0}
+  .opt:hover:not(:disabled){background:var(--brand-soft)}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media print{
+  .top,.chnav,.chfoot,#v-quiz,.credit{display:none!important}
+  #v-materi{display:block!important}
+  .materi{display:block}
+  .ch{display:block!important;max-width:none;page-break-after:always}
+  body{background:#fff;font-size:11pt}
+  .tw{overflow:visible;border:0}
+}
+
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in">
+  <h1 class="brand">Am I <span>Controlled?</span></h1>
+  <div class="tabs" role="tablist" aria-label="Bagian">
+    <button role="tab" id="tab-materi" aria-selected="true" aria-controls="v-materi">Materi</button>
+    <button role="tab" id="tab-quiz" aria-selected="false" aria-controls="v-quiz">Latihan</button>
+  </div>
+  <button class="icon" id="theme" aria-label="Ganti tema terang/gelap" title="Tema terang/gelap">◐</button>
+</div></header>
+
+<main class="wrap">
+<div id="v-materi" role="tabpanel" aria-labelledby="tab-materi">
+  <p class="credit">K15 (2) Farmakoterapi Hipertensi Bagian 2 · Blok 3.2 — Modul Kardiovaskular &amp; Respirasi</p>
+  <div class="materi">
+    <nav class="chnav" id="chnav" role="tablist" aria-label="Bab materi"></nav>
+    <div>
+<section class="ch" data-ch="1">
+<h2>Terapi Awal</h2>
+<p class="def"><strong>Kombinasi awal 2 obat (<em>initial upfront combination</em>)</strong>: memulai dua kelas lini pertama yang berbeda dengan mekanisme kerja komplementer sejak hari pertama, idealnya dalam satu <strong>pil kombinasi tunggal (<em>single-pill combination</em>/SPC)</strong>.</p>
+<h3>Monoterapi atau kombinasi 2 obat?</h3>
+<table>
+<tr><th>Strategi</th><th>Untuk siapa</th><th>Catatan</th></tr>
+<tr><th scope="row">Monoterapi</th><td>Hipertensi <strong>derajat 1 risiko rendah</strong> dengan tensi mendekati target (selisih sistolik &lt;20 mmHg atau diastolik &lt;10 mmHg dari target); lanjut usia sangat rapuh (<em>frail elderly</em>) dengan toleransi hemodinamik rendah.</td><td>Pilihan: ACEi / ARB / CCB / tiazid-like. Bila target belum tercapai: titrasi dosis atau ganti kelas. Hindari polifarmasi terburu-buru pada geriatri rapuh.</td></tr>
+<tr><th scope="row">Kombinasi awal 2 obat</th><td><strong>Hipertensi derajat 2</strong>: tensi ≥20/10 mmHg di atas target, atau ≥140/90 mmHg dengan target &lt;130/80 mmHg. <strong>Wajib sejak hari pertama.</strong></td><td>Penghambat RAAS + CCB atau tiazid, dalam SPC. Tambah pilar ke-3 bila target &lt;130/80 belum tercapai.</td></tr>
+</table>
+<p>SPC dipilih karena menurunkan <em>pill burden</em>, mendongkrak kepatuhan, dan mencegah keengganan klinisi menaikkan obat (<em>clinical inertia</em>).</p>
+<p><strong>Mengapa 2 obat dosis rendah, bukan 1 obat dosis maksimal?</strong></p>
+<ul>
+<li>Menghantam dua jalur patofisiologi sekaligus jauh lebih poten dibanding memaksimalkan satu obat (<em>diminishing returns</em>).</li>
+<li>Efek samping antihipertensi bergantung dosis (<em>dose-dependent</em>); dua obat dosis rendah-sedang memberi penurunan tensi optimal dengan efek samping minimal.</li>
+</ul>
+<h3>Tiga pilar lini pertama</h3>
+<table>
+<tr><th>Pilar</th><th>Contoh obat</th><th>Mekanisme</th></tr>
+<tr><th scope="row">Penghambat RAAS: ACEi</th><td>Ramipril, Lisinopril, Kaptopril</td><td>Menghambat enzim konversi angiotensin I → II</td></tr>
+<tr><th scope="row">Penghambat RAAS: ARB</th><td>Kandesartan, Valsartan, Telmisartan</td><td>Memblokade reseptor AT1</td></tr>
+<tr><th scope="row">CCB dihidropiridin</th><td>Amlodipin, Nifedipin lepas lambat</td><td>Memblokade kanal kalsium tipe L → vasodilatasi arteriol perifer</td></tr>
+<tr><th scope="row">Diuretik tiazid / tiazid-like</th><td>Klortalidon, Indapamid (tiazid-like); Hidroklorotiazid (HCT)</td><td>Menghambat kotransporter Na⁺/Cl⁻ di tubulus distal ginjal</td></tr>
+</table>
+<p>Tiazid-like (klortalidon, indapamid) berdurasi lebih panjang dan punya bukti kardiovaskular superior dibanding HCT.</p>
+<p class="awas"><strong>Beta-blocker bukan lini pertama</strong> untuk hipertensi tanpa penyulit. Hanya dipakai bila ada indikasi wajib khusus (<em>compelling indications</em>): pascaserangan jantung, angina pektoris, HFrEF.</p>
+<h3>Pasangan kombinasi rasional</h3>
+<table>
+<tr><th>Pasangan</th><th>Keuntungan</th><th>Penjelasan</th></tr>
+<tr><td rowspan="2"><strong>Penghambat RAAS + CCB dihidropiridin</strong></td><td>Sinergisme vasodilatasi</td><td>Supresi hormonal dipadu relaksasi kalsium vaskular menurunkan resistensi perifer.</td></tr>
+<tr><td>Pencegahan edema tungkai</td><td>CCB melebarkan arteriol prekapiler tanpa melebarkan venula pascakapiler → tekanan hidrostatik kapiler melonjak → cairan merembes (edema perifer pretibial). ACEi/ARB mendilatasi venula pascakapiler, menormalkan gradien tekanan kapiler, meniadakan bengkak kaki akibat CCB.</td></tr>
+<tr><td rowspan="2"><strong>Penghambat RAAS + tiazid / tiazid-like</strong></td><td>Mematikan kompensasi renin</td><td>Diuretik membuang natrium dan memicu refleks pelepasan renin; ACEi/ARB memblokade refleks ini sehingga penurunan tensi berlipat ganda.</td></tr>
+<tr><td>Keseimbangan kalium</td><td>Diuretik membuang kalium (risiko hipokalemia); penghambat RAAS menahan kalium (risiko hiperkalemia). Gabungannya menjaga kalium serum tetap normal.</td></tr>
+</table>
+<h3>Larangan mutlak: blokade ganda RAAS</h3>
+<p class="awas"><strong>Kontraindikasi absolut:</strong> menggabungkan <strong>ACEi + ARB</strong>, atau ACEi/ARB dengan penghambat renin langsung (<strong>Aliskiren</strong>).</p>
+<p>Bahaya terbukti pada studi <strong>ONTARGET</strong> dan <strong>VA NEPHRON-D</strong>:</p>
+<ul>
+<li>Tidak memberi reduksi mortalitas atau proteksi organ tambahan.</li>
+<li>Melipatgandakan risiko gagal ginjal akut (<em>acute kidney injury</em>/AKI).</li>
+<li>Hiperkalemia berat (&gt;5,5 mEq/L) yang memicu aritmia letal.</li>
+<li>Meningkatkan hipotensi ortostatik berat dan pingsan (sinkop).</li>
+</ul>
+</section>
+
+<section class="ch" data-ch="2">
+<h2>Target &amp; Evaluasi</h2>
+<p class="def"><strong>Target tekanan darah umum dewasa (AHA/ACC): &lt;130/80 mmHg</strong> untuk semua pasien hipertensi umum, DM, dan CKD, guna mereduksi stroke, infark miokard, dan kematian.</p>
+<p><strong>Pelonggaran konservatif</strong> (sistolik 130–139 mmHg) khusus untuk usia &gt;80 tahun, kerapuhan fisik berat (<em>severe frailty</em>), atau risiko jatuh tinggi, demi perfusi organ vital.</p>
+<h3>Efek jas putih (<em>white-coat effect</em>)</h3>
+<table>
+<tr><th>Fenotipe</th><th>Tensi klinik</th><th>Tensi rumah</th><th>Status pasien</th></tr>
+<tr><th scope="row">Hipertensi jas putih</th><td>Tinggi (≥130/80 mmHg)</td><td>Normal</td><td>Belum berobat</td></tr>
+<tr><th scope="row">Jas putih tak terkontrol</th><td>Tinggi</td><td>Normal</td><td>Sudah berobat rutin</td></tr>
+</table>
+<p><strong>Evaluasi wajib:</strong> konfirmasi dengan <strong>HBPM</strong> (tensi rumah 7 hari) atau <strong>ABPM</strong> (24 jam) <em>sebelum</em> titrasi obat, untuk mencegah <em>overtreatment</em> dan hipotensi berbahaya di rumah.</p>
+<h3>Hemodinamik pasien geriatri</h3>
+<table>
+<tr><th>Kondisi</th><th>Ciri</th><th>Mekanisme</th><th>Tindakan</th></tr>
+<tr><th scope="row">Hipertensi sistolik terisolasi (ISH)</th><td>Sistolik ≥140 mmHg, diastolik normal/rendah (&lt;90 mmHg), <em>pulse pressure</em> melebar</td><td>Elastin berkurang dan kolagen meningkat pada aorta → kekakuan arteri (<em>arterial stiffness</em>)</td><td>Terpilih: CCB dihidropiridin (Amlodipin) atau tiazid-like (Klortalidon/Indapamid); tambahan: ACEi atau ARB dosis rendah. Prinsip "<em>start low, go slow</em>": mulai dosis terendah, titrasi perlahan.</td></tr>
+<tr><th scope="row">Hipotensi ortostatik</th><td>Sistolik turun ≥20 mmHg atau diastolik ≥10 mmHg dalam 1–3 menit setelah berdiri</td><td>Refleks baroreseptor tumpul</td><td>Wajib skrining tensi duduk dan berdiri sebelum titrasi obat.</td></tr>
+</table>
+<h3>Pemantauan ginjal: kenaikan kreatinin yang diizinkan</h3>
+<ol class="flow">
+<li>ACEi/ARB<small>merelaksasi arteriol eferen</small></li>
+<li>Tekanan hidraulik intraglomerular turun</li>
+<li>Filtrasi turun sesaat<small>kreatinin naik sedikit</small></li>
+</ol>
+<p>Kenaikan kreatinin serum <strong>≤30% dari baseline</strong> dalam 2–4 minggu pertama adalah fisiologis normal dan bukti renoproteksi; <strong>obat tetap dilanjutkan</strong>. Evaluasi hanya bila kreatinin naik &gt;30% atau kalium &gt;5,5 mEq/L.</p>
+<p class="awas"><strong>Stenosis arteri renalis bilateral</strong> adalah kontraindikasi mutlak ACEi/ARB: filtrasi glomerulus runtuh total, memicu anuria dan AKI berat.</p>
+</section>
+
+<section class="ch" data-ch="3">
+<h2>Komorbiditas</h2>
+<p>Pemilihan antihipertensi mengikuti penyakit penyerta. Ringkasnya:</p>
+<table>
+<tr><th>Kondisi</th><th>Lini pertama</th><th>Tambahan / alternatif</th><th>Peringatan</th></tr>
+<tr><th scope="row">CKD / DM dengan albuminuria</th><td>ACEi atau ARB</td><td>CCB dihidropiridin atau tiazid-like</td><td>Kenaikan kreatinin ≤30% normal; KI stenosis arteri renalis bilateral</td></tr>
+<tr><th scope="row">DM tanpa albuminuria</th><td>ACEi / ARB / CCB / tiazid-like</td><td>Kombinasi 2 obat lini pertama</td><td>Waspada beta-blocker</td></tr>
+<tr><th scope="row">CAD / post-MI / angina</th><td>Beta-blocker kardioselektif + penghambat RAAS</td><td>Amlodipin untuk angina</td><td>Jangan henti mendadak beta-blocker</td></tr>
+<tr><th scope="row">HFrEF</th><td>4 pilar GDMT</td><td>Furosemid untuk kongesti</td><td>KI mutlak: Verapamil/Diltiazem</td></tr>
+<tr><th scope="row">Kehamilan</th><td>Labetalol oral / Nifedipin lepas lambat / Metildopa</td><td>Labetalol IV / Hidralazin IV pada krisis</td><td>KI mutlak: ACEi, ARB, Spironolakton</td></tr>
+</table>
+<h3>CKD &amp; diabetes melitus</h3>
+<ul>
+<li><strong>Albuminuria (UACR ≥30 mg/g): wajib ACEi atau ARB.</strong> Obat ini merelaksasi arteriol eferen, memangkas tekanan intraglomerular, menekan proteinuria, dan memperlambat laju ESRD.</li>
+<li><strong>DM tanpa albuminuria:</strong> bebas memilih dari 3 pilar lini pertama.</li>
+</ul>
+<p class="awas"><strong>Beta-blocker pada DM</strong> menyamarkan tanda bahaya hipoglikemia (takikardia, tremor, cemas). Satu-satunya tanda tersisa adalah <strong>keringat dingin (diaforesis)</strong>, karena kelenjar keringat dipersarafi serat kolinergik. Beta-blocker juga menghambat pemecahan glikogen hati (glikogenolisis via β₂).</p>
+<h3>Penyakit jantung koroner (CAD / post-MI / angina)</h3>
+<p><strong>Lini 1 wajib: beta-blocker kardioselektif (Bisoprolol / Metoprolol suksinat) + penghambat RAAS (ACEi/ARB).</strong></p>
+<ul>
+<li>Beta-blocker memangkas denyut dan inotropik (menurunkan MVO₂) serta memperpanjang diastolik sehingga perfusi koroner optimal.</li>
+<li>Penghambat RAAS mencegah <em>remodeling</em> ventrikel kiri.</li>
+<li>Tambahan: Amlodipin untuk angina. Verapamil/Diltiazem menjadi alternatif bila intoleran beta-blocker <em>dan</em> fungsi pompa ventrikel kiri normal.</li>
+</ul>
+<h3>Gagal jantung: HFrEF vs HFpEF</h3>
+<p><strong>HFrEF (LVEF ≤40%)</strong> wajib mendapat <strong>4 pilar GDMT penurun mortalitas</strong>:</p>
+<table>
+<tr><th>Pilar</th><th>Obat</th></tr>
+<tr><td>1. ARNI / ACEi / ARB</td><td>ARNI = Sakubitril-Valsartan</td></tr>
+<tr><td>2. Beta-blocker mortalitas</td><td>Bisoprolol, Karvedilol, Metoprolol suksinat</td></tr>
+<tr><td>3. MRA</td><td>Spironolakton / Eplerenon</td></tr>
+<tr><td>4. SGLT2i</td><td>Dapagliflozin / Empagliflozin</td></tr>
+</table>
+<p>Diuretik loop (Furosemid) hanya diberikan bila ada kongesti.</p>
+<p class="awas"><strong>Kontraindikasi mutlak pada HFrEF:</strong> CCB non-dihidropiridin (Verapamil/Diltiazem), karena efek inotropik negatifnya memperberat gagal pompa.</p>
+<p><strong>HFpEF (LVEF ≥50%)</strong>: kontrol sistolik ketat, SGLT2i, dan diuretik terukur untuk kongesti.</p>
+<h3>Stroke iskemik</h3>
+<p><strong>Fase akut (24–48 jam):</strong> tensi naik sebagai kompensasi untuk menjaga perfusi <em>penumbra iskemik</em>. Autoregulasi serebral bergeser ke kanan; penurunan tensi agresif memperluas infark.</p>
+<table>
+<tr><th>Situasi</th><th>Aturan tensi</th><th>Tujuan</th></tr>
+<tr><th scope="row">Kandidat rtPA</th><td>Turunkan ke &lt;185/110 mmHg sebelum rtPA (Nikardipin IV / Labetalol IV); jaga &lt;180/105 mmHg selama 24 jam setelahnya</td><td>Mencegah transformasi hemoragik</td></tr>
+<tr><th scope="row">Non-trombolisis</th><td><strong>Hipertensi permisif</strong>: tensi hingga ≤220/120 mmHg dibiarkan; antihipertensi IV hanya bila &gt;220/120 mmHg</td><td>Menjaga penumbra iskemik</td></tr>
+<tr><th scope="row">Pencegahan sekunder (&gt;48 jam)</th><td>Kombinasi standar studi <strong>PROGRESS</strong>: penghambat RAAS (ACEi/ARB) + tiazid-like (Indapamid)</td><td>Mencegah stroke berulang</td></tr>
+</table>
+<h3>Hipertensi pada kehamilan</h3>
+<p><strong>Lini 1 aman: Labetalol, Nifedipin lepas lambat, Metildopa.</strong></p>
+<p class="awas"><strong>Kontraindikasi mutlak:</strong> penghambat RAAS (fetopati RAAS: disgenesis ginjal janin, oligohidramnion, hipoplasia paru, kematian intrauterin) dan MRA Spironolakton (antiandrogenik: feminisasi janin pria).</p>
+<p><strong>Krisis preeklampsia berat (≥160/110 mmHg):</strong> Labetalol IV, Hidralazin IV, atau Nifedipin oral lepas cepat, ditambah MgSO₄ sebagai profilaksis kejang.</p>
+<h3>Komorbiditas spesifik lain</h3>
+<table>
+<tr><th>Kondisi</th><th>Aturan</th><th>Alasan</th></tr>
+<tr><th scope="row">BPH</th><td>Alfa-1 blocker (Doksazosin, Terazosin) hanya sebagai <em>add-on</em>, bukan lini 1 mandiri</td><td>Risiko gagal jantung (studi ALLHAT)</td></tr>
+<tr><th scope="row">Gout</th><td>Hindari tiazid; <strong>Losartan</strong> pilihan terbaik</td><td>Losartan menghambat transporter URAT-1 (urikosurik)</td></tr>
+<tr><th scope="row">Asma / PPOK</th><td>Kontraindikasi beta-blocker nonselektif (Propranolol); bila beta-blocker wajib, pakai beta-1 selektif (Bisoprolol) dosis rendah</td><td>Bahaya bronkospasme</td></tr>
+</table>
+</section>
+
+<section class="ch" data-ch="4">
+<h2>Resisten &amp; Interaksi</h2>
+<p class="def"><strong>Hipertensi resisten sejati</strong>: tensi tetap ≥130/80 mmHg meski patuh mengonsumsi <strong>3 kelas obat dosis optimal</strong>, yang <strong>salah satunya wajib diuretik</strong> (tiazid-like); atau tensi baru terkontrol dengan ≥4 obat.</p>
+<h3>Menyingkirkan hipertensi semu (pseudoresistensi)</h3>
+<table>
+<tr><th>Penyebab</th><th>Keterangan</th></tr>
+<tr><th scope="row">1. Ketidakpatuhan</th><td>Tidak teratur minum obat atau mengurangi dosis sendiri.</td></tr>
+<tr><th scope="row">2. Efek jas putih</th><td>Konfirmasi dengan HBPM atau ABPM 24 jam.</td></tr>
+<tr><th scope="row">3. Kesalahan manset</th><td><em>Under-cuffing</em>: manset terlalu kecil pada lengan besar memberi estimasi tensi palsu tinggi.</td></tr>
+<tr><th scope="row">4. Zat presor eksogen</th><td>NSAID (hambat prostaglandin ginjal → retensi natrium), dekongestan (pseudoefedrin → vasokonstriksi α₁), kortikosteroid, pil KB estrogen, herbal licorice.</td></tr>
+<tr><th scope="row">5. Penyebab sekunder</th><td>Terutama hiperaldosteronisme primer, apnea tidur obstruktif (OSA), dan stenosis arteri renalis.</td></tr>
+</table>
+<h3>Algoritma terapi hipertensi resisten</h3>
+<ol class="flow">
+<li>Singkirkan pseudoresistensi<small>termasuk NSAID</small></li>
+<li>Fondasi <em>triple therapy</em><small>penghambat RAAS + CCB dihidropiridin + tiazid-like</small></li>
+<li>Lini keempat: Spironolakton<small>25–50 mg/hari (PATHWAY-2)</small></li>
+</ol>
+<p><strong>Spironolakton (MRA)</strong> paling superior sebagai lini keempat karena mengatasi retensi cairan akibat aldosteron. Syarat: kalium &lt;4,5 mEq/L dan eGFR &gt;30–45 mL/min. Alternatif: Eplerenon, Amilorid, atau beta-blocker.</p>
+<h3>Interaksi farmakologis fatal</h3>
+<table>
+<tr><th>Nama</th><th>Kombinasi</th><th>Mekanisme</th><th>Akibat</th></tr>
+<tr><th scope="row">The Triple Whammy</th><td>NSAID + ACEi/ARB + diuretik</td><td>NSAID: konstriksi arteriol aferen; ACEi/ARB: dilatasi arteriol eferen; diuretik: volume plasma turun → tekanan filtrasi glomerulus kolaps total</td><td>Gagal ginjal akut (AKI) anurik berat</td></tr>
+<tr><th scope="row">Depresi kardiak ganda</th><td>Beta-blocker + Verapamil/Diltiazem</td><td>Supresi nodus SA/AV dan inotropik</td><td>Bradikardia berat (&lt;40 bpm), blok AV derajat 3, henti jantung</td></tr>
+<tr><th scope="row">Hiperkalemia fatal</th><td>Penghambat RAAS + Spironolakton + Kotrimoksazol</td><td>Trimetoprim menghambat kanal ENaC mirip amilorid</td><td>Kalium &gt;6,5 mEq/L, gelombang T lancip pada EKG, fibrilasi ventrikel/asistol</td></tr>
+</table>
+</section>
+
+<section class="ch" data-ch="5">
+<h2>Krisis Hipertensi</h2>
+<p class="def"><strong>Krisis hipertensi</strong>: lonjakan tensi sistolik ≥180 mmHg dan/atau diastolik ≥120 mmHg. Dibedakan menjadi <strong>urgensi</strong> (tanpa kerusakan organ target akut) dan <strong>emergensi</strong> (disertai kerusakan organ target akut).</p>
+<table>
+<tr><th></th><th>Urgensi</th><th>Emergensi</th></tr>
+<tr><th scope="row">Organ target</th><td>Utuh; pasien stabil, pusing ringan/cemas</td><td>Rusak akut: ensefalopati, stroke akut, ACS, edema paru akut kardiogenik, diseksi aorta, AKI anurik, eklampsia</td></tr>
+<tr><th scope="row">Tempat</th><td>Rawat jalan / observasi</td><td>ICU, pasang <em>arterial line</em></td></tr>
+<tr><th scope="row">Obat</th><td><strong>Oral</strong> bertahap: Kaptopril, Klonidin, Labetalol oral</td><td><strong>Intravena</strong> kontinu, dititrasi</td></tr>
+<tr><th scope="row">Kecepatan</th><td>Turun bertahap dalam 24–48 jam</td><td>MAP turun maksimal 20–25% dalam 1 jam pertama</td></tr>
+</table>
+<p class="awas">Pada urgensi <strong>dilarang menurunkan tensi mendadak</strong> (obat suntik IV atau nifedipin sublingual) karena memicu stroke iskemik atau infark miokard seketika.</p>
+<h3>Obat intravena pada emergensi</h3>
+<table>
+<tr><th>Obat</th><th>Golongan</th><th>Dipilih untuk</th></tr>
+<tr><th scope="row">Nikardipin IV</th><td>CCB, lini 1 serbaguna</td><td>Neurologis, renal</td></tr>
+<tr><th scope="row">Labetalol IV</th><td>Alfa-beta blocker</td><td>Neurologis, diseksi aorta, eklampsia</td></tr>
+<tr><th scope="row">Nitrogliserin IV</th><td>Vasodilator vena</td><td>Lini 1 untuk ACS dan edema paru kardiogenik akut</td></tr>
+<tr><th scope="row">Esmolol IV</th><td>Beta-blocker ultra-singkat</td><td>Lini 1 untuk diseksi aorta</td></tr>
+</table>
+<h3>Kaidah penurunan MAP</h3>
+<p><strong>MAP = diastolik + ⅓ × (sistolik − diastolik)</strong></p>
+<p class="klinis">Tensi 210/120 mmHg: MAP = 120 + ⅓ × (210 − 120) = 120 + 30 = 150 mmHg. Penurunan 20% berarti MAP sekitar 120 mmHg pada 1 jam pertama. <em>(Angka contoh dibuat untuk ilustrasi rumus; rumus dan batas 20–25% dari bahan.)</em></p>
+<ol class="flow">
+<li>1 jam pertama<small>MAP turun maksimal 20–25%</small></li>
+<li>2–6 jam berikutnya<small>menuju 160/100–110 mmHg</small></li>
+<li>24–48 jam<small>normotensi</small></li>
+</ol>
+<h3>Pengecualian: diseksi aorta akut</h3>
+<p class="awas">Sistolik <strong>wajib turun agresif hingga &lt;120 mmHg</strong> dan denyut jantung <strong>&lt;60 bpm dalam 20 menit pertama</strong>.</p>
+<p>Urutan obat: <strong>beta-blocker IV (Esmolol/Labetalol) lebih dahulu</strong> untuk meredam gaya ejeksi bilik kiri (dP/dt), baru disusul vasodilator (Nikardipin IV) bila target sistolik belum tercapai.</p>
+</section>
+
+<section class="ch" data-ch="6">
+<h2>Deprescribing</h2>
+<p class="def"><strong><em>Tapering-off</em></strong>: protokol putus obat bertahap, yaitu menghentikan satu per satu obat yang bukan indikasi wajib atau yang memicu hipotensi postural.</p>
+<h3>Indikasi deprescribing</h3>
+<ul>
+<li>Hipotensi simtomatik: sistolik &lt;100–110 mmHg disertai lemas atau pusing postural.</li>
+<li>Insiden jatuh berulang atau fraktur pada geriatri.</li>
+<li><em>Frailty</em> berat atau demensia lanjut.</li>
+<li>Perawatan paliatif akhir hidup.</li>
+</ul>
+<h3>Fenomena rebound</h3>
+<table>
+<tr><th>Obat</th><th>Mekanisme bila henti mendadak</th><th>Gambaran</th><th>Tapering</th></tr>
+<tr><th scope="row">Beta-blocker</th><td>Badai simpatis akibat <em>up-regulation</em> reseptor beta miokard</td><td>Takikardia berat, lonjakan tensi, infark miokard, kematian mendadak</td><td>Bertahap 1–2 minggu</td></tr>
+<tr><th scope="row">Klonidin (<em>sympathetic storm</em>)</th><td>Klonidin menekan simpatis sentral; henti mendadak → luapan katekolamin masif</td><td>Tremor, takikardia liar, sakit kepala hebat, krisis tensi rebound meniru feokromositoma</td><td>Perlahan, berminggu-minggu</td></tr>
+</table>
+<h3>Jebakan fatal: urutan menghentikan Klonidin + beta-blocker</h3>
+<p class="awas">Pada pasien yang memakai Klonidin <em>dan</em> beta-blocker, <strong>dilarang keras menghentikan Klonidin terlebih dahulu.</strong></p>
+<p>Mekanisme (<em>unopposed alpha stimulation</em>):</p>
+<ol class="flow">
+<li>Klonidin distop<small>luapan katekolamin masif</small></li>
+<li>Reseptor β₂ vasodilator<small>masih diblokade beta-blocker</small></li>
+<li>Reseptor α₁ vaskular terstimulasi tanpa perlawanan</li>
+<li>Vasokonstriksi masif<small>krisis tensi, stroke hemoragik, henti jantung</small></li>
+</ol>
+<p><strong>Urutan wajib:</strong></p>
+<ol>
+<li>Turunkan dosis beta-blocker dan <strong>hentikan beta-blocker sepenuhnya terlebih dahulu</strong>.</li>
+<li>Setelah tubuh bersih dari efek beta-blocker, barulah dosis Klonidin diturunkan bertahap sampai tuntas; terapi pengganti dilanjutkan setelahnya.</li>
+</ol>
+</section>
+
+    </div>
+  </div>
+</div>
+
+<div id="v-quiz" role="tabpanel" aria-labelledby="tab-quiz" hidden>
+ <div class="quiz">
+  <div id="setup"></div>
+
+  <div id="run" hidden>
+    <div class="runhead">
+      <strong id="rpos"></strong><span id="rinfo" aria-live="off"></span>
+      <button class="btn sm" id="endbtn">Akhiri</button>
+      <div class="bar" id="rbarwrap" role="progressbar" aria-valuemin="0" aria-label="Soal terjawab"><i id="rbar"></i></div>
+    </div>
+    <div class="qcard">
+      <p class="scen" id="rscen" hidden></p>
+      <h2 class="qtext" id="rq" tabindex="-1"></h2>
+    </div>
+    <div class="opts" id="ropts" role="group" aria-label="Pilihan jawaban"></div>
+    <div class="fb" id="rfb" role="status" aria-live="polite" hidden></div>
+    <details class="grid" id="rgridwrap" hidden><summary>Daftar soal (titik kuning = ragu)</summary><div id="rgrid"></div></details>
+    <div class="actbar">
+      <button class="btn fit" id="prevbtn" aria-label="Soal sebelumnya">←</button>
+      <button class="btn fit" id="flagbtn" aria-pressed="false">Ragu</button>
+      <span class="hint" id="rhint">Pilih satu jawaban</span>
+      <button class="btn pri" id="nextbtn">Berikutnya →</button>
+    </div>
+  </div>
+
+  <div id="result" hidden></div>
+ </div>
+</div>
+</main>
+
+<dialog id="dlg" aria-labelledby="dlgmsg"><p id="dlgmsg"></p><div class="row"><button class="btn" value="no">Batal</button><button class="btn pri" value="yes" id="dlgok">Ya</button></div></dialog>
+
+<script>
+const META={id:'b32-k15-2',bab:['Terapi Awal','Target & Evaluasi','Komorbiditas','Resisten & Interaksi','Krisis Hipertensi','Deprescribing']};
+// [bab, pertanyaan, [BENAR, pengecoh×4], pembahasan, skenario atau '', [id butir]]
+const QRAW=[
+/* ===== BAB 1 ===== */
+[1,'Strategi awal yang paling sesuai adalah…',['Monoterapi satu obat lini pertama','Kombinasi dua obat dalam satu pil','Kombinasi tiga obat dosis rendah','Beta-blocker ditambah klonidin oral','ACEi dan ARB dosis rendah bersama'],'Derajat 1 risiko rendah dengan selisih sistolik <20 mmHg dan diastolik <10 mmHg dari target cukup dengan monoterapi. Kombinasi awal dua obat diperuntukkan bagi derajat 2.','Perempuan 45 tahun, hipertensi derajat 1 risiko rendah. Tensi berulang 134/84 mmHg dengan target <130/80 mmHg.',['1.01']],
+[1,'Selain hipertensi derajat 1 risiko rendah, monoterapi juga dipilih pada…',['Lansia sangat rapuh bertoleransi hemodinamik rendah','Hipertensi derajat 2 dengan diabetes melitus','Pasien albuminuria dengan penyakit ginjal kronik','Pasien pascaserangan jantung dengan angina','Hipertensi resisten dengan retensi cairan'],'Bahan menyebut dua kelompok monoterapi: derajat 1 risiko rendah yang dekat target dan frail elderly dengan toleransi hemodinamik rendah.','',['1.01']],
+[1,'Pasien derajat 1 dengan monoterapi belum mencapai target. Langkah berikutnya menurut bahan adalah…',['Titrasi dosis atau ganti kelas obat','Tambahkan ARB pada ACEi yang ada','Ganti ke obat intravena kontinu','Hentikan obat lalu amati tiga bulan','Tambahkan klonidin dan beta-blocker'],'Pada jalur monoterapi, bila target belum tercapai dosis dititrasi atau kelasnya diganti. Menambah ARB pada ACEi adalah blokade ganda RAAS yang dilarang.','',['1.02']],
+[1,'Kombinasi awal dua obat wajib dimulai sejak hari pertama pada…',['Hipertensi derajat 2','Hipertensi derajat 1 risiko rendah','Hipertensi jas putih','Lansia sangat rapuh','Hipertensi urgensi'],'Derajat 2 (≥20/10 mmHg di atas target, atau ≥140/90 mmHg dengan target <130/80 mmHg) langsung mendapat dua obat. Derajat 1 risiko rendah dan lansia rapuh justru kandidat monoterapi.','',['1.03']],
+[1,'Terapi awal yang paling tepat adalah…',['Dua obat lini pertama dalam satu pil','Satu obat lini pertama dosis rendah','Satu obat lini pertama dosis maksimal','Tiga obat lini pertama pil terpisah','Beta-blocker tunggal dititrasi cepat'],'162/98 mmHg berada ≥20/10 mmHg di atas target, jadi termasuk derajat 2: kombinasi awal dua obat dalam SPC. Satu obat dosis maksimal kurang poten dan efek sampingnya lebih banyak.','Laki-laki 52 tahun baru terdiagnosis hipertensi. Tensi berulang 162/98 mmHg, target <130/80 mmHg, tanpa penyakit penyerta.',['1.03']],
+[1,'Clinical inertia yang dicegah oleh pil kombinasi tunggal (SPC) berarti…',['Keengganan klinisi menaikkan obat','Kelupaan pasien meminum obat harian','Penurunan efek obat akibat toleransi','Lambatnya obat mencapai kadar tunak','Penolakan pasien terhadap banyak pil'],'Bahan mendefinisikan clinical inertia sebagai keengganan klinisi menaikkan obat. Banyaknya pil adalah pill burden, manfaat SPC yang lain.','',['1.04']],
+[1,'Dua obat dosis rendah lebih disukai daripada satu obat dosis maksimal karena…',['Efek samping bergantung dosis, dua jalur dihantam','Waktu paruh tiap obat menjadi lebih panjang','Metabolisme hati tiap obat menjadi lambat','Ikatan protein plasma obat makin kuat','Ekskresi ginjal kedua obat saling dihambat'],'Menaikkan satu obat ke dosis maksimal memberi tambahan efek yang makin kecil (diminishing returns) dengan efek samping yang naik mengikuti dosis. Alasannya bukan farmakokinetik.','',['1.05']],
+[1,'Tiga pilar utama lini pertama antihipertensi adalah…',['Penghambat RAAS, CCB dihidropiridin, tiazid','Penghambat RAAS, beta-blocker, diuretik loop','Beta-blocker, CCB dihidropiridin, tiazid','Penghambat RAAS, alfa-1 blocker, tiazid','CCB nondihidropiridin, MRA, beta-blocker'],'Tiga pilar: penghambat RAAS (ACEi/ARB), CCB dihidropiridin, dan diuretik tiazid/tiazid-like. Beta-blocker bukan lini pertama tanpa indikasi khusus.','',['1.06']],
+[1,'Obat berikut yang BUKAN anggota tiga pilar lini pertama adalah…',['Bisoprolol','Ramipril','Amlodipin','Indapamid','Telmisartan'],'Bisoprolol adalah beta-blocker, yang hanya dipakai bila ada compelling indication. Ramipril (ACEi), telmisartan (ARB), amlodipin (CCB dihidropiridin), dan indapamid (tiazid-like) semuanya pilar lini pertama.','',['1.06']],
+[1,'Kelompok obat yang seluruhnya ACE inhibitor adalah…',['Ramipril, Lisinopril, Kaptopril','Kandesartan, Valsartan, Telmisartan','Ramipril, Valsartan, Kaptopril','Lisinopril, Amlodipin, Indapamid','Kaptopril, Losartan, Klortalidon'],'Akhiran -pril menandai ACEi; akhiran -sartan menandai ARB. Kandesartan, valsartan, dan telmisartan adalah ARB.','',['1.07']],
+[1,'Mekanisme kerja ARB seperti kandesartan adalah…',['Memblokade reseptor AT1','Menghambat enzim konversi angiotensin','Menghambat renin secara langsung','Memblokade kanal kalsium tipe L','Menghambat kotransporter Na⁺/Cl⁻'],'ARB memblokade reseptor AT1. Menghambat enzim konversi angiotensin I→II adalah kerja ACEi; penghambat renin langsung adalah aliskiren.','',['1.08']],
+[1,'Amlodipin menurunkan tensi melalui…',['Blokade kanal kalsium tipe L, dilatasi arteriol','Blokade kanal kalsium tipe L, dilatasi venula','Blokade reseptor AT1, dilatasi arteriol','Blokade kanal natrium, relaksasi otot polos','Blokade reseptor alfa-1, dilatasi arteriol'],'CCB dihidropiridin memblokade kanal kalsium tipe L sehingga arteriol perifer melebar. Venula justru tidak ikut melebar; itulah asal edema tungkainya.','',['1.09']],
+[1,'Keunggulan klortalidon dan indapamid dibanding hidroklorotiazid (HCT) adalah…',['Durasi lebih panjang, bukti kardiovaskular superior','Durasi lebih singkat, efek samping lebih ringan','Tidak membuang kalium, aman pada pasien gout','Bekerja di ansa Henle, diuresis lebih kuat','Menahan kalium, aman bersama penghambat RAAS'],'Tiazid-like berdurasi lebih panjang dan bukti kardiovaskularnya lebih kuat. Tempat kerjanya tetap kotransporter Na⁺/Cl⁻ di tubulus distal, dan tetap membuang kalium.','',['1.10']],
+[1,'Posisi beta-blocker untuk pasien ini adalah…',['Bukan lini pertama tanpa indikasi wajib khusus','Lini pertama setara tiga pilar utama','Lini pertama khusus usia di bawah 50 tahun','Lini kedua setelah monoterapi ACEi gagal','Hanya dipakai sebagai obat intravena darurat'],'Untuk hipertensi tanpa penyulit beta-blocker bukan lini pertama; ia dicadangkan untuk compelling indications (pascaserangan jantung, angina, HFrEF).','Laki-laki 40 tahun dengan hipertensi tanpa penyulit meminta bisoprolol karena obat itu dipakai tetangganya.',['1.11']],
+[1,'Kondisi yang termasuk compelling indication pemberian beta-blocker adalah…',['HFrEF','Gout','BPH','Hipertensi sistolik terisolasi','DM tanpa albuminuria'],'Bahan menyebut tiga indikasi wajib khusus: pascaserangan jantung, angina pektoris, dan HFrEF. Pada DM beta-blocker justru perlu diwaspadai.','',['1.11']],
+[1,'CCB dihidropiridin menimbulkan edema tungkai karena…',['Arteriol prekapiler melebar, venula pascakapiler tidak','Venula pascakapiler melebar, arteriol prekapiler tidak','Natrium dan air tertahan di tubulus distal ginjal','Tekanan onkotik plasma turun akibat proteinuria','Permeabilitas kapiler naik akibat refleks renin'],'Dilatasi arteriol tanpa dilatasi venula menaikkan tekanan hidrostatik kapiler sehingga cairan merembes ke jaringan. Edema ini bukan karena retensi natrium.','',['1.12']],
+[1,'Penambahan obat yang paling rasional adalah…',['ACEi atau ARB','Furosemid','Nifedipin lepas lambat','Doksazosin','Hidroklorotiazid'],'ACEi/ARB mendilatasi venula pascakapiler, menormalkan gradien tekanan kapiler sehingga bengkak akibat CCB hilang, sekaligus bersinergi menurunkan tensi. Edema ini bukan kelebihan cairan, jadi diuretik bukan jawabannya.','Perempuan 58 tahun memakai amlodipin. Tensi belum mencapai target dan kedua tungkai bengkak di daerah pretibial.',['1.12']],
+[1,'Pada kombinasi penghambat RAAS + tiazid, penurunan tensi berlipat ganda karena…',['ACEi/ARB memblokade refleks pelepasan renin','ACEi/ARB menambah pembuangan natrium tubulus','Diuretik memblokade reseptor AT1 di pembuluh','Diuretik melebarkan venula pascakapiler','ACEi/ARB memperpanjang waktu paruh diuretik'],'Diuretik membuang natrium dan memicu refleks pelepasan renin yang melawan penurunan tensi; ACEi/ARB mematikan kompensasi itu.','',['1.13']],
+[1,'Pengaruh penambahan ARB terhadap kalium pasien ini adalah…',['Menahan kalium sehingga cenderung kembali normal','Membuang kalium sehingga kadarnya makin rendah','Tidak memengaruhi kadar kalium serum','Menggeser kalium masuk ke dalam sel','Menahan natrium sehingga kalium terbuang'],'Diuretik membuang kalium (risiko hipokalemia), penghambat RAAS menahan kalium (risiko hiperkalemia); gabungannya menjaga kalium tetap normal.','Laki-laki 60 tahun memakai indapamid. Kalium serum 3,3 mEq/L dan tensi belum mencapai target, sehingga direncanakan penambahan ARB.',['1.14']],
+[1,'Kombinasi yang merupakan kontraindikasi absolut adalah…',['Ramipril + Valsartan','Ramipril + Amlodipin','Valsartan + Indapamid','Amlodipin + Klortalidon','Lisinopril + Hidroklorotiazid'],'Ramipril (ACEi) + valsartan (ARB) adalah blokade ganda RAAS. Empat pasangan lain adalah kombinasi rasional dari pilar yang berbeda.','',['1.15']],
+[1,'Penilaian terhadap rencana tersebut adalah…',['Dilarang; termasuk blokade ganda RAAS','Dianjurkan; proteksi ginjal bertambah','Boleh bila kalium di bawah 5,5 mEq/L','Boleh bila kreatinin naik kurang dari 30%','Dianjurkan bila tensi belum capai target'],'ARB + aliskiren (penghambat renin langsung) sama terlarangnya dengan ACEi + ARB: tidak menambah proteksi organ tetapi menaikkan risiko AKI dan hiperkalemia.','Pasien DM dengan proteinuria sudah memakai kandesartan. Dokter ingin menambahkan aliskiren agar perlindungan ginjalnya lebih kuat.',['1.15']],
+[1,'Temuan studi ONTARGET dan VA NEPHRON-D tentang blokade ganda RAAS adalah…',['Tanpa manfaat mortalitas; AKI dan hiperkalemia naik','Mortalitas turun, tetapi AKI dan hiperkalemia naik','Proteksi ginjal bertambah; hipotensi ortostatik naik','Mortalitas turun tanpa tambahan efek samping','Tanpa manfaat mortalitas dan tanpa tambahan bahaya'],'Blokade ganda tidak memberi reduksi mortalitas atau proteksi organ tambahan, sementara AKI, hiperkalemia berat (>5,5 mEq/L), hipotensi ortostatik berat, dan sinkop meningkat.','',['1.16']],
+[1,'Pasien derajat 2 sudah memakai dua obat lini pertama tetapi target <130/80 mmHg belum tercapai. Langkah berikutnya adalah…',['Menambah pilar lini pertama ketiga','Menambah spironolakton dosis rendah','Menambah beta-blocker kardioselektif','Mengganti keduanya dengan obat lain','Menambah ARB pada ACEi yang ada'],'Setelah kombinasi dua obat, langkahnya menambah pilar ke-3 sehingga terbentuk penghambat RAAS + CCB + tiazid. Spironolakton baru masuk sebagai lini keempat pada hipertensi resisten.','',['1.17']],
+
+/* ===== BAB 2 ===== */
+[2,'Target tekanan darah umum dewasa menurut AHA/ACC adalah…',['<130/80 mmHg','<140/90 mmHg','<120/80 mmHg','<150/90 mmHg','<130/90 mmHg'],'Target umum <130/80 mmHg berlaku untuk hipertensi umum, DM, dan CKD.','',['2.01']],
+[2,'Penilaian yang tepat terhadap tensi pasien ini adalah…',['Belum mencapai target <130/80 mmHg','Sudah mencapai target <140/90 mmHg','Sudah mencapai target <140/85 mmHg','Belum mencapai target <120/70 mmHg','Sudah mencapai target <150/90 mmHg'],'Target <130/80 mmHg berlaku juga untuk DM dan CKD; pelonggaran hanya untuk usia >80 tahun, kerapuhan berat, atau risiko jatuh tinggi.','Laki-laki 55 tahun dengan DM dan CKD, tidak rapuh. Dalam terapi, tensi berulang 136/84 mmHg.',['2.01']],
+[2,'Target sistolik yang sesuai untuk pasien ini adalah…',['130–139 mmHg','<120 mmHg','120–129 mmHg','140–159 mmHg','150–160 mmHg'],'Usia >80 tahun, severe frailty, atau risiko jatuh tinggi mendapat pelonggaran konservatif sistolik 130–139 mmHg demi perfusi organ vital.','Perempuan 84 tahun dengan kerapuhan fisik berat dan riwayat jatuh berulang.',['2.02']],
+[2,'Fenotipe yang paling sesuai adalah…',['Jas putih tak terkontrol','Hipertensi jas putih','Hipertensi resisten sejati','Hipertensi sistolik terisolasi','Hipotensi ortostatik'],'Tensi klinik tinggi dengan tensi rumah normal pada pasien yang sudah berobat rutin disebut jas putih tak terkontrol. Istilah hipertensi jas putih dipakai untuk pasien yang belum berobat.','Laki-laki 61 tahun berobat rutin dengan tiga antihipertensi. Tensi di klinik 150/92 mmHg; rata-rata tensi rumah 7 hari 122/76 mmHg.',['2.04']],
+[2,'Yang membedakan hipertensi jas putih dari jas putih tak terkontrol adalah…',['Pasien belum mendapat obat','Tensi rumah ikut tinggi','Tensi klinik justru normal','Diastolik rendah, sistolik tinggi','Pasien berusia di atas 80 tahun'],'Keduanya sama-sama tinggi di klinik dan normal di rumah; bedanya hipertensi jas putih terjadi pada pasien yang belum berobat.','',['2.03']],
+[2,'Sebelum menaikkan dosis pada pasien yang dicurigai mengalami efek jas putih, yang wajib dilakukan adalah…',['Konfirmasi dengan HBPM 7 hari atau ABPM 24 jam','Ulangi tensi klinik dengan manset lebih kecil','Tambah obat keempat lalu evaluasi sebulan','Periksa kreatinin dan kalium dalam 2–4 minggu','Ukur tensi duduk dan berdiri selama 3 menit'],'Konfirmasi tensi di luar klinik mencegah overtreatment dan hipotensi berbahaya di rumah. Tensi duduk-berdiri adalah skrining hipotensi ortostatik, bukan efek jas putih.','',['2.05']],
+[2,'Mekanisme hipertensi sistolik terisolasi (ISH) pada lansia adalah…',['Elastin berkurang, kolagen aorta meningkat','Refleks baroreseptor menjadi tumpul','Arteriol eferen glomerulus berelaksasi','Renin naik akibat stenosis arteri renalis','Aldosteron berlebih menahan natrium'],'Perubahan elastin-kolagen membuat aorta kaku (arterial stiffness). Baroreseptor tumpul adalah mekanisme hipotensi ortostatik.','',['2.06']],
+[2,'Profil hemodinamik hipertensi sistolik terisolasi adalah…',['Sistolik ≥140, diastolik <90, pulse pressure lebar','Sistolik ≥140, diastolik ≥90, pulse pressure sempit','Sistolik <140, diastolik ≥90, pulse pressure sempit','Sistolik ≥180, diastolik ≥120, pulse pressure lebar','Sistolik ≥130, diastolik ≥80, pulse pressure normal'],'Arteri yang kaku membuat sistolik melonjak sementara diastolik normal/rendah, sehingga selisihnya (pulse pressure) melebar.','',['2.06']],
+[2,'Pilihan awal yang paling sesuai adalah…',['Amlodipin dosis terendah, titrasi perlahan','Amlodipin dosis maksimal sejak awal','Bisoprolol dosis terendah, titrasi perlahan','Ramipril + Valsartan dosis rendah','Doksazosin dosis terendah malam hari'],'ISH: terpilih CCB dihidropiridin atau tiazid-like dengan prinsip start low, go slow; ACEi/ARB dosis rendah sebagai tambahan. Ramipril + valsartan adalah blokade ganda RAAS.','Laki-laki 74 tahun, tensi berulang 168/74 mmHg, tanpa penyakit penyerta lain.',['2.07']],
+[2,'Hipotensi ortostatik didefinisikan sebagai penurunan…',['Sistolik ≥20 atau diastolik ≥10 dalam 1–3 menit','Sistolik ≥10 atau diastolik ≥5 dalam 1–3 menit','Sistolik ≥20 atau diastolik ≥10 dalam 10 menit','Sistolik ≥30 atau diastolik ≥20 dalam 1 menit','Sistolik ≥40 atau diastolik ≥20 dalam 5 menit'],'Batasnya sistolik ≥20 mmHg atau diastolik ≥10 mmHg dalam 1–3 menit setelah berdiri.','',['2.08']],
+[2,'Temuan ini menunjukkan…',['Hipotensi ortostatik akibat baroreseptor tumpul','Efek jas putih akibat kecemasan di klinik','Hipertensi sistolik terisolasi akibat aorta kaku','Rebound simpatis akibat putus klonidin','Pseudoresistensi akibat manset terlalu kecil'],'Sistolik turun 138 − 114 = 24 mmHg (≥20) dalam 2 menit setelah berdiri. Karena itu tensi duduk dan berdiri wajib diskrining sebelum obat dititrasi.','Perempuan 78 tahun mengeluh pusing tiap bangun dari duduk. Tensi duduk 138/80 mmHg; dua menit setelah berdiri 114/76 mmHg.',['2.08']],
+[2,'ACEi/ARB menurunkan filtrasi glomerulus sesaat karena menyebabkan…',['Relaksasi arteriol eferen','Konstriksi arteriol eferen','Konstriksi arteriol aferen','Relaksasi arteriol aferen','Penurunan volume plasma'],'Arteriol eferen yang melebar menurunkan tekanan hidraulik intraglomerular. Konstriksi aferen adalah kerja NSAID; volume plasma turun adalah kerja diuretik.','',['2.09']],
+[2,'Kenaikan kreatinin setelah memulai ACEi/ARB yang masih diizinkan adalah…',['≤30% dalam 2–4 minggu pertama','≤10% dalam 2–4 minggu pertama','≤50% dalam 2–4 minggu pertama','≤30% dalam 2–4 hari pertama','≤20% dalam 6 bulan pertama'],'Kenaikan ≤30% dari baseline dalam 2–4 minggu pertama dianggap fisiologis dan tanda renoproteksi.','',['2.10']],
+[2,'Tindakan yang tepat adalah…',['Lanjutkan ramipril','Hentikan ramipril','Ganti ke valsartan','Tambahkan valsartan','Turunkan dosis separuh'],'Kenaikan (1,2 − 1,0)/1,0 = 20%, masih ≤30%, dan kalium ≤5,5 mEq/L: fisiologis, obat dilanjutkan. Menghentikan obat membuang manfaat renoproteksinya.','Tiga minggu setelah memulai ramipril, kreatinin pasien naik dari 1,0 menjadi 1,2 mg/dL. Kalium 4,8 mEq/L.',['2.10']],
+[2,'Sikap yang tepat adalah…',['Evaluasi; kreatinin naik >30% dan kalium >5,5','Lanjutkan; kenaikan ini masih fisiologis','Lanjutkan; tambahkan spironolakton dosis rendah','Lanjutkan; tambahkan ARB dosis rendah','Lanjutkan; periksa ulang enam bulan lagi'],'Kenaikan (1,5 − 1,0)/1,0 = 50% melewati batas 30%, dan kalium 5,8 melewati 5,5 mEq/L: keduanya pemicu evaluasi. Menambah spironolakton atau ARB memperburuk hiperkalemia.','Tiga minggu setelah memulai lisinopril, kreatinin pasien naik dari 1,0 menjadi 1,5 mg/dL. Kalium 5,8 mEq/L.',['2.10']],
+[2,'Kondisi ginjal yang menjadi kontraindikasi mutlak ACEi/ARB adalah…',['Stenosis arteri renalis bilateral','Albuminuria dengan UACR ≥30 mg/g','Kenaikan kreatinin 20% dari baseline','Diabetes melitus tanpa albuminuria','Penyakit ginjal kronik dengan DM'],'Pada stenosis bilateral filtrasi bergantung pada tonus eferen; ACEi/ARB membuatnya runtuh total (anuria, AKI berat). Albuminuria justru indikasi wajib ACEi/ARB.','',['2.11']],
+
+/* ===== BAB 3 ===== */
+[3,'ACEi atau ARB menjadi wajib bila UACR mencapai…',['≥30 mg/g','≥3 mg/g','≥300 mg/g','≥130 mg/g','≥1.000 mg/g'],'Albuminuria didefinisikan UACR ≥30 mg/g; sejak ambang ini ACEi/ARB wajib.','',['3.01']],
+[3,'Obat yang wajib ada dalam rejimen pasien ini adalah…',['Lisinopril','Amlodipin','Indapamid','Bisoprolol','Doksazosin'],'UACR 120 mg/g ≥30 mg/g: wajib ACEi atau ARB karena menurunkan tekanan intraglomerular, menekan proteinuria, dan memperlambat laju ESRD. Amlodipin atau indapamid hanya tambahan.','Perempuan 57 tahun dengan DM tipe 2. UACR 120 mg/g, tensi 146/90 mmHg.',['3.01']],
+[3,'Pada CKD dengan albuminuria yang sudah memakai ACEi, obat tambahan yang dianjurkan adalah…',['CCB dihidropiridin atau tiazid-like','ARB atau penghambat renin langsung','Verapamil atau diltiazem','Beta-blocker nonselektif atau klonidin','Kotrimoksazol atau spironolakton'],'Tambahan diambil dari pilar lini pertama lain. Menambah ARB atau aliskiren pada ACEi adalah blokade ganda RAAS yang dilarang.','',['3.02']],
+[3,'Pemilihan antihipertensi pada DM tanpa albuminuria adalah…',['Bebas memilih dari tiga pilar lini pertama','Wajib ACEi atau ARB sebagai obat pertama','Wajib beta-blocker kardioselektif','Wajib tiazid-like karena retensi natrium','Wajib CCB nondihidropiridin dosis rendah'],'Keharusan ACEi/ARB muncul bila ada albuminuria; tanpa itu ketiga pilar setara.','',['3.03']],
+[3,'Tanda hipoglikemia yang masih dapat muncul pada pasien ini adalah…',['Keringat dingin','Takikardia','Tremor','Rasa cemas','Denyut berdebar'],'Beta-blocker menyamarkan takikardia, tremor, dan cemas; satu-satunya tanda yang tersisa adalah diaforesis.','Laki-laki 59 tahun dengan DM memakai insulin dan bisoprolol. Ia terlambat makan dan gula darahnya turun.',['3.04']],
+[3,'Keringat dingin tetap muncul saat hipoglikemia pada pemakai beta-blocker karena…',['Kelenjar keringat dipersarafi serat kolinergik','Kelenjar keringat dipersarafi reseptor beta-1','Kelenjar keringat dipersarafi reseptor alfa-2','Keringat dipicu langsung oleh kadar insulin','Keringat dipicu langsung oleh glikogenolisis'],'Persarafan kelenjar keringat bersifat kolinergik, jadi tidak ikut terblokade oleh beta-blocker.','',['3.04']],
+[3,'Beta-blocker menghambat glikogenolisis hati melalui blokade…',['Reseptor beta-2','Reseptor beta-1','Reseptor alfa-1','Reseptor alfa-2','Reseptor muskarinik'],'Pemecahan glikogen hati diperantarai β₂; hambatannya memperlambat pemulihan dari hipoglikemia.','',['3.05']],
+[3,'Lini 1 wajib untuk hipertensi dengan penyakit jantung koroner adalah…',['Beta-blocker kardioselektif + penghambat RAAS','CCB dihidropiridin + diuretik tiazid-like','Beta-blocker nonselektif + CCB nondihidropiridin','Penghambat RAAS + alfa-1 blocker','CCB nondihidropiridin + penghambat RAAS'],'CAD/post-MI/angina adalah compelling indication beta-blocker (bisoprolol/metoprolol suksinat), dipasangkan dengan ACEi/ARB.','',['3.06']],
+[3,'Pasangan obat yang paling tepat adalah…',['Bisoprolol + Ramipril','Amlodipin + Indapamid','Propranolol + Verapamil','Ramipril + Valsartan','Doksazosin + Klortalidon'],'Pasca-infark: beta-blocker kardioselektif + penghambat RAAS. Propranolol + verapamil berisiko depresi kardiak ganda; ramipril + valsartan adalah blokade ganda RAAS.','Laki-laki 60 tahun, dua bulan pascainfark miokard. Tensi 150/92 mmHg.',['3.06']],
+[3,'Beta-blocker memperbaiki perfusi koroner dengan cara…',['Memperpanjang fase diastolik','Memperpendek fase diastolik','Melebarkan arteri koroner langsung','Mencegah remodeling ventrikel kiri','Melebarkan venula pascakapiler'],'Denyut yang lebih lambat memperpanjang diastolik, saat koroner terisi; MVO₂ juga turun karena denyut dan inotropik berkurang. Mencegah remodeling adalah peran penghambat RAAS.','',['3.07']],
+[3,'Peran penghambat RAAS pada penyakit jantung koroner adalah…',['Mencegah remodeling ventrikel kiri','Menurunkan MVO₂ lewat penurunan denyut','Memperpanjang fase diastolik jantung','Meredam gaya ejeksi bilik kiri (dP/dt)','Menekan nodus SA dan nodus AV'],'RAAS blocker mencegah remodeling ventrikel kiri; penurunan MVO₂ dan pemanjangan diastolik adalah kerja beta-blocker.','',['3.07']],
+[3,'Alternatif yang dapat dipakai adalah…',['Verapamil atau Diltiazem','Propranolol atau Karvedilol','Doksazosin atau Terazosin','Klonidin atau Metildopa','Hidralazin atau Aliskiren'],'CCB nondihidropiridin menjadi alternatif bila intoleran beta-blocker, dengan syarat fungsi pompa ventrikel kiri normal. Pada HFrEF obat ini kontraindikasi mutlak.','Pasien angina pektoris tidak dapat menoleransi beta-blocker. Ekokardiografi menunjukkan fungsi pompa ventrikel kiri normal.',['3.08']],
+[3,'Empat pilar GDMT penurun mortalitas pada HFrEF adalah…',['ARNI/ACEi/ARB, beta-blocker, MRA, SGLT2i','ARNI/ACEi/ARB, beta-blocker, MRA, furosemid','ACEi, CCB dihidropiridin, tiazid-like, SGLT2i','ARNI, verapamil, MRA, SGLT2i','ACEi, ARB, beta-blocker, MRA'],'Furosemid bukan pilar; ia hanya untuk kongesti. Verapamil kontraindikasi mutlak pada HFrEF, dan ACEi + ARB bersama adalah blokade ganda RAAS.','',['3.09']],
+[3,'Pilar GDMT yang belum diberikan adalah…',['Dapagliflozin','Furosemid','Hidroklorotiazid','Diltiazem','Valsartan'],'Sudah ada ACEi, beta-blocker, dan MRA; yang kurang adalah SGLT2i. Valsartan akan menggandakan blokade RAAS, diltiazem kontraindikasi.','Laki-laki 63 tahun dengan LVEF 32%, tanpa tanda kongesti. Ia memakai ramipril, bisoprolol, dan spironolakton.',['3.09']],
+[3,'Beta-blocker yang terbukti menurunkan mortalitas pada HFrEF adalah…',['Bisoprolol, Karvedilol, Metoprolol suksinat','Bisoprolol, Propranolol, Metoprolol suksinat','Labetalol, Karvedilol, Esmolol','Propranolol, Labetalol, Bisoprolol','Esmolol, Bisoprolol, Karvedilol'],'Tiga beta-blocker mortalitas menurut bahan: bisoprolol, karvedilol, metoprolol suksinat. Esmolol dan labetalol muncul di bahan sebagai obat krisis hipertensi.','',['3.10']],
+[3,'ARNI pada pilar pertama GDMT adalah…',['Sakubitril-Valsartan','Amlodipin-Valsartan','Spironolakton-Eplerenon','Dapagliflozin-Empagliflozin','Aliskiren-Valsartan'],'ARNI = sakubitril-valsartan. Spironolakton/eplerenon adalah MRA (pilar 3); dapagliflozin/empagliflozin adalah SGLT2i (pilar 4).','',['3.10']],
+[3,'Kedudukan furosemid pada HFrEF adalah…',['Hanya diberikan bila ada kongesti','Salah satu pilar penurun mortalitas','Pengganti MRA bila kalium tinggi','Hanya bila LVEF sudah di atas 50%','Pengganti SGLT2i pada pasien DM'],'Diuretik loop meredakan kongesti tetapi tidak termasuk empat pilar penurun mortalitas.','',['3.11']],
+[3,'Obat yang merupakan kontraindikasi mutlak pada HFrEF adalah…',['Verapamil','Karvedilol','Eplerenon','Empagliflozin','Sakubitril-Valsartan'],'CCB nondihidropiridin (verapamil/diltiazem) dilarang pada HFrEF. Empat obat lain justru anggota pilar GDMT.','',['3.12']],
+[3,'Alasan usul itu harus ditolak adalah…',['Inotropik negatif memperberat gagal pompa','Dilatasi arteriol memicu edema tungkai','Retensi kalium memicu hiperkalemia berat','Tanda hipoglikemia pasien menjadi samar','Dilatasi eferen menurunkan filtrasi ginjal'],'Diltiazem adalah CCB nondihidropiridin; efek inotropik negatifnya memperberat pompa yang sudah lemah.','Pasien HFrEF dengan LVEF 30% masih bertensi 150/90 mmHg. Seorang dokter mengusulkan penambahan diltiazem.',['3.12']],
+[3,'Batas LVEF untuk HFrEF dan HFpEF berturut-turut adalah…',['≤40% dan ≥50%','≤30% dan ≥40%','≤50% dan ≥60%','≤35% dan ≥45%','≤45% dan ≥55%'],'HFrEF: LVEF ≤40%; HFpEF: LVEF ≥50%.','',['3.13']],
+[3,'Tatalaksana hipertensi pada HFpEF menurut bahan adalah…',['Kontrol sistolik ketat, SGLT2i, diuretik terukur','Empat pilar GDMT penurun mortalitas lengkap','Verapamil, MRA, dan diuretik loop dosis tinggi','Hipertensi permisif, diuretik bila kongesti','Beta-blocker IV, lalu disusul vasodilator'],'Empat pilar GDMT ditujukan untuk HFrEF. Pada HFpEF: kontrol sistolik ketat, SGLT2i, dan diuretik terukur untuk kongesti.','',['3.13']],
+[3,'Tensi tidak diturunkan secara agresif pada stroke iskemik akut karena…',['Perfusi penumbra iskemik bergantung pada tensi','Obat intravena merusak sawar darah otak','Autoregulasi serebral bergeser ke arah kiri','Refleks baroreseptor pasien menjadi tumpul','Katekolamin meluap tanpa perlawanan beta-2'],'Kenaikan tensi adalah kompensasi untuk menjaga penumbra; autoregulasi bergeser ke kanan sehingga penurunan agresif memperluas infark.','',['3.14']],
+[3,'Sikap yang tepat adalah…',['Biarkan; tensi ≤220/120 bersifat permisif','Turunkan ke <185/110 dengan nikardipin IV','Turunkan MAP 25% dalam satu jam pertama','Beri nifedipin sublingual satu kali','Turunkan ke <130/80 dalam 24 jam'],'Pada pasien non-trombolisis, tensi hingga ≤220/120 mmHg dibiarkan (hipertensi permisif) demi penumbra. Batas <185/110 hanya berlaku untuk kandidat rtPA.','Laki-laki 66 tahun, stroke iskemik onset 10 jam, bukan kandidat trombolisis. Tensi 198/108 mmHg. Keluarga meminta tensi segera dinormalkan.',['3.14','3.16']],
+[3,'Tindakan terhadap tensi sebelum trombolisis adalah…',['Turunkan ke <185/110 mmHg sebelum rtPA','Biarkan hingga ≤220/120 mmHg lalu rtPA','Turunkan ke <140/90 mmHg sebelum rtPA','Turunkan ke <160/100 mmHg sebelum rtPA','Turunkan ke <130/80 mmHg sebelum rtPA'],'Kandidat rtPA harus <185/110 mmHg sebelum obat diberikan (nikardipin IV/labetalol IV) untuk mencegah transformasi hemoragik. Hipertensi permisif ≤220/120 berlaku bagi yang tidak ditrombolisis.','Perempuan 62 tahun, stroke iskemik onset 2 jam, kandidat rtPA. Tensi 196/112 mmHg.',['3.15']],
+[3,'Setelah rtPA diberikan, tensi dipertahankan…',['<180/105 mmHg selama 24 jam','<185/110 mmHg selama 48 jam','<220/120 mmHg selama 24 jam','<160/100 mmHg selama 6 jam','<140/90 mmHg selama 24 jam'],'Sebelum rtPA <185/110 mmHg; setelahnya <180/105 mmHg selama 24 jam.','',['3.15']],
+[3,'Pada stroke iskemik akut tanpa trombolisis, antihipertensi IV baru diberikan bila tensi…',['>220/120 mmHg','>185/110 mmHg','>180/105 mmHg','>180/120 mmHg','>160/110 mmHg'],'Hingga ≤220/120 mmHg tensi dibiarkan. Angka 185/110 dan 180/105 adalah batas untuk pasien rtPA.','',['3.16']],
+[3,'Kombinasi standar studi PROGRESS untuk pencegahan sekunder stroke adalah…',['Penghambat RAAS + Indapamid','Penghambat RAAS + Amlodipin','Beta-blocker + Indapamid','Amlodipin + Indapamid','Penghambat RAAS + Spironolakton'],'Setelah fase akut (>48 jam): ACEi/ARB + diuretik tiazid-like (indapamid).','',['3.17']],
+[3,'Antihipertensi lini 1 yang aman pada kehamilan adalah…',['Labetalol, Nifedipin lepas lambat, Metildopa','Labetalol, Lisinopril, Metildopa','Losartan, Nifedipin lepas lambat, Metildopa','Labetalol, Amlodipin, Spironolakton','Kaptopril, Hidralazin, Metildopa'],'Tiga obat lini 1: labetalol, nifedipin lepas lambat, metildopa. ACEi, ARB, dan spironolakton kontraindikasi mutlak.','',['3.18']],
+[3,'Tindakan yang tepat adalah…',['Ganti ramipril dengan metildopa','Lanjutkan ramipril dosis rendah','Ganti ramipril dengan valsartan','Ganti ramipril dengan spironolakton','Tambahkan indapamid pada ramipril'],'Penghambat RAAS kontraindikasi mutlak pada kehamilan (fetopati RAAS); gantinya salah satu lini 1 aman. Valsartan (ARB) dan spironolakton sama-sama terlarang.','Perempuan 29 tahun dengan hipertensi kronik memakai ramipril. Ia baru mengetahui dirinya hamil 8 minggu.',['3.18','3.19']],
+[3,'Semua berikut adalah bagian dari fetopati akibat penghambat RAAS, KECUALI…',['Feminisasi janin pria','Disgenesis ginjal janin','Oligohidramnion','Hipoplasia paru','Kematian intrauterin'],'Feminisasi janin pria adalah akibat efek antiandrogenik spironolakton, bukan fetopati RAAS.','',['3.19','3.20']],
+[3,'Spironolakton dikontraindikasikan pada kehamilan karena…',['Efek antiandrogenik pada janin pria','Disgenesis ginjal dan oligohidramnion','Hipoplasia paru dan kematian intrauterin','Bronkospasme pada ibu dan janin','Hambatan glikogenolisis hati janin'],'Spironolakton bersifat antiandrogenik sehingga menyebabkan feminisasi janin pria. Disgenesis ginjal dan oligohidramnion adalah fetopati RAAS.','',['3.20']],
+[3,'Tatalaksana yang sesuai adalah…',['Labetalol IV + MgSO₄','Kaptopril oral + MgSO₄','Metildopa oral + furosemid','Esmolol IV + spironolakton','Nifedipin lepas lambat saja'],'Krisis preeklampsia berat (≥160/110 mmHg): labetalol IV, hidralazin IV, atau nifedipin oral lepas cepat, ditambah MgSO₄ profilaksis kejang. Kaptopril adalah penghambat RAAS.','Perempuan hamil 34 minggu, tensi 172/114 mmHg, nyeri kepala, proteinuria positif.',['3.21']],
+[3,'Krisis preeklampsia berat ditetapkan pada tensi…',['≥160/110 mmHg','≥140/90 mmHg','≥180/120 mmHg','≥150/100 mmHg','≥185/110 mmHg'],'Ambang krisis pada kehamilan lebih rendah (≥160/110 mmHg) daripada krisis hipertensi umum (≥180/120 mmHg).','',['3.21']],
+[3,'Jawaban yang tepat terhadap permintaan itu adalah…',['Hanya sebagai add-on; ada risiko gagal jantung','Lini pertama tunggal; dua manfaat sekaligus','Kontraindikasi; memperberat keluhan BPH','Hanya sebagai add-on; ada risiko hiperkalemia','Lini pertama bila usia di atas 65 tahun'],'Alfa-1 blocker (doksazosin, terazosin) bukan lini 1 mandiri karena risiko gagal jantung; ia ditambahkan pada obat lini pertama.','Laki-laki 68 tahun dengan BPH baru terdiagnosis hipertensi. Ia meminta doksazosin saja sebagai satu obat untuk kedua penyakitnya.',['3.22']],
+[3,'Studi yang menjadi dasar alfa-1 blocker tidak dipakai sebagai lini 1 mandiri adalah…',['ALLHAT','ONTARGET','PATHWAY-2','PROGRESS','VA NEPHRON-D'],'ALLHAT: risiko gagal jantung dengan alfa-1 blocker. ONTARGET/VA NEPHRON-D: blokade ganda RAAS; PATHWAY-2: spironolakton lini keempat; PROGRESS: pencegahan sekunder stroke.','',['3.22']],
+[3,'Antihipertensi yang paling tepat adalah…',['Losartan','Hidroklorotiazid','Klortalidon','Indapamid','Propranolol'],'Pada gout tiazid dihindari; losartan pilihan terbaik karena bersifat urikosurik.','Laki-laki 50 tahun dengan serangan gout berulang baru terdiagnosis hipertensi.',['3.23']],
+[3,'Losartan menguntungkan pada gout karena…',['Menghambat transporter URAT-1','Menghambat kotransporter Na⁺/Cl⁻','Menghambat kanal ENaC tubulus','Memblokade reseptor alfa-1','Menghambat prostaglandin ginjal'],'Hambatan URAT-1 meningkatkan pembuangan asam urat (urikosurik).','',['3.23']],
+[3,'Beta-blocker yang dipilih adalah…',['Bisoprolol dosis rendah','Propranolol dosis rendah','Propranolol dosis penuh','Esmolol IV kontinu','Labetalol IV kontinu'],'Pada asma/PPOK beta-blocker nonselektif (propranolol) dikontraindikasikan karena bronkospasme; bila beta-blocker wajib, pakai beta-1 selektif dosis rendah.','Perempuan 58 tahun dengan asma, pascainfark miokard, sehingga beta-blocker wajib diberikan.',['3.24']],
+
+/* ===== BAB 4 ===== */
+[4,'Hipertensi resisten sejati: tensi tetap ≥130/80 mmHg meski patuh memakai…',['3 kelas dosis optimal, satu di antaranya diuretik','2 kelas dosis optimal, satu di antaranya diuretik','3 kelas dosis optimal, satu di antaranya beta-blocker','4 kelas dosis rendah, tanpa perlu diuretik','3 kelas dosis optimal, satu di antaranya MRA'],'Definisi mensyaratkan tiga kelas dosis optimal dengan diuretik (tiazid-like) di dalamnya, atau tensi yang baru terkontrol dengan ≥4 obat.','',['4.01']],
+[4,'Apakah pasien ini memenuhi definisi hipertensi resisten sejati?',['Belum; rejimennya belum memuat diuretik','Ya; sudah tiga kelas dosis optimal','Belum; harus lima kelas lebih dahulu','Ya; tensi sudah melebihi 140/90 mmHg','Belum; harus ada MRA lebih dahulu'],'Salah satu dari tiga obat wajib diuretik. Rejimen ini belum berisi diuretik, jadi definisi belum terpenuhi.','Pasien patuh memakai ramipril, amlodipin, dan bisoprolol dosis optimal. Tensi 148/92 mmHg, terkonfirmasi dengan HBPM.',['4.01']],
+[4,'Langkah pertama sebelum menambah obat keempat adalah…',['Menyingkirkan pseudoresistensi','Menambahkan spironolakton','Mengganti ke obat intravena','Menambahkan ARB pada ACEi','Menaikkan dosis ke maksimal'],'Ketidakpatuhan, efek jas putih, kesalahan manset, zat presor eksogen, dan penyebab sekunder harus disingkirkan dulu sebelum menyebut resisten sejati.','Perempuan 56 tahun tetap bertensi 150/94 mmHg di klinik meski diresepkan tiga obat termasuk diuretik. Kepatuhan, tensi rumah, dan obat lain yang diminumnya belum pernah ditanyakan.',['4.02']],
+[4,'Penjelasan yang paling mungkin untuk tensi klinik yang tinggi adalah…',['Under-cuffing: estimasi palsu tinggi','Under-cuffing: estimasi palsu rendah','Efek jas putih: tensi rumah ikut tinggi','Kekakuan arteri: diastolik ikut tinggi','Baroreseptor tumpul: tensi berdiri naik'],'Manset terlalu kecil pada lengan besar memberi angka palsu tinggi.','Laki-laki obes dengan lingkar lengan besar selalu diukur dengan manset ukuran standar yang tampak sempit.',['4.03']],
+[4,'NSAID menaikkan tensi melalui…',['Hambat prostaglandin ginjal, retensi natrium','Stimulasi reseptor alfa-1, vasokonstriksi','Hambat kanal ENaC, retensi kalium','Up-regulation reseptor beta miokard','Luapan katekolamin dari simpatis sentral'],'NSAID menghambat prostaglandin ginjal sehingga natrium tertahan. Vasokonstriksi α₁ adalah mekanisme dekongestan.','',['4.04']],
+[4,'Mekanisme kenaikan tensi pada pasien ini adalah…',['Vasokonstriksi lewat reseptor alfa-1','Retensi natrium lewat prostaglandin ginjal','Blokade reseptor beta-2 vasodilator','Luapan katekolamin akibat putus obat','Hambatan kanal ENaC tubulus distal'],'Pseudoefedrin (dekongestan) menyebabkan vasokonstriksi α₁; ini zat presor eksogen yang harus dicari pada pseudoresistensi.','Tensi seorang pasien yang semula terkontrol menjadi tinggi sejak ia rutin minum obat flu berisi pseudoefedrin.',['4.04']],
+[4,'Semua berikut disebut bahan sebagai zat presor eksogen, KECUALI…',['Kotrimoksazol','Kortikosteroid','Pil KB estrogen','Herbal licorice','NSAID'],'Kotrimoksazol muncul di bahan sebagai pemicu hiperkalemia (trimetoprim menghambat ENaC), bukan sebagai zat presor.','',['4.05']],
+[4,'Penyebab sekunder yang terutama dicari pada hipertensi yang tampak resisten adalah…',['Hiperaldosteronisme primer, OSA, stenosis arteri renalis','Under-cuffing, efek jas putih, ketidakpatuhan minum obat','NSAID, dekongestan, kortikosteroid, pil KB estrogen','Gout, BPH, asma, penyakit paru obstruktif kronik','ISH, hipotensi ortostatik, kerapuhan fisik berat'],'Tiga penyebab sekunder utama: hiperaldosteronisme primer, apnea tidur obstruktif, stenosis arteri renalis. Pilihan lain adalah penyebab pseudoresistensi jenis berbeda atau komorbiditas.','',['4.06']],
+[4,'Fondasi triple therapy pada hipertensi resisten adalah…',['Penghambat RAAS + CCB dihidropiridin + tiazid-like','Penghambat RAAS + beta-blocker + tiazid-like','ACEi + ARB + CCB dihidropiridin','CCB dihidropiridin + beta-blocker + MRA','Penghambat RAAS + CCB dihidropiridin + MRA'],'Fondasinya ketiga pilar lini pertama. MRA baru masuk sebagai obat keempat.','',['4.07']],
+[4,'Obat lini keempat terpilih pada hipertensi resisten beserta studinya adalah…',['Spironolakton; PATHWAY-2','Eplerenon; PROGRESS','Bisoprolol; ALLHAT','Amilorid; ONTARGET','Doksazosin; VA NEPHRON-D'],'PATHWAY-2 menunjukkan spironolakton 25–50 mg/hari paling superior karena mengatasi retensi cairan akibat aldosteron.','',['4.08']],
+[4,'Obat keempat yang paling tepat adalah…',['Spironolakton 25 mg/hari','Valsartan dosis rendah','Aliskiren dosis rendah','Verapamil lepas lambat','Klonidin tiga kali sehari'],'Kalium <4,5 mEq/L dan eGFR memadai: syarat spironolakton terpenuhi. Valsartan atau aliskiren di atas ramipril adalah blokade ganda RAAS.','Hipertensi resisten sejati sudah ditegakkan pada pasien yang memakai ramipril, amlodipin, dan indapamid. Kalium 4,1 mEq/L, eGFR 68 mL/min.',['4.08']],
+[4,'Syarat laboratorium sebelum memberi spironolakton sebagai lini keempat adalah…',['Kalium <4,5 mEq/L dan eGFR >30–45','Kalium <5,5 mEq/L dan eGFR >15–30','Kalium <3,5 mEq/L dan eGFR >60–90','Kalium <6,5 mEq/L dan eGFR >30–45','Kalium <4,5 mEq/L dan eGFR >60–90'],'Syarat: kalium <4,5 mEq/L dan eGFR >30–45 mL/min (tabel rangkuman bahan menulis >30). Angka 5,5 dan 6,5 adalah batas hiperkalemia berat/fatal di bagian lain.','',['4.09']],
+[4,'Alternatif lini keempat selain spironolakton adalah…',['Eplerenon, Amilorid, atau beta-blocker','Aliskiren, ARB kedua, atau beta-blocker','Eplerenon, NSAID, atau beta-blocker','Kotrimoksazol, Amilorid, atau Eplerenon','Pseudoefedrin, Amilorid, atau beta-blocker'],'Bahan menyebut eplerenon, amilorid, atau beta-blocker. Aliskiren/ARB kedua adalah blokade ganda RAAS; NSAID dan pseudoefedrin justru zat presor.','',['4.09']],
+[4,'Komponen The Triple Whammy adalah…',['NSAID + ACEi/ARB + diuretik','NSAID + CCB + beta-blocker','ACEi + ARB + diuretik','ACEi/ARB + MRA + kotrimoksazol','Beta-blocker + verapamil + diuretik'],'Tiga obat ini bersama-sama meruntuhkan tekanan filtrasi glomerulus dan menyebabkan AKI anurik berat. ACEi/ARB + spironolakton + kotrimoksazol adalah interaksi hiperkalemia fatal.','',['4.10']],
+[4,'Kontribusi ibuprofen terhadap gagal ginjal akut pasien ini adalah…',['Konstriksi arteriol aferen','Dilatasi arteriol eferen','Penurunan volume plasma','Dilatasi arteriol aferen','Konstriksi arteriol eferen'],'Triple whammy: NSAID menyempitkan aferen, ACEi melebarkan eferen, diuretik menurunkan volume plasma; tekanan filtrasi kolaps total.','Perempuan 70 tahun memakai lisinopril dan hidroklorotiazid. Seminggu terakhir ia minum ibuprofen untuk nyeri lutut; kini urinnya hampir tidak keluar dan kreatinin naik tajam.',['4.10']],
+[4,'Mekanisme kejadian ini adalah…',['Supresi ganda nodus SA/AV dan inotropik','Stimulasi alfa-1 tanpa perlawanan beta-2','Up-regulation reseptor beta di miokard','Hiperkalemia dengan gelombang T lancip','Kolaps tekanan filtrasi glomerulus'],'Beta-blocker + verapamil/diltiazem menekan nodus SA/AV dan kontraktilitas sekaligus: bradikardia berat (<40 bpm), blok AV derajat 3, hingga henti jantung.','Pasien yang memakai bisoprolol mendapat tambahan verapamil. Beberapa hari kemudian ia pingsan dengan denyut 36 bpm.',['4.11']],
+[4,'Kotrimoksazol memicu hiperkalemia pada pemakai penghambat RAAS + spironolakton karena…',['Trimetoprim menghambat kanal ENaC','Sulfametoksazol menghambat kanal ENaC','Trimetoprim menghambat transporter URAT-1','Trimetoprim menghambat kotransporter Na⁺/Cl⁻','Sulfametoksazol menyempitkan arteriol aferen'],'Trimetoprim bekerja mirip amilorid pada kanal ENaC sehingga kalium tertahan.','',['4.12']],
+[4,'Kelainan yang paling mungkin adalah…',['Hiperkalemia','Hipokalemia','Hiponatremia','Hipoglikemia','Hipokalsemia'],'RAAS blocker + spironolakton + kotrimoksazol: kalium dapat melonjak >6,5 mEq/L dengan gelombang T lancip, lalu fibrilasi ventrikel/asistol.','Pasien memakai ramipril dan spironolakton. Setelah diberi kotrimoksazol ia lemah, dan EKG menunjukkan gelombang T lancip.',['4.12']],
+
+/* ===== BAB 5 ===== */
+[5,'Krisis hipertensi didefinisikan sebagai lonjakan tensi…',['Sistolik ≥180 dan/atau diastolik ≥120 mmHg','Sistolik ≥160 dan/atau diastolik ≥110 mmHg','Sistolik ≥200 dan/atau diastolik ≥130 mmHg','Sistolik ≥220 dan/atau diastolik ≥120 mmHg','Sistolik ≥180 dan/atau diastolik ≥100 mmHg'],'Batas krisis: ≥180 dan/atau ≥120 mmHg. Angka 160/110 adalah ambang krisis preeklampsia berat; 220/120 adalah batas hipertensi permisif stroke.','',['5.01']],
+[5,'Yang membedakan hipertensi urgensi dari emergensi adalah…',['Ada tidaknya kerusakan organ target akut','Tinggi rendahnya angka tekanan sistolik','Tinggi rendahnya angka tekanan diastolik','Lamanya pasien menderita hipertensi','Jumlah obat yang sedang dipakai pasien'],'Angka tensinya sama (≥180/≥120 mmHg); pembedanya kerusakan organ target akut.','',['5.02']],
+[5,'Diagnosis dan tatalaksana yang tepat adalah…',['Urgensi; obat oral bertahap','Emergensi; obat IV kontinu','Urgensi; obat IV kontinu','Emergensi; obat oral bertahap','Urgensi; nifedipin sublingual'],'Tensi ≥180/120 tanpa kerusakan organ target akut = urgensi: obat oral, turun bertahap 24–48 jam, rawat jalan/observasi. Obat IV dan nifedipin sublingual dilarang.','Laki-laki 50 tahun lupa minum obat. Tensi 190/124 mmHg, pusing ringan. Pemeriksaan neurologis, EKG, dan kreatinin normal.',['5.02','5.03']],
+[5,'Obat oral yang dipakai pada hipertensi urgensi adalah…',['Kaptopril, Klonidin, Labetalol oral','Nikardipin, Esmolol, Nitrogliserin','Kaptopril, Nikardipin, Esmolol','Hidralazin, Nitrogliserin, Klonidin','Spironolakton, Amilorid, Eplerenon'],'Urgensi memakai obat oral kerja bertahap. Nikardipin, esmolol, dan nitrogliserin adalah obat IV untuk emergensi.','',['5.03']],
+[5,'Pada hipertensi urgensi, tensi diturunkan bertahap dalam…',['24–48 jam','20 menit','1 jam','2–6 jam','1–2 minggu'],'Urgensi: bertahap 24–48 jam. Angka 1 jam dan 2–6 jam adalah tahapan emergensi; 20 menit untuk diseksi aorta.','',['5.03']],
+[5,'Nifedipin sublingual dilarang pada hipertensi urgensi karena…',['Penurunan mendadak memicu stroke iskemik/infark','Penurunan mendadak memicu perdarahan otak','Absorpsinya lambat sehingga tidak efektif','Memicu badai simpatis akibat putus obat','Menimbulkan hiperkalemia dan aritmia letal'],'Tensi yang jatuh mendadak menurunkan perfusi otak dan jantung sehingga terjadi stroke iskemik atau infark miokard seketika.','',['5.04']],
+[5,'Semua berikut tergolong kerusakan organ target akut pada hipertensi emergensi, KECUALI…',['Pusing ringan disertai cemas','Ensefalopati hipertensi','Edema paru akut kardiogenik','Diseksi aorta','AKI anurik'],'Pusing ringan/cemas dengan fungsi organ utuh adalah gambaran urgensi. Daftar emergensi: ensefalopati, stroke akut, ACS, edema paru akut, diseksi aorta, AKI anurik, eklampsia.','',['5.05']],
+[5,'Klasifikasi dan tempat perawatan yang tepat adalah…',['Emergensi; rawat ICU, obat IV','Urgensi; rawat jalan, obat oral','Urgensi; observasi, obat IV','Emergensi; observasi, obat oral','Urgensi; rawat ICU, obat oral'],'Edema paru akut kardiogenik adalah kerusakan organ target akut, jadi ini emergensi: ICU, arterial line, obat IV kontinu yang dititrasi.','Perempuan 64 tahun, tensi 214/128 mmHg, sesak berat mendadak dengan ronki basah di kedua paru.',['5.05','5.06']],
+[5,'Di ICU, tensi pasien hipertensi emergensi dipantau dengan memasang…',['Arterial line','ABPM 24 jam','HBPM 7 hari','Manset ukuran besar','Monitor Holter'],'Emergensi dirawat di ICU dengan arterial line karena obat IV dititrasi kontinu. HBPM/ABPM dipakai untuk konfirmasi efek jas putih.','',['5.06']],
+[5,'Obat IV yang disebut lini 1 serbaguna untuk emergensi neurologis dan renal adalah…',['Nikardipin','Esmolol','Nitrogliserin','Hidralazin','Furosemid'],'Nikardipin IV adalah CCB lini 1 serbaguna (neurologis, renal). Esmolol untuk diseksi aorta; nitrogliserin untuk ACS dan edema paru.','',['5.07']],
+[5,'Labetalol IV tergolong…',['Alfa-beta blocker','Beta-blocker ultra-singkat','CCB dihidropiridin','Vasodilator vena','Agonis alfa-2 sentral'],'Labetalol adalah alfa-beta blocker, dipakai pada emergensi neurologis, diseksi aorta, dan eklampsia. Beta-blocker ultra-singkat adalah esmolol.','',['5.08']],
+[5,'Obat IV lini 1 untuk pasien ini adalah…',['Nitrogliserin IV','Esmolol IV','Hidralazin IV','Kaptopril oral','Klonidin oral'],'Nitrogliserin IV adalah vasodilator vena lini 1 untuk ACS dan edema paru kardiogenik akut. Obat oral tidak dipakai pada emergensi.','Laki-laki 58 tahun, tensi 206/124 mmHg, nyeri dada khas dengan perubahan EKG sesuai sindrom koroner akut.',['5.09']],
+[5,'Esmolol IV adalah…',['Beta-blocker ultra-singkat, lini 1 diseksi aorta','Alfa-beta blocker, lini 1 pada eklampsia','Vasodilator vena, lini 1 edema paru akut','CCB serbaguna, lini 1 kasus neurologis','Beta-blocker ultra-singkat, lini 1 pada ACS'],'Esmolol: beta-blocker ultra-singkat, lini 1 untuk diseksi aorta. Lini 1 ACS menurut bahan adalah nitrogliserin IV.','',['5.10']],
+[5,'MAP pasien ini adalah…',['140 mmHg','130 mmHg','150 mmHg','160 mmHg','120 mmHg'],'MAP = diastolik + ⅓ × (sistolik − diastolik) = 120 + ⅓ × (180 − 120) = 120 + 20 = 140 mmHg.','Seorang pasien datang dengan tensi 180/120 mmHg.',['5.11']],
+[5,'Kaidah penurunan MAP pada hipertensi emergensi umum adalah…',['Maksimal 20–25% dalam 1 jam pertama','Maksimal 10–15% dalam 1 jam pertama','Maksimal 20–25% dalam 20 menit pertama','Minimal 40–50% dalam 1 jam pertama','Maksimal 20–25% dalam 24 jam pertama'],'MAP diturunkan paling banyak 20–25% pada jam pertama agar perfusi organ tidak jatuh. Batas 20 menit hanya untuk diseksi aorta.','',['5.12']],
+[5,'MAP terendah yang masih diperbolehkan pada akhir jam pertama adalah…',['120 mmHg','80 mmHg','96 mmHg','104 mmHg','112 mmHg'],'Penurunan maksimal 25%: 25% × 160 = 40, sehingga 160 − 40 = 120 mmHg. Lebih rendah dari itu berarti menurunkan terlalu cepat.','Pasien ensefalopati hipertensi dirawat di ICU dengan MAP awal 160 mmHg.',['5.12']],
+[5,'Setelah jam pertama, target tensi untuk 2–6 jam berikutnya adalah…',['160/100–110 mmHg','140/90–95 mmHg','130/80–85 mmHg','180/105–110 mmHg','120/70–80 mmHg'],'Urutannya: MAP turun maksimal 20–25% (1 jam), lalu 160/100–110 mmHg (2–6 jam), lalu normotensi dalam 24–48 jam.','',['5.12']],
+[5,'Target hemodinamik darurat pada diseksi aorta akut adalah…',['Sistolik <120 mmHg, HR <60 bpm, dalam 20 menit','Sistolik <140 mmHg, HR <80 bpm, dalam 1 jam','Sistolik <120 mmHg, HR <60 bpm, dalam 6 jam','Sistolik <160 mmHg, HR <60 bpm, dalam 20 menit','Sistolik <100 mmHg, HR <40 bpm, dalam 20 menit'],'Diseksi aorta adalah pengecualian kaidah 20–25%: sistolik harus <120 mmHg dan HR <60 bpm dalam 20 menit pertama.','',['5.13']],
+[5,'Obat yang diberikan pertama kali adalah…',['Esmolol IV','Nikardipin IV','Nitrogliserin IV','Hidralazin IV','Kaptopril oral'],'Pada diseksi aorta beta-blocker IV (esmolol/labetalol) diberikan dahulu; vasodilator seperti nikardipin baru menyusul bila sistolik belum <120 mmHg.','Laki-laki 61 tahun dengan nyeri dada seperti dirobek yang menembus ke punggung. Tensi 200/118 mmHg, HR 108 bpm. CT angiografi: diseksi aorta.',['5.13','5.14']],
+[5,'Beta-blocker IV didahulukan sebelum vasodilator pada diseksi aorta untuk…',['Meredam gaya ejeksi bilik kiri (dP/dt)','Melebarkan vena dan menurunkan preload','Mencegah remodeling ventrikel kiri','Menjaga perfusi penumbra iskemik','Mencegah transformasi hemoragik'],'Gaya ejeksi (dP/dt) harus diredam lebih dahulu; setelah itu vasodilator (nikardipin) ditambahkan.','',['5.14']],
+
+/* ===== BAB 6 ===== */
+[6,'Keadaan ini merupakan…',['Indikasi deprescribing: hipotensi simtomatik','Indikasi menambah obat: jas putih tak terkontrol','Indikasi mempertahankan obat: target tercapai','Indikasi obat intravena: hipertensi emergensi','Indikasi MRA: hipertensi resisten sejati'],'Sistolik <100–110 mmHg dengan lemas/pusing postural adalah hipotensi simtomatik, indikasi mengurangi obat.','Perempuan 82 tahun memakai tiga antihipertensi. Sistolik 98 mmHg; ia lemas dan pusing setiap kali berdiri.',['6.01']],
+[6,'Hipotensi simtomatik sebagai indikasi deprescribing adalah lemas/pusing postural dengan sistolik…',['<100–110 mmHg','<120–130 mmHg','<130–139 mmHg','<140–150 mmHg','<160–180 mmHg'],'Batas yang dipakai bahan: sistolik <100–110 mmHg disertai gejala. Angka 130–139 mmHg adalah target longgar lansia rapuh.','',['6.01']],
+[6,'Semua berikut adalah indikasi deprescribing antihipertensi, KECUALI…',['Hipertensi derajat 2 baru terdiagnosis','Jatuh berulang atau fraktur geriatri','Frailty berat atau demensia lanjut','Perawatan paliatif akhir hidup','Hipotensi simtomatik postural'],'Derajat 2 yang baru terdiagnosis justru memerlukan kombinasi awal dua obat. Empat pilihan lain adalah indikasi deprescribing.','',['6.02']],
+[6,'Prinsip tapering-off antihipertensi adalah menghentikan obat…',['Satu per satu, obat tanpa indikasi wajib dahulu','Sekaligus, dimulai dari yang dosisnya terbesar','Satu per satu, obat indikasi wajib dahulu','Sekaligus, lalu tensi rumah dipantau 7 hari','Dua per dua, dimulai dari klonidin dahulu'],'Yang dihentikan dulu adalah obat non-indikasi wajib atau pemicu hipotensi postural, satu per satu.','',['6.03']],
+[6,'Mekanisme rebound setelah beta-blocker dihentikan mendadak adalah…',['Up-regulation reseptor beta miokard','Luapan katekolamin dari simpatis sentral','Stimulasi alfa-1 tanpa perlawanan beta-2','Down-regulation reseptor beta miokard','Refleks baroreseptor yang tumpul'],'Blokade lama menaikkan jumlah reseptor beta; saat obat hilang terjadi badai simpatis. Luapan katekolamin sentral adalah mekanisme rebound klonidin.','',['6.04']],
+[6,'Cara menghentikan bisoprolol yang seharusnya adalah…',['Tapering bertahap 1–2 minggu','Tapering bertahap 1–2 hari','Henti langsung, pantau 48 jam','Ganti langsung dengan verapamil','Ganti langsung dengan klonidin'],'Henti mendadak memicu takikardia berat, lonjakan tensi, infark miokard, bahkan kematian mendadak; beta-blocker diturunkan bertahap 1–2 minggu.','Laki-laki 62 tahun pascainfark berhenti minum bisoprolol tiga hari karena kehabisan obat. Ia datang dengan berdebar, tensi melonjak, dan nyeri dada.',['6.04']],
+[6,'Krisis tensi rebound akibat putus klonidin mendadak meniru…',['Feokromositoma','Hiperaldosteronisme primer','Stenosis arteri renalis','Apnea tidur obstruktif','Hipertensi jas putih'],'Luapan katekolamin masif (tremor, takikardia liar, sakit kepala hebat, krisis tensi) menyerupai feokromositoma.','',['6.05']],
+[6,'Dasar terjadinya sympathetic storm setelah klonidin dihentikan mendadak adalah…',['Klonidin menekan simpatis sentral; katekolamin meluap','Klonidin memblokade beta miokard; reseptor bertambah','Klonidin memblokade alfa-1 perifer; pembuluh menyempit','Klonidin menghambat renin; natrium dan air tertahan','Klonidin memblokade kanal kalsium; terjadi vasospasme'],'Selama dipakai klonidin menekan simpatis sentral; penghentian mendadak melepaskan katekolamin secara masif. Karena itu taperingnya perlahan, berminggu-minggu.','',['6.05']],
+[6,'Pada pasien yang memakai klonidin dan beta-blocker, obat yang dihentikan lebih dahulu adalah…',['Beta-blocker, sampai tuntas','Klonidin, sampai tuntas','Keduanya pada hari yang sama','Klonidin, separuh dosis saja','Obat yang dosisnya paling kecil'],'Menghentikan klonidin lebih dulu dilarang keras karena memicu unopposed alpha stimulation.','',['6.06']],
+[6,'Rencana penghentian yang benar adalah…',['Tapering bisoprolol sampai stop, lalu tapering klonidin','Stop klonidin malam ini, bisoprolol tetap dilanjutkan','Stop keduanya malam ini, lalu pantau tensi di rumah','Tapering klonidin sampai stop, lalu tapering bisoprolol','Stop bisoprolol malam ini, lalu stop klonidin esok hari'],'Urutan wajib: beta-blocker diturunkan dan dihentikan dulu; setelah tubuh bersih dari efeknya, klonidin diturunkan bertahap. Keduanya tidak boleh distop mendadak.','Perempuan 76 tahun dengan demensia lanjut dan jatuh berulang memakai klonidin dan bisoprolol. Keluarga mengusulkan klonidin dihentikan malam ini karena membuatnya mengantuk.',['6.06','6.08']],
+[6,'Pada unopposed alpha stimulation, reseptor yang terstimulasi tanpa perlawanan adalah…',['α₁ vaskular, karena β₂ vasodilator terblokade','β₁ miokard, karena α₁ vaskular terblokade','β₂ vaskular, karena α₁ vaskular terblokade','α₂ sentral, karena β₁ miokard terblokade','α₁ vaskular, karena α₂ sentral terblokade'],'Katekolamin yang meluap setelah klonidin distop tidak dapat mengaktifkan β₂ (terblokade beta-blocker), sehingga seluruh efeknya jatuh ke α₁.','',['6.07']],
+[6,'Akibat akhir unopposed alpha stimulation adalah…',['Vasokonstriksi masif dan krisis tensi','Vasodilatasi masif dan hipotensi berat','Bradikardia berat dan blok AV derajat 3','Hiperkalemia dan gelombang T lancip','Anuria dan gagal ginjal akut berat'],'Stimulasi α₁ tanpa lawan menyebabkan vasokonstriksi masif, krisis tensi katastropik, stroke hemoragik, hingga henti jantung.','',['6.07']],
+[6,'Pada penghentian klonidin + beta-blocker, klonidin mulai diturunkan…',['Setelah tubuh bersih dari efek beta-blocker','Bersamaan dengan penurunan beta-blocker','Sebelum beta-blocker mulai diturunkan','Setelah tensi kembali di atas target','Setelah terapi pengganti dihentikan'],'Langkah 1: beta-blocker diturunkan dan dihentikan sepenuhnya. Langkah 2: setelah efeknya bersih, klonidin ditapering sampai tuntas.','',['6.08']],
+];
+
+(function(){
+'use strict';
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const shuf=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={
+  get(k,d){try{const v=localStorage.getItem(META.id+'.'+k);return v==null?d:JSON.parse(v);}catch(e){return d;}},
+  set(k,v){try{localStorage.setItem(META.id+'.'+k,JSON.stringify(v));}catch(e){}},
+  del(k){try{localStorage.removeItem(META.id+'.'+k);}catch(e){}}
+};
+const CH=META.bab.map((n,i)=>({id:i+1,n}));
+const KEYS='ABCDE', SEC_PER_Q=60;
+const Q=[],QB={},cnt={};
+QRAW.forEach(r=>{cnt[r[0]]=(cnt[r[0]]||0)+1;const q={id:r[0]+'-'+cnt[r[0]],c:r[0],q:r[1],o:r[2],e:r[3],s:r[4]||''};Q.push(q);QB[q.id]=q;});
+let M=store.get('m',{});            // id -> 1 benar / 0 salah (jawaban terakhir)
+let cfg=Object.assign({mode:'latihan',n:20,ch:CH.map(c=>c.id),kasus:false},store.get('cfg',{}));
+let S=null, R=null, timer=null, rvFilter='salah';
+const chName=c=>CH.find(x=>x.id===c).n;
+const chStat=c=>{const qs=Q.filter(q=>q.c===c);return{n:qs.length,ok:qs.filter(q=>M[q.id]===1).length};};
+const wrongIds=()=>Q.filter(q=>M[q.id]===0).map(q=>q.id);
+
+/* tema */
+const root=document.documentElement;
+{const t=store.get('theme','');if(t)root.dataset.theme=t;}
+$('#theme').onclick=()=>{const dark=root.dataset.theme?root.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;root.dataset.theme=dark?'light':'dark';store.set('theme',root.dataset.theme);};
+
+/* dialog konfirmasi */
+function ask(msg,ok){return new Promise(res=>{const d=$('#dlg');if(!d.showModal){res(confirm(msg));return;}
+  $('#dlgmsg').textContent=msg;$('#dlgok').textContent=ok;d.returnValue='no';d.onclose=()=>res(d.returnValue==='yes');d.showModal();});}
+$$('#dlg button').forEach(b=>b.onclick=()=>$('#dlg').close(b.value));
+
+/* tab utama */
+function go(v){['materi','quiz'].forEach(x=>{$('#v-'+x).hidden=x!==v;$('#tab-'+x).setAttribute('aria-selected',x===v);});
+  if(v==='quiz'&&!S&&!R)renderSetup();window.scrollTo(0,0);}
+$('#tab-materi').onclick=()=>go('materi');
+$('#tab-quiz').onclick=()=>go('quiz');
+
+/* materi */
+$$('.ch table').forEach(t=>{const w=document.createElement('div');w.className='tw'+(t.rows[0].cells.length>=5?' wide':'');t.replaceWith(w);w.appendChild(t);});
+function buildNav(){$('#chnav').innerHTML=CH.map(c=>{const s=chStat(c.id);return `<button role="tab" data-ch="${c.id}"><span class="no">${c.id}</span><span class="nm">${esc(c.n)}</span><span class="pc">${s.ok}/${s.n}</span></button>`;}).join('');}
+function openCh(c,scroll){
+  if(!CH.some(x=>x.id===c))c=1;
+  $$('.ch').forEach(s=>s.classList.toggle('on',+s.dataset.ch===c));
+  $$('#chnav button').forEach(b=>{const on=+b.dataset.ch===c;b.classList.toggle('on',on);b.setAttribute('aria-selected',on);
+    if(on){const n=$('#chnav');if(n.scrollWidth>n.clientWidth)n.scrollLeft=b.offsetLeft-(n.clientWidth-b.offsetWidth)/2;}});
+  store.set('ch',c);if(scroll)window.scrollTo(0,0);
+}
+$('#chnav').onclick=e=>{const b=e.target.closest('button');if(b)openCh(+b.dataset.ch,true);};
+$$('.ch').forEach(s=>{const c=+s.dataset.ch,nx=CH.find(x=>x.id===c+1),f=document.createElement('div');f.className='chfoot';
+  f.innerHTML=`<button class="btn pri" data-quiz="${c}">Latihan bab ini · ${chStat(c).n} soal</button>`+(nx?`<button class="btn" data-next="${nx.id}">Lanjut: ${esc(nx.n)} →</button>`:`<button class="btn" data-quiz="0">Latihan semua bab →</button>`);
+  s.appendChild(f);});
+$('#v-materi').addEventListener('click',e=>{const b=e.target.closest('[data-next],[data-quiz]');if(!b)return;
+  if(b.dataset.next){openCh(+b.dataset.next,true);return;}
+  const c=+b.dataset.quiz;cfg.ch=c?[c]:CH.map(x=>x.id);cfg.kasus=false;store.set('cfg',cfg);
+  if(S){go('quiz');return;}R=null;go('quiz');renderSetup();});
+
+/* layar quiz */
+function screen(n){['setup','run','result'].forEach(x=>$('#'+x).hidden=x!==n);}
+
+function pool(){return Q.filter(q=>cfg.ch.includes(q.c)&&(!cfg.kasus||q.s));}
+function renderSetup(){
+  clearInterval(timer);screen('setup');
+  const saved=S||store.get('s',null), tot=Q.length, ok=Q.filter(q=>M[q.id]===1).length, wr=wrongIds().length;
+  const nk=Q.filter(q=>q.s).length;
+  $('#setup').innerHTML=
+  (saved&&saved.items?`<div class="card resume"><p><strong>Ada sesi yang belum selesai.</strong><br>${saved.mode==='ujian'?'Ujian':'Latihan'} · soal ${Math.min(saved.i+1,saved.items.length)} dari ${saved.items.length}</p><button class="btn pri sm" id="resume">Lanjutkan</button><button class="btn sm" id="discard">Buang</button></div>`:'')+
+  `<h2>Latihan soal</h2><p class="lead">${tot} soal, ${nk} di antaranya berbasis kasus. Soal yang belum pernah muncul dan yang pernah salah didahulukan.</p>
+  <div class="overall"><div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="${tot}" aria-valuenow="${ok}" aria-label="Soal dikuasai"><i style="width:${ok/tot*100}%"></i></div>
+    <div class="row"><span><strong>${ok}</strong> dari ${tot} soal dikuasai</span>${Object.keys(M).length?'<button class="link" id="reset">Reset progres</button>':''}</div></div>
+  <fieldset><legend>Mode</legend><div class="modes">
+    <label class="pick"><input type="radio" name="mode" value="latihan"><b>Latihan</b><small>Pembahasan muncul setelah tiap jawaban.</small></label>
+    <label class="pick"><input type="radio" name="mode" value="ujian"><b>Ujian</b><small>Berwaktu 1 menit per soal. Pembahasan di akhir.</small></label></div></fieldset>
+  <fieldset><legend>Bab <span class="sp"><button type="button" class="link" id="all">Semua</button><button type="button" class="link" id="none">Kosongkan</button></span></legend>
+    <div class="chips">${CH.map(c=>{const s=chStat(c.id);return `<label class="pick"><input type="checkbox" name="ch" value="${c.id}"><b>${esc(c.n)}</b><small>${s.ok}/${s.n} dikuasai</small></label>`;}).join('')}</div></fieldset>
+  <fieldset><legend>Jumlah soal</legend><div class="seg">${[10,20,40,0].map(n=>`<label class="pick"><input type="radio" name="n" value="${n}">${n||'Semua'}</label>`).join('')}</div></fieldset>
+  <label class="check"><input type="checkbox" id="kasus"> Hanya soal berbasis kasus</label>
+  <div class="actbar">${wr?`<button class="btn fit" id="redo">Ulangi ${wr} yang salah</button>`:''}<button class="btn pri" id="start"></button></div>`;
+  $$('#setup input[name=mode]').forEach(i=>i.checked=i.value===cfg.mode);
+  $$('#setup input[name=ch]').forEach(i=>i.checked=cfg.ch.includes(+i.value));
+  $$('#setup input[name=n]').forEach(i=>i.checked=+i.value===cfg.n);
+  $('#kasus').checked=cfg.kasus;
+  syncSetup();
+}
+function syncSetup(){
+  const m=$('#setup input[name=mode]:checked'),n=$('#setup input[name=n]:checked');
+  cfg.mode=m?m.value:'latihan';cfg.n=n?+n.value:20;
+  cfg.ch=$$('#setup input[name=ch]:checked').map(i=>+i.value);cfg.kasus=$('#kasus').checked;store.set('cfg',cfg);
+  $$('#setup .pick').forEach(l=>l.classList.toggle('on',$('input',l).checked));
+  const av=pool().length,k=cfg.n?Math.min(cfg.n,av):av,b=$('#start');
+  b.disabled=!k;b.textContent=!cfg.ch.length?'Pilih minimal satu bab':!k?'Tidak ada soal yang cocok':`Mulai ${cfg.mode==='ujian'?'ujian':'latihan'} · ${k} soal`;
+}
+$('#setup').addEventListener('change',syncSetup);
+$('#setup').addEventListener('click',async e=>{const id=e.target.id;
+  if(id==='all'||id==='none'){$$('#setup input[name=ch]').forEach(i=>i.checked=id==='all');syncSetup();}
+  else if(id==='start'){const p=pool(),rank=q=>M[q.id]===undefined?0:M[q.id]===0?1:2;
+    const pick=shuf(p).sort((a,b)=>rank(a)-rank(b)).slice(0,cfg.n||p.length);begin(shuf(pick).map(q=>q.id),cfg.mode);}
+  else if(id==='redo')begin(shuf(wrongIds()),'latihan');
+  else if(id==='resume'){S=S||store.get('s',null);startRun();}
+  else if(id==='discard'){S=null;store.del('s');renderSetup();}
+  else if(id==='reset'&&await ask('Hapus seluruh catatan soal yang dikuasai dan yang salah?','Hapus')){M={};store.set('m',M);buildNav();openCh(store.get('ch',1));renderSetup();}
+});
+
+/* sesi */
+function begin(ids,mode){S={mode,items:ids.map(id=>({id,ord:shuf([0,1,2,3,4]),pick:null,flag:false})),i:0,left:ids.length*SEC_PER_Q,total:ids.length*SEC_PER_Q};R=null;save();startRun();}
+function save(){if(S)store.set('s',S);}
+function startRun(){
+  if(!S||!S.items||!S.items.every(it=>QB[it.id])){S=null;store.del('s');renderSetup();return;}
+  screen('run');clearInterval(timer);
+  if(S.mode==='ujian')timer=setInterval(()=>{S.left--;drawInfo();if(S.left%5===0)save();if(S.left<=0)finish();},1000);
+  renderRun();window.scrollTo(0,0);
+}
+const answered=()=>S.items.filter(it=>it.pick!==null).length;
+function drawInfo(){const el=$('#rinfo');
+  if(S.mode==='ujian'){const t=Math.max(0,S.left);el.textContent='⏱ '+Math.floor(t/60)+':'+String(t%60).padStart(2,'0');el.classList.toggle('low',t<=60);}
+  else{el.classList.remove('low');el.textContent=S.items.filter(it=>it.pick===0).length+' benar';}}
+function renderRun(){
+  const it=S.items[S.i],q=QB[it.id],ex=S.mode==='ujian',ans=it.pick!==null,rev=!ex&&ans,last=S.i===S.items.length-1,n=S.items.length;
+  $('#rpos').textContent=`Soal ${S.i+1} dari ${n}`;drawInfo();
+  $('#rbar').style.width=answered()/n*100+'%';$('#rbarwrap').setAttribute('aria-valuenow',answered());$('#rbarwrap').setAttribute('aria-valuemax',n);
+  $('#rscen').hidden=!q.s;$('#rscen').textContent=q.s;$('#rq').textContent=q.q;
+  $('#ropts').innerHTML=it.ord.map((oi,k)=>{let c='',mk='';
+    if(rev){if(oi===0){c=' ok';mk='✓';}else if(oi===it.pick){c=' no';mk='✗';}else c=' dim';}else if(oi===it.pick)c=' sel';
+    return `<button class="opt${c}" data-k="${k}"${rev?' disabled':''}${ex?` aria-pressed="${oi===it.pick}"`:''}><span class="key">${KEYS[k]}</span><span class="otx">${esc(q.o[oi])}</span><span class="mk" aria-hidden="true">${mk}</span></button>`;}).join('');
+  const fb=$('#rfb');fb.hidden=!rev;
+  if(rev){const ok=it.pick===0;fb.className='fb'+(ok?'':' no');
+    fb.innerHTML=`<b>${ok?'✓ Benar':'✗ Belum tepat'}</b>${ok?'':`<p>Jawaban: <strong>${KEYS[it.ord.indexOf(0)]}. ${esc(q.o[0])}</strong></p>`}<p>${esc(q.e)}</p><span class="src">Bab ${q.c} · ${esc(chName(q.c))}</span>`;}
+  $('#prevbtn').hidden=!ex;$('#prevbtn').disabled=S.i===0;
+  $('#flagbtn').hidden=!ex;$('#flagbtn').setAttribute('aria-pressed',it.flag);
+  const nb=$('#nextbtn');nb.hidden=!ex&&!ans;nb.textContent=last?(ex?'Kumpulkan':'Lihat hasil'):'Berikutnya →';nb.classList.toggle('pri',!ex||last||ans);
+  $('#rhint').hidden=ex||ans;
+  $('#endbtn').textContent=ex?'Kumpulkan':'Akhiri';
+  $('#rgridwrap').hidden=!ex;
+  if(ex)$('#rgrid').innerHTML=S.items.map((x,k)=>`<button data-go="${k}" class="${x.pick!==null?'done':''}${k===S.i?' cur':''}${x.flag?' flag':''}" aria-label="Soal ${k+1}${x.pick!==null?', terjawab':''}${x.flag?', ragu':''}">${k+1}</button>`).join('');
+}
+function choose(k){const it=S.items[S.i];if(!it||k>4)return;
+  if(S.mode==='latihan'){if(it.pick!==null)return;it.pick=it.ord[k];M[it.id]=it.pick===0?1:0;store.set('m',M);save();renderRun();
+    const fb=$('#rfb');if(fb.getBoundingClientRect().bottom>innerHeight-80)fb.scrollIntoView({block:'center',behavior:'smooth'});$('#nextbtn').focus({preventScroll:true});}
+  else{it.pick=it.pick===it.ord[k]?null:it.ord[k];save();renderRun();const b=$(`#ropts [data-k="${k}"]`);if(b)b.focus({preventScroll:true});}
+}
+function move(d){const j=S.i+d;if(j<0)return;if(j>=S.items.length){S.mode==='ujian'?tryEnd():finish();return;}S.i=j;save();renderRun();window.scrollTo(0,0);$('#rq').focus({preventScroll:true});}
+async function tryEnd(){const n=S.items.length,a=answered();
+  const msg=S.mode==='ujian'?(a<n?`${n-a} soal belum dijawab dan akan dihitung salah. Kumpulkan sekarang?`:'Semua soal sudah dijawab. Kumpulkan sekarang?')
+    :(a?`Akhiri sesi? ${a} dari ${n} soal sudah dijawab; sisanya tidak dihitung.`:'Akhiri sesi? Belum ada soal yang dijawab.');
+  if(await ask(msg,S.mode==='ujian'?'Kumpulkan':'Akhiri'))finish();}
+function finish(){
+  if(!S)return;
+  clearInterval(timer);if($('#dlg').open)$('#dlg').close('no');
+  const ex=S.mode==='ujian',items=ex?S.items:S.items.filter(it=>it.pick!==null);
+  if(ex){items.forEach(it=>{if(it.pick!==null)M[it.id]=it.pick===0?1:0;});store.set('m',M);}
+  store.del('s');const used=ex?S.total-Math.max(0,S.left):0;const mode=S.mode;S=null;buildNav();openCh(store.get('ch',1));
+  if(!items.length){renderSetup();return;}
+  R={mode,items,used};rvFilter=items.some(it=>it.pick!==0)?'salah':'semua';renderResult();window.scrollTo(0,0);
+}
+$('#ropts').onclick=e=>{const b=e.target.closest('.opt');if(b&&!b.disabled)choose(+b.dataset.k);};
+$('#nextbtn').onclick=()=>move(1);$('#prevbtn').onclick=()=>move(-1);$('#endbtn').onclick=tryEnd;
+$('#flagbtn').onclick=()=>{const it=S.items[S.i];it.flag=!it.flag;save();renderRun();};
+$('#rgrid').onclick=e=>{const b=e.target.closest('[data-go]');if(b){S.i=+b.dataset.go;save();renderRun();window.scrollTo(0,0);}};
+document.addEventListener('keydown',e=>{
+  if(!S||$('#run').hidden||$('#v-quiz').hidden||$('#dlg').open||e.ctrlKey||e.metaKey||e.altKey)return;
+  const k=e.key.toLowerCase(),i='12345'.indexOf(k)>=0?'12345'.indexOf(k):'abcde'.indexOf(k);
+  if(k.length===1&&i>=0){e.preventDefault();choose(i);return;}
+  const onBtn=e.target.tagName==='BUTTON'||e.target.tagName==='SUMMARY';
+  if((k==='enter'&&!onBtn)||k==='arrowright'){if(!$('#nextbtn').hidden){e.preventDefault();move(1);}}
+  else if(k==='arrowleft'&&S.mode==='ujian'){e.preventDefault();move(-1);}
+  else if(k==='r'&&S.mode==='ujian'){e.preventDefault();$('#flagbtn').click();}
+});
+
+/* hasil */
+function renderResult(){
+  screen('result');
+  const it=R.items,n=it.length,ok=it.filter(x=>x.pick===0).length,pct=Math.round(ok/n*100),wrong=it.filter(x=>x.pick!==0);
+  const by={};it.forEach(x=>{const c=QB[x.id].c;by[c]=by[c]||{n:0,ok:0};by[c].n++;if(x.pick===0)by[c].ok++;});
+  const rows=Object.keys(by).map(c=>({c:+c,n:by[c].n,ok:by[c].ok,p:by[c].ok/by[c].n})).sort((a,b)=>a.c-b.c);
+  const weak=rows.filter(r=>r.p<1).sort((a,b)=>a.p-b.p||b.n-a.n)[0];
+  const verdict=pct>=85?(R.mode==='ujian'?'Kuat. Pertahankan dengan mengulang soal kasus secara berkala.':'Kuat. Naikkan tantangan: coba mode Ujian atau hanya soal berbasis kasus.')
+    :pct>=65?'Sudah di jalur. Tinjau soal yang salah di bawah, lalu ulangi.'
+    :`Belum aman. Baca ulang bab ${weak?esc(chName(weak.c)):''} dahulu, lalu ulangi soal yang salah.`;
+  const tm=R.mode==='ujian'?` · waktu ${Math.floor(R.used/60)} mnt ${R.used%60} dtk`:'';
+  const list=rvFilter==='salah'?wrong:it;
+  $('#result').innerHTML=`
+  <div class="score"><div class="ring" style="--p:${pct}" role="img" aria-label="Skor ${pct} persen"><b>${pct}%</b></div>
+    <div><h2 tabindex="-1" id="rtitle">${ok} dari ${n} benar</h2><p>${verdict}</p><p class="lead" style="margin:4px 0 0">${R.mode==='ujian'?'Ujian':'Latihan'}${tm}</p></div></div>
+  <h3>Per bab</h3>
+  ${rows.map(r=>`<div class="chrow"><span class="nm">${esc(chName(r.c))}</span><span class="ct">${r.ok}/${r.n}</span>
+    <div class="bar"><i class="${r.p<.65?'low':''}" style="width:${r.p*100}%"></i></div>
+    ${r.p<1||r.n<3?`<div class="more"><span>${r.n<3?'Sampel kecil, belum cukup untuk menilai bab ini.':''}</span>${r.p<1?`<button class="link" data-read="${r.c}">Baca bab</button>`:''}</div>`:''}</div>`).join('')}
+  <h3>Tinjau jawaban <span class="sp">${wrong.length?`<button class="tog" data-f="salah" aria-pressed="${rvFilter==='salah'}">Salah (${wrong.length})</button>`:''}<button class="tog" data-f="semua" aria-pressed="${rvFilter==='semua'}">Semua (${n})</button></span></h3>
+  ${list.map(x=>{const q=QB[x.id],good=x.pick===0;return `<details class="rv${good?'':' no'}"${good?'':' open'}><summary><span class="mk">${good?'✓':'✗'}</span><span>${q.s?esc(q.s)+' ':''}<strong>${esc(q.q)}</strong></span></summary>
+    <div class="body"><ol>${x.ord.map(oi=>`<li class="${oi===0?'ok':oi===x.pick?'no':''}">${esc(q.o[oi])}${oi===x.pick?`<span class="you">← jawabanmu</span>`:''}</li>`).join('')}</ol>
+    ${x.pick===null?'<p><em>Tidak dijawab.</em></p>':''}<p>${esc(q.e)}</p></div></details>`;}).join('')}
+  <div class="actbar">${wrong.length?`<button class="btn pri" id="again">Ulangi ${wrong.length} yang salah</button>`:''}<button class="btn${wrong.length?'':' pri'}" id="fresh">Sesi baru</button></div>`;
+}
+$('#result').addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;
+  if(t.dataset.f){rvFilter=t.dataset.f;renderResult();}
+  else if(t.dataset.read){openCh(+t.dataset.read);go('materi');}
+  else if(t.id==='again')begin(shuf(R.items.filter(x=>x.pick!==0).map(x=>x.id)),'latihan');
+  else if(t.id==='fresh'){R=null;renderSetup();window.scrollTo(0,0);}
+});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)save();});
+
+/* mulai */
+buildNav();openCh(store.get('ch',1));
+})();
+
+</script>
+</body>
+</html>
