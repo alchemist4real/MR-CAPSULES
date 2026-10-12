@@ -90,7 +90,7 @@ export default async function handler(req, res) {
   }
 
   // Destructive operations check
-  if (['delete', 'delete_files', 'rename_file', 'rename_folder', 'update_config', 'add_admin', 'remove_admin', 'ban_user', 'cleanup_guests'].includes(action)) {
+  if (['delete', 'delete_files', 'rename_file', 'rename_folder', 'update_config', 'add_admin', 'remove_admin', 'ban_user', 'cleanup_guests', 'batch_create_users', 'batch_award_points'].includes(action)) {
     if (!isAdmin) {
       return res.status(403).json({ error: 'Forbidden. Admin privileges required.' });
     }
@@ -831,7 +831,207 @@ export default async function handler(req, res) {
         if (statsData.length > 0) globalStats = statsData[0];
       }
 
-      return res.status(200).json({ success: true, users: usersWithRoles, globalStats });
+      const search = (req.body.query || req.body.search || '').toLowerCase().trim();
+      let filteredUsers = usersWithRoles;
+      if (search) {
+        filteredUsers = filteredUsers.filter(u =>
+          (u.email && u.email.toLowerCase().includes(search)) ||
+          (u.user_metadata?.full_name && u.user_metadata.full_name.toLowerCase().includes(search)) ||
+          (u.user_metadata?.username && u.user_metadata.username.toLowerCase().includes(search)) ||
+          (u.user_metadata?.whatsapp && u.user_metadata.whatsapp.toLowerCase().includes(search)) ||
+          (u.user_metadata?.division && u.user_metadata.division.toLowerCase().includes(search))
+        );
+      }
+
+      return res.status(200).json({ success: true, total: filteredUsers.length, users: filteredUsers, globalStats });
+    }
+
+    if (action === 'batch_create_users') {
+      if (!isAdmin && !isSuperAdmin) return res.status(403).json({ error: 'Admin access required' });
+      const sbKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+      if (!sbKey) return res.status(500).json({ error: 'SUPABASE_SERVICE_ROLE_KEY not configured' });
+
+      const { users: rawUsers, default_password = '', default_division = null, stop_on_error = false } = req.body;
+      if (!Array.isArray(rawUsers) || rawUsers.length === 0) return res.status(400).json({ error: 'Missing or empty users array' });
+
+      const existingRes = await fetch(`${supabaseUrl}/auth/v1/admin/users?per_page=1000`, {
+        headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}` }
+      });
+      const existingData = existingRes.ok ? await existingRes.json() : { users: [] };
+      const existingEmailSet = new Set((existingData.users || []).map(u => (u.email || '').toLowerCase().trim()));
+      const seenInBatch = new Set();
+
+      const created = [];
+      const failed = [];
+
+      for (let idx = 0; idx < rawUsers.length; idx++) {
+        const u = rawUsers[idx];
+        const userEmail = (u.email || '').trim().toLowerCase();
+        const userPass = u.password || default_password;
+        const fullName = (u.full_name || u.name || '').trim();
+        const username = (u.username || (userEmail ? userEmail.split('@')[0] : '')).trim();
+        const whatsapp = (u.whatsapp || '').trim();
+        const division = (u.division_id || u.division || default_division || '').toLowerCase().trim();
+        const grantAdmin = u.is_admin === true;
+
+        if (!userEmail || !userEmail.includes('@')) {
+          failed.push({ index: idx, email: userEmail, error: 'Invalid or missing email' });
+          if (stop_on_error) break;
+          continue;
+        }
+        if (!userPass || userPass.length < 6) {
+          failed.push({ index: idx, email: userEmail, error: 'Password must be at least 6 characters' });
+          if (stop_on_error) break;
+          continue;
+        }
+        if (existingEmailSet.has(userEmail) || seenInBatch.has(userEmail)) {
+          failed.push({ index: idx, email: userEmail, error: `User with email "${userEmail}" already exists` });
+          if (stop_on_error) break;
+          continue;
+        }
+        seenInBatch.add(userEmail);
+
+        try {
+          const createRes = await fetch(`${supabaseUrl}/auth/v1/admin/users`, {
+            method: 'POST',
+            headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: userEmail,
+              password: userPass,
+              email_confirm: true,
+              user_metadata: { full_name: fullName || username, username, whatsapp, email: userEmail },
+              app_metadata: { provider: 'email', providers: ['email'], banned: false }
+            })
+          });
+
+          if (!createRes.ok) {
+            const errTxt = await createRes.text();
+            failed.push({ index: idx, email: userEmail, error: `Supabase Auth error: ${errTxt}` });
+            if (stop_on_error) break;
+            continue;
+          }
+
+          const createdUser = await createRes.json();
+          existingEmailSet.add(userEmail);
+
+          let assignedDiv = null;
+          if (['management', 'development', 'review'].includes(division)) {
+            await fetch(`${supabaseUrl}/rest/v1/division_members`, {
+              method: 'POST',
+              headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates' },
+              body: JSON.stringify({ user_id: createdUser.id, division_id: division, whatsapp })
+            });
+            assignedDiv = division;
+          }
+
+          let adminAssigned = false;
+          if (grantAdmin && isSuperAdmin) {
+            await fetch(`${supabaseUrl}/rest/v1/user_roles`, {
+              method: 'POST',
+              headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates' },
+              body: JSON.stringify({ identifier: userEmail, role: 'admin' })
+            });
+            adminAssigned = true;
+          }
+
+          created.push({ id: createdUser.id, email: userEmail, username, division: assignedDiv || 'none', is_admin: adminAssigned });
+        } catch (err) {
+          failed.push({ index: idx, email: userEmail, error: err.message });
+          if (stop_on_error) break;
+        }
+      }
+
+      await logAdminAction('batch_create_users', { createdCount: created.length, failedCount: failed.length });
+      return res.status(200).json({ success: true, created_count: created.length, failed_count: failed.length, created, failed });
+    }
+
+    if (action === 'batch_award_points') {
+      if (!isAdmin && !isSuperAdmin && !hasDivision) return res.status(403).json({ error: 'Team access required' });
+      const sbKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+      if (!sbKey) return res.status(500).json({ error: 'SUPABASE_SERVICE_ROLE_KEY not configured' });
+
+      const points = Number(req.body.points);
+      if (isNaN(points) || points === 0) return res.status(400).json({ error: 'Valid numeric points required' });
+
+      const contribType = req.body.type || 'batch_award';
+      const taskId = req.body.task_id || null;
+      const excludeBanned = req.body.exclude_banned !== false;
+      const divisionId = req.body.division_id ? String(req.body.division_id).toLowerCase().trim() : null;
+
+      let targetUserIds = [];
+
+      if (Array.isArray(req.body.users) && req.body.users.length > 0) {
+        const usersRes = await fetch(`${supabaseUrl}/auth/v1/admin/users?per_page=1000`, {
+          headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}` }
+        });
+        if (!usersRes.ok) throw new Error(await usersRes.text());
+        const { users } = await usersRes.json();
+        const emailMap = new Map((users || []).map(u => [(u.email || '').toLowerCase().trim(), u]));
+        const idMap = new Map((users || []).map(u => [u.id, u]));
+
+        for (const uItem of req.body.users) {
+          if (typeof uItem === 'string') {
+            const matched = idMap.get(uItem.trim()) || emailMap.get(uItem.trim().toLowerCase());
+            if (matched) targetUserIds.push({ userId: matched.id, points });
+          } else if (typeof uItem === 'object' && uItem !== null) {
+            const uid = uItem.user_id || '';
+            const uemail = (uItem.user_email || uItem.email || '').trim().toLowerCase();
+            const matched = (uid ? idMap.get(uid) : null) || (uemail ? emailMap.get(uemail) : null);
+            if (matched) targetUserIds.push({ userId: matched.id, points: Number(uItem.points) || points });
+          }
+        }
+      } else {
+        const usersRes = await fetch(`${supabaseUrl}/auth/v1/admin/users?per_page=1000`, {
+          headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}` }
+        });
+        if (!usersRes.ok) throw new Error(await usersRes.text());
+        const { users } = await usersRes.json();
+        let filteredUsers = users || [];
+
+        if (excludeBanned) {
+          filteredUsers = filteredUsers.filter(u => !(u.banned_until || (u.app_metadata && u.app_metadata.banned)));
+        }
+
+        if (divisionId) {
+          const divRes = await fetch(`${supabaseUrl}/rest/v1/division_members?division_id=eq.${encodeURIComponent(divisionId)}&select=user_id`, {
+            headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}` }
+          });
+          const divRows = divRes.ok ? await divRes.json() : [];
+          const memberSet = new Set((divRows || []).map(d => d.user_id));
+          filteredUsers = filteredUsers.filter(u => memberSet.has(u.id));
+        }
+
+        targetUserIds = filteredUsers.map(u => ({ userId: u.id, points }));
+      }
+
+      if (targetUserIds.length === 0) {
+        return res.status(200).json({ success: true, message: 'No users matched', total_users_awarded: 0, total_points_awarded: 0 });
+      }
+
+      const records = targetUserIds.map(t => {
+        const row = { user_id: t.userId, points: t.points, type: contribType };
+        if (taskId) row.task_id = taskId;
+        return row;
+      });
+
+      const CHUNK_SIZE = 100;
+      let insertedCount = 0;
+      let totalPoints = 0;
+
+      for (let i = 0; i < records.length; i += CHUNK_SIZE) {
+        const chunk = records.slice(i, i + CHUNK_SIZE);
+        const insRes = await fetch(`${supabaseUrl}/rest/v1/contributions`, {
+          method: 'POST',
+          headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+          body: JSON.stringify(chunk)
+        });
+        if (!insRes.ok) throw new Error(`Bulk insert failed: ${await insRes.text()}`);
+        insertedCount += chunk.length;
+        totalPoints += chunk.reduce((sum, r) => sum + r.points, 0);
+      }
+
+      await logAdminAction('batch_award_points', { count: insertedCount, total_points: totalPoints, points_each: points });
+      return res.status(200).json({ success: true, total_users_awarded: insertedCount, total_points_awarded: totalPoints, points_each: points });
     }
 
     if (action === 'delete_user') {

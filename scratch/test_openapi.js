@@ -1,4 +1,23 @@
 // scratch/test_openapi.js
+import fs from 'fs';
+import path from 'path';
+
+try {
+  const envPath = path.resolve('.env.local');
+  if (fs.existsSync(envPath)) {
+    const envContent = fs.readFileSync(envPath, 'utf8');
+    envContent.split('\n').forEach(line => {
+      const trimmed = line.trim();
+      if (trimmed && !trimmed.startsWith('#') && trimmed.includes('=')) {
+        const idx = trimmed.indexOf('=');
+        const k = trimmed.slice(0, idx).trim();
+        const v = trimmed.slice(idx + 1).trim().replace(/^['"]|['"]$/g, '');
+        if (!process.env[k]) process.env[k] = v;
+      }
+    });
+  }
+} catch (e) {}
+
 import openApiHandler from '../api/openapi.js';
 import mcpHandler from '../api/mcp.js';
 
@@ -134,7 +153,7 @@ async function runTests() {
   const req9 = {
     method: 'POST',
     url: '/api/mcp',
-    headers: { host: 'mr-capsules.vercel.app', origin: 'https://chatgpt.com' },
+    headers: { host: 'mr-capsules.vercel.app', origin: 'https://chatgpt.com', authorization: `Bearer ${process.env.MCP_GATEWAY_API_KEY || 'mrc_test'}` },
     body: { jsonrpc: '2.0', id: 'tools-1', method: 'tools/list', params: {} }
   };
   const res9 = new MockResponse();
