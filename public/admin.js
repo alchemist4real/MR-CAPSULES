@@ -2115,12 +2115,39 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
 
         const path = basePath + file.name;
         const existing = currentTree.find(i => i.path === path);
+        const targetRepo = window.currentMountMode === 'MR-CAPSULES' ? 'MR-CAPSULES' : 'MR-CAPSULES-CONTENT';
         
-        await adminAction('upload', { path, contentBase64: base64, sha: existing ? existing.sha : null });
+        const uploadRes = await adminAction('upload', {
+          path,
+          contentBase64: base64,
+          sha: existing ? existing.sha : null,
+          repo: targetRepo
+        });
+
+        if (uploadRes && uploadRes.success) {
+          // Optimistically update currentTree so file is immediately visible
+          const existingIdx = currentTree.findIndex(i => i.path === path);
+          const newItem = {
+            name: file.name,
+            path: path,
+            type: 'blob',
+            mode: '100644',
+            sha: uploadRes.sha || ('temp-' + Date.now()),
+            _repo: targetRepo
+          };
+          if (existingIdx >= 0) currentTree[existingIdx] = newItem;
+          else currentTree.push(newItem);
+          renderBrowser();
+        }
+
         processed++;
         statusText.textContent = `Uploaded ${processed}/${files.length}`;
       }
+      
+      statusText.textContent = `Upload complete. Synchronizing repository...`;
       await loadTree();
+      statusText.textContent = `Uploaded ${files.length} file(s) successfully.`;
+      showToast(`Uploaded ${files.length} file(s) successfully!`, 'success');
     }
 
     const btnUpload = document.getElementById('btnUpload');
@@ -2144,9 +2171,22 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
           const path = basePath + fileName;
           const defaultContent = `<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>${fileName.replace(/\.[^/.]+$/, '')}</title>\n</head>\n<body>\n  <h1>${fileName.replace(/\.[^/.]+$/, '')}</h1>\n  <p>New module content</p>\n</body>\n</html>\n`;
           const base64 = utf8ToBase64(defaultContent);
+          const targetRepo = window.currentMountMode === 'MR-CAPSULES' ? 'MR-CAPSULES' : 'MR-CAPSULES-CONTENT';
           statusText.textContent = `Creating ${fileName}...`;
-          await adminAction('create_file', { path, contentBase64: base64 });
+          const createRes = await adminAction('create_file', { path, contentBase64: base64, repo: targetRepo });
           statusText.textContent = `Created ${fileName}`;
+          if (createRes && createRes.success) {
+            const newItem = {
+              name: fileName,
+              path: path,
+              type: 'blob',
+              mode: '100644',
+              sha: createRes.sha || null,
+              _repo: targetRepo
+            };
+            currentTree.push(newItem);
+            renderBrowser();
+          }
           await loadTree();
 
           const createdItem = currentTree.find(i => i.path === path) || { name: fileName, path, sha: null };

@@ -197,6 +197,14 @@
             <span class="stat-label">GUIDED TOUR<br><span style="opacity:0.8; font-size:12px;">LEARN THE SYSTEM</span></span>
             <button class="auth-btn auth-btn-outline" style="min-height:34px; padding:6px 14px; font-size:12.5px;" onclick="document.getElementById('settingsModal').classList.remove('active'); document.getElementById('interactionModeModal').classList.add('active');">LAUNCH</button>
           </div>
+          <div class="stat-divider" style="margin: 8px 0;"></div>
+          <div class="stat-item" style="flex-direction:row; align-items:center; justify-content:space-between; width:100%;">
+            <span class="stat-label">SYNC CATALOG<br><span style="opacity:0.8; font-size:12px;">PULL LATEST MODULES</span></span>
+            <button class="auth-btn auth-btn-outline" id="btnManualSyncCatalog" style="min-height:34px; padding:6px 14px; font-size:12.5px; display:flex; align-items:center; gap:6px;">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+              <span>SYNC NOW</span>
+            </button>
+          </div>
         </div>
       </div>
       <div>
@@ -692,7 +700,7 @@ async function init() {
   } catch(e) {
     console.error("Fallback to /api/content:", e);
     try {
-      const res = await fetch('/api/content');
+      const res = await fetch('/api/content?t=' + Date.now());
       if (res.ok) {
         const data = await res.json();
         applyData(data);
@@ -704,6 +712,9 @@ async function init() {
 
   // Load Klipy live GIF stream with Ads in background
   initKlipyGifs();
+
+  // Dynamic live background sync to catch any web-uploaded modules immediately
+  backgroundSync(true);
 }
 
 let isFlatMode = false;
@@ -737,21 +748,96 @@ function applyData(data) {
   }
 }
 
-async function backgroundSync() {
-  try {
-    const res = await fetch('/api/content');
-    if (res.ok) {
-      const freshData = await res.json();
-      rawData = freshData;
-      // Only build if we don't have anything shown yet
-      if (!catalog || catalog.length === 0) {
-        applyData(freshData);
-      }
-    }
-  } catch(e) {
-    console.log('Background sync skipped');
+function refreshCurrentNavLevel(freshData) {
+  if (!freshData || !freshData.semesters) return;
+  if (isFlatMode) {
+    loadCatalog(freshData.files || [], cur);
+    return;
+  }
+  if (navHistory.length === 0) {
+    loadCatalog(freshData.semesters, cur);
+    return;
+  }
+  
+  const semIndex = navHistory[0].index;
+  const currentSemTitle = navHistory[0].array[semIndex]?.title;
+  const targetSem = freshData.semesters.find(s => s.title === currentSemTitle || s.id === navHistory[0].array[semIndex]?.id) || freshData.semesters[semIndex];
+  
+  if (!targetSem) return;
+  navHistory[0].array = freshData.semesters;
+  
+  if (navHistory.length === 1) {
+    loadCatalog(targetSem.blocks || [], cur);
+    return;
+  }
+  
+  const blockIndex = navHistory[1].index;
+  const currentBlockTitle = navHistory[1].array[blockIndex]?.title;
+  const targetBlock = (targetSem.blocks || []).find(b => b.title === currentBlockTitle || b.id === navHistory[1].array[blockIndex]?.id) || targetSem.blocks?.[blockIndex];
+  
+  if (!targetBlock) return;
+  navHistory[1].array = targetSem.blocks;
+  
+  if (navHistory.length === 2) {
+    loadCatalog(targetBlock.categories || [], cur);
+    return;
+  }
+  
+  const catIndex = navHistory[2].index;
+  const currentCatTitle = navHistory[2].array[catIndex]?.title;
+  const targetCat = (targetBlock.categories || []).find(c => c.title === currentCatTitle || c.id === navHistory[2].array[catIndex]?.id) || targetBlock.categories?.[catIndex];
+  
+  if (!targetCat) return;
+  navHistory[2].array = targetBlock.categories;
+  
+  if (navHistory.length === 3) {
+    loadCatalog(targetCat.files || [], cur);
+    return;
   }
 }
+
+async function backgroundSync(force = false) {
+  try {
+    const res = await fetch('/api/content?t=' + Date.now(), {
+      cache: 'no-cache',
+      headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+    });
+    if (res.ok) {
+      const freshData = await res.json();
+      if (!freshData || !freshData.semesters) return null;
+
+      const currentPaths = (rawData?.files || []).map(f => f.path).sort().join(',');
+      const freshPaths = (freshData.files || []).map(f => f.path).sort().join(',');
+      const isContentDifferent = currentPaths !== freshPaths;
+
+      if (isContentDifferent || force || !catalog || catalog.length === 0) {
+        console.log(`[Sync] Live catalog updated (${freshData.files?.length || 0} modules). Difference: ${isContentDifferent}`);
+        rawData = freshData;
+        window.appData = freshData;
+        updateCoversPool();
+
+        if (navHistory.length === 0) {
+          applyData(freshData);
+        } else {
+          refreshCurrentNavLevel(freshData);
+        }
+      }
+      return freshData;
+    }
+  } catch(e) {
+    console.warn('[Sync] Background sync skipped:', e);
+  }
+  return null;
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    backgroundSync(false);
+  }
+});
+window.addEventListener('focus', () => {
+  backgroundSync(false);
+});
 
 function loadCatalog(newCatalog, restoreIndex = -1) {
   catalog = [...newCatalog];
@@ -2636,6 +2722,30 @@ try {
     document.getElementById('btnSettingsClose').addEventListener('click', () => {
       settingsModal.classList.remove('active');
     });
+
+    const btnManualSync = document.getElementById('btnManualSyncCatalog');
+    if (btnManualSync) {
+      btnManualSync.addEventListener('click', async () => {
+        const origText = btnManualSync.innerHTML;
+        btnManualSync.disabled = true;
+        btnManualSync.innerHTML = '<span class="spin-inline" style="display:inline-block;width:12px;height:12px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:s 0.8s linear infinite;"></span> SYNCING...';
+        try {
+          const fresh = await backgroundSync(true);
+          const totalFiles = fresh?.files?.length || 0;
+          btnManualSync.innerHTML = `? SYNCED (${totalFiles})`;
+          setTimeout(() => {
+            btnManualSync.disabled = false;
+            btnManualSync.innerHTML = origText;
+          }, 2000);
+        } catch(e) {
+          btnManualSync.innerHTML = 'SYNC FAILED';
+          setTimeout(() => {
+            btnManualSync.disabled = false;
+            btnManualSync.innerHTML = origText;
+          }, 2000);
+        }
+      });
+    }
 
     function startTracking() {
       if(isTracking) return;

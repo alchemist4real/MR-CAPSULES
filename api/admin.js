@@ -305,14 +305,40 @@ export default async function handler(req, res) {
       const targetOwner = mountCfg.owner || owner;
       const targetBranch = mountCfg.branch || 'main';
 
+      const getFreshTree = async (repoName) => {
+        try {
+          let commitSha = targetBranch;
+          const cRes = await fetch(`https://api.github.com/repos/${targetOwner}/${repoName}/commits/${targetBranch}?per_page=1&t=${Date.now()}`, {
+            headers: {
+              'Authorization': `Bearer ${githubToken}`,
+              'Accept': 'application/vnd.github.v3+json',
+              'User-Agent': 'MR-CAPSULES-ADMIN',
+              'If-None-Match': '',
+              'Cache-Control': 'no-cache, no-store, must-revalidate'
+            }
+          });
+          if (cRes.ok) {
+            const cData = await cRes.json();
+            if (cData.sha) commitSha = cData.sha;
+          }
+          const tRes = await fetch(`https://api.github.com/repos/${targetOwner}/${repoName}/git/trees/${commitSha}?recursive=1`, {
+            headers: {
+              'Authorization': `Bearer ${githubToken}`,
+              'Accept': 'application/vnd.github.v3+json',
+              'User-Agent': 'MR-CAPSULES-ADMIN',
+              'If-None-Match': '',
+              'Cache-Control': 'no-cache, no-store, must-revalidate'
+            }
+          });
+          if (tRes.ok) return await tRes.json();
+        } catch(e) {}
+        return { tree: [] };
+      };
+
       if (requestedMount === 'ALL') {
         const [primaryTreeRes, fallbackTreeRes] = await Promise.all([
-          fetch(`https://api.github.com/repos/${targetOwner}/${targetPrimary}/git/trees/${targetBranch}?recursive=1`, {
-            headers: { 'Authorization': `Bearer ${githubToken}`, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'MR-CAPSULES-ADMIN' }
-          }).then(r => r.ok ? r.json() : { tree: [] }).catch(() => ({ tree: [] })),
-          fetch(`https://api.github.com/repos/${targetOwner}/${targetFallback}/git/trees/${targetBranch}?recursive=1`, {
-            headers: { 'Authorization': `Bearer ${githubToken}`, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'MR-CAPSULES-ADMIN' }
-          }).then(r => r.ok ? r.json() : { tree: [] }).catch(() => ({ tree: [] }))
+          getFreshTree(targetPrimary),
+          getFreshTree(targetFallback)
         ]);
 
         const mergedMap = new Map();
@@ -346,11 +372,7 @@ export default async function handler(req, res) {
         });
       } else {
         const specificRepo = requestedMount === targetFallback ? targetFallback : targetPrimary;
-        const ghRes = await fetch(`https://api.github.com/repos/${targetOwner}/${specificRepo}/git/trees/${targetBranch}?recursive=1`, {
-          headers: { 'Authorization': `Bearer ${githubToken}`, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'MR-CAPSULES-ADMIN' }
-        });
-        if (!ghRes.ok) throw new Error(`GitHub API Error: ${await ghRes.text()}`);
-        const data = await ghRes.json();
+        const data = await getFreshTree(specificRepo);
         const tree = (data.tree || []).map(i => ({ ...i, _repo: specificRepo }));
         return res.status(200).json({ success: true, tree, mount: specificRepo, mountConfig: mountCfg });
       }
@@ -363,32 +385,54 @@ export default async function handler(req, res) {
       const targetOwner = mountCfg.owner || owner;
       const targetBranch = mountCfg.branch || 'main';
 
+      const getFreshTree = async (repoName) => {
+        try {
+          let commitSha = targetBranch;
+          const cRes = await fetch(`https://api.github.com/repos/${targetOwner}/${repoName}/commits/${targetBranch}?per_page=1&t=${Date.now()}`, {
+            headers: {
+              'Authorization': `Bearer ${githubToken}`,
+              'Accept': 'application/vnd.github.v3+json',
+              'User-Agent': 'MR-CAPSULES-ADMIN',
+              'If-None-Match': '',
+              'Cache-Control': 'no-cache, no-store, must-revalidate'
+            }
+          });
+          if (cRes.ok) {
+            const cData = await cRes.json();
+            if (cData.sha) commitSha = cData.sha;
+          }
+          const tRes = await fetch(`https://api.github.com/repos/${targetOwner}/${repoName}/git/trees/${commitSha}?recursive=1`, {
+            headers: {
+              'Authorization': `Bearer ${githubToken}`,
+              'Accept': 'application/vnd.github.v3+json',
+              'User-Agent': 'MR-CAPSULES-ADMIN',
+              'If-None-Match': '',
+              'Cache-Control': 'no-cache, no-store, must-revalidate'
+            }
+          });
+          if (tRes.ok) return await tRes.json();
+        } catch(e) {}
+        return { tree: [] };
+      };
+
       const [primaryTreeRes, fallbackTreeRes] = await Promise.all([
-        fetch(`https://api.github.com/repos/${targetOwner}/${targetPrimary}/git/trees/${targetBranch}?recursive=1`, {
-          headers: { 'Authorization': `Bearer ${githubToken}`, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'MR-CAPSULES-ADMIN' }
-        }).then(r => r.ok ? r.json() : { tree: [] }),
-        fetch(`https://api.github.com/repos/${targetOwner}/${targetFallback}/git/trees/${targetBranch}?recursive=1`, {
-          headers: { 'Authorization': `Bearer ${githubToken}`, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'MR-CAPSULES-ADMIN' }
-        }).then(r => r.ok ? r.json() : { tree: [] })
+        getFreshTree(targetPrimary),
+        getFreshTree(targetFallback)
       ]);
 
       const primaryBlobs = new Map((primaryTreeRes.tree || []).filter(i => i.type === 'blob' && (i.path.startsWith('content/') || i.path.startsWith('cover/'))).map(i => [i.path, i.sha]));
       const fallbackBlobs = new Map((fallbackTreeRes.tree || []).filter(i => i.type === 'blob' && (i.path.startsWith('content/') || i.path.startsWith('cover/'))).map(i => [i.path, i.sha]));
 
+      // Only import files from fallback into primary if missing (primary is master content store)
       const missingInPrimary = [];
-      const missingInFallback = [];
-
       for (const [p, sha] of fallbackBlobs) {
-        if (!primaryBlobs.has(p)) missingInPrimary.push({ path: p, sha });
-      }
-      for (const [p, sha] of primaryBlobs) {
-        if (!fallbackBlobs.has(p)) missingInFallback.push({ path: p, sha });
+        if (!primaryBlobs.has(p) && (p.startsWith('content/') || p.startsWith('cover/'))) {
+          missingInPrimary.push({ path: p, sha });
+        }
       }
 
       let syncedToPrimary = 0;
-      let syncedToFallback = 0;
-
-      for (const item of missingInPrimary) {
+      for (const item of missingInPrimary.slice(0, 10)) {
         try {
           const enc = item.path.split('/').map(s => encodeURIComponent(s)).join('/');
           const fileRes = await fetch(`https://api.github.com/repos/${targetOwner}/${targetFallback}/contents/${enc}`, {
@@ -396,30 +440,14 @@ export default async function handler(req, res) {
           });
           if (fileRes.ok) {
             const fData = await fileRes.json();
-            const putRes = await fetch(`https://api.github.com/repos/${targetOwner}/${targetPrimary}/contents/${enc}`, {
-              method: 'PUT',
-              headers: { 'Authorization': `Bearer ${githubToken}`, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'MR-CAPSULES-ADMIN', 'Content-Type': 'application/json' },
-              body: JSON.stringify({ message: `sync: mirror ${item.path} from ${targetFallback}`, content: fData.content })
-            });
-            if (putRes.ok) syncedToPrimary++;
-          }
-        } catch(e) {}
-      }
-
-      for (const item of missingInFallback) {
-        try {
-          const enc = item.path.split('/').map(s => encodeURIComponent(s)).join('/');
-          const fileRes = await fetch(`https://api.github.com/repos/${targetOwner}/${targetPrimary}/contents/${enc}`, {
-            headers: { 'Authorization': `Bearer ${githubToken}`, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'MR-CAPSULES-ADMIN' }
-          });
-          if (fileRes.ok) {
-            const fData = await fileRes.json();
-            const putRes = await fetch(`https://api.github.com/repos/${targetOwner}/${targetFallback}/contents/${enc}`, {
-              method: 'PUT',
-              headers: { 'Authorization': `Bearer ${githubToken}`, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'MR-CAPSULES-ADMIN', 'Content-Type': 'application/json' },
-              body: JSON.stringify({ message: `sync: mirror ${item.path} from ${targetPrimary}`, content: fData.content })
-            });
-            if (putRes.ok) syncedToFallback++;
+            if (fData.content) {
+              const putRes = await fetch(`https://api.github.com/repos/${targetOwner}/${targetPrimary}/contents/${enc}`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${githubToken}`, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'MR-CAPSULES-ADMIN', 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: `sync: mirror ${item.path} from ${targetFallback}`, content: fData.content })
+              });
+              if (putRes.ok) syncedToPrimary++;
+            }
           }
         } catch(e) {}
       }
@@ -438,24 +466,28 @@ export default async function handler(req, res) {
           state_data: {
             ...mountCfg,
             lastSyncedAt: nowIso,
-            lastSyncResult: { syncedToPrimary, syncedToFallback, timestamp: nowIso }
+            totalContentFiles: primaryBlobs.size,
+            lastSyncResult: { syncedToPrimary, totalPrimary: primaryBlobs.size, timestamp: nowIso }
           },
           updated_at: nowIso
         })
       });
 
-      await logAdminAction('sync_mount', { syncedToPrimary, syncedToFallback });
+      await logAdminAction('sync_mount', { syncedToPrimary, totalPrimary: primaryBlobs.size });
       return res.status(200).json({
         success: true,
         syncedToPrimary,
-        syncedToFallback,
-        message: `Sync completed: ${syncedToPrimary} files synced to ${targetPrimary}, ${syncedToFallback} files synced to ${targetFallback}.`
+        totalPrimary: primaryBlobs.size,
+        message: `Content repository synced (${primaryBlobs.size} items active in ${targetPrimary}${syncedToPrimary > 0 ? `, ${syncedToPrimary} imported` : ''}).`
       });
     }
 
     if (['upload', 'create_file', 'make_file', 'create_folder', 'make_folder'].includes(action)) {
       let finalPath = cleanPath;
       if (!finalPath) return res.status(400).json({ error: 'Missing path' });
+
+      const mountCfg = await getMountConfig();
+      const targetUploadRepo = body.repo || (mountCfg.primaryRepo || repo);
 
       // If action is create_folder or make_folder, or path ends with '/', ensure it ends with /.gitkeep
       if (action === 'create_folder' || action === 'make_folder' || finalPath.endsWith('/') || body.isFolder) {
@@ -476,7 +508,7 @@ export default async function handler(req, res) {
       // Check SHA conflict if sha provided
       if (sha) {
         const encodedPath = finalPath.split('/').map(s => encodeURIComponent(s)).join('/');
-        const checkRes = await ghApi('GET', `/contents/${encodedPath}`);
+        const checkRes = await ghApi('GET', `/contents/${encodedPath}`, undefined, targetUploadRepo);
         if (checkRes.ok) {
           const remoteFile = await checkRes.json();
           if (remoteFile.sha && remoteFile.sha !== sha) {
@@ -491,7 +523,7 @@ export default async function handler(req, res) {
         let existingSha = sha || null;
         if (!existingSha) {
           try {
-            const checkRes = await ghApi('GET', `/contents/${encodedPath}`);
+            const checkRes = await ghApi('GET', `/contents/${encodedPath}`, undefined, targetUploadRepo);
             if (checkRes.ok) {
               const fileInfo = await checkRes.json();
               existingSha = fileInfo.sha;
@@ -505,11 +537,11 @@ export default async function handler(req, res) {
         };
         if (existingSha) putBody.sha = existingSha;
 
-        const putRes = await ghApi('PUT', `/contents/${encodedPath}`, putBody);
+        const putRes = await ghApi('PUT', `/contents/${encodedPath}`, putBody, targetUploadRepo);
         if (putRes.ok) {
           const putData = await putRes.json();
-          await logAdminAction(action, { path: finalPath });
-          return res.status(200).json({ success: true, path: finalPath, sha: putData.content?.sha || putData.commit?.sha });
+          await logAdminAction(action, { path: finalPath, repo: targetUploadRepo });
+          return res.status(200).json({ success: true, path: finalPath, sha: putData.content?.sha || putData.commit?.sha, repo: targetUploadRepo });
         } else {
           const putErr = await putRes.json().catch(() => ({}));
           console.warn(`[Admin API] Contents API upload returned ${putRes.status}:`, putErr.message || putErr);
@@ -523,20 +555,20 @@ export default async function handler(req, res) {
       const maxRetries = 3;
       for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
-          const blobRes = await ghApi('POST', '/git/blobs', { content: base64, encoding: 'base64' });
+          const blobRes = await ghApi('POST', '/git/blobs', { content: base64, encoding: 'base64' }, targetUploadRepo);
           const blobData = await blobRes.json();
           if (!blobRes.ok) throw new Error(blobData.message || 'Failed to create blob');
 
-          const commitSha = await getBranchRef();
-          const parentCommit = await getCommit(commitSha);
+          const commitSha = await getBranchRef(targetUploadRepo);
+          const parentCommit = await getCommit(commitSha, targetUploadRepo);
           const treeItems = [{ path: finalPath, mode: '100644', type: 'blob', sha: blobData.sha }];
-          const newTreeSha = await createTree(parentCommit.tree.sha, treeItems);
+          const newTreeSha = await createTree(parentCommit.tree.sha, treeItems, targetUploadRepo);
 
-          const newCommitSha = await createCommit(`admin: ${action.replace('_', ' ')} ${finalPath}`, newTreeSha, [commitSha]);
-          await updateRef(newCommitSha);
+          const newCommitSha = await createCommit(`admin: ${action.replace('_', ' ')} ${finalPath}`, newTreeSha, [commitSha], targetUploadRepo);
+          await updateRef(newCommitSha, targetUploadRepo);
 
-          await logAdminAction(action, { path: finalPath });
-          return res.status(200).json({ success: true, path: finalPath, sha: blobData.sha });
+          await logAdminAction(action, { path: finalPath, repo: targetUploadRepo });
+          return res.status(200).json({ success: true, path: finalPath, sha: blobData.sha, repo: targetUploadRepo });
         } catch (err) {
           lastErr = err;
           if (attempt < maxRetries) {

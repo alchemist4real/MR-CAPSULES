@@ -40,32 +40,56 @@ export default async function handler(req, res) {
     const cleanPath = reqFile.replace(/^\/+/, '').replace(/\.\./g, '');
     const encPath = cleanPath.split('/').map(s => encodeURIComponent(s)).join('/');
     
-    // 1. Try primary repo raw
-    let rawRes = await fetch(`https://raw.githubusercontent.com/${owner}/${contentRepo}/${branch}/${encPath}`, {
-      headers: { ...(token ? { 'Authorization': `Bearer ${token}` } : {}), 'User-Agent': 'Vercel-Proxy' }
+    // 1. Try primary repo raw with cache busting
+    let rawRes = await fetch(`https://raw.githubusercontent.com/${owner}/${contentRepo}/${branch}/${encPath}?t=${Date.now()}`, {
+      headers: { ...(token ? { 'Authorization': `Bearer ${token}` } : {}), 'User-Agent': 'Vercel-Proxy', 'Cache-Control': 'no-cache' }
     });
     // 2. Try fallback repo raw
     if (!rawRes.ok && contentRepo !== fallbackRepo) {
-      rawRes = await fetch(`https://raw.githubusercontent.com/${owner}/${fallbackRepo}/${branch}/${encPath}`, {
-        headers: { ...(token ? { 'Authorization': `Bearer ${token}` } : {}), 'User-Agent': 'Vercel-Proxy' }
+      rawRes = await fetch(`https://raw.githubusercontent.com/${owner}/${fallbackRepo}/${branch}/${encPath}?t=${Date.now()}`, {
+        headers: { ...(token ? { 'Authorization': `Bearer ${token}` } : {}), 'User-Agent': 'Vercel-Proxy', 'Cache-Control': 'no-cache' }
       });
     }
     if (rawRes.ok) {
       const htmlText = await rawRes.text();
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      res.setHeader('Cache-Control', 's-maxage=600, stale-while-revalidate=1200');
+      res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
       return res.status(200).send(htmlText);
     }
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     return res.status(404).send('Module not found on GitHub');
   }
 
   try {
-    let ghRes = await fetch(`https://api.github.com/repos/${owner}/${contentRepo}/git/trees/${branch}?recursive=1`, {
+    // Fetch latest commit SHA to guarantee 100% tree freshness without GitHub edge caching
+    const getRepoCommitSha = async (repoName) => {
+      try {
+        const cRes = await fetch(`https://api.github.com/repos/${owner}/${repoName}/commits/${branch}?per_page=1&t=${Date.now()}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/vnd.github+json',
+            'User-Agent': 'Vercel-Proxy',
+            'If-None-Match': '',
+            'Cache-Control': 'no-cache, no-store, must-revalidate'
+          }
+        });
+        if (cRes.ok) {
+          const cData = await cRes.json();
+          if (cData.sha) return cData.sha;
+        }
+      } catch(e) {}
+      return branch;
+    };
+
+    const targetSha = await getRepoCommitSha(contentRepo);
+    let ghRes = await fetch(`https://api.github.com/repos/${owner}/${contentRepo}/git/trees/${targetSha}?recursive=1`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
         'Accept': 'application/vnd.github+json',
-        'User-Agent': 'Vercel-Proxy'
+        'User-Agent': 'Vercel-Proxy',
+        'If-None-Match': '',
+        'Cache-Control': 'no-cache, no-store, must-revalidate'
       }
     });
 
@@ -78,12 +102,15 @@ export default async function handler(req, res) {
     // If activeMount is ALL, also merge tree from fallbackRepo
     if (activeMount === 'ALL' && contentRepo !== fallbackRepo) {
       try {
-        const fbRes = await fetch(`https://api.github.com/repos/${owner}/${fallbackRepo}/git/trees/${branch}?recursive=1`, {
+        const fbSha = await getRepoCommitSha(fallbackRepo);
+        const fbRes = await fetch(`https://api.github.com/repos/${owner}/${fallbackRepo}/git/trees/${fbSha}?recursive=1`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
             'Accept': 'application/vnd.github+json',
-            'User-Agent': 'Vercel-Proxy'
+            'User-Agent': 'Vercel-Proxy',
+            'If-None-Match': '',
+            'Cache-Control': 'no-cache, no-store, must-revalidate'
           }
         });
         if (fbRes.ok) {
@@ -99,12 +126,15 @@ export default async function handler(req, res) {
       } catch(e) {}
     } else if (!ghRes.ok && contentRepo !== fallbackRepo) {
       console.warn(`[Content API] Content repo ${contentRepo} returned ${ghRes.status}. Falling back to ${fallbackRepo}...`);
-      ghRes = await fetch(`https://api.github.com/repos/${owner}/${fallbackRepo}/git/trees/${branch}?recursive=1`, {
+      const fbSha = await getRepoCommitSha(fallbackRepo);
+      ghRes = await fetch(`https://api.github.com/repos/${owner}/${fallbackRepo}/git/trees/${fbSha}?recursive=1`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Accept': 'application/vnd.github+json',
-          'User-Agent': 'Vercel-Proxy'
+          'User-Agent': 'Vercel-Proxy',
+          'If-None-Match': '',
+          'Cache-Control': 'no-cache, no-store, must-revalidate'
         }
       });
       if (ghRes.ok) {
@@ -231,8 +261,13 @@ export default async function handler(req, res) {
       contentCdn: process.env.CONTENT_CDN || `https://cdn.jsdelivr.net/gh/${owner}/${contentRepo}@main`
     };
 
-    // Cache for 5 minutes to reduce GitHub API rate limit consumption
-    res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=600');
+    // Cache for 10 seconds or bypass if refresh requested
+    const isRefreshReq = req.query.t || req.query.refresh || req.headers['cache-control']?.includes('no-cache');
+    if (isRefreshReq) {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    } else {
+      res.setHeader('Cache-Control', 'public, s-maxage=10, stale-while-revalidate=30');
+    }
     return res.status(200).json(result);
   } catch (error) {
     return res.status(500).json({ message: error.message });
