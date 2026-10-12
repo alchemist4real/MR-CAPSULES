@@ -164,6 +164,10 @@
             <span class="mount-status-tag" id="mountStatusTag">● MOUNTED</span>
           </div>
           <div class="mount-actions">
+            <button id="btnKlipyModal" class="btn-unified" title="Explore, search and mount Klipy GIF covers with live Ads engine">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>
+              <span>🎬 Klipy GIFs</span>
+            </button>
             <button id="btnSyncMount" class="btn-unified" title="Bidirectional synchronization between Content and Main repositories">
               <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
               <span>Sync Repos</span>
@@ -1275,6 +1279,54 @@
       <div class="modal-footer" style="display:flex; justify-content:flex-end; gap:8px; padding-top:16px;">
         <button id="btnCancelMountSettings" class="btn-unified" type="button">Cancel</button>
         <button id="btnSaveMountSettings" class="btn-unified primary" type="button">Save to Supabase</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Klipy GIF Explorer & Cover Modal -->
+  <div id="klipyModal" class="custom-modal-overlay hidden">
+    <div class="custom-modal" style="max-width: 900px; width: 94vw; max-height: 88vh; display: flex; flex-direction: column;">
+      <div class="modal-header">
+        <div class="modal-title" style="display:flex; align-items:center; gap:8px;">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>
+          Klipy GIF Explorer &amp; Covers
+          <span style="background:rgba(34,197,94,0.15); color:#22c55e; border:1px solid rgba(34,197,94,0.3); font-size:10px; padding:2px 8px; border-radius:10px; font-weight:700; margin-left:6px;">ADS ACTIVE 🟢</span>
+        </div>
+        <button class="modal-close-btn" id="btnCloseKlipyModal" type="button">&times;</button>
+      </div>
+      <div class="modal-body" style="display:flex; flex-direction:column; gap:12px; overflow-y:auto; padding:16px;">
+        <!-- Search bar -->
+        <div style="display:flex; gap:8px;">
+          <input type="text" id="klipySearchInput" class="auth-input" style="flex:1;" placeholder="Search millions of GIFs (e.g. lofi study, cardiology, anime aesthetic, pixel art)...">
+          <button id="btnKlipySearchSubmit" class="btn-unified primary" style="padding:0 20px;">Search</button>
+        </div>
+
+        <!-- Tag chips -->
+        <div id="klipyChips" style="display:flex; flex-wrap:wrap; gap:6px;">
+          <button type="button" class="btn-unified klipy-chip active" data-q="">🔥 Trending</button>
+          <button type="button" class="btn-unified klipy-chip" data-q="lofi study">📚 Lofi Study</button>
+          <button type="button" class="btn-unified klipy-chip" data-q="pixel art aesthetic">👾 Pixel Art</button>
+          <button type="button" class="btn-unified klipy-chip" data-q="medical anatomy">🫀 Anatomy / Med</button>
+          <button type="button" class="btn-unified klipy-chip" data-q="neuroscience brain">🧠 Neuroscience</button>
+          <button type="button" class="btn-unified klipy-chip" data-q="retro anime aesthetic">✨ Retro Anime</button>
+          <button type="button" class="btn-unified klipy-chip" data-q="synthwave neon">🌌 Synthwave</button>
+        </div>
+
+        <!-- Status & Target Info -->
+        <div style="display:flex; align-items:center; justify-content:space-between; font-size:11.5px; color:var(--text-muted); background:var(--bg-main); padding:6px 12px; border-radius:6px; border:1px solid var(--border-light);">
+          <span id="klipyStatusText">Menampilkan koleksi GIF Klipy (Ads didukung secara native)</span>
+          <span id="klipyItemCount" style="font-family:var(--font-mono); font-weight:700;">24 items</span>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="klipyLoading" style="display:none; text-align:center; padding:30px; color:var(--text-muted);">
+          <div class="mount-pulse" style="display:inline-block; margin-bottom:8px;"></div>
+          <div>Memuat dari Klipy Global Edge CDN...</div>
+        </div>
+
+        <!-- GIF Grid -->
+        <div id="klipyGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(170px, 1fr)); gap:10px; min-height:280px; align-content:start;">
+        </div>
       </div>
     </div>
   </div>

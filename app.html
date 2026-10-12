@@ -186,6 +186,14 @@
           </div>
           <div class="stat-divider" style="margin: 8px 0;"></div>
           <div class="stat-item" style="flex-direction:row; align-items:center; justify-content:space-between; width:100%;">
+            <span class="stat-label">KLIPY LIVE GIFS<br><span style="opacity:0.8; font-size:12px;">ANIMATED ADS &amp; COVERS</span></span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="klipyToggleCb" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="stat-divider" style="margin: 8px 0;"></div>
+          <div class="stat-item" style="flex-direction:row; align-items:center; justify-content:space-between; width:100%;">
             <span class="stat-label">GUIDED TOUR<br><span style="opacity:0.8; font-size:12px;">LEARN THE SYSTEM</span></span>
             <button class="auth-btn auth-btn-outline" style="min-height:34px; padding:6px 14px; font-size:12.5px;" onclick="document.getElementById('settingsModal').classList.remove('active'); document.getElementById('interactionModeModal').classList.add('active');">LAUNCH</button>
           </div>
@@ -434,6 +442,74 @@ if (perfToggleCb) {
   });
 }
 
+/* ══ KLIPY GIF & ADS STREAM ENGINE ══ */
+const KLIPY_APP_KEY = 'qUbWlJZVfjk1dLpW89qJ48lZW8KFxMAl6sBCCwUfbtfwlUCuw585ISUTqJmCvULt';
+let isKlipyEnabled = true;
+try {
+  isKlipyEnabled = localStorage.getItem('mr_klipy_enabled') !== 'off';
+} catch(e) {}
+
+const klipyToggleCb = document.getElementById('klipyToggleCb');
+if (klipyToggleCb) {
+  klipyToggleCb.checked = isKlipyEnabled;
+  klipyToggleCb.addEventListener('change', (e) => {
+    isKlipyEnabled = e.target.checked;
+    try { localStorage.setItem('mr_klipy_enabled', isKlipyEnabled ? 'on' : 'off'); } catch(e) {}
+    if (isKlipyEnabled) {
+      initKlipyGifs();
+    } else {
+      if (rawData && rawData.covers) {
+        covers = [...rawData.covers];
+        if (catalog && catalog.length > 0) loadCatalog(catalog, cur);
+      }
+    }
+  });
+}
+
+let klipyPool = [];
+let klipyAdsPool = [];
+
+async function initKlipyGifs() {
+  if (!isKlipyEnabled || isLowPerfMode) return;
+  try {
+    const params = new URLSearchParams({
+      limit: '24',
+      'ad-position': '1',
+      'ad-min-width': '200',
+      'ad-max-width': '640',
+      'ad-min-height': '150',
+      'ad-max-height': '350'
+    });
+    // Direct client fetch to preserve client IP & User-Agent for programmatic ad monetization
+    const res = await fetch(`https://api.klipy.com/api/v1/${KLIPY_APP_KEY}/gifs/trending?${params.toString()}`);
+    if (!res.ok) return;
+
+    const data = await res.json();
+    const items = data.data?.data || [];
+    
+    const newGifs = [];
+    items.forEach(item => {
+      if (item.type === 'ad') {
+        klipyAdsPool.push(item);
+      } else if (item.file) {
+        const gifUrl = item.file.hd?.gif?.url || item.file.md?.gif?.url || item.file.sm?.gif?.url;
+        if (gifUrl) newGifs.push(gifUrl);
+      }
+    });
+
+    if (newGifs.length > 0) {
+      klipyPool = newGifs;
+      covers = [...klipyPool, ...(rawData?.covers || [])];
+      if (window.appData) window.appData.covers = covers;
+      if (catalog && catalog.length > 0) {
+        loadCatalog(catalog, cur);
+      }
+    }
+  } catch(e) {
+    console.log('[Klipy] Fallback to static CDN covers:', e.message);
+  }
+}
+
 function encodePathSegments(relPath) {
   if (!relPath) return '';
   return relPath.replace(/^\/+/, '').split('/').map(seg => encodeURIComponent(seg)).join('/');
@@ -489,6 +565,9 @@ async function init() {
       console.error("Failed to load catalog from API:", err);
     }
   }
+
+  // Load Klipy live GIF stream with Ads in background
+  initKlipyGifs();
 }
 
 let isFlatMode = false;
@@ -568,6 +647,24 @@ function loadCatalog(newCatalog, restoreIndex = -1) {
     }
   });
 
+  // Inject Klipy sponsored Ad item into catalog stream if available
+  if (klipyAdsPool.length > 0 && !isLowPerfMode && catalog.length >= 3 && !catalog.some(c => c.isAd)) {
+    const ad = klipyAdsPool[Math.floor(Math.random() * klipyAdsPool.length)];
+    const adFile = ad.file || {};
+    const adGif = adFile.hd?.gif?.url || adFile.md?.gif?.url || adFile.sm?.gif?.url || ad.url;
+    if (adGif) {
+      const adItem = {
+        id: 'ad-' + (ad.id || Date.now()),
+        title: ad.title || 'Sponsored Advertisement',
+        type: 'ad',
+        cover: adGif,
+        isAd: true,
+        clickUrl: ad.click_url || ad.target_url || ad.url || '#'
+      };
+      catalog.splice(1, 0, adItem);
+    }
+  }
+
   buildCoverflow(restoreIndex);
 }
 
@@ -575,10 +672,11 @@ function buildCoverflow(startIndex) {
   cf.innerHTML = '';
   cards = catalog.map((item, i) => {
     const el = document.createElement('div');
-    el.className = 'card type-' + item.type;
+    el.className = 'card type-' + item.type + (item.isAd ? ' is-ad' : '');
     
     let metaText = '';
-    if (item.type === 'semester') metaText = `${item.blocks.length} Blocks`;
+    if (item.isAd) metaText = "Sponsored Advertisement";
+    else if (item.type === 'semester') metaText = `${item.blocks.length} Blocks`;
     else if (item.type === 'block') metaText = `${item.categories.length} Categories`;
     else if (item.type === 'category') metaText = `${item.files.length} Files`;
     else if (item.type === 'file') metaText = "HTML File";
@@ -586,6 +684,7 @@ function buildCoverflow(startIndex) {
     el.innerHTML = `
       <div class="art">
         ${item.cover ? `<img class="art-bg" src="${getContentCdnUrl(item.cover)}" alt="cover" loading="lazy" onerror="if(!this.dataset.triedRaw){this.dataset.triedRaw='1';this.src='https://raw.githubusercontent.com/alchemist4real/MR-CAPSULES-CONTENT/main/'+encodeURI('${item.cover.replace(/^\/+/, '')}');}">` : `<div class="art-dot-grid"></div>`}
+        ${item.isAd ? `<div class="klipy-ad-badge" style="position:absolute; top:8px; right:8px; background:#eab308; color:#000; font-size:9px; font-weight:800; padding:2px 6px; border-radius:4px; z-index:5;">SPONSORED</div>` : ''}
       </div>
       <div class="card-label">
         <div class="s">${item.title}</div>
@@ -593,6 +692,10 @@ function buildCoverflow(startIndex) {
       </div>`;
     
     el.addEventListener('click', () => { 
+      if (item.isAd && item.clickUrl) {
+        window.open(item.clickUrl, '_blank');
+        return;
+      }
       if(el._off !== 0) go(i); 
       else diveIn(i); 
     });
@@ -732,6 +835,12 @@ function setupGuestRestrictions(session) {
 
 function diveIn(index) {
   const item = catalog[index];
+  if (!item) return;
+
+  if (item.isAd) {
+    if (item.clickUrl) window.open(item.clickUrl, '_blank');
+    return;
+  }
 
   // Guest restriction 1: Semester 3 archive lockdown
   if (isCurrentUserGuest && item.type === 'semester' && (item.title.includes('3') || item.title.includes('Semester 3'))) {

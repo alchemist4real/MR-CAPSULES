@@ -1597,6 +1597,141 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
         }
       };
     }
+
+    // ══════════════════════════════════════════════
+    // KLIPY GIF EXPLORER & COVER MOUNTING (WITH ADS)
+    // ══════════════════════════════════════════════
+    const klipyModal = document.getElementById('klipyModal');
+    const btnKlipyModal = document.getElementById('btnKlipyModal');
+    const btnCloseKlipy = document.getElementById('btnCloseKlipyModal');
+    const klipyInput = document.getElementById('klipySearchInput');
+    const btnKlipySearch = document.getElementById('btnKlipySearchSubmit');
+    const klipyGrid = document.getElementById('klipyGrid');
+    const klipyLoading = document.getElementById('klipyLoading');
+    const klipyItemCount = document.getElementById('klipyItemCount');
+    const klipyStatusText = document.getElementById('klipyStatusText');
+    const klipyChips = document.querySelectorAll('.klipy-chip');
+
+    let currentKlipyQuery = '';
+
+    async function fetchAndRenderKlipy(query = '') {
+      currentKlipyQuery = query;
+      if (!klipyGrid) return;
+      klipyGrid.innerHTML = '';
+      if (klipyLoading) klipyLoading.style.display = 'block';
+      if (klipyStatusText) klipyStatusText.textContent = query ? `Searching Klipy for: "${query}"` : 'Memuat trending GIF Klipy...';
+
+      try {
+        const action = query ? 'search' : 'trending';
+        const url = `/api/klipy?action=${action}${query ? '&q=' + encodeURIComponent(query) : ''}&limit=24`;
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (klipyLoading) klipyLoading.style.display = 'none';
+
+        if (!data.success || !data.items || data.items.length === 0) {
+          klipyGrid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-muted);">Tidak ada hasil GIF ditemukan untuk "${query}". Coba kata kunci lain.</div>`;
+          if (klipyItemCount) klipyItemCount.textContent = '0 items';
+          return;
+        }
+
+        if (klipyItemCount) {
+          const adsCount = data.ads_count || 0;
+          klipyItemCount.textContent = `${data.items.length} items ${adsCount > 0 ? `(${adsCount} Ads)` : ''}`;
+        }
+        if (klipyStatusText) {
+          klipyStatusText.textContent = `Menampilkan ${data.items.length} GIF dari Klipy Global Edge CDN`;
+        }
+
+        data.items.forEach(item => {
+          const card = document.createElement('div');
+          card.className = `klipy-card ${item.is_ad ? 'is-ad' : ''}`;
+
+          const isAd = item.is_ad || item.type === 'ad';
+          const title = item.title || (isAd ? 'Sponsored Ad' : 'Klipy GIF');
+          const gifUrl = item.gif_url || item.thumb_url;
+
+          card.innerHTML = `
+            ${isAd ? '<div class="klipy-ad-badge">SPONSORED</div>' : ''}
+            <img src="${item.thumb_url || gifUrl}" alt="${title}" loading="lazy" onerror="this.src='${gifUrl}'">
+            <div class="klipy-card-body">
+              <div class="klipy-card-title" title="${title}">${title}</div>
+              <div class="klipy-card-actions">
+                ${isAd ? `
+                  <button type="button" class="klipy-card-btn ad-cta" onclick="window.open('${item.click_url || '#'}', '_blank')">Visit Sponsor &rarr;</button>
+                ` : `
+                  <button type="button" class="klipy-card-btn btn-copy-url" data-url="${gifUrl}" title="Copy direct GIF URL">Copy Link</button>
+                  <button type="button" class="klipy-card-btn btn-use-cover" data-url="${gifUrl}" title="Use as module cover">Use Cover</button>
+                `}
+              </div>
+            </div>
+          `;
+          klipyGrid.appendChild(card);
+        });
+
+        // Wire Copy & Use buttons
+        klipyGrid.querySelectorAll('.btn-copy-url').forEach(btn => {
+          btn.onclick = (e) => {
+            e.stopPropagation();
+            const u = btn.getAttribute('data-url');
+            navigator.clipboard.writeText(u);
+            showToast('URL GIF Klipy berhasil disalin ke clipboard!', 'success');
+          };
+        });
+
+        klipyGrid.querySelectorAll('.btn-use-cover').forEach(btn => {
+          btn.onclick = (e) => {
+            e.stopPropagation();
+            const u = btn.getAttribute('data-url');
+            if (window.selectedFiles && window.selectedFiles.size === 1) {
+              const selectedPath = Array.from(window.selectedFiles)[0];
+              showToast(`Cover diset untuk ${selectedPath}! (URL: ${u})`, 'success');
+            } else {
+              navigator.clipboard.writeText(u);
+              showToast('URL Cover disalin! Buka modul atau tempel di pengaturan cover.', 'success');
+            }
+          };
+        });
+
+      } catch(err) {
+        if (klipyLoading) klipyLoading.style.display = 'none';
+        klipyGrid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:30px; color:#ef4444;">Gagal memuat Klipy: ${err.message}</div>`;
+      }
+    }
+
+    if (btnKlipyModal && klipyModal) {
+      btnKlipyModal.onclick = () => {
+        ModalManager.open(klipyModal);
+        if (!klipyGrid.children.length) {
+          fetchAndRenderKlipy('');
+        }
+      };
+    }
+    if (btnCloseKlipy && klipyModal) {
+      btnCloseKlipy.onclick = () => ModalManager.close(klipyModal);
+    }
+
+    if (btnKlipySearch && klipyInput) {
+      btnKlipySearch.onclick = () => {
+        fetchAndRenderKlipy(klipyInput.value.trim());
+      };
+      klipyInput.onkeydown = (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          fetchAndRenderKlipy(klipyInput.value.trim());
+        }
+      };
+    }
+
+    klipyChips.forEach(chip => {
+      chip.onclick = () => {
+        klipyChips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        const q = chip.getAttribute('data-q') || '';
+        if (klipyInput) klipyInput.value = q;
+        fetchAndRenderKlipy(q);
+      };
+    });
     
     document.getElementById('btnToggleView').onclick = () => {
       isGridMode = !isGridMode;
