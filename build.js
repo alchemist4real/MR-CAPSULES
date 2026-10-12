@@ -34,46 +34,83 @@ function walkDir(dir, fileList = []) {
   return fileList;
 }
 
+function copyStaticAssets(publicDir) {
+  const rootFiles = fs.readdirSync(process.cwd());
+  rootFiles.forEach(file => {
+    if (
+      file === 'node_modules' ||
+      file === '.git' ||
+      file === '.vercel' ||
+      file === 'api' ||
+      file === 'public' ||
+      file === 'graphify-out' ||
+      file === '.agents' ||
+      file === 'scratch' ||
+      file === 'content' ||
+      file === 'cover'
+    ) {
+      return;
+    }
+    const srcPath = path.join(process.cwd(), file);
+    const destPath = path.join(publicDir, file);
+    copyRecursiveSync(srcPath, destPath);
+  });
+}
+
 function build() {
   console.log('Building Mr. Capsules catalog and public static files...');
   try {
-    const contentDir = path.join(process.cwd(), 'content');
-    const coversDir = path.join(process.cwd(), 'cover');
     const publicDir = path.join(process.cwd(), 'public');
-
     if (!fs.existsSync(publicDir)) {
       fs.mkdirSync(publicDir, { recursive: true });
     }
 
-    // Auto-detect and sync with adjacent dedicated content repo if present
     const adjacentContentRoot = path.join(process.cwd(), '..', 'MR-CAPSULES-CONTENT');
-    if (fs.existsSync(adjacentContentRoot)) {
-      const adjContent = path.join(adjacentContentRoot, 'content');
-      if (fs.existsSync(adjContent)) {
-        copyRecursiveSync(adjContent, contentDir);
-        copyRecursiveSync(contentDir, adjContent);
-      }
-      const adjCovers = path.join(adjacentContentRoot, 'cover');
-      if (fs.existsSync(adjCovers)) {
-        copyRecursiveSync(adjCovers, coversDir);
-        copyRecursiveSync(coversDir, adjCovers);
+    let contentDir = null;
+    let coversDir = null;
+
+    if (fs.existsSync(path.join(adjacentContentRoot, 'content'))) {
+      contentDir = path.join(adjacentContentRoot, 'content');
+      console.log('Detected mounted content repository at:', contentDir);
+    } else if (fs.existsSync(path.join(process.cwd(), 'content'))) {
+      contentDir = path.join(process.cwd(), 'content');
+      console.log('Using local content directory at:', contentDir);
+    }
+
+    if (fs.existsSync(path.join(adjacentContentRoot, 'cover'))) {
+      coversDir = path.join(adjacentContentRoot, 'cover');
+    } else if (fs.existsSync(path.join(process.cwd(), 'cover'))) {
+      coversDir = path.join(process.cwd(), 'cover');
+    }
+
+    // If neither local nor adjacent content exists (e.g. cloud build container without mounted repo)
+    if (!contentDir) {
+      console.log('No local content directory found (operating in decoupled mode).');
+      const existingDataJs = path.join(process.cwd(), 'data.js');
+      if (fs.existsSync(existingDataJs)) {
+        console.log('Preserving existing committed data.js catalog for production build.');
+        fs.copyFileSync(existingDataJs, path.join(publicDir, 'data.js'));
+        copyStaticAssets(publicDir);
+        console.log('Build complete (decoupled mode).');
+        return;
       }
     }
 
     let covers = [];
-    if (fs.existsSync(coversDir)) {
+    if (coversDir && fs.existsSync(coversDir)) {
       covers = fs.readdirSync(coversDir).filter(f => 
         f.endsWith('.png') || f.endsWith('.jpg') || f.endsWith('.jpeg') || f.endsWith('.gif')
       );
     }
 
-    const allHtmlPaths = fs.existsSync(contentDir) ? walkDir(contentDir) : [];
+    const allHtmlPaths = contentDir && fs.existsSync(contentDir) ? walkDir(contentDir) : [];
     
     const semMap = {};
     const flatFiles = [];
 
     allHtmlPaths.forEach(filePath => {
-      const relativePath = path.relative(process.cwd(), filePath).replace(/\\/g, '/');
+      const relToContent = path.relative(contentDir, filePath).replace(/\\/g, '/');
+      const relativePath = `content/${relToContent}`;
       const fileName = path.basename(filePath);
       
       const parts = relativePath.split('/');
@@ -174,30 +211,9 @@ function build() {
     fs.writeFileSync(path.join(process.cwd(), 'data.js'), jsContent);
     fs.writeFileSync(path.join(publicDir, 'data.js'), jsContent);
 
-    // Copy all static web assets to public/ directory for Vercel CDN deployment
-    // (content/ and cover/ are excluded as they are hosted on the separate content repository/CDN)
-    const rootFiles = fs.readdirSync(process.cwd());
-    rootFiles.forEach(file => {
-      if (
-        file === 'node_modules' ||
-        file === '.git' ||
-        file === '.vercel' ||
-        file === 'api' ||
-        file === 'public' ||
-        file === 'graphify-out' ||
-        file === '.agents' ||
-        file === 'scratch' ||
-        file === 'content' ||
-        file === 'cover'
-      ) {
-        return;
-      }
-      const srcPath = path.join(process.cwd(), file);
-      const destPath = path.join(publicDir, file);
-      copyRecursiveSync(srcPath, destPath);
-    });
+    copyStaticAssets(publicDir);
 
-    console.log('Successfully generated catalog and copied all static assets to public/');
+    console.log(`Successfully generated catalog (${flatFiles.length} files) and copied all static assets to public/`);
   } catch (err) {
     console.error('Error generating catalog:', err);
     process.exit(1);
