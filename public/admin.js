@@ -62,11 +62,18 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
         return await fetchRes.blob();
     }
 
-    async function fetchFileSecureText(path) {
-        const res = await adminAction('download', { path });
-        if (!res.success || !res.contentBase64) throw new Error("Failed to download: " + (res.error || 'Unknown error'));
-        const fetchRes = await fetch(`data:application/octet-stream;base64,${res.contentBase64}`);
-        return await fetchRes.text();
+    async function fetchFileSecureText(path, repo) {
+        const res = await adminAction('download', { path, repo });
+        if (!res.success) throw new Error("Failed to download: " + (res.error || 'Unknown error'));
+        if (res.content) return res.content;
+        if (res.contentBase64) {
+          const cleanB64 = res.contentBase64.replace(/\s+/g, '');
+          const binStr = atob(cleanB64);
+          const bytes = new Uint8Array(binStr.length);
+          for (let i = 0; i < binStr.length; i++) bytes[i] = binStr.charCodeAt(i);
+          return new TextDecoder('utf-8').decode(bytes);
+        }
+        throw new Error("Empty content received");
     }
 
     let isGridMode = true;
@@ -954,9 +961,10 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
     };
 
     // Load Data
+    window.currentMountMode = 'ALL';
     window.loadTree = loadTree;
     async function loadTree() {
-      statusText.textContent = 'Fetching repository...';
+      statusText.textContent = `Fetching repository (${window.currentMountMode})...`;
       fileBrowser.innerHTML = '';
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 30000);
@@ -964,7 +972,7 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
         const res = await fetch('/api/admin', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${sessionToken}` },
-          body: JSON.stringify({ action: 'tree' }),
+          body: JSON.stringify({ action: 'tree', mount: window.currentMountMode }),
           signal: controller.signal
         });
         clearTimeout(timeoutId);
@@ -974,7 +982,11 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
           selectedFiles.clear();
           renderBrowser();
           updateBulkDeleteUI();
-          statusText.textContent = 'Repository loaded.';
+          statusText.textContent = `Repository loaded (${data.mount || window.currentMountMode}).`;
+          const statusTag = document.getElementById('mountStatusTag');
+          if (statusTag) {
+            statusTag.textContent = `● ${data.mount || window.currentMountMode} MOUNTED`;
+          }
         } else {
           statusText.textContent = 'Failed to load tree: ' + data.error;
         }
@@ -1033,7 +1045,9 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
               name: name,
               type: isFile ? 'file' : 'folder',
               path: currentPath + name + (isFile ? '' : '/'),
-              sha: isFile ? item.sha : null
+              sha: isFile ? item.sha : null,
+              _repo: isFile ? item._repo : null,
+              _synced: isFile ? item._synced : false
             });
           }
         }
@@ -1146,11 +1160,25 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
             </div>
           `;
         }
+
+        let repoTagHtml = '';
+        if (item.type !== 'folder') {
+          if (item._synced) {
+            repoTagHtml = '<span class="repo-tag synced" title="Synced across CONTENT & MAIN repositories">SYNCED</span>';
+          } else if (item._repo === 'MR-CAPSULES-CONTENT') {
+            repoTagHtml = '<span class="repo-tag content-repo" title="Hosted in Primary CONTENT Repository">CONTENT</span>';
+          } else if (item._repo === 'MR-CAPSULES') {
+            repoTagHtml = '<span class="repo-tag main-repo" title="Hosted in MAIN Engine Repository">MAIN</span>';
+          }
+        }
         
         div.innerHTML = `
           ${cbHtml}
           <div class="file-icon">${icon}</div>
-          <div class="file-name" title="${sanitize(item.name)}">${sanitize(item.name)}</div>
+          <div class="file-name" title="${sanitize(item.name)}">
+            ${sanitize(item.name)}
+            ${repoTagHtml}
+          </div>
           <div class="file-actions">
             <button class="btn btn-actions" type="button" title="Actions" aria-label="Actions for ${sanitize(item.name)}" data-json='${encodeURIComponent(JSON.stringify(item))}'>
               <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
@@ -1479,6 +1507,96 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
 
     // Actions
     document.getElementById('btnRefresh').onclick = loadTree;
+
+    // Repo Mount UI Controls
+    const mountSelect = document.getElementById('repoMountSelect');
+    if (mountSelect) {
+      mountSelect.onchange = (e) => {
+        window.currentMountMode = e.target.value;
+        loadTree();
+      };
+    }
+
+    const btnSyncMount = document.getElementById('btnSyncMount');
+    if (btnSyncMount) {
+      btnSyncMount.onclick = async () => {
+        btnSyncMount.disabled = true;
+        const origHtml = btnSyncMount.innerHTML;
+        btnSyncMount.innerHTML = '<span class="spin-inline" style="display:inline-block;width:12px;height:12px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:s 0.8s linear infinite;"></span> Syncing...';
+        try {
+          const res = await adminAction('sync_mount');
+          if (res.success) {
+            showToast(res.message || 'Repositories successfully synced!', 'success');
+            await loadTree();
+          } else {
+            showToast('Sync failed: ' + (res.error || 'Unknown error'), 'error');
+          }
+        } catch(e) {
+          showToast('Sync error: ' + e.message, 'error');
+        } finally {
+          btnSyncMount.disabled = false;
+          btnSyncMount.innerHTML = origHtml;
+        }
+      };
+    }
+
+    const mountModal = document.getElementById('mountSettingsModal');
+    const btnMountSettings = document.getElementById('btnMountSettings');
+    if (btnMountSettings && mountModal) {
+      btnMountSettings.onclick = async () => {
+        try {
+          const res = await adminAction('get_mount_config');
+          if (res.success && res.config) {
+            const c = res.config;
+            const p = document.getElementById('mountPrimaryRepo'); if (p) p.value = c.primaryRepo || 'MR-CAPSULES-CONTENT';
+            const f = document.getElementById('mountFallbackRepo'); if (f) f.value = c.fallbackRepo || 'MR-CAPSULES';
+            const o = document.getElementById('mountOwner'); if (o) o.value = c.owner || 'alchemist4real';
+            const b = document.getElementById('mountBranch'); if (b) b.value = c.branch || 'main';
+            const m = document.getElementById('mountDefaultMode'); if (m) m.value = c.activeMount || 'ALL';
+            const cdn = document.getElementById('mountCdnProvider'); if (cdn) cdn.value = c.cdnProvider || 'jsdelivr';
+          }
+        } catch(e) {}
+        ModalManager.open(mountModal);
+      };
+    }
+
+    const btnCloseMount = document.getElementById('btnCloseMountSettings');
+    const btnCancelMount = document.getElementById('btnCancelMountSettings');
+    if (btnCloseMount && mountModal) btnCloseMount.onclick = () => ModalManager.close(mountModal);
+    if (btnCancelMount && mountModal) btnCancelMount.onclick = () => ModalManager.close(mountModal);
+
+    const btnSaveMount = document.getElementById('btnSaveMountSettings');
+    if (btnSaveMount && mountModal) {
+      btnSaveMount.onclick = async () => {
+        const payload = {
+          primaryRepo: (document.getElementById('mountPrimaryRepo')?.value || 'MR-CAPSULES-CONTENT').trim(),
+          fallbackRepo: (document.getElementById('mountFallbackRepo')?.value || 'MR-CAPSULES').trim(),
+          owner: (document.getElementById('mountOwner')?.value || 'alchemist4real').trim(),
+          branch: (document.getElementById('mountBranch')?.value || 'main').trim(),
+          activeMount: document.getElementById('mountDefaultMode')?.value || 'ALL',
+          cdnProvider: document.getElementById('mountCdnProvider')?.value || 'jsdelivr'
+        };
+        btnSaveMount.disabled = true;
+        btnSaveMount.textContent = 'Saving...';
+        try {
+          const res = await adminAction('update_mount_config', { config: payload });
+          if (res.success) {
+            showToast('Mount config saved to Supabase!', 'success');
+            ModalManager.close(mountModal);
+            window.currentMountMode = payload.activeMount;
+            if (mountSelect) mountSelect.value = payload.activeMount;
+            await loadTree();
+          } else {
+            showToast('Save failed: ' + (res.error || 'Unknown error'), 'error');
+          }
+        } catch(e) {
+          showToast('Save error: ' + e.message, 'error');
+        } finally {
+          btnSaveMount.disabled = false;
+          btnSaveMount.textContent = 'Save to Supabase';
+        }
+      };
+    }
     
     document.getElementById('btnToggleView').onclick = () => {
       isGridMode = !isGridMode;
@@ -1694,10 +1812,22 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
           frame.classList.remove('hidden');
           frame.srcdoc = '<!DOCTYPE html><html><body style="display:flex;align-items:center;justify-content:center;height:100vh;margin:0;font-family:sans-serif;color:#888;background:#161b2e;">Loading module preview...</body></html>';
           try {
-            const text = await fetchFileSecureText(item.path);
+            let text = await fetchFileSecureText(item.path, item._repo);
+            const cleanPath = item.path.replace(/^\/+/, '');
+            const lastSlash = cleanPath.lastIndexOf('/');
+            const encodedDir = lastSlash >= 0 ? cleanPath.substring(0, lastSlash + 1).split('/').map(s => encodeURIComponent(s)).join('/') : '';
+            const usedRepo = item._repo || 'MR-CAPSULES-CONTENT';
+            const baseHref = `https://cdn.jsdelivr.net/gh/alchemist4real/${usedRepo}@main/${encodedDir}`;
+            if (baseHref && !text.includes('<base ') && !text.includes('<base>')) {
+              if (/<head[^>]*>/i.test(text)) {
+                text = text.replace(/(<head[^>]*>)/i, `$1\n  <base href="${baseHref}">`);
+              } else {
+                text = `<base href="${baseHref}">\n` + text;
+              }
+            }
             frame.srcdoc = text;
           } catch(e) {
-            frame.srcdoc = `<!DOCTYPE html><html><body style="padding:24px;color:#f85149;font-family:sans-serif;background:#161b2e;">Failed to load preview: ${e.message}</body></html>`;
+            frame.srcdoc = `<!DOCTYPE html><html><body style="padding:24px;color:#f85149;font-family:sans-serif;background:#161b2e;"><h3>Failed to load preview</h3><p>${e.message}</p></body></html>`;
           }
         } else {
           openEditor(item);

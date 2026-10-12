@@ -35,6 +35,7 @@ const CATEGORY_PRESETS = {
   content: [
     'system_health',
     'content_list',
+    'content_search',
     'content_get',
     'content_tree',
     'content_upload',
@@ -77,6 +78,7 @@ const CATEGORY_PRESETS = {
     'system_health',
     'account_manager',
     'users_create',
+    'users_create_batch',
     'users_list',
     'users_ban',
     'users_reset_password',
@@ -94,6 +96,7 @@ const CATEGORY_PRESETS = {
     'divisions_get_members',
     'config_get',
     'config_update',
+    'contributions_award_batch',
     'activity_logs',
     'system_cleanup_guests',
     'apikeys_list',
@@ -105,6 +108,7 @@ const CATEGORY_PRESETS = {
   essential: [
     'system_health',
     'account_manager',
+    'users_create_batch',
     'doctortablet_list_notes',
     'doctortablet_read_note',
     'doctortablet_save_note',
@@ -113,6 +117,7 @@ const CATEGORY_PRESETS = {
     'doctortablet_search_notes',
     'doctortablet_export_merged_document',
     'content_list',
+    'content_search',
     'content_get',
     'content_tree',
     'content_upload',
@@ -126,6 +131,7 @@ const CATEGORY_PRESETS = {
     'tasks_add_note',
     'contributions_leaderboard',
     'contributions_my',
+    'contributions_award_batch',
     'divisions_list',
     'docs_get'
   ]

@@ -382,10 +382,10 @@ export default async function handler(req, res) {
 export function getMcpToolsList() {
   return [
     { name: 'system_health', description: 'Health check — returns server info and usage instructions', inputSchema: { type: 'object', properties: {} } },
-    { name: 'content_list', description: 'List educational content organized by semester and block. Supports filtering by semester, block, category, or search keyword. Without filters, returns a compact curriculum overview to save tokens.', inputSchema: { type: 'object', properties: { semester: { type: 'string', description: 'Filter by semester name or number, e.g. "semester 1" or "1"' }, block: { type: 'string', description: 'Filter by block code, e.g. "1.2" or "2.5"' }, category: { type: 'string', description: 'Filter by category prefix, e.g. "CBT", "IDENT", "LECTURE"' }, search: { type: 'string', description: 'Search term to match file titles' }, compact: { type: 'boolean', description: 'If true, returns compact summary counts per block instead of full file lists (default true when no filters provided)' } } } },
-    { name: 'content_search', description: 'Fast keyword search across educational content titles, modules, categories, semesters, and blocks without downloading heavy HTML. Returns matching file paths and direct public URLs in <100 tokens.', inputSchema: { type: 'object', properties: { query: { type: 'string', description: 'Search keyword, e.g. "farmakologi", "reechard", "histologi", "cbt 2"' }, semester: { type: 'string', description: 'Optional semester filter, e.g. "semester 1" or "1"' }, block: { type: 'string', description: 'Optional block filter, e.g. "1.2" or "2.5"' }, category: { type: 'string', description: 'Optional category filter, e.g. "CBT", "IDENT", "LECTURE"' }, limit: { type: 'number', description: 'Maximum matching items to return (default 20, max 50)' } }, required: ['query'] } },
+    { name: 'content_list', description: 'List educational content organized by semester and block. Supports filtering by semester, block, category, or search keyword. Without filters, returns a compact curriculum overview to save tokens.', inputSchema: { type: 'object', properties: { semester: { type: 'string', description: 'Filter by semester name or number, e.g. "semester 1" or "1"' }, block: { type: 'string', description: 'Filter by block code, e.g. "1.2" or "2.5"' }, category: { type: 'string', description: 'Filter by category prefix, e.g. "CBT", "IDENT", "LECTURE"' }, search: { type: 'string', description: 'Search term to match file titles' }, query: { type: 'string', description: 'Alias for search keyword' }, limit: { type: 'number', description: 'Maximum items to return' }, offset: { type: 'number', description: 'Pagination offset' }, compact: { type: 'boolean', description: 'If true, returns compact summary counts per block instead of full file lists (default true when no filters provided)' } } } },
+    { name: 'content_search', description: 'Fast keyword search across educational content titles, modules, categories, semesters, and blocks without downloading heavy HTML. Returns matching file paths and direct public URLs in <100 tokens.', inputSchema: { type: 'object', properties: { query: { type: 'string', description: 'Search keyword, e.g. "farmakologi", "reechard", "histologi", "cbt 2"' }, search: { type: 'string', description: 'Alias for query' }, semester: { type: 'string', description: 'Optional semester filter, e.g. "semester 1" or "1"' }, block: { type: 'string', description: 'Optional block filter, e.g. "1.2" or "2.5"' }, category: { type: 'string', description: 'Optional category filter, e.g. "CBT", "IDENT", "LECTURE"' }, limit: { type: 'number', description: 'Maximum matching items to return (default 20, max 50)' } }, required: ['query'] } },
     { name: 'content_get', description: 'Download and extract educational content from a file. By default uses smart extraction to strip redundant CSS/scripts and extract structured quiz questions or clean lecture text, saving up to 90% tokens.', inputSchema: { type: 'object', properties: { path: { type: 'string', description: 'File path, e.g. content/semester 2/2.5/2.5 CBT_21 REECHARD GANTENG.html' }, format: { type: 'string', enum: ['smart', 'quiz_only', 'text_only', 'metadata', 'raw'], description: 'Extraction format: "smart" (default, extracts questions or clean text), "quiz_only" (structured questions array), "text_only" (markdown notes), "metadata" (title & question count in <100 tokens), "raw" (full HTML)' }, offset: { type: 'number', description: 'Question offset for pagination (0-indexed, default 0)' }, limit: { type: 'number', description: 'Number of questions to return (default 30, max 100)' }, max_chars: { type: 'number', description: 'Safety character cap for text extraction (default 40000)' } }, required: ['path'] } },
-    { name: 'content_tree', description: 'Get content file paths. By default returns a clean array of paths saving 80% tokens, with optional prefix filtering.', inputSchema: { type: 'object', properties: { prefix: { type: 'string', description: 'Optional path prefix to filter, e.g. "content/semester 2/"' }, paths_only: { type: 'boolean', description: 'If true (default), returns string paths array. If false, returns raw git tree blobs with SHAs.' } } } },
+    { name: 'content_tree', description: 'Get content file paths with efficient keyword search, extension filtering, and pagination. By default returns clean array of paths saving 80% tokens.', inputSchema: { type: 'object', properties: { prefix: { type: 'string', description: 'Optional path prefix to filter, e.g. "content/semester 2/"' }, search: { type: 'string', description: 'Search keyword to filter file paths (case-insensitive substring match)' }, query: { type: 'string', description: 'Alias for search keyword' }, extension: { type: 'string', description: 'Filter by file extension, e.g. ".html", ".png", ".md"' }, limit: { type: 'number', description: 'Maximum paths to return (default 100, max 500)' }, offset: { type: 'number', description: 'Pagination offset (default 0)' }, paths_only: { type: 'boolean', description: 'If true (default), returns string paths array. If false, returns git tree blobs with SHAs.' } } } },
     { name: 'content_upload', description: 'Upload a content file directly. You can pass contentBase64, contentGzipBase64 (compressed & 100% checksum-verified, ideal when network egress is blocked), OR a public url (for files up to 100MB) to fetch and commit the file reliably without chunking.', inputSchema: { type: 'object', properties: { path: { type: 'string', description: 'Target path, e.g. content/Semester 1/file.html' }, contentBase64: { type: 'string', description: 'Base64 encoded file content' }, contentGzipBase64: { type: 'string', description: 'Gzip compressed base64 encoded content (80% smaller, checksum verified)' }, url: { type: 'string', description: 'Public URL to fetch the file from' } }, required: ['path'] } },
     { name: 'content_upload_from_agent_path', description: 'Generates authenticated curl commands and instructions for Claude to upload a large local file directly from the sandbox filesystem (avoiding base64 typing corruption).', inputSchema: { type: 'object', properties: { agentFilePath: { type: 'string', description: 'Absolute file path in agent sandbox, e.g. /mnt/user-data/outputs/farmakokinetik.html' }, targetPath: { type: 'string', description: 'Target path in repository, e.g. content/semester 3/3.1/3.1 LECTURE_Am I Kinetic.html' } }, required: ['agentFilePath', 'targetPath'] } },
     { name: 'content_pull_to_sandbox', description: 'Pull/download a content file directly into the sandbox filesystem without exposing API credentials. Returns clean curl and python commands.', inputSchema: { type: 'object', properties: { path: { type: 'string', description: 'Repository file path, e.g. content/semester 3/3.1/3.1 LECTURE_Farmakokinetika.html' }, saveTo: { type: 'string', description: 'Optional absolute destination path in sandbox. Defaults to /mnt/user-data/outputs/<filename>' } }, required: ['path'] } },
@@ -405,16 +405,18 @@ export function getMcpToolsList() {
     { name: 'tasks_logs', description: 'Get activity history for a task', inputSchema: { type: 'object', properties: { task_id: { type: 'string' } }, required: ['task_id'] } },
     { name: 'divisions_list', description: 'List all organization divisions', inputSchema: { type: 'object', properties: {} } },
     { name: 'divisions_my', description: 'Get your division membership', inputSchema: { type: 'object', properties: {} } },
-    { name: 'account_manager', description: 'Unified account manager: create accounts, set passwords, set usernames/names, assign divisions, grant/revoke admin roles, ban/unban users, fetch detailed profiles, or delete accounts.', inputSchema: { type: 'object', properties: { action: { type: 'string', enum: ['create', 'update', 'set_password', 'set_username', 'set_division', 'set_admin', 'set_ban', 'get', 'list', 'delete'], description: 'Operation to perform' }, user_id: { type: 'string', description: 'Target user UUID' }, email: { type: 'string', description: 'User email address' }, password: { type: 'string', description: 'Password for creation or reset (min 6 chars)' }, username: { type: 'string', description: 'Username handle' }, full_name: { type: 'string', description: 'User full name (e.g. Ahmad Muqorrobin)' }, whatsapp: { type: 'string', description: 'WhatsApp contact number' }, division_id: { type: 'string', enum: ['management', 'development', 'review', 'none'], description: 'Division assignment ("management", "development", "review", or "none" to unassign)' }, is_admin: { type: 'boolean', description: 'True to grant admin privileges, false to revoke' }, banned: { type: 'boolean', description: 'True to ban user account, false to unban' }, query: { type: 'string', description: 'Optional search keyword when action is "list"' } }, required: ['action'] } },
+    { name: 'account_manager', description: 'Unified account manager: create accounts individually or in batch, set passwords, set usernames/names, assign divisions, grant/revoke admin roles, ban/unban users, fetch detailed profiles, or delete accounts.', inputSchema: { type: 'object', properties: { action: { type: 'string', enum: ['create', 'batch_create', 'update', 'set_password', 'set_username', 'set_division', 'set_admin', 'set_ban', 'get', 'list', 'delete'], description: 'Operation to perform' }, user_id: { type: 'string', description: 'Target user UUID' }, email: { type: 'string', description: 'User email address' }, password: { type: 'string', description: 'Password for creation or reset (min 6 chars)' }, username: { type: 'string', description: 'Username handle' }, full_name: { type: 'string', description: 'User full name (e.g. Ahmad Muqorrobin)' }, whatsapp: { type: 'string', description: 'WhatsApp contact number' }, division_id: { type: 'string', enum: ['management', 'development', 'review', 'none'], description: 'Division assignment ("management", "development", "review", or "none" to unassign)' }, is_admin: { type: 'boolean', description: 'True to grant admin privileges, false to revoke' }, banned: { type: 'boolean', description: 'True to ban user account, false to unban' }, query: { type: 'string', description: 'Search keyword when action is "list"' }, search: { type: 'string', description: 'Alias for query when action is "list"' }, users: { type: 'array', description: 'Array of user objects when action is "batch_create"' }, default_password: { type: 'string', description: 'Default password fallback when action is "batch_create"' }, default_division: { type: 'string', description: 'Default division fallback when action is "batch_create"' }, limit: { type: 'number', description: 'Pagination limit when action is "list"' }, offset: { type: 'number', description: 'Pagination offset when action is "list"' }, compact: { type: 'boolean', description: 'Compact summary output when action is "list"' } }, required: ['action'] } },
     { name: 'users_create', description: 'Directly create a new user account with email, password, optional username/full name, division, and admin status (Admin only).', inputSchema: { type: 'object', properties: { email: { type: 'string', description: 'User email address' }, password: { type: 'string', description: 'Account password (minimum 6 characters)' }, full_name: { type: 'string', description: 'Full name (e.g. Ahmad Muqorrobin)' }, username: { type: 'string', description: 'Username' }, whatsapp: { type: 'string', description: 'WhatsApp phone number' }, division_id: { type: 'string', enum: ['management', 'development', 'review'], description: 'Division to assign' }, is_admin: { type: 'boolean', description: 'Grant admin rights' } }, required: ['email', 'password'] } },
-    { name: 'users_list', description: 'List all registered users (SuperAdmin only)', inputSchema: { type: 'object', properties: {} } },
+    { name: 'users_create_batch', description: 'Batch create multiple user accounts with automated credentials, division assignment, and role configuration in a single call (Admin/SuperAdmin only).', inputSchema: { type: 'object', properties: { users: { type: 'array', description: 'Array of user accounts to create', items: { type: 'object', properties: { email: { type: 'string', description: 'User email address' }, password: { type: 'string', description: 'Password (min 6 chars, defaults to default_password)' }, full_name: { type: 'string', description: 'Full name' }, username: { type: 'string', description: 'Username handle' }, whatsapp: { type: 'string', description: 'WhatsApp phone number' }, division_id: { type: 'string', enum: ['management', 'development', 'review'], description: 'Division to assign' }, is_admin: { type: 'boolean', description: 'Grant admin privileges (SuperAdmin only)' } }, required: ['email'] } }, default_password: { type: 'string', description: 'Default password to use if not specified per user (min 6 chars)' }, default_division: { type: 'string', enum: ['management', 'development', 'review'], description: 'Default division to assign if not specified per user' }, stop_on_error: { type: 'boolean', description: 'If true, stops batch on first error; default false continues processing remaining accounts' } }, required: ['users'] } },
+    { name: 'users_list', description: 'List and search registered users with query search, division filter, role filter, pagination, and token-saving compact mode (Admin/SuperAdmin only).', inputSchema: { type: 'object', properties: { search: { type: 'string', description: 'Search term to match against email, full name, username, or WhatsApp' }, query: { type: 'string', description: 'Alias for search keyword' }, division: { type: 'string', description: 'Filter by division ("management", "development", "review", or "none")' }, role: { type: 'string', enum: ['admin', 'superadmin', 'user'], description: 'Filter by user role' }, banned: { type: 'boolean', description: 'Filter by banned status' }, limit: { type: 'number', description: 'Maximum users to return (default 25, max 100)' }, offset: { type: 'number', description: 'Pagination offset (default 0)' }, compact: { type: 'boolean', description: 'If true (default), returns compact user profiles to save tokens' } } } },
     { name: 'users_ban', description: 'Ban or unban a user (SuperAdmin only)', inputSchema: { type: 'object', properties: { user_id: { type: 'string' }, banned: { type: 'boolean' } }, required: ['user_id', 'banned'] } },
     { name: 'users_reset_password', description: 'Reset a user password by user_id or email (Admin / SuperAdmin only)', inputSchema: { type: 'object', properties: { user_id: { type: 'string' }, email: { type: 'string' }, new_password: { type: 'string' } }, required: ['new_password'] } },
     { name: 'config_get', description: 'Get app configuration settings (Admin only)', inputSchema: { type: 'object', properties: {} } },
     { name: 'config_update', description: 'Update app settings (Admin only)', inputSchema: { type: 'object', properties: { allowSignup: { type: 'boolean' }, maintenanceMode: { type: 'boolean' } } } },
     { name: 'contributions_leaderboard', description: 'Get the contribution points leaderboard', inputSchema: { type: 'object', properties: {} } },
     { name: 'contributions_my', description: 'Get your own contribution history and total points', inputSchema: { type: 'object', properties: {} } },
-    { name: 'contributions_record', description: 'Manually award or record contribution points for a user (Management/Admin only)', inputSchema: { type: 'object', properties: { user_id: { type: 'string', description: 'Target user UUID' }, user_email: { type: 'string', description: 'Target user email' }, points: { type: 'number', description: 'Points to award (e.g. 1, 2, 5)' }, type: { type: 'string', description: 'Contribution type or description' }, task_id: { type: 'string', description: 'Optional task UUID' } }, required: ['points'] } },
+    { name: 'contributions_record', description: 'Manually award or record contribution points for a user (Management/Admin only). Automatically routes to batch award if all_users: true or users array passed.', inputSchema: { type: 'object', properties: { user_id: { type: 'string', description: 'Target user UUID (or "all")' }, user_email: { type: 'string', description: 'Target user email' }, points: { type: 'number', description: 'Points to award (e.g. 1, 2, 5)' }, all_users: { type: 'boolean', description: 'Set true to award to all users' }, users: { type: 'array', description: 'Array of users to award in batch' }, type: { type: 'string', description: 'Contribution type or description' }, task_id: { type: 'string', description: 'Optional task UUID' } }, required: ['points'] } },
+    { name: 'contributions_award_batch', description: 'Award contribution points in batch to all users, a specific division, or a list of users (Management/Admin only). Uses optimized database batch insertion.', inputSchema: { type: 'object', properties: { points: { type: 'number', description: 'Points to award to each user (e.g. 5, 10, 50)' }, all_users: { type: 'boolean', description: 'If true (default if users omitted), award to all registered users' }, division_id: { type: 'string', enum: ['management', 'development', 'review'], description: 'Optional division filter when awarding to all users' }, exclude_banned: { type: 'boolean', description: 'If true (default), exclude banned users' }, users: { type: 'array', description: 'Optional explicit list of target user IDs, emails, or { user_id, user_email, points } objects', items: { anyOf: [{ type: 'string' }, { type: 'object', properties: { user_id: { type: 'string' }, user_email: { type: 'string' }, points: { type: 'number' } } }] } }, type: { type: 'string', description: 'Contribution category/reason (default: "batch_award")' }, task_id: { type: 'string', description: 'Optional task UUID' } }, required: ['points'] } },
     { name: 'review_issues', description: 'Get review issues for a task (reviewer only)', inputSchema: { type: 'object', properties: { task_id: { type: 'string' } }, required: ['task_id'] } },
     { name: 'review_report', description: 'Report a review issue on a task', inputSchema: { type: 'object', properties: { task_id: { type: 'string' }, issue_type: { type: 'string' }, description: { type: 'string' } }, required: ['task_id'] } },
     { name: 'review_resolve', description: 'Mark a review issue as resolved', inputSchema: { type: 'object', properties: { issue_id: { type: 'string' } }, required: ['issue_id'] } },
@@ -443,7 +445,7 @@ export function getMcpToolsList() {
     { name: 'divisions_join', description: 'Join an organization division', inputSchema: { type: 'object', properties: { division_id: { type: 'string', enum: ['management','development','review'] }, whatsapp: { type: 'string' } }, required: ['division_id'] } },
     { name: 'divisions_update_whatsapp', description: 'Update your WhatsApp contact info', inputSchema: { type: 'object', properties: { whatsapp: { type: 'string' } }, required: ['whatsapp'] } },
     { name: 'divisions_get_members', description: 'Get detailed member list of a specific division (or all divisions)', inputSchema: { type: 'object', properties: { division_id: { type: 'string' } } } },
-    { name: 'cover_list', description: 'List all cover image files in the cover/ directory', inputSchema: { type: 'object', properties: {} } },
+    { name: 'cover_list', description: 'List cover image files in the cover/ directory with keyword search filter and pagination.', inputSchema: { type: 'object', properties: { search: { type: 'string', description: 'Search keyword for cover image filename' }, query: { type: 'string', description: 'Alias for search keyword' }, limit: { type: 'number', description: 'Maximum cover images to return (default 50)' } } } },
     { name: 'cover_upload', description: 'Upload or update a cover image in cover/ (base64 encoded)', inputSchema: { type: 'object', properties: { filename: { type: 'string', description: 'e.g. semester 1.png' }, contentBase64: { type: 'string' } }, required: ['filename', 'contentBase64'] } },
     { name: 'cover_delete', description: 'Delete a cover image from cover/', inputSchema: { type: 'object', properties: { filename: { type: 'string' } }, required: ['filename'] } },
     { name: 'docs_get', description: 'Get documentation outline or a specific section from docs.html. By default returns table of contents in ~250 tokens instead of full 86KB HTML.', inputSchema: { type: 'object', properties: { sectionIndex: { type: 'number', description: '1-indexed section number to fetch only that specific section' }, full_html: { type: 'boolean', description: 'If true, returns full raw docs.html' } } } },
@@ -803,8 +805,9 @@ async function routeMethod(method, params, auth, roles, cfg) {
 
   if (m === 'content_list') return contentList(params, gt, go, gr);
   if (m === 'content_search') {
-    if (!params.query) throw err400('Missing params.query');
-    return contentSearch(params, gt, go, gr, cfg.reqHost);
+    const q = params.query || params.search;
+    if (!q) throw err400('Missing params.query');
+    return contentSearch({ ...params, query: q }, gt, go, gr, cfg.reqHost);
   }
   if (m === 'content_get') {
     if (!params.path) throw err400('Missing params.path');
@@ -947,7 +950,7 @@ async function routeMethod(method, params, auth, roles, cfg) {
     return divisionsGetMembers(params.division_id, su, sk);
   }
 
-  if (m === 'cover_list') return coverList(gt, go, gr);
+  if (m === 'cover_list') return coverList(params, gt, go, gr);
   if (m === 'cover_upload') {
     if (!roles.hasDivision && !roles.isAdmin) throw err403('Division membership required to upload cover');
     if (!params.filename || !params.contentBase64) throw err400('Missing params.filename or params.contentBase64');
@@ -992,10 +995,14 @@ async function routeMethod(method, params, auth, roles, cfg) {
     if (!roles.isAdmin && !roles.isSuperAdmin) throw err403('Admin or SuperAdmin only');
     return handleAccountManager({ ...params, action: 'create' }, auth, roles, su, sk, SUPERADMIN_EMAIL);
   }
+  if (m === 'users_create_batch' || m === 'users_batch_create' || m === 'account_batch_create') {
+    if (!roles.isAdmin && !roles.isSuperAdmin) throw err403('Admin or SuperAdmin only');
+    return usersCreateBatch(params, auth, roles, su, sk, SUPERADMIN_EMAIL);
+  }
 
   if (m === 'users_list') {
-    if (!roles.isSuperAdmin) throw err403('SuperAdmin only');
-    return usersList(su, sk);
+    if (!roles.isAdmin && !roles.isSuperAdmin) throw err403('Admin or SuperAdmin only');
+    return usersList(params, su, sk, SUPERADMIN_EMAIL);
   }
   if (m === 'users_ban') {
     if (!roles.isSuperAdmin) throw err403('SuperAdmin only');
@@ -1058,8 +1065,15 @@ async function routeMethod(method, params, auth, roles, cfg) {
 
   if (m === 'contributions_leaderboard') return contributionsLeaderboard(su, sk);
   if (m === 'contributions_my') return contributionsMy(auth.userId, su, sk);
+  if (m === 'contributions_award_batch' || m === 'contributions_batch_award' || m === 'contributions_award_all') {
+    if (!roles.isManagement && !roles.isAdmin && !roles.isSuperAdmin) throw err403('Management or Admin only');
+    return contributionsAwardBatch(params, auth.email, su, sk);
+  }
   if (m === 'contributions_record') {
-    if (!roles.isManagement && !roles.isAdmin) throw err403('Management or Admin only');
+    if (!roles.isManagement && !roles.isAdmin && !roles.isSuperAdmin) throw err403('Management or Admin only');
+    if (params.all_users === true || params.all === true || params.user_id === 'all' || Array.isArray(params.users)) {
+      return contributionsAwardBatch(params, auth.email, su, sk);
+    }
     return contributionsRecord(params, auth.email, su, sk);
   }
 
@@ -1624,7 +1638,7 @@ async function contentList(paramsOrGt, gtOrOwner, ownerOrRepo, repoOptional) {
   const semFilter = params.semester ? String(params.semester).toLowerCase().replace(/^semester\s*/i, '') : null;
   const blockFilter = params.block ? String(params.block).toLowerCase() : null;
   const catFilter = params.category ? String(params.category).toLowerCase() : null;
-  const searchFilter = params.search ? String(params.search).toLowerCase() : null;
+  const searchFilter = (params.search || params.query) ? String(params.search || params.query).toLowerCase().trim() : null;
 
   const isFilterActive = !!(semFilter || blockFilter || catFilter || searchFilter);
   const isCompact = params.compact === true || (!isFilterActive && params.compact !== false);
@@ -1674,18 +1688,29 @@ async function contentList(paramsOrGt, gtOrOwner, ownerOrRepo, repoOptional) {
     };
   }
 
+  const limit = params.limit ? Math.max(1, parseInt(params.limit)) : null;
+  const offset = Math.max(0, parseInt(params.offset) || 0);
+
+  let returnedFilesCount = 0;
   const semesters = Object.entries(semMap).map(([semName, blocks]) => ({
     semester: semName,
     blocks: Object.entries(blocks).map(([blockName, cats]) => ({
       block: blockName,
-      categories: Object.entries(cats).map(([catName, files]) => ({
-        category: catName,
-        files: files.map(f => ({ title: f.title, path: f.path }))
-      }))
+      categories: Object.entries(cats).map(([catName, files]) => {
+        let selectedFiles = files;
+        if (offset > 0 || limit !== null) {
+          selectedFiles = files.slice(offset, limit !== null ? offset + limit : undefined);
+        }
+        returnedFilesCount += selectedFiles.length;
+        return {
+          category: catName,
+          files: selectedFiles.map(f => ({ title: f.title, path: f.path }))
+        };
+      })
     }))
   }));
 
-  return { compact: false, semesters, total_files: matchedCount };
+  return { compact: false, semesters, total_files: matchedCount, count: returnedFilesCount, offset, ...(limit !== null ? { limit } : {}) };
 }
 
 async function contentSearch(params, githubToken, owner, repo, reqHost = 'mr-capsules.vercel.app') {
@@ -1918,12 +1943,40 @@ async function contentTree(paramsOrGt, gtOrOwner, ownerOrRepo, repoOptional) {
     filtered = filtered.filter(item => item.path.toLowerCase().startsWith(pfx));
   }
 
-  const pathsOnly = params.paths_only !== false;
-  if (pathsOnly) {
-    return { total: filtered.length, paths: filtered.map(item => item.path) };
+  const searchQuery = (params.search || params.query || '').toLowerCase().trim();
+  if (searchQuery) {
+    filtered = filtered.filter(item => item.path.toLowerCase().includes(searchQuery));
   }
 
-  return { tree: filtered };
+  const extFilter = (params.extension || params.ext || '').toLowerCase().trim();
+  if (extFilter) {
+    const dotExt = extFilter.startsWith('.') ? extFilter : '.' + extFilter;
+    filtered = filtered.filter(item => item.path.toLowerCase().endsWith(dotExt));
+  }
+
+  const totalMatches = filtered.length;
+  const offset = Math.max(0, parseInt(params.offset) || 0);
+  const limit = params.limit ? Math.min(500, Math.max(1, parseInt(params.limit))) : (searchQuery ? 100 : (params.prefix ? 100 : null));
+  const paginated = (offset > 0 || limit !== null) ? filtered.slice(offset, limit !== null ? offset + limit : undefined) : filtered;
+
+  const pathsOnly = params.paths_only !== false;
+  if (pathsOnly) {
+    return {
+      total: totalMatches,
+      count: paginated.length,
+      offset,
+      ...(limit !== null ? { limit } : {}),
+      paths: paginated.map(item => item.path)
+    };
+  }
+
+  return {
+    total: totalMatches,
+    count: paginated.length,
+    offset,
+    ...(limit !== null ? { limit } : {}),
+    tree: paginated
+  };
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -2796,9 +2849,151 @@ async function divisionsMyDivision(userId, su, sk) {
 // USERS HANDLERS
 // ═══════════════════════════════════════════════════════════════
 
+async function usersCreateBatch(params, auth, roles, su, sk, superadminEmail) {
+  if (!roles.isAdmin && !roles.isSuperAdmin) throw err403('Admin or SuperAdmin only');
+  const rawUsers = Array.isArray(params.users) ? params.users : [];
+  if (rawUsers.length === 0) throw err400('params.users must be a non-empty array of user objects');
+
+  const defaultPassword = params.default_password || '';
+  const defaultDivision = params.default_division ? String(params.default_division).toLowerCase().trim() : null;
+  const stopOnError = params.stop_on_error === true;
+
+  const existingRes = await fetch(`${su}/auth/v1/admin/users?per_page=1000`, {
+    headers: { 'apikey': sk, 'Authorization': `Bearer ${sk}` }
+  });
+  const existingUsers = existingRes.ok ? (await existingRes.json()).users || [] : [];
+  const existingEmailSet = new Set(existingUsers.map(u => (u.email || '').toLowerCase().trim()));
+  const seenInBatch = new Set();
+
+  const created = [];
+  const failed = [];
+
+  for (let idx = 0; idx < rawUsers.length; idx++) {
+    const u = rawUsers[idx];
+    const email = (u.email || '').trim().toLowerCase();
+    const password = u.password || defaultPassword;
+    const fullName = (u.full_name || u.name || '').trim();
+    const username = (u.username || (email ? email.split('@')[0] : '')).trim();
+    const whatsapp = (u.whatsapp || '').trim();
+    const division = (u.division_id || u.division || defaultDivision || '').toLowerCase().trim();
+    const isAdmin = u.is_admin === true;
+
+    if (!email || !email.includes('@')) {
+      failed.push({ index: idx, email, error: 'Invalid or missing email' });
+      if (stopOnError) break;
+      continue;
+    }
+    if (!password || password.length < 6) {
+      failed.push({ index: idx, email, error: 'Password must be at least 6 characters' });
+      if (stopOnError) break;
+      continue;
+    }
+    if (existingEmailSet.has(email) || seenInBatch.has(email)) {
+      failed.push({ index: idx, email, error: `User with email "${email}" already exists` });
+      if (stopOnError) break;
+      continue;
+    }
+    seenInBatch.add(email);
+
+    const payload = {
+      email,
+      password,
+      email_confirm: true,
+      user_metadata: {
+        full_name: fullName || username,
+        username: username,
+        whatsapp: whatsapp,
+        email: email
+      },
+      app_metadata: {
+        provider: 'email',
+        providers: ['email'],
+        banned: false
+      }
+    };
+
+    try {
+      const createRes = await fetch(`${su}/auth/v1/admin/users`, {
+        method: 'POST',
+        headers: {
+          'apikey': sk,
+          'Authorization': `Bearer ${sk}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!createRes.ok) {
+        const errText = await createRes.text();
+        failed.push({ index: idx, email, error: `Supabase Auth error: ${errText}` });
+        if (stopOnError) break;
+        continue;
+      }
+
+      const createdUser = await createRes.json();
+      const newUserId = createdUser.id;
+      existingEmailSet.add(email);
+
+      let assignedDiv = null;
+      if (['management', 'development', 'review'].includes(division)) {
+        await fetch(`${su}/rest/v1/division_members`, {
+          method: 'POST',
+          headers: { 'apikey': sk, 'Authorization': `Bearer ${sk}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates' },
+          body: JSON.stringify({ user_id: newUserId, division_id: division, whatsapp: whatsapp })
+        });
+        assignedDiv = division;
+      }
+
+      let adminAssigned = false;
+      if (isAdmin) {
+        if (roles.isSuperAdmin) {
+          await fetch(`${su}/rest/v1/user_roles`, {
+            method: 'POST',
+            headers: { 'apikey': sk, 'Authorization': `Bearer ${sk}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates' },
+            body: JSON.stringify({ identifier: email, role: 'admin' })
+          });
+          adminAssigned = true;
+        }
+      }
+
+      created.push({
+        id: newUserId,
+        email,
+        full_name: fullName || username,
+        username,
+        division: assignedDiv || 'none',
+        is_admin: adminAssigned
+      });
+    } catch (err) {
+      failed.push({ index: idx, email, error: err.message });
+      if (stopOnError) break;
+    }
+  }
+
+  await logAction(auth.email, 'mcp_batch_create_users', {
+    total_requested: rawUsers.length,
+    created_count: created.length,
+    failed_count: failed.length
+  }, su, sk);
+
+  return {
+    success: true,
+    message: `Batch creation finished: ${created.length} accounts created, ${failed.length} failed`,
+    total_requested: rawUsers.length,
+    created_count: created.length,
+    failed_count: failed.length,
+    created,
+    failed
+  };
+}
+
 async function handleAccountManager(params, auth, roles, su, sk, superadminEmail) {
   const action = (params.action || '').toLowerCase().trim();
   if (!action) throw err400('Missing params.action');
+
+  if (action === 'batch_create' || action === 'create_batch') {
+    return usersCreateBatch(params, auth, roles, su, sk, superadminEmail);
+  }
 
   // Helper to resolve a target user by ID or Email
   async function resolveTargetUser(idInput, emailInput) {
@@ -2985,62 +3180,7 @@ async function handleAccountManager(params, auth, roles, su, sk, superadminEmail
   // 3. ACTION: LIST
   if (action === 'list') {
     if (!roles.isAdmin && !roles.isSuperAdmin) throw err403('Admin or SuperAdmin only');
-    const usersRes = await fetch(`${su}/auth/v1/admin/users?per_page=1000`, {
-      headers: { 'apikey': sk, 'Authorization': `Bearer ${sk}` }
-    });
-    if (!usersRes.ok) throw new Error('Failed to fetch user list');
-    const { users } = await usersRes.json();
-
-    const [divsRes, rolesRes] = await Promise.all([
-      fetch(`${su}/rest/v1/division_members?select=user_id,division_id,whatsapp`, {
-        headers: { 'apikey': sk, 'Authorization': `Bearer ${sk}` }
-      }),
-      fetch(`${su}/rest/v1/user_roles?select=identifier,role`, {
-        headers: { 'apikey': sk, 'Authorization': `Bearer ${sk}` }
-      })
-    ]);
-
-    const divs = divsRes.ok ? await divsRes.json() : [];
-    const roleList = rolesRes.ok ? await rolesRes.json() : [];
-
-    const divMap = new Map((divs || []).map(d => [d.user_id, d]));
-    const adminSet = new Set((roleList || []).filter(r => r.role === 'admin').map(r => (r.identifier || '').toLowerCase()));
-
-    const query = (params.query || '').toLowerCase().trim();
-
-    const enriched = (users || []).map(u => {
-      const email = (u.email || '').toLowerCase();
-      const divInfo = divMap.get(u.id);
-      const isUserAdmin = adminSet.has(email) || (superadminEmail && email === superadminEmail.toLowerCase());
-      const isSuper = superadminEmail && email === superadminEmail.toLowerCase();
-      return {
-        id: u.id,
-        email: u.email,
-        full_name: u.user_metadata?.full_name || u.user_metadata?.name || u.email?.split('@')[0] || '',
-        username: u.user_metadata?.username || u.email?.split('@')[0] || '',
-        whatsapp: divInfo?.whatsapp || u.user_metadata?.whatsapp || '',
-        division: divInfo?.division_id || 'None',
-        is_admin: isUserAdmin,
-        is_superadmin: isSuper,
-        banned: !!u.app_metadata?.banned,
-        created_at: u.created_at,
-        last_sign_in_at: u.last_sign_in_at
-      };
-    }).filter(u => {
-      if (!query) return true;
-      return (
-        u.email.toLowerCase().includes(query) ||
-        u.full_name.toLowerCase().includes(query) ||
-        u.username.toLowerCase().includes(query) ||
-        u.division.toLowerCase().includes(query)
-      );
-    });
-
-    return {
-      success: true,
-      total: enriched.length,
-      users: enriched
-    };
+    return usersList(params, su, sk, superadminEmail);
   }
 
   // 4. ACTION: SET_PASSWORD / RESET_PASSWORD
@@ -3443,6 +3583,128 @@ async function contributionsRecord(params, adminEmail, su, sk) {
   return { success: true, user_id: targetUserId, points_awarded: points };
 }
 
+async function contributionsAwardBatch(params, adminEmail, su, sk) {
+  const points = Number(params.points);
+  if (isNaN(points) || points === 0) throw err400('Valid numeric params.points is required (e.g. 5, 10)');
+  const contribType = params.type || 'batch_award';
+  const taskId = params.task_id || null;
+  const excludeBanned = params.exclude_banned !== false;
+  const divisionId = params.division_id ? String(params.division_id).toLowerCase().trim() : null;
+
+  let targetUsers = [];
+
+  if (Array.isArray(params.users) && params.users.length > 0) {
+    const usersRes = await fetch(`${su}/auth/v1/admin/users?per_page=1000`, {
+      headers: { 'apikey': sk, 'Authorization': `Bearer ${sk}` }
+    });
+    if (!usersRes.ok) throw new Error('Failed to fetch users: ' + await usersRes.text());
+    const { users } = await usersRes.json();
+    const emailMap = new Map((users || []).map(u => [(u.email || '').toLowerCase().trim(), u]));
+    const idMap = new Map((users || []).map(u => [u.id, u]));
+
+    for (const uItem of params.users) {
+      if (typeof uItem === 'string') {
+        const str = uItem.trim();
+        const matched = idMap.get(str) || emailMap.get(str.toLowerCase());
+        if (matched) {
+          targetUsers.push({ userId: matched.id, email: matched.email, points });
+        }
+      } else if (typeof uItem === 'object' && uItem !== null) {
+        const uid = uItem.user_id || '';
+        const uemail = (uItem.user_email || uItem.email || '').trim().toLowerCase();
+        const matched = (uid ? idMap.get(uid) : null) || (uemail ? emailMap.get(uemail) : null);
+        if (matched) {
+          const uPoints = Number(uItem.points) || points;
+          targetUsers.push({ userId: matched.id, email: matched.email, points: uPoints });
+        }
+      }
+    }
+  } else {
+    const usersRes = await fetch(`${su}/auth/v1/admin/users?per_page=1000`, {
+      headers: { 'apikey': sk, 'Authorization': `Bearer ${sk}` }
+    });
+    if (!usersRes.ok) throw new Error('Failed to fetch users: ' + await usersRes.text());
+    const { users } = await usersRes.json();
+    let filteredUsers = users || [];
+
+    if (excludeBanned) {
+      filteredUsers = filteredUsers.filter(u => !(u.banned_until || (u.app_metadata && u.app_metadata.banned)));
+    }
+
+    if (divisionId) {
+      const divRes = await fetch(`${su}/rest/v1/division_members?division_id=eq.${encodeURIComponent(divisionId)}&select=user_id`, {
+        headers: { 'apikey': sk, 'Authorization': `Bearer ${sk}` }
+      });
+      const divRows = divRes.ok ? await divRes.json() : [];
+      const memberSet = new Set((divRows || []).map(d => d.user_id));
+      filteredUsers = filteredUsers.filter(u => memberSet.has(u.id));
+    }
+
+    targetUsers = filteredUsers.map(u => ({ userId: u.id, email: u.email, points }));
+  }
+
+  if (targetUsers.length === 0) {
+    return {
+      success: true,
+      message: 'No matching users found to award points',
+      total_users_awarded: 0,
+      total_points_awarded: 0
+    };
+  }
+
+  const records = targetUsers.map(t => {
+    const row = {
+      user_id: t.userId,
+      points: t.points,
+      type: contribType
+    };
+    if (taskId) row.task_id = taskId;
+    return row;
+  });
+
+  const CHUNK_SIZE = 100;
+  let insertedCount = 0;
+  let totalPoints = 0;
+
+  for (let i = 0; i < records.length; i += CHUNK_SIZE) {
+    const chunk = records.slice(i, i + CHUNK_SIZE);
+    const res = await fetch(`${su}/rest/v1/contributions`, {
+      method: 'POST',
+      headers: {
+        'apikey': sk,
+        'Authorization': `Bearer ${sk}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify(chunk)
+    });
+    if (!res.ok) {
+      const errTxt = await res.text();
+      throw new Error(`Failed to batch record contributions: ${errTxt}`);
+    }
+    insertedCount += chunk.length;
+    totalPoints += chunk.reduce((sum, r) => sum + r.points, 0);
+  }
+
+  await logAction(adminEmail, 'mcp_batch_award_points', {
+    awarded_count: insertedCount,
+    total_points: totalPoints,
+    points_each: points,
+    type: contribType,
+    division_id: divisionId || 'all'
+  }, su, sk);
+
+  return {
+    success: true,
+    message: `Successfully awarded points to ${insertedCount} users (${totalPoints} total points)`,
+    total_users_awarded: insertedCount,
+    points_each: points,
+    total_points_awarded: totalPoints,
+    type: contribType,
+    division: divisionId || 'all'
+  };
+}
+
 // ═══════════════════════════════════════════════════════════════
 // REVIEW HANDLERS
 // ═══════════════════════════════════════════════════════════════
@@ -3515,23 +3777,117 @@ async function usersResetPassword(userId, email, newPassword, adminEmail, su, sk
   return { success: true, message: `Password for ${targetEmail || targetId} updated successfully`, user_id: targetId };
 }
 
-async function usersList(su, sk) {
+async function usersList(paramsOrSu, suOrSk, skOptional, superadminEmailOptional) {
+  let params = {}, su, sk, superadminEmail;
+  if (typeof paramsOrSu === 'object' && paramsOrSu !== null) {
+    params = paramsOrSu;
+    su = suOrSk;
+    sk = skOptional;
+    superadminEmail = superadminEmailOptional;
+  } else {
+    su = paramsOrSu;
+    sk = suOrSk;
+    superadminEmail = skOptional;
+  }
+
   const listRes = await fetch(`${su}/auth/v1/admin/users?per_page=1000`, {
     headers: { 'apikey': sk, 'Authorization': `Bearer ${sk}` }
   });
   if (!listRes.ok) throw new Error('Failed to list users: ' + await listRes.text());
   const data = await listRes.json();
-  const users = (data.users || []).map(u => ({
+
+  const [divsRes, rolesRes] = await Promise.all([
+    fetch(`${su}/rest/v1/division_members?select=user_id,division_id,whatsapp`, {
+      headers: { 'apikey': sk, 'Authorization': `Bearer ${sk}` }
+    }),
+    fetch(`${su}/rest/v1/user_roles?select=identifier,role`, {
+      headers: { 'apikey': sk, 'Authorization': `Bearer ${sk}` }
+    })
+  ]);
+
+  const divs = divsRes.ok ? await divsRes.json() : [];
+  const roleList = rolesRes.ok ? await rolesRes.json() : [];
+  const divMap = new Map((divs || []).map(d => [d.user_id, d]));
+  const adminSet = new Set((roleList || []).filter(r => r.role === 'admin').map(r => (r.identifier || '').toLowerCase()));
+
+  const search = (params.search || params.query || '').toLowerCase().trim();
+  const filterDivision = params.division ? String(params.division).toLowerCase().trim() : null;
+  const filterRole = params.role ? String(params.role).toLowerCase().trim() : null;
+  const filterBanned = params.banned !== undefined ? (params.banned === true || params.banned === 'true') : null;
+  const compact = params.compact !== false; // default true for token efficiency
+
+  let users = (data.users || []).map(u => {
+    const email = (u.email || '').toLowerCase();
+    const divInfo = divMap.get(u.id);
+    const isUserAdmin = adminSet.has(email) || (superadminEmail && email === superadminEmail.toLowerCase());
+    const isSuper = superadminEmail && email === superadminEmail.toLowerCase();
+    const isBanned = !!(u.banned_until || (u.app_metadata && u.app_metadata.banned));
+
+    return {
+      id: u.id,
+      email: u.email || '',
+      full_name: (u.user_metadata && (u.user_metadata.full_name || u.user_metadata.name)) || '',
+      username: (u.user_metadata && u.user_metadata.username) || '',
+      whatsapp: divInfo?.whatsapp || (u.user_metadata && u.user_metadata.whatsapp) || '',
+      division: divInfo?.division_id || 'none',
+      is_admin: isUserAdmin,
+      is_superadmin: isSuper,
+      banned: isBanned,
+      created_at: u.created_at,
+      last_sign_in_at: u.last_sign_in_at
+    };
+  });
+
+  if (search) {
+    users = users.filter(u =>
+      u.email.toLowerCase().includes(search) ||
+      u.full_name.toLowerCase().includes(search) ||
+      u.username.toLowerCase().includes(search) ||
+      u.whatsapp.toLowerCase().includes(search) ||
+      u.division.toLowerCase().includes(search)
+    );
+  }
+
+  if (filterDivision) {
+    users = users.filter(u => u.division.toLowerCase() === filterDivision);
+  }
+
+  if (filterRole === 'admin') {
+    users = users.filter(u => u.is_admin);
+  } else if (filterRole === 'superadmin') {
+    users = users.filter(u => u.is_superadmin);
+  } else if (filterRole === 'user') {
+    users = users.filter(u => !u.is_admin && !u.is_superadmin);
+  }
+
+  if (filterBanned !== null) {
+    users = users.filter(u => u.banned === filterBanned);
+  }
+
+  const totalMatched = users.length;
+  const offset = Math.max(0, parseInt(params.offset) || 0);
+  const limit = Math.min(100, Math.max(1, parseInt(params.limit) || 25));
+  const paginated = users.slice(offset, offset + limit);
+
+  const finalUsers = compact ? paginated.map(u => ({
     id: u.id,
-    email: u.email || '',
-    full_name: (u.user_metadata && u.user_metadata.full_name) || '',
-    username: (u.user_metadata && u.user_metadata.username) || '',
-    whatsapp: (u.user_metadata && u.user_metadata.whatsapp) || '',
-    banned: !!(u.banned_until || (u.app_metadata && u.app_metadata.banned)),
-    created_at: u.created_at,
-    last_sign_in_at: u.last_sign_in_at
-  }));
-  return { success: true, total: users.length, users };
+    email: u.email,
+    full_name: u.full_name,
+    username: u.username,
+    division: u.division,
+    is_admin: u.is_admin,
+    banned: u.banned
+  })) : paginated;
+
+  return {
+    success: true,
+    total: totalMatched,
+    count: finalUsers.length,
+    offset,
+    limit,
+    compact,
+    users: finalUsers
+  };
 }
 
 async function usersBan(userId, banned, adminEmail, su, sk) {
@@ -3685,10 +4041,30 @@ async function divisionsUpdateWhatsapp(userId, whatsapp, su, sk) {
 // COVER & DOCS HANDLERS
 // ═══════════════════════════════════════════════════════════════
 
-async function coverList(githubToken, owner, repo) {
-  const tree = await contentTree(githubToken, owner, repo);
-  const covers = (tree.tree || []).filter(item => item.path.startsWith('cover/'));
-  return { covers };
+async function coverList(paramsOrGt, gtOrOwner, ownerOrRepo, repoOptional) {
+  let params = {}, gt, owner, repo;
+  if (typeof paramsOrGt === 'object' && paramsOrGt !== null) {
+    params = paramsOrGt;
+    gt = gtOrOwner;
+    owner = ownerOrRepo;
+    repo = repoOptional;
+  } else {
+    gt = paramsOrGt;
+    owner = gtOrOwner;
+    repo = ownerOrRepo;
+  }
+
+  const tree = await contentTree({ prefix: 'cover/', paths_only: false }, gt, owner, repo);
+  let covers = (tree.tree || []).filter(item => item.path.startsWith('cover/'));
+  const search = (params.search || params.query || '').toLowerCase().trim();
+  if (search) {
+    covers = covers.filter(item => item.path.toLowerCase().includes(search));
+  }
+  const total = covers.length;
+  if (params.limit) {
+    covers = covers.slice(0, Math.max(1, parseInt(params.limit)));
+  }
+  return { success: true, total, count: covers.length, covers: covers.map(c => ({ path: c.path, size_bytes: c.size, sha: c.sha })) };
 }
 
 async function docsGet(paramsOrGt, gtOrOwner, ownerOrRepo, repoOptional, reqHost = 'mr-capsules.vercel.app') {

@@ -434,6 +434,11 @@ if (perfToggleCb) {
   });
 }
 
+function encodePathSegments(relPath) {
+  if (!relPath) return '';
+  return relPath.replace(/^\/+/, '').split('/').map(seg => encodeURIComponent(seg)).join('/');
+}
+
 function getContentCdnUrl(relPath) {
   if (!relPath) return '';
   if (relPath.startsWith('http://') || relPath.startsWith('https://') || relPath.startsWith('data:')) {
@@ -441,11 +446,11 @@ function getContentCdnUrl(relPath) {
   }
   const defaultCdn = 'https://cdn.jsdelivr.net/gh/alchemist4real/MR-CAPSULES-CONTENT@main';
   const cdn = window.CONTENT_CDN || (window.appData && window.appData.contentCdn) || defaultCdn;
-  const cleanPath = relPath.replace(/^\/+/, '');
+  const encodedPath = encodePathSegments(relPath);
   if (cdn) {
-    return `${cdn.replace(/\/+$/, '')}/${cleanPath}`;
+    return `${cdn.replace(/\/+$/, '')}/${encodedPath}`;
   }
-  return `/${cleanPath}`;
+  return `/${encodedPath}`;
 }
 
 let rawData = null;
@@ -1053,23 +1058,76 @@ async function openFile(path, name, index = -1) {
 </body>
 </html>`;
 
-  const cdnUrl = getContentCdnUrl(path);
   try {
-    let res = await fetch(cdnUrl, { signal });
-    if (!res.ok) {
-      const rawUrl = 'https://raw.githubusercontent.com/alchemist4real/MR-CAPSULES-CONTENT/main/' + path.replace(/^\/+/, '');
-      res = await fetch(rawUrl, { signal });
-    }
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    let htmlText = await res.text();
+    const cleanPath = path.replace(/^\/+/, '');
+    const encodedPath = encodePathSegments(cleanPath);
+    const primaryRepo = (window.appData && window.appData.mountedRepo) || 'MR-CAPSULES-CONTENT';
+    const fallbackRepo = 'MR-CAPSULES';
+    const owner = 'alchemist4real';
 
-    // Inject base tag so any relative assets resolve to the CDN folder
-    const baseUrl = cdnUrl.substring(0, cdnUrl.lastIndexOf('/') + 1);
-    if (!htmlText.includes('<base ') && !htmlText.includes('<base>')) {
+    const urlsToTry = [];
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      urlsToTry.push({ url: `/${encodedPath}`, type: 'local' });
+    }
+    urlsToTry.push({
+      url: `https://cdn.jsdelivr.net/gh/${owner}/${primaryRepo}@main/${encodedPath}`,
+      type: 'jsdelivr'
+    });
+    urlsToTry.push({
+      url: `https://raw.githubusercontent.com/${owner}/${primaryRepo}/main/${encodedPath}`,
+      type: 'raw-primary'
+    });
+    if (primaryRepo !== fallbackRepo) {
+      urlsToTry.push({
+        url: `https://raw.githubusercontent.com/${owner}/${fallbackRepo}/main/${encodedPath}`,
+        type: 'raw-fallback'
+      });
+    }
+    urlsToTry.push({
+      url: `/api/content?file=${encodedPath}`,
+      type: 'api-proxy'
+    });
+
+    let htmlText = null;
+    let successfulUrl = null;
+    let lastErr = null;
+
+    for (const target of urlsToTry) {
+      try {
+        const fetchPromise = fetch(target.url, { signal });
+        const timeoutMs = target.type === 'jsdelivr' ? 4000 : 7000;
+        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeoutMs));
+        const res = await Promise.race([fetchPromise, timeoutPromise]);
+        if (res.ok) {
+          const text = await res.text();
+          if (text && text.trim().length > 10) {
+            htmlText = text;
+            successfulUrl = target.url;
+            break;
+          }
+        }
+      } catch (e) {
+        if (e.name === 'AbortError') return;
+        lastErr = e;
+      }
+    }
+
+    if (!htmlText) {
+      throw new Error(`Gagal memuat modul: ${lastErr ? lastErr.message : 'File tidak ditemukan di CDN maupun GitHub'}`);
+    }
+
+    // Determine base URL directory for resolving relative images and styles inside iframe
+    let baseHref = '';
+    if (successfulUrl) {
+      const lastSlashIndex = successfulUrl.lastIndexOf('/');
+      baseHref = lastSlashIndex >= 0 ? successfulUrl.substring(0, lastSlashIndex + 1) : '';
+    }
+
+    if (baseHref && !htmlText.includes('<base ') && !htmlText.includes('<base>')) {
       if (/<head[^>]*>/i.test(htmlText)) {
-        htmlText = htmlText.replace(/(<head[^>]*>)/i, `$1\n  <base href="${baseUrl}">`);
+        htmlText = htmlText.replace(/(<head[^>]*>)/i, `$1\n  <base href="${baseHref}">`);
       } else {
-        htmlText = `<base href="${baseUrl}">\n` + htmlText;
+        htmlText = `<base href="${baseHref}">\n` + htmlText;
       }
     }
 

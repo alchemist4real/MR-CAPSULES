@@ -45,6 +45,21 @@ function build() {
       fs.mkdirSync(publicDir, { recursive: true });
     }
 
+    // Auto-detect and sync with adjacent dedicated content repo if present
+    const adjacentContentRoot = path.join(process.cwd(), '..', 'MR-CAPSULES-CONTENT');
+    if (fs.existsSync(adjacentContentRoot)) {
+      const adjContent = path.join(adjacentContentRoot, 'content');
+      if (fs.existsSync(adjContent)) {
+        copyRecursiveSync(adjContent, contentDir);
+        copyRecursiveSync(contentDir, adjContent);
+      }
+      const adjCovers = path.join(adjacentContentRoot, 'cover');
+      if (fs.existsSync(adjCovers)) {
+        copyRecursiveSync(adjCovers, coversDir);
+        copyRecursiveSync(coversDir, adjCovers);
+      }
+    }
+
     let covers = [];
     if (fs.existsSync(coversDir)) {
       covers = fs.readdirSync(coversDir).filter(f => 
@@ -150,7 +165,9 @@ function build() {
       semesters: semesters,
       files: flatFiles,
       covers: covers.map(c => `cover/${c}`),
-      contentCdn: process.env.CONTENT_CDN || 'https://cdn.jsdelivr.net/gh/alchemist4real/MR-CAPSULES-CONTENT@main'
+      contentCdn: process.env.CONTENT_CDN || 'https://cdn.jsdelivr.net/gh/alchemist4real/MR-CAPSULES-CONTENT@main',
+      mountedRepo: process.env.GITHUB_CONTENT_REPO || 'MR-CAPSULES-CONTENT',
+      fallbackRepo: 'MR-CAPSULES'
     };
 
     const jsContent = `window.appData = ${JSON.stringify(result)};`;

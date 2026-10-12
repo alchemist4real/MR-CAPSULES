@@ -200,22 +200,257 @@ export default async function handler(req, res) {
     return res.ok;
   };
 
+  const getMountConfig = async () => {
+    try {
+      const stateRes = await fetch(`${supabaseUrl}/rest/v1/gitrouter_app_state?id=eq.repo_mount_config&select=state_data`, {
+        headers: { 'apikey': serviceKey, 'Authorization': `Bearer ${serviceKey}` }
+      });
+      if (stateRes.ok) {
+        const rows = await stateRes.json();
+        if (rows && rows.length > 0 && rows[0].state_data) {
+          return rows[0].state_data;
+        }
+      }
+    } catch(e) {}
+    return {
+      primaryRepo: repo,
+      fallbackRepo: fallbackRepo,
+      owner: owner,
+      branch: 'main',
+      activeMount: 'ALL',
+      cdnProvider: 'jsdelivr'
+    };
+  };
+
   try {
+    if (action === 'get_mount_config') {
+      const cfg = await getMountConfig();
+      return res.status(200).json({ success: true, config: cfg });
+    }
+
+    if (action === 'update_mount_config') {
+      const currentCfg = await getMountConfig();
+      const updatedCfg = {
+        ...currentCfg,
+        ...(body.config || {}),
+        updated_at: new Date().toISOString()
+      };
+      await fetch(`${supabaseUrl}/rest/v1/gitrouter_app_state`, {
+        method: 'POST',
+        headers: {
+          'apikey': serviceKey,
+          'Authorization': `Bearer ${serviceKey}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'resolution=merge-duplicates'
+        },
+        body: JSON.stringify({
+          id: 'repo_mount_config',
+          state_data: updatedCfg,
+          updated_at: new Date().toISOString()
+        })
+      });
+      await logAdminAction('update_mount_config', { config: updatedCfg });
+      return res.status(200).json({ success: true, config: updatedCfg });
+    }
+
     if (action === 'download') {
       const targetPath = cleanPath;
       if (!targetPath) return res.status(400).json({ error: 'Missing path' });
       const encodedPath = targetPath.split('/').map(s => encodeURIComponent(s)).join('/');
-      const fileRes = await ghApi('GET', `/contents/${encodedPath}`);
-      if (!fileRes.ok) return res.status(404).json({ error: 'File not found on GitHub' });
+      const reqRepo = body.repo || repo;
+      
+      let fileRes = await ghApi('GET', `/contents/${encodedPath}`, undefined, reqRepo);
+      let usedRepo = reqRepo;
+      if (!fileRes.ok && reqRepo !== fallbackRepo) {
+        fileRes = await ghApi('GET', `/contents/${encodedPath}`, undefined, fallbackRepo);
+        if (fileRes.ok) usedRepo = fallbackRepo;
+      }
+
+      if (!fileRes.ok) {
+        // Fallback directly to Raw GitHub with bearer token
+        const rawRes = await fetch(`https://raw.githubusercontent.com/${owner}/${usedRepo}/main/${encodedPath}`, {
+          headers: { 'Authorization': `Bearer ${githubToken}`, 'User-Agent': 'MR-CAPSULES-ADMIN' }
+        });
+        if (rawRes.ok) {
+          const rawText = await rawRes.text();
+          return res.status(200).json({
+            success: true,
+            content: rawText,
+            contentBase64: Buffer.from(rawText, 'utf8').toString('base64'),
+            repo: usedRepo
+          });
+        }
+        return res.status(404).json({ error: 'File not found on GitHub' });
+      }
+
       const fileData = await fileRes.json();
-      return res.status(200).json({ success: true, contentBase64: fileData.content, sha: fileData.sha });
+      let utf8Content = '';
+      if (fileData.content) {
+        utf8Content = Buffer.from(fileData.content.replace(/\s+/g, ''), 'base64').toString('utf8');
+      }
+      return res.status(200).json({
+        success: true,
+        content: utf8Content,
+        contentBase64: fileData.content,
+        sha: fileData.sha,
+        repo: usedRepo
+      });
     }
 
     if (action === 'tree') {
-      const ghRes = await ghApi('GET', `/git/trees/main?recursive=1`);
-      if (!ghRes.ok) throw new Error(`GitHub API Error: ${await ghRes.text()}`);
-      const data = await ghRes.json();
-      return res.status(200).json({ success: true, tree: data.tree });
+      const mountCfg = await getMountConfig();
+      const requestedMount = body.mount || mountCfg.activeMount || 'ALL';
+      const targetPrimary = mountCfg.primaryRepo || repo;
+      const targetFallback = mountCfg.fallbackRepo || fallbackRepo;
+      const targetOwner = mountCfg.owner || owner;
+      const targetBranch = mountCfg.branch || 'main';
+
+      if (requestedMount === 'ALL') {
+        const [primaryTreeRes, fallbackTreeRes] = await Promise.all([
+          fetch(`https://api.github.com/repos/${targetOwner}/${targetPrimary}/git/trees/${targetBranch}?recursive=1`, {
+            headers: { 'Authorization': `Bearer ${githubToken}`, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'MR-CAPSULES-ADMIN' }
+          }).then(r => r.ok ? r.json() : { tree: [] }).catch(() => ({ tree: [] })),
+          fetch(`https://api.github.com/repos/${targetOwner}/${targetFallback}/git/trees/${targetBranch}?recursive=1`, {
+            headers: { 'Authorization': `Bearer ${githubToken}`, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'MR-CAPSULES-ADMIN' }
+          }).then(r => r.ok ? r.json() : { tree: [] }).catch(() => ({ tree: [] }))
+        ]);
+
+        const mergedMap = new Map();
+        (primaryTreeRes.tree || []).forEach(item => {
+          mergedMap.set(item.path, {
+            ...item,
+            _repo: targetPrimary,
+            _isPrimary: true
+          });
+        });
+
+        (fallbackTreeRes.tree || []).forEach(item => {
+          if (mergedMap.has(item.path)) {
+            const existing = mergedMap.get(item.path);
+            existing._synced = true;
+          } else {
+            mergedMap.set(item.path, {
+              ...item,
+              _repo: targetFallback,
+              _isFallback: true
+            });
+          }
+        });
+
+        const mergedTree = Array.from(mergedMap.values());
+        return res.status(200).json({
+          success: true,
+          tree: mergedTree,
+          mount: 'ALL',
+          mountConfig: mountCfg
+        });
+      } else {
+        const specificRepo = requestedMount === targetFallback ? targetFallback : targetPrimary;
+        const ghRes = await fetch(`https://api.github.com/repos/${targetOwner}/${specificRepo}/git/trees/${targetBranch}?recursive=1`, {
+          headers: { 'Authorization': `Bearer ${githubToken}`, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'MR-CAPSULES-ADMIN' }
+        });
+        if (!ghRes.ok) throw new Error(`GitHub API Error: ${await ghRes.text()}`);
+        const data = await ghRes.json();
+        const tree = (data.tree || []).map(i => ({ ...i, _repo: specificRepo }));
+        return res.status(200).json({ success: true, tree, mount: specificRepo, mountConfig: mountCfg });
+      }
+    }
+
+    if (action === 'sync_mount') {
+      const mountCfg = await getMountConfig();
+      const targetPrimary = mountCfg.primaryRepo || repo;
+      const targetFallback = mountCfg.fallbackRepo || fallbackRepo;
+      const targetOwner = mountCfg.owner || owner;
+      const targetBranch = mountCfg.branch || 'main';
+
+      const [primaryTreeRes, fallbackTreeRes] = await Promise.all([
+        fetch(`https://api.github.com/repos/${targetOwner}/${targetPrimary}/git/trees/${targetBranch}?recursive=1`, {
+          headers: { 'Authorization': `Bearer ${githubToken}`, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'MR-CAPSULES-ADMIN' }
+        }).then(r => r.ok ? r.json() : { tree: [] }),
+        fetch(`https://api.github.com/repos/${targetOwner}/${targetFallback}/git/trees/${targetBranch}?recursive=1`, {
+          headers: { 'Authorization': `Bearer ${githubToken}`, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'MR-CAPSULES-ADMIN' }
+        }).then(r => r.ok ? r.json() : { tree: [] })
+      ]);
+
+      const primaryBlobs = new Map((primaryTreeRes.tree || []).filter(i => i.type === 'blob' && (i.path.startsWith('content/') || i.path.startsWith('cover/'))).map(i => [i.path, i.sha]));
+      const fallbackBlobs = new Map((fallbackTreeRes.tree || []).filter(i => i.type === 'blob' && (i.path.startsWith('content/') || i.path.startsWith('cover/'))).map(i => [i.path, i.sha]));
+
+      const missingInPrimary = [];
+      const missingInFallback = [];
+
+      for (const [p, sha] of fallbackBlobs) {
+        if (!primaryBlobs.has(p)) missingInPrimary.push({ path: p, sha });
+      }
+      for (const [p, sha] of primaryBlobs) {
+        if (!fallbackBlobs.has(p)) missingInFallback.push({ path: p, sha });
+      }
+
+      let syncedToPrimary = 0;
+      let syncedToFallback = 0;
+
+      for (const item of missingInPrimary) {
+        try {
+          const enc = item.path.split('/').map(s => encodeURIComponent(s)).join('/');
+          const fileRes = await fetch(`https://api.github.com/repos/${targetOwner}/${targetFallback}/contents/${enc}`, {
+            headers: { 'Authorization': `Bearer ${githubToken}`, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'MR-CAPSULES-ADMIN' }
+          });
+          if (fileRes.ok) {
+            const fData = await fileRes.json();
+            const putRes = await fetch(`https://api.github.com/repos/${targetOwner}/${targetPrimary}/contents/${enc}`, {
+              method: 'PUT',
+              headers: { 'Authorization': `Bearer ${githubToken}`, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'MR-CAPSULES-ADMIN', 'Content-Type': 'application/json' },
+              body: JSON.stringify({ message: `sync: mirror ${item.path} from ${targetFallback}`, content: fData.content })
+            });
+            if (putRes.ok) syncedToPrimary++;
+          }
+        } catch(e) {}
+      }
+
+      for (const item of missingInFallback) {
+        try {
+          const enc = item.path.split('/').map(s => encodeURIComponent(s)).join('/');
+          const fileRes = await fetch(`https://api.github.com/repos/${targetOwner}/${targetPrimary}/contents/${enc}`, {
+            headers: { 'Authorization': `Bearer ${githubToken}`, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'MR-CAPSULES-ADMIN' }
+          });
+          if (fileRes.ok) {
+            const fData = await fileRes.json();
+            const putRes = await fetch(`https://api.github.com/repos/${targetOwner}/${targetFallback}/contents/${enc}`, {
+              method: 'PUT',
+              headers: { 'Authorization': `Bearer ${githubToken}`, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'MR-CAPSULES-ADMIN', 'Content-Type': 'application/json' },
+              body: JSON.stringify({ message: `sync: mirror ${item.path} from ${targetPrimary}`, content: fData.content })
+            });
+            if (putRes.ok) syncedToFallback++;
+          }
+        } catch(e) {}
+      }
+
+      const nowIso = new Date().toISOString();
+      await fetch(`${supabaseUrl}/rest/v1/gitrouter_app_state`, {
+        method: 'POST',
+        headers: {
+          'apikey': serviceKey,
+          'Authorization': `Bearer ${serviceKey}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'resolution=merge-duplicates'
+        },
+        body: JSON.stringify({
+          id: 'repo_mount_config',
+          state_data: {
+            ...mountCfg,
+            lastSyncedAt: nowIso,
+            lastSyncResult: { syncedToPrimary, syncedToFallback, timestamp: nowIso }
+          },
+          updated_at: nowIso
+        })
+      });
+
+      await logAdminAction('sync_mount', { syncedToPrimary, syncedToFallback });
+      return res.status(200).json({
+        success: true,
+        syncedToPrimary,
+        syncedToFallback,
+        message: `Sync completed: ${syncedToPrimary} files synced to ${targetPrimary}, ${syncedToFallback} files synced to ${targetFallback}.`
+      });
     }
 
     if (['upload', 'create_file', 'make_file', 'create_folder', 'make_folder'].includes(action)) {
