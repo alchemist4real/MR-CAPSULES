@@ -1387,7 +1387,7 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
           const newFolderPath = parentDir + cleanNewName + '/';
 
           statusText.textContent = `Renaming folder to ${cleanNewName}...`;
-          adminAction('rename_folder', { oldPath: item.path, newPath: newFolderPath })
+          adminAction('rename_folder', { oldPath: item.path, newPath: newFolderPath, repo: item._repo })
             .then(() => loadTree())
             .catch(e => showToast('Rename folder failed: ' + e.message, 'error'));
         };
@@ -1423,17 +1423,32 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
       if (document.getElementById('ctxMove')) {
         document.getElementById('ctxMove').onclick = async (e) => {
           ModalManager.close(modal);
-          const newDir = await customPrompt("Enter new directory path (e.g. content/semester 1/):", currentPath);
-          if (!newDir || newDir === currentPath) return;
-          adminAction('rename_file', { path: item.path, newPath: newDir.replace(/\/$/, '') + '/' + item.name }).then(() => loadTree()).catch(e => showToast('Move failed: ' + e.message, 'error'));
+          const cleanPath = item.path.replace(/^\/+/, '');
+          const lastSlash = cleanPath.lastIndexOf('/');
+          const currentDir = lastSlash >= 0 ? cleanPath.substring(0, lastSlash + 1) : '';
+          const newDir = await customPrompt("Enter new directory path (e.g. content/semester 1/):", currentDir || currentPath);
+          if (!newDir || newDir.trim() === '' || newDir.trim() === currentDir) return;
+          const cleanDir = newDir.trim().replace(/\\/g, '/').replace(/^\/+/, '').replace(/\/+$/, '') + '/';
+          statusText.textContent = `Moving file to ${cleanDir}...`;
+          adminAction('rename_file', { path: item.path, newPath: cleanDir + item.name, repo: item._repo })
+            .then(() => loadTree())
+            .catch(e => showToast('Move failed: ' + e.message, 'error'));
         };
       }
       if (document.getElementById('ctxRename')) {
         document.getElementById('ctxRename').onclick = async () => {
           ModalManager.close(modal);
           const newName = await customPrompt("Enter new file name:", item.name);
-          if (!newName || newName === item.name) return;
-          adminAction('rename_file', { path: item.path, newPath: currentPath + newName }).then(() => loadTree()).catch(e => showToast('Rename failed: ' + e.message, 'error'));
+          if (!newName || newName.trim() === '' || newName.trim() === item.name) return;
+          const cleanName = newName.trim().replace(/[\\/]/g, '');
+          const cleanPath = item.path.replace(/^\/+/, '');
+          const lastSlash = cleanPath.lastIndexOf('/');
+          const parentDir = lastSlash >= 0 ? cleanPath.substring(0, lastSlash + 1) : '';
+          const newPath = parentDir + cleanName;
+          statusText.textContent = `Renaming file to ${cleanName}...`;
+          adminAction('rename_file', { path: item.path, newPath: newPath, repo: item._repo })
+            .then(() => loadTree())
+            .catch(e => showToast('Rename failed: ' + e.message, 'error'));
         };
       }
       if (document.getElementById('ctxCreateTask')) {

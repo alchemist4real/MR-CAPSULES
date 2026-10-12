@@ -167,32 +167,32 @@ export default async function handler(req, res) {
   };
 
   // Git Data API Helpers (for bypassing 1MB limits)
-  const getBranchRef = async () => {
-    const res = await ghApi('GET', '/git/refs/heads/main');
+  const getBranchRef = async (targetRepo = repo) => {
+    const res = await ghApi('GET', '/git/refs/heads/main', undefined, targetRepo);
     const data = await res.json();
     if (!res.ok) throw new Error(`Failed to get main ref: ${JSON.stringify(data)}`);
     return data.object.sha;
   };
-  const getCommit = async (commitSha) => {
-    const res = await ghApi('GET', `/git/commits/${commitSha}`);
+  const getCommit = async (commitSha, targetRepo = repo) => {
+    const res = await ghApi('GET', `/git/commits/${commitSha}`, undefined, targetRepo);
     const data = await res.json();
     if (!res.ok) throw new Error(`Failed to get commit: ${JSON.stringify(data)}`);
     return data;
   };
-  const createTree = async (baseTreeSha, treeItems) => {
-    const res = await ghApi('POST', '/git/trees', { base_tree: baseTreeSha, tree: treeItems });
+  const createTree = async (baseTreeSha, treeItems, targetRepo = repo) => {
+    const res = await ghApi('POST', '/git/trees', { base_tree: baseTreeSha, tree: treeItems }, targetRepo);
     const data = await res.json();
     if (!res.ok) throw new Error(`Failed to create tree: ${JSON.stringify(data)}`);
     return data.sha;
   };
-  const createCommit = async (message, treeSha, parentCommits) => {
-    const res = await ghApi('POST', '/git/commits', { message, tree: treeSha, parents: parentCommits });
+  const createCommit = async (message, treeSha, parentCommits, targetRepo = repo) => {
+    const res = await ghApi('POST', '/git/commits', { message, tree: treeSha, parents: parentCommits }, targetRepo);
     const data = await res.json();
     if (!res.ok) throw new Error(`Failed to create commit: ${JSON.stringify(data)}`);
     return data.sha;
   };
-  const updateRef = async (newCommitSha) => {
-    const res = await ghApi('PATCH', '/git/refs/heads/main', { sha: newCommitSha });
+  const updateRef = async (newCommitSha, targetRepo = repo) => {
+    const res = await ghApi('PATCH', '/git/refs/heads/main', { sha: newCommitSha }, targetRepo);
     if (!res.ok) {
       const errData = await res.json().catch(() => ({}));
       throw new Error(errData.message || `Failed to update ref (${res.status})`);
@@ -667,28 +667,57 @@ export default async function handler(req, res) {
     }
 
     if (action === 'rename_file') {
-      const { newPath } = req.body;
-      if (!newPath || !path) throw new Error("Missing path or newPath");
-      
-      const encodedPath = path.split('/').map(s => encodeURIComponent(s)).join('/');
-      const fileRes = await ghApi('GET', `/contents/${encodedPath}`);
-      if (!fileRes.ok) throw new Error("Original file not found on GitHub");
+      const srcPath = (rawPath || cleanPath || '').trim().replace(/\\/g, '/').replace(/^\/+/, '');
+      const dstPath = (cleanNewPath || req.body.newPath || '').trim().replace(/\\/g, '/').replace(/^\/+/, '');
+      if (!srcPath || !dstPath) throw new Error("Missing path or newPath");
+      if (srcPath.includes('..') || dstPath.includes('..')) {
+        return res.status(400).json({ error: 'Invalid path traversal detected.' });
+      }
+      if (srcPath === dstPath) return res.status(200).json({ success: true, message: 'Source and destination paths are identical' });
+
+      // Determine which repo holds the source file
+      let targetRepo = body.repo;
+      const encodedSrc = srcPath.split('/').map(s => encodeURIComponent(s)).join('/');
+      let fileRes;
+
+      if (targetRepo) {
+        fileRes = await ghApi('GET', `/contents/${encodedSrc}`, undefined, targetRepo);
+      } else {
+        // Try primary content repo first
+        fileRes = await ghApi('GET', `/contents/${encodedSrc}`, undefined, repo);
+        if (fileRes.ok) {
+          targetRepo = repo;
+        } else if (fallbackRepo !== repo) {
+          // Fallback to core repo
+          const fbRes = await ghApi('GET', `/contents/${encodedSrc}`, undefined, fallbackRepo);
+          if (fbRes.ok) {
+            fileRes = fbRes;
+            targetRepo = fallbackRepo;
+          }
+        }
+      }
+
+      if (!fileRes || !fileRes.ok) {
+        throw new Error(`Original file not found on GitHub (${srcPath})`);
+      }
+
       const fileData = await fileRes.json();
       const fileSha = fileData.sha;
-      
+      if (!fileSha) throw new Error("Unable to determine file SHA for rename");
+
       const treeItems = [
-        { path: path, mode: '100644', type: 'blob', sha: null },
-        { path: newPath, mode: '100644', type: 'blob', sha: fileSha }
+        { path: srcPath, mode: '100644', type: 'blob', sha: null },
+        { path: dstPath, mode: '100644', type: 'blob', sha: fileSha }
       ];
 
-      const commitSha = await getBranchRef();
-      const parentCommit = await getCommit(commitSha);
-      const newTreeSha = await createTree(parentCommit.tree.sha, treeItems);
-      const newCommitSha = await createCommit(`admin: rename ${path} to ${newPath}`, newTreeSha, [commitSha]);
-      await updateRef(newCommitSha);
-      
-      await logAdminAction('rename_file', { old: path, new: newPath });
-      return res.status(200).json({ success: true });
+      const commitSha = await getBranchRef(targetRepo);
+      const parentCommit = await getCommit(commitSha, targetRepo);
+      const newTreeSha = await createTree(parentCommit.tree.sha, treeItems, targetRepo);
+      const newCommitSha = await createCommit(`admin: rename ${srcPath} to ${dstPath}`, newTreeSha, [commitSha], targetRepo);
+      await updateRef(newCommitSha, targetRepo);
+
+      await logAdminAction('rename_file', { old: srcPath, new: dstPath, repo: targetRepo });
+      return res.status(200).json({ success: true, oldPath: srcPath, newPath: dstPath, repo: targetRepo });
     }
 
     if (action === 'rename_folder') {
@@ -699,20 +728,34 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Invalid path traversal detected.' });
       }
 
-      const commitSha = await getBranchRef();
-      const parentCommit = await getCommit(commitSha);
-      const resTree = await ghApi('GET', `/git/trees/${parentCommit.tree.sha}?recursive=1`);
-      if (!resTree.ok) throw new Error("Failed to fetch repository tree");
-      const fullTree = await resTree.json();
-
       let normOld = srcPath.startsWith('content/') || srcPath.startsWith('cover/') ? srcPath : 'content/' + srcPath;
       let normNew = dstPath.startsWith('content/') || dstPath.startsWith('cover/') ? dstPath : 'content/' + dstPath;
 
       if (!normOld.endsWith('/')) normOld += '/';
       if (!normNew.endsWith('/')) normNew += '/';
 
+      let targetRepo = body.repo;
+      if (!targetRepo) {
+        // Find which repo contains files in normOld
+        targetRepo = repo;
+        const commitSha = await getBranchRef(repo);
+        const parentCommit = await getCommit(commitSha, repo);
+        const resTree = await ghApi('GET', `/git/trees/${parentCommit.tree.sha}?recursive=1`, undefined, repo);
+        const fullTree = resTree.ok ? await resTree.json() : { tree: [] };
+        const count = (fullTree.tree || []).filter(item => item.type === 'blob' && item.path.startsWith(normOld)).length;
+        if (count === 0 && fallbackRepo !== repo) {
+          targetRepo = fallbackRepo;
+        }
+      }
+
+      const commitSha = await getBranchRef(targetRepo);
+      const parentCommit = await getCommit(commitSha, targetRepo);
+      const resTree = await ghApi('GET', `/git/trees/${parentCommit.tree.sha}?recursive=1`, undefined, targetRepo);
+      if (!resTree.ok) throw new Error("Failed to fetch repository tree");
+      const fullTree = await resTree.json();
+
       const affectedFiles = (fullTree.tree || []).filter(item => item.type === 'blob' && item.path.startsWith(normOld));
-      if (affectedFiles.length === 0) throw new Error("No files found in folder to rename");
+      if (affectedFiles.length === 0) throw new Error(`No files found in folder ${normOld} to rename`);
 
       const treeItems = [];
       for (const file of affectedFiles) {
@@ -721,11 +764,11 @@ export default async function handler(req, res) {
         treeItems.push({ path: newFilePath, mode: '100644', type: 'blob', sha: file.sha });
       }
 
-      const newTreeSha = await createTree(parentCommit.tree.sha, treeItems);
-      const newCommitSha = await createCommit(`admin: rename folder ${normOld} to ${normNew}`, newTreeSha, [commitSha]);
-      await updateRef(newCommitSha);
-      await logAdminAction('rename_folder', { old: normOld, new: normNew, count: affectedFiles.length });
-      return res.status(200).json({ success: true });
+      const newTreeSha = await createTree(parentCommit.tree.sha, treeItems, targetRepo);
+      const newCommitSha = await createCommit(`admin: rename folder ${normOld} to ${normNew}`, newTreeSha, [commitSha], targetRepo);
+      await updateRef(newCommitSha, targetRepo);
+      await logAdminAction('rename_folder', { old: normOld, new: normNew, count: affectedFiles.length, repo: targetRepo });
+      return res.status(200).json({ success: true, repo: targetRepo });
     }
 
     if (action === 'add_admin' || action === 'remove_admin' || action === 'ban_user') {
