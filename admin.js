@@ -2183,7 +2183,7 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
           } else if (targetId === 'viewDocs') {
             const iframe = document.getElementById('docsEmbedIframe');
             if (iframe && (!iframe.getAttribute('src') || iframe.getAttribute('src') === 'about:blank')) {
-              iframe.setAttribute('src', '/docs.html?embed=admin');
+              iframe.setAttribute('src', '/docs?embed=admin');
             }
           }
         }
