@@ -8,8 +8,8 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="shortcut icon" href="/favicon.ico">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link rel="stylesheet" href="/tokens.css?v=1.9">
-<link rel="stylesheet" href="/index-styles.css?v=1.9">
+<link rel="stylesheet" href="/tokens.css?v=2.2">
+<link rel="stylesheet" href="/index-styles.css?v=2.2">
 </head>
 <body>
 
@@ -266,6 +266,34 @@
       </button>
     </div>
   </div>
+  
+  <!-- Dedicated Retro Academic Module Loader Overlay -->
+  <div id="iframeLoader" class="iframe-loader">
+    <div class="iframe-loader-box">
+      <div class="loader-badge">
+        <span class="loader-dot"></span>
+        <span>MR. CAPSULES // ACADEMIC REPOSITORY</span>
+      </div>
+      <div class="loader-module-title" id="loaderModuleName">MEMUAT MODUL...</div>
+      
+      <!-- Retro Segmented Progress Bar -->
+      <div class="retro-progress-wrap">
+        <div class="retro-progress-bar" id="loaderProgressBar"></div>
+      </div>
+      
+      <div class="loader-status-row">
+        <span id="loaderStatusText">STREAMING VIA GLOBAL EDGE CDN...</span>
+        <span id="loaderPercentText">0%</span>
+      </div>
+      
+      <div class="loader-meta-tags">
+        <span class="loader-tag">OFFBIT PROTOCOL</span>
+        <span class="loader-tag">DECRYPTED CBT</span>
+        <span class="loader-tag">V2.4</span>
+      </div>
+    </div>
+  </div>
+
   <iframe id="viewerFrame" src=""></iframe>
 </div>
 
@@ -1248,6 +1276,15 @@ const iframeTitle = document.getElementById('iframeTitle');
 let currentViewerIndex = -1;
 let activeModuleAbortController = null;
 
+function setIframeProgress(percent, statusText) {
+  const bar = document.getElementById('loaderProgressBar');
+  const txt = document.getElementById('loaderStatusText');
+  const pct = document.getElementById('loaderPercentText');
+  if (bar) bar.style.width = percent + '%';
+  if (txt && statusText) txt.textContent = statusText;
+  if (pct) pct.textContent = Math.round(percent) + '%';
+}
+
 async function openFile(path, name, index = -1) {
   if (isCurrentUserGuest) {
     let views = parseInt(localStorage.getItem('mr_guest_views') || '0', 10);
@@ -1268,7 +1305,14 @@ async function openFile(path, name, index = -1) {
   currentViewerIndex = index;
   updateNextFileButton();
 
-  // Reset frame and show interactive dark loader
+  // Show themed retro module loader
+  const iframeLoader = document.getElementById('iframeLoader');
+  if (iframeLoader) iframeLoader.classList.remove('hidden');
+  const modTitle = document.getElementById('loaderModuleName');
+  if (modTitle) modTitle.textContent = name.toUpperCase();
+  setIframeProgress(22, 'CONNECTING TO CONTENT ROUTE...');
+
+  // Reset frame with matching Creamy Avocado & French Blue fallback
   viewerFrame.src = 'about:blank';
   viewerFrame.srcdoc = `<!DOCTYPE html>
 <html>
@@ -1276,32 +1320,77 @@ async function openFile(path, name, index = -1) {
   <meta charset="utf-8">
   <style>
     body {
-      background: #0f121d;
-      color: #94a3b8;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #DCF4A2;
+      color: #0055A4;
+      font-family: monospace, sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       height: 100vh;
       margin: 0;
-      gap: 14px;
+      gap: 16px;
+      user-select: none;
     }
-    .spin {
-      width: 32px;
-      height: 32px;
-      border: 3px solid rgba(255,255,255,0.08);
-      border-top-color: #38bdf8;
-      border-radius: 50%;
-      animation: s 0.8s linear infinite;
+    .box {
+      background: #C7E885;
+      border: 1.5px solid #0055A4;
+      border-radius: 8px;
+      padding: 24px 32px;
+      text-align: center;
+      box-shadow: 4px 4px 0px #0055A4;
+      max-width: 420px;
+      width: 85%;
     }
-    @keyframes s { to { transform: rotate(360deg); } }
-    .msg { font-size: 13px; font-weight: 600; letter-spacing: 1px; color: #cbd5e1; }
+    .badge {
+      display: inline-block;
+      border: 1.5px solid #0055A4;
+      border-radius: 99px;
+      padding: 3px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+    .title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 14px;
+    }
+    .bar {
+      height: 14px;
+      border: 1.5px solid #0055A4;
+      border-radius: 3px;
+      padding: 2px;
+      background: #DCF4A2;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    .fill {
+      height: 100%;
+      background: repeating-linear-gradient(90deg, #0055A4, #0055A4 6px, transparent 6px, transparent 10px);
+      animation: fillAnim 1.4s ease-in-out infinite;
+    }
+    @keyframes fillAnim {
+      0% { width: 15%; }
+      50% { width: 75%; }
+      100% { width: 95%; }
+    }
+    .sub {
+      font-size: 11px;
+      opacity: 0.85;
+      letter-spacing: 0.5px;
+    }
   </style>
 </head>
 <body>
-  <div class="spin"></div>
-  <div class="msg">MEMUAT MODUL...</div>
+  <div class="box">
+    <div class="badge">MR. CAPSULES // VIEWER</div>
+    <div class="title">MEMUAT MODUL PEMBELAJARAN...</div>
+    <div class="bar"><div class="fill"></div></div>
+    <div class="sub">STREAMING DATA DARI CDN EDGE...</div>
+  </div>
 </body>
 </html>`;
 
@@ -1339,6 +1428,8 @@ async function openFile(path, name, index = -1) {
     let successfulUrl = null;
     let lastErr = null;
 
+    setIframeProgress(48, 'FETCHING ASSET DARI GLOBAL CDN...');
+
     for (const target of urlsToTry) {
       try {
         const fetchPromise = fetch(target.url, { signal });
@@ -1363,6 +1454,8 @@ async function openFile(path, name, index = -1) {
       throw new Error(`Gagal memuat modul: ${lastErr ? lastErr.message : 'File tidak ditemukan di CDN maupun GitHub'}`);
     }
 
+    setIframeProgress(86, 'DECRYPTING & RENDERING VIEW...');
+
     // Determine base URL directory for resolving relative images and styles inside iframe
     let baseHref = '';
     if (successfulUrl) {
@@ -1378,16 +1471,92 @@ async function openFile(path, name, index = -1) {
       }
     }
 
+    setIframeProgress(100, 'PROTOKOL SELESAI // DOKUMEN AKTIF');
+    
+    const hideLoader = () => {
+      if (iframeLoader) iframeLoader.classList.add('hidden');
+    };
+    viewerFrame.addEventListener('load', hideLoader, { once: true });
     viewerFrame.srcdoc = htmlText;
+    setTimeout(hideLoader, 300);
   } catch (err) {
     if (err.name === 'AbortError') return;
     console.error("Failed to load module:", err);
+    if (iframeLoader) iframeLoader.classList.add('hidden');
     viewerFrame.srcdoc = `<!DOCTYPE html>
 <html>
-<body style="background:#0f121d;color:#ef4444;font-family:sans-serif;padding:32px;line-height:1.6;">
-  <h3 style="margin-top:0;">Gagal Memuat Modul</h3>
-  <p style="color:#94a3b8;">${err.message}</p>
-  <button onclick="location.reload()" style="padding:8px 16px;background:#1e293b;color:#f1f5f9;border:1px solid #334155;border-radius:6px;cursor:pointer;">Muat Ulang</button>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      background: #DCF4A2;
+      color: #0055A4;
+      font-family: monospace, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      padding: 24px;
+      box-sizing: border-box;
+      user-select: none;
+    }
+    .card {
+      background: #C7E885;
+      border: 1.5px solid #0055A4;
+      border-radius: 8px;
+      padding: 28px 32px;
+      max-width: 460px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 4px 4px 0px #0055A4;
+    }
+    .badge {
+      display: inline-block;
+      background: #003870;
+      color: #DCF4A2;
+      border-radius: 99px;
+      padding: 3px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 14px;
+    }
+    h2 {
+      margin: 0 0 10px 0;
+      font-size: 1.25rem;
+      color: #003870;
+      letter-spacing: 0.5px;
+    }
+    p {
+      font-size: 12px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      opacity: 0.9;
+    }
+    .btn {
+      background: #0055A4;
+      color: #DCF4A2;
+      border: 1.5px solid #003870;
+      padding: 8px 22px;
+      border-radius: 99px;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 2px 2px 0px #003870;
+    }
+    .btn:hover { background: #003870; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="badge">PROTOCOL ALERT // ASSET NOT FOUND</div>
+    <h2>GAGAL MEMUAT MODUL</h2>
+    <p>${err.message}</p>
+    <button class="btn" onclick="location.reload()">Coba Muat Ulang</button>
+  </div>
 </body>
 </html>`;
   }
@@ -1423,6 +1592,8 @@ function updateNextFileButton() {
 document.getElementById('btnIframeBack').addEventListener('click', () => {
   if (activeModuleAbortController) activeModuleAbortController.abort();
   iframeViewer.classList.remove('active');
+  const iframeLoader = document.getElementById('iframeLoader');
+  if (iframeLoader) iframeLoader.classList.add('hidden');
   viewerFrame.src = 'about:blank';
   viewerFrame.srcdoc = '';
   if (document.fullscreenElement) document.exitFullscreen();
