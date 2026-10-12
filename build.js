@@ -47,7 +47,8 @@ function copyStaticAssets(publicDir) {
       file === '.agents' ||
       file === 'scratch' ||
       file === 'content' ||
-      file === 'cover'
+      file === 'cover' ||
+      file === 'build.js'
     ) {
       return;
     }
@@ -98,9 +99,18 @@ function build() {
 
     let covers = [];
     if (coversDir && fs.existsSync(coversDir)) {
-      covers = fs.readdirSync(coversDir).filter(f => 
-        f.endsWith('.png') || f.endsWith('.jpg') || f.endsWith('.jpeg') || f.endsWith('.gif')
-      );
+      const maxCoverBytes = 1.5 * 1024 * 1024; // 1.5 MB threshold to ensure fast, stutter-free loading
+      covers = fs.readdirSync(coversDir).filter(f => {
+        const isImg = f.endsWith('.png') || f.endsWith('.jpg') || f.endsWith('.jpeg') || f.endsWith('.gif');
+        if (!isImg) return false;
+        try {
+          const sz = fs.statSync(path.join(coversDir, f)).size;
+          return sz <= maxCoverBytes;
+        } catch(e) {
+          return false;
+        }
+      });
+      console.log(`Included ${covers.length} lightweight web-optimized covers (<1.5MB) from pool.`);
     }
 
     const allHtmlPaths = contentDir && fs.existsSync(contentDir) ? walkDir(contentDir) : [];

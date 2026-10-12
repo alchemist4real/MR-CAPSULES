@@ -442,12 +442,81 @@ if (perfToggleCb) {
   });
 }
 
-/* ══ KLIPY GIF & ADS STREAM ENGINE ══ */
+/* ══ KLIPY GIF & ADS STREAM ENGINE (HIGH SPEED) ══ */
 const KLIPY_APP_KEY = 'qUbWlJZVfjk1dLpW89qJ48lZW8KFxMAl6sBCCwUfbtfwlUCuw585ISUTqJmCvULt';
+const KLIPY_CACHE_KEY = 'mr_klipy_cache_v2';
+const KLIPY_CACHE_TTL = 3 * 3600 * 1000; // 3 hours
+
 let isKlipyEnabled = true;
 try {
   isKlipyEnabled = localStorage.getItem('mr_klipy_enabled') !== 'off';
 } catch(e) {}
+
+let klipyPool = [];
+let klipyAdsPool = [];
+
+// Synchronously restore from cache for instant 0ms startup!
+try {
+  const cachedStr = localStorage.getItem(KLIPY_CACHE_KEY);
+  if (cachedStr) {
+    const cached = JSON.parse(cachedStr);
+    if (cached && (Date.now() - (cached.timestamp || 0) < KLIPY_CACHE_TTL)) {
+      if (Array.isArray(cached.gifs) && cached.gifs.length > 0) {
+        klipyPool = cached.gifs;
+      }
+      if (Array.isArray(cached.ads) && cached.ads.length > 0) {
+        klipyAdsPool = cached.ads;
+      }
+    }
+  }
+} catch(e) {}
+
+// Blacklist of heavy uncompressed legacy GIF files (>1.5MB - up to 27MB) to prevent browser stall
+const HEAVY_COVERS_BLACKLIST = new Set([
+  'cover/893ac87fd8990ed431a5efd725b2a85d.gif',
+  'cover/74c9011f548ab30c6b30b6bb13223459.gif',
+  'cover/f56c730553fe1b0cf65d580c6b0dd004.gif',
+  'cover/f22635607bc881102b9c56c9e9f1ffda.gif',
+  'cover/4cb674823cbbec913fc84e3ebd124f0a.gif',
+  'cover/e562ce67a72222111d0688e1d9f65363.gif',
+  'cover/53e37ccab2be67cdc7e348c610d95bc6.gif',
+  'cover/b6123030f575bd0ec055c62550c153f0.gif',
+  'cover/c899dae38c04f739889622ebfc9a1553.gif',
+  'cover/7ddb507496f96111d9ee7252ddd9fd26.gif',
+  'cover/ca0ca2b69536cfa0c5872bb8623cad92.gif',
+  'cover/4ed8fdf6c981cfc40e8ec53aa6ee34cd.gif',
+  'cover/cad0ee1e064aacd78eeaadbad7e73de1.gif',
+  'cover/a46cc8c58bdfd2422b1a0c86546b1643.gif',
+  'cover/a809f592065ad3c366f9b97a699e3af1.gif',
+  'cover/f1795f03d3d96c09bbbd448f8f01856c.gif',
+  'cover/6ec59a46147bb7e1e21a748cb4ac63bd.gif',
+  'cover/f3703c12d72a12dabc9a804516b24708.gif',
+  'cover/764a31edb8e34d6b560d57eadaddffd3.gif',
+  'cover/432797c8fdde0ab37156d61908e39a23.gif',
+  'cover/05c48a6432e80f26141a5af542c9e1c7.gif',
+  'cover/cf12abf0721dd0104c96a6dfe615f853.gif',
+  'cover/40a5717e164e4aae7339ca73739bb89f.gif',
+  'cover/50479fc45011cab8fba096e42d00ed25.gif',
+  'cover/72d374167a5a04a3607d95a470798e55.gif',
+  'cover/d71d256d9f9889cb4927ffa598046644.gif',
+  'cover/e355dd57b792b4cef6f62d744b1608ce.gif',
+  'cover/04094a2a2088424b488e130b94859bc1.gif'
+]);
+
+function isLightweightCover(path) {
+  if (!path) return false;
+  return !HEAVY_COVERS_BLACKLIST.has(path.replace(/^\/+/, ''));
+}
+
+function updateCoversPool() {
+  const staticCovers = (rawData?.covers || []).filter(isLightweightCover);
+  if (isKlipyEnabled && klipyPool.length > 0) {
+    covers = [...klipyPool, ...staticCovers];
+  } else {
+    covers = staticCovers.length > 0 ? staticCovers : [...klipyPool];
+  }
+  if (window.appData) window.appData.covers = covers;
+}
 
 const klipyToggleCb = document.getElementById('klipyToggleCb');
 if (klipyToggleCb) {
@@ -455,58 +524,97 @@ if (klipyToggleCb) {
   klipyToggleCb.addEventListener('change', (e) => {
     isKlipyEnabled = e.target.checked;
     try { localStorage.setItem('mr_klipy_enabled', isKlipyEnabled ? 'on' : 'off'); } catch(e) {}
-    if (isKlipyEnabled) {
+    updateCoversPool();
+    if (catalog && catalog.length > 0) loadCatalog(catalog, cur);
+    if (isKlipyEnabled && klipyPool.length === 0) {
       initKlipyGifs();
-    } else {
-      if (rawData && rawData.covers) {
-        covers = [...rawData.covers];
-        if (catalog && catalog.length > 0) loadCatalog(catalog, cur);
-      }
     }
   });
 }
-
-let klipyPool = [];
-let klipyAdsPool = [];
 
 async function initKlipyGifs() {
   if (!isKlipyEnabled || isLowPerfMode) return;
   try {
     const params = new URLSearchParams({
-      limit: '24',
+      limit: '28',
       'ad-position': '1',
       'ad-min-width': '200',
       'ad-max-width': '640',
       'ad-min-height': '150',
       'ad-max-height': '350'
     });
-    // Direct client fetch to preserve client IP & User-Agent for programmatic ad monetization
-    const res = await fetch(`https://api.klipy.com/api/v1/${KLIPY_APP_KEY}/gifs/trending?${params.toString()}`);
-    if (!res.ok) return;
 
-    const data = await res.json();
-    const items = data.data?.data || [];
-    
+    let items = [];
+    // 1. Try high-speed cached proxy first
+    try {
+      const res = await fetch(`/api/klipy?action=trending&${params.toString()}`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json && json.items && json.items.length) {
+          items = json.items;
+        }
+      }
+    } catch(err) {}
+
+    // 2. Direct fallback to Klipy API if proxy fails
+    if (!items.length) {
+      const res = await fetch(`https://api.klipy.com/api/v1/${KLIPY_APP_KEY}/gifs/trending?${params.toString()}`);
+      if (res.ok) {
+        const json = await res.json();
+        const rawItems = json.data?.data || [];
+        items = rawItems.map(item => {
+          const isAd = item.type === 'ad';
+          const file = item.file || {};
+          const fastUrl = file.sm?.webp?.url || file.sm?.gif?.url || file.md?.webp?.url || file.md?.gif?.url || item.url || '';
+          return {
+            id: item.id,
+            type: item.type || 'gif',
+            is_ad: isAd,
+            title: item.title,
+            fast_url: fastUrl,
+            gif_url: fastUrl,
+            thumb_url: fastUrl,
+            blur_preview: item.blur_preview || null,
+            click_url: item.click_url || item.target_url || item.url,
+            file: file
+          };
+        });
+      }
+    }
+
+    if (!items.length) return;
+
     const newGifs = [];
+    const newAds = [];
     items.forEach(item => {
-      if (item.type === 'ad') {
-        klipyAdsPool.push(item);
-      } else if (item.file) {
-        const gifUrl = item.file.hd?.gif?.url || item.file.md?.gif?.url || item.file.sm?.gif?.url;
-        if (gifUrl) newGifs.push(gifUrl);
+      if (item.is_ad || item.type === 'ad') {
+        newAds.push(item);
+      } else {
+        const u = item.fast_url || item.gif_url || item.thumb_url;
+        if (u) newGifs.push(u);
       }
     });
 
     if (newGifs.length > 0) {
+      const prevCount = klipyPool.length;
       klipyPool = newGifs;
-      covers = [...klipyPool, ...(rawData?.covers || [])];
-      if (window.appData) window.appData.covers = covers;
-      if (catalog && catalog.length > 0) {
+      klipyAdsPool = newAds;
+
+      try {
+        localStorage.setItem(KLIPY_CACHE_KEY, JSON.stringify({
+          timestamp: Date.now(),
+          gifs: klipyPool,
+          ads: klipyAdsPool
+        }));
+      } catch(e) {}
+
+      updateCoversPool();
+      if (prevCount === 0 && catalog && catalog.length > 0) {
         loadCatalog(catalog, cur);
       }
     }
   } catch(e) {
-    console.log('[Klipy] Fallback to static CDN covers:', e.message);
+    console.log('[Klipy] Fallback to lightweight CDN covers:', e.message);
   }
 }
 
@@ -574,7 +682,7 @@ let isFlatMode = false;
 
 function applyData(data) {
   rawData = data;
-  covers = data.covers || [];
+  updateCoversPool();
   
   if (isFlatMode) {
     navHistory = [];
@@ -647,11 +755,11 @@ function loadCatalog(newCatalog, restoreIndex = -1) {
     }
   });
 
-  // Inject Klipy sponsored Ad item into catalog stream if available
+  // Inject Klipy sponsored Ad item into catalog stream if available (using fast animated format)
   if (klipyAdsPool.length > 0 && !isLowPerfMode && catalog.length >= 3 && !catalog.some(c => c.isAd)) {
     const ad = klipyAdsPool[Math.floor(Math.random() * klipyAdsPool.length)];
     const adFile = ad.file || {};
-    const adGif = adFile.hd?.gif?.url || adFile.md?.gif?.url || adFile.sm?.gif?.url || ad.url;
+    const adGif = ad.fast_url || ad.gif_url || adFile.sm?.webp?.url || adFile.sm?.gif?.url || adFile.md?.webp?.url || ad.url;
     if (adGif) {
       const adItem = {
         id: 'ad-' + (ad.id || Date.now()),
@@ -670,20 +778,44 @@ function loadCatalog(newCatalog, restoreIndex = -1) {
 
 function buildCoverflow(startIndex) {
   cf.innerHTML = '';
+  const N = catalog.length;
+  const initialCur = (startIndex >= 0 && startIndex < N) ? startIndex : Math.floor(N / 2);
+
   cards = catalog.map((item, i) => {
     const el = document.createElement('div');
     el.className = 'card type-' + item.type + (item.isAd ? ' is-ad' : '');
     
     let metaText = '';
     if (item.isAd) metaText = "Sponsored Advertisement";
-    else if (item.type === 'semester') metaText = `${item.blocks.length} Blocks`;
-    else if (item.type === 'block') metaText = `${item.categories.length} Categories`;
-    else if (item.type === 'category') metaText = `${item.files.length} Files`;
+    else if (item.type === 'semester') metaText = `${item.blocks ? item.blocks.length : 0} Blocks`;
+    else if (item.type === 'block') metaText = `${item.categories ? item.categories.length : 0} Categories`;
+    else if (item.type === 'category') metaText = `${item.files ? item.files.length : 0} Files`;
     else if (item.type === 'file') metaText = "HTML File";
+
+    let off = ((i - initialCur % N + N) % N);
+    if (off > Math.floor(N / 2)) off -= N;
+    const isInitiallyNear = Math.abs(off) <= 2;
+
+    const coverUrl = item.cover ? getContentCdnUrl(item.cover) : '';
+    let artHtml = '<div class="art-dot-grid"></div>';
+
+    if (coverUrl) {
+      const initialSrc = isInitiallyNear ? coverUrl : '';
+      const fallbackAttr = `if(!this.dataset.triedRaw){this.dataset.triedRaw='1';this.src='https://raw.githubusercontent.com/alchemist4real/MR-CAPSULES-CONTENT/main/'+encodeURI('${item.cover.replace(/^\/+/, '')}');}`;
+      artHtml = `
+        <img class="art-bg ${isInitiallyNear ? 'loaded' : 'lazy'}"
+             ${initialSrc ? `src="${initialSrc}"` : ''}
+             data-src="${coverUrl}"
+             alt="cover"
+             loading="eager"
+             decoding="async"
+             onerror="${fallbackAttr}">
+      `;
+    }
 
     el.innerHTML = `
       <div class="art">
-        ${item.cover ? `<img class="art-bg" src="${getContentCdnUrl(item.cover)}" alt="cover" loading="lazy" onerror="if(!this.dataset.triedRaw){this.dataset.triedRaw='1';this.src='https://raw.githubusercontent.com/alchemist4real/MR-CAPSULES-CONTENT/main/'+encodeURI('${item.cover.replace(/^\/+/, '')}');}">` : `<div class="art-dot-grid"></div>`}
+        ${artHtml}
         ${item.isAd ? `<div class="klipy-ad-badge" style="position:absolute; top:8px; right:8px; background:#eab308; color:#000; font-size:9px; font-weight:800; padding:2px 6px; border-radius:4px; z-index:5;">SPONSORED</div>` : ''}
       </div>
       <div class="card-label">
@@ -704,11 +836,7 @@ function buildCoverflow(startIndex) {
   });
   
   if (catalog.length > 0) {
-    if (startIndex >= 0 && startIndex < catalog.length) {
-      go(startIndex);
-    } else {
-      go(Math.floor(catalog.length / 2));
-    }
+    go(initialCur);
   } else {
     document.getElementById('nowSong').textContent = "No Content Found";
     document.getElementById('nowArtist').textContent = "Empty directory";
@@ -966,6 +1094,16 @@ function apply(anim, tiltZ = 0){
     el.style.zIndex       = s.zi;
     el.style.pointerEvents= Math.abs(off)<=2?'auto':'none';
     el.classList.toggle('card-active', off===0);
+
+    // Dynamic Proximity Hydration: load image as soon as card approaches visible center (|off| <= 2)
+    if (Math.abs(off) <= 2) {
+      const img = el.querySelector('.art-bg[data-src]');
+      if (img && (!img.src || img.src === window.location.href || img.classList.contains('lazy'))) {
+        img.src = img.dataset.src;
+        img.classList.remove('lazy');
+        img.classList.add('loaded');
+      }
+    }
   });
 }
 

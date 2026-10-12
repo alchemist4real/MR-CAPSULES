@@ -57,13 +57,15 @@ export default async function handler(req, res) {
     const data = await response.json();
     const items = data.data?.data || [];
 
-    // Format items for easy frontend consumption
+    // Format items for fast streaming (prioritizing 20-70KB sm.webp/sm.gif instead of 3MB+ hd.gif)
     const formatted = items.map(item => {
       const isAd = item.type === 'ad';
       const file = item.file || {};
-      const gifUrl = file.hd?.gif?.url || file.md?.gif?.url || file.sm?.gif?.url || item.url || '';
-      const webpUrl = file.hd?.webp?.url || file.md?.webp?.url || file.sm?.webp?.url || '';
-      const thumbUrl = file.sm?.webp?.url || file.sm?.gif?.url || file.sm?.jpg?.url || gifUrl;
+      const fastUrl = file.sm?.webp?.url || file.sm?.gif?.url || file.md?.webp?.url || file.md?.gif?.url || item.url || '';
+      const gifUrl = fastUrl;
+      const webpUrl = file.sm?.webp?.url || file.md?.webp?.url || file.hd?.webp?.url || '';
+      const hdUrl = file.hd?.webp?.url || file.hd?.gif?.url || file.md?.gif?.url || fastUrl;
+      const thumbUrl = file.sm?.webp?.url || file.sm?.gif?.url || file.sm?.jpg?.url || fastUrl;
 
       return {
         id: item.id,
@@ -71,20 +73,22 @@ export default async function handler(req, res) {
         is_ad: isAd,
         title: item.title || (isAd ? 'Sponsored' : 'Klipy GIF'),
         slug: item.slug || '',
+        fast_url: fastUrl,
         gif_url: gifUrl,
         webp_url: webpUrl,
+        hd_url: hdUrl,
         thumb_url: thumbUrl,
         click_url: item.click_url || item.target_url || item.url || null,
         dimensions: {
-          width: file.hd?.gif?.width || file.md?.gif?.width || 480,
-          height: file.hd?.gif?.height || file.md?.gif?.height || 270
+          width: file.sm?.webp?.width || file.sm?.gif?.width || file.md?.gif?.width || 360,
+          height: file.sm?.webp?.height || file.sm?.gif?.height || file.md?.gif?.height || 200
         },
         blur_preview: item.blur_preview || null,
         raw: item
       };
     });
 
-    res.setHeader('Cache-Control', 's-maxage=120, stale-while-revalidate=300');
+    res.setHeader('Cache-Control', 's-maxage=600, stale-while-revalidate=86400');
     return res.status(200).json({
       success: true,
       action,

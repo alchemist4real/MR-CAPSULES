@@ -215,10 +215,12 @@ export default async function handler(req, res) {
       };
     });
 
-    const coversFiles = data.tree.filter(item => 
+    const maxCoverBytes = 1.5 * 1024 * 1024;
+    const coversFiles = (treeData || []).filter(item => 
       item.type === 'blob' && 
       item.path.startsWith('cover/') && 
-      (item.path.endsWith('.png') || item.path.endsWith('.jpg') || item.path.endsWith('.jpeg') || item.path.endsWith('.gif'))
+      (item.path.endsWith('.png') || item.path.endsWith('.jpg') || item.path.endsWith('.jpeg') || item.path.endsWith('.gif')) &&
+      (!item.size || item.size <= maxCoverBytes)
     );
     const covers = coversFiles.map(c => c.path);
 
