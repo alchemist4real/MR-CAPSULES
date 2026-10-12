@@ -2158,11 +2158,10 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
     };
 
     // Tabs Logic
-    document.querySelectorAll('.tab').forEach(t => {
-      t.onclick = (e) => {
-        const targetTab = e.currentTarget;
-        const targetId = targetTab.getAttribute('data-target');
-        if (!targetId) return; // Allow default link behavior for tabs without data-target (e.g. docs link)
+    function activateTab(targetId) {
+      if (!targetId) return;
+      const targetTab = document.querySelector(`.tab[data-target="${targetId}"]`);
+      if (targetTab) {
         document.querySelectorAll('.tab').forEach(tx => tx.classList.remove('active'));
         document.querySelectorAll('.view-section, .view-section-row').forEach(vx => vx.classList.remove('active'));
         targetTab.classList.add('active');
@@ -2181,10 +2180,55 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
             if (typeof window.loadUsers === 'function') window.loadUsers();
           } else if (targetId === 'viewTasks') {
             if (typeof window.loadTasks === 'function') window.loadTasks();
+          } else if (targetId === 'viewDocs') {
+            const iframe = document.getElementById('docsEmbedIframe');
+            if (iframe && (!iframe.getAttribute('src') || iframe.getAttribute('src') === 'about:blank')) {
+              iframe.setAttribute('src', '/docs.html?embed=admin');
+            }
           }
         }
+      }
+    }
+    window.activateTabById = activateTab;
+
+    document.querySelectorAll('.tab').forEach(t => {
+      t.onclick = (e) => {
+        const targetTab = e.currentTarget;
+        const targetId = targetTab.getAttribute('data-target');
+        if (!targetId) return; // Allow default link behavior for tabs without data-target (e.g. docs link)
+        activateTab(targetId);
       };
     });
+
+    // Deep link support via hash or URL param (?tab=docs / #docs)
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const requestedTab = urlParams.get('tab') || urlParams.get('view') || (window.location.hash ? window.location.hash.replace('#', '') : '');
+      if (requestedTab) {
+        const tabMap = {
+          'docs': 'viewDocs',
+          'viewdocs': 'viewDocs',
+          'dashboard': 'viewDashboard',
+          'viewdashboard': 'viewDashboard',
+          'files': 'viewFiles',
+          'viewfiles': 'viewFiles',
+          'users': 'viewUsers',
+          'team': 'viewUsers',
+          'viewusers': 'viewUsers',
+          'tasks': 'viewTasks',
+          'viewtasks': 'viewTasks',
+          'apikeys': 'viewApiKeys',
+          'keys': 'viewApiKeys',
+          'viewapikeys': 'viewApiKeys'
+        };
+        const mappedView = tabMap[requestedTab.toLowerCase()];
+        if (mappedView) {
+          setTimeout(() => activateTab(mappedView), 50);
+        }
+      }
+    } catch(err) {
+      console.warn('Tab deep-link check error:', err);
+    }
 
     // Users Logic
     window.loadUsers = loadUsers;
