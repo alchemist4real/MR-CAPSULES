@@ -172,12 +172,12 @@ export default async function handler(req, res) {
       }
 
       let category = 'Other';
-      let name = fileName.replace('.html', '');
+      let name = fileName.replace('.html', '').trim();
       
       if (fileName.includes('_')) {
         const fileParts = fileName.split('_');
-        category = fileParts[0];
-        name = fileParts.slice(1).join('_').replace('.html', '');
+        category = fileParts[0].trim();
+        name = fileParts.slice(1).join('_').replace('.html', '').trim();
       }
 
       flatFiles.push({

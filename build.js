@@ -135,12 +135,12 @@ function build() {
       }
 
       let category = "Other";
-      let name = fileName.replace('.html', '');
+      let name = fileName.replace('.html', '').trim();
       
       if (fileName.includes('_')) {
         const fileParts = fileName.split('_');
-        category = fileParts[0];
-        name = fileParts.slice(1).join('_').replace('.html', '');
+        category = fileParts[0].trim();
+        name = fileParts.slice(1).join('_').replace('.html', '').trim();
       }
 
       flatFiles.push({
@@ -222,6 +222,17 @@ function build() {
     fs.writeFileSync(path.join(publicDir, 'data.js'), jsContent);
 
     copyStaticAssets(publicDir);
+
+    // Inject build timestamp into public/app.html data.js script tag for guaranteed cache busting
+    const publicAppHtml = path.join(publicDir, 'app.html');
+    if (fs.existsSync(publicAppHtml)) {
+      let appHtmlContent = fs.readFileSync(publicAppHtml, 'utf8');
+      appHtmlContent = appHtmlContent.replace(
+        /<script src="data\.js[^"]*"><\/script>/g,
+        `<script src="data.js?v=${Date.now()}"></script>`
+      );
+      fs.writeFileSync(publicAppHtml, appHtmlContent);
+    }
 
     console.log(`Successfully generated catalog (${flatFiles.length} files) and copied all static assets to public/`);
   } catch (err) {

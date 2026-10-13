@@ -305,7 +305,7 @@
   <iframe id="viewerFrame" src=""></iframe>
 </div>
 
-<script src="data.js"></script>
+<script src="data.js?v=1791907219299"></script>
 <script>
 /* ══ PERSONA ENGINE ══ */
 const personaToggles = document.querySelectorAll('.persona-btn');
@@ -1487,26 +1487,27 @@ async function openFile(path, name, index = -1) {
     const fallbackRepo = 'MR-CAPSULES';
     const owner = 'alchemist4real';
 
+    const cacheBuster = `?t=${Date.now()}`;
     const urlsToTry = [];
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      urlsToTry.push({ url: `/${encodedPath}`, type: 'local' });
+      urlsToTry.push({ url: `/${encodedPath}${cacheBuster}`, type: 'local' });
     }
     urlsToTry.push({
-      url: `https://cdn.jsdelivr.net/gh/${owner}/${primaryRepo}@main/${encodedPath}`,
+      url: `https://cdn.jsdelivr.net/gh/${owner}/${primaryRepo}@main/${encodedPath}${cacheBuster}`,
       type: 'jsdelivr'
     });
     urlsToTry.push({
-      url: `https://raw.githubusercontent.com/${owner}/${primaryRepo}/main/${encodedPath}`,
+      url: `https://raw.githubusercontent.com/${owner}/${primaryRepo}/main/${encodedPath}${cacheBuster}`,
       type: 'raw-primary'
     });
     if (primaryRepo !== fallbackRepo) {
       urlsToTry.push({
-        url: `https://raw.githubusercontent.com/${owner}/${fallbackRepo}/main/${encodedPath}`,
+        url: `https://raw.githubusercontent.com/${owner}/${fallbackRepo}/main/${encodedPath}${cacheBuster}`,
         type: 'raw-fallback'
       });
     }
     urlsToTry.push({
-      url: `/api/content?file=${encodedPath}`,
+      url: `/api/content?file=${encodedPath}&t=${Date.now()}`,
       type: 'api-proxy'
     });
 
@@ -1518,7 +1519,11 @@ async function openFile(path, name, index = -1) {
 
     for (const target of urlsToTry) {
       try {
-        const fetchPromise = fetch(target.url, { signal });
+        const fetchPromise = fetch(target.url, {
+          signal,
+          cache: 'no-cache',
+          headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+        });
         const timeoutMs = target.type === 'jsdelivr' ? 4000 : 7000;
         const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeoutMs));
         const res = await Promise.race([fetchPromise, timeoutPromise]);
@@ -1545,8 +1550,9 @@ async function openFile(path, name, index = -1) {
     // Determine base URL directory for resolving relative images and styles inside iframe
     let baseHref = '';
     if (successfulUrl) {
-      const lastSlashIndex = successfulUrl.lastIndexOf('/');
-      baseHref = lastSlashIndex >= 0 ? successfulUrl.substring(0, lastSlashIndex + 1) : '';
+      const cleanUrl = successfulUrl.split('?')[0];
+      const lastSlashIndex = cleanUrl.lastIndexOf('/');
+      baseHref = lastSlashIndex >= 0 ? cleanUrl.substring(0, lastSlashIndex + 1) : '';
     }
 
     if (baseHref && !htmlText.includes('<base ') && !htmlText.includes('<base>')) {

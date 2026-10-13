@@ -144,7 +144,10 @@ export default async function handler(req, res) {
         'Authorization': `Bearer ${githubToken}`,
         'Accept': 'application/vnd.github.v3+json',
         'User-Agent': 'MR-CAPSULES-ADMIN',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache',
+        'If-None-Match': ''
       },
       body: bodyObj ? JSON.stringify(bodyObj) : undefined
     });
@@ -157,7 +160,10 @@ export default async function handler(req, res) {
           'Authorization': `Bearer ${githubToken}`,
           'Accept': 'application/vnd.github.v3+json',
           'User-Agent': 'MR-CAPSULES-ADMIN',
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache',
+          'If-None-Match': ''
         },
         body: bodyObj ? JSON.stringify(bodyObj) : undefined
       });
