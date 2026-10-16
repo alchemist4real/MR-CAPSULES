@@ -198,6 +198,14 @@
         <div class="toolbar">
           <h2 class="toolbar-header">Analytics & Activity Logs</h2>
           <div style="display:flex; align-items:center; gap:8px;">
+            <button id="btnOpenLogsToolbar" class="btn-unified" onclick="window.openActivityLogsModal()" title="View Activity & Audit Logs">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              <span>Activity Logs</span>
+            </button>
+            <button id="btnOpenContribsToolbar" class="btn-unified" onclick="window.openContributionsModal()" title="View Leaderboard">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+              <span>Leaderboard</span>
+            </button>
             <button id="btnDashCouple" class="btn-unified" onclick="window.openManageCoupleModal()" title="Manage Couple Package">
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
               <span>Couple Package</span>
@@ -228,23 +236,51 @@
             </div>
           </div>
 
-          <!-- Logs & Leaderboard Row -->
-          <div class="dashboard-row">
+          <!-- Interactive Action Hub Cards (No Direct Clutter) -->
+          <div class="dashboard-row" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:16px;">
             
-            <!-- Activity Logs Column -->
-            <div class="card-column">
-              <div class="card-column-header">Hybrid Activity Log (Logins & Live)</div>
-              <div id="activityLogList" class="card-column-body">
-                 <div id="activityPlaceholder" class="placeholder-text">Waiting for activity...</div>
+            <!-- Activity Logs Hub Card -->
+            <div class="card-column" style="padding:22px; display:flex; flex-direction:column; justify-content:space-between; background:var(--bg-card); border:1px solid var(--border-light); border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,0.12);">
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                  <span style="font-size:11px; font-weight:800; color:var(--c3); text-transform:uppercase; letter-spacing:0.08em; font-family:var(--font-primary);">SYSTEM ACTIVITY &amp; AUDIT</span>
+                  <span style="background:rgba(34,197,94,0.15); color:#22c55e; border:1px solid rgba(34,197,94,0.3); font-size:10px; padding:2px 8px; border-radius:10px; font-weight:700;">LIVE PULSE 🟢</span>
+                </div>
+                <h3 style="font-size:18px; font-weight:700; color:var(--text-main); margin:0 0 6px 0;">Activity &amp; Access Logs</h3>
+                <p style="font-size:13px; color:var(--text-muted); margin:0 0 16px 0; line-height:1.45;">
+                  Log teragregasi rapi: riwayat login, registrasi akun &amp; guest baru, status perangkat, dan presence real-time tanpa duplikasi.
+                </p>
+                <div id="dashLatestActivitySnippet" style="font-size:12px; font-family:var(--font-mono); color:var(--c4); background:var(--bg-main); padding:10px 14px; border-radius:6px; border:1px solid var(--border-light); margin-bottom:18px; word-break:break-word;">
+                  Memuat aktivitas terbaru...
+                </div>
               </div>
+              <button id="btnOpenActivityModal" class="btn-unified primary" style="width:100%; justify-content:center; padding:11px 16px; font-weight:700; font-size:13.5px;" onclick="window.openActivityLogsModal()">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                <span>Lihat Activity Logs (Modal)</span>
+              </button>
             </div>
-            
-            <!-- Top Contributors Column -->
-            <div class="card-column">
-               <div class="card-column-header">Top Contributors</div>
-               <div id="leaderboardList" class="card-column-body"></div>
+
+            <!-- Top Contributors Hub Card -->
+            <div class="card-column" style="padding:22px; display:flex; flex-direction:column; justify-content:space-between; background:var(--bg-card); border:1px solid var(--border-light); border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,0.12);">
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                  <span style="font-size:11px; font-weight:800; color:var(--c3); text-transform:uppercase; letter-spacing:0.08em; font-family:var(--font-primary);">LEADERBOARD &amp; REWARDS</span>
+                  <span style="background:rgba(59,130,246,0.15); color:#3b82f6; border:1px solid rgba(59,130,246,0.3); font-size:10px; padding:2px 8px; border-radius:10px; font-weight:700;">POINTS 🏆</span>
+                </div>
+                <h3 style="font-size:18px; font-weight:700; color:var(--text-main); margin:0 0 6px 0;">Top Contributors</h3>
+                <p style="font-size:13px; color:var(--text-muted); margin:0 0 16px 0; line-height:1.45;">
+                  Peringkat kontribusi materi modul, review kurikulum, dan sistem poin reward antar anggota organisasi.
+                </p>
+                <div id="dashTopContributorSnippet" style="font-size:12px; font-family:var(--font-mono); color:var(--c3); background:var(--bg-main); padding:10px 14px; border-radius:6px; border:1px solid var(--border-light); margin-bottom:18px; word-break:break-word;">
+                  Memuat data kontributor...
+                </div>
+              </div>
+              <button id="btnOpenContributionsModal" class="btn-unified primary" style="width:100%; justify-content:center; padding:11px 16px; font-weight:700; font-size:13.5px;" onclick="window.openContributionsModal()">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                <span>Lihat Leaderboard (Modal)</span>
+              </button>
             </div>
-            
+
           </div>
         </div>
 
@@ -366,6 +402,7 @@
                     <option value="all">Filter: ALL USERS</option>
                     <option value="admin">Filter: ADMINS ONLY</option>
                     <option value="online">Filter: ONLINE ONLY</option>
+                    <option value="guest">Filter: GUESTS ONLY</option>
                     <option value="banned">Filter: BANNED ONLY</option>
                   </select>
                 </div>
@@ -377,6 +414,7 @@
                   <button class="btn-unified user-filter active user-filter-btn" data-filter="all">ALL</button>
                   <button class="btn-unified user-filter user-filter-btn" data-filter="admin">ADMINS</button>
                   <button class="btn-unified user-filter user-filter-btn" data-filter="online">ONLINE</button>
+                  <button class="btn-unified user-filter user-filter-btn" data-filter="guest">GUESTS</button>
                   <button class="btn-unified user-filter user-filter-btn" data-filter="banned">BANNED</button>
                 </div>
                 <div class="user-stats-ribbon" id="userStatsRibbon">
@@ -1328,6 +1366,56 @@
         <!-- GIF Grid -->
         <div id="klipyGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(170px, 1fr)); gap:10px; min-height:280px; align-content:start;">
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Activity Logs Modal -->
+  <div id="modalActivityLogs" class="custom-modal-overlay hidden">
+    <div class="custom-modal" style="max-width: 880px; width: 94vw; max-height: 88vh; display: flex; flex-direction: column;">
+      <div class="modal-header">
+        <div class="modal-title" style="display:flex; align-items:center; gap:8px;">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          System Activity &amp; Audit Logs
+          <span style="background:rgba(34,197,94,0.15); color:#22c55e; border:1px solid rgba(34,197,94,0.3); font-size:10px; padding:2px 8px; border-radius:10px; font-weight:700; margin-left:6px;">LIVE PULSE 🟢</span>
+        </div>
+        <button class="modal-close-btn" id="btnCloseActivityLogs" type="button" onclick="window.closeActivityLogsModal()">&times;</button>
+      </div>
+      <div class="modal-body" style="display:flex; flex-direction:column; gap:12px; overflow-y:hidden; padding:16px; flex:1;">
+        <!-- Filters & Search Toolbar -->
+        <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between;">
+          <div id="logFilterChips" style="display:flex; flex-wrap:wrap; gap:6px;">
+            <button type="button" class="btn-unified log-chip active" data-filter="all" onclick="window.setLogFilter('all')">ALL</button>
+            <button type="button" class="btn-unified log-chip" data-filter="signups" onclick="window.setLogFilter('signups')">SIGNUPS &amp; GUESTS</button>
+            <button type="button" class="btn-unified log-chip" data-filter="logins" onclick="window.setLogFilter('logins')">LOGINS</button>
+            <button type="button" class="btn-unified log-chip" data-filter="devices" onclick="window.setLogFilter('devices')">DEVICES</button>
+            <button type="button" class="btn-unified log-chip" data-filter="live" onclick="window.setLogFilter('live')">LIVE STATUS</button>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <input type="text" id="searchLogsInput" class="auth-input" style="padding:6px 12px; font-size:12.5px; width:180px;" placeholder="Search logs..." oninput="window.handleSearchLogs(this.value)">
+            <button id="btnRefreshLogsModal" class="btn-unified" title="Refresh logs" onclick="window.fetchHybridLogs()"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg></button>
+          </div>
+        </div>
+        <!-- Streamlined Logs Container -->
+        <div id="activityLogList" style="flex:1; overflow-y:auto; border:1px solid var(--border-light); border-radius:8px; background:var(--bg-main); min-height:360px; max-height:60vh;">
+           <div id="activityPlaceholder" class="placeholder-text" style="padding:48px 24px; text-align:center; color:var(--text-muted);">Waiting for activity...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contributor Leaderboard Modal -->
+  <div id="modalContributions" class="custom-modal-overlay hidden">
+    <div class="custom-modal" style="max-width: 760px; width: 92vw; max-height: 85vh; display: flex; flex-direction: column;">
+      <div class="modal-header">
+        <div class="modal-title" style="display:flex; align-items:center; gap:8px;">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          Top Contributors &amp; Points Leaderboard
+        </div>
+        <button class="modal-close-btn" id="btnCloseContributions" type="button" onclick="window.closeContributionsModal()">&times;</button>
+      </div>
+      <div class="modal-body" style="display:flex; flex-direction:column; gap:12px; overflow-y:auto; padding:16px;">
+        <div id="leaderboardList"></div>
       </div>
     </div>
   </div>

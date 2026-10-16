@@ -1,5 +1,6 @@
 // api/env.js
 // Handles public system environment and configuration endpoints
+import crypto from 'crypto';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -65,6 +66,16 @@ export default async function handler(req, res) {
   }
 
   if (isConfigReq) {
+    // 1. Ensure durable server-side device ID cookie (Safari ITP resistant)
+    let cookieDevId = null;
+    const cookieHeader = req.headers.cookie || '';
+    const match = cookieHeader.match(/(?:^|;\s*)mr_device_id=([^;]*)/);
+    if (match) cookieDevId = decodeURIComponent(match[1]);
+
+    const deviceId = cookieDevId || (typeof crypto.randomUUID === 'function' ? crypto.randomUUID() : 'dev_' + Math.random().toString(36).substr(2, 9));
+    const isHttps = process.env.NODE_ENV === 'production' || process.env.VERCEL === '1';
+    res.setHeader('Set-Cookie', `mr_device_id=${deviceId}; Path=/; Max-Age=31536000; SameSite=Lax; HttpOnly${isHttps ? '; Secure' : ''}`);
+
     try {
       const response = await fetch(`${supabaseUrl}/rest/v1/app_settings?limit=1`, {
         headers: { 'apikey': serviceKey, 'Authorization': `Bearer ${serviceKey}` }
@@ -77,7 +88,8 @@ export default async function handler(req, res) {
             allowSignup: data[0].allow_signup ?? true,
             allowGuest: data[0].allow_guest ?? true,
             maintenanceMode: data[0].maintenance_mode ?? false,
-            bannedDevices: data[0].banned_devices || []
+            bannedDevices: data[0].banned_devices || [],
+            deviceId: deviceId
           });
         }
       }
@@ -87,7 +99,8 @@ export default async function handler(req, res) {
       allowSignup: true,
       allowGuest: true,
       maintenanceMode: false,
-      bannedDevices: []
+      bannedDevices: [],
+      deviceId: deviceId
     });
   }
 

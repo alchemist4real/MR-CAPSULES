@@ -255,6 +255,19 @@
   const btnLogoutSession = document.getElementById('btnLogoutSession');
   const btnSwitchAccount = document.getElementById('btnSwitchAccount');
 
+  // Early pre-check: if already authenticated, enter study platform directly
+  try {
+    const isLoggingOut = window.location.search.includes('logout=true');
+    const isAuthRequired = window.location.search.includes('auth=required');
+    const hasActiveSession = Object.keys(localStorage).some(k => k.startsWith('sb-') && k.endsWith('-auth-token') && localStorage.getItem(k));
+    if (hasActiveSession && !isLoggingOut && !isAuthRequired) {
+      if (authForm) authForm.style.display = 'none';
+      if (authBoxTitle) authBoxTitle.textContent = 'ENTERING PLATFORM...';
+      if (authBoxSubtitle) authBoxSubtitle.textContent = 'REDIRECTING TO STUDY CENTER';
+      window.location.replace('/app.html');
+    }
+  } catch(e) {}
+
   // Contact / Recovery Modal Elements
   const forgotPasswordModal = document.getElementById('forgotPasswordModal');
   const btnCloseForgotModal = document.getElementById('btnCloseForgotModal');
@@ -497,13 +510,26 @@
     });
   }
 
-  // ── Session State Management (Intuitive Form Hide on Login) ──
+  // ── Session State Management (Intuitive Direct Entry on Login) ──
   function renderSessionIndicator(session) {
     if (session && session.user) {
       if (session.user.user_metadata?.banned || session.user.app_metadata?.banned) {
         alert('YOUR ACCOUNT HAS BEEN SUSPENDED BY THE ADMINISTRATOR.');
         if (supabase) supabase.auth.signOut();
         renderSessionIndicator(null);
+        return;
+      }
+
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('logout') === 'true') {
+        if (supabase) supabase.auth.signOut();
+        renderSessionIndicator(null);
+        return;
+      }
+
+      // If user has an active session and isn't logging out or explicitly bouncing, enter directly
+      if (!urlParams.get('auth')) {
+        window.location.replace('/app.html');
         return;
       }
 
@@ -740,6 +766,9 @@
     }
     if (logoutFlag === 'true') {
       showAuthMsg('YOU HAVE BEEN SIGNED OUT SUCCESSFULLY.', false);
+      if (supabase) {
+        try { supabase.auth.signOut(); } catch(e) {}
+      }
       window.history.replaceState({}, document.title, window.location.pathname);
     }
 

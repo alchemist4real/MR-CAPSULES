@@ -39,7 +39,8 @@ function copyStaticAssets(publicDir) {
   rootFiles.forEach(file => {
     if (
       file === 'node_modules' ||
-      file === '.git' ||
+      file.startsWith('.git') ||
+      file.startsWith('.env') ||
       file === '.vercel' ||
       file === 'api' ||
       file === 'public' ||
@@ -48,6 +49,7 @@ function copyStaticAssets(publicDir) {
       file === 'scratch' ||
       file === 'content' ||
       file === 'cover' ||
+      file === 'supabase' ||
       file === 'build.js'
     ) {
       return;

@@ -90,52 +90,318 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
     
     window.fetchHybridLogs = async function() {
       try {
-        const { data, error } = await supabaseClient.from('activity_logs').select('*').order('time', { ascending: false }).limit(100);
-        if (!error && data) {
-          window.hybridLogs = data.map(d => ({
-            id: d.log_id,
-            type: d.type,
-            time: new Date(d.time).getTime(),
-            user: d.user_name,
-            email: d.email,
-            devStr: d.dev_str
-          }));
+        const sessionRes = await supabaseClient.auth.getSession();
+        const token = sessionRes.data?.session?.access_token;
+        if (!token) return;
+
+        const res = await fetch('/api/admin', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({ action: 'get_activity_logs' })
+        });
+        const result = await res.json();
+        if (result.success) {
+          const logs = [];
+
+          // 1. Direct activity logs from database
+          if (Array.isArray(result.activity_logs)) {
+            result.activity_logs.forEach(d => {
+              logs.push({
+                id: d.log_id || ('log_' + d.id),
+                type: d.type,
+                time: new Date(d.time).getTime(),
+                user: d.user_name || d.email || 'Unknown',
+                email: d.email,
+                devStr: d.dev_str
+              });
+            });
+          }
+
+          // 2. Active devices with last_seen
+          if (Array.isArray(result.devices)) {
+            result.devices.forEach(d => {
+              if (!d.last_seen) return;
+              const t = new Date(d.last_seen).getTime();
+              // Show devices seen in last 72h
+              if (Date.now() - t < 72 * 3600 * 1000) {
+                const uName = d.userInfo?.username || d.userInfo?.email || 'Unknown';
+                let devLabel = d.device_name || 'Device';
+                if (d.city || d.country) {
+                  devLabel += ` [📍 ${d.city ? d.city + ', ' : ''}${d.country || ''}]`;
+                }
+                if (d.is_safari) {
+                  devLabel += ' 🍎';
+                }
+                if (d.ip_hash) {
+                  devLabel += ` #${d.ip_hash.substring(0, 8)}`;
+                }
+                logs.push({
+                  id: 'dev_seen_' + d.device_id + '_' + t,
+                  type: 'device_seen',
+                  time: t,
+                  user: uName,
+                  email: d.userInfo?.email,
+                  devStr: devLabel
+                });
+              }
+            });
+          }
+
+          // 3. New User & Guest Signups
+          if (Array.isArray(result.signups)) {
+            result.signups.forEach(s => {
+              logs.push({
+                id: s.id,
+                type: s.type,
+                time: new Date(s.time).getTime(),
+                user: s.user,
+                email: s.email,
+                isGuest: s.isGuest
+              });
+            });
+          }
+
+          // 4. User Signins
+          if (Array.isArray(result.signins)) {
+            result.signins.forEach(s => {
+              logs.push({
+                id: s.id,
+                type: 'login',
+                time: new Date(s.time).getTime(),
+                user: s.user,
+                email: s.email,
+                isGuest: s.isGuest
+              });
+            });
+          }
+
+          // Deduplicate logs by ID
+          const seenLogIds = new Set();
+          const uniqueLogs = [];
+          logs.forEach(l => {
+            if (!seenLogIds.has(l.id)) {
+              seenLogIds.add(l.id);
+              uniqueLogs.push(l);
+            }
+          });
+
+          // Merge with any transient in-memory logs
+          const existingTransient = (window.hybridLogs || []).filter(l => l.isLive);
+          window.hybridLogs = uniqueLogs.concat(existingTransient);
           window.renderHybridLogs();
         }
       } catch(e) { console.error("Error formatting hybrid logs:", e); }
     };
+
+    window.currentLogFilter = 'all';
+    window.currentLogSearch = '';
+
+    window.openActivityLogsModal = function() {
+      const modal = document.getElementById('modalActivityLogs');
+      if (!modal) return;
+      if (window.ModalManager) {
+        window.ModalManager.open(modal);
+      } else {
+        modal.classList.remove('hidden');
+        modal.classList.add('active');
+      }
+      window.fetchHybridLogs();
+    };
+
+    window.closeActivityLogsModal = function() {
+      const modal = document.getElementById('modalActivityLogs');
+      if (!modal) return;
+      if (window.ModalManager) {
+        window.ModalManager.close(modal);
+      } else {
+        modal.classList.add('hidden');
+        modal.classList.remove('active');
+      }
+    };
+
+    window.openContributionsModal = function() {
+      const modal = document.getElementById('modalContributions');
+      if (!modal) return;
+      if (window.ModalManager) {
+        window.ModalManager.open(modal);
+      } else {
+        modal.classList.remove('hidden');
+        modal.classList.add('active');
+      }
+      if (typeof window.loadContributions === 'function') {
+        window.loadContributions();
+      }
+    };
+
+    window.closeContributionsModal = function() {
+      const modal = document.getElementById('modalContributions');
+      if (!modal) return;
+      if (window.ModalManager) {
+        window.ModalManager.close(modal);
+      } else {
+        modal.classList.add('hidden');
+        modal.classList.remove('active');
+      }
+    };
+
+    window.setLogFilter = function(filter) {
+      window.currentLogFilter = filter || 'all';
+      const chips = document.querySelectorAll('#logFilterChips .log-chip');
+      chips.forEach(btn => {
+        if (btn.getAttribute('data-filter') === window.currentLogFilter) {
+          btn.classList.add('active');
+          btn.style.background = 'var(--c3)';
+          btn.style.color = 'var(--c1)';
+        } else {
+          btn.classList.remove('active');
+          btn.style.background = '';
+          btn.style.color = '';
+        }
+      });
+      window.renderHybridLogs();
+    };
+
+    window.handleSearchLogs = function(val) {
+      window.currentLogSearch = (val || '').toLowerCase().trim();
+      window.renderHybridLogs();
+    };
     
     window.renderHybridLogs = function() {
       var logList = document.getElementById('activityLogList');
+      var snippetEl = document.getElementById('dashLatestActivitySnippet');
+      
+      var raw = (window.hybridLogs || []).slice().sort(function(a, b) { return b.time - a.time; });
+      
+      // Update Dashboard Hub preview snippet
+      if (snippetEl) {
+        if (raw.length > 0) {
+          var first = raw[0];
+          var firstTimeStr = new Date(first.time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+          var eventLabel = first.type === 'signup' ? 'Registered' : (first.type === 'guest_signup' ? 'Guest Joined' : (first.type === 'login' ? 'Logged In' : (first.type === 'online' ? 'Online' : (first.type === 'device_seen' ? 'Device Active' : first.type))));
+          snippetEl.innerHTML = `<span style="color:var(--c4); font-weight:700;">🟢 ${sanitize(first.user)}:</span> ${eventLabel} <span style="color:var(--text-muted); font-size:11px;">(${firstTimeStr})</span>`;
+        } else {
+          snippetEl.textContent = 'Belum ada aktivitas tercatat.';
+        }
+      }
+
       if (!logList) return;
       logList.innerHTML = '';
-      
-      var sorted = window.hybridLogs.slice().sort(function(a, b) { return b.time - a.time; });
-      
-      sorted.forEach(function(log) {
-        var item = document.createElement('div');
-        item.style.padding = '12px 24px';
-        item.style.borderBottom = '1px solid var(--border-light)';
-        item.style.animation = 'fadeIn 0.3s ease';
-        
-        var timeStr = new Date(log.time).toLocaleString();
-        if (log.type === 'login') {
-          item.innerHTML = '<div style="font-size:13px; font-weight:600; color:var(--c4);">' + timeStr + ' - [SYSTEM: LOGIN]</div>' +
-            '<div style="font-weight:700; font-size:14.5px; margin-top:2px; word-break:break-word;">' + sanitize(log.user) + '</div>' +
-            '<div style="font-size:14px; margin-top:2px; word-break:break-all;">' + sanitize(log.email || '') + '</div>' +
-            '<div style="font-size:12px; color:var(--text-muted); opacity:0.95; margin-top:4px; word-break:break-all;">Devices: ' + sanitize(log.devStr || 'Unknown') + '</div>';
-        } else if (log.type === 'online') {
-          item.innerHTML = '<div style="font-size:13px; font-weight:600; color:var(--c4);">' + timeStr + ' - [LIVE PRESENCE]</div>' +
-            '<div style="font-weight:700; font-size:14.5px; color:var(--text-main); margin-top:2px; word-break:break-word;">' + sanitize(log.user) + ' came online</div>';
-        } else if (log.type === 'offline') {
-          item.innerHTML = '<div style="font-size:13px; font-weight:600; color:var(--text-muted);">' + timeStr + ' - [LIVE PRESENCE]</div>' +
-            '<div style="font-weight:700; font-size:14.5px; color:var(--danger); margin-top:2px; word-break:break-word;">' + sanitize(log.user) + ' went offline</div>';
+
+      // 1. Non-Redundant Aggregation (collapses repetitive presence & device pings)
+      var aggregated = [];
+      var presenceMap = new Map();
+
+      raw.forEach(function(log) {
+        var userKey = (log.email || log.user || 'anon').toLowerCase().trim();
+
+        if (log.type === 'online' || log.type === 'offline' || log.type === 'device_seen') {
+          var gKey = userKey + '_' + log.type;
+          if (presenceMap.has(gKey)) {
+            var existing = presenceMap.get(gKey);
+            existing.count = (existing.count || 1) + 1;
+            existing.earliestTime = log.time;
+            if (!existing.devStr && log.devStr) existing.devStr = log.devStr;
+          } else {
+            var entry = Object.assign({}, log, { count: 1, latestTime: log.time, earliestTime: log.time });
+            presenceMap.set(gKey, entry);
+            aggregated.push(entry);
+          }
+        } else {
+          aggregated.push(log);
         }
+      });
+
+      // 2. Chip & Search Filters
+      var filtered = aggregated;
+      var curFilter = window.currentLogFilter || 'all';
+      if (curFilter === 'signups') {
+        filtered = filtered.filter(l => l.type === 'signup' || l.type === 'guest_signup');
+      } else if (curFilter === 'logins') {
+        filtered = filtered.filter(l => l.type === 'login');
+      } else if (curFilter === 'devices') {
+        filtered = filtered.filter(l => l.type === 'device_seen');
+      } else if (curFilter === 'live') {
+        filtered = filtered.filter(l => l.type === 'online' || l.type === 'offline');
+      }
+
+      var query = window.currentLogSearch || '';
+      if (query) {
+        filtered = filtered.filter(l => {
+          var u = (l.user || '').toLowerCase();
+          var em = (l.email || '').toLowerCase();
+          var dev = (l.devStr || '').toLowerCase();
+          var typ = (l.type || '').toLowerCase();
+          return u.includes(query) || em.includes(query) || dev.includes(query) || typ.includes(query);
+        });
+      }
+
+      if (filtered.length === 0) {
+        logList.innerHTML = '<div style="padding:48px 24px; color:var(--text-muted); text-align:center; font-family:var(--font-primary); font-size:13.5px;">TIDAK ADA LOG SESUAI FILTER/PENCARIAN</div>';
+        return;
+      }
+
+      filtered.forEach(function(log) {
+        var item = document.createElement('div');
+        item.style.cssText = 'padding:14px 20px; border-bottom:1px solid var(--border-light); display:flex; justify-content:space-between; align-items:flex-start; gap:16px; transition:background 0.2s ease;';
+        item.onmouseenter = function() { item.style.background = 'rgba(255,255,255,0.02)'; };
+        item.onmouseleave = function() { item.style.background = ''; };
+
+        var timeStr = new Date(log.time).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' }) + ' WIB';
+
+        var badgeHtml = '';
+        var mainTitle = '';
+        var metaHtml = '';
+
+        if (log.type === 'signup') {
+          badgeHtml = '<span class="badge" style="background:rgba(6,182,212,0.15); color:var(--c3); border:1px solid rgba(6,182,212,0.3); font-size:10px;">NEW ACCOUNT</span>';
+          mainTitle = `<span style="font-weight:700; color:var(--text-main); font-size:14px;">${sanitize(log.user)}</span> <span style="font-size:13px; color:var(--text-muted);">mendaftar akun baru</span>`;
+          metaHtml = log.email ? `<div style="font-size:12.5px; color:var(--text-muted); margin-top:2px; word-break:break-all;">${sanitize(log.email)}</div>` : '';
+        } else if (log.type === 'guest_signup') {
+          badgeHtml = '<span class="badge" style="background:rgba(230,126,34,0.15); color:#e67e22; border:1px dashed #e67e22; font-size:10px;">GUEST JOINED</span>';
+          mainTitle = `<span style="font-weight:700; color:#e67e22; font-size:14px;">${sanitize(log.user)}</span> <span style="font-size:13px; color:var(--text-muted);">membuat sesi guest</span>`;
+          metaHtml = log.email ? `<div style="font-size:12.5px; color:var(--text-muted); margin-top:2px; word-break:break-all;">${sanitize(log.email)}</div>` : '';
+        } else if (log.type === 'login') {
+          badgeHtml = `<span class="badge" style="background:rgba(14,165,233,0.15); color:var(--c4); border:1px solid rgba(14,165,233,0.3); font-size:10px;">USER LOGIN</span>`;
+          mainTitle = `<span style="font-weight:700; color:var(--text-main); font-size:14px;">${sanitize(log.user)}</span> ${log.isGuest ? '<span class="badge badge-guest" style="font-size:9px;">GUEST</span>' : ''}`;
+          metaHtml = (log.email ? `<div style="font-size:12.5px; color:var(--text-muted); margin-top:2px;">${sanitize(log.email)}</div>` : '') +
+                     (log.devStr ? `<div style="font-size:11.5px; color:var(--text-muted); opacity:0.85; margin-top:2px;">${sanitize(log.devStr)}</div>` : '');
+        } else if (log.type === 'online') {
+          var countBadge = (log.count > 1) ? `<span style="font-size:10px; font-weight:700; background:rgba(34,197,94,0.18); color:#22c55e; padding:1px 6px; border-radius:10px; border:1px solid rgba(34,197,94,0.3); margin-left:6px;">🔁 ${log.count}x Online</span>` : '';
+          badgeHtml = `<span class="badge" style="background:rgba(34,197,94,0.15); color:#22c55e; border:1px solid rgba(34,197,94,0.3); font-size:10px;">LIVE ONLINE 🟢</span>${countBadge}`;
+          mainTitle = `<span style="font-weight:700; color:var(--text-main); font-size:14px;">${sanitize(log.user)}</span> <span style="font-size:13px; color:var(--text-muted);">sedang aktif</span>`;
+          metaHtml = (log.email ? `<div style="font-size:12.5px; color:var(--text-muted); margin-top:2px;">${sanitize(log.email)}</div>` : '') +
+                     (log.count > 1 ? `<div style="font-size:11px; color:var(--text-muted); opacity:0.85; margin-top:2px;">Terdeteksi aktif berulang kali hari ini</div>` : '');
+        } else if (log.type === 'offline') {
+          badgeHtml = `<span class="badge" style="background:rgba(239,68,68,0.15); color:var(--danger); border:1px solid rgba(239,68,68,0.3); font-size:10px;">DISCONNECTED</span>`;
+          mainTitle = `<span style="font-weight:700; color:var(--danger); font-size:14px;">${sanitize(log.user)}</span> <span style="font-size:13px; color:var(--text-muted);">koneksi terputus</span>`;
+          metaHtml = log.email ? `<div style="font-size:12.5px; color:var(--text-muted); margin-top:2px;">${sanitize(log.email)}</div>` : '';
+        } else if (log.type === 'device_seen') {
+          badgeHtml = `<span class="badge" style="background:rgba(168,85,247,0.15); color:#a855f7; border:1px solid rgba(168,85,247,0.3); font-size:10px;">DEVICE ACTIVE</span>`;
+          mainTitle = `<span style="font-weight:700; color:var(--text-main); font-size:14px;">${sanitize(log.user)}</span>`;
+          metaHtml = (log.email ? `<div style="font-size:12.5px; color:var(--text-muted); margin-top:2px;">${sanitize(log.email)}</div>` : '') +
+                     (log.devStr ? `<div style="font-size:11.5px; color:var(--text-muted); opacity:0.85; margin-top:2px;">📱 ${sanitize(log.devStr)}</div>` : '');
+        } else {
+          badgeHtml = `<span class="badge" style="font-size:10px;">${sanitize(log.type.toUpperCase())}</span>`;
+          mainTitle = `<span style="font-weight:700; font-size:14px;">${sanitize(log.user)}</span>`;
+        }
+
+        item.innerHTML = `
+          <div style="flex:1; min-width:0;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px; flex-wrap:wrap;">
+              ${badgeHtml}
+            </div>
+            <div>${mainTitle}</div>
+            ${metaHtml}
+          </div>
+          <div style="font-size:12px; font-weight:600; color:var(--text-muted); font-family:var(--font-mono); white-space:nowrap; text-align:right;">
+            ${timeStr}
+          </div>
+        `;
         logList.appendChild(item);
       });
-      if (sorted.length === 0) {
-         logList.innerHTML = '<div id="activityPlaceholder" style="padding:24px; color:var(--text-muted); text-align:center;">Waiting for activity...</div>';
-      }
     };
     
     window.addHybridLog = async function(log) {
@@ -144,16 +410,28 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
           window.hybridLogs.push(log);
           window.hybridLogs.sort(function(a, b) { return b.time - a.time; });
           if (window.hybridLogs.length > 200) window.hybridLogs = window.hybridLogs.slice(0, 200);
-           try {
-             await supabaseClient.from('activity_logs').upsert({
-                log_id: log.id,
-                type: log.type,
-                time: new Date(log.time).toISOString(),
-                user_name: log.user,
-                email: log.email || null,
-                dev_str: log.devStr || null
-             }, { onConflict: 'log_id' });
-          } catch(e) { console.error("Error inserting activity log:", e); }
+          window.renderHybridLogs();
+
+          if (log.persist) {
+            try {
+              const sessionRes = await supabaseClient.auth.getSession();
+              const token = sessionRes.data?.session?.access_token;
+              if (token) {
+                await fetch('/api/admin', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                  body: JSON.stringify({
+                    action: 'log_activity',
+                    type: log.type,
+                    log_id: log.id,
+                    user_name: log.user,
+                    email: log.email || null,
+                    dev_str: log.devStr || null
+                  })
+                });
+              }
+            } catch(e) { console.error("Error saving persistent activity log:", e); }
+          }
        }
     };
 
@@ -731,41 +1009,53 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
                 if (window.currentFilter === 'online' && window.applyUserFilters) {
                   window.applyUserFilters();
                 }
-              }).on('presence', { event: 'join' }, ({ key, newPresences }) => {
+              });
+
+              const presenceEventThrottle = new Map();
+              const isPresenceThrottled = (name, type) => {
+                const k = type + '_' + name;
+                const last = presenceEventThrottle.get(k) || 0;
+                if (Date.now() - last < 120000) return true; // 2 minute cooldown per user event
+                presenceEventThrottle.set(k, Date.now());
+                return false;
+              };
+
+              window.sessionRoom.on('presence', { event: 'join' }, ({ key, newPresences }) => {
+                let changed = false;
                 newPresences.forEach(function(p) {
                   var name = (p.email || p.user || 'Unknown');
-                  window.addHybridLog({
-                     id: 'online_' + name + '_' + Date.now(),
-                     type: 'online',
-                     time: Date.now(),
-                     user: name
-                  });
+                  if (!isPresenceThrottled(name, 'online')) {
+                    window.addHybridLog({
+                       id: 'online_' + name + '_' + Date.now(),
+                       type: 'online',
+                       time: Date.now(),
+                       user: name,
+                       isLive: true
+                    });
+                    changed = true;
+                  }
                 });
-                window.renderHybridLogs();
+                if (changed) window.renderHybridLogs();
               }).on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+                let changed = false;
                 leftPresences.forEach(function(p) {
                   var name = (p.email || p.user || 'Unknown');
-                  window.addHybridLog({
-                     id: 'offline_' + name + '_' + Date.now(),
-                     type: 'offline',
-                     time: Date.now(),
-                     user: name
-                  });
+                  if (!isPresenceThrottled(name, 'offline')) {
+                    window.addHybridLog({
+                       id: 'offline_' + name + '_' + Date.now(),
+                       type: 'offline',
+                       time: Date.now(),
+                       user: name,
+                       isLive: true
+                    });
+                    changed = true;
+                  }
                 });
-                window.renderHybridLogs();
+                if (changed) window.renderHybridLogs();
               }).subscribe(async (status) => {
                  if (status === 'SUBSCRIBED') {
                     var tEmail = (badgeEl ? badgeEl.textContent : '') || 'Admin';
-                    var tNow = Date.now();
                     await window.sessionRoom.track({ user: 'auth-user', email: tEmail, joined_at: new Date().toISOString() });
-                    
-                    window.addHybridLog({
-                       id: 'online_' + tEmail + '_' + tNow,
-                       type: 'online',
-                       time: tNow,
-                       user: tEmail
-                    });
-                    window.renderHybridLogs();
                  }
               });
 
@@ -2609,15 +2899,23 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
       let bannedCount = 0;
       let guestCount = 0;
 
+      const isUserGuest = (userObj) => {
+        if (!userObj) return false;
+        const m = userObj.user_metadata || {};
+        const em = (userObj.email || '').toLowerCase();
+        const un = (m.username || em.split('@')[0] || '').toLowerCase();
+        return m.is_guest === true || em.startsWith('guest_') || un.startsWith('guest_') || (em.includes('@mrcapsules.com') && em.startsWith('guest'));
+      };
+
       users.forEach(u => {
         const meta = u.user_metadata || {};
         const appMeta = u.app_metadata || {};
         if (u.role === 'admin') adminCount++;
         if (appMeta.banned === true || meta.banned === true) bannedCount++;
-        if (meta.is_guest === true || (!u.email && meta.username?.startsWith('guest_'))) guestCount++;
+        if (isUserGuest(u)) guestCount++;
       });
 
-      const statsText = `Total: ${users.length} • Admins: ${adminCount} • Banned: ${bannedCount}`;
+      const statsText = `Total: ${users.length} • Admins: ${adminCount} • Guests: ${guestCount} • Banned: ${bannedCount}`;
       if (summaryEl) summaryEl.textContent = statsText;
       if (itemCountEl) itemCountEl.textContent = `${users.length} users`;
 
@@ -2636,7 +2934,7 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
         const isBanned = appMeta.banned === true || meta.banned === true;
         const isAdmin = u.role === 'admin';
         const division = meta.division || '';
-        const isGuest = meta.is_guest === true || username.startsWith('guest_');
+        const isGuest = isUserGuest(u);
         const isCoupleUser = window.couplePackageConfig && window.couplePackageConfig.enabled && isCoupleMember(u, window.couplePackageConfig);
 
         const devices = Array.isArray(meta.devices) ? meta.devices.slice() : [];
@@ -2649,11 +2947,11 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
 
         let badgesHtml = '';
         if (isAdmin) badgesHtml += '<span class="badge badge-admin">ADMIN</span>';
+        else if (isGuest) badgesHtml += '<span class="badge badge-guest">GUEST</span>';
         else badgesHtml += '<span class="badge badge-member">MEMBER</span>';
         if (isCoupleUser) badgesHtml += '<span class="badge badge-couple"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>COUPLE</span>';
         if (division) badgesHtml += `<span class="badge badge-division">${sanitize(division.toUpperCase())}</span>`;
         if (isBanned) badgesHtml += '<span class="badge badge-banned">BANNED</span>';
-        if (isGuest) badgesHtml += '<span class="badge badge-guest">GUEST</span>';
 
         let deviceRowsHtml = '';
         if (devices.length > 0) {
@@ -2684,11 +2982,15 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
               isStale = true;
             }
             const staleStyle = isStale ? 'opacity:0.45; text-decoration:line-through;' : '';
+            const safariBadge = dev.is_safari ? '<span style="font-size:9.5px; background:rgba(59,130,246,0.15); color:#60a5fa; border:1px solid rgba(59,130,246,0.3); padding:1px 4px; border-radius:3px; margin-left:5px; font-weight:600;" title="Safari ITP Persistent Cookie">🍎 SAFARI</span>' : '';
+            const locationStr = (dev.city || dev.country) ? ` · 📍 ${dev.city ? sanitize(dev.city) + ', ' : ''}${sanitize(dev.country || '')}` : '';
+            const ipHashStr = dev.ip_hash ? ` · <span style="font-family:var(--font-mono, monospace); font-size:10px; opacity:0.75;" title="Salted IP Hash (UU PDP Compliant)">#${sanitize(dev.ip_hash.substring(0, 8))}</span>` : '';
+
             deviceRowsHtml += `
               <div class="user-device-item" style="${staleStyle}">
                 <div style="display:flex; flex-direction:column; gap:2px; min-width:0; flex:1;">
-                  <span class="user-device-id" title="${sanitize(dev.id)}" style="font-weight:500;">${sanitize(devName)}</span>
-                  <span style="font-size:11px; color:var(--text-muted);">${sanitize(dev.id.substring(0, 12))}… · ${lastSeenStr}</span>
+                  <span class="user-device-id" title="${sanitize(dev.id)}" style="font-weight:500;">${sanitize(devName)}${safariBadge}</span>
+                  <span style="font-size:11px; color:var(--text-muted);">${sanitize(dev.id.substring(0, 12))}… · ${lastSeenStr}${locationStr}${ipHashStr}</span>
                 </div>
                 <div class="user-device-actions">
                   <button class="btn-dev-action ${isDevBanned ? '' : 'danger'} btn-block-dev" data-dev="${sanitize(dev.id)}" data-banned="${isDevBanned}">
@@ -2791,7 +3093,7 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
             </td>
             <td><span class="user-email-text" style="font-size:13px;">${sanitize(email || '-')}</span></td>
             <td><span class="badge badge-division">${sanitize(division ? division.toUpperCase() : 'NONE')}</span></td>
-            <td>${isAdmin ? '<span class="badge badge-admin">ADMIN</span>' : '<span class="badge badge-member">MEMBER</span>'}${isCoupleUser ? ' <span class="badge badge-couple"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>COUPLE</span>' : ''}</td>
+            <td>${isAdmin ? '<span class="badge badge-admin">ADMIN</span>' : (isGuest ? '<span class="badge badge-guest">GUEST</span>' : '<span class="badge badge-member">MEMBER</span>')}${isCoupleUser ? ' <span class="badge badge-couple"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>COUPLE</span>' : ''}</td>
             <td><span style="font-family:var(--font-secondary); font-size:12.5px;">${devices.length} Dev</span></td>
             <td><span style="font-family:var(--font-secondary); font-size:12px; color:var(--text-muted);">${joinedDate}</span></td>
             <td><div class="user-table-actions">${actionsHtml}</div></td>
@@ -3683,6 +3985,17 @@ window.unlinkCouplePackage = async function() {
 };
 
 window.renderLeaderboard = function(list) {
+  const snippetEl = document.getElementById('dashTopContributorSnippet');
+  if (snippetEl) {
+    if (Array.isArray(list) && list.length > 0) {
+      const top = list[0];
+      const topName = top.name || top.username || top.email?.split('@')[0] || 'Member';
+      snippetEl.innerHTML = `<span style="color:var(--c3); font-weight:700;">🏆 1st: ${sanitize(topName)}</span> (${top.points || 0} pts) · ${list.length} kontributor`;
+    } else {
+      snippetEl.textContent = 'Belum ada kontribusi tercatat.';
+    }
+  }
+
   const lbList = document.getElementById('leaderboardList');
   if (!lbList) return;
   lbList.innerHTML = '';

@@ -305,7 +305,7 @@
   <iframe id="viewerFrame" src=""></iframe>
 </div>
 
-<script src="data.js?v=1792143568720"></script>
+<script src="data.js?v=1792146273404"></script>
 <script>
 /* ══ PERSONA ENGINE ══ */
 const personaToggles = document.querySelectorAll('.persona-btn');
@@ -1769,14 +1769,15 @@ try {
       document.cookie = name + "=" + value + ";path=/;expires=" + d.toGMTString();
     }
 
-    // ── Device Recognition (v2 — stable, race-free) ──────────────────
-    // 1. Use localStorage-anchored ID for stability (survives FP churn)
-    // 2. FingerprintJS only seeds the FIRST ID; subsequent changes are ignored
-    // 3. syncDeviceId waits for fingerprint before upserting to DB
-    // 4. Always updates last_seen + device metadata on sync
+    // ── Device Recognition (v3 — Serverless & Safari ITP Resistant) ─────────
+    // 1. Primary: Server-set HttpOnly mr_device_id (immune to Safari 7-day wipe)
+    // 2. Secondary: Client storage mirror for instant synchronous access
+    // 3. Telemetry: FingerprintJS visitorId preserved as secondary signal
+    // 4. Server sync: Captures salted ip_hash (UU PDP safe) + Vercel city/country
 
     let fpDeviceId = localStorage.getItem('capsules_device_id') || 
                      sessionStorage.getItem('capsules_device_id') || 
+                     getCookie('mr_device_id') ||
                      getCookie('capsules_device_id');
 
     // Track whether stored ID is a real fingerprint or a random fallback
@@ -1791,8 +1792,6 @@ try {
       try { sessionStorage.setItem('capsules_device_id', id); } catch(e) {}
       setCookie('capsules_device_id', id, 365);
     }
-    // Only sync to storages immediately if we have a real fingerprint
-    // Don't persist fallback dev_ IDs to prevent ghost accumulation
     if (hadStoredFingerprint) {
       syncToStorages(fpDeviceId);
     }
@@ -1814,7 +1813,7 @@ try {
       else if (/Chrome\//.test(ua) && !/Chromium/.test(ua)) { var m = ua.match(/Chrome\/(\d+)/); browser = 'Chrome' + (m ? ' ' + m[1] : ''); }
       else if (/Safari\//.test(ua) && !/Chrome/.test(ua)) { var m = ua.match(/Version\/(\d+)/); browser = 'Safari' + (m ? ' ' + m[1] : ''); }
       else if (/Firefox\//.test(ua)) { var m = ua.match(/Firefox\/(\d+)/); browser = 'Firefox' + (m ? ' ' + m[1] : ''); }
-      // Detect OS
+      // Detect OS (with iPad Safari desktop-mode detection via touchpoints)
       if (/iPad/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)) os = 'iPad';
       else if (/iPhone/.test(ua)) os = 'iPhone';
       else if (/Android/.test(ua)) os = 'Android';
@@ -1834,76 +1833,123 @@ try {
       `;
     }
 
-    // Promise that resolves when device ID is finalized (fingerprint or fallback timeout)
+    // Promise that resolves when device ID is finalized
     let _resolveDeviceReady;
     const deviceIdReady = new Promise(resolve => { _resolveDeviceReady = resolve; });
 
-    // FingerprintJS: only update stored ID if we didn't have a stable one yet
-    const FP_TIMEOUT = 3000; // 3s max wait for fingerprint
+    // FingerprintJS: secondary telemetry & fallback seed
+    const FP_TIMEOUT = 3000;
     let fpTimedOut = false;
     const fpTimer = setTimeout(() => {
       fpTimedOut = true;
-      // If we still have a dev_ fallback, persist it so at least something is stored
       if (!hadStoredFingerprint) syncToStorages(fpDeviceId);
       _resolveDeviceReady();
     }, FP_TIMEOUT);
 
     import('./fp.js').then(FingerprintJS => FingerprintJS.load()).then(fp => fp.get()).then(result => {
       clearTimeout(fpTimer);
-      if (!hadStoredFingerprint) {
-        // First-time fingerprint: adopt it as the stable device ID
+      window._cachedFpVisitorId = result.visitorId;
+      if (!hadStoredFingerprint && fpDeviceId.startsWith('dev_')) {
         fpDeviceId = result.visitorId;
         syncToStorages(fpDeviceId);
       }
-      // If we already had a stored fingerprint, keep it (stability > accuracy)
       if (!fpTimedOut) _resolveDeviceReady();
-      // Check ban with final ID
-      if (window.bannedDevicesList && window.bannedDevicesList.includes(fpDeviceId)) {
+      if (window.bannedDevicesList && (window.bannedDevicesList.includes(fpDeviceId) || window.bannedDevicesList.includes(result.visitorId))) {
         showDeviceBanError();
       }
     }).catch(err => {
       clearTimeout(fpTimer);
-      console.warn("FingerprintJS couldn't load. Using fallback device ID.", err);
+      console.warn("FingerprintJS couldn't load. Using serverless fallback device ID.", err);
       if (!hadStoredFingerprint) syncToStorages(fpDeviceId);
       if (!fpTimedOut) _resolveDeviceReady();
     });
 
     async function syncDeviceId(session) {
       if (!session || !session.user) return;
-      // Wait for device ID to be finalized (fingerprint or timeout)
       await deviceIdReady;
       const currentDev = getDeviceId();
       const devName = getDeviceName();
       const ua = (navigator.userAgent || '').substring(0, 512);
-      try {
-        // Upsert with metadata + always update last_seen
-        await supabase.from('user_devices').upsert([{
-          user_id: session.user.id,
-          device_id: currentDev,
-          device_name: devName,
-          user_agent: ua,
-          last_seen: new Date().toISOString()
-        }], { onConflict: 'user_id,device_id' }).select();
 
-        // Clean up any leftover dev_ ghost entries for this user
-        if (!currentDev.startsWith('dev_')) {
-          await supabase.from('user_devices')
-            .delete()
-            .eq('user_id', session.user.id)
-            .like('device_id', 'dev_%');
+      let browser = 'Unknown Browser';
+      let os = 'Unknown OS';
+      if (/CriOS/i.test(ua)) browser = 'Chrome iOS';
+      else if (/FxiOS/i.test(ua)) browser = 'Firefox iOS';
+      else if (/EdgiOS/i.test(ua)) browser = 'Edge iOS';
+      else if (/OPiOS/i.test(ua)) browser = 'Opera iOS';
+      else if (/Edg\//i.test(ua)) browser = 'Edge';
+      else if (/OPR\//i.test(ua)) browser = 'Opera';
+      else if (/Chrome\//.test(ua) && !/Chromium/.test(ua)) browser = 'Chrome';
+      else if (/Safari\//.test(ua) && !/Chrome/.test(ua)) browser = 'Safari';
+      else if (/Firefox\//.test(ua)) browser = 'Firefox';
+
+      if (/iPad/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)) os = 'iPad';
+      else if (/iPhone/.test(ua)) os = 'iPhone';
+      else if (/Android/.test(ua)) os = 'Android';
+      else if (/Mac OS X/.test(ua)) os = 'macOS';
+      else if (/Windows/.test(ua)) os = 'Windows';
+      else if (/Linux/.test(ua)) os = 'Linux';
+      else if (/CrOS/.test(ua)) os = 'ChromeOS';
+
+      const isSafari = /Safari/i.test(ua) && !/Chrome|Chromium|Edg|OPR/i.test(ua);
+      const devType = os === 'iPad' ? 'tablet' : (/iPhone|Android/i.test(os) ? 'mobile' : 'desktop');
+
+      try {
+        const token = session.access_token;
+        const res = await fetch('/api/device', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': token ? `Bearer ${token}` : ''
+          },
+          body: JSON.stringify({
+            client_device_id: currentDev,
+            fingerprint: window._cachedFpVisitorId || null,
+            browser: browser,
+            os: os,
+            device_type: devType,
+            is_safari: isSafari
+          })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data.banned) {
+            showDeviceBanError();
+            return;
+          }
+          if (data.device_id && data.device_id !== currentDev) {
+            fpDeviceId = data.device_id;
+            syncToStorages(fpDeviceId);
+          }
         }
-      } catch (e) { /* ignore RLS errors */ }
+      } catch (e) {
+        console.warn('Serverless device sync error, falling back to client-side sync:', e);
+        try {
+          await supabase.from('user_devices').upsert([{
+            user_id: session.user.id,
+            device_id: currentDev,
+            device_name: devName,
+            user_agent: ua,
+            last_seen: new Date().toISOString()
+          }], { onConflict: 'user_id,device_id' }).select();
+        } catch (err) {}
+      }
     }
 
     let isSignupAllowed = true;
     fetch('/api/config')
       .then(r => r.json())
       .then(async config => {
+        if (config.deviceId && (!fpDeviceId || fpDeviceId.startsWith('dev_'))) {
+          fpDeviceId = config.deviceId;
+          syncToStorages(fpDeviceId);
+        }
         window.bannedDevicesList = config.bannedDevices || [];
         // Wait for device fingerprint to be finalized before checking ban
         await deviceIdReady;
         const dId = getDeviceId();
-        if (window.bannedDevicesList.includes(dId)) {
+        if (window.bannedDevicesList.includes(dId) || (window._cachedFpVisitorId && window.bannedDevicesList.includes(window._cachedFpVisitorId))) {
           showDeviceBanError();
           return;
         }

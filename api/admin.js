@@ -891,7 +891,21 @@ export default async function handler(req, res) {
 
       const usersWithRoles = (data.users || []).map(u => {
         const roleRecord = rolesData.find(r => r.identifier === u.email || r.identifier === (u.user_metadata || {}).username);
-        const userDevices = devicesData.filter(d => d.user_id === u.id).map(d => ({ id: d.device_id, added: d.created_at, last_seen: d.last_seen, name: d.device_name || 'Unknown', user_agent: d.user_agent || '' }));
+        const userDevices = devicesData.filter(d => d.user_id === u.id).map(d => ({
+          id: d.device_id,
+          added: d.created_at,
+          last_seen: d.last_seen,
+          name: d.device_name || 'Unknown',
+          user_agent: d.user_agent || '',
+          browser: d.browser || null,
+          os: d.os || null,
+          device_type: d.device_type || null,
+          country: d.country || null,
+          city: d.city || null,
+          ip_hash: d.ip_hash || null,
+          is_safari: d.is_safari || false,
+          fingerprint: d.fingerprint || null
+        }));
         const divRecord = divData.find(d => d.user_id === u.id);
         
         // Ensure user_metadata exists
@@ -925,6 +939,118 @@ export default async function handler(req, res) {
       }
 
       return res.status(200).json({ success: true, total: filteredUsers.length, users: filteredUsers, globalStats });
+    }
+
+    if (action === 'get_activity_logs') {
+      if (!isAdmin && !isSuperAdmin) return res.status(403).json({ error: 'Admin access required' });
+      const sbKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+      if (!sbKey) return res.status(500).json({ error: 'SUPABASE_SERVICE_ROLE_KEY not configured' });
+
+      try {
+        const logsRes = await fetch(`${supabaseUrl}/rest/v1/activity_logs?order=time.desc&limit=60`, {
+          headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}` }
+        });
+        const logsData = logsRes.ok ? await logsRes.json() : [];
+
+        const devRes = await fetch(`${supabaseUrl}/rest/v1/user_devices?order=last_seen.desc.nullslast&limit=30`, {
+          headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}` }
+        });
+        const devData = devRes.ok ? await devRes.json() : [];
+
+        const usersRes = await fetch(`${supabaseUrl}/auth/v1/admin/users?per_page=100`, {
+          headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}` }
+        });
+        const usersJson = usersRes.ok ? await usersRes.json() : { users: [] };
+        const userMap = {};
+        (usersJson.users || []).forEach(u => {
+          userMap[u.id] = {
+            email: u.email,
+            username: u.user_metadata?.username || u.user_metadata?.full_name || u.email?.split('@')[0],
+            last_sign_in: u.last_sign_in_at
+          };
+        });
+
+        const signups = (usersJson.users || []).filter(u => u.created_at).map(u => {
+          const email = (u.email || '').toLowerCase();
+          const meta = u.user_metadata || {};
+          const username = meta.username || meta.full_name || email.split('@')[0] || 'Unknown';
+          const isGuest = meta.is_guest === true || email.startsWith('guest_') || username.startsWith('guest_') || (email.includes('@mrcapsules.com') && email.startsWith('guest'));
+          return {
+            id: 'signup_' + u.id,
+            type: isGuest ? 'guest_signup' : 'signup',
+            time: u.created_at,
+            user: username,
+            email: u.email,
+            isGuest
+          };
+        });
+
+        const signins = (usersJson.users || []).filter(u => u.last_sign_in_at).map(u => {
+          const email = (u.email || '').toLowerCase();
+          const meta = u.user_metadata || {};
+          const username = meta.username || meta.full_name || email.split('@')[0] || 'Unknown';
+          const isGuest = meta.is_guest === true || email.startsWith('guest_') || username.startsWith('guest_') || (email.includes('@mrcapsules.com') && email.startsWith('guest'));
+          return {
+            id: 'login_' + u.id + '_' + new Date(u.last_sign_in_at).getTime(),
+            type: 'login',
+            time: u.last_sign_in_at,
+            user: username,
+            email: u.email,
+            isGuest
+          };
+        });
+
+        return res.status(200).json({
+          success: true,
+          activity_logs: logsData,
+          signups,
+          signins,
+          devices: devData.map(d => ({
+            ...d,
+            userInfo: userMap[d.user_id] || { email: 'Unknown', username: 'Unknown' }
+          }))
+        });
+      } catch (err) {
+        return res.status(500).json({ error: 'Failed to fetch activity logs: ' + err.message });
+      }
+    }
+
+    if (action === 'log_activity') {
+      const sbKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+      if (!sbKey) return res.status(500).json({ error: 'Server config error' });
+      const { type, log_id, user_name, email: logEmail, dev_str } = req.body;
+      if (!type) return res.status(400).json({ error: 'Missing log type' });
+
+      try {
+        const payload = {
+          log_id: log_id || `${type}_${email}_${Date.now()}`,
+          type: type,
+          time: new Date().toISOString(),
+          user_name: user_name || username || email,
+          email: logEmail || email,
+          dev_str: dev_str || req.headers['user-agent'] || null
+        };
+
+        const insertRes = await fetch(`${supabaseUrl}/rest/v1/activity_logs`, {
+          method: 'POST',
+          headers: {
+            'apikey': sbKey,
+            'Authorization': `Bearer ${sbKey}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'resolution=merge-duplicates'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!insertRes.ok) {
+          const errText = await insertRes.text();
+          return res.status(500).json({ error: errText });
+        }
+
+        return res.status(200).json({ success: true, log: payload });
+      } catch (err) {
+        return res.status(500).json({ error: 'Failed to log activity: ' + err.message });
+      }
     }
 
     if (action === 'batch_create_users') {
