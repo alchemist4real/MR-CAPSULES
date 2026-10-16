@@ -199,37 +199,44 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
     window.currentLogFilter = 'all';
     window.currentLogSearch = '';
 
+    let _logsAutoRefreshTimer = null;
     window.openActivityLogsModal = function() {
       const modal = document.getElementById('modalActivityLogs');
       if (!modal) return;
+      modal.classList.add('active');
+      modal.classList.remove('hidden');
       if (window.ModalManager) {
         window.ModalManager.open(modal);
-      } else {
-        modal.classList.remove('hidden');
-        modal.classList.add('active');
       }
       window.fetchHybridLogs();
+      clearInterval(_logsAutoRefreshTimer);
+      _logsAutoRefreshTimer = setInterval(() => {
+        const m = document.getElementById('modalActivityLogs');
+        if (m && m.classList.contains('active')) {
+          window.fetchHybridLogs();
+        } else {
+          clearInterval(_logsAutoRefreshTimer);
+        }
+      }, 10000);
     };
 
     window.closeActivityLogsModal = function() {
+      clearInterval(_logsAutoRefreshTimer);
       const modal = document.getElementById('modalActivityLogs');
       if (!modal) return;
+      modal.classList.remove('active');
       if (window.ModalManager) {
         window.ModalManager.close(modal);
-      } else {
-        modal.classList.add('hidden');
-        modal.classList.remove('active');
       }
     };
 
     window.openContributionsModal = function() {
       const modal = document.getElementById('modalContributions');
       if (!modal) return;
+      modal.classList.add('active');
+      modal.classList.remove('hidden');
       if (window.ModalManager) {
         window.ModalManager.open(modal);
-      } else {
-        modal.classList.remove('hidden');
-        modal.classList.add('active');
       }
       if (typeof window.loadContributions === 'function') {
         window.loadContributions();
@@ -239,11 +246,9 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
     window.closeContributionsModal = function() {
       const modal = document.getElementById('modalContributions');
       if (!modal) return;
+      modal.classList.remove('active');
       if (window.ModalManager) {
         window.ModalManager.close(modal);
-      } else {
-        modal.classList.add('hidden');
-        modal.classList.remove('active');
       }
     };
 
@@ -1015,7 +1020,7 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
               const isPresenceThrottled = (name, type) => {
                 const k = type + '_' + name;
                 const last = presenceEventThrottle.get(k) || 0;
-                if (Date.now() - last < 120000) return true; // 2 minute cooldown per user event
+                if (Date.now() - last < 5000) return true; // 5s cooldown per user event for snappy updates
                 presenceEventThrottle.set(k, Date.now());
                 return false;
               };
@@ -1105,7 +1110,40 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
                    }
                    updateAndRender();
                 })
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'activity_logs' }, payload => {
+                   if (payload.new) {
+                     const d = payload.new;
+                     window.addHybridLog({
+                       id: d.log_id || ('log_' + d.id),
+                       type: d.type,
+                       time: new Date(d.time).getTime(),
+                       user: d.user_name || d.email || 'Unknown',
+                       email: d.email,
+                       devStr: d.dev_str,
+                       isLive: true
+                     });
+                     window.renderHybridLogs();
+                   }
+                })
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'user_devices' }, payload => {
+                   if (payload.new && payload.new.last_seen) {
+                     const d = payload.new;
+                     const t = new Date(d.last_seen).getTime();
+                     let devLabel = d.device_name || 'Device';
+                     if (d.city || d.country) devLabel += ` [📍 ${d.city ? d.city + ', ' : ''}${d.country || ''}]`;
+                     if (d.is_safari) devLabel += ' 🍎';
+                     if (d.ip_hash) devLabel += ` #${d.ip_hash.substring(0, 8)}`;
+                     window.addHybridLog({
+                       id: 'dev_seen_' + d.device_id + '_' + t,
+                       type: 'device_seen',
+                       time: t,
+                       user: d.user_name || d.email || 'Unknown',
+                       email: d.email,
+                       devStr: devLabel,
+                       isLive: true
+                     });
+                     window.renderHybridLogs();
+                   }
                    clearTimeout(window._deviceChangeTimer);
                    window._deviceChangeTimer = setTimeout(() => loadUsers(), 800);
                 })

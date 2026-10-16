@@ -947,20 +947,23 @@ export default async function handler(req, res) {
       if (!sbKey) return res.status(500).json({ error: 'SUPABASE_SERVICE_ROLE_KEY not configured' });
 
       try {
-        const logsRes = await fetch(`${supabaseUrl}/rest/v1/activity_logs?order=time.desc&limit=60`, {
-          headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}` }
-        });
-        const logsData = logsRes.ok ? await logsRes.json() : [];
+        const [logsRes, devRes, usersRes] = await Promise.all([
+          fetch(`${supabaseUrl}/rest/v1/activity_logs?order=time.desc&limit=60`, {
+            headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}` }
+          }),
+          fetch(`${supabaseUrl}/rest/v1/user_devices?order=last_seen.desc.nullslast&limit=30`, {
+            headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}` }
+          }),
+          fetch(`${supabaseUrl}/auth/v1/admin/users?per_page=100`, {
+            headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}` }
+          })
+        ]);
 
-        const devRes = await fetch(`${supabaseUrl}/rest/v1/user_devices?order=last_seen.desc.nullslast&limit=30`, {
-          headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}` }
-        });
-        const devData = devRes.ok ? await devRes.json() : [];
-
-        const usersRes = await fetch(`${supabaseUrl}/auth/v1/admin/users?per_page=100`, {
-          headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}` }
-        });
-        const usersJson = usersRes.ok ? await usersRes.json() : { users: [] };
+        const [logsData, devData, usersJson] = await Promise.all([
+          logsRes.ok ? logsRes.json() : [],
+          devRes.ok ? devRes.json() : [],
+          usersRes.ok ? usersRes.json() : { users: [] }
+        ]);
         const userMap = {};
         (usersJson.users || []).forEach(u => {
           userMap[u.id] = {
