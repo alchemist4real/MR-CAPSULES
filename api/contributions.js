@@ -1,40 +1,42 @@
-// Couple Contribution Package — DB-backed configuration
-// Reads couple config from Supabase `couple_config` table instead of in-memory Sets
+// Couple & Synergy Contribution Package — DB-backed multi-couple system
+// High performance caching & instant profile resolution
 
-async function loadCoupleConfig(supabaseUrl, sbKey) {
+let cachedProfiles = null;
+let lastProfilesFetch = 0;
+
+async function getFastUsers(supabaseUrl, sbKey) {
+  const now = Date.now();
+  if (cachedProfiles && (now - lastProfilesFetch < 60000)) {
+    return cachedProfiles;
+  }
   try {
-    const res = await fetch(`${supabaseUrl}/rest/v1/couple_config?id=eq.1&select=*`, {
+    // 1. Fetch from public.profiles (extremely fast, ~20-30ms)
+    const res = await fetch(`${supabaseUrl}/rest/v1/profiles?select=id,email,username`, {
       headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}`, 'Cache-Control': 'no-cache' },
       cache: 'no-store'
     });
-    if (!res.ok) return null;
-    const data = await res.json();
-    if (!Array.isArray(data) || data.length === 0) return null;
-    return data[0]; // { partner1_email, partner1_user_id, partner2_email, partner2_user_id, ... }
-  } catch (e) {
-    console.warn('Failed to load couple config:', e.message);
-    return null;
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) {
+        cachedProfiles = data.map(p => ({
+          id: p.id,
+          email: p.email,
+          username: p.username || (p.email ? p.email.split('@')[0] : 'Unknown'),
+          user_metadata: { username: p.username || (p.email ? p.email.split('@')[0] : 'Unknown') }
+        }));
+        lastProfilesFetch = now;
+        return cachedProfiles;
+      }
+    }
+  } catch (err) {
+    console.warn('Fast profiles fetch failed, falling back to auth admin:', err.message);
   }
-}
 
-function isCoupleMember(user, coupleConfig) {
-  if (!user || !coupleConfig) return false;
-  const email = (user.email || '').toLowerCase();
-  const p1Email = (coupleConfig.partner1_email || '').toLowerCase();
-  const p2Email = (coupleConfig.partner2_email || '').toLowerCase();
-  // Exact match by user_id or email only — no fuzzy matching
-  if (user.id && (user.id === coupleConfig.partner1_user_id || user.id === coupleConfig.partner2_user_id)) return true;
-  if (email && (email === p1Email || email === p2Email)) return true;
-  return false;
-}
-
-function getCoupleLabel(coupleConfig, allUsers) {
-  if (!coupleConfig) return null;
-  const p1 = allUsers ? allUsers.find(u => (u.email || '').toLowerCase() === (coupleConfig.partner1_email || '').toLowerCase()) : null;
-  const p2 = allUsers ? allUsers.find(u => (u.email || '').toLowerCase() === (coupleConfig.partner2_email || '').toLowerCase()) : null;
-  const name1 = p1?.user_metadata?.username || coupleConfig.partner1_email.split('@')[0];
-  const name2 = p2?.user_metadata?.username || coupleConfig.partner2_email.split('@')[0];
-  return `Paket Contribution Couple: ${name1} & ${name2}`;
+  // Fallback to fetchAllAdminUsers if profiles table is empty or failed
+  const authUsers = await fetchAllAdminUsers(supabaseUrl, sbKey);
+  cachedProfiles = authUsers;
+  lastProfilesFetch = now;
+  return cachedProfiles;
 }
 
 async function fetchAllAdminUsers(supabaseUrl, sbKey) {
@@ -56,6 +58,40 @@ async function fetchAllAdminUsers(supabaseUrl, sbKey) {
     } catch(e) { break; }
   }
   return allUsers;
+}
+
+async function loadAllCoupleConfigs(supabaseUrl, sbKey) {
+  try {
+    const res = await fetch(`${supabaseUrl}/rest/v1/couple_config?select=*&order=created_at.asc`, {
+      headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}`, 'Cache-Control': 'no-cache' },
+      cache: 'no-store'
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
+  } catch (e) {
+    console.warn('Failed to load couple configs:', e.message);
+    return [];
+  }
+}
+
+function findUserCouple(user, coupleConfigs) {
+  if (!user || !Array.isArray(coupleConfigs)) return null;
+  const email = (user.email || '').toLowerCase().trim();
+  const userId = user.id;
+
+  for (const c of coupleConfigs) {
+    if (c.is_active === false) continue;
+    const p1Email = (c.partner1_email || '').toLowerCase().trim();
+    const p2Email = (c.partner2_email || '').toLowerCase().trim();
+    if (userId && (userId === c.partner1_user_id || userId === c.partner2_user_id)) {
+      return c;
+    }
+    if (email && (email === p1Email || email === p2Email)) {
+      return c;
+    }
+  }
+  return null;
 }
 
 export default async function handler(req, res) {
@@ -86,17 +122,30 @@ export default async function handler(req, res) {
   const { action } = body;
 
   try {
+    // ════════════════════════════════════════════════════════════════
+    // 1. GET MY CONTRIBUTIONS
+    // ════════════════════════════════════════════════════════════════
     if (action === 'get_my_contributions') {
-      const coupleConfig = await loadCoupleConfig(supabaseUrl, sbKey);
-      const isCouple = isCoupleMember(userData, coupleConfig);
+      const [coupleConfigs, allUsers] = await Promise.all([
+        loadAllCoupleConfigs(supabaseUrl, sbKey),
+        getFastUsers(supabaseUrl, sbKey)
+      ]);
+      const userCouple = findUserCouple(userData, coupleConfigs);
       let targetUserIds = [userId];
+      let coupleLabel = null;
 
-      if (isCouple) {
-        const allUsers = await fetchAllAdminUsers(supabaseUrl, sbKey);
-        const coupleUsers = allUsers.filter(u => isCoupleMember(u, coupleConfig));
-        if (coupleUsers.length > 0) {
-          targetUserIds = Array.from(new Set(coupleUsers.map(u => u.id)));
-        }
+      if (userCouple) {
+        const p1 = allUsers.find(u => (u.email || '').toLowerCase().trim() === (userCouple.partner1_email || '').toLowerCase().trim());
+        const p2 = allUsers.find(u => (u.email || '').toLowerCase().trim() === (userCouple.partner2_email || '').toLowerCase().trim());
+        const p1Id = p1?.id || userCouple.partner1_user_id;
+        const p2Id = p2?.id || userCouple.partner2_user_id;
+        const ids = [p1Id, p2Id].filter(Boolean);
+        if (ids.length > 0) targetUserIds = Array.from(new Set(ids));
+        
+        const name1 = p1?.user_metadata?.username || p1?.username || userCouple.partner1_email.split('@')[0];
+        const name2 = p2?.user_metadata?.username || p2?.username || userCouple.partner2_email.split('@')[0];
+        const title = userCouple.package_name && userCouple.package_name !== 'Couple Package' ? userCouple.package_name : `${name1} & ${name2}`;
+        coupleLabel = `Paket Couple: ${title}`;
       }
 
       const filterParam = targetUserIds.length > 1
@@ -108,108 +157,116 @@ export default async function handler(req, res) {
         cache: 'no-store'
       });
       const data = await resData.json();
-      if (!Array.isArray(data)) console.error('get_my_contributions error:', data);
-
-      let coupleLabel = null;
-      if (isCouple) {
-        const allUsers = await fetchAllAdminUsers(supabaseUrl, sbKey);
-        coupleLabel = getCoupleLabel(coupleConfig, allUsers);
-      }
 
       return res.status(200).json({
         success: true,
-        is_couple: isCouple,
+        is_couple: !!userCouple,
         couple_package: coupleLabel,
         contributions: Array.isArray(data) ? data : []
       });
     }
 
+    // ════════════════════════════════════════════════════════════════
+    // 2. GET LEADERBOARD (FAST & MULTI-COUPLE AWARE)
+    // ════════════════════════════════════════════════════════════════
     if (action === 'get_leaderboard') {
-      const resData = await fetch(`${supabaseUrl}/rest/v1/contributions?select=points,user_id`, {
-        headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}`, 'Cache-Control': 'no-cache' },
-        cache: 'no-store'
+      const [resContribs, coupleConfigs, allUsers] = await Promise.all([
+        fetch(`${supabaseUrl}/rest/v1/contributions?select=points,user_id,created_at`, {
+          headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}`, 'Cache-Control': 'no-cache' },
+          cache: 'no-store'
+        }).then(r => r.json()).catch(() => []),
+        loadAllCoupleConfigs(supabaseUrl, sbKey),
+        getFastUsers(supabaseUrl, sbKey)
+      ]);
+
+      const validData = Array.isArray(resContribs) ? resContribs : [];
+      const activeCouples = coupleConfigs.filter(c => c.is_active !== false);
+
+      const coupleUserMap = new Map();
+      const couplePointsMap = new Map();
+
+      activeCouples.forEach(c => {
+        couplePointsMap.set(c.id, 0);
+        if (c.partner1_user_id) coupleUserMap.set(c.partner1_user_id, c);
+        if (c.partner2_user_id) coupleUserMap.set(c.partner2_user_id, c);
+
+        const u1 = allUsers.find(u => (u.email || '').toLowerCase().trim() === (c.partner1_email || '').toLowerCase().trim());
+        const u2 = allUsers.find(u => (u.email || '').toLowerCase().trim() === (c.partner2_email || '').toLowerCase().trim());
+        if (u1) coupleUserMap.set(u1.id, c);
+        if (u2) coupleUserMap.set(u2.id, c);
       });
-      const data = await resData.json();
-      if (!Array.isArray(data)) console.error('get_leaderboard error:', data);
-      const validData = Array.isArray(data) ? data : [];
-      
-      const allUsers = await fetchAllAdminUsers(supabaseUrl, sbKey);
-      const coupleConfig = await loadCoupleConfig(supabaseUrl, sbKey);
-      
-      // Calculate pooled points for couple package
-      const coupleUserIds = new Set(allUsers.filter(u => isCoupleMember(u, coupleConfig)).map(u => u.id));
-      let coupleTotalPoints = 0;
+
+      const individualScores = {};
+
       validData.forEach(c => {
-        if (coupleUserIds.has(c.user_id)) {
-          coupleTotalPoints += (c.points || 0);
-        }
-      });
-      
-      const scores = {};
-      validData.forEach(c => {
-        const u = allUsers.find(au => au.id === c.user_id);
-        const email = u ? u.email : 'Unknown';
-        const username = u?.user_metadata?.username || (u ? u.email.split('@')[0] : 'Unknown');
-        const userIsCouple = isCoupleMember(u, coupleConfig);
-        if (!userIsCouple) {
-          if (!scores[email]) {
-            scores[email] = {
-              points: 0,
-              username,
-              is_couple: false
-            };
+        const pts = c.points || 0;
+        const couple = coupleUserMap.get(c.user_id);
+        if (couple) {
+          couplePointsMap.set(couple.id, (couplePointsMap.get(couple.id) || 0) + pts);
+        } else {
+          if (!individualScores[c.user_id]) {
+            const u = allUsers.find(au => au.id === c.user_id);
+            const email = u ? u.email : 'Unknown';
+            const username = u?.user_metadata?.username || u?.username || (email.includes('@') ? email.split('@')[0] : 'Unknown');
+            individualScores[c.user_id] = { points: 0, email, username, is_couple: false };
           }
-          scores[email].points += (c.points || 0);
+          individualScores[c.user_id].points += pts;
         }
       });
 
-      const list = Object.keys(scores)
-        .filter(k => scores[k].points > 0)
-        .map(k => ({
-          email: k,
-          username: scores[k].username,
-          points: scores[k].points,
-          is_couple: false
-        }));
+      const leaderboard = [];
 
-      // Add 1 single combined couple entry only if coupleTotalPoints > 0
-      if (coupleTotalPoints > 0 && coupleConfig) {
-        const coupleUsers = allUsers.filter(u => isCoupleMember(u, coupleConfig));
-        const coupleNames = coupleUsers.map(u => u?.user_metadata?.username || u.email.split('@')[0]);
-        const coupleUsername = coupleNames.length > 0 ? coupleNames.join(' & ') : `${coupleConfig.partner1_email.split('@')[0]} & ${coupleConfig.partner2_email.split('@')[0]}`;
-        const coupleLabel = getCoupleLabel(coupleConfig, allUsers);
-        list.push({
-          email: coupleUsers.map(u => u.email).join(', '),
-          username: coupleUsername,
-          points: coupleTotalPoints,
-          is_couple: true,
-          couple_label: coupleLabel
-        });
-      }
-       
-      const leaderboard = list.sort((a,b) => b.points - a.points);
-                               
+      Object.values(individualScores).forEach(item => {
+        if (item.points > 0) {
+          leaderboard.push(item);
+        }
+      });
+
+      activeCouples.forEach(c => {
+        const totalPts = couplePointsMap.get(c.id) || 0;
+        if (totalPts > 0) {
+          const u1 = allUsers.find(u => (u.email || '').toLowerCase().trim() === (c.partner1_email || '').toLowerCase().trim());
+          const u2 = allUsers.find(u => (u.email || '').toLowerCase().trim() === (c.partner2_email || '').toLowerCase().trim());
+          const name1 = u1?.user_metadata?.username || u1?.username || c.partner1_email.split('@')[0];
+          const name2 = u2?.user_metadata?.username || u2?.username || c.partner2_email.split('@')[0];
+          const coupleTitle = c.package_name && c.package_name !== 'Couple Package' ? c.package_name : `${name1} & ${name2}`;
+
+          leaderboard.push({
+            couple_id: c.id,
+            email: `${c.partner1_email}, ${c.partner2_email}`,
+            username: coupleTitle,
+            points: totalPts,
+            is_couple: true,
+            couple_label: `Paket Couple: ${coupleTitle}`
+          });
+        }
+      });
+
+      leaderboard.sort((a, b) => b.points - a.points);
       return res.status(200).json({ success: true, leaderboard });
     }
 
+    // ════════════════════════════════════════════════════════════════
+    // 3. CHECK CONTRIBUTION ACCESS
+    // ════════════════════════════════════════════════════════════════
     if (action === 'check_contribution') {
-      // Allow super admin to bypass
       const isSuperAdmin = userData.email === (process.env.SUPERADMIN_EMAIL || 'muqorroben@gmail.com');
       if (isSuperAdmin) {
         return res.status(200).json({ success: true, has_contributed: true });
       }
-      // Allow guest users to bypass
       const isGuest = (userData.email && userData.email.match(/^guest_\d+_\d+@mrcapsules\.com$/)) ||
                       (userData.user_metadata && userData.user_metadata.is_guest);
       if (isGuest) {
         return res.status(200).json({ success: true, has_contributed: true });
       }
-      
-      // Check couple package
-      const coupleConfig = await loadCoupleConfig(supabaseUrl, sbKey);
-      if (isCoupleMember(userData, coupleConfig)) {
-        const allUsers = await fetchAllAdminUsers(supabaseUrl, sbKey);
-        const coupleUserIds = Array.from(new Set(allUsers.filter(u => isCoupleMember(u, coupleConfig)).map(u => u.id)));
+
+      const coupleConfigs = await loadAllCoupleConfigs(supabaseUrl, sbKey);
+      const userCouple = findUserCouple(userData, coupleConfigs);
+      if (userCouple) {
+        const allUsers = await getFastUsers(supabaseUrl, sbKey);
+        const p1 = allUsers.find(u => (u.email || '').toLowerCase().trim() === (userCouple.partner1_email || '').toLowerCase().trim());
+        const p2 = allUsers.find(u => (u.email || '').toLowerCase().trim() === (userCouple.partner2_email || '').toLowerCase().trim());
+        const coupleUserIds = Array.from(new Set([p1?.id || userCouple.partner1_user_id, p2?.id || userCouple.partner2_user_id].filter(Boolean)));
         if (coupleUserIds.length > 0) {
           const filterParam = coupleUserIds.length > 1
             ? `user_id=in.(${coupleUserIds.join(',')})`
@@ -227,7 +284,7 @@ export default async function handler(req, res) {
           }
         }
       }
-      
+
       const rpcRes = await fetch(`${supabaseUrl}/rest/v1/rpc/check_user_contribution`, {
         method: 'POST',
         headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}`, 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' },
@@ -236,94 +293,102 @@ export default async function handler(req, res) {
       });
       if (!rpcRes.ok) throw new Error(await rpcRes.text());
       const hasContributed = await rpcRes.json();
-      
+
       return res.status(200).json({ success: true, has_contributed: hasContributed });
     }
 
-    if (action === 'get_couple_package') {
-      const coupleConfig = await loadCoupleConfig(supabaseUrl, sbKey);
-      if (!coupleConfig) {
-        return res.status(200).json({ success: true, enabled: false, couple: [] });
-      }
-      const allUsers = await fetchAllAdminUsers(supabaseUrl, sbKey);
-      const p1 = allUsers.find(u => (u.email || '').toLowerCase() === coupleConfig.partner1_email.toLowerCase());
-      const p2 = allUsers.find(u => (u.email || '').toLowerCase() === coupleConfig.partner2_email.toLowerCase());
+    // ════════════════════════════════════════════════════════════════
+    // 4. GET COUPLE PACKAGES (ALL PACKAGES & METRICS)
+    // ════════════════════════════════════════════════════════════════
+    if (action === 'get_couple_package' || action === 'get_couple_packages') {
+      const [coupleConfigs, allUsers, allContribs] = await Promise.all([
+        loadAllCoupleConfigs(supabaseUrl, sbKey),
+        getFastUsers(supabaseUrl, sbKey),
+        fetch(`${supabaseUrl}/rest/v1/contributions?select=points,created_at,user_id&order=created_at.desc`, {
+          headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}`, 'Cache-Control': 'no-cache' },
+          cache: 'no-store'
+        }).then(r => r.json()).catch(() => [])
+      ]);
 
-      const p1Id = p1?.id || coupleConfig.partner1_user_id;
-      const p2Id = p2?.id || coupleConfig.partner2_user_id;
-      const coupleIds = [p1Id, p2Id].filter(Boolean);
+      const validContribs = Array.isArray(allContribs) ? allContribs : [];
+      const packages = coupleConfigs.map(c => {
+        const p1 = allUsers.find(u => (u.email || '').toLowerCase().trim() === (c.partner1_email || '').toLowerCase().trim());
+        const p2 = allUsers.find(u => (u.email || '').toLowerCase().trim() === (c.partner2_email || '').toLowerCase().trim());
+        const p1Id = p1?.id || c.partner1_user_id;
+        const p2Id = p2?.id || c.partner2_user_id;
+        const name1 = p1?.user_metadata?.username || p1?.username || c.partner1_email.split('@')[0];
+        const name2 = p2?.user_metadata?.username || p2?.username || c.partner2_email.split('@')[0];
 
-      let pooledPoints = 0;
-      let lastContributedAt = null;
-      let hasActiveAccess = false;
+        let p1Points = 0;
+        let p2Points = 0;
+        let p1Last = null;
+        let p2Last = null;
 
-      let p1Points = 0;
-      let p2Points = 0;
-      let p1LastContributed = null;
-      let p2LastContributed = null;
-
-      if (coupleIds.length > 0) {
-        try {
-          const cRes = await fetch(`${supabaseUrl}/rest/v1/contributions?user_id=in.(${coupleIds.join(',')})&select=points,created_at,user_id&order=created_at.desc`, {
-            headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}`, 'Cache-Control': 'no-cache' },
-            cache: 'no-store'
-          });
-          if (cRes.ok) {
-            const cData = await cRes.json();
-            if (Array.isArray(cData)) {
-              cData.forEach(c => {
-                const pts = c.points || 0;
-                pooledPoints += pts;
-                if (c.user_id === p1Id) {
-                  p1Points += pts;
-                  if (!p1LastContributed) p1LastContributed = c.created_at;
-                } else if (c.user_id === p2Id) {
-                  p2Points += pts;
-                  if (!p2LastContributed) p2LastContributed = c.created_at;
-                }
-              });
-              if (cData.length > 0) {
-                lastContributedAt = cData[0].created_at;
-                hasActiveAccess = new Date(lastContributedAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-              }
-            }
+        validContribs.forEach(cb => {
+          if (cb.user_id === p1Id) {
+            p1Points += (cb.points || 0);
+            if (!p1Last) p1Last = cb.created_at;
+          } else if (cb.user_id === p2Id) {
+            p2Points += (cb.points || 0);
+            if (!p2Last) p2Last = cb.created_at;
           }
-        } catch (err) {
-          console.warn('Error fetching couple contributions:', err);
-        }
-      }
+        });
 
+        const pooledPoints = p1Points + p2Points;
+        let lastContributedAt = null;
+        if (p1Last && p2Last) {
+          lastContributedAt = new Date(p1Last) > new Date(p2Last) ? p1Last : p2Last;
+        } else {
+          lastContributedAt = p1Last || p2Last || null;
+        }
+
+        const hasActiveAccess = lastContributedAt 
+          ? new Date(lastContributedAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+          : false;
+
+        return {
+          id: c.id,
+          package_name: c.package_name || `${name1} & ${name2}`,
+          is_active: c.is_active !== false,
+          pooled_points: pooledPoints,
+          has_active_access: hasActiveAccess,
+          last_contributed_at: lastContributedAt,
+          created_at: c.created_at,
+          updated_at: c.updated_at,
+          partner1: {
+            id: p1Id,
+            email: c.partner1_email,
+            username: name1,
+            points: p1Points,
+            last_contributed_at: p1Last
+          },
+          partner2: {
+            id: p2Id,
+            email: c.partner2_email,
+            username: name2,
+            points: p2Points,
+            last_contributed_at: p2Last
+          }
+        };
+      });
+
+      const firstPkg = packages[0] || null;
       return res.status(200).json({
         success: true,
-        enabled: true,
-        pooled_points: pooledPoints,
-        last_contributed_at: lastContributedAt,
-        has_active_access: hasActiveAccess,
-        updated_at: coupleConfig.updated_at,
-        created_at: coupleConfig.created_at,
-        couple: [
-          {
-            id: p1Id,
-            email: coupleConfig.partner1_email,
-            username: p1?.user_metadata?.username || coupleConfig.partner1_email.split('@')[0],
-            full_name: p1?.user_metadata?.full_name || p1?.user_metadata?.name || '',
-            points: p1Points,
-            last_contributed_at: p1LastContributed
-          },
-          {
-            id: p2Id,
-            email: coupleConfig.partner2_email,
-            username: p2?.user_metadata?.username || coupleConfig.partner2_email.split('@')[0],
-            full_name: p2?.user_metadata?.full_name || p2?.user_metadata?.name || '',
-            points: p2Points,
-            last_contributed_at: p2LastContributed
-          }
-        ]
+        enabled: packages.length > 0,
+        packages: packages,
+        // Single-couple backward compatibility
+        pooled_points: firstPkg ? firstPkg.pooled_points : 0,
+        last_contributed_at: firstPkg ? firstPkg.last_contributed_at : null,
+        has_active_access: firstPkg ? firstPkg.has_active_access : false,
+        couple: firstPkg ? [firstPkg.partner1, firstPkg.partner2] : []
       });
     }
 
+    // ════════════════════════════════════════════════════════════════
+    // 5. SET / UNLINK / SWAP COUPLE PACKAGE (MULTI-COUPLE SUPPORT)
+    // ════════════════════════════════════════════════════════════════
     if (action === 'set_couple_package') {
-      // Role check for admin actions
       const username = userData.user_metadata?.username;
       const encEmail = encodeURIComponent(userData.email);
       const identifierQuery = username ? `or=(identifier.eq.${encEmail},identifier.eq.${encodeURIComponent(username)})` : `identifier=eq.${encEmail}`;
@@ -338,60 +403,127 @@ export default async function handler(req, res) {
         return res.status(403).json({ error: 'Forbidden. Admin only.' });
       }
 
-      const { partner1_email, partner2_email, unlink } = body;
+      const { partner1_email, partner2_email, package_name, unlink, swap, couple_id } = body;
+
+      // UNLINK ACTION
       if (unlink) {
-        // Delete couple config from DB
-        await fetch(`${supabaseUrl}/rest/v1/couple_config?id=eq.1`, {
+        let deleteUrl = `${supabaseUrl}/rest/v1/couple_config`;
+        if (couple_id) {
+          deleteUrl += `?id=eq.${couple_id}`;
+        } else {
+          const allCouples = await loadAllCoupleConfigs(supabaseUrl, sbKey);
+          if (allCouples.length === 1) {
+            deleteUrl += `?id=eq.${allCouples[0].id}`;
+          } else {
+            return res.status(400).json({ error: 'Harap tentukan ID pasangan yang ingin dihapus.' });
+          }
+        }
+        const delRes = await fetch(deleteUrl, {
           method: 'DELETE',
           headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}` }
         });
-        return res.status(200).json({ success: true, message: 'Couple package unlinked.' });
+        if (!delRes.ok) {
+          const errText = await delRes.text();
+          return res.status(500).json({ error: 'Gagal melepas pasangan: ' + errText });
+        }
+        return res.status(200).json({ success: true, message: 'Paket couple berhasil dilepas (unlinked).' });
       }
 
+      // SWAP ROLES ACTION
+      if (swap) {
+        if (!couple_id) return res.status(400).json({ error: 'Parameter couple_id dibutuhkan untuk swap peran.' });
+        const targetRes = await fetch(`${supabaseUrl}/rest/v1/couple_config?id=eq.${couple_id}&select=*`, {
+          headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}` }
+        });
+        if (!targetRes.ok) return res.status(404).json({ error: 'Data pasangan tidak ditemukan.' });
+        const targetData = await targetRes.json();
+        if (!Array.isArray(targetData) || targetData.length === 0) return res.status(404).json({ error: 'Pasangan tidak ditemukan.' });
+        const cur = targetData[0];
+
+        const patchRes = await fetch(`${supabaseUrl}/rest/v1/couple_config?id=eq.${couple_id}`, {
+          method: 'PATCH',
+          headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            partner1_email: cur.partner2_email,
+            partner1_user_id: cur.partner2_user_id,
+            partner2_email: cur.partner1_email,
+            partner2_user_id: cur.partner1_user_id,
+            updated_at: new Date().toISOString()
+          })
+        });
+        if (!patchRes.ok) return res.status(500).json({ error: 'Gagal menukar peran partner.' });
+        return res.status(200).json({ success: true, message: 'Peran Partner 1 & 2 berhasil ditukar.' });
+      }
+
+      // CREATE OR UPDATE ACTION
       if (!partner1_email || !partner2_email) {
-        return res.status(400).json({ error: 'Both partner emails are required.' });
+        return res.status(400).json({ error: 'Email kedua partner wajib diisi.' });
+      }
+      if (partner1_email.toLowerCase().trim() === partner2_email.toLowerCase().trim()) {
+        return res.status(400).json({ error: 'Partner 1 dan Partner 2 tidak boleh orang yang sama!' });
       }
 
-      const allUsers = await fetchAllAdminUsers(supabaseUrl, sbKey);
-      const p1 = allUsers.find(u => (u.email || '').toLowerCase() === partner1_email.toLowerCase());
-      const p2 = allUsers.find(u => (u.email || '').toLowerCase() === partner2_email.toLowerCase());
+      const allUsers = await getFastUsers(supabaseUrl, sbKey);
+      const p1 = allUsers.find(u => (u.email || '').toLowerCase().trim() === partner1_email.toLowerCase().trim());
+      const p2 = allUsers.find(u => (u.email || '').toLowerCase().trim() === partner2_email.toLowerCase().trim());
 
       if (!p1 || !p2) {
-        return res.status(404).json({ error: 'One or both partners not found in user accounts.' });
+        return res.status(404).json({ error: 'Salah satu atau kedua akun partner tidak ditemukan dalam sistem.' });
       }
 
-      // Upsert couple config into DB (singleton row id=1)
-      const upsertRes = await fetch(`${supabaseUrl}/rest/v1/couple_config`, {
-        method: 'POST',
-        headers: {
-          'apikey': sbKey,
-          'Authorization': `Bearer ${sbKey}`,
-          'Content-Type': 'application/json',
-          'Prefer': 'resolution=merge-duplicates'
-        },
-        body: JSON.stringify({
-          id: 1,
-          partner1_email: p1.email.toLowerCase(),
-          partner1_user_id: p1.id,
-          partner2_email: p2.email.toLowerCase(),
-          partner2_user_id: p2.id,
-          updated_at: new Date().toISOString()
-        })
-      });
+      const name1 = p1?.user_metadata?.username || p1?.username || partner1_email.split('@')[0];
+      const name2 = p2?.user_metadata?.username || p2?.username || partner2_email.split('@')[0];
+      const pkgName = package_name ? package_name.trim() : `${name1} & ${name2}`;
 
-      if (!upsertRes.ok) {
-        const errText = await upsertRes.text();
-        console.error('Failed to upsert couple_config:', errText);
-        return res.status(500).json({ error: 'Failed to save couple config to database.' });
+      if (couple_id) {
+        // Update existing couple package without touching others
+        const patchRes = await fetch(`${supabaseUrl}/rest/v1/couple_config?id=eq.${couple_id}`, {
+          method: 'PATCH',
+          headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            package_name: pkgName,
+            partner1_email: p1.email.toLowerCase().trim(),
+            partner1_user_id: p1.id,
+            partner2_email: p2.email.toLowerCase().trim(),
+            partner2_user_id: p2.id,
+            updated_at: new Date().toISOString()
+          })
+        });
+        if (!patchRes.ok) {
+          const errText = await patchRes.text();
+          return res.status(500).json({ error: 'Gagal memperbarui konfigurasi pasangan: ' + errText });
+        }
+      } else {
+        // INSERT BRAND NEW COUPLE PACKAGE (Never overwrites existing couples!)
+        const insertRes = await fetch(`${supabaseUrl}/rest/v1/couple_config`, {
+          method: 'POST',
+          headers: {
+            'apikey': sbKey,
+            'Authorization': `Bearer ${sbKey}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+          },
+          body: JSON.stringify({
+            package_name: pkgName,
+            partner1_email: p1.email.toLowerCase().trim(),
+            partner1_user_id: p1.id,
+            partner2_email: p2.email.toLowerCase().trim(),
+            partner2_user_id: p2.id,
+            is_active: true,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          })
+        });
+        if (!insertRes.ok) {
+          const errText = await insertRes.text();
+          return res.status(500).json({ error: 'Gagal menambahkan pasangan baru: ' + errText });
+        }
       }
 
       return res.status(200).json({
         success: true,
-        message: 'Couple package successfully updated!',
-        couple: [
-          { id: p1.id, email: p1.email, username: p1.user_metadata?.username || p1.email.split('@')[0] },
-          { id: p2.id, email: p2.email, username: p2.user_metadata?.username || p2.email.split('@')[0] }
-        ]
+        message: couple_id ? 'Paket pasangan berhasil diperbarui!' : 'Paket pasangan baru berhasil ditambahkan!',
+        package_name: pkgName
       });
     }
 

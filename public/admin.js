@@ -3579,12 +3579,14 @@ window.updateCoupleSelectionPreview = function() {
 
   function getUserPoints(email) {
     if (!email) return 0;
-    if (window.couplePackageConfig && Array.isArray(window.couplePackageConfig.couple)) {
-      const p = window.couplePackageConfig.couple.find(c => (c.email || '').toLowerCase() === email.toLowerCase());
-      if (p && typeof p.points === 'number') return p.points;
+    if (window.couplePackageConfig && Array.isArray(window.couplePackageConfig.packages)) {
+      for (const pkg of window.couplePackageConfig.packages) {
+        if ((pkg.partner1?.email || '').toLowerCase() === email.toLowerCase()) return pkg.partner1.points || 0;
+        if ((pkg.partner2?.email || '').toLowerCase() === email.toLowerCase()) return pkg.partner2.points || 0;
+      }
     }
     if (Array.isArray(window.latestLeaderboard)) {
-      const lb = window.latestLeaderboard.find(x => (x.email || '').toLowerCase() === email.toLowerCase());
+      const lb = window.latestLeaderboard.find(x => (x.email || '').toLowerCase().includes(email.toLowerCase()));
       if (lb && typeof lb.points === 'number') return lb.points;
     }
     return 0;
@@ -3613,7 +3615,7 @@ window.updateCoupleSelectionPreview = function() {
         </div>
       `;
     } else {
-      p1Box.innerHTML = `<span style="color:var(--text-muted); font-size:11.5px;">Select user above</span>`;
+      p1Box.innerHTML = `<span style="color:var(--text-muted); font-size:11.5px;">Pilih user di atas</span>`;
     }
   }
 
@@ -3633,7 +3635,7 @@ window.updateCoupleSelectionPreview = function() {
         </div>
       `;
     } else {
-      p2Box.innerHTML = `<span style="color:var(--text-muted); font-size:11.5px;">Select user above</span>`;
+      p2Box.innerHTML = `<span style="color:var(--text-muted); font-size:11.5px;">Pilih user di atas</span>`;
     }
   }
 
@@ -3642,17 +3644,7 @@ window.updateCoupleSelectionPreview = function() {
   }
 };
 
-window.swapCouplePartners = async function() {
-  if (!window.couplePackageConfig || !window.couplePackageConfig.enabled || !Array.isArray(window.couplePackageConfig.couple) || window.couplePackageConfig.couple.length !== 2) {
-    customAlert('Tidak ada couple aktif yang dapat ditukar posisinya.');
-    return;
-  }
-  const p1 = window.couplePackageConfig.couple[0];
-  const p2 = window.couplePackageConfig.couple[1];
-
-  const confirmed = await customConfirm(`Tukar posisi Partner 1 (${p1.username || p1.email}) dan Partner 2 (${p2.username || p2.email})?`);
-  if (!confirmed) return;
-
+window.swapCoupleRoles = async function(coupleId) {
   const token = sessionToken || window.sessionToken;
   try {
     const res = await fetch('/api/contributions', {
@@ -3663,26 +3655,67 @@ window.swapCouplePartners = async function() {
       },
       body: JSON.stringify({
         action: 'set_couple_package',
-        partner1_email: p2.email,
-        partner2_email: p1.email
+        swap: true,
+        couple_id: coupleId
       })
     });
     const data = await res.json();
     if (res.ok && data.success) {
-      showToast('Posisi partner couple berhasil ditukar.', 'success');
+      showToast('Peran Partner 1 & 2 berhasil ditukar.', 'success');
       await loadCouplePackageStatus();
       if (typeof window.loadContributions === 'function') {
         window.loadContributions();
       }
-      if (window.lastLoadedUsers && window.lastBannedDevs && typeof renderUsers === 'function') {
-        renderUsers(window.lastLoadedUsers, window.lastBannedDevs);
-      }
     } else {
-      showToast('Gagal menukar partner couple: ' + (data.error || 'Server error'), 'error');
+      showToast('Gagal menukar peran: ' + (data.error || 'Server error'), 'error');
     }
   } catch (err) {
     showToast('Network error: ' + err.message, 'error');
   }
+};
+
+window.swapCouplePartners = function() {
+  const pkgs = window.couplePackageConfig?.packages || [];
+  if (pkgs.length > 0) window.swapCoupleRoles(pkgs[0].id);
+};
+
+window.unlinkSpecificCouple = async function(coupleId, name) {
+  const token = sessionToken || window.sessionToken;
+  const label = name ? `"${name}"` : 'ini';
+  const confirmed = await customConfirm(`Yakin ingin melepas (unlink) paket pasangan ${label}? Poin kontribusi akan kembali ke skor individu masing-masing tanpa ada data yang hilang.`);
+  if (!confirmed) return;
+
+  try {
+    const res = await fetch('/api/contributions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        action: 'set_couple_package',
+        unlink: true,
+        couple_id: coupleId
+      })
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      showToast('Paket pasangan berhasil dilepas.', 'success');
+      await loadCouplePackageStatus();
+      if (typeof window.loadContributions === 'function') {
+        window.loadContributions();
+      }
+    } else {
+      showToast('Gagal melepas paket pasangan: ' + (data.error || 'Server error'), 'error');
+    }
+  } catch (err) {
+    showToast('Network error: ' + err.message, 'error');
+  }
+};
+
+window.unlinkCouplePackage = function() {
+  const pkgs = window.couplePackageConfig?.packages || [];
+  if (pkgs.length > 0) window.unlinkSpecificCouple(pkgs[0].id, pkgs[0].package_name);
 };
 
 async function loadCouplePackageStatus() {
@@ -3691,27 +3724,10 @@ async function loadCouplePackageStatus() {
 
   const activeContainer = document.getElementById('coupleActiveCardContainer');
   const emptyContainer = document.getElementById('coupleActiveEmptyContainer');
-  const quotaBadge = document.getElementById('modalCoupleQuotaBadge');
-  const p1Avatar = document.getElementById('modalP1Avatar');
-  const p1Name = document.getElementById('modalP1Name');
-  const p1Email = document.getElementById('modalP1Email');
-  const p1Points = document.getElementById('modalP1Points');
-  const p2Avatar = document.getElementById('modalP2Avatar');
-  const p2Name = document.getElementById('modalP2Name');
-  const p2Email = document.getElementById('modalP2Email');
-  const p2Points = document.getElementById('modalP2Points');
-  const pooledPointsEl = document.getElementById('modalCouplePooledPoints');
-  const summaryStatus = document.getElementById('modalSummaryStatus');
-  const summaryLastContrib = document.getElementById('modalSummaryLastContrib');
-  const summaryQuota = document.getElementById('modalSummaryQuota');
-
-  const p1Select = document.getElementById('selectCouplePartner1');
-  const p2Select = document.getElementById('selectCouplePartner2');
-
+  const countBadge = document.getElementById('modalCoupleCountBadge');
   const widget = document.getElementById('coupleSidebarWidget');
   const namesEl = document.getElementById('coupleSidebarNames');
   const statusEl = document.getElementById('coupleSidebarStatus');
-  const modalStatusEl = document.getElementById('coupleCurrentStatusText');
 
   try {
     const res = await fetch('/api/contributions', {
@@ -3726,127 +3742,118 @@ async function loadCouplePackageStatus() {
     const data = await res.json();
     window.couplePackageConfig = data;
 
-    if (data.enabled && Array.isArray(data.couple) && data.couple.length === 2) {
-      const p1 = data.couple[0];
-      const p2 = data.couple[1];
-      const name1 = p1.username || p1.email.split('@')[0];
-      const name2 = p2.username || p2.email.split('@')[0];
-      const email1 = p1.email || '-';
-      const email2 = p2.email || '-';
-      const init1 = (name1.length >= 2 ? name1.substring(0, 2) : name1).toUpperCase();
-      const init2 = (name2.length >= 2 ? name2.substring(0, 2) : name2).toUpperCase();
-      const pts = data.pooled_points || 0;
-      const pts1 = p1.points || 0;
-      const pts2 = p2.points || 0;
-      const isActive = !!data.has_active_access;
-      const lastContribFormatted = data.last_contributed_at 
-        ? new Date(data.last_contributed_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' })
-        : 'Belum Ada';
+    const packages = Array.isArray(data.packages) ? data.packages : (data.enabled && data.couple ? [{
+      id: 1,
+      package_name: 'Couple Package',
+      pooled_points: data.pooled_points || 0,
+      has_active_access: !!data.has_active_access,
+      last_contributed_at: data.last_contributed_at,
+      partner1: data.couple[0] || {},
+      partner2: data.couple[1] || {}
+    }] : []);
 
-      if (activeContainer) activeContainer.style.display = 'block';
+    if (countBadge) countBadge.textContent = packages.length;
+
+    if (packages.length > 0) {
+      if (activeContainer) {
+        activeContainer.style.display = 'flex';
+        activeContainer.innerHTML = packages.map(pkg => {
+          const p1 = pkg.partner1 || {};
+          const p2 = pkg.partner2 || {};
+          const name1 = p1.username || (p1.email ? p1.email.split('@')[0] : 'Partner 1');
+          const name2 = p2.username || (p2.email ? p2.email.split('@')[0] : 'Partner 2');
+          const email1 = p1.email || '-';
+          const email2 = p2.email || '-';
+          const init1 = (name1.length >= 2 ? name1.substring(0, 2) : name1).toUpperCase();
+          const init2 = (name2.length >= 2 ? name2.substring(0, 2) : name2).toUpperCase();
+          const pts1 = p1.points || 0;
+          const pts2 = p2.points || 0;
+          const pooledPts = pkg.pooled_points || (pts1 + pts2);
+          const isActive = !!pkg.has_active_access;
+          const lastContribFormatted = pkg.last_contributed_at 
+            ? new Date(pkg.last_contributed_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' })
+            : 'Belum Ada';
+          const pkgTitle = pkg.package_name || `${name1} & ${name2}`;
+
+          return `
+            <div class="dash-couple-card" style="margin:0; padding:14px 16px; background:var(--bg-elevated, var(--c1)); border:1px solid var(--border-light); border-radius:6px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="font-weight:800; font-size:13.5px; color:var(--text-main);">${sanitize(pkgTitle)}</span>
+                  <span class="badge" style="font-size:10px; padding:1px 6px; background:var(--bg-surface); color:var(--text-muted); border:1px solid var(--border-light);">#${pkg.id}</span>
+                </div>
+                <span class="badge" style="background:${isActive ? 'color-mix(in srgb, var(--c2) 18%, transparent)' : 'color-mix(in srgb, var(--danger) 18%, transparent)'}; color:${isActive ? 'var(--c2)' : 'var(--danger)'}; border:1px solid ${isActive ? 'var(--c2)' : 'var(--danger)'}; font-size:10px; font-weight:700; padding:2px 8px; border-radius:3px;">
+                  ${isActive ? '30-DAY ACCESS ACTIVE' : 'ACCESS EXPIRED'}
+                </span>
+              </div>
+
+              <!-- Symmetrical Dual Partner Boxes with Center Synergy Core -->
+              <div class="dash-couple-grid" style="margin-bottom:12px;">
+                <!-- Partner 1 -->
+                <div class="dash-couple-box left" style="padding:10px 14px;">
+                  <div class="user-avatar-badge" style="width:34px; height:34px; min-width:34px; font-size:12px; font-weight:700;">${sanitize(init1)}</div>
+                  <div style="min-width:0; flex:1;">
+                    <div style="font-size:9.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">PARTNER 1</div>
+                    <div style="font-size:13px; font-weight:700; color:var(--text-main); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${sanitize(name1)}</div>
+                    <div style="font-size:11px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${sanitize(email1)}</div>
+                    <div style="font-size:11.5px; font-weight:700; color:var(--accent); margin-top:2px;">${pts1} pts</div>
+                  </div>
+                </div>
+
+                <!-- Center Core -->
+                <div class="dash-couple-core" style="padding:4px 8px;">
+                  <div style="width:28px; height:28px; border-radius:50%; background:color-mix(in srgb, var(--accent) 15%, transparent); display:flex; align-items:center; justify-content:center; margin-bottom:2px; color:var(--accent);">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                  </div>
+                  <div style="font-size:16px; font-weight:800; color:var(--c4); line-height:1.2;">${pooledPts} pts</div>
+                  <div style="font-size:9px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">POOLED SCORE</div>
+                </div>
+
+                <!-- Partner 2 (Mirrored) -->
+                <div class="dash-couple-box right" style="padding:10px 14px;">
+                  <div style="min-width:0; flex:1;">
+                    <div style="font-size:9.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">PARTNER 2</div>
+                    <div style="font-size:13px; font-weight:700; color:var(--text-main); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${sanitize(name2)}</div>
+                    <div style="font-size:11px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${sanitize(email2)}</div>
+                    <div style="font-size:11.5px; font-weight:700; color:var(--accent); margin-top:2px;">${pts2} pts</div>
+                  </div>
+                  <div class="user-avatar-badge" style="width:34px; height:34px; min-width:34px; font-size:12px; font-weight:700;">${sanitize(init2)}</div>
+                </div>
+              </div>
+
+              <!-- Card Bottom Bar -->
+              <div style="display:flex; justify-content:space-between; align-items:center; padding-top:10px; border-top:1px solid var(--border-light); font-size:11.5px; flex-wrap:wrap; gap:8px;">
+                <div style="color:var(--text-muted); font-size:11px;">
+                  <span>Aktivitas Terakhir: <strong>${lastContribFormatted}</strong></span>
+                </div>
+                <div style="display:flex; gap:6px;">
+                  <button class="btn-unified" style="font-size:11px; padding:3px 8px;" onclick="window.swapCoupleRoles(${pkg.id})" title="Tukar posisi Partner 1 &amp; Partner 2">Swap Roles</button>
+                  <button class="btn-unified" style="font-size:11px; padding:3px 8px; color:var(--danger); border-color:color-mix(in srgb, var(--danger) 35%, transparent);" onclick="window.unlinkSpecificCouple(${pkg.id}, '${sanitize(pkgTitle)}')" title="Hapus paket pasangan ini">Unlink</button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
       if (emptyContainer) emptyContainer.style.display = 'none';
 
-      if (p1Avatar) p1Avatar.textContent = init1;
-      if (p1Name) p1Name.textContent = name1;
-      if (p1Email) p1Email.textContent = email1;
-      if (p1Points) p1Points.textContent = `${pts1} pts`;
-
-      if (p2Avatar) p2Avatar.textContent = init2;
-      if (p2Name) p2Name.textContent = name2;
-      if (p2Email) p2Email.textContent = email2;
-      if (p2Points) p2Points.textContent = `${pts2} pts`;
-
-      if (pooledPointsEl) pooledPointsEl.textContent = `${pts} pts`;
-
-      if (quotaBadge) {
-        quotaBadge.textContent = isActive ? '30-DAY ACCESS ACTIVE' : 'ACCESS EXPIRED';
-        quotaBadge.style.background = isActive ? 'color-mix(in srgb, var(--c2) 18%, transparent)' : 'color-mix(in srgb, var(--danger) 18%, transparent)';
-        quotaBadge.style.color = isActive ? 'var(--c2)' : 'var(--danger)';
-        quotaBadge.style.border = `1px solid ${isActive ? 'var(--c2)' : 'var(--danger)'}`;
-      }
-
-      if (summaryStatus) {
-        summaryStatus.textContent = isActive ? 'Active (Synced)' : 'Inactive';
-        summaryStatus.style.color = isActive ? 'var(--c2)' : 'var(--danger)';
-      }
-      if (summaryLastContrib) {
-        summaryLastContrib.textContent = lastContribFormatted;
-      }
-      if (summaryQuota) {
-        summaryQuota.textContent = isActive ? 'Shared 30-Day Granted' : 'Access Expired';
-        summaryQuota.style.color = isActive ? 'var(--c2)' : 'var(--text-muted)';
-      }
-
-      if (p1Select && (!p1Select.value || p1Select.value === email1)) p1Select.value = email1;
-      if (p2Select && (!p2Select.value || p2Select.value === email2)) p2Select.value = email2;
-
-      if (widget) widget.style.display = 'none';
-      if (namesEl) namesEl.textContent = `${name1} & ${name2}`;
+      if (namesEl) namesEl.textContent = `${packages.length} Active Couple${packages.length > 1 ? 's' : ''}`;
       if (statusEl) {
-        statusEl.innerHTML = `<span id="coupleSidebarNames" style="font-weight:600; color:var(--text-main);">${sanitize(name1)} &amp; ${sanitize(name2)}</span><br>` +
-          `<span style="color:${isActive ? 'var(--c2)' : 'var(--text-muted)'}; font-weight:600;">${pts} pts • ${isActive ? 'Akses Aktif' : 'Expired'}</span>`;
-      }
-
-      if (modalStatusEl) {
-        modalStatusEl.innerHTML =
-          `<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap:10px; margin-top:4px;">` +
-            `<div style="padding:10px 12px; background:var(--bg-surface); border:1px solid var(--border-light); border-radius:4px;">` +
-              `<div style="font-size:10px; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">PARTNERS</div>` +
-              `<div style="font-size:13px; font-weight:700; color:var(--text-main); margin-top:2px;">${sanitize(name1)} &amp; ${sanitize(name2)}</div>` +
-            `</div>` +
-            `<div style="padding:10px 12px; background:var(--bg-surface); border:1px solid var(--border-light); border-radius:4px;">` +
-              `<div style="font-size:10px; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">POOLED POINTS</div>` +
-              `<div style="font-size:13px; font-weight:800; color:var(--c4); margin-top:2px;">${pts} pts</div>` +
-            `</div>` +
-            `<div style="padding:10px 12px; background:var(--bg-surface); border:1px solid var(--border-light); border-radius:4px;">` +
-              `<div style="font-size:10px; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">30-DAY ACCESS</div>` +
-              `<div style="font-size:12px; font-weight:700; color:${isActive ? 'var(--c2)' : 'var(--danger)'}; margin-top:2px;">${isActive ? 'ACTIVE (SYNCED)' : 'EXPIRED'}</div>` +
-            `</div>` +
-          `</div>`;
+        statusEl.innerHTML = `<span style="font-weight:600; color:var(--text-main);">${packages.length} Pasangan Terdaftar</span><br>` +
+          `<span style="color:var(--c2); font-weight:600;">Sinergi Leaderboard Aktif</span>`;
       }
     } else {
-      if (activeContainer) activeContainer.style.display = 'none';
+      if (activeContainer) {
+        activeContainer.style.display = 'none';
+        activeContainer.innerHTML = '';
+      }
       if (emptyContainer) emptyContainer.style.display = 'block';
-
-      if (p1Avatar) p1Avatar.textContent = '-';
-      if (p1Name) p1Name.textContent = 'Unassigned';
-      if (p1Email) p1Email.textContent = '-';
-      if (p1Points) p1Points.textContent = '0 pts';
-
-      if (p2Avatar) p2Avatar.textContent = '-';
-      if (p2Name) p2Name.textContent = 'Unassigned';
-      if (p2Email) p2Email.textContent = '-';
-      if (p2Points) p2Points.textContent = '0 pts';
-
-      if (pooledPointsEl) pooledPointsEl.textContent = '0 pts';
-
-      if (quotaBadge) {
-        quotaBadge.textContent = 'NOT CONFIGURED';
-        quotaBadge.style.background = 'var(--border-light)';
-        quotaBadge.style.color = 'var(--text-muted)';
-        quotaBadge.style.border = '1px solid var(--border-light)';
-      }
-
-      if (summaryStatus) {
-        summaryStatus.textContent = 'Not Configured';
-        summaryStatus.style.color = 'var(--text-muted)';
-      }
-      if (summaryLastContrib) {
-        summaryLastContrib.textContent = '-';
-      }
-      if (summaryQuota) {
-        summaryQuota.textContent = 'Unlinked';
-        summaryQuota.style.color = 'var(--text-muted)';
-      }
 
       if (widget) widget.style.display = 'none';
       if (namesEl) namesEl.textContent = 'Belum Dikonfigurasi';
       if (statusEl) {
         statusEl.innerHTML = `<span id="coupleSidebarNames" style="font-weight:600; color:var(--text-muted);">Belum Dikonfigurasi</span><br>` +
           `<span style="color:var(--text-muted);">Klik Configure untuk menghubungkan</span>`;
-      }
-      if (modalStatusEl) {
-        modalStatusEl.innerHTML = `<div style="padding:10px 12px; background:var(--bg-surface); border:1px solid var(--border-light); border-radius:4px; color:var(--text-muted); text-align:center;">Belum ada pasangan yang dihubungkan. Silakan pilih Partner 1 &amp; Partner 2 di atas.</div>`;
       }
     }
 
@@ -3895,21 +3902,17 @@ window.openManageCoupleModal = async function() {
 
     p1Select.innerHTML = opts1;
     p2Select.innerHTML = opts2;
-
-    // Pre-select if couple is active
-    if (window.couplePackageConfig && window.couplePackageConfig.enabled && Array.isArray(window.couplePackageConfig.couple) && window.couplePackageConfig.couple.length === 2) {
-      p1Select.value = window.couplePackageConfig.couple[0].email || '';
-      p2Select.value = window.couplePackageConfig.couple[1].email || '';
-    } else {
-      p1Select.value = '';
-      p2Select.value = '';
-    }
+    p1Select.value = '';
+    p2Select.value = '';
   }
+
+  const pkgNameInput = document.getElementById('inputCouplePackageName');
+  if (pkgNameInput) pkgNameInput.value = '';
 
   await loadCouplePackageStatus();
 
-  // If couple is active, switch to active tab, otherwise switch to new tab
-  if (window.couplePackageConfig && window.couplePackageConfig.enabled && Array.isArray(window.couplePackageConfig.couple) && window.couplePackageConfig.couple.length === 2) {
+  const pkgs = window.couplePackageConfig?.packages || [];
+  if (pkgs.length > 0) {
     window.switchCoupleModalTab('active');
   } else {
     window.switchCoupleModalTab('new');
@@ -3928,10 +3931,12 @@ window.saveCouplePackage = async function() {
   const token = sessionToken || window.sessionToken;
   const p1Select = document.getElementById('selectCouplePartner1');
   const p2Select = document.getElementById('selectCouplePartner2');
+  const pkgNameInput = document.getElementById('inputCouplePackageName');
   const btnSave = document.getElementById('btnSaveCouplePackage');
 
   const p1Email = p1Select ? p1Select.value.trim() : '';
   const p2Email = p2Select ? p2Select.value.trim() : '';
+  const pkgName = pkgNameInput ? pkgNameInput.value.trim() : '';
 
   if (!p1Email || !p2Email) {
     customAlert('Silakan pilih kedua partner terlebih dahulu.');
@@ -3954,24 +3959,25 @@ window.saveCouplePackage = async function() {
         body: JSON.stringify({
           action: 'set_couple_package',
           partner1_email: p1Email,
-          partner2_email: p2Email
+          partner2_email: p2Email,
+          package_name: pkgName
         })
       });
 
       const data = await res.json();
       if (res.ok && data.success) {
-        showToast('Couple Package berhasil disimpan.', 'success');
+        showToast('Paket pasangan baru berhasil ditambahkan!', 'success');
+        if (pkgNameInput) pkgNameInput.value = '';
+        if (p1Select) p1Select.value = '';
+        if (p2Select) p2Select.value = '';
         await loadCouplePackageStatus();
         window.switchCoupleModalTab('active');
         if (typeof window.loadContributions === 'function') {
           window.loadContributions();
         }
-        if (window.lastLoadedUsers && window.lastBannedDevs && typeof renderUsers === 'function') {
-          renderUsers(window.lastLoadedUsers, window.lastBannedDevs);
-        }
       } else {
-        showToast('Gagal menyimpan couple package: ' + (data.error || 'Server error'), 'error');
-        customAlert(data.error || 'Gagal menyimpan couple package.');
+        showToast('Gagal menambahkan pasangan: ' + (data.error || 'Server error'), 'error');
+        customAlert(data.error || 'Gagal menambahkan pasangan.');
       }
     } catch (err) {
       showToast('Network error: ' + err.message, 'error');
@@ -3982,43 +3988,6 @@ window.saveCouplePackage = async function() {
     await withButtonLoading(btnSave, saveAction, 'Menyimpan...');
   } else {
     await saveAction();
-  }
-};
-
-window.unlinkCouplePackage = async function() {
-  const token = sessionToken || window.sessionToken;
-  const confirmed = await customConfirm('Yakin ingin melepas (unlink) Couple Package? Akses bersama dan penggabungan poin leaderboard akan dinonaktifkan.');
-  if (!confirmed) return;
-
-  try {
-    const res = await fetch('/api/contributions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        action: 'set_couple_package',
-        unlink: true
-      })
-    });
-
-    const data = await res.json();
-    if (res.ok && data.success) {
-      showToast('Couple Package berhasil dilepas.', 'success');
-      await loadCouplePackageStatus();
-      window.switchCoupleModalTab('active');
-      if (typeof window.loadContributions === 'function') {
-        window.loadContributions();
-      }
-      if (window.lastLoadedUsers && window.lastBannedDevs && typeof renderUsers === 'function') {
-        renderUsers(window.lastLoadedUsers, window.lastBannedDevs);
-      }
-    } else {
-      showToast('Gagal melepas couple package: ' + (data.error || 'Server error'), 'error');
-    }
-  } catch (err) {
-    showToast('Network error: ' + err.message, 'error');
   }
 };
 
@@ -4076,53 +4045,47 @@ async function loadContributions() {
   const token = sessionToken || window.sessionToken;
   if (!token) return;
   try {
-    // 1. Fetch Leaderboard
-    const resLb = await fetch('/api/contributions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({ action: 'get_leaderboard' })
-    });
-    if (resLb.ok) {
-      const dataLb = await resLb.json();
-      const list = dataLb.leaderboard || (Array.isArray(dataLb) ? dataLb : []);
+    // Parallel fetching for zero delay: Leaderboard, My Contributions, and Couple Packages load concurrently
+    const [resLb, resMy, _] = await Promise.all([
+      fetch('/api/contributions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ action: 'get_leaderboard' })
+      }).then(r => r.ok ? r.json() : null).catch(() => null),
+
+      fetch('/api/contributions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ action: 'get_my_contributions' })
+      }).then(r => r.ok ? r.json() : null).catch(() => null),
+
+      loadCouplePackageStatus()
+    ]);
+
+    if (resLb) {
+      const list = resLb.leaderboard || (Array.isArray(resLb) ? resLb : []);
       window.latestLeaderboard = list;
       if (Array.isArray(list)) {
         window.renderLeaderboard(list);
       }
     }
 
-    // 2. Fetch My Contributions
-    const resMy = await fetch('/api/contributions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({ action: 'get_my_contributions' })
-    });
-    if (resMy.ok) {
-      const dataMy = await resMy.json();
+    if (resMy) {
       const myPointsEl = document.getElementById('myPoints');
       const contribStatusEl = document.getElementById('contributionStatus');
-      if (dataMy && Array.isArray(dataMy.contributions)) {
+      if (resMy && Array.isArray(resMy.contributions)) {
         let totalPts = 0;
-        dataMy.contributions.forEach(c => totalPts += (c.points || 0));
+        resMy.contributions.forEach(c => totalPts += (c.points || 0));
         if (myPointsEl) myPointsEl.textContent = totalPts;
         if (contribStatusEl) {
-          if (dataMy.is_couple && dataMy.couple_package) {
-            contribStatusEl.innerHTML = `<span style="color:var(--c2); font-weight:700; display:inline-flex; align-items:center; gap:4px;"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>${sanitize(dataMy.couple_package)}</span>`;
+          if (resMy.is_couple && resMy.couple_package) {
+            contribStatusEl.innerHTML = `<span style="color:var(--c2); font-weight:700; display:inline-flex; align-items:center; gap:4px;"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>${sanitize(resMy.couple_package)}</span>`;
           } else {
             contribStatusEl.textContent = 'Individual Account';
           }
         }
       }
     }
-
-    // 3. Keep couple status widget synced
-    await loadCouplePackageStatus();
   } catch (err) {
     console.warn('Failed to load contributions:', err);
   }
