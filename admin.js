@@ -88,6 +88,11 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
 
     window.hybridLogs = [];
     
+    window.currentLogFilter = 'all';
+    window.currentLogDateFilter = 'all';
+    window.currentLogSearch = '';
+    window.hybridLogs = [];
+
     window.fetchHybridLogs = async function() {
       try {
         const sessionRes = await supabaseClient.auth.getSession();
@@ -100,18 +105,63 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + token
           },
-          body: JSON.stringify({ action: 'get_activity_logs' })
+          body: JSON.stringify({ action: 'get_activity_logs', limit: 120 })
         });
         const result = await res.json();
         if (result.success) {
           const logs = [];
 
-          // 1. Direct activity logs from database
+          // 1. User Behavioral & CBT Telemetry (from user_activity_logs)
+          if (Array.isArray(result.user_activity_logs)) {
+            result.user_activity_logs.forEach(u => {
+              const evType = u.event_type || 'user_event';
+              let cat = 'user';
+              if (evType.startsWith('cbt:') || evType.startsWith('module:') || evType.startsWith('search:')) {
+                cat = 'cbt';
+              } else if (u.severity === 'security' || evType.startsWith('sec:')) {
+                cat = 'security';
+              }
+
+              logs.push({
+                id: 'act_' + u.id,
+                type: evType,
+                category: cat,
+                severity: u.severity || 'info',
+                time: new Date(u.created_at).getTime(),
+                user: u.user_email || (u.is_guest ? 'Guest Student' : 'Student'),
+                email: u.user_email,
+                payload: u.payload || {},
+                geo: (u.geo_city || u.geo_country) ? `${u.geo_city ? u.geo_city + ', ' : ''}${u.geo_country || ''}` : null,
+                devStr: u.user_agent,
+                isGuest: u.is_guest
+              });
+            });
+          }
+
+          // 2. Administrative Action Logs (Audit Trail from admin_action_logs)
+          if (Array.isArray(result.admin_action_logs)) {
+            result.admin_action_logs.forEach(a => {
+              logs.push({
+                id: 'admin_' + a.id,
+                type: 'admin_action',
+                action: a.action,
+                category: 'admin',
+                severity: 'info',
+                time: new Date(a.created_at).getTime(),
+                user: a.admin_email,
+                email: a.admin_email,
+                details: a.details || {}
+              });
+            });
+          }
+
+          // 3. Legacy activity logs
           if (Array.isArray(result.activity_logs)) {
             result.activity_logs.forEach(d => {
               logs.push({
                 id: d.log_id || ('log_' + d.id),
                 type: d.type,
+                category: d.type === 'login' ? 'logins' : 'devices',
                 time: new Date(d.time).getTime(),
                 user: d.user_name || d.email || 'Unknown',
                 email: d.email,
@@ -120,27 +170,24 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
             });
           }
 
-          // 2. Active devices with last_seen
+          // 4. Active devices with last_seen
           if (Array.isArray(result.devices)) {
             result.devices.forEach(d => {
               if (!d.last_seen) return;
               const t = new Date(d.last_seen).getTime();
-              // Show devices seen in last 72h
               if (Date.now() - t < 72 * 3600 * 1000) {
                 const uName = d.userInfo?.username || d.userInfo?.email || 'Unknown';
                 let devLabel = d.device_name || 'Device';
                 if (d.city || d.country) {
-                  devLabel += ` [📍 ${d.city ? d.city + ', ' : ''}${d.country || ''}]`;
+                  devLabel += ` [${d.city ? d.city + ', ' : ''}${d.country || ''}]`;
                 }
-                if (d.is_safari) {
-                  devLabel += ' 🍎';
-                }
-                if (d.ip_hash) {
-                  devLabel += ` #${d.ip_hash.substring(0, 8)}`;
-                }
+                if (d.is_safari) devLabel += ' (Safari)';
+                if (d.ip_hash) devLabel += ` #${d.ip_hash.substring(0, 8)}`;
+
                 logs.push({
                   id: 'dev_seen_' + d.device_id + '_' + t,
                   type: 'device_seen',
+                  category: 'devices',
                   time: t,
                   user: uName,
                   email: d.userInfo?.email,
@@ -150,12 +197,13 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
             });
           }
 
-          // 3. New User & Guest Signups
+          // 5. New User & Guest Signups
           if (Array.isArray(result.signups)) {
             result.signups.forEach(s => {
               logs.push({
                 id: s.id,
                 type: s.type,
+                category: 'signups',
                 time: new Date(s.time).getTime(),
                 user: s.user,
                 email: s.email,
@@ -164,12 +212,13 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
             });
           }
 
-          // 4. User Signins
+          // 6. User Signins
           if (Array.isArray(result.signins)) {
             result.signins.forEach(s => {
               logs.push({
                 id: s.id,
                 type: 'login',
+                category: 'logins',
                 time: new Date(s.time).getTime(),
                 user: s.user,
                 email: s.email,
@@ -195,9 +244,6 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
         }
       } catch(e) { console.error("Error formatting hybrid logs:", e); }
     };
-
-    window.currentLogFilter = 'all';
-    window.currentLogSearch = '';
 
     let _logsAutoRefreshTimer = null;
     window.openActivityLogsModal = function() {
@@ -269,33 +315,20 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
       window.renderHybridLogs();
     };
 
+    window.setLogDateFilter = function(range) {
+      window.currentLogDateFilter = range || 'all';
+      window.renderHybridLogs();
+    };
+
     window.handleSearchLogs = function(val) {
       window.currentLogSearch = (val || '').toLowerCase().trim();
       window.renderHybridLogs();
     };
-    
-    window.renderHybridLogs = function() {
-      var logList = document.getElementById('activityLogList');
-      var snippetEl = document.getElementById('dashLatestActivitySnippet');
-      
+
+    window.getFilteredLogs = function() {
       var raw = (window.hybridLogs || []).slice().sort(function(a, b) { return b.time - a.time; });
-      
-      // Update Dashboard Hub preview snippet
-      if (snippetEl) {
-        if (raw.length > 0) {
-          var first = raw[0];
-          var firstTimeStr = new Date(first.time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
-          var eventLabel = first.type === 'signup' ? 'Registered' : (first.type === 'guest_signup' ? 'Guest Joined' : (first.type === 'login' ? 'Logged In' : (first.type === 'online' ? 'Online' : (first.type === 'device_seen' ? 'Device Active' : first.type))));
-          snippetEl.innerHTML = `<span style="color:var(--c4); font-weight:700;">🟢 ${sanitize(first.user)}:</span> ${eventLabel} <span style="color:var(--text-muted); font-size:11px;">(${firstTimeStr})</span>`;
-        } else {
-          snippetEl.textContent = 'Belum ada aktivitas tercatat.';
-        }
-      }
 
-      if (!logList) return;
-      logList.innerHTML = '';
-
-      // 1. Non-Redundant Aggregation (collapses repetitive presence & device pings)
+      // 1. Non-Redundant Aggregation for repetitive presence & device pings
       var aggregated = [];
       var presenceMap = new Map();
 
@@ -319,29 +352,120 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
         }
       });
 
-      // 2. Chip & Search Filters
-      var filtered = aggregated;
+      // 2. Date Range Filter
+      var now = Date.now();
+      var dateFiltered = aggregated.filter(function(l) {
+        if (!window.currentLogDateFilter || window.currentLogDateFilter === 'all') return true;
+        var diff = now - l.time;
+        if (window.currentLogDateFilter === 'today') return diff <= 24 * 3600 * 1000;
+        if (window.currentLogDateFilter === '7d') return diff <= 7 * 24 * 3600 * 1000;
+        if (window.currentLogDateFilter === '30d') return diff <= 30 * 24 * 3600 * 1000;
+        return true;
+      });
+
+      // 3. Category & Chip Filters
       var curFilter = window.currentLogFilter || 'all';
-      if (curFilter === 'signups') {
-        filtered = filtered.filter(l => l.type === 'signup' || l.type === 'guest_signup');
-      } else if (curFilter === 'logins') {
-        filtered = filtered.filter(l => l.type === 'login');
-      } else if (curFilter === 'devices') {
-        filtered = filtered.filter(l => l.type === 'device_seen');
-      } else if (curFilter === 'live') {
-        filtered = filtered.filter(l => l.type === 'online' || l.type === 'offline');
+      var categoryFiltered = dateFiltered.filter(function(l) {
+        if (curFilter === 'all') return true;
+        if (curFilter === 'cbt') return l.category === 'cbt' || (l.type && (l.type.startsWith('cbt:') || l.type.startsWith('module:')));
+        if (curFilter === 'admin') return l.category === 'admin' || l.type === 'admin_action';
+        if (curFilter === 'security') return l.category === 'security' || l.severity === 'security' || (l.type && l.type.startsWith('sec:'));
+        if (curFilter === 'signups') return l.type === 'signup' || l.type === 'guest_signup';
+        if (curFilter === 'logins') return l.type === 'login';
+        if (curFilter === 'devices') return l.type === 'device_seen' || l.category === 'devices';
+        if (curFilter === 'live') return l.type === 'online' || l.type === 'offline';
+        return true;
+      });
+
+      // 4. Search Filter
+      var query = window.currentLogSearch || '';
+      if (!query) return categoryFiltered;
+
+      return categoryFiltered.filter(function(l) {
+        var u = (l.user || '').toLowerCase();
+        var em = (l.email || '').toLowerCase();
+        var dev = (l.devStr || '').toLowerCase();
+        var typ = (l.type || '').toLowerCase();
+        var act = (l.action || '').toLowerCase();
+        var pStr = l.payload ? JSON.stringify(l.payload).toLowerCase() : '';
+        return u.includes(query) || em.includes(query) || dev.includes(query) || typ.includes(query) || act.includes(query) || pStr.includes(query);
+      });
+    };
+
+    window.exportLogsCsv = function() {
+      var logs = window.getFilteredLogs();
+      if (!logs || logs.length === 0) {
+        showToast('Tidak ada log untuk diekspor', 'info');
+        return;
       }
 
-      var query = window.currentLogSearch || '';
-      if (query) {
-        filtered = filtered.filter(l => {
-          var u = (l.user || '').toLowerCase();
-          var em = (l.email || '').toLowerCase();
-          var dev = (l.devStr || '').toLowerCase();
-          var typ = (l.type || '').toLowerCase();
-          return u.includes(query) || em.includes(query) || dev.includes(query) || typ.includes(query);
-        });
+      var headers = ['Timestamp', 'Waktu (WIB)', 'Kategori', 'Tipe Event', 'User', 'Email', 'Severity', 'Detail'];
+      var rows = [headers.join(',')];
+
+      logs.forEach(function(l) {
+        var iso = new Date(l.time).toISOString();
+        var wib = new Date(l.time).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'medium' });
+        var cat = l.category || 'general';
+        var typ = l.action ? ('admin:' + l.action) : (l.type || '-');
+        var usr = (l.user || '-').replace(/"/g, '""');
+        var eml = (l.email || '-').replace(/"/g, '""');
+        var sev = l.severity || 'info';
+        var dtl = JSON.stringify(l.payload || l.details || { dev: l.devStr || '' }).replace(/"/g, '""');
+
+        rows.push([
+          `"${iso}"`,
+          `"${wib}"`,
+          `"${cat}"`,
+          `"${typ}"`,
+          `"${usr}"`,
+          `"${eml}"`,
+          `"${sev}"`,
+          `"${dtl}"`
+        ].join(','));
+      });
+
+      var blob = new Blob([rows.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+      var url = URL.createObjectURL(blob);
+      var link = document.createElement('a');
+      var dateStr = new Date().toISOString().slice(0, 10);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `mr_capsules_audit_logs_${dateStr}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast(`${logs.length} baris log berhasil diekspor ke CSV`, 'success');
+    };
+
+    window.renderHybridLogs = function() {
+      var logList = document.getElementById('activityLogList');
+      var snippetEl = document.getElementById('dashLatestActivitySnippet');
+      
+      var raw = (window.hybridLogs || []).slice().sort(function(a, b) { return b.time - a.time; });
+      
+      // Update Dashboard Hub preview snippet
+      if (snippetEl) {
+        if (raw.length > 0) {
+          var first = raw[0];
+          var firstTimeStr = new Date(first.time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+          var eventLabel = first.type === 'cbt:exam_submitted' ? `CBT Ujian Selesai (${first.payload?.score_pct || 0}%)` :
+                           (first.type === 'cbt:exam_started' ? 'Memulai CBT Ujian' :
+                           (first.type === 'module:view' ? `Membaca Modul ${first.payload?.title || ''}` :
+                           (first.type === 'admin_action' ? `Admin Aksi: ${first.action}` :
+                           (first.type === 'signup' ? 'Registered' :
+                           (first.type === 'guest_signup' ? 'Guest Joined' :
+                           (first.type === 'login' ? 'Logged In' :
+                           (first.type === 'online' ? 'Online' :
+                           (first.type === 'device_seen' ? 'Device Active' : first.type))))))));
+          snippetEl.innerHTML = `<span style="color:var(--c4); font-weight:700;">${sanitize(first.user)}:</span> ${eventLabel} <span style="color:var(--text-muted); font-size:11px;">(${firstTimeStr})</span>`;
+        } else {
+          snippetEl.textContent = 'Belum ada aktivitas tercatat.';
+        }
       }
+
+      if (!logList) return;
+      logList.innerHTML = '';
+
+      var filtered = window.getFilteredLogs();
 
       if (filtered.length === 0) {
         logList.innerHTML = '<div style="padding:48px 24px; color:var(--text-muted); text-align:center; font-family:var(--font-primary); font-size:13.5px;">TIDAK ADA LOG SESUAI FILTER/PENCARIAN</div>';
@@ -360,7 +484,42 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
         var mainTitle = '';
         var metaHtml = '';
 
-        if (log.type === 'signup') {
+        // Rich Event Rendering
+        if (log.type === 'cbt:exam_submitted') {
+          var p = log.payload || {};
+          var pct = p.score_pct || 0;
+          var isPassed = pct >= 75;
+          var badgeBg = isPassed ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)';
+          var badgeCol = isPassed ? '#22c55e' : 'var(--danger)';
+          badgeHtml = `<span class="badge" style="background:${badgeBg}; color:${badgeCol}; border:1px solid ${badgeCol}; font-size:10px; font-weight:700;">CBT SELESAI (${pct}%)</span>`;
+          mainTitle = `<span style="font-weight:700; color:var(--text-main); font-size:14px;">${sanitize(log.user)}</span> <span style="font-size:13px; color:var(--text-muted);">menyelesaikan ujian <b>${sanitize(p.module_id || 'Modul CBT')}</b></span>`;
+          var incText = (p.incorrect_questions && p.incorrect_questions.length > 0) ? `<span style="color:var(--danger); margin-left:8px;">Salah No: ${p.incorrect_questions.slice(0, 10).join(', ')}${p.incorrect_questions.length > 10 ? '...' : ''}</span>` : '';
+          metaHtml = `<div style="font-size:12.5px; color:var(--text-muted); margin-top:2px;">Skor: <b>${p.score || 0}/${p.total_questions || 0}</b> (${pct}%) &bull; Durasi: ${Math.round((p.duration_seconds || 0)/60)} menit ${incText}</div>`;
+        } else if (log.type === 'cbt:exam_started') {
+          var p = log.payload || {};
+          badgeHtml = '<span class="badge" style="background:rgba(6,182,212,0.15); color:var(--c3); border:1px solid rgba(6,182,212,0.3); font-size:10px;">CBT STARTED</span>';
+          mainTitle = `<span style="font-weight:700; color:var(--text-main); font-size:14px;">${sanitize(log.user)}</span> <span style="font-size:13px; color:var(--text-muted);">memulai ujian CBT: <b>${sanitize(p.module_id || 'Modul')}</b> (${p.total_questions || 0} soal)</span>`;
+          metaHtml = log.email ? `<div style="font-size:12.5px; color:var(--text-muted); margin-top:2px;">${sanitize(log.email)}</div>` : '';
+        } else if (log.type === 'module:view') {
+          var p = log.payload || {};
+          badgeHtml = '<span class="badge" style="background:rgba(168,85,247,0.15); color:#c084fc; border:1px solid rgba(168,85,247,0.3); font-size:10px;">MODULE OPEN</span>';
+          mainTitle = `<span style="font-weight:700; color:var(--text-main); font-size:14px;">${sanitize(log.user)}</span> <span style="font-size:13px; color:var(--text-muted);">membaca modul <b>${sanitize(p.title || p.path || '')}</b></span>`;
+          metaHtml = log.email ? `<div style="font-size:12.5px; color:var(--text-muted); margin-top:2px;">${sanitize(log.email)}</div>` : '';
+        } else if (log.type === 'module:dwell') {
+          var p = log.payload || {};
+          badgeHtml = '<span class="badge" style="background:rgba(20,184,166,0.15); color:#2dd4bf; border:1px solid rgba(20,184,166,0.3); font-size:10px;">STUDY DWELL</span>';
+          mainTitle = `<span style="font-weight:700; color:var(--text-main); font-size:14px;">${sanitize(log.user)}</span> <span style="font-size:13px; color:var(--text-muted);">aktif belajar modul (${p.active_minutes || 1} menit)</span>`;
+          metaHtml = `<div style="font-size:12px; color:var(--text-muted); margin-top:2px;">Path: ${sanitize(p.path || '')}</div>`;
+        } else if (log.type === 'admin_action') {
+          badgeHtml = '<span class="badge" style="background:rgba(245,158,11,0.15); color:#f59e0b; border:1px solid rgba(245,158,11,0.3); font-size:10px; font-weight:700;">ADMIN AUDIT</span>';
+          mainTitle = `<span style="font-weight:700; color:#f59e0b; font-size:14px;">${sanitize(log.user)}</span> <span style="font-size:13px; color:var(--text-main);">menjalankan aksi <b>${sanitize(log.action || '')}</b></span>`;
+          var detailsStr = log.details ? JSON.stringify(log.details) : '';
+          metaHtml = detailsStr ? `<div style="font-size:11.5px; color:var(--text-muted); font-family:var(--font-mono); margin-top:2px; word-break:break-all;">${sanitize(detailsStr.slice(0, 160))}</div>` : '';
+        } else if (log.severity === 'security' || log.type.startsWith('sec:')) {
+          badgeHtml = '<span class="badge" style="background:rgba(239,68,68,0.2); color:var(--danger); border:1px solid var(--danger); font-size:10px; font-weight:700;">SECURITY ALERT</span>';
+          mainTitle = `<span style="font-weight:700; color:var(--danger); font-size:14px;">${sanitize(log.user)}</span> <span style="font-size:13px; color:var(--danger);">Peringatan Keamanan (${sanitize(log.type)})</span>`;
+          metaHtml = log.email ? `<div style="font-size:12.5px; color:var(--text-muted); margin-top:2px;">${sanitize(log.email)}</div>` : '';
+        } else if (log.type === 'signup') {
           badgeHtml = '<span class="badge" style="background:rgba(6,182,212,0.15); color:var(--c3); border:1px solid rgba(6,182,212,0.3); font-size:10px;">NEW ACCOUNT</span>';
           mainTitle = `<span style="font-weight:700; color:var(--text-main); font-size:14px;">${sanitize(log.user)}</span> <span style="font-size:13px; color:var(--text-muted);">mendaftar akun baru</span>`;
           metaHtml = log.email ? `<div style="font-size:12.5px; color:var(--text-muted); margin-top:2px; word-break:break-all;">${sanitize(log.email)}</div>` : '';
@@ -374,7 +533,7 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
           metaHtml = (log.email ? `<div style="font-size:12.5px; color:var(--text-muted); margin-top:2px;">${sanitize(log.email)}</div>` : '') +
                      (log.devStr ? `<div style="font-size:11.5px; color:var(--text-muted); opacity:0.85; margin-top:2px;">${sanitize(log.devStr)}</div>` : '');
         } else if (log.type === 'online') {
-          var countBadge = (log.count > 1) ? `<span style="font-size:10px; font-weight:700; background:rgba(34,197,94,0.18); color:#22c55e; padding:1px 6px; border-radius:10px; border:1px solid rgba(34,197,94,0.3); margin-left:6px;">🔁 ${log.count}x Online</span>` : '';
+          var countBadge = (log.count > 1) ? `<span style="font-size:10px; font-weight:700; background:rgba(34,197,94,0.18); color:#22c55e; padding:1px 6px; border-radius:10px; border:1px solid rgba(34,197,94,0.3); margin-left:6px;">${log.count}x Online</span>` : '';
           badgeHtml = `<span class="badge" style="background:rgba(34,197,94,0.15); color:#22c55e; border:1px solid rgba(34,197,94,0.3); font-size:10px;">LIVE ONLINE 🟢</span>${countBadge}`;
           mainTitle = `<span style="font-weight:700; color:var(--text-main); font-size:14px;">${sanitize(log.user)}</span> <span style="font-size:13px; color:var(--text-muted);">sedang aktif</span>`;
           metaHtml = (log.email ? `<div style="font-size:12.5px; color:var(--text-muted); margin-top:2px;">${sanitize(log.email)}</div>` : '') +
@@ -387,10 +546,11 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
           badgeHtml = `<span class="badge" style="background:rgba(168,85,247,0.15); color:#a855f7; border:1px solid rgba(168,85,247,0.3); font-size:10px;">DEVICE ACTIVE</span>`;
           mainTitle = `<span style="font-weight:700; color:var(--text-main); font-size:14px;">${sanitize(log.user)}</span>`;
           metaHtml = (log.email ? `<div style="font-size:12.5px; color:var(--text-muted); margin-top:2px;">${sanitize(log.email)}</div>` : '') +
-                     (log.devStr ? `<div style="font-size:11.5px; color:var(--text-muted); opacity:0.85; margin-top:2px;">📱 ${sanitize(log.devStr)}</div>` : '');
+                     (log.devStr ? `<div style="font-size:11.5px; color:var(--text-muted); opacity:0.85; margin-top:2px;">${sanitize(log.devStr)}</div>` : '');
         } else {
           badgeHtml = `<span class="badge" style="font-size:10px;">${sanitize(log.type.toUpperCase())}</span>`;
           mainTitle = `<span style="font-weight:700; font-size:14px;">${sanitize(log.user)}</span>`;
+          metaHtml = log.email ? `<div style="font-size:12.5px; color:var(--text-muted); margin-top:2px;">${sanitize(log.email)}</div>` : '';
         }
 
         item.innerHTML = `
@@ -408,7 +568,118 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
         logList.appendChild(item);
       });
     };
-    
+
+    // User 360 Activity Timeline Modal Controller
+    window.openUserTimeline = async function(userId, userEmail, userName) {
+      const modal = document.getElementById('modalUserTimeline');
+      if (!modal) return;
+      modal.classList.add('active');
+      modal.classList.remove('hidden');
+      if (window.ModalManager) window.ModalManager.open(modal);
+
+      const titleEl = document.getElementById('userTimelineTitle');
+      const subEl = document.getElementById('userTimelineSubtitle');
+      const statsEl = document.getElementById('userTimelineStats');
+      const listEl = document.getElementById('userTimelineList');
+
+      if (titleEl) titleEl.textContent = `USER 360° TIMELINE // ${(userName || userEmail || 'USER').toUpperCase()}`;
+      if (subEl) subEl.textContent = `Mengambil rekam jejak untuk ${userEmail || userId}...`;
+      if (statsEl) statsEl.textContent = '';
+      if (listEl) listEl.innerHTML = '<div style="padding:48px 24px; text-align:center; color:var(--text-muted);">Memuat aktivitas telemetri...</div>';
+
+      try {
+        const sessionRes = await supabaseClient.auth.getSession();
+        const token = sessionRes.data?.session?.access_token;
+        if (!token) throw new Error('Auth session not found');
+
+        const res = await fetch('/api/admin', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({ action: 'get_activity_logs', user_id: userId, email: userEmail, limit: 150 })
+        });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.error || 'Failed to load timeline');
+
+        const userActs = data.user_activity_logs || [];
+        const userDevs = (data.devices || []).filter(d => d.user_id === userId);
+
+        let totalExams = 0;
+        let totalScoreSum = 0;
+        let dwellMinutes = 0;
+
+        userActs.forEach(ev => {
+          if (ev.event_type === 'cbt:exam_submitted') {
+            totalExams++;
+            totalScoreSum += (ev.payload?.score_pct || 0);
+          } else if (ev.event_type === 'module:dwell') {
+            dwellMinutes += (ev.payload?.active_minutes || 1);
+          }
+        });
+
+        const avgScore = totalExams > 0 ? Math.round(totalScoreSum / totalExams) : 0;
+        if (subEl) subEl.textContent = `Akun: ${userEmail} &bull; ID: ${(userId || '').slice(0, 8)}...`;
+        if (statsEl) {
+          statsEl.innerHTML = `<span style="background:rgba(6,182,212,0.15); color:var(--c3); padding:2px 8px; border-radius:10px; font-weight:700;">Ujian CBT: ${totalExams}x (Avg ${avgScore}%)</span> &bull; <span style="background:rgba(20,184,166,0.15); color:#2dd4bf; padding:2px 8px; border-radius:10px; font-weight:700;">Belajar: ${dwellMinutes} Menit</span>`;
+        }
+
+        if (userActs.length === 0 && userDevs.length === 0) {
+          listEl.innerHTML = '<div style="padding:48px 24px; text-align:center; color:var(--text-muted);">Belum ada rekam jejak telemetri tercatat untuk user ini.</div>';
+          return;
+        }
+
+        listEl.innerHTML = '';
+        userActs.forEach(ev => {
+          const row = document.createElement('div');
+          row.style.cssText = 'padding:14px 20px; border-bottom:1px solid var(--border-light); display:flex; justify-content:space-between; align-items:flex-start; gap:16px;';
+          const timeStr = new Date(ev.created_at).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' }) + ' WIB';
+          
+          let badge = '';
+          let text = '';
+          let sub = '';
+
+          if (ev.event_type === 'cbt:exam_submitted') {
+            const p = ev.payload || {};
+            const pct = p.score_pct || 0;
+            badge = `<span class="badge" style="background:${pct >= 75 ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)'}; color:${pct >= 75 ? '#22c55e' : 'var(--danger)'}; border:1px solid ${pct >= 75 ? '#22c55e' : 'var(--danger)'}; font-size:10px;">CBT SELESAI (${pct}%)</span>`;
+            text = `Menyelesaikan modul <b>${sanitize(p.module_id || 'CBT')}</b> - Skor: ${p.score || 0}/${p.total_questions || 0}`;
+            sub = `Durasi pengerjaan: ${Math.round((p.duration_seconds || 0)/60)} menit &bull; Geo: ${ev.geo_city || 'Indonesia'}`;
+          } else if (ev.event_type === 'cbt:exam_started') {
+            badge = '<span class="badge" style="background:rgba(6,182,212,0.15); color:var(--c3); border:1px solid rgba(6,182,212,0.3); font-size:10px;">CBT START</span>';
+            text = `Memulai pengerjaan modul <b>${sanitize(ev.payload?.module_id || 'Modul')}</b>`;
+            sub = `Jumlah soal: ${ev.payload?.total_questions || 0} butir`;
+          } else if (ev.event_type === 'module:view') {
+            badge = '<span class="badge" style="background:rgba(168,85,247,0.15); color:#c084fc; border:1px solid rgba(168,85,247,0.3); font-size:10px;">BACA MODUL</span>';
+            text = `Membuka modul <b>${sanitize(ev.payload?.title || ev.payload?.path || '')}</b>`;
+            sub = `Lokasi: ${sanitize(ev.payload?.path || '')}`;
+          } else if (ev.event_type === 'module:dwell') {
+            badge = '<span class="badge" style="background:rgba(20,184,166,0.15); color:#2dd4bf; border:1px solid rgba(20,184,166,0.3); font-size:10px;">DWELL TIME</span>';
+            text = `Durasi belajar aktif: <b>${ev.payload?.active_minutes || 1} menit</b>`;
+            sub = `Modul: ${sanitize(ev.payload?.path || '')}`;
+          } else {
+            badge = `<span class="badge" style="font-size:10px;">${sanitize(ev.event_type.toUpperCase())}</span>`;
+            text = `Aktivitas: ${sanitize(ev.event_type)}`;
+            sub = ev.payload ? JSON.stringify(ev.payload) : '';
+          }
+
+          row.innerHTML = `
+            <div style="flex:1; min-width:0;">
+              <div style="margin-bottom:4px;">${badge}</div>
+              <div style="font-size:13.5px; color:var(--text-main);">${text}</div>
+              <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">${sub}</div>
+            </div>
+            <div style="font-size:11.5px; color:var(--text-muted); font-family:var(--font-mono); white-space:nowrap;">${timeStr}</div>
+          `;
+          listEl.appendChild(row);
+        });
+
+      } catch(err) {
+        if (listEl) listEl.innerHTML = `<div style="padding:48px 24px; text-align:center; color:var(--danger);">Gagal memuat timeline: ${err.message}</div>`;
+      }
+    };
+
     window.addHybridLog = async function(log) {
        const exists = window.hybridLogs.find(l => l.id === log.id);
        if (!exists) {
@@ -2801,7 +3072,14 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
         };
       }
 
-      const btnReset = cardOrRow.querySelector('.btn-reset-pwd');
+      const btnTimeline = cardOrRow.querySelector('.btn-user-timeline');
+        if (btnTimeline) {
+          btnTimeline.onclick = () => {
+            window.openUserTimeline(u.id, email, username);
+          };
+        }
+
+        const btnReset = cardOrRow.querySelector('.btn-reset-pwd');
       if (btnReset) {
         btnReset.onclick = async () => {
           const newPassword = await customPrompt(`Enter new password for ${email}:`, 'MrCapsules2026!');
@@ -3055,6 +3333,7 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
           }
           actionsHtml += `<button class="btn-card ${isBanned ? 'primary' : 'danger'} btn-ban" data-id="${sanitize(u.id)}" data-banned="${isBanned}">${isBanned ? 'Unban' : 'Ban'}</button>`;
           actionsHtml += `<button class="btn-card primary btn-reset-pwd" data-id="${sanitize(u.id)}">Reset Pwd</button>`;
+          actionsHtml += `<button class="btn-card btn-user-timeline" style="border:1px solid var(--c3); color:var(--c3);" data-id="${sanitize(u.id)}" data-email="${sanitize(email)}" data-username="${sanitize(username)}">Timeline</button>`;
           actionsHtml += `<button class="btn-card danger btn-del-user" data-id="${sanitize(u.id)}">Delete</button>`;
         }
 

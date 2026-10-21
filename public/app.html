@@ -8,6 +8,7 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="shortcut icon" href="/favicon.ico">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/telemetry.js"></script>
 <link rel="stylesheet" href="/tokens.css?v=2.2">
 <link rel="stylesheet" href="/index-styles.css?v=2.2">
 </head>
@@ -305,7 +306,7 @@
   <iframe id="viewerFrame" src=""></iframe>
 </div>
 
-<script src="data.js?v=1792589091667"></script>
+<script src="data.js?v=1792596855039"></script>
 <script>
 /* ══ PERSONA ENGINE ══ */
 const personaToggles = document.querySelectorAll('.persona-btn');
@@ -1372,6 +1373,9 @@ function setIframeProgress(percent, statusText) {
 }
 
 async function openFile(path, name, index = -1) {
+  if (window.CapsuleTracker) {
+    window.CapsuleTracker.trackModuleView(path, name);
+  }
   if (isCurrentUserGuest) {
     let views = parseInt(localStorage.getItem('mr_guest_views') || '0', 10);
     if (views >= 3) {

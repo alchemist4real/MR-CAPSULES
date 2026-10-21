@@ -1335,11 +1335,11 @@
 
   <!-- Activity Logs Modal -->
   <div id="modalActivityLogs" class="settings-overlay">
-    <div class="settings-box prompt-box-limit" style="max-width: 900px; width: 94vw; max-height: 88vh; height: 88vh; display: flex; flex-direction: column;">
+    <div class="settings-box prompt-box-limit" style="max-width: 960px; width: 95vw; max-height: 88vh; height: 88vh; display: flex; flex-direction: column;">
       <div class="settings-header">
         <div style="display:flex; align-items:center; gap:8px;">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-          <span class="modal-title">SYSTEM ACTIVITY &amp; AUDIT LOGS</span>
+          <span class="modal-title">UNIFIED ACTIVITY &amp; AUDIT EXPLORER</span>
           <span style="background:rgba(34,197,94,0.15); color:#22c55e; border:1px solid rgba(34,197,94,0.3); font-size:10px; padding:2px 8px; border-radius:10px; font-weight:700; margin-left:6px;">LIVE 🟢</span>
         </div>
         <button class="btn-text" onclick="if(window.ModalManager) ModalManager.close(document.getElementById('modalActivityLogs')); else document.getElementById('modalActivityLogs').classList.remove('active');">
@@ -1348,23 +1348,62 @@
         </button>
       </div>
       <div class="settings-body" style="display:flex; flex-direction:column; gap:12px; overflow:hidden; padding:16px; flex:1; min-height:0;">
-        <!-- Filters & Search Toolbar -->
-        <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between; flex-shrink:0;">
-          <div id="logFilterChips" style="display:flex; flex-wrap:wrap; gap:6px;">
-            <button type="button" class="btn-unified log-chip active" data-filter="all" onclick="window.setLogFilter('all')">ALL</button>
-            <button type="button" class="btn-unified log-chip" data-filter="signups" onclick="window.setLogFilter('signups')">SIGNUPS &amp; GUESTS</button>
-            <button type="button" class="btn-unified log-chip" data-filter="logins" onclick="window.setLogFilter('logins')">LOGINS</button>
-            <button type="button" class="btn-unified log-chip" data-filter="devices" onclick="window.setLogFilter('devices')">DEVICES</button>
-            <button type="button" class="btn-unified log-chip" data-filter="live" onclick="window.setLogFilter('live')">LIVE STATUS</button>
-          </div>
-          <div style="display:flex; gap:8px; align-items:center;">
-            <input type="text" id="searchLogsInput" class="auth-input" style="padding:6px 12px; font-size:12.5px; width:180px;" placeholder="Search logs..." oninput="window.handleSearchLogs(this.value)">
-            <button id="btnRefreshLogsModal" class="btn-unified" title="Refresh logs" onclick="window.fetchHybridLogs()"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg></button>
+        <!-- Filters, Time Range & Search Toolbar -->
+        <div style="display:flex; flex-direction:column; gap:10px; flex-shrink:0;">
+          <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between;">
+            <div id="logFilterChips" style="display:flex; flex-wrap:wrap; gap:6px;">
+              <button type="button" class="btn-unified log-chip active" data-filter="all" onclick="window.setLogFilter('all')">ALL</button>
+              <button type="button" class="btn-unified log-chip" data-filter="cbt" onclick="window.setLogFilter('cbt')">CBT &amp; BELAJAR</button>
+              <button type="button" class="btn-unified log-chip" data-filter="admin" onclick="window.setLogFilter('admin')">AUDIT ADMIN</button>
+              <button type="button" class="btn-unified log-chip" data-filter="security" onclick="window.setLogFilter('security')">SECURITY / ALERTS</button>
+              <button type="button" class="btn-unified log-chip" data-filter="signups" onclick="window.setLogFilter('signups')">SIGNUPS &amp; GUESTS</button>
+              <button type="button" class="btn-unified log-chip" data-filter="logins" onclick="window.setLogFilter('logins')">LOGINS</button>
+              <button type="button" class="btn-unified log-chip" data-filter="devices" onclick="window.setLogFilter('devices')">DEVICES</button>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+              <select id="logDateFilter" class="auth-input" style="padding:6px 10px; font-size:12px; width:auto; height:32px; background:var(--bg-secondary); color:var(--text-main); border:1px solid var(--border-light); border-radius:6px;" onchange="window.setLogDateFilter(this.value)">
+                <option value="all">Semua Waktu</option>
+                <option value="today">Hari Ini</option>
+                <option value="7d">7 Hari Terakhir</option>
+                <option value="30d">30 Hari Terakhir</option>
+              </select>
+              <button id="btnExportLogs" class="btn-unified" title="Export CSV" style="font-size:11px; padding:6px 12px; display:inline-flex; align-items:center; gap:5px;" onclick="window.exportLogsCsv()">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                EXPORT CSV
+              </button>
+              <input type="text" id="searchLogsInput" class="auth-input" style="padding:6px 12px; font-size:12.5px; width:160px;" placeholder="Search logs..." oninput="window.handleSearchLogs(this.value)">
+              <button id="btnRefreshLogsModal" class="btn-unified" title="Refresh logs" onclick="window.fetchHybridLogs()"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg></button>
+            </div>
           </div>
         </div>
         <!-- Streamlined Logs Container -->
         <div id="activityLogList" style="flex:1; overflow-y:auto; border:1px solid var(--border-light); border-radius:8px; background:var(--bg-main); min-height:0;">
            <div id="activityPlaceholder" class="placeholder-text" style="padding:48px 24px; text-align:center; color:var(--text-muted);">Waiting for activity...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- User 360 Activity Timeline Modal -->
+  <div id="modalUserTimeline" class="settings-overlay">
+    <div class="settings-box prompt-box-limit" style="max-width: 820px; width: 94vw; max-height: 85vh; height: 85vh; display: flex; flex-direction: column;">
+      <div class="settings-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c3);"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          <span class="modal-title" id="userTimelineTitle">USER 360° ACTIVITY TIMELINE</span>
+        </div>
+        <button class="btn-text" onclick="if(window.ModalManager) ModalManager.close(document.getElementById('modalUserTimeline')); else document.getElementById('modalUserTimeline').classList.remove('active');">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          CLOSE
+        </button>
+      </div>
+      <div class="settings-body" style="display:flex; flex-direction:column; gap:12px; overflow:hidden; padding:16px; flex:1; min-height:0;">
+        <div id="userTimelineHeader" style="padding:12px 16px; background:var(--bg-secondary); border-radius:6px; border:1px solid var(--border-light); font-size:13px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+           <span id="userTimelineSubtitle" style="color:var(--text-main); font-weight:700;">Loading user activity...</span>
+           <span id="userTimelineStats" style="color:var(--text-muted); font-size:12px;"></span>
+        </div>
+        <div id="userTimelineList" style="flex:1; overflow-y:auto; border:1px solid var(--border-light); border-radius:8px; background:var(--bg-main); min-height:0;">
+           <div class="placeholder-text" style="padding:48px 24px; text-align:center; color:var(--text-muted);">Memuat rekam jejak aktivitas...</div>
         </div>
       </div>
     </div>

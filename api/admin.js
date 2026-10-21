@@ -947,7 +947,25 @@ export default async function handler(req, res) {
       if (!sbKey) return res.status(500).json({ error: 'SUPABASE_SERVICE_ROLE_KEY not configured' });
 
       try {
-        const [logsRes, devRes, usersRes] = await Promise.all([
+        const targetUserId = req.body.user_id || req.body.userId || null;
+        const targetUserEmail = req.body.email || req.body.user_email || null;
+        const limitCount = Math.min(parseInt(req.body.limit, 10) || 60, 200);
+
+        // Filter user_activity_logs by user if requested (User 360 view)
+        let userActivityQuery = `order=created_at.desc&limit=${limitCount}`;
+        if (targetUserId) {
+          userActivityQuery += `&user_id=eq.${encodeURIComponent(targetUserId)}`;
+        } else if (targetUserEmail) {
+          userActivityQuery += `&user_email=eq.${encodeURIComponent(targetUserEmail.toLowerCase())}`;
+        }
+
+        const [userActivityRes, adminLogsRes, logsRes, devRes, usersRes] = await Promise.all([
+          fetch(`${supabaseUrl}/rest/v1/user_activity_logs?${userActivityQuery}`, {
+            headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}` }
+          }),
+          fetch(`${supabaseUrl}/rest/v1/admin_action_logs?order=created_at.desc&limit=50`, {
+            headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}` }
+          }),
           fetch(`${supabaseUrl}/rest/v1/activity_logs?order=time.desc&limit=60`, {
             headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}` }
           }),
@@ -959,7 +977,9 @@ export default async function handler(req, res) {
           })
         ]);
 
-        const [logsData, devData, usersJson] = await Promise.all([
+        const [userActivityData, adminLogsData, logsData, devData, usersJson] = await Promise.all([
+          userActivityRes.ok ? userActivityRes.json() : [],
+          adminLogsRes.ok ? adminLogsRes.json() : [],
           logsRes.ok ? logsRes.json() : [],
           devRes.ok ? devRes.json() : [],
           usersRes.ok ? usersRes.json() : { users: [] }
@@ -1005,6 +1025,8 @@ export default async function handler(req, res) {
 
         return res.status(200).json({
           success: true,
+          user_activity_logs: userActivityData,
+          admin_action_logs: adminLogsData,
           activity_logs: logsData,
           signups,
           signins,
