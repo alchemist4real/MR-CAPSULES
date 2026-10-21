@@ -86,8 +86,6 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
       return div.innerHTML;
     }
 
-    window.hybridLogs = [];
-    
     window.currentLogFilter = 'all';
     window.currentLogDateFilter = 'all';
     window.currentLogSearch = '';
@@ -252,8 +250,15 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
       modal.classList.add('active');
       modal.classList.remove('hidden');
       if (window.ModalManager) {
-        window.ModalManager.open(modal);
+        window.ModalManager.open(modal, {
+          onClose: function() {
+            clearInterval(_logsAutoRefreshTimer);
+            _logsAutoRefreshTimer = null;
+          }
+        });
       }
+      const selectDate = document.getElementById('logDateFilter');
+      if (selectDate) selectDate.value = window.currentLogDateFilter || 'all';
       window.fetchHybridLogs();
       clearInterval(_logsAutoRefreshTimer);
       _logsAutoRefreshTimer = setInterval(() => {
@@ -262,13 +267,24 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
           window.fetchHybridLogs();
         } else {
           clearInterval(_logsAutoRefreshTimer);
+          _logsAutoRefreshTimer = null;
         }
       }, 10000);
     };
 
     window.closeActivityLogsModal = function() {
       clearInterval(_logsAutoRefreshTimer);
+      _logsAutoRefreshTimer = null;
       const modal = document.getElementById('modalActivityLogs');
+      if (!modal) return;
+      modal.classList.remove('active');
+      if (window.ModalManager) {
+        window.ModalManager.close(modal);
+      }
+    };
+
+    window.closeUserTimeline = function() {
+      const modal = document.getElementById('modalUserTimeline');
       if (!modal) return;
       modal.classList.remove('active');
       if (window.ModalManager) {
@@ -410,7 +426,10 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
         var usr = (l.user || '-').replace(/"/g, '""');
         var eml = (l.email || '-').replace(/"/g, '""');
         var sev = l.severity || 'info';
-        var dtl = JSON.stringify(l.payload || l.details || { dev: l.devStr || '' }).replace(/"/g, '""');
+        var detailsObj = (l.payload && Object.keys(l.payload).length > 0) ? l.payload :
+                         (l.details && Object.keys(l.details).length > 0) ? l.details :
+                         (l.devStr ? { device: l.devStr } : {});
+        var dtl = JSON.stringify(detailsObj).replace(/\r?\n/g, ' ').replace(/"/g, '""');
 
         rows.push([
           `"${iso}"`,
@@ -449,13 +468,13 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
           var firstTimeStr = new Date(first.time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
           var eventLabel = first.type === 'cbt:exam_submitted' ? `CBT Ujian Selesai (${first.payload?.score_pct || 0}%)` :
                            (first.type === 'cbt:exam_started' ? 'Memulai CBT Ujian' :
-                           (first.type === 'module:view' ? `Membaca Modul ${first.payload?.title || ''}` :
-                           (first.type === 'admin_action' ? `Admin Aksi: ${first.action}` :
+                           (first.type === 'module:view' ? `Membaca Modul ${sanitize(first.payload?.title || '')}` :
+                           (first.type === 'admin_action' ? `Admin Aksi: ${sanitize(first.action || '')}` :
                            (first.type === 'signup' ? 'Registered' :
                            (first.type === 'guest_signup' ? 'Guest Joined' :
                            (first.type === 'login' ? 'Logged In' :
                            (first.type === 'online' ? 'Online' :
-                           (first.type === 'device_seen' ? 'Device Active' : first.type))))))));
+                           (first.type === 'device_seen' ? 'Device Active' : sanitize(first.type)))))))));
           snippetEl.innerHTML = `<span style="color:var(--c4); font-weight:700;">${sanitize(first.user)}:</span> ${eventLabel} <span style="color:var(--text-muted); font-size:11px;">(${firstTimeStr})</span>`;
         } else {
           snippetEl.textContent = 'Belum ada aktivitas tercatat.';
@@ -519,6 +538,15 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
           badgeHtml = '<span class="badge" style="background:rgba(239,68,68,0.2); color:var(--danger); border:1px solid var(--danger); font-size:10px; font-weight:700;">SECURITY ALERT</span>';
           mainTitle = `<span style="font-weight:700; color:var(--danger); font-size:14px;">${sanitize(log.user)}</span> <span style="font-size:13px; color:var(--danger);">Peringatan Keamanan (${sanitize(log.type)})</span>`;
           metaHtml = log.email ? `<div style="font-size:12.5px; color:var(--text-muted); margin-top:2px;">${sanitize(log.email)}</div>` : '';
+        } else if (log.type === 'search:query') {
+          var p = log.payload || {};
+          badgeHtml = '<span class="badge" style="background:rgba(234,179,8,0.15); color:#eab308; border:1px solid rgba(234,179,8,0.3); font-size:10px;">PENCARIAN</span>';
+          mainTitle = `<span style="font-weight:700; color:var(--text-main); font-size:14px;">${sanitize(log.user)}</span> <span style="font-size:13px; color:var(--text-muted);">mencari: <b>"${sanitize(p.query || '')}"</b> (${p.results_count || 0} hasil)</span>`;
+          metaHtml = log.email ? `<div style="font-size:12px; color:var(--text-muted); margin-top:2px;">${sanitize(log.email)}</div>` : '';
+        } else if (log.type === 'auth:logout') {
+          badgeHtml = '<span class="badge" style="background:rgba(148,163,184,0.15); color:#94a3b8; border:1px solid rgba(148,163,184,0.3); font-size:10px;">LOGOUT</span>';
+          mainTitle = `<span style="font-weight:700; color:var(--text-main); font-size:14px;">${sanitize(log.user)}</span> <span style="font-size:13px; color:var(--text-muted);">keluar dari sesi</span>`;
+          metaHtml = log.email ? `<div style="font-size:12px; color:var(--text-muted); margin-top:2px;">${sanitize(log.email)}</div>` : '';
         } else if (log.type === 'signup') {
           badgeHtml = '<span class="badge" style="background:rgba(6,182,212,0.15); color:var(--c3); border:1px solid rgba(6,182,212,0.3); font-size:10px;">NEW ACCOUNT</span>';
           mainTitle = `<span style="font-weight:700; color:var(--text-main); font-size:14px;">${sanitize(log.user)}</span> <span style="font-size:13px; color:var(--text-muted);">mendaftar akun baru</span>`;
@@ -604,13 +632,17 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
         if (!data.success) throw new Error(data.error || 'Failed to load timeline');
 
         const userActs = data.user_activity_logs || [];
-        const userDevs = (data.devices || []).filter(d => d.user_id === userId);
+        const userEmailLower = (userEmail || '').toLowerCase();
+        const userDevs = (data.devices || []).filter(d => (userId && d.user_id === userId) || (userEmailLower && d.userInfo?.email?.toLowerCase() === userEmailLower));
 
         let totalExams = 0;
         let totalScoreSum = 0;
         let dwellMinutes = 0;
 
-        userActs.forEach(ev => {
+        // Build unified chronological timeline stream
+        const combinedStream = [];
+        combinedStream.forEach(ev => {
+          combinedStream.push({ ...ev, time: new Date(ev.created_at).getTime() });
           if (ev.event_type === 'cbt:exam_submitted') {
             totalExams++;
             totalScoreSum += (ev.payload?.score_pct || 0);
@@ -619,13 +651,44 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
           }
         });
 
+        (data.signups || []).filter(s => (userId && s.id === 'signup_' + userId) || (userEmailLower && (s.email || '').toLowerCase() === userEmailLower)).forEach(s => {
+          combinedStream.push({
+            event_type: 'auth:signup',
+            created_at: s.time,
+            time: new Date(s.time).getTime(),
+            payload: { isGuest: s.isGuest }
+          });
+        });
+
+        (data.signins || []).filter(s => userEmailLower && (s.email || '').toLowerCase() === userEmailLower).forEach(s => {
+          combinedStream.push({
+            event_type: 'auth:login',
+            created_at: s.time,
+            time: new Date(s.time).getTime(),
+            payload: { isGuest: s.isGuest }
+          });
+        });
+
+        userDevs.forEach(d => {
+          if (d.last_seen) {
+            combinedStream.push({
+              event_type: 'auth:device_seen',
+              created_at: d.last_seen,
+              time: new Date(d.last_seen).getTime(),
+              payload: { device_name: d.device_name, city: d.city, country: d.country, ip_hash: d.ip_hash }
+            });
+          }
+        });
+
+        combinedStream.sort((a, b) => b.time - a.time);
+
         const avgScore = totalExams > 0 ? Math.round(totalScoreSum / totalExams) : 0;
         if (subEl) subEl.textContent = `Akun: ${userEmail} &bull; ID: ${(userId || '').slice(0, 8)}...`;
         if (statsEl) {
           statsEl.innerHTML = `<span style="background:rgba(6,182,212,0.15); color:var(--c3); padding:2px 8px; border-radius:10px; font-weight:700;">Ujian CBT: ${totalExams}x (Avg ${avgScore}%)</span> &bull; <span style="background:rgba(20,184,166,0.15); color:#2dd4bf; padding:2px 8px; border-radius:10px; font-weight:700;">Belajar: ${dwellMinutes} Menit</span>`;
         }
 
-        if (userActs.length === 0 && userDevs.length === 0) {
+        if (combinedStream.length === 0) {
           listEl.innerHTML = '<div style="padding:48px 24px; text-align:center; color:var(--text-muted);">Belum ada rekam jejak telemetri tercatat untuk user ini.</div>';
           return;
         }
@@ -646,6 +709,19 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
             badge = `<span class="badge" style="background:${pct >= 75 ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)'}; color:${pct >= 75 ? '#22c55e' : 'var(--danger)'}; border:1px solid ${pct >= 75 ? '#22c55e' : 'var(--danger)'}; font-size:10px;">CBT SELESAI (${pct}%)</span>`;
             text = `Menyelesaikan modul <b>${sanitize(p.module_id || 'CBT')}</b> - Skor: ${p.score || 0}/${p.total_questions || 0}`;
             sub = `Durasi pengerjaan: ${Math.round((p.duration_seconds || 0)/60)} menit &bull; Geo: ${ev.geo_city || 'Indonesia'}`;
+          } else if (ev.event_type === 'auth:signup') {
+            badge = '<span class="badge" style="background:rgba(6,182,212,0.15); color:var(--c3); border:1px solid rgba(6,182,212,0.3); font-size:10px;">REGISTRASI AKUN</span>';
+            text = `Akun berhasil didaftarkan ${ev.payload?.isGuest ? '(Mode Guest)' : '(Mahasiswa)'}`;
+            sub = 'Pendaftaran pengguna baru';
+          } else if (ev.event_type === 'auth:login') {
+            badge = '<span class="badge" style="background:rgba(14,165,233,0.15); color:var(--c4); border:1px solid rgba(14,165,233,0.3); font-size:10px;">LOGIN</span>';
+            text = 'Login sesi ke aplikasi';
+            sub = 'Otentikasi berhasil';
+          } else if (ev.event_type === 'auth:device_seen') {
+            const p = ev.payload || {};
+            badge = '<span class="badge" style="background:rgba(168,85,247,0.15); color:#a855f7; border:1px solid rgba(168,85,247,0.3); font-size:10px;">PERANGKAT AKTIF</span>';
+            text = `Perangkat: ${sanitize(p.device_name || 'Browser')}`;
+            sub = `Lokasi: ${sanitize(p.city ? p.city + ', ' : '')}${sanitize(p.country || 'Indonesia')} ${p.ip_hash ? '#' + p.ip_hash.slice(0, 8) : ''}`;
           } else if (ev.event_type === 'cbt:exam_started') {
             badge = '<span class="badge" style="background:rgba(6,182,212,0.15); color:var(--c3); border:1px solid rgba(6,182,212,0.3); font-size:10px;">CBT START</span>';
             text = `Memulai pengerjaan modul <b>${sanitize(ev.payload?.module_id || 'Modul')}</b>`;
@@ -3075,7 +3151,8 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
       const btnTimeline = cardOrRow.querySelector('.btn-user-timeline');
         if (btnTimeline) {
           btnTimeline.onclick = () => {
-            window.openUserTimeline(u.id, email, username);
+            const uName = btnTimeline.getAttribute('data-username') || (u.user_metadata && (u.user_metadata.username || u.user_metadata.full_name)) || (email || '').split('@')[0] || 'User';
+            window.openUserTimeline(u.id, email, uName);
           };
         }
 

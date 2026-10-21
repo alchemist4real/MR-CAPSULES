@@ -951,9 +951,11 @@ export default async function handler(req, res) {
         const targetUserEmail = req.body.email || req.body.user_email || null;
         const limitCount = Math.min(parseInt(req.body.limit, 10) || 60, 200);
 
-        // Filter user_activity_logs by user if requested (User 360 view)
+        // Filter user_activity_logs by user if requested (User 360 view with OR query support)
         let userActivityQuery = `order=created_at.desc&limit=${limitCount}`;
-        if (targetUserId) {
+        if (targetUserId && targetUserEmail) {
+          userActivityQuery += `&or=(user_id.eq.${encodeURIComponent(targetUserId)},user_email.eq.${encodeURIComponent(targetUserEmail.toLowerCase())})`;
+        } else if (targetUserId) {
           userActivityQuery += `&user_id=eq.${encodeURIComponent(targetUserId)}`;
         } else if (targetUserEmail) {
           userActivityQuery += `&user_email=eq.${encodeURIComponent(targetUserEmail.toLowerCase())}`;
