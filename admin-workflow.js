@@ -23,6 +23,16 @@ function parseSafeDate(dateStr) {
 }
 window.parseSafeDate = parseSafeDate;
 
+function escapeWorkflowHtml(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // Wait for sessionToken to be populated by admin.js
     if (window.sessionToken) {
@@ -699,20 +709,22 @@ window.loadTaskLogs = async function(taskId) {
             if (lastReject && lastReject.note) {
                 rejectNoteHtml = `<div style="margin-bottom:14px; padding:12px; background:transparent; border:1.5px solid var(--danger); border-radius:var(--radius-card);">
                     <div style="font-size:12px; font-weight:bold; color:var(--danger); text-transform:uppercase; letter-spacing:0.5px;">Latest Rejection Reason</div>
-                    <div style="font-size:13.5px; color:var(--text-main); margin-top:6px; line-height:1.4;">"${lastReject.note}"</div>
+                    <div style="font-size:13.5px; color:var(--text-main); margin-top:6px; line-height:1.4;">"${escapeWorkflowHtml(lastReject.note)}"</div>
                 </div>`;
             }
         }
 
         container.innerHTML = rejectNoteHtml + res.logs.map(l => {
-            let noteHtml = l.note ? `<div style="color:var(--text-main); font-style:italic; margin-top:6px; padding-left:10px; border-left:2px solid var(--border-medium); font-size:13px;">"${l.note}"</div>` : '';
+            let noteHtml = l.note ? `<div style="color:var(--text-main); font-style:italic; margin-top:6px; padding-left:10px; border-left:2px solid var(--border-medium); font-size:13px;">"${escapeWorkflowHtml(l.note)}"</div>` : '';
             let actionColor = 'var(--accent)';
             if (l.action === 'rejected' || l.action === 'deleted') actionColor = 'var(--danger)';
             else if (l.action === 'phase_reset' || l.action === 'retracked') actionColor = 'color-mix(in srgb, var(--danger) 65%, var(--c1))';
             else if (l.action === 're_review_requested' || l.action === 'resubmitted') actionColor = 'var(--accent)';
 
+            const authorName = l.user ? (l.user.username || (l.user.email ? l.user.email.split('@')[0] : 'User')) : 'System';
+
             return `<div style="font-size:13px; border-bottom:1px solid var(--border-light); padding:10px 0;">
-                <div><span style="color:${actionColor}; font-weight:700;">${l.action.replace(/_/g, ' ').toUpperCase()}</span> by <b>${l.user ? (l.user.username || l.user.email.split('@')[0]) : 'System'}</b></div>
+                <div><span style="color:${actionColor}; font-weight:700;">${l.action.replace(/_/g, ' ').toUpperCase()}</span> by <b>${escapeWorkflowHtml(authorName)}</b></div>
                 <div style="color:var(--text-muted); font-size:12px; margin-top:3px;">${l.created_at && parseSafeDate(l.created_at) ? parseSafeDate(l.created_at).toLocaleString() : '-'}</div>
                 ${noteHtml}
             </div>`;

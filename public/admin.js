@@ -351,13 +351,25 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
       raw.forEach(function(log) {
         var userKey = (log.email || log.user || 'anon').toLowerCase().trim();
 
-        if (log.type === 'online' || log.type === 'offline' || log.type === 'device_seen') {
+        if (log.type === 'online' || log.type === 'offline') {
           var gKey = userKey + '_' + log.type;
           if (presenceMap.has(gKey)) {
             var existing = presenceMap.get(gKey);
             existing.count = (existing.count || 1) + 1;
             existing.earliestTime = log.time;
             if (!existing.devStr && log.devStr) existing.devStr = log.devStr;
+          } else {
+            var entry = Object.assign({}, log, { count: 1, latestTime: log.time, earliestTime: log.time });
+            presenceMap.set(gKey, entry);
+            aggregated.push(entry);
+          }
+        } else if (log.type === 'device_seen') {
+          var devIdentifier = log.devStr || log.deviceId || log.id || 'dev';
+          var gKey = userKey + '_dev_' + devIdentifier;
+          if (presenceMap.has(gKey)) {
+            var existing = presenceMap.get(gKey);
+            existing.count = (existing.count || 1) + 1;
+            existing.earliestTime = log.time;
           } else {
             var entry = Object.assign({}, log, { count: 1, latestTime: log.time, earliestTime: log.time });
             presenceMap.set(gKey, entry);
@@ -641,7 +653,7 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
 
         // Build unified chronological timeline stream
         const combinedStream = [];
-        combinedStream.forEach(ev => {
+        userActs.forEach(ev => {
           combinedStream.push({ ...ev, time: new Date(ev.created_at).getTime() });
           if (ev.event_type === 'cbt:exam_submitted') {
             totalExams++;
@@ -694,7 +706,7 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
         }
 
         listEl.innerHTML = '';
-        userActs.forEach(ev => {
+        combinedStream.forEach(ev => {
           const row = document.createElement('div');
           row.style.cssText = 'padding:14px 20px; border-bottom:1px solid var(--border-light); display:flex; justify-content:space-between; align-items:flex-start; gap:16px;';
           const timeStr = new Date(ev.created_at).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' }) + ' WIB';
@@ -1407,7 +1419,7 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
               }).subscribe(async (status) => {
                  if (status === 'SUBSCRIBED') {
                     var tEmail = (badgeEl ? badgeEl.textContent : '') || 'Admin';
-                    await window.sessionRoom.track({ user: 'auth-user', email: tEmail, joined_at: new Date().toISOString() });
+                    await window.sessionRoom.track({ user: 'Admin', email: tEmail, joined_at: new Date().toISOString() });
                  }
               });
 
@@ -1458,43 +1470,101 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
                    updateAndRender();
                 })
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'activity_logs' }, payload => {
-                   if (payload.new) {
-                     const d = payload.new;
-                     window.addHybridLog({
-                       id: d.log_id || ('log_' + d.id),
-                       type: d.type,
-                       time: new Date(d.time).getTime(),
-                       user: d.user_name || d.email || 'Unknown',
-                       email: d.email,
-                       devStr: d.dev_str,
-                       isLive: true
-                     });
-                     window.renderHybridLogs();
-                   }
-                })
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'user_devices' }, payload => {
-                   if (payload.new && payload.new.last_seen) {
-                     const d = payload.new;
-                     const t = new Date(d.last_seen).getTime();
-                     let devLabel = d.device_name || 'Device';
-                     if (d.city || d.country) devLabel += ` [📍 ${d.city ? d.city + ', ' : ''}${d.country || ''}]`;
-                     if (d.is_safari) devLabel += ' 🍎';
-                     if (d.ip_hash) devLabel += ` #${d.ip_hash.substring(0, 8)}`;
-                     window.addHybridLog({
-                       id: 'dev_seen_' + d.device_id + '_' + t,
-                       type: 'device_seen',
-                       time: t,
-                       user: d.user_name || d.email || 'Unknown',
-                       email: d.email,
-                       devStr: devLabel,
-                       isLive: true
-                     });
-                     window.renderHybridLogs();
-                   }
-                   clearTimeout(window._deviceChangeTimer);
-                   window._deviceChangeTimer = setTimeout(() => loadUsers(), 800);
-                })
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'app_settings' }, payload => {
+                    if (payload.new) {
+                      const d = payload.new;
+                      window.addHybridLog({
+                        id: d.log_id || ('log_' + d.id),
+                        type: d.type,
+                        time: new Date(d.time).getTime(),
+                        user: d.user_name || (d.email ? d.email.split('@')[0] : 'User'),
+                        email: d.email,
+                        devStr: d.dev_str,
+                        isLive: true
+                      });
+                      window.renderHybridLogs();
+                    }
+                 })
+                 .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'user_activity_logs' }, payload => {
+                    if (payload.new) {
+                      const u = payload.new;
+                      const evType = u.event_type || 'user_event';
+                      let cat = 'user';
+                      if (evType.startsWith('cbt:') || evType.startsWith('module:') || evType.startsWith('search:')) {
+                        cat = 'cbt';
+                      } else if (u.severity === 'security' || evType.startsWith('sec:')) {
+                        cat = 'security';
+                      }
+
+                      window.addHybridLog({
+                        id: 'act_' + u.id,
+                        type: evType,
+                        category: cat,
+                        severity: u.severity || 'info',
+                        time: new Date(u.created_at).getTime(),
+                        user: u.user_email ? u.user_email.split('@')[0] : (u.is_guest ? 'Guest Student' : 'Student'),
+                        email: u.user_email,
+                        payload: u.payload || {},
+                        geo: (u.geo_city || u.geo_country) ? `${u.geo_city ? u.geo_city + ', ' : ''}${u.geo_country || ''}` : null,
+                        devStr: u.user_agent,
+                        isGuest: u.is_guest,
+                        isLive: true
+                      });
+                      window.renderHybridLogs();
+                    }
+                 })
+                 .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'admin_action_logs' }, payload => {
+                    if (payload.new) {
+                      const a = payload.new;
+                      window.addHybridLog({
+                        id: 'admin_' + a.id,
+                        type: 'admin_action',
+                        action: a.action,
+                        category: 'admin',
+                        severity: 'info',
+                        time: new Date(a.created_at).getTime(),
+                        user: a.admin_email ? a.admin_email.split('@')[0] : 'Admin',
+                        email: a.admin_email,
+                        details: a.details || {},
+                        isLive: true
+                      });
+                      window.renderHybridLogs();
+                    }
+                 })
+                 .on('postgres_changes', { event: '*', schema: 'public', table: 'user_devices' }, payload => {
+                    if (payload.new && payload.new.last_seen) {
+                      const d = payload.new;
+                      const t = new Date(d.last_seen).getTime();
+                      let devLabel = d.device_name || 'Device';
+                      if (d.city || d.country) devLabel += ` [📍 ${d.city ? d.city + ', ' : ''}${d.country || ''}]`;
+                      if (d.is_safari) devLabel += ' 🍎';
+                      if (d.ip_hash) devLabel += ` #${d.ip_hash.substring(0, 8)}`;
+
+                      let resolvedUser = 'User';
+                      let resolvedEmail = '';
+                      const uList = window.allUsersCache || window.lastLoadedUsers || [];
+                      const foundUser = uList.find(u => u.id === d.user_id);
+                      if (foundUser) {
+                        resolvedUser = (foundUser.user_metadata && foundUser.user_metadata.username) || (foundUser.email ? foundUser.email.split('@')[0] : 'User');
+                        resolvedEmail = foundUser.email || '';
+                      }
+
+                      window.addHybridLog({
+                        id: 'dev_seen_' + d.device_id + '_' + t,
+                        type: 'device_seen',
+                        category: 'devices',
+                        time: t,
+                        user: resolvedUser,
+                        email: resolvedEmail,
+                        deviceId: d.device_id,
+                        devStr: devLabel,
+                        isLive: true
+                      });
+                      window.renderHybridLogs();
+                    }
+                    clearTimeout(window._deviceChangeTimer);
+                    window._deviceChangeTimer = setTimeout(() => loadUsers(), 800);
+                 })
+                 .on('postgres_changes', { event: '*', schema: 'public', table: 'app_settings' }, payload => {
                    window._cachedBannedDevices = null;
                    loadUsers();
                 })
@@ -3063,7 +3133,7 @@ Object.defineProperty(window, 'supabaseClient', { get() { return supabaseClient;
              id: 'login_' + u.id + '_' + u.last_sign_in_at,
              type: 'login',
              time: new Date(u.last_sign_in_at).getTime(),
-             user: (meta.username || 'Unknown'),
+             user: (meta.username || (u.email ? u.email.split('@')[0] : 'User')),
              email: u.email,
              devStr: devStr
           };

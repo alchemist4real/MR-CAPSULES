@@ -2878,8 +2878,19 @@ try {
       }).subscribe(async (status) => {
         if (status === 'SUBSCRIBED') {
            var trackEmail = '';
-           try { var sess = await supabase.auth.getSession(); trackEmail = sess.data.session.user.email || ''; } catch(e) {}
-           await sessionRoom.track({ user: 'auth-user', email: trackEmail, joined_at: new Date().toISOString() });
+           var trackUser = 'User';
+           try {
+             var sess = await supabase.auth.getSession();
+             if (sess && sess.data && sess.data.session && sess.data.session.user) {
+               var u = sess.data.session.user;
+               trackEmail = u.email || '';
+               trackUser = (u.user_metadata && u.user_metadata.username) || (u.email ? u.email.split('@')[0] : 'User');
+             } else {
+               trackEmail = localStorage.getItem('capsule_guest_email') || '';
+               trackUser = localStorage.getItem('capsule_guest_name') || (trackEmail ? trackEmail.split('@')[0] : 'Guest');
+             }
+           } catch(e) {}
+           await sessionRoom.track({ user: trackUser, email: trackEmail, joined_at: new Date().toISOString() });
         }
       });
 
@@ -2980,15 +2991,22 @@ try {
             email: session.user.email,
             dev_str: navigator.userAgent
           });
-          const beaconHeaders = new Blob([offlinePayload], { type: 'application/json' });
           try {
-            navigator.sendBeacon(
-              `https://hdhvrlkizorscvehttzd.supabase.co/rest/v1/activity_logs`,
-              beaconHeaders
-            );
+            if (window.Telemetry && typeof window.Telemetry.track === 'function') {
+              window.Telemetry.track('auth:logout', { reason: 'page_unload' });
+              window.Telemetry.flush();
+            }
+            navigator.sendBeacon('/api/telemetry', new Blob([JSON.stringify({
+              events: [{
+                event_type: 'auth:logout',
+                payload: { reason: 'page_unload' },
+                user_email: session.user.email,
+                user_id: session.user.id,
+                created_at: new Date().toISOString()
+              }]
+            })], { type: 'application/json' }));
           } catch(e) {
-            // Fallback: try supabase client (may or may not complete)
-            supabase.from('activity_logs').upsert(JSON.parse(offlinePayload), { onConflict: 'log_id' }).then(() => {});
+            try { supabase.from('activity_logs').upsert(JSON.parse(offlinePayload), { onConflict: 'log_id' }).then(() => {}); } catch(err) {}
           }
           if (sessionUptime % 60 !== 0 && cachedUserId) {
             supabase.from('user_stats').upsert({ user_id: cachedUserId, total_uptime: localUptime, last_updated: new Date().toISOString() })
